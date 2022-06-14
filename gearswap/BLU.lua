@@ -6,6 +6,7 @@
 --                 NOTES                 --
 -------------------------------------------
 --[[
+
 Place both this file and the sounds folder inside the GearSwap data folder
 	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/BLU.lua
@@ -65,7 +66,9 @@ Replace each of those two lines entirely with the following:
 Then save the file and reload it in game by typing:
 	//lua r azuresets
 into your chatlog directly.
+
 --]]
+
 -------------------------------------------
 --                OPTIONS                --
 -------------------------------------------
@@ -148,6 +151,9 @@ NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%. Will
 NotiTPReturn		=	'On'	--[On/Off]	Displays your TP return after Weapon Skills.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 ReraiseReminderTimer=	1800	--			Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+NotiTime			=	'Off'	--[On/Off]	Displays a notification for time remaining notices.
+NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
+NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -162,13 +168,13 @@ NotiTerror			=	'On'	--[On/Off]	Displays a notification when you are terrorized.
 NotiMute			=	'On'	--[On/Off]	Displays a notification when you are muted.
 NotiPlague			=	'On'	--[On/Off]	Displays a notification when you are plagued.
 NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
+NotiEncumbrance		=	'On'	--[On/Off]	Displays a notification when you have encumbrance.
 -------------------------------------------
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
 HUDBGTrans	=		'175'	--Background transparency for the HUD. (1 = fully clear, 256 = fully opaque)
-TPReturnWait=		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate
-							--depending on lag, regain, etc.)
+TPReturnWait=		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
 Debug		=		'Off'	--[On/Off]
 
 --Mode color values in RGB for the HUD
@@ -295,7 +301,7 @@ function get_sets()
 
 	-- Fast Cast (cap is 80%)
 	sets.fastcast = {
-		ammo="Staunch Tathlum",
+		ammo="Sapience Orb", --2%
 		head="Amalric Coif +1", --11%
 		body="Amalric Doublet +1", --4% (from augment)
 		hands="Leyline Gloves", --5% (possibly up to additional 3% with augments)
@@ -307,7 +313,7 @@ function get_sets()
 		right_ear="Etiolation Earring", --1%
 		left_ring="Prolix Ring", --2%
 		right_ring="Kishar Ring", --4%
-		back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Damage taken-5%',}},
+		back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Damage taken-5%',}}, --10%
 	}
 
 	-- Physical Spells (STR, Accuracy, Attack)	(Macc only affects add'l effects landing, NOT the damage from the physical spell itself)
@@ -354,7 +360,7 @@ function get_sets()
 	sets.dark = set_combine(sets.magical, {
 		head="Pixie Hairpin +1",
 		body="Amalric Doublet +1",
-		right_ring="Archon Ring",
+		left_ring="Archon Ring",
 	})
 
 	-- Breath
@@ -518,6 +524,164 @@ TopVersion = 'Pollen' --Leave this alone, used for debugging purposes
 
 
 
+BottomVersion = 'Pollen'
+FileVersion = '06.14.22'
+
+-------------------------------------------
+--               UPDATES                 --
+-------------------------------------------
+
+--[[
+If the new updates Version Compatibility Codename matches your current files TopVersion,
+simply replace everything under the "Do Not Edit Below This Line".
+Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+06.14.22 (Version Compatibility Codename: Pollen)
+-Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
+-Removed Gearswaps built-in debugmode from the files Debug mode.
+-Moved the Updates section towards the top of the file.
+-Code cleanup
+
+03.11.22 (Version Compatibility Codename: Pollen)
+-Overhauled Debuff Notifications. Will now check which debuffs are up in real time with a list of priority for which is displayed instead of clearing the notifications entirely when any of them are removed (leaving it blank even if a different debuff was still up).
+-Added missing On/Off option/rules to Time Remaining (currently only for Abyssea), Omen, and Vagary
+-Added Encumbrance to the Debuffs.
+-Fixed Alliance invite incorrectly triggering Party invite notification.
+-Fixed some subjob conditions throwing errors when you have no subjob (ie Odyssey NMs)
+
+02.02.22 (Version Compatibility Codename: Pollen)
+-Added Weak status notification.
+-Fixed gear not fully equipping in towns.
+-Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
+-Fixed Fast Cast gear to not equip when using a Forbidden Key, Pickaxe, Sickle, or Hatchet.
+
+02.01.22 (Version Compatibility Codename: Pollen)
+-Overhauled how Blue Magic spells are handled. Uses tables now for groups of spells that use certain gearsets.
+-Overhauled Notifications. Removed reliance on variables and spun out Debuffs into their own thing.
+-Renamed the OnScreen Display to HUD.
+-Added Paralysis to the Debuffs.
+-Added option to automatically use an Echo Drop (or Remedy) instead of spell when you are silenced.
+-Added a Savage Blade Weapon Skill set.
+-Added missing Luhlaza Bazubands +2 and +3 variants for extending Azure Lore timer.
+-Added rule for White Magic Cure spells to the Healing set.
+-Added rule for Elemental spells to use the Magical set.
+-Added option for setting macro book page (set).
+-Added Trade, Invite, Sneak, Invisible, Vorseal, Signet, Sanction, Sigil, and Ionis to the Notifications.
+-Added the 3000 TP notification to the Notification options.
+-Added 2 new sounds (NotiGood and NotiBad) and adjusted sound usage accordingly.
+-Added a Heartbeat function. This creates a one second "heartbeat" that we can use to do various things that may not otherwise have an automatic trigger.
+-Added a background to the HUD creating a box that everything is displayed inside, instead of separate floating pieces of info.
+-Added Spell/Ability recasts to the HUD. Green when active, Orange when not active but on cooldown, red when not active and ready to use.
+-Added equipping of Opo-opo Necklace when asleep (and un-equip after).
+-Added HUD now hiding when in a cutscene. (The code to hide while zoning is adding a lot of lag, will look further into this)
+-Adjusted the solid colors to be a little less solid (red was just so... ~*RED*~)
+-Adjusted the Doom Notification to have a more noticeable presence.
+-Fixed an issue with AutoLockstyle where it would not run correctly if you change your sub job immediately after changing to BLU.
+-Fixed the Reraise Reminder.
+-Fixed the Dead Notification.
+-Changed «« and »» to << and >> for chatlog notifications since «« and »» don't actually display in the chatlog.
+-Changed compatibility naming scheme to Blue Mage spells.
+-Code cleanup
+
+11.10.21 (Version Compatibility Codename: Maxprime-u1)
+-Fixed Aftermath Notification colors displaying incorrectly.
+
+10.27.21 (Version Compatibility Codename: Maxprime)
+-Overhauled how lockstyle is handled. This now uses the in-game lockstyle set system instead of a gear set defined in this file.
+-Added ability to use a Town lockstyle set separate from the set used while out in the field.
+-Removed the Lockstyle gear set since it is no longer needed.
+-Updated the Aftermath status to include Almace and Sequence (in addition to Tizona).
+-Updated the Aftermath status in the OnScreen display to automatically display, or not, based on the equipped weapon.
+-Layout of the OnScreen display will now self-adjust based on whether the Aftermath display is on or off.
+-Removed the option to turn the Aftermath status in the OnScreen display on or off as this is now automatic as long as the OnScreen display is turned on.
+-Added an Azure Lore and Unbridled Wisdom timer. These will show a countdown in echo until they wear off.
+-Added a Cruel Joke chat log timer. Can choose between party chat or echo (or off).
+-Added a "Food Has Worn Off" notification.
+-Added Mute and Plague to the notifications.
+-Added ability to turn on or off individual notifications.
+-Added a sound notification to the Doom notification (if you have AlertSounds turned on of course).
+-Overhauled AlertSounds. There is now a sounds folder with sound files included with this gearswap file. Simply drop the sounds folder inside your data folder (It should look like \addons\GearSwap\data\sounds).
+-Fixed the spell Fantod using the magicaccuracy set while not in Tank mode, now uses the buff set instead.
+-Adjusted the "Low MP" Notification to wait 30 seconds before being able to display the same notification again, instead of the above 40% threshhold previously used.
+-Removed the Experimental feature GearCheck.
+-Removed the Experimental feature AutoDefender.
+-Removed reliance on Autoexec. Everything Autoexec did is now done completely through GearSwap functions.
+-Code cleanup (lots of code cleanup...)
+-Code comments added.
+-Updated Top and Bottom version names.
+-Updated //fileinfo
+
+07.17.21 (Version Compatibility Codename: Jackup)
+-Added an Expiacion Weapon Skill set.
+-Added a White Wind set.
+-Added a Kite set. This set will equip when in any Tank mode and not engaged (turning "Status: Idle" into "Status: Kiting")
+-Added a Cursna/Holy Water set, replacing the Purity Ring code previously added.
+-Added a "Reraise Has Worn Off" Notification.
+-Added a Reraise Reminder Notification.
+-Added a "Low MP" Notification. Triggers when MP is under 20%. This will not trigger again until the player’s HP reaches 40%.
+-OnScreen Notifications will now reset after zoning.
+-Fixed sneak cancelling on yourself if you cast sneak on another player.
+-Fixed Learning submodes to correctly use the Blue Magic Skill set.
+-Updated Top and Bottom version names.
+-Updated //fileinfo
+
+03.30.21 (Version Compatibility Codename: Fidant)
+-Added a slight wait into the On-Screen display. This should prevent the occasional Text plugin error on file load.
+-Added SoundAlerts function. This will play a sound for various things (cancelled spell due to silence, not enough TP for a WS, 3000 TP, etc)
+-Updated which gear sets are equipped for a few of the Unbridled Learning spells where we care more about the additional effect landing than we do about the damage.
+-Fixed Unity Trust set to actually equip as intended.
+-Updated Top and Bottom version names.
+-Minor formatting adjustments.
+
+02.09.21 (Version Compatibility Codename: Neonstar)
+-Added Purity Ring on casting Cursna on yourself or using a Holy Water.
+-Added Enmity set. Will only equip for Fantod, Jettatura, and Blank Gaze when in any of the tank modes.
+-Updated Top and Bottom version names.
+
+01.10.21 (Version Compatibility Codename: Kedar)
+-Added Aftermath status into the OnScreen display. This is a separate line and can be turned on or off in the options.
+-Changed the Gear Mode logic. You can now independently turn on or off the Treasure Hunter and Learning sub-modes.
+ This will skip the modes that are turned off when you cycle through modes. So for example if you do not need
+ or use either of the Treasure Hunter or Learning modes it will simply cycle between DPS and Tank.
+-Added options to use an alias command or a kb shortcut for cycling between gear modes.
+-Simplified the command needed to use a macro to cycle between gear modes.
+-Added town sets. Unless you don't use a lockstyle, this is mostly intended just for the movement speed gear for specific towns.
+-Added Unity Trust set. Put your Unity Shirt in this set to get the bonus when calling your Unity Trust.
+-Added a second shorthand alias (lstyle) for the Auto-Lockstyle function.
+-Adjusted Auto-Lockstyle function to choose the correct set to change back into after locking the lockstyle set (tank, idle, town, etc)
+-Added option to adjust the transparency level of the OnScreen display.
+-Added option to automatically re-equip your gear after you zone. 'All' will either equip whichever Gear Mode you are in, or equip the
+ set for the town you are in. 'Town' will only do this when you zone into a town.
+-Added ability to turn off the Chat and Book options in case you either do not want to use them or another plugin does it already.
+-Moved the GearCheck and AutoDefender functions into a new Experimental Options section.
+-Added a new Top and Bottom version identifier. This will help narrow down issues when updating this file to a new version in the future.
+ The idea is that whenever I make changes that require edits to the top half of the file, I will change the Top and Bottom version names.
+ This is so that when you update the file and replace everything below the "Do Not Edit Below This Line" line and have issues,
+ we can see if it stems from the Top and Bottom versions not matching.
+-Minor adjustments to which gear sets are used in different gear modes while engaged/idle.
+-Some code cleanup
+-Changed //filehelp to //fileinfo. Don't @ me.
+-Updated //fileinfo to reflect updates.
+
+10.20.20
+-Added a Rest set. You will need to add this set even if you don't intend to use it.
+-Changed //help to //filehelp to avoid any possible overlap with plugins/addons
+-Adjusted gear sets during idle and engaged. (ex. if you're in tank mode and engaged, it will now equip tank set first, then pull from
+ dps set for any slots not assigned in your tank set)
+-Adjusted BlueMagicSkill, Healing, and Battery gear rules to combine with Buff set.
+-Adjusted Precast to cancel spell when unable to actually cast due to debuff(s) and to add a notification when that happens.
+
+09.15.20
+-Fixed spell subtarget on WS
+-Fixed distance for ranged WS
+-Fixed TH gear equipping at the appropriate time
+-Fixed a lot of the chat log notifications not displaying properly
+-Fixed Diffusion so that it has the set equipped for spell cast completion and not just at ability activation
+-Will now warn you when you have certain items equipped (Warp Ring, Reraise Hairpin, etc.)
+-Added a //help command that will print out the Notes/Options
+-Lots of code cleanup
+--]]
+
 -------------------------------------------
 --            SPELL MAPPING              --
 -------------------------------------------
@@ -562,8 +726,6 @@ Healing = S{
 --              FILE LOAD                --
 -------------------------------------------
 
-BottomVersion = 'Pollen'
-FileVersion = '03.05.22'
 Mode = 'NONE' --We don't yet know what spellset you're using
 NotiLowMPToggle = 'Off' --Start with the toggle off for the Low MP Notification so that it can trigger
 DTOverride = "Off" --Start with the Damage Taken Override off
@@ -610,7 +772,7 @@ if HUD == 'On' then
 		REMA = false --If we do not have a REMA equipped, we set it to false
 	end
 	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text bg1 create "                                                                                                                          ";text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
+	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
 	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
@@ -642,8 +804,8 @@ if HUD == 'On' then
 	send_command('text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
 	send_command('text mode create "Please select a Mode...";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
 	send_command('text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('text debuffs create "";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
-	send_command('text loading create "Loading Keys BLUE MAGE file ver: '..FileVersion..'...";text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
+	send_command('text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	send_command('text loading create "Loading Keys BLUE MAGE file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
 else
 	windower.add_to_chat(8,'Keys BLUE MAGE file ver: '..FileVersion..'')
@@ -672,7 +834,7 @@ if BLUAlert == 'On' then
 end
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs debugmode;gs showswaps')
+	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -755,35 +917,35 @@ function self_command(command)
 		if HUDRecast == 'On' then --using the HUDRecast
 			if player.equipment.main == 'Tizona' or player.equipment.main == 'Almace' or player.equipment.main == 'Sequence' then
 				--if we have any REMAs equipped we place the Aftermath, Mode, Notifications, Debuff, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .1;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .35;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
-				send_command('wait .4;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .45;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .45;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+				send_command('wait .7;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
 			else
 				--if we do not have any REMAs equipped we move the Mode, Notifications, Debuffs, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .1;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .3;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .35;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .35;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .7;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
 			end
 		else --not using the HUDRecast
 			if player.equipment.main == 'Tizona' or player.equipment.main == 'Almace' or player.equipment.main == 'Sequence' then
 				--if we have any REMAs equipped we place the Aftermath, Mode, Notifications, Debuff, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .15;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .35;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine1..'')
-				send_command('wait .4;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-				send_command('wait .45;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .45;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine1..'')
+				send_command('wait .7;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
+				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
 			else
 				--if we do not have any REMAs equipped we move the Mode, Notifications, Debuffs, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .25;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-				send_command('wait .3;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .3;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .6;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
+				send_command('wait .7;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .7;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
 			end
 		end
 	elseif command == 'Fileinfo' then
@@ -1054,7 +1216,7 @@ function choose_set()
 				send_command('text notifications text "Status: Resting";text notifications color 255 255 255')
 			end
 		end
-		equip(sets.rest)
+		equip(set_combine(sets.rest, sets.dtoverride))
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Rest]')
 		end
@@ -1601,81 +1763,12 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
+	if (buff == 2 or buff == 19) then
+		equip({neck="Opo-opo Necklace"})
+	end
 	if buff == 15 and NotiDoom == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< DOOM >>')
-		end
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
-	elseif (buff == 2 or buff == 19) and NotiSleep == On then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SLEEP >>')
-		end
-		equip({neck="Opo-opo Necklace"})
-	elseif buff == 6 and NotiSilence == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SILENCE >>')
-		end
-	elseif buff == 7 and NotiPetrification == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PETRIFICATION >>')
-		end
-	elseif (buff == 9 or buff == 20) and NotiCurse =='On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< CURSE >>')
-		end
-	elseif buff == 10 and NotiStun == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< STUN >>')
-		end
-	elseif (buff == 14 or buff == 17) and NotiCharm == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< CHARM >>')
-		end
-	elseif buff == 16 and NotiAmnesia == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< AMNESIA >>')
-		end
-	elseif buff == 28 and NotiTerror == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< TERROR >>')
-		end
-	elseif buff == 29 and NotiMute == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< MUTE >>')
-		end
-	elseif buff == 31 and NotiPlague == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PLAGUE >>')
-		end
-	elseif (buff == 4 or buff == 566) and NotiPara == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PARALYSIS >>')
 		end
 	end
 end)
@@ -1757,8 +1850,8 @@ windower.register_event('lose buff', function(buff)
 			send_command('gs c ClearDebuffs')
 		end
 		choose_set()
-	elseif (buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
-		send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
+	-- elseif (buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
+		-- send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
 	elseif buff == 36 then --lose blink, clear shadow count to 0
 		ShadowCount = 0
 	end
@@ -1783,6 +1876,39 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
+
+	if HUD == 'On' then
+		if buffactive['Doom'] and NotiDoom == 'On' then
+			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
+		elseif buffactive['Charm'] and NotiCharm == 'On' then
+			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
+		elseif buffactive['Terror'] and NotiTerror == 'On' then
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
+		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
+		elseif buffactive['Sleep'] and NotiSleep == On then
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
+		elseif buffactive['Stun'] and NotiStun == 'On' then
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
+		elseif buffactive['Amnesia'] and NotiAmnesia == 'On' then
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
+		elseif buffactive['Silence'] and NotiSilence == 'On' then
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
+		elseif buffactive['Mute'] and NotiMute == 'On' then
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
+		elseif buffactive['Plague'] and NotiPlague == 'On' then
+			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
+		elseif buffactive['Paralysis'] and NotiPara == 'On' then
+			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
+		elseif buffactive['Encumbrance'] and NotiEncumbrance == 'On' then
+			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50')
+		elseif buffactive['Curse'] and NotiCurse == 'On' then
+			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
+		else
+			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
+		end
+	end
+
 	if os.time() > Heartbeat then
 		Heartbeat = os.time() --this gets updated once per second, then we do the things below
 		if AutoLockstyle == 'On' and AutoLockstyleRun == true and LockstyleDelay > 0 then
@@ -2842,21 +2968,21 @@ windower.register_event('incoming text',function(org)
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On'and  HUD == 'On' then
 				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On'and  HUD == 'On' then
 				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		end
@@ -2876,7 +3002,7 @@ windower.register_event('incoming text',function(org)
 		ShadowCount = ShadowCount - 7
 	elseif org:find('8 shadows absorbed by') and org:find(''..player.name..'') then
 		ShadowCount = ShadowCount - 8
-	elseif org:find('You find a') then
+	elseif NotiOmen == 'On' and org:find('You find a') then
 		if org:find('Fu\'s scale') then
 			send_command('input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
 		elseif org:find('Gin\'s scale') then
@@ -2888,11 +3014,11 @@ windower.register_event('incoming text',function(org)
 		elseif org:find('Kyou\'s scale') then
 			send_command('input /p Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
 		end
-	elseif org:find('You pitiful lot will never learn') then
+	elseif NotiVagary == 'On' and org:find('You pitiful lot will never learn') then
 		send_command('input /p Perfidien pop! <call14>')
-	elseif org:find('the void calls') then
+	elseif NotiVagary == 'On' and org:find('the void calls') then
 		send_command('input /p Plouton pop! <call14>')
-	elseif org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
+	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
 		if org:find('Lightning') then
 			send_command('input /p Lightning <call14>')
 		elseif org:find('Fire') then
@@ -2918,7 +3044,7 @@ function file_unload()
 		send_command('lua unload blualert') --unload the blualert plugin
 	end
 	if Debug == 'On' then
-		send_command('gs debugmode;gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
+		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
 	end
 	if HUD == 'On' then
 		--delete the different text objects
@@ -2928,148 +3054,6 @@ end
 
 --[[
 
--------------------------------------------
---               UPDATES                 --
--------------------------------------------
-If the new updates Version Compatibility Codename matches your current files TopVersion,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the Version Compatibility Codename changes will you need to update the entire file.
-
-03.05.22 (Version Compatibility Codename: Pollen)
--Fixed Alliance invite incorrectly triggering Party invite notification.
--Fixed some subjob conditions throwing errors when you have no subjob (ie Odyssey NMs)
-
-02.02.22 (Version Compatibility Codename: Pollen)
--Added Weak status notification.
--Fixed gear not fully equipping in towns.
--Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
--Fixed Fast Cast gear to not equip when using a Forbidden Key, Pickaxe, Sickle, or Hatchet.
-
-02.01.22 (Version Compatibility Codename: Pollen)
--Overhauled how Blue Magic spells are handled. Uses tables now for groups of spells that use certain gearsets.
--Overhauled Notifications. Removed reliance on variables and spun out Debuffs into their own thing.
--Renamed the OnScreen Display to HUD.
--Added Paralysis to the Debuffs.
--Added option to automatically use an Echo Drop (or Remedy) instead of spell when you are silenced.
--Added a Savage Blade Weapon Skill set.
--Added missing Luhlaza Bazubands +2 and +3 variants for extending Azure Lore timer.
--Added rule for White Magic Cure spells to the Healing set.
--Added rule for Elemental spells to use the Magical set.
--Added option for setting macro book page (set).
--Added Trade, Invite, Sneak, Invisible, Vorseal, Signet, Sanction, Sigil, and Ionis to the Notifications.
--Added the 3000 TP notification to the Notification options.
--Added 2 new sounds (NotiGood and NotiBad) and adjusted sound usage accordingly.
--Added a Heartbeat function. This creates a one second "heartbeat" that we can use to do various things that may not otherwise have an automatic trigger.
--Added a background to the HUD creating a box that everything is displayed inside, instead of separate floating pieces of info.
--Added Spell/Ability recasts to the HUD. Green when active, Orange when not active but on cooldown, red when not active and ready to use.
--Added equipping of Opo-opo Necklace when asleep (and un-equip after).
--Added HUD now hiding when in a cutscene. (The code to hide while zoning is adding a lot of lag, will look further into this)
--Adjusted the solid colors to be a little less solid (red was just so... ~*RED*~)
--Adjusted the Doom Notification to have a more noticeable presence.
--Fixed an issue with AutoLockstyle where it would not run correctly if you change your sub job immediately after changing to BLU.
--Fixed the Reraise Reminder.
--Fixed the Dead Notification.
--Changed «« and »» to << and >> for chatlog notifications since «« and »» don't actually display in the chatlog.
--Changed compatibility naming scheme to Blue Mage spells.
--Code cleanup
-
-11.10.21 (Version Compatibility Codename: Maxprime-u1)
--Fixed Aftermath Notification colors displaying incorrectly.
-
-10.27.21 (Version Compatibility Codename: Maxprime)
--Overhauled how lockstyle is handled. This now uses the in-game lockstyle set system instead of a gear set defined in this file.
--Added ability to use a Town lockstyle set separate from the set used while out in the field.
--Removed the Lockstyle gear set since it is no longer needed.
--Updated the Aftermath status to include Almace and Sequence (in addition to Tizona).
--Updated the Aftermath status in the OnScreen display to automatically display, or not, based on the equipped weapon.
--Layout of the OnScreen display will now self-adjust based on whether the Aftermath display is on or off.
--Removed the option to turn the Aftermath status in the OnScreen display on or off as this is now automatic as long as the OnScreen display is turned on.
--Added an Azure Lore and Unbridled Wisdom timer. These will show a countdown in echo until they wear off.
--Added a Cruel Joke chat log timer. Can choose between party chat or echo (or off).
--Added a "Food Has Worn Off" notification.
--Added Mute and Plague to the notifications.
--Added ability to turn on or off individual notifications.
--Added a sound notification to the Doom notification (if you have AlertSounds turned on of course).
--Overhauled AlertSounds. There is now a sounds folder with sound files included with this gearswap file. Simply drop the sounds folder inside your data folder (It should look like \addons\GearSwap\data\sounds).
--Fixed the spell Fantod using the magicaccuracy set while not in Tank mode, now uses the buff set instead.
--Adjusted the "Low MP" Notification to wait 30 seconds before being able to display the same notification again, instead of the above 40% threshhold previously used.
--Removed the Experimental feature GearCheck.
--Removed the Experimental feature AutoDefender.
--Removed reliance on Autoexec. Everything Autoexec did is now done completely through GearSwap functions.
--Code cleanup (lots of code cleanup...)
--Code comments added.
--Updated Top and Bottom version names.
--Updated //fileinfo
-
-07.17.21 (Version Compatibility Codename: Jackup)
--Added an Expiacion Weapon Skill set.
--Added a White Wind set.
--Added a Kite set. This set will equip when in any Tank mode and not engaged (turning "Status: Idle" into "Status: Kiting")
--Added a Cursna/Holy Water set, replacing the Purity Ring code previously added.
--Added a "Reraise Has Worn Off" Notification.
--Added a Reraise Reminder Notification.
--Added a "Low MP" Notification. Triggers when MP is under 20%. This will not trigger again until the player’s HP reaches 40%.
--OnScreen Notifications will now reset after zoning.
--Fixed sneak cancelling on yourself if you cast sneak on another player.
--Fixed Learning submodes to correctly use the Blue Magic Skill set.
--Updated Top and Bottom version names.
--Updated //fileinfo
-
-03.30.21 (Version Compatibility Codename: Fidant)
--Added a slight wait into the On-Screen display. This should prevent the occasional Text plugin error on file load.
--Added SoundAlerts function. This will play a sound for various things (cancelled spell due to silence, not enough TP for a WS, 3000 TP, etc)
--Updated which gear sets are equipped for a few of the Unbridled Learning spells where we care more about the additional effect landing than we do about the damage.
--Fixed Unity Trust set to actually equip as intended.
--Updated Top and Bottom version names.
--Minor formatting adjustments.
-
-02.09.21 (Version Compatibility Codename: Neonstar)
--Added Purity Ring on casting Cursna on yourself or using a Holy Water.
--Added Enmity set. Will only equip for Fantod, Jettatura, and Blank Gaze when in any of the tank modes.
--Updated Top and Bottom version names.
-
-01.10.21 (Version Compatibility Codename: Kedar)
--Added Aftermath status into the OnScreen display. This is a separate line and can be turned on or off in the options.
--Changed the Gear Mode logic. You can now independently turn on or off the Treasure Hunter and Learning sub-modes.
- This will skip the modes that are turned off when you cycle through modes. So for example if you do not need
- or use either of the Treasure Hunter or Learning modes it will simply cycle between DPS and Tank.
--Added options to use an alias command or a kb shortcut for cycling between gear modes.
--Simplified the command needed to use a macro to cycle between gear modes.
--Added town sets. Unless you don't use a lockstyle, this is mostly intended just for the movement speed gear for specific towns.
--Added Unity Trust set. Put your Unity Shirt in this set to get the bonus when calling your Unity Trust.
--Added a second shorthand alias (lstyle) for the Auto-Lockstyle function.
--Adjusted Auto-Lockstyle function to choose the correct set to change back into after locking the lockstyle set (tank, idle, town, etc)
--Added option to adjust the transparency level of the OnScreen display.
--Added option to automatically re-equip your gear after you zone. 'All' will either equip whichever Gear Mode you are in, or equip the
- set for the town you are in. 'Town' will only do this when you zone into a town.
--Added ability to turn off the Chat and Book options in case you either do not want to use them or another plugin does it already.
--Moved the GearCheck and AutoDefender functions into a new Experimental Options section.
--Added a new Top and Bottom version identifier. This will help narrow down issues when updating this file to a new version in the future.
- The idea is that whenever I make changes that require edits to the top half of the file, I will change the Top and Bottom version names.
- This is so that when you update the file and replace everything below the "Do Not Edit Below This Line" line and have issues,
- we can see if it stems from the Top and Bottom versions not matching.
--Minor adjustments to which gear sets are used in different gear modes while engaged/idle.
--Some code cleanup
--Changed //filehelp to //fileinfo. Don't @ me.
--Updated //fileinfo to reflect updates.
-
-10.20.20
--Added a Rest set. You will need to add this set even if you don't intend to use it.
--Changed //help to //filehelp to avoid any possible overlap with plugins/addons
--Adjusted gear sets during idle and engaged. (ex. if you're in tank mode and engaged, it will now equip tank set first, then pull from
- dps set for any slots not assigned in your tank set)
--Adjusted BlueMagicSkill, Healing, and Battery gear rules to combine with Buff set.
--Adjusted Precast to cancel spell when unable to actually cast due to debuff(s) and to add a notification when that happens.
-
-09.15.20
--Fixed spell subtarget on WS
--Fixed distance for ranged WS
--Fixed TH gear equipping at the appropriate time
--Fixed a lot of the chat log notifications not displaying properly
--Fixed Diffusion so that it has the set equipped for spell cast completion and not just at ability activation
--Will now warn you when you have certain items equipped (Warp Ring, Reraise Hairpin, etc.)
--Added a //help command that will print out the Notes/Options
--Lots of code cleanup
 
 -------------------------------------------
 --            KEYS NOTEPAD               --
