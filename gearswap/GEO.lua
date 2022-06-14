@@ -6,6 +6,7 @@
 --                 NOTES                 --
 -------------------------------------------
 --[[
+
 Place both this file and the sounds folder inside the GearSwap data folder
 ex:	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/GEO.lua
@@ -29,6 +30,7 @@ When you load this file for the first time, your HUD may look all wrong. The def
 Adjust the FontSize, LineSpacer, and ColumnSpacer options below as needed.
 
 Recommended Windower Addons: Text
+
 --]]
 -------------------------------------------
 --                OPTIONS                --
@@ -48,7 +50,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts. 
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (or Remedy) instead of spell when you are silenced.
-AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you can a Geo- spell with a Luopan already out.
+AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -77,6 +79,9 @@ NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%. Will
 NotiTPReturn		=	'On'	--[On/Off]	Displays your TP return after Weapon Skills.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 ReraiseReminderTimer=	1800	--			Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+NotiTime			=	'Off'	--[On/Off]	Displays a notification for time remaining notices.
+NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
+NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -98,8 +103,7 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 -------------------------------------------
 
 HUDBGTrans = 		'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-TPReturnWait =		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate
-							--depending on lag, regain, etc.)
+TPReturnWait =		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
 Debug =				'Off'	--[On/Off]
 
 
@@ -176,7 +180,7 @@ function get_sets()
 		feet="Amalric Nails +1", --6%
 		neck="Baetyl Pendant", --4%
 		waist="Witful Belt", --3%
-		left_ear="Etiolation Earring", --1%
+		left_ear="Malignance Earring", --1%
 		right_ear="Loquac. Earring", --2%
 		left_ring="Prolix Ring", --2%
 		right_ring="Kishar Ring", --4%
@@ -236,8 +240,10 @@ function get_sets()
 
 	-- Buff (Conserve MP)
 	sets.buff = {
+		head="Vanya Hood",
 		body="Amalric Doublet +1",
 		hands="Shrieker's Cuffs",
+		legs="Vanya Slops",
 		feet="Amalric Nails +1",
 		neck="Reti Pendant",
 		waist="Austerity Belt",
@@ -254,6 +260,7 @@ function get_sets()
 		hands="Vanya Cuffs",
 		legs="Vanya Slops",
 		feet="Vanya Clogs", --5
+		neck="Unmoving Collar +1",
 		left_ear="Mendi. Earring", --5
 		right_ear="Regal Earring",
 		left_ring="Stikini Ring +1",
@@ -356,12 +363,73 @@ TopVersion = 'Indi-Poison' --Leave this alone, used for debugging purposes
 	--XXXXXXXXXXXXXXXXXX                                               XXXXXXXXXXXXXXXXXX--
 	--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--
 
+
+
+BottomVersion = 'Indi-Poison'
+FileVersion = '06.14.22'
+
+-------------------------------------------
+--               UPDATES                 --
+-------------------------------------------
+
+--[[
+If the new updates Version Compatibility Codename matches your current files TopVersion,
+simply replace everything under the "Do Not Edit Below This Line".
+Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+06.14.22 (Version Compatibility Codename: Indi-Poison)
+-Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
+-Removed Gearswaps built-in debugmode from the files Debug mode.
+-Moved the Updates section towards the top of the file.
+-Code cleanup
+
+03.11.22 (Version Compatibility Codename: Indi-Poison)
+-Overhauled Debuff Notifications. Will now check which debuffs are up in real time with a list of priority for which is displayed instead of clearing the notifications entirely when any of them are removed (leaving it blank even if a different debuff was still up).
+-Added missing On/Off option/rules to Time Remaining (currently only for Abyssea), Omen, and Vagary
+-Fixed Alliance invite incorrectly triggering Party invite notification.
+
+02.02.22 (Version Compatibility Codename: Indi-Poison)
+-Added Weak status notification.
+-Fixed gear not fully equipping in towns.
+-Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
+-Fixed Fast Cast gear to not equip when using a Forbidden Key, Pickaxe, Sickle, or Hatchet.
+
+02.01.22 (Version Compatibility Codename: Ind-Poison)
+-Overhauled Notifications. Removed reliance on variables and spun out Debuffs into their own thing.
+-Renamed the OnScreen Display to HUD.
+-Added Paralysis to the Debuffs.
+-Added option to automatically use an Echo Drop (or Remedy) instead of spell when you are silenced.
+-Added AutoFullCircle function. Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
+-Added rule for White Magic Cure spells to the Healing set.
+-Added option for setting macro book page (set).
+-Added Trade, Invite, Sneak, Invisible, Vorseal, Signet, Sanction, Sigil, and Ionis to the Notifications.
+-Added the 3000 TP notification to the Notification options.
+-Added 2 new sounds (NotiGood and NotiBad) and adjusted sound usage accordingly.
+-Added a Heartbeat function. This creates a one second "heartbeat" that we can use to do various things that may not otherwise have an automatic trigger.
+-Added a background to the HUD creating a box that everything is displayed inside, instead of separate floating pieces of info.
+-Moved the KO Notification into the Heartbeat function.
+-Moved Luopan check into the Heartbeat function.
+-Added HUD now hiding when in a cutscene. (The code to hide while zoning is adding a lot of lag, will look further into this)
+-Adjusted the solid colors to be a little less solid (red was just so... ~*RED*~)
+-Adjusted the Doom Notification to have a more noticeable presence.
+-Fixed an issue with AutoLockstyle where it would not run correctly if you change your sub job immediately after changing to BLU.
+-Fixed the Reraise Reminder.
+-Fixed the Dead Notification.
+-Changed «« and »» to << and >> for chatlog notifications since «« and »» don't actually display in the chatlog.
+-Fixed displaying DT Override status while in towns.
+-Fixed a lot calls to the Text plugin when not using the Text plugin (HUD turned off)
+-Fixed the Reraise Reminder.
+-Code cleanup
+
+12.02.21 (Version Compatibility Codename: Indi-Regen)
+-First version
+-Started from Blue Mage file version 11.30.21
+--]]
+
 -------------------------------------------
 --              FILE LOAD                --
 -------------------------------------------
 
-BottomVersion = 'Indi-Poison'
-FileVersion = '02.16.22'
 IndiColure = 'None'
 GeoColure = 'None'
 Entrust = 'None'
@@ -380,8 +448,6 @@ LastingRecast = 0
 DematerializeRecast = 0
 LifeRecast = 0
 RadialRecast = 0
-DSealRecast = 0
-ESealRecast = 0
 if HUD == 'On' then
 	--Space out each line and column properly
 	HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
@@ -394,7 +460,7 @@ if HUD == 'On' then
 	HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
 	HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
 	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text bg1 create "                                                                                                                          ";text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
+	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
 	send_command('text bg4 create "                                                                                                                          ";wait .3;text bg4 size '..FontSize..';text bg4 pos '..HUDposXColumn1..' -100;text bg4 bg_transparency '..HUDBGTrans..'')--Background Line 4
@@ -406,14 +472,14 @@ if HUD == 'On' then
 	send_command('text radial create "[ Radial ]";wait .3;text radial size '..FontSize..';text radial pos '..HUDposXColumn1..' -100;text radial bg_transparency 1')
 	--Create the Notifications and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
 	send_command('text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('text debuffs create "";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	send_command('text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
 	send_command('text indicolurelabel create "Self";wait .3;text indicolurelabel size '..FontSize..';text indicolurelabel pos '..HUDposXColumn1..' -100;text indicolurelabel color 255 255 255;text indicolurelabel bg_transparency 1') --Self
 	send_command('text indicolure create "'..IndiColure..'";wait .3;text indicolure size '..FontSize..';text indicolure pos '..HUDposXColumn1..' -100;text indicolure color 255 50 50;text indicolure bg_transparency 1') --Self
 	send_command('text geocolurelabel create "Luopan";wait .3;text geocolurelabel size '..FontSize..';text geocolurelabel pos '..HUDposXColumn3..' -100;text geocolurelabel color 255 255 255;text geocolurelabel bg_transparency 1') --Luopan
 	send_command('text geocolure create "'..GeoColure..'";wait .3;text geocolure size '..FontSize..';text geocolure pos '..HUDposXColumn3..' -100;text geocolure color 255 50 50;text geocolure bg_transparency 1') --Luopan
 	send_command('text entrustlabel create "Entrust";wait .3;text entrustlabel size '..FontSize..';text entrustlabel pos '..HUDposXColumn5..' -100;text entrustlabel color 255 255 255;text entrustlabel bg_transparency 1') --Entrust
 	send_command('text entrust create "'..Entrust..'";wait .3;text entrust size '..FontSize..';text entrust pos '..HUDposXColumn5..' -100;text entrust color 255 50 50;text entrust bg_transparency 1') --Entrust
-	send_command('text loading create "Loading Keys GEOMANCER file ver: '..FileVersion..'...";text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
+	send_command('text loading create "Loading Keys GEOMANCER file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
 else
 	windower.add_to_chat(8,'Keys GEOMANCER file ver: '..FileVersion..'')
@@ -435,7 +501,7 @@ send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboar
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs debugmode;gs showswaps')
+	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -480,33 +546,33 @@ function self_command(command)
 		LoadHUD = true
 		send_command('text loading hide')
 		if HUDRecast == 'On' then --using the HUDRecast
-			send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-			send_command('wait .1;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-			send_command('wait .15;text bg4 pos '..HUDposXColumn1..' '..HUDposYLine4..'')
-			send_command('wait .45;text radial pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-			send_command('wait .45;text blaze pos '..HUDposXColumn2..' '..HUDposYLine1..'')
-			send_command('wait .45;text dematerialize pos '..HUDposXColumn3..' '..HUDposYLine1..'')
-			send_command('wait .45;text lasting pos '..HUDposXColumn4..' '..HUDposYLine1..'')
-			send_command('wait .45;text life pos '..HUDposXColumn5..' '..HUDposYLine1..'')
-			send_command('wait .35;text indicolure pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-			send_command('wait .35;text geocolure pos '..HUDposXColumn3..' '..HUDposYLine2..'')
-			send_command('wait .35;text entrust pos '..HUDposXColumn5..' '..HUDposYLine2..'')
-			send_command('wait .4;text indicolurelabel pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-			send_command('wait .4;text geocolurelabel pos '..HUDposXColumn3..' '..HUDposYLine3..'')
-			send_command('wait .4;text entrustlabel pos '..HUDposXColumn5..' '..HUDposYLine3..'')
-			send_command('wait .45;text notifications pos '..HUDposXColumn1..' '..HUDposYLine4..'')
-			send_command('wait .45;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine4..'')
+			send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+			send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+			send_command('wait .3;text bg4 pos '..HUDposXColumn1..' '..HUDposYLine4..'')
+			send_command('wait .8;text radial pos '..HUDposXColumn1..' '..HUDposYLine1..'')
+			send_command('wait .8;text blaze pos '..HUDposXColumn2..' '..HUDposYLine1..'')
+			send_command('wait .8;text dematerialize pos '..HUDposXColumn3..' '..HUDposYLine1..'')
+			send_command('wait .8;text lasting pos '..HUDposXColumn4..' '..HUDposYLine1..'')
+			send_command('wait .8;text life pos '..HUDposXColumn5..' '..HUDposYLine1..'')
+			send_command('wait .9;text indicolure pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+			send_command('wait .9;text geocolure pos '..HUDposXColumn3..' '..HUDposYLine2..'')
+			send_command('wait .9;text entrust pos '..HUDposXColumn5..' '..HUDposYLine2..'')
+			send_command('wait 1;text indicolurelabel pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+			send_command('wait 1;text geocolurelabel pos '..HUDposXColumn3..' '..HUDposYLine3..'')
+			send_command('wait 1;text entrustlabel pos '..HUDposXColumn5..' '..HUDposYLine3..'')
+			send_command('wait 1.1;text notifications pos '..HUDposXColumn1..' '..HUDposYLine4..'')
+			send_command('wait 1.1;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine4..'')
 		else --not using the HUDRecast
-			send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-			send_command('wait .1;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-			send_command('wait .3;text indicolure pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-			send_command('wait .3;text geocolure pos '..HUDposXColumn3..' '..HUDposYLine1..'')
-			send_command('wait .3;text entrust pos '..HUDposXColumn5..' '..HUDposYLine1..'')
-			send_command('wait .35;text indicolurelabel pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-			send_command('wait .35;text geocolurelabel pos '..HUDposXColumn3..' '..HUDposYLine2..'')
-			send_command('wait .35;text entrustlabel pos '..HUDposXColumn5..' '..HUDposYLine2..'')
-			send_command('wait .4;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-			send_command('wait .4;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+			send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+			send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+			send_command('wait .7;text indicolure pos '..HUDposXColumn1..' '..HUDposYLine1..'')
+			send_command('wait .7;text geocolure pos '..HUDposXColumn3..' '..HUDposYLine1..'')
+			send_command('wait .7;text entrust pos '..HUDposXColumn5..' '..HUDposYLine1..'')
+			send_command('wait .8;text indicolurelabel pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+			send_command('wait .8;text geocolurelabel pos '..HUDposXColumn3..' '..HUDposYLine2..'')
+			send_command('wait .8;text entrustlabel pos '..HUDposXColumn5..' '..HUDposYLine2..'')
+			send_command('wait .9;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+			send_command('wait .9;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
 		end
 	elseif command == 'Fileinfo' then
 		windower.add_to_chat(3,'-------------------------------------------')
@@ -569,6 +635,7 @@ function self_command(command)
 		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'UseEcho: '..(''..UseEcho..''):color(8)..'')
+		windower.add_to_chat(200,'AutoFullCircle: '..(''..AutoFullCircle..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
 		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
@@ -994,7 +1061,7 @@ function aftercast(spell)
 		send_command('wait '..TPReturnWait..';gs c TPReturn')
 	elseif spell.type == 'Geomancy' and not spell.interrupted and HUD == 'On' then
 		if string.find(spell.english,'Poison') then
-			SpellSH = 'Poison)'
+			SpellSH = 'Poison'
 		elseif string.find(spell.english,'Voidance') then
 			SpellSH = 'Voidance (Eva Up)'
 		elseif string.find(spell.english,'Precision') then
@@ -1122,80 +1189,8 @@ end)
 
 windower.register_event('gain buff', function(buff)
 	if buff == 15 and NotiDoom == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< DOOM >>')
-		end
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
-	elseif (buff == 2 or buff == 19) and NotiSleep == On then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SLEEP >>')
-		end
-		send_command('gs c OpoOpo')
-	elseif buff == 6 and NotiSilence == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SILENCE >>')
-		end
-	elseif buff == 7 and NotiPetrification == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PETRIFICATION >>')
-		end
-	elseif (buff == 9 or buff == 20) and NotiCurse =='On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< CURSE >>')
-		end
-	elseif buff == 10 and NotiStun == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< STUN >>')
-		end
-	elseif (buff == 14 or buff == 17) and NotiCharm == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< CHARM >>')
-		end
-	elseif buff == 16 and NotiAmnesia == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< AMNESIA >>')
-		end
-	elseif buff == 28 and NotiTerror == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< TERROR >>')
-		end
-	elseif buff == 29 and NotiMute == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< MUTE >>')
-		end
-	elseif buff == 31 and NotiPlague == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PLAGUE >>')
-		end
-	elseif (buff == 4 or buff == 566) and NotiPara == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PARALYSIS >>')
 		end
 	end
 	if HUD == 'On' then
@@ -1268,8 +1263,8 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
 		end
-	elseif (buff == 2 or buff == 19 or buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
-		send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
+	-- elseif (buff == 2 or buff == 19 or buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
+		-- send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
 	elseif buff == 612 and HUD == 'On' then
 		send_command('text indicolure text "None";text indicolure color 255 50 50')
 	end
@@ -1294,6 +1289,37 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
+	if HUD == 'On' then
+		if buffactive['Doom'] and NotiDoom == 'On' then
+			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
+		elseif buffactive['Charm'] and NotiCharm == 'On' then
+			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
+		elseif buffactive['Terror'] and NotiTerror == 'On' then
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
+		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
+		elseif buffactive['Sleep'] and NotiSleep == On then
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
+		elseif buffactive['Stun'] and NotiStun == 'On' then
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
+		elseif buffactive['Amnesia'] and NotiAmnesia == 'On' then
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
+		elseif buffactive['Silence'] and NotiSilence == 'On' then
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
+		elseif buffactive['Mute'] and NotiMute == 'On' then
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
+		elseif buffactive['Plague'] and NotiPlague == 'On' then
+			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
+		elseif buffactive['Paralysis'] and NotiPara == 'On' then
+			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
+		elseif buffactive['Encumbrance'] and NotiEncumbrance == 'On' then
+			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50')
+		elseif buffactive['Curse'] and NotiCurse == 'On' then
+			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
+		else
+			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
+		end
+	end
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
 		if AutoLockstyle == 'On' and AutoLockstyleRun == true and LockstyleDelay > 0 then
@@ -1458,25 +1484,25 @@ windower.register_event('incoming text',function(org)
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		end
-	elseif org:find('You find a') then
+	elseif NotiOmen == 'On' and org:find('You find a') then
 		if org:find('Fu\'s scale') then
 			send_command('input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
 		elseif org:find('Gin\'s scale') then
@@ -1488,11 +1514,11 @@ windower.register_event('incoming text',function(org)
 		elseif org:find('Kyou\'s scale') then
 			send_command('input /p Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
 		end
-	elseif org:find('You pitiful lot will never learn') then
+	elseif NotiVagary == 'On' and org:find('You pitiful lot will never learn') then
 		send_command('input /p Perfidien pop! <call14>')
-	elseif org:find('the void calls') then
+	elseif NotiVagary == 'On' and org:find('the void calls') then
 		send_command('input /p Plouton pop! <call14>')
-	elseif org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
+	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
 		if org:find('Lightning') then
 			send_command('input /p Lightning <call14>')
 		elseif org:find('Fire') then
@@ -1515,7 +1541,7 @@ end)
 
 function file_unload()
 	if Debug == 'On' then
-		send_command('gs debugmode;gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
+		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
 	end
 	if HUD == 'On' then
 		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text bg4 delete;text indicolure delete;text indicolurelabel delete;text geocolure delete;text geocolurelabel delete;text entrust delete;text entrustlabel delete;text blaze delete;text lasting delete;text dematerialize delete;text life delete;text radial delete;text loading delete;text notifications delete;text debuffs delete') --delete the different text objects
@@ -1523,53 +1549,6 @@ function file_unload()
 end
 
 --[[
-
--------------------------------------------
---               UPDATES                 --
--------------------------------------------
-If the new updates Version Compatibility Codename matches your current files TopVersion,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the Version Compatibility Codename changes will you need to update the entire file.
-
-02.16.22 (Version Compatibility Codename: Indi-Poison)
--Fixed Alliance invite incorrectly triggering Party invite notification.
-
-02.02.22 (Version Compatibility Codename: Indi-Poison)
--Added Weak status notification.
--Fixed gear not fully equipping in towns.
--Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
--Fixed Fast Cast gear to not equip when using a Forbidden Key, Pickaxe, Sickle, or Hatchet.
-
-02.01.22 (Version Compatibility Codename: Ind-Poison)
--Overhauled Notifications. Removed reliance on variables and spun out Debuffs into their own thing.
--Renamed the OnScreen Display to HUD.
--Added Paralysis to the Debuffs.
--Added option to automatically use an Echo Drop (or Remedy) instead of spell when you are silenced.
--Added AutoFullCircle function. Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
--Added rule for White Magic Cure spells to the Healing set.
--Added option for setting macro book page (set).
--Added Trade, Invite, Sneak, Invisible, Vorseal, Signet, Sanction, Sigil, and Ionis to the Notifications.
--Added the 3000 TP notification to the Notification options.
--Added 2 new sounds (NotiGood and NotiBad) and adjusted sound usage accordingly.
--Added a Heartbeat function. This creates a one second "heartbeat" that we can use to do various things that may not otherwise have an automatic trigger.
--Added a background to the HUD creating a box that everything is displayed inside, instead of separate floating pieces of info.
--Moved the KO Notification into the Heartbeat function.
--Moved Luopan check into the Heartbeat function.
--Added HUD now hiding when in a cutscene. (The code to hide while zoning is adding a lot of lag, will look further into this)
--Adjusted the solid colors to be a little less solid (red was just so... ~*RED*~)
--Adjusted the Doom Notification to have a more noticeable presence.
--Fixed an issue with AutoLockstyle where it would not run correctly if you change your sub job immediately after changing to BLU.
--Fixed the Reraise Reminder.
--Fixed the Dead Notification.
--Changed «« and »» to << and >> for chatlog notifications since «« and »» don't actually display in the chatlog.
--Fixed displaying DT Override status while in towns.
--Fixed a lot calls to the Text plugin when not using the Text plugin (HUD turned off)
--Fixed the Reraise Reminder.
--Code cleanup
-
-12.02.21 (Version Compatibility Codename: Indi-Regen)
--First version
--Started from Blue Mage file version 11.30.21 (Version Compatibility Codename: Maxprime-u2)
 
 -------------------------------------------
 --            KEYS NOTEPAD               --
