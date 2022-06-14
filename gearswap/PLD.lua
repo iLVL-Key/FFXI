@@ -6,6 +6,7 @@
 --                 NOTES                 --
 -------------------------------------------
 --[[
+
 Place both this file and the sounds folder inside the GearSwap data folder
 	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/PLD.lua
@@ -25,16 +26,18 @@ Run the Lockstyle function yourself at any time by typing
 For the HUD function (see options below), suggested placement is center screen, just above your chat log.
 
 IMPORTANT:
-When you load this file for the first time, your HUD may look all wrong. The defaults preloaded are for a screen at 3440x1400.
+When you load this file for the first time, your HUD may look all wrong.
+The defaults preloaded are for a screen at 3440x1400. I have not tested at any other resolution.
 Adjust the FontSize, LineSpacer, and ColumnSpacer options below as needed.
 
 Recommended Windower Addons: Text
+
 --]]
+
 -------------------------------------------
 --                OPTIONS                --
 -------------------------------------------
 
-Mode			=	'Tank'	--[Tank/DPS]	Sets the starting mode
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
 LockstyleField	=	'5'		--[1-20]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
@@ -77,6 +80,9 @@ NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%. Will
 NotiTPReturn		=	'On'	--[On/Off]	Displays your TP return after Weapon Skills.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 ReraiseReminderTimer=	1800	--			Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+NotiTime			=	'Off'	--[On/Off]	Displays a notification for time remaining notices.
+NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
+NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -97,12 +103,11 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 -------------------------------------------
 
 HUDBGTrans = 		'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-TPReturnWait =		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate
-							--depending on lag, regain, etc.)
+TPReturnWait =		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
 Debug =				'Off'	--[On/Off]
 
 --Color values in RGB for the HUD gear modes
-DPScolor =			'125 125 255'	--DPS
+Refreshcolor =		'125 125 255'	--Refresh
 Tankcolor =			'255 125 125'	--Tank
 
 --Color values in RGB for the HUD Aftermath status
@@ -118,6 +123,7 @@ function get_sets()
 
 	-- Tank (Damage Taken-, Evasion, Magic Evasion, Enmity+, VIT, Defense)
 	sets.tank = {
+		ammo="Staunch Tathlum",
 		head="Sakpata's Helm",
 		body="Sakpata's Plate", -- 5 Sakpata + Defending ring caps DT, any additional pieces with any form of DT are wasted
 		hands="Sakpata's Gauntlets",
@@ -125,54 +131,31 @@ function get_sets()
 		feet="Sakpata's Leggings",
 		neck="Unmoving Collar +1",
 		waist="Flume Belt",
-		left_ear="Ethereal Earring",
-		right_ear="Genmei Earring",
+		left_ear="Cryptic Earring",
+		right_ear="Ethereal Earring",
 		left_ring="Petrov Ring",
 		right_ring="Defending Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
-	-- Tank Idle (Movement speed, Damage Taken -, Enmity+, VIT+, Defense)
-	-- Combines with Tank set
-	sets.tankidle = set_combine(sets.tank, {
-		legs="Carmine Cuisses +1",
-	})
-
-	-- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack, Refresh, Regain, Regen)
-	sets.dps = {
-		head="Sakpata's Helm",
-		body="Sakpata's Plate",
-		hands="Sakpata's Gauntlets",
-		legs="Sakpata's Cuisses",
-		feet="Sakpata's Leggings",
-		neck="Defiant Collar",
-		waist="Windbuffet Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Cessance Earring",
-		left_ring="Hetairoi Ring",
-		right_ring="Regal Ring",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
-	}
-
-	-- DPS Idle (Refresh, Regain, Regen, Damage Taken-)
-	-- Combines with DPS set
-	sets.dpsidle = set_combine(sets.dps, {
-		head="Nyame Helm",
-		body="Nyame Mail",
-		hands="Nyame Gauntlets",
-		legs="Carmine Cuisses +1",
-		feet="Nyame Sollerets",
+	-- Refresh (only need Refresh gear in here, will inherit the rest from the Tank set above)
+	sets.refresh = set_combine(sets.tank, {
+		ammo="Homiliary",
 		neck="Coatl Gorget +1",
 		waist="Flume Belt",
-		left_ear="Ethereal Earring",
-		right_ear="Cryptic Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	})
+
+	-- Idle (Movement speed)
+	-- Combines with Tank/Refresh set based on current mode
+	sets.idle = {
+		legs="Carmine Cuisses +1",
+	}
 
 	-- Enmity (full Enmity+ for spells/abilities)
 	sets.enmity = {
+		ammo="Sapience Orb",
 		head="Souv. Schaller +1",
 		body="Souveran Cuirass",
 		hands="Souv. Handschuhs",
@@ -194,23 +177,24 @@ function get_sets()
 
 	-- Fast Cast (cap is 80%)
 	sets.fastcast = {
-    head="Sakpata's Helm",
-    body="Nyame Mail",
-    hands="Leyline Gloves",
-    legs="Nyame Flanchard",
-    feet="Nyame Sollerets",
-    neck="Baetyl Pendant",
-    waist="Sailfi Belt +1",
-    left_ear="Loquac. Earring",
-    right_ear="Etiolation Earring",
-    left_ring="Prolix Ring",
-    right_ring="Kishar Ring",
+		ammo="Sapience Orb",
+		head="Sakpata's Helm",
+		body="Nyame Mail",
+		hands="Leyline Gloves",
+		legs="Nyame Flanchard",
+		feet="Nyame Sollerets",
+		neck="Baetyl Pendant",
+		waist="Sailfi Belt +1",
+		left_ear="Loquac. Earring",
+		right_ear="Etiolation Earring",
+		left_ring="Prolix Ring",
+		right_ring="Kishar Ring",
 	}
 
 	-- Spell Interruption Rate Down (Need 102% for actual 100% caps, don't forget about 10% from merits)
-	-- All spells (not abilities) will use this set FIRST, then fill in other unused slots.
-	-- Either make sure any slots you set for other spells (healing, cursna, etc) don't use the slots definined here,
-	-- or copy and paste these slots into your other sets and build/define slots around it.
+	-- NOTE: This specific set is not used in the file itself, this is for your own organization.
+	-- Use this as a guide to make sure you get to 102% SIRD, then copy and paste these slots
+	-- into the next 7 sets (healing through cursna) and build/define slots around it.
 	sets.sird = {
 		ammo="Staunch Tathlum",		--10 SIRD
 		head="Souv. Schaller +1",	--20 SIRD
@@ -277,7 +261,7 @@ function get_sets()
 		waist="Rumination Sash",	--10 SIRD
 	}
 
-	-- Buff (SIRD, Conserve MP, Enmity)
+	-- Buff (SIRD, Conserve MP)
 	-- Protect and Shell use this.
 	sets.buff = {
 		ammo="Staunch Tathlum",		--10 SIRD
@@ -300,12 +284,13 @@ function get_sets()
 
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
+		ammo="Aurgelmir Orb",
 		head="Sakpata's Helm",
 		body="Sakpata's Plate",
 		hands="Valorous Mitts",
 		legs="Sakpata's Cuisses",
 		feet="Valorous Greaves",
-		neck="Defiant Collar",
+		neck="Rep. Plat. Medal",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
@@ -433,12 +418,54 @@ TopVersion = 'Undead Killer' --Leave this alone, used for debugging purposes
 	--XXXXXXXXXXXXXXXXXX                                               XXXXXXXXXXXXXXXXXX--
 	--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--
 
+
+
+BottomVersion = 'Undead Killer'
+FileVersion = '06.14.22'
+
+-------------------------------------------
+--               UPDATES                 --
+-------------------------------------------
+
+--[[
+If the new updates Version Compatibility Codename matches your current files TopVersion,
+simply replace everything under the "Do Not Edit Below This Line".
+Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+06.14.22 (Version Compatibility Codename: Undead Killer)
+-Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
+-Adjusted Ability recast order in the HUD.
+-Changed DPS mode to Refresh mode and adjusted gear equipping and HUD behavior accordingly.
+-Removed Gearswaps built-in debugmode from the files Debug mode.
+-Fixed Relic Aftermath not displaying in the HUD.
+-Moved the Updates section towards the top of the file.
+-Code cleanup
+
+03.11.22 (Version Compatibility Codename: Undead Killer)
+-Overhauled Debuff Notifications. Will now check which debuffs are up in real time with a list of priority for which is displayed instead of clearing the notifications entirely when any of them are removed (leaving it blank even if a different debuff was still up).
+-Added missing On/Off option/rules to Time Remaining (currently only for Abyssea), Omen, and Vagary
+-Fixed Alliance invite incorrectly triggering Party invite notification.
+-Fixed some subjob conditions throwing errors when you have no subjob (ie Odyssey NMs)
+-Fixed AutoMajesty and AutoDefender to not attempt to activate when you have Amnesia.
+
+02.02.22 (Version Compatibility Codename: Undead Killer)
+-Added Weak status notification.
+-Updated "Codename" to "Version Compatibility Codename" to be more clear in its purpose. Whenever changes are made to the top portion of the file, the Version Compatibility Codename is changed and the TopVersion and BottomVersion updated to reflect the new codename. This is done so that when a new update is posted and you 
+-Updated how the HUD loading is handled. The loading is now smoother and objects don't overlap eachother while loading.
+-Fixed gear not fully equipping in towns.
+-Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
+-Fixed Fast Cast gear to not equip when using a Forbidden Key, Pickaxe, Sickle, or Hatchet.
+
+02.01.22 (Version Compatibility Codename: Undead Killer)
+-First version
+-Started from Blue Mage file version 02.01.22
+--]]
+
 -------------------------------------------
 --              FILE LOAD                --
 -------------------------------------------
 
-BottomVersion = 'Undead Killer'
-FileVersion = '03.05.22'
+Mode =	'Tank' --sets the starting mode
 NotiLowMPToggle = 'Off' --start with the toggle off for the Low MP Notification so that it can trigger
 RRRCountdown = ReraiseReminderTimer
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
@@ -453,8 +480,6 @@ PhalanxRecast = 0
 ReprisalRecast = 0
 PalisadeRecast = 0
 EnlightRecast = 0
-AggressorRecast = 0
-BerserkRecast = 0
 if HUD == 'On' then
 	--Space out each line and column properly
 	HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
@@ -471,7 +496,7 @@ if HUD == 'On' then
 		REMA = false --If we do not have a REMA equipped, we set it to false
 	end
 	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text bg1 create "                                                                                                                          ";text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
+	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
 	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
@@ -482,14 +507,12 @@ if HUD == 'On' then
 	send_command('text reprisal create "[ Reprisal ]";wait .3;text reprisal size '..FontSize..';text reprisal pos '..HUDposXColumn1..' -100;text reprisal bg_transparency 1')
 	send_command('text palisade create "[ Palisade ]";wait .3;text palisade size '..FontSize..';text palisade pos '..HUDposXColumn1..' -100;text palisade bg_transparency 1')
 	send_command('text enlight create "[ Enlight ]";wait .3;text enlight size '..FontSize..';text enlight pos '..HUDposXColumn1..' -100;text enlight bg_transparency 1')
-	send_command('text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
-	send_command('text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
 	--Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
 	send_command('text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
 	send_command('text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
 	send_command('text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('text debuffs create "";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
-	send_command('text loading create "Loading Keys PALADIN file ver: '..FileVersion..'...";text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
+	send_command('text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	send_command('text loading create "Loading Keys PALADIN file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
 else
 	windower.add_to_chat(8,'Keys PALADIN file ver: '..FileVersion..'')
@@ -511,7 +534,7 @@ send_command('alias mode gs c Mode') --creates the Mode aliase
 send_command('bind ^'..ModeCtrlPlus..' gs c Mode') --creates the gear mode keyboard shortcut
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs debugmode;gs showswaps')
+	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -522,15 +545,15 @@ AutoLockstyleRun = true
 
 function self_command(command)
 	if command == 'Mode' then
-		if Mode == 'DPS' then
+		if Mode == 'Refresh' then
 			Mode = 'Tank'
 			if HUD == 'On' then
 				send_command('text mode color '..Tankcolor..'')
 			end
 		elseif Mode == 'Tank' then
-			Mode = 'DPS'
+			Mode = 'Refresh'
 			if HUD == 'On' then
-				send_command('text mode color '..DPScolor..'')
+				send_command('text mode color '..Refreshcolor..'')
 			end
 		end
 		if HUD == 'On' then
@@ -570,35 +593,35 @@ function self_command(command)
 		if HUDRecast == 'On' then --using the HUDRecast
 			if player.equipment.main == 'Excalibur' or player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' or player.equipment.main == 'Sequence' or player.equipment.main == 'Burtgang' then
 				--if we have any REMAs equipped we place the Aftermath, Mode, Notifications, Debuff, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .1;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .35;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
-				send_command('wait .4;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .45;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .45;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+				send_command('wait .7;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
 			else
 				--if we do not have any REMAs equipped we move the Mode, Notifications, Debuffs, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .1;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .3;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .35;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .35;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .7;text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
 			end
 		else --not using the HUDRecast
 			if player.equipment.main == 'Excalibur' or player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' or player.equipment.main == 'Sequence' or player.equipment.main == 'Burtgang' then
 				--if we have any REMAs equipped we place the Aftermath, Mode, Notifications, Debuff, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .15;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .35;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine1..'')
-				send_command('wait .4;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-				send_command('wait .45;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .45;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+				send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine1..'')
+				send_command('wait .7;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
+				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
 			else
 				--if we do not have any REMAs equipped we move the Mode, Notifications, Debuffs, and appropriate BG text objects into view
-				send_command('wait .05;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .25;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-				send_command('wait .3;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .3;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .6;text mode pos '..HUDposXColumn1..' '..HUDposYLine1..'')
+				send_command('wait .7;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+				send_command('wait .7;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
 			end
 		end
 	elseif command == 'Fileinfo' then
@@ -704,7 +727,7 @@ function self_command(command)
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'TPReturnWait: '..(''..TPReturnWait..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
-		windower.add_to_chat(200,'DPScolor: '..(''..DPScolor..''):color(8)..'')
+		windower.add_to_chat(200,'Refreshcolor: '..(''..Refreshcolor..''):color(8)..'')
 		windower.add_to_chat(200,'Tankcolor: '..(''..Tankcolor..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
@@ -773,9 +796,16 @@ function choose_set()
 				send_command('text notifications text "Status: Resting";text notifications color 255 255 255')
 			end
 		end
-		equip(sets.rest)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Rest]')
+		if Mode == 'Refresh' then
+			equip(set_combine(sets.refresh, sets.rest))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
+			end
+		elseif Mode == 'Tank' then
+			equip(set_combine(sets.tank, sets.rest))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Tank + Rest]')
+			end
 		end
 	elseif player.status == "Engaged" then
 		if HUD == 'On' then
@@ -787,10 +817,10 @@ function choose_set()
 				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
 			end
 		end
-		if Mode == 'DPS' then
-			equip(sets.dps)
+		if Mode == 'Refresh' then
+			equip(sets.refresh)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: DPS]')
+				windower.add_to_chat(8,'[Equipped Set: Tank + Refresh]')
 			end
 		elseif Mode == 'Tank' then
 			equip(sets.tank)
@@ -811,75 +841,40 @@ function choose_set()
 			end
 		end
 		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
-			if Mode == 'Tank' then
-				equip(set_combine(sets.tankidle, sets.adoulin))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank Idle + Adoulin]')
-				end
-			else
-				equip(set_combine(sets.dpsidle, sets.adoulin))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: DPS Idle + Adoulin]')
-				end
+			equip(set_combine(sets.refresh, sets.idle, sets.adoulin))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Adoulin]')
 			end
 		elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
-			if Mode == 'Tank' then
-				equip(set_combine(sets.tankidle, sets.bastok))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank Idle + Bastok]')
-				end
-			else
-				equip(set_combine(sets.dpsidle, sets.bastok))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: DPS Idle + Bastok]')
-				end
+			equip(set_combine(sets.refresh, sets.idle, sets.bastok))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Bastok]')
 			end
 		elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
-			if Mode == 'Tank' then
-				equip(set_combine(sets.tankidle, sets.sandoria))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank Idle + San d\'Oria]')
-				end
-			else
-				equip(set_combine(sets.dpsidle, sets.sandoria))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: DPS Idle + San d\'Oria]')
-				end
+			equip(set_combine(sets.refresh, sets.idle, sets.sandoria))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + San d\'Oria]')
 			end
 		elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
-			if Mode == 'Tank' then
-				equip(set_combine(sets.tankidle, sets.windurst))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank Idle + Windurst]')
-				end
-			else
-				equip(set_combine(sets.dpsidle, sets.windurst))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: DPS Idle + Windurst]')
-				end
+			equip(set_combine(sets.refresh, sets.idle, sets.windurst))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Windurst]')
 			end
 		elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
-			if Mode == 'Tank' then
-				equip(set_combine(sets.tankidle, sets.town))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank Idle + Town]')
-				end
-			else
-				equip(set_combine(sets.dpsidle, sets.town))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: DPS Idle + Town]')
-				end
+			equip(set_combine(sets.refresh, sets.idle, sets.town))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Town]')
 			end
 		else
 			if Mode == 'Tank' then
-				equip(sets.tankidle)
+				equip(set_combine(sets.tank, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank Idle]')
+					windower.add_to_chat(8,'[Equipped Set: Tank + Idle]')
 				end
 			else
-				equip(sets.dpsidle)
+				equip(set_combine(sets.refresh, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: DPS Idle]')
+					windower.add_to_chat(8,'[Equipped Set: Refresh + Idle]')
 				end
 			end
 		end
@@ -1185,10 +1180,10 @@ end
 windower.register_event('status change', function(status)
     if status == 4 and HUD == 'On' and ShowHUD == true then --In a cutscene: Hide the HUD
 		ShowHUD = false
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text phalanx hide;text crusade hide;text palisade hide;text reprisal hide;text defender hide;text cocoon hide;text enlight hide;text aggressor hide;text berserk hide;text mode hide;text notifications hide;text debuffs hide;text aftermath hide')
+		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text phalanx hide;text crusade hide;text palisade hide;text reprisal hide;text defender hide;text cocoon hide;text enlight hide;text mode hide;text notifications hide;text debuffs hide;text aftermath hide')
     elseif status ~= 4  and HUD == 'On' and ShowHUD == false then --Out of cutscene: SHow the HUD
 		ShowHUD = true
-		send_command('text bg1 show;text bg2 show;text bg3 show;text phalanx show;text crusade show;text palisade show;text reprisal show;text defender show;text cocoon show;text enlight show;text aggressor show;text berserk show;text mode show;text notifications show;text debuffs show;text aftermath show')
+		send_command('text bg1 show;text bg2 show;text bg3 show;text phalanx show;text crusade show;text palisade show;text reprisal show;text defender show;text cocoon show;text enlight show;text mode show;text notifications show;text debuffs show;text aftermath show')
     end
 end)
 
@@ -1201,13 +1196,7 @@ windower.register_event('gain buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
 		end
-		if player.equipment.main == 'Excalibur' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 1 (Regen/Refresh)";text aftermath color '..Aftermath1color..'')
-			else
-				windower.add_to_chat(220,'<< Aftermath: Level 1 (Regen/Refresh) >>')
-			end
-		elseif player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
+		if player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
 			if HUD == 'On' then
 				send_command('wait 1;text aftermath text "Aftermath: Level 1 (30% Triple Dmg)";text aftermath color '..Aftermath1color..'')
 			else
@@ -1230,13 +1219,7 @@ windower.register_event('gain buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
 		end
-		if player.equipment.main == 'Excalibur' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 2 (Regen/Refresh)";text aftermath color '..Aftermath2color..'')
-			else
-				windower.add_to_chat(204,'<< Aftermath: Level 2 (Regen/Refresh) >>')
-			end
-		elseif player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
+		if player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
 			if HUD == 'On' then
 				send_command('wait 1;text aftermath text "Aftermath: Level 2 (40% Triple Dmg)";text aftermath color '..Aftermath2color..'')
 			else
@@ -1259,13 +1242,7 @@ windower.register_event('gain buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
 		end
-		if player.equipment.main == 'Excalibur' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 3 (Regen/Refresh)";text aftermath color '..Aftermath3color..'')
-			else
-				windower.add_to_chat(50,'<< Aftermath: Level 3 (Regen/Refresh) >>')
-			end
-		elseif player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
+		if player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
 			if HUD == 'On' then
 				send_command('wait 1;text aftermath text "Aftermath: Level 3 (50% Triple Dmg)";text aftermath color '..Aftermath3color..'')
 			else
@@ -1284,82 +1261,24 @@ windower.register_event('gain buff', function(buff)
 				windower.add_to_chat(50,'<< Aftermath: Level 3 (Occ. Att. 2-3x) >>')
 			end
 		end
+	elseif buff == 273 and NotiAftermath =='On' then --Relic Aftermath
+		if AlertSounds == 'On' then
+			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
+		end
+		if player.equipment.main == 'Excalibur' then
+			if HUD == 'On' then
+				send_command('wait 1;text aftermath text "Aftermath: Active (Regen/Refresh)";text aftermath color '..Aftermath3color..'')
+			else
+				windower.add_to_chat(220,'<< Aftermath: Active (Regen/Refresh) >>')
+			end
+		end
+	end
+	if (buff == 2 or buff == 19) then
+		equip({neck="Vim Torque"})
 	end
 	if buff == 15 and NotiDoom == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< DOOM >>')
-		end
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
-	elseif (buff == 2 or buff == 19) and NotiSleep == On then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SLEEP >>')
-		end
-		send_command('gs c OpoOpo')
-	elseif buff == 6 and NotiSilence == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SILENCE >>')
-		end
-	elseif buff == 7 and NotiPetrification == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PETRIFICATION >>')
-		end
-	elseif (buff == 9 or buff == 20) and NotiCurse =='On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< CURSE >>')
-		end
-	elseif buff == 10 and NotiStun == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< STUN >>')
-		end
-	elseif (buff == 14 or buff == 17) and NotiCharm == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< CHARM >>')
-		end
-	elseif buff == 16 and NotiAmnesia == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< AMNESIA >>')
-		end
-	elseif buff == 28 and NotiTerror == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< TERROR >>')
-		end
-	elseif buff == 29 and NotiMute == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< MUTE >>')
-		end
-	elseif buff == 31 and NotiPlague == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PLAGUE >>')
-		end
-	elseif (buff == 4 or buff == 566) and NotiPara == 'On' then
-		if HUD == 'On' then
-			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PARALYSIS >>')
 		end
 	end
 end)
@@ -1441,8 +1360,6 @@ windower.register_event('lose buff', function(buff)
 			send_command('gs c ClearDebuffs')
 		end
 		choose_set()
-	elseif (buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
-		send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
 	end
 end)
 
@@ -1466,6 +1383,37 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
+	if HUD == 'On' then
+		if buffactive['Doom'] and NotiDoom == 'On' then
+			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
+		elseif buffactive['Charm'] and NotiCharm == 'On' then
+			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
+		elseif buffactive['Terror'] and NotiTerror == 'On' then
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
+		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
+		elseif buffactive['Sleep'] and NotiSleep == On then
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
+		elseif buffactive['Stun'] and NotiStun == 'On' then
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
+		elseif buffactive['Amnesia'] and NotiAmnesia == 'On' then
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
+		elseif buffactive['Silence'] and NotiSilence == 'On' then
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
+		elseif buffactive['Mute'] and NotiMute == 'On' then
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
+		elseif buffactive['Plague'] and NotiPlague == 'On' then
+			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
+		elseif buffactive['Paralysis'] and NotiPara == 'On' then
+			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
+		elseif buffactive['Encumbrance'] and NotiEncumbrance == 'On' then
+			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50')
+		elseif buffactive['Curse'] and NotiCurse == 'On' then
+			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
+		else
+			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
+		end
+	end
 	if os.time() > Heartbeat then
 		Heartbeat = os.time() --this gets updated once per second, then we do the things below
 		if AutoLockstyle == 'On' and AutoLockstyleRun == true and LockstyleDelay > 0 then
@@ -1498,49 +1446,43 @@ windower.register_event('prerender', function()
 			if NotiDoom == 'On' and buffactive['Doom'] then 
 				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
 			end
+			
+			
+			
+			
+			if Mode == "Tank" then
+				if buffactive['Enmity Boost'] and buffactive['Phalanx'] and buffactive['Reprisal'] and buffactive['Palisade'] and (buffactive['Defense Boost'] or buffactive['Defender']) then
+					send_command('text mode text "Mode: Turtle"')
+				else
+					send_command('text mode text "Mode: '..Mode..'"')
+				end
+			end
 			if HUDRecast == 'On' then --using the HUDRecast
 				--HUDRecast goes in Line 1:
-				if Mode == 'Tank' then --are we in Tank mode?
-					if player.sub_job == 'WAR' then
-						send_command('text defender pos '..HUDposXColumn1..' '..HUDposYLine1..'')	--Defender goes in Column 1
-						send_command('text cocoon pos '..HUDposXColumn1..' -100')					--Cocoon is not visible (-100 puts it above the screen):
-						send_command('text crusade pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Crusade goes in Column 2
-						send_command('text phalanx pos '..HUDposXColumn3..' '..HUDposYLine1..'')	--Phalanx goes in Column 3
-						send_command('text reprisal pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Reprisal goes in Column 4
-						send_command('text palisade pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Palisade goes in Column 5
-					elseif player.sub_job == 'BLU' then
-						send_command('text defender pos '..HUDposXColumn1..' -100')					--Defender is not visible
-						send_command('text cocoon pos '..HUDposXColumn1..' '..HUDposYLine1..'')		--Cocoon goes in Column 1
-						send_command('text crusade pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Crusade goes in Column 2
-						send_command('text phalanx pos '..HUDposXColumn3..' '..HUDposYLine1..'')	--Phalanx goes in Column 3
-						send_command('text reprisal pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Reprisal goes in Column 4
-						send_command('text palisade pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Palisade goes in Column 5
-					else
-						send_command('text defender pos '..HUDposXColumn1..' -100')					--Defender is not visible
-						send_command('text cocoon pos '..HUDposXColumn1..' -100')					--Cocoon is not visible
-						send_command('text crusade pos '..HUDposXColumn1..' '..HUDposYLine1..'')	--Crusade goes in Column 1
-						send_command('text phalanx pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Phalanx goes in Column 2
-						send_command('text reprisal pos '..HUDposXColumn3..' '..HUDposYLine1..'')	--Reprisal goes in Column 3
-						send_command('text palisade pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Palisade goes in Column 4
-					end
-					send_command('text enlight pos '..HUDposXColumn1..' -100')						--None of these are visible
-					send_command('text aggressor pos '..HUDposXColumn2..' -100')
-					send_command('text berserk pos '..HUDposXColumn3..' -100')
-				else --if not tank mode, assumes DPS mode
-					send_command('text enlight pos '..HUDposXColumn1..' '..HUDposYLine1..'')		--Enlight goes in Column 1
-					if player.sub_job == 'WAR' then
-						send_command('text aggressor pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Aggressor goes in Column 2
-						send_command('text berserk pos '..HUDposXColumn3..' '..HUDposYLine1..'')	--Berserk goes in Column 3
-					else
-						send_command('text aggressor pos '..HUDposXColumn2..' -100')				--Aggressor is not visible
-						send_command('text berserk pos '..HUDposXColumn3..' -100')					--Berserk is not visible
-					end
-					send_command('text defender pos '..HUDposXColumn1..' -100')						--None of these are visible
-					send_command('text cocoon pos '..HUDposXColumn1..' -100')
-					send_command('text crusade pos '..HUDposXColumn1..' -100')
-					send_command('text phalanx pos '..HUDposXColumn2..' -100')
-					send_command('text reprisal pos '..HUDposXColumn3..' -100')
-					send_command('text palisade pos '..HUDposXColumn4..' -100')
+				if player.sub_job == 'WAR' then
+					send_command('text crusade pos '..HUDposXColumn1..' '..HUDposYLine1..'')	--Crusade goes in Column 1
+					send_command('text phalanx pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Phalanx goes in Column 2
+					send_command('text defender pos '..HUDposXColumn3..' '..HUDposYLine1..'')	--Defender goes in Column 3
+					send_command('text cocoon pos '..HUDposXColumn3..' -100')					--Cocoon is not visible (-100 puts it above the screen):
+					send_command('text reprisal pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Reprisal goes in Column 4
+					send_command('text palisade pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Palisade goes in Column 5
+					send_command('text enlight pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Enlight goes in Column 6
+				elseif player.sub_job == 'BLU' then
+					send_command('text crusade pos '..HUDposXColumn1..' '..HUDposYLine1..'')	--Crusade goes in Column 1
+					send_command('text phalanx pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Phalanx goes in Column 2
+					send_command('text defender pos '..HUDposXColumn3..' -100')					--Defender is not visible
+					send_command('text cocoon pos '..HUDposXColumn3..' '..HUDposYLine1..'')		--Cocoon goes in Column 1
+					send_command('text reprisal pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Reprisal goes in Column 4
+					send_command('text palisade pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Palisade goes in Column 5
+					send_command('text enlight pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Enlight goes in Column 6
+				else
+					send_command('text defender pos '..HUDposXColumn1..' -100')					--Defender is not visible
+					send_command('text cocoon pos '..HUDposXColumn1..' -100')					--Cocoon is not visible
+					send_command('text crusade pos '..HUDposXColumn1..' '..HUDposYLine1..'')	--Crusade goes in Column 1
+					send_command('text phalanx pos '..HUDposXColumn2..' '..HUDposYLine1..'')	--Phalanx goes in Column 2
+					send_command('text reprisal pos '..HUDposXColumn3..' '..HUDposYLine1..'')	--Reprisal goes in Column 3
+					send_command('text palisade pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Palisade goes in Column 4
+					send_command('text enlight pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Enlight goes in Column 5
 				end
 				--REMAs equipped:
 				if (player.equipment.main == 'Excalibur' or player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' or player.equipment.main == 'Sequence' or player.equipment.main == 'Burtgang') and REMA == false then
@@ -1582,8 +1524,6 @@ windower.register_event('prerender', function()
 			end
 			--Recast updates:
 			if player.sub_job == 'WAR' then
-				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
-				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
 				DefenderRecast = windower.ffxi.get_ability_recasts()[3]
 			elseif player.sub_job == 'BLU' then
 				CocoonRecast = windower.ffxi.get_spell_recasts()[547]
@@ -1620,14 +1560,6 @@ windower.register_event('prerender', function()
 				else CocoonColor = '255 50 50'
 				end
 			elseif player.sub_job == 'WAR' then
-				if buffactive['Aggressor'] then AggressorColor = '75 255 75'
-				elseif AggressorRecast > 0 then AggressorColor = '255 165 0'
-				else AggressorColor = '255 50 50'
-				end
-				if buffactive['Berserk'] then BerserkColor = '75 255 75'
-				elseif BerserkRecast > 0 then BerserkColor = '255 165 0'
-				else BerserkColor = '255 50 50'
-				end
 				if buffactive['Defender'] then DefenderColor = '75 255 75'
 				elseif DefenderRecast > 0 then DefenderColor = '255 165 0'
 				else DefenderColor = '255 50 50'
@@ -1643,8 +1575,6 @@ windower.register_event('prerender', function()
 				send_command('text cocoon color '..CocoonColor..'')
 			elseif player.sub_job == 'WAR' then
 				send_command('text defender color '..DefenderColor..'')
-				send_command('text aggressor color '..AggressorColor..'')
-				send_command('text berserk color '..BerserkColor..'')
 			end
 		end
 		--Majesty recast update is done outside of the HUD check because we use it for AutoMajesty option instead
@@ -1717,27 +1647,27 @@ windower.register_event('incoming text',function(org)
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if HUD == 'On' then
+			if NotiTime == 'On' and HUD == 'On' then
 				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50')
 			end
 		end
 	elseif org:find('Style lock mode enabled.') then
 		StyleLockModeEnabledDelay = 5
-	elseif org:find('You find a') then
+	elseif NotiOmen == 'On' and org:find('You find a') then
 		if org:find('Fu\'s scale') then
 			send_command('wait 2 5;input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
 		elseif org:find('Gin\'s scale') then
@@ -1749,11 +1679,11 @@ windower.register_event('incoming text',function(org)
 		elseif org:find('Kyou\'s scale') then
 			send_command('wait 2 5;input /p Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
 		end
-	elseif org:find('You pitiful lot will never learn') then
+	elseif NotiVagary == 'On' and org:find('You pitiful lot will never learn') then
 		send_command('input /p Perfidien pop! <call14>')
-	elseif org:find('the void calls') then
+	elseif NotiVagary == 'On' and org:find('the void calls') then
 		send_command('input /p Plouton pop! <call14>')
-	elseif org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
+	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
 		if org:find('Lightning') then
 			send_command('input /p Lightning <call14>')
 		elseif org:find('Fire') then
@@ -1776,38 +1706,14 @@ end)
 
 function file_unload()
 	if Debug == 'On' then
-		send_command('gs debugmode;gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
+		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
 	end
 	if HUD == 'On' then
-		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text phalanx delete;text crusade delete;text palisade delete;text reprisal delete;text defender delete;text cocoon delete;text enlight delete;text aggressor delete;text berserk delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
+		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text phalanx delete;text crusade delete;text palisade delete;text reprisal delete;text defender delete;text cocoon delete;text enlight delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
 	end
 end
 
 --[[
-
--------------------------------------------
---               UPDATES                 --
--------------------------------------------
-If the new updates Version Compatibility Codename matches your current files TopVersion,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the Version Compatibility Codename changes will you need to update the entire file.
-
-03.05.22 (Version Compatibility Codename: Undead Killer)
--Fixed Alliance invite incorrectly triggering Party invite notification.
--Fixed some subjob conditions throwing errors when you have no subjob (ie Odyssey NMs)
--Fixed AutoMajesty and AutoDefender to not attempt to activate when you have Amnesia.
-
-02.02.22 (Version Compatibility Codename: Undead Killer)
--Added Weak status notification.
--Updated "Codename" to "Version Compatibility Codename" to be more clear in its purpose. Whenever changes are made to the top portion of the file, the Version Compatibility Codename is changed and the TopVersion and BottomVersion updated to reflect the new codename. This is done so that when a new update is posted and you 
--Updated how the HUD loading is handled. The loading is now smoother and objects don't overlap eachother while loading.
--Fixed gear not fully equipping in towns.
--Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
--Fixed Fast Cast gear to not equip when using a Forbidden Key, Pickaxe, Sickle, or Hatchet.
-
-02.01.22 (Version Compatibility Codename: Undead Killer)
--First version
--Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
 
 -------------------------------------------
 --            KEYS NOTEPAD               --
