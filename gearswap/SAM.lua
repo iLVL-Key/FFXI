@@ -159,7 +159,7 @@ function get_sets()
 		head="Wakido Kabuto +3",
 		feet="Danzo Sune-ate",
 		neck="Rep. Plat. Medal",
-		left_ring="Karieyh Ring",
+		left_ring="Karieyh Ring +1",
 	}
 
 	-- DT Override (Damage Taken-, Magic Evasion)
@@ -183,7 +183,7 @@ function get_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
-		left_ring="Karieyh Ring",
+		left_ring="Karieyh Ring +1",
 		right_ring="Regal Ring",
 		back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
 	}
@@ -205,7 +205,7 @@ function get_sets()
 
 	-- Sengikori
 	sets.sengikori = {
-		feet="Unkai Sune-Ate +1",
+		feet="Kasuga Sune-Ate +1",
 	}
 
 	-- Meditate
@@ -275,7 +275,7 @@ TopVersion = 'Tachi: Enpi' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Tachi: Enpi'
-FileVersion = '06.14.22'
+FileVersion = '07.18.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -285,6 +285,13 @@ FileVersion = '06.14.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+07.18.22 (Version Compatibility Codename: Tachi: Enpi)
+-Overhauled how area checks are handled. Uses tables now for groups of areas.
+-Fixed some errors that would show up on job change. These were caused by the Heartbeat function constantly checking for any debuffs present; when you unload the file (change job) it will delete the debuff text objects used for the HUD which will cause a split second where the debuff check freaks out. The fix was to simply disable the debuff checks in town zones.
+-Fixed the DTOverride set not equipping correctly when idle.
+-Fixed an issue with the Sleep debuff not showing properly in the HUD.
+-Code cleanup
 
 06.14.22 (Version Compatibility Codename: Tachi: Enpi)
 -Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
@@ -307,6 +314,30 @@ Only when the Version Compatibility Codename changes will you need to update the
 -First version
 -Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
 --]]
+
+-------------------------------------------
+--             AREA MAPPING              --
+-------------------------------------------
+
+AdoulinZones = S{
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+    }
+
+BastokZones = S{
+	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
+    }
+
+SandyZones = S{
+	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
+    }
+
+WindyZones = S{
+	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
+    }
+
+TownZones = S{
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+    }
 
 -------------------------------------------
 --              FILE LOAD                --
@@ -349,24 +380,24 @@ if HUD == 'On' then
 	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text meditate create "[ Meditate ]";wait .3;text meditate size '..FontSize..';text meditate pos '..HUDposXColumn1..' -100;text meditate bg_transparency 1')
-	send_command('text sekkanoki create "[ Sekkanoki ]";wait .3;text sekkanoki size '..FontSize..';text sekkanoki pos '..HUDposXColumn1..' -100;text sekkanoki bg_transparency 1')
-	send_command('text sengikori create "[ Sengikori ]";wait .3;text sengikori size '..FontSize..';text sengikori pos '..HUDposXColumn1..' -100;text sengikori bg_transparency 1')
-	send_command('text hagakure create "[ Hagakure ]";wait .3;text hagakure size '..FontSize..';text hagakure pos '..HUDposXColumn1..' -100;text hagakure bg_transparency 1')
-	send_command('text highjump create "[ High J. ]";wait .3;text highjump size '..FontSize..';text highjump pos '..HUDposXColumn1..' -100;text highjump bg_transparency 1')
-	send_command('text superjump create "[ Super J. ]";wait .3;text superjump size '..FontSize..';text superjump pos '..HUDposXColumn1..' -100;text superjump bg_transparency 1')
-	send_command('text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
-	send_command('text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
-	send_command('text hasso create "[ Hasso ]";wait .3;text hasso size '..FontSize..';text hasso pos '..HUDposXColumn1..' -100;text hasso bg_transparency 1')
-	send_command('text seigan create "[ Seigan ]";wait .3;text seigan size '..FontSize..';text seigan pos '..HUDposXColumn1..' -100;text seigan bg_transparency 1')
-	--Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
-	send_command('text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
-	send_command('text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
 	send_command('text loading create "Loading Keys SAMURAI file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
+	--Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .1;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
+	send_command('wait .1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
+	send_command('wait .1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
+	send_command('wait .1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .2;text meditate create "[ Meditate ]";wait .3;text meditate size '..FontSize..';text meditate pos '..HUDposXColumn1..' -100;text meditate bg_transparency 1')
+	send_command('wait .2;text sekkanoki create "[ Sekkanoki ]";wait .3;text sekkanoki size '..FontSize..';text sekkanoki pos '..HUDposXColumn1..' -100;text sekkanoki bg_transparency 1')
+	send_command('wait .2;text sengikori create "[ Sengikori ]";wait .3;text sengikori size '..FontSize..';text sengikori pos '..HUDposXColumn1..' -100;text sengikori bg_transparency 1')
+	send_command('wait .2;text hagakure create "[ Hagakure ]";wait .3;text hagakure size '..FontSize..';text hagakure pos '..HUDposXColumn1..' -100;text hagakure bg_transparency 1')
+	send_command('wait .2;text highjump create "[ High J. ]";wait .3;text highjump size '..FontSize..';text highjump pos '..HUDposXColumn1..' -100;text highjump bg_transparency 1')
+	send_command('wait .2;text superjump create "[ Super J. ]";wait .3;text superjump size '..FontSize..';text superjump pos '..HUDposXColumn1..' -100;text superjump bg_transparency 1')
+	send_command('wait .2;text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
+	send_command('wait .2;text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
+	send_command('wait .2;text hasso create "[ Hasso ]";wait .3;text hasso size '..FontSize..';text hasso pos '..HUDposXColumn1..' -100;text hasso bg_transparency 1')
+	send_command('wait .2;text seigan create "[ Seigan ]";wait .3;text seigan size '..FontSize..';text seigan pos '..HUDposXColumn1..' -100;text seigan bg_transparency 1')
 else
 	windower.add_to_chat(8,'Keys SAMURAI file ver: '..FileVersion..'')
 	windower.add_to_chat(8,'Type //fileinfo for more information')
@@ -576,7 +607,7 @@ function self_command(command)
 		windower.add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+			if TownZones:contains(world.area) then
 				send_command('wait 5;gs c Choose Set')
 			end
 		else
@@ -587,7 +618,7 @@ function self_command(command)
 	elseif command == 'Zone Lockstyle' then
 		send_command('wait 5;gs c Lockstyle')
 	elseif command == 'Lockstyle' then
-		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+		if TownZones:contains(world.area) then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
 			send_command('input /lockstyleset '..LockstyleField..'')
@@ -669,7 +700,7 @@ function choose_set()
 				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
 			end
 		end
-		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
+		if AdoulinZones:contains(world.area) then
 			if Mode == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.adoulin, sets.idle))
 				if Debug == 'On' then
@@ -681,7 +712,7 @@ function choose_set()
 					windower.add_to_chat(8,'[Equipped Set: Hasso + Adoulin + Idle]')
 				end
 			end
-		elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
+		elseif BastokZones:contains(world.area) then
 			if Mode == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.bastok, sets.idle))
 				if Debug == 'On' then
@@ -693,7 +724,7 @@ function choose_set()
 					windower.add_to_chat(8,'[Equipped Set: Hasso + Bastok + Idle]')
 				end
 			end
-		elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
+		elseif SandyZones:contains(world.area) then
 			if Mode == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.sandoria, sets.idle))
 				if Debug == 'On' then
@@ -705,7 +736,7 @@ function choose_set()
 					windower.add_to_chat(8,'[Equipped Set: Hasso + San d\'Oria + Idle]')
 				end
 			end
-		elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
+		elseif WindyZones:contains(world.area) then
 			if Mode == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.windurst, sets.idle))
 				if Debug == 'On' then
@@ -717,7 +748,7 @@ function choose_set()
 					windower.add_to_chat(8,'[Equipped Set: Hasso + Windurst + Idle]')
 				end
 			end
-		elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+		elseif TownZones:contains(world.area) then
 			if Mode == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.town, sets.idle))
 				if Debug == 'On' then
@@ -731,12 +762,12 @@ function choose_set()
 			end
 		elseif DTOverride == 'On' then
 			if Mode == 'Seigan' then
-				equip(set_combine(sets.seigan, sets.dtoverride, sets.idle))
+				equip(set_combine(sets.seigan, sets.idle, sets.dtoverride))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Seigan + DT Override + Idle]')
 				end
 			else
-				equip(set_combine(sets.hasso, sets.dtoverride, sets.idle))
+				equip(set_combine(sets.hasso, sets.idle, sets.dtoverride))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Hasso + DT Override + Idle]')
 				end
@@ -1148,8 +1179,6 @@ windower.register_event('lose buff', function(buff)
 			send_command('gs c ClearDebuffs')
 		end
 		choose_set()
-	-- elseif (buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
-		-- send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
 	end
 end)
 
@@ -1173,7 +1202,7 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
-	if HUD == 'On' then
+	if HUD == 'On' and LoadHUD == true and not TownZones:contains(world.area) then
 		if buffactive['Doom'] and NotiDoom == 'On' then
 			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
 		elseif buffactive['Charm'] and NotiCharm == 'On' then
@@ -1182,7 +1211,8 @@ windower.register_event('prerender', function()
 			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
 		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
 			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		elseif buffactive['Sleep'] and NotiSleep == On then
+		elseif buffactive['Sleep'] and NotiSleep == 'On' then
+		elseif buffactive['Sleep'] and NotiSleep == 'On' then
 			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
 		elseif buffactive['Stun'] and NotiStun == 'On' then
 			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
@@ -1255,12 +1285,12 @@ windower.register_event('prerender', function()
 					send_command('text sekkanoki pos '..HUDposXColumn2..' '..HUDposYLine1..'')		--Sekkanoki goes in Column 2
 					send_command('text sengikori pos '..HUDposXColumn3..' '..HUDposYLine1..'')		--Sengikori goes in Column 3
 					send_command('text hagakure pos '..HUDposXColumn4..' '..HUDposYLine1..'')		--Hagakure goes in Column 4
-					if player.sub_job == 'WAR' then
+					if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
 						send_command('text berserk pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Berserk goes in Column 5
 						send_command('text aggressor pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Aggressor goes in Column 6
 						send_command('text highjump pos '..HUDposXColumn5..' -100')					--High Jump is not visible
 						send_command('text superjump pos '..HUDposXColumn6..' -100')				--Super Jump is not visible
-					elseif player.sub_job == 'DRG' then
+					elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then
 						send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
 						send_command('text aggressor pos '..HUDposXColumn6..' -100')				--Aggressor is not visible
 						send_command('text highjump pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--High Jump goes in Column 5
@@ -1328,10 +1358,10 @@ windower.register_event('prerender', function()
 			HagakureRecast = windower.ffxi.get_ability_recasts()[54]
 			HassoRecast = windower.ffxi.get_spell_recasts()[138]
 			SeiganRecast = windower.ffxi.get_spell_recasts()[139]
-			if player.sub_job == 'WAR' then
+			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
 				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
 				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
-			elseif player.sub_job == 'DRG' then
+			elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then
 				HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
 				SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
 			end
@@ -1359,7 +1389,7 @@ windower.register_event('prerender', function()
 			elseif SeiganRecast > 0 then SeiganColor = '255 165 0'
 			else SeiganColor = '255 50 50'
 			end
-			if player.sub_job == 'WAR' then
+			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
 				if buffactive['Aggressor'] then AggressorColor = '75 255 75'
 				elseif AggressorRecast > 0 then AggressorColor = '255 165 0'
 				else AggressorColor = '255 50 50'
@@ -1368,7 +1398,7 @@ windower.register_event('prerender', function()
 				elseif BerserkRecast > 0 then BerserkColor = '255 165 0'
 				else BerserkColor = '255 50 50'
 				end
-			elseif player.sub_job == 'DRG' then
+			elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then
 				if HighJumpRecast == 0 then HighJumpColor = '255 50 50'
 				else HighJumpColor = '255 165 0'
 				end
@@ -1383,10 +1413,10 @@ windower.register_event('prerender', function()
 			send_command('text hagakure color '..HagakureColor..'')
 			send_command('text hasso color '..HassoColor..'')
 			send_command('text seigan color '..SeiganColor..'')
-			if player.sub_job == 'WAR' then
+			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
 				send_command('text aggressor color '..AggressorColor..'')
 				send_command('text berserk color '..BerserkColor..'')
-			elseif player.sub_job == 'DRG' then			
+			elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then			
 				send_command('text highjump color '..HighJumpColor..'')
 				send_command('text superjump color '..SuperJumpColor..'')
 			end
