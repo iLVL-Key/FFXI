@@ -185,14 +185,14 @@ function get_sets()
 		feet="Amalric Nails +1", --6%
 		neck="Baetyl Pendant", --4%
 		waist="Witful Belt", --3%
-		left_ear="Malignance Earring", --1%
+		left_ear="Malignance Earring", --4%
 		right_ear="Loquac. Earring", --2%
 		left_ring="Prolix Ring", --2%
 		right_ring="Kishar Ring", --4%
 		back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
 	}
 
-	-- Blod Pact Delay (BP Ability Delay-, SMN Skill+) (BP precast)
+	-- Blood Pact Delay (BP Ability Delay-, SMN Skill+) (BP precast)
 	sets.bpdelay = {
 		main="Espiritus",
 		sub="Vox Grip",
@@ -217,7 +217,7 @@ function get_sets()
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
 		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
-		neck="Melic Torque",
+		neck="Shulmanu Collar",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
 		right_ear="Gelos Earring",
@@ -282,7 +282,7 @@ function get_sets()
 
 	-- Blood Pact: Ward Debuff (SMN skill, Pet MAcc) (BP midcast)
 	sets.bpwarddebuff = {
-		main="EGrioavolr",
+		main="Grioavolr",
 		sub="Vox Grip",
 		ammo="Sancus Sachet",
 		head="Beckoner's Horn +1",
@@ -415,7 +415,7 @@ TopVersion = 'Inferno' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Inferno'
-FileVersion = '06.14.22'
+FileVersion = '07.18.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -425,6 +425,13 @@ FileVersion = '06.14.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+07.18.22 (Version Compatibility Codename: Inferno)
+-Overhauled how area checks are handled. Uses tables now for groups of areas.
+-Fixed some errors that would show up on job change. These were caused by the Heartbeat function constantly checking for any debuffs present; when you unload the file (change job) it will delete the debuff text objects used for the HUD which will cause a split second where the debuff check freaks out. The fix was to simply disable the debuff checks in town zones.
+-Fixed an issue with the Sleep debuff not showing properly in the HUD.
+-Removed a rule for losing Indicolure leftover from converting from the GEO file.
+-Code cleanup
 
 06.14.22 (Version Compatibility Codename: Inferno)
 -First version
@@ -457,11 +464,35 @@ BPRageHybrid = S{
     }
 
 BPWardBuff = S{
-	'Altana\'s Favor','Healing Ruby','Raise II','Shining Ruby','Aerial Armor','Frost Armor','Reraise II','Rolling Thunder','Katabatic Blades','Whispering Wind','Crimson Howl','Lightning Armor','Chinook','Ecliptic Growl','Glittering Ruby','Earthen Ward','Spring Water','Hastega','Noctoshield','Ecliptic Howl','Dream Shroud','Healing Ruby II','Perfect Defense','Earthen Armor','Fleet Wind','Inferno Howl','Wind\s Blessing','Soothing Ruby','Heavenward Howl','Pacifying Ruby','Hastega II','Soothing Current','Crystal Blessing'
+	'Altana\'s Favor','Healing Ruby','Raise II','Shining Ruby','Aerial Armor','Frost Armor','Reraise II','Rolling Thunder','Katabatic Blades','Whispering Wind','Crimson Howl','Lightning Armor','Chinook','Ecliptic Growl','Glittering Ruby','Earthen Ward','Spring Water','Hastega','Noctoshield','Ecliptic Howl','Dream Shroud','Healing Ruby II','Perfect Defense','Earthen Armor','Fleet Wind','Inferno Howl','Wind\'s Blessing','Soothing Ruby','Heavenward Howl','Pacifying Ruby','Hastega II','Soothing Current','Crystal Blessing'
     }
 
 BPWardDebuff = S{
 	'Lunatic Voice','Somnolence','Lunar Cry','Mewing Lullaby','Nightmare','Lunar Roar','Slowga','Ultimate Terror','Sleepga','Bitter Elegy','Eerie Eye','Tidal Roar','Diamond Storm','Shock Squall','Pavor Nocturnus'
+    }
+
+-------------------------------------------
+--             AREA MAPPING              --
+-------------------------------------------
+
+AdoulinZones = S{
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+    }
+
+BastokZones = S{
+	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
+    }
+
+SandyZones = S{
+	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
+    }
+
+WindyZones = S{
+	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
+    }
+
+TownZones = S{
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
     }
 
 -------------------------------------------
@@ -495,19 +526,19 @@ if HUD == 'On' then
 	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text favor create "[ A. Favor ]";wait .3;text favor size '..FontSize..';text favor pos '..HUDposXColumn1..' -100;text favor bg_transparency 1')
-	send_command('text siphon create "[ E. Siphon ]";wait .3;text siphon size '..FontSize..';text siphon pos '..HUDposXColumn1..' -100;text siphon bg_transparency 1')
-	send_command('text apogee create "[ Apogee ]";wait .3;text apogee size '..FontSize..';text apogee pos '..HUDposXColumn1..' -100;text apogee bg_transparency 1')
-	send_command('text cede create "[ M. Cede ]";wait .3;text cede size '..FontSize..';text cede pos '..HUDposXColumn1..' -100;text cede bg_transparency 1')
-	send_command('text convert create "[ Convert ]";wait .3;text convert size '..FontSize..';text convert pos '..HUDposXColumn1..' -100;text convert bg_transparency 1')
-	--Create the Aftermath, Avatar, Notifications and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
-	send_command('text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
-	send_command('text avatar create "No Avatar";wait .3;text avatar size '..FontSize..';text avatar pos '..HUDposXColumn1..' -100;text avatar color 255 255 255;text avatar bg_transparency 1') --Avatar
 	send_command('text loading create "Loading Keys SUMMONER file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
+	--Create the Aftermath, Avatar, Notifications and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .1;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
+	send_command('wait .1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
+	send_command('wait .1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	send_command('wait .1;text avatar create "No Avatar";wait .3;text avatar size '..FontSize..';text avatar pos '..HUDposXColumn1..' -100;text avatar color 255 255 255;text avatar bg_transparency 1') --Avatar
+	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .2;text favor create "[ A. Favor ]";wait .3;text favor size '..FontSize..';text favor pos '..HUDposXColumn1..' -100;text favor bg_transparency 1')
+	send_command('wait .2;text siphon create "[ E. Siphon ]";wait .3;text siphon size '..FontSize..';text siphon pos '..HUDposXColumn1..' -100;text siphon bg_transparency 1')
+	send_command('wait .2;text apogee create "[ Apogee ]";wait .3;text apogee size '..FontSize..';text apogee pos '..HUDposXColumn1..' -100;text apogee bg_transparency 1')
+	send_command('wait .2;text cede create "[ M. Cede ]";wait .3;text cede size '..FontSize..';text cede pos '..HUDposXColumn1..' -100;text cede bg_transparency 1')
+	send_command('wait .2;text convert create "[ Convert ]";wait .3;text convert size '..FontSize..';text convert pos '..HUDposXColumn1..' -100;text convert bg_transparency 1')
 else
 	windower.add_to_chat(8,'Keys SUMMONER file ver: '..FileVersion..'')
 	windower.add_to_chat(8,'Type //fileinfo for more information')
@@ -592,7 +623,7 @@ function self_command(command)
 				send_command('wait .7;text siphon pos '..HUDposXColumn2..' '..HUDposYLine1..'')
 				send_command('wait .7;text apogee pos '..HUDposXColumn3..' '..HUDposYLine1..'')
 				send_command('wait .7;text cede pos '..HUDposXColumn4..' '..HUDposYLine1..'')
-				if player.sub_job == 'RDM' then
+				if player.sub_job == 'RDM' and player.sub_job_level >= 1 then
 					send_command('wait .7;text convert pos '..HUDposXColumn5..' '..HUDposYLine1..'')
 				end
 				send_command('wait .8;text avatar pos '..HUDposXColumn1..' '..HUDposYLine2..'')
@@ -722,7 +753,8 @@ function self_command(command)
 		windower.add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+			if TownZones:contains(world.area) then
+			-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 				send_command('wait 5;gs c Choose Set')
 			end
 		else
@@ -733,7 +765,8 @@ function self_command(command)
 	elseif command == 'Zone Lockstyle' then
 		send_command('wait 5;gs c Lockstyle')
 	elseif command == 'Lockstyle' then
-		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+		if TownZones:contains(world.area) then
+		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
 			send_command('input /lockstyleset '..LockstyleField..'')
@@ -832,27 +865,32 @@ function choose_set()
 				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
 			end
 		end
-		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
+		if AdoulinZones:contains(world.area) then
+		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
 			equip(set_combine(sets.idle, sets.adoulin))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Adoulin]')
 			end
-		elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
+		elseif BastokZones:contains(world.area) then
+		-- elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
 			equip(set_combine(sets.idle, sets.bastok))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Bastok]')
 			end
-		elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
+		elseif SandyZones:contains(world.area) then
+		-- elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
 			equip(set_combine(sets.idle, sets.sandoria))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + San d\'Oria]')
 			end
-		elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
+		elseif WindyZones:contains(world.area) then
+		-- elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
 			equip(set_combine(sets.idle, sets.windurst))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Windurst]')
 			end
-		elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+		elseif TownZones:contains(world.area) then
+		-- elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			equip(set_combine(sets.idle, sets.town))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Town]')
@@ -1019,7 +1057,7 @@ function precast(spell)
 			if player.equipment.body == 'Summoner\'s Horn +2' or player.equipment.body == 'Glyphic Horn' or player.equipment.body == 'Glyphic Horn +1' or player.equipment.body == 'Glyphic Horn +2' or player.equipment.body == 'Glyphic Horn +3' then --these pieces extend Astral Flow by 30 seconds so we adjust accordingly
 				send_command('input /echo [Astral Flow] 3:30;wait 30;input /echo [Astral Flow] 3:00;wait 30;input /echo [Astral Flow] 2:30;wait 30;input /echo [Astral Flow] 2:00;wait 30;input /echo [Astral Flow] 1:30;wait 30;input /echo [Astral Flow] 1:00;wait 30;input /echo [Astral Flow] 0:30;wait 10;input /echo [Astral Flow] 0:20;wait 10;input /echo [Astral Flow] 0:10')
 			else
-				send_command('input /echo [Bolster] 3:00;wait 30;input /echo [Bolster] 2:30;wait 30;input /echo [Bolster] 2:00;wait 30;input /echo [Bolster] 1:30;wait 30;input /echo [Bolster] 1:00;wait 30;input /echo [Bolster] 0:30;wait 10;input /echo [Bolster] 0:20;wait 10;input /echo [Bolster] 0:10')
+				send_command('input /echo [Astral Flow] 3:00;wait 30;input /echo [Astral Flow] 2:30;wait 30;input /echo [Astral Flow] 2:00;wait 30;input /echo [Astral Flow] 1:30;wait 30;input /echo [Astral Flow] 1:00;wait 30;input /echo [Astral Flow] 0:30;wait 10;input /echo [Astral Flow] 0:20;wait 10;input /echo [Astral Flow] 0:10')
 			end
 		end
 	elseif spell.english == 'Astral Conduit' and ACTimer == 'On' then
@@ -1375,8 +1413,6 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
 		end
-	elseif buff == 612 and HUD == 'On' then
-		send_command('text indicolure text "None";text indicolure color 255 50 50')
 	end
 end)
 
@@ -1399,7 +1435,7 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
-	if HUD == 'On' then
+	if HUD == 'On' and LoadHUD == true and not TownZones:contains(world.area) then
 		if buffactive['Doom'] and NotiDoom == 'On' then
 			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
 		elseif buffactive['Charm'] and NotiCharm == 'On' then
@@ -1408,7 +1444,7 @@ windower.register_event('prerender', function()
 			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
 		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
 			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		elseif buffactive['Sleep'] and NotiSleep == On then
+		elseif buffactive['Sleep'] and NotiSleep == 'On' then
 			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
 		elseif buffactive['Stun'] and NotiStun == 'On' then
 			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
@@ -1490,7 +1526,7 @@ windower.register_event('prerender', function()
 			SiphonRecast = windower.ffxi.get_ability_recasts()[175]
 			ApogeeRecast = windower.ffxi.get_ability_recasts()[108]
 			CedeRecast = windower.ffxi.get_ability_recasts()[71]
-			if player.sub_job == 'RDM' then
+			if player.sub_job == 'RDM' and player.sub_job_level >= 1 then
 				ConvertRecast = windower.ffxi.get_ability_recasts()[49]
 			end
 			--Recast color updates - decide the colors:
@@ -1507,7 +1543,7 @@ windower.register_event('prerender', function()
 			if CedeRecast == 0 then CedeColor = '255 50 50'
 			else CedeColor = '255 165 0'
 			end
-			if player.sub_job == 'RDM' then
+			if player.sub_job == 'RDM' and player.sub_job_level >= 1 then
 				if ConvertRecast == 0 then ConvertColor = '255 50 50'
 				else ConvertColor = '255 165 0'
 				end
@@ -1517,7 +1553,7 @@ windower.register_event('prerender', function()
 			send_command('text siphon color '..SiphonColor..'')
 			send_command('text apogee color '..ApogeeColor..'')
 			send_command('text cede color '..CedeColor..'')
-			if player.sub_job == 'RDM' then
+			if player.sub_job == 'RDM' and player.sub_job_level >= 1 then
 				send_command('text convert color '..ConvertColor..'')
 			end
 		end
@@ -1657,6 +1693,8 @@ end
 -------------------------------------------
 --            KEYS NOTEPAD               --
 -------------------------------------------
+
+-Auto-Favor
 
 Default text size is 12
 Large 15 (+24)
