@@ -257,7 +257,7 @@ function get_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
-		left_ring="Karieyh Ring",
+		left_ring="Karieyh Ring +1",
 		right_ring="Ilabrat Ring",
 		back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
 	}
@@ -525,7 +525,7 @@ TopVersion = 'Pollen' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Pollen'
-FileVersion = '06.14.22'
+FileVersion = '07.018.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -535,6 +535,13 @@ FileVersion = '06.14.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+07.18.22 (Version Compatibility Codename: Pollen)
+-Overhauled how area checks are handled. Uses tables now for groups of areas.
+-Fixed the DTOverride set not equipping correctly when idle.
+-Fixed some errors that would show up on job change. These were caused by the Heartbeat function constantly checking for any debuffs present; when you unload the file (change job) it will delete the debuff text objects used for the HUD which will cause a split second where the debuff check freaks out. The fix was to simply disable the debuff checks in town zones.
+-Fixed an issue with the Sleep debuff not showing properly in the HUD.
+-Code cleanup
 
 06.14.22 (Version Compatibility Codename: Pollen)
 -Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
@@ -723,6 +730,30 @@ Healing = S{
     }
 
 -------------------------------------------
+--             AREA MAPPING              --
+-------------------------------------------
+
+AdoulinZones = S{
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+    }
+
+BastokZones = S{
+	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
+    }
+
+SandyZones = S{
+	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
+    }
+
+WindyZones = S{
+	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
+    }
+
+TownZones = S{
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+    }
+
+-------------------------------------------
 --              FILE LOAD                --
 -------------------------------------------
 
@@ -775,38 +806,38 @@ if HUD == 'On' then
 	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text recastmode1c1 create "[ '..RecastMode1C1SH..' ]";wait .3;text recastmode1c1 size '..FontSize..';text recastmode1c1 pos '..HUDposXColumn1..' -100;text recastmode1c1 bg_transparency 1')--Mode 1, Column 1
-	send_command('text recastmode1c2 create "[ '..RecastMode1C2SH..' ]";wait .3;text recastmode1c2 size '..FontSize..';text recastmode1c2 pos '..HUDposXColumn2..' -100;text recastmode1c2 bg_transparency 1')--Mode 1, Column 2
-	send_command('text recastmode1c3 create "[ '..RecastMode1C3SH..' ]";wait .3;text recastmode1c3 size '..FontSize..';text recastmode1c3 pos '..HUDposXColumn3..' -100;text recastmode1c3 bg_transparency 1')--Mode 1, Column 3
-	send_command('text recastmode1c4 create "[ '..RecastMode1C4SH..' ]";wait .3;text recastmode1c4 size '..FontSize..';text recastmode1c4 pos '..HUDposXColumn4..' -100;text recastmode1c4 bg_transparency 1')--Mode 1, Column 4
-	send_command('text recastmode1c5 create "[ '..RecastMode1C5SH..' ]";wait .3;text recastmode1c5 size '..FontSize..';text recastmode1c5 pos '..HUDposXColumn5..' -100;text recastmode1c5 bg_transparency 1')--Mode 1, Column 5
-	send_command('text recastmode1c6 create "[ '..RecastMode1C6SH..' ]";wait .3;text recastmode1c6 size '..FontSize..';text recastmode1c6 pos '..HUDposXColumn6..' -100;text recastmode1c6 bg_transparency 1')--Mode 1, Column 6
-	send_command('text recastmode2c1 create "[ '..RecastMode2C1SH..' ]";wait .3;text recastmode2c1 size '..FontSize..';text recastmode2c1 pos '..HUDposXColumn1..' -100;text recastmode2c1 bg_transparency 1')--Mode 2, Column 1
-	send_command('text recastmode2c2 create "[ '..RecastMode2C2SH..' ]";wait .3;text recastmode2c2 size '..FontSize..';text recastmode2c2 pos '..HUDposXColumn2..' -100;text recastmode2c2 bg_transparency 1')--Mode 2, Column 2
-	send_command('text recastmode2c3 create "[ '..RecastMode2C3SH..' ]";wait .3;text recastmode2c3 size '..FontSize..';text recastmode2c3 pos '..HUDposXColumn3..' -100;text recastmode2c3 bg_transparency 1')--Mode 2, Column 3
-	send_command('text recastmode2c4 create "[ '..RecastMode2C4SH..' ]";wait .3;text recastmode2c4 size '..FontSize..';text recastmode2c4 pos '..HUDposXColumn4..' -100;text recastmode2c4 bg_transparency 1')--Mode 2, Column 4
-	send_command('text recastmode2c5 create "[ '..RecastMode2C5SH..' ]";wait .3;text recastmode2c5 size '..FontSize..';text recastmode2c5 pos '..HUDposXColumn5..' -100;text recastmode2c5 bg_transparency 1')--Mode 2, Column 5
-	send_command('text recastmode2c6 create "[ '..RecastMode2C6SH..' ]";wait .3;text recastmode2c6 size '..FontSize..';text recastmode2c6 pos '..HUDposXColumn6..' -100;text recastmode2c6 bg_transparency 1')--Mode 2, Column 6
-	send_command('text recastmode3c1 create "[ '..RecastMode3C1SH..' ]";wait .3;text recastmode3c1 size '..FontSize..';text recastmode3c1 pos '..HUDposXColumn1..' -100;text recastmode3c1 bg_transparency 1')--Mode 3, Column 1
-	send_command('text recastmode3c2 create "[ '..RecastMode3C2SH..' ]";wait .3;text recastmode3c2 size '..FontSize..';text recastmode3c2 pos '..HUDposXColumn2..' -100;text recastmode3c2 bg_transparency 1')--Mode 3, Column 2
-	send_command('text recastmode3c3 create "[ '..RecastMode3C3SH..' ]";wait .3;text recastmode3c3 size '..FontSize..';text recastmode3c3 pos '..HUDposXColumn3..' -100;text recastmode3c3 bg_transparency 1')--Mode 3, Column 3
-	send_command('text recastmode3c4 create "[ '..RecastMode3C4SH..' ]";wait .3;text recastmode3c4 size '..FontSize..';text recastmode3c4 pos '..HUDposXColumn4..' -100;text recastmode3c4 bg_transparency 1')--Mode 3, Column 4
-	send_command('text recastmode3c5 create "[ '..RecastMode3C5SH..' ]";wait .3;text recastmode3c5 size '..FontSize..';text recastmode3c5 pos '..HUDposXColumn5..' -100;text recastmode3c5 bg_transparency 1')--Mode 3, Column 5
-	send_command('text recastmode3c6 create "[ '..RecastMode3C6SH..' ]";wait .3;text recastmode3c6 size '..FontSize..';text recastmode3c6 pos '..HUDposXColumn6..' -100;text recastmode3c6 bg_transparency 1')--Mode 3, Column 6
-	send_command('text recastmode4c1 create "[ '..RecastMode4C1SH..' ]";wait .3;text recastmode4c1 size '..FontSize..';text recastmode4c1 pos '..HUDposXColumn1..' -100;text recastmode4c1 bg_transparency 1')--Mode 4, Column 1
-	send_command('text recastmode4c2 create "[ '..RecastMode4C2SH..' ]";wait .3;text recastmode4c2 size '..FontSize..';text recastmode4c2 pos '..HUDposXColumn2..' -100;text recastmode4c2 bg_transparency 1')--Mode 4, Column 2
-	send_command('text recastmode4c3 create "[ '..RecastMode4C3SH..' ]";wait .3;text recastmode4c3 size '..FontSize..';text recastmode4c3 pos '..HUDposXColumn3..' -100;text recastmode4c3 bg_transparency 1')--Mode 4, Column 3
-	send_command('text recastmode4c4 create "[ '..RecastMode4C4SH..' ]";wait .3;text recastmode4c4 size '..FontSize..';text recastmode4c4 pos '..HUDposXColumn4..' -100;text recastmode4c4 bg_transparency 1')--Mode 4, Column 4
-	send_command('text recastmode4c5 create "[ '..RecastMode4C5SH..' ]";wait .3;text recastmode4c5 size '..FontSize..';text recastmode4c5 pos '..HUDposXColumn5..' -100;text recastmode4c5 bg_transparency 1')--Mode 4, Column 5
-	send_command('text recastmode4c6 create "[ '..RecastMode4C6SH..' ]";wait .3;text recastmode4c6 size '..FontSize..';text recastmode4c6 pos '..HUDposXColumn6..' -100;text recastmode4c6 bg_transparency 1')--Mode 4, Column 6
-	--Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
-	send_command('text mode create "Please select a Mode...";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
-	send_command('text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
 	send_command('text loading create "Loading Keys BLUE MAGE file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
+	--Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .1;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
+	send_command('wait .1;text mode create "Please select a Mode...";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
+	send_command('wait .1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
+	send_command('wait .1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .2;text recastmode1c1 create "[ '..RecastMode1C1SH..' ]";wait .3;text recastmode1c1 size '..FontSize..';text recastmode1c1 pos '..HUDposXColumn1..' -100;text recastmode1c1 bg_transparency 1')--Mode 1, Column 1
+	send_command('wait .2;text recastmode1c2 create "[ '..RecastMode1C2SH..' ]";wait .3;text recastmode1c2 size '..FontSize..';text recastmode1c2 pos '..HUDposXColumn2..' -100;text recastmode1c2 bg_transparency 1')--Mode 1, Column 2
+	send_command('wait .2;text recastmode1c3 create "[ '..RecastMode1C3SH..' ]";wait .3;text recastmode1c3 size '..FontSize..';text recastmode1c3 pos '..HUDposXColumn3..' -100;text recastmode1c3 bg_transparency 1')--Mode 1, Column 3
+	send_command('wait .2;text recastmode1c4 create "[ '..RecastMode1C4SH..' ]";wait .3;text recastmode1c4 size '..FontSize..';text recastmode1c4 pos '..HUDposXColumn4..' -100;text recastmode1c4 bg_transparency 1')--Mode 1, Column 4
+	send_command('wait .2;text recastmode1c5 create "[ '..RecastMode1C5SH..' ]";wait .3;text recastmode1c5 size '..FontSize..';text recastmode1c5 pos '..HUDposXColumn5..' -100;text recastmode1c5 bg_transparency 1')--Mode 1, Column 5
+	send_command('wait .2;text recastmode1c6 create "[ '..RecastMode1C6SH..' ]";wait .3;text recastmode1c6 size '..FontSize..';text recastmode1c6 pos '..HUDposXColumn6..' -100;text recastmode1c6 bg_transparency 1')--Mode 1, Column 6
+	send_command('wait .2;text recastmode2c1 create "[ '..RecastMode2C1SH..' ]";wait .3;text recastmode2c1 size '..FontSize..';text recastmode2c1 pos '..HUDposXColumn1..' -100;text recastmode2c1 bg_transparency 1')--Mode 2, Column 1
+	send_command('wait .2;text recastmode2c2 create "[ '..RecastMode2C2SH..' ]";wait .3;text recastmode2c2 size '..FontSize..';text recastmode2c2 pos '..HUDposXColumn2..' -100;text recastmode2c2 bg_transparency 1')--Mode 2, Column 2
+	send_command('wait .2;text recastmode2c3 create "[ '..RecastMode2C3SH..' ]";wait .3;text recastmode2c3 size '..FontSize..';text recastmode2c3 pos '..HUDposXColumn3..' -100;text recastmode2c3 bg_transparency 1')--Mode 2, Column 3
+	send_command('wait .2;text recastmode2c4 create "[ '..RecastMode2C4SH..' ]";wait .3;text recastmode2c4 size '..FontSize..';text recastmode2c4 pos '..HUDposXColumn4..' -100;text recastmode2c4 bg_transparency 1')--Mode 2, Column 4
+	send_command('wait .2;text recastmode2c5 create "[ '..RecastMode2C5SH..' ]";wait .3;text recastmode2c5 size '..FontSize..';text recastmode2c5 pos '..HUDposXColumn5..' -100;text recastmode2c5 bg_transparency 1')--Mode 2, Column 5
+	send_command('wait .2;text recastmode2c6 create "[ '..RecastMode2C6SH..' ]";wait .3;text recastmode2c6 size '..FontSize..';text recastmode2c6 pos '..HUDposXColumn6..' -100;text recastmode2c6 bg_transparency 1')--Mode 2, Column 6
+	send_command('wait .2;text recastmode3c1 create "[ '..RecastMode3C1SH..' ]";wait .3;text recastmode3c1 size '..FontSize..';text recastmode3c1 pos '..HUDposXColumn1..' -100;text recastmode3c1 bg_transparency 1')--Mode 3, Column 1
+	send_command('wait .2;text recastmode3c2 create "[ '..RecastMode3C2SH..' ]";wait .3;text recastmode3c2 size '..FontSize..';text recastmode3c2 pos '..HUDposXColumn2..' -100;text recastmode3c2 bg_transparency 1')--Mode 3, Column 2
+	send_command('wait .2;text recastmode3c3 create "[ '..RecastMode3C3SH..' ]";wait .3;text recastmode3c3 size '..FontSize..';text recastmode3c3 pos '..HUDposXColumn3..' -100;text recastmode3c3 bg_transparency 1')--Mode 3, Column 3
+	send_command('wait .2;text recastmode3c4 create "[ '..RecastMode3C4SH..' ]";wait .3;text recastmode3c4 size '..FontSize..';text recastmode3c4 pos '..HUDposXColumn4..' -100;text recastmode3c4 bg_transparency 1')--Mode 3, Column 4
+	send_command('wait .2;text recastmode3c5 create "[ '..RecastMode3C5SH..' ]";wait .3;text recastmode3c5 size '..FontSize..';text recastmode3c5 pos '..HUDposXColumn5..' -100;text recastmode3c5 bg_transparency 1')--Mode 3, Column 5
+	send_command('wait .2;text recastmode3c6 create "[ '..RecastMode3C6SH..' ]";wait .3;text recastmode3c6 size '..FontSize..';text recastmode3c6 pos '..HUDposXColumn6..' -100;text recastmode3c6 bg_transparency 1')--Mode 3, Column 6
+	send_command('wait .2;text recastmode4c1 create "[ '..RecastMode4C1SH..' ]";wait .3;text recastmode4c1 size '..FontSize..';text recastmode4c1 pos '..HUDposXColumn1..' -100;text recastmode4c1 bg_transparency 1')--Mode 4, Column 1
+	send_command('wait .2;text recastmode4c2 create "[ '..RecastMode4C2SH..' ]";wait .3;text recastmode4c2 size '..FontSize..';text recastmode4c2 pos '..HUDposXColumn2..' -100;text recastmode4c2 bg_transparency 1')--Mode 4, Column 2
+	send_command('wait .2;text recastmode4c3 create "[ '..RecastMode4C3SH..' ]";wait .3;text recastmode4c3 size '..FontSize..';text recastmode4c3 pos '..HUDposXColumn3..' -100;text recastmode4c3 bg_transparency 1')--Mode 4, Column 3
+	send_command('wait .2;text recastmode4c4 create "[ '..RecastMode4C4SH..' ]";wait .3;text recastmode4c4 size '..FontSize..';text recastmode4c4 pos '..HUDposXColumn4..' -100;text recastmode4c4 bg_transparency 1')--Mode 4, Column 4
+	send_command('wait .2;text recastmode4c5 create "[ '..RecastMode4C5SH..' ]";wait .3;text recastmode4c5 size '..FontSize..';text recastmode4c5 pos '..HUDposXColumn5..' -100;text recastmode4c5 bg_transparency 1')--Mode 4, Column 5
+	send_command('wait .2;text recastmode4c6 create "[ '..RecastMode4C6SH..' ]";wait .3;text recastmode4c6 size '..FontSize..';text recastmode4c6 pos '..HUDposXColumn6..' -100;text recastmode4c6 bg_transparency 1')--Mode 4, Column 6
 else
 	windower.add_to_chat(8,'Keys BLUE MAGE file ver: '..FileVersion..'')
 	windower.add_to_chat(8,'Type //fileinfo for more information')
@@ -1166,7 +1197,7 @@ function self_command(command)
 		windower.add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+			if TownZones:contains(world.area) then
 				send_command('wait 5;gs c Choose Set')
 			end
 		else
@@ -1177,7 +1208,7 @@ function self_command(command)
 	elseif command == 'Zone Lockstyle' then
 		send_command('wait 5;gs c Lockstyle')
 	elseif command == 'Lockstyle' and LockstyleDelay == 0 then
-		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+		if TownZones:contains(world.area) then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
 			send_command('input /lockstyleset '..LockstyleField..'')
@@ -1264,34 +1295,34 @@ function choose_set()
 				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
 			end
 		end
-		if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
+		if AdoulinZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.adoulin))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Adoulin]')
 			end
-		elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
+		elseif BastokZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.bastok))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Bastok]')
 			end
-		elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
+		elseif SandyZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.sandoria))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + San d\'Oria]')
 			end
-		elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
+		elseif WindyZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.windurst))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Windurst]')
 			end
-		elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
+		elseif TownZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.town))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Town]')
 			end
 		else
 			if DTOverride == "On" then
-				equip(set_combine(sets.dtoverride, sets.idle))
+				equip(set_combine(sets.idle, sets.dtoverride))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: DT Override + Idle]')
 				end
@@ -1850,8 +1881,6 @@ windower.register_event('lose buff', function(buff)
 			send_command('gs c ClearDebuffs')
 		end
 		choose_set()
-	-- elseif (buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
-		-- send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
 	elseif buff == 36 then --lose blink, clear shadow count to 0
 		ShadowCount = 0
 	end
@@ -1877,7 +1906,7 @@ end)
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
 
-	if HUD == 'On' then
+	if HUD == 'On' and LoadHUD == true and not TownZones:contains(world.area) then
 		if buffactive['Doom'] and NotiDoom == 'On' then
 			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
 		elseif buffactive['Charm'] and NotiCharm == 'On' then
@@ -1886,7 +1915,7 @@ windower.register_event('prerender', function()
 			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
 		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
 			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		elseif buffactive['Sleep'] and NotiSleep == On then
+		elseif buffactive['Sleep'] and NotiSleep == 'On' then
 			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
 		elseif buffactive['Stun'] and NotiStun == 'On' then
 			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
@@ -2295,7 +2324,7 @@ windower.register_event('prerender', function()
 				end
 			end
 			--Recast updates:
-			if player.sub_job == 'WAR' then
+			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
 				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
 				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
 				DefenderRecast = windower.ffxi.get_ability_recasts()[3]
@@ -2376,7 +2405,7 @@ windower.register_event('prerender', function()
 			elseif MBarrierRecast > 0 then MBarrierColor = '255 165 0'
 			else MBarrierColor = '255 50 50'
 			end
-			if player.sub_job == 'WAR' then
+			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
 				if buffactive['Aggressor'] then AggressorColor = '75 255 75'
 				elseif AggressorRecast > 0 then AggressorColor = '255 165 0'
 				else AggressorColor = '255 50 50'
@@ -2411,10 +2440,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode1C1 == 'Amplification' then send_command('text recastmode1c1 color '..AmplifiColor..'')
 			elseif RecastMode1C1 == 'Regeneration' then send_command('text recastmode1c1 color '..RegenerColor..'')
 			elseif RecastMode1C1 == 'Magic Barrier' then send_command('text recastmode1c1 color '..MBarrierColor..'')
-			elseif RecastMode1C1 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode1c1 color '..AggressorColor..'')
-			elseif RecastMode1C1 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode1c1 color '..BerserkColor..'')
-			elseif RecastMode1C1 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode1c1 color '..DefenderColor..'')
-			elseif RecastMode1C1 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode1c1 color '..WarcryColor..'')
+			elseif RecastMode1C1 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c1 color '..AggressorColor..'')
+			elseif RecastMode1C1 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c1 color '..BerserkColor..'')
+			elseif RecastMode1C1 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c1 color '..DefenderColor..'')
+			elseif RecastMode1C1 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c1 color '..WarcryColor..'')
 			end
 			--Mode 1 Column 2
 			if RecastMode1C2 == 'Erratic Flutter' then send_command('text recastmode1c2 color '..ErraticColor..'')
@@ -2432,10 +2461,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode1C2 == 'Amplification' then send_command('text recastmode1c2 color '..AmplifiColor..'')
 			elseif RecastMode1C2 == 'Regeneration' then send_command('text recastmode1c2 color '..RegenerColor..'')
 			elseif RecastMode1C2 == 'Magic Barrier' then send_command('text recastmode1c2 color '..MBarrierColor..'')
-			elseif RecastMode1C2 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode1c2 color '..AggressorColor..'')
-			elseif RecastMode1C2 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode1c2 color '..BerserkColor..'')
-			elseif RecastMode1C2 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode1c2 color '..DefenderColor..'')
-			elseif RecastMode1C2 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode1c2 color '..WarcryColor..'')
+			elseif RecastMode1C2 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c2 color '..AggressorColor..'')
+			elseif RecastMode1C2 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c2 color '..BerserkColor..'')
+			elseif RecastMode1C2 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c2 color '..DefenderColor..'')
+			elseif RecastMode1C2 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c2 color '..WarcryColor..'')
 			end
 			--Mode 1 Column 3
 			if RecastMode1C3 == 'Erratic Flutter' then send_command('text recastmode1c3 color '..ErraticColor..'')
@@ -2453,10 +2482,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode1C3 == 'Amplification' then send_command('text recastmode1c3 color '..AmplifiColor..'')
 			elseif RecastMode1C3 == 'Regeneration' then send_command('text recastmode1c3 color '..RegenerColor..'')
 			elseif RecastMode1C3 == 'Magic Barrier' then send_command('text recastmode1c3 color '..MBarrierColor..'')
-			elseif RecastMode1C3 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode1c3 color '..AggressorColor..'')
-			elseif RecastMode1C3 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode1c3 color '..BerserkColor..'')
-			elseif RecastMode1C3 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode1c3 color '..DefenderColor..'')
-			elseif RecastMode1C3 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode1c3 color '..WarcryColor..'')
+			elseif RecastMode1C3 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c3 color '..AggressorColor..'')
+			elseif RecastMode1C3 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c3 color '..BerserkColor..'')
+			elseif RecastMode1C3 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c3 color '..DefenderColor..'')
+			elseif RecastMode1C3 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c3 color '..WarcryColor..'')
 			end
 			--Mode 1 Column 4
 			if RecastMode1C4 == 'Erratic Flutter' then send_command('text recastmode1c4 color '..ErraticColor..'')
@@ -2474,10 +2503,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode1C4 == 'Amplification' then send_command('text recastmode1c4 color '..AmplifiColor..'')
 			elseif RecastMode1C4 == 'Regeneration' then send_command('text recastmode1c4 color '..RegenerColor..'')
 			elseif RecastMode1C4 == 'Magic Barrier' then send_command('text recastmode1c4 color '..MBarrierColor..'')
-			elseif RecastMode1C4 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode1c4 color '..AggressorColor..'')
-			elseif RecastMode1C4 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode1c4 color '..BerserkColor..'')
-			elseif RecastMode1C4 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode1c4 color '..DefenderColor..'')
-			elseif RecastMode1C4 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode1c4 color '..WarcryColor..'')
+			elseif RecastMode1C4 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c4 color '..AggressorColor..'')
+			elseif RecastMode1C4 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c4 color '..BerserkColor..'')
+			elseif RecastMode1C4 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c4 color '..DefenderColor..'')
+			elseif RecastMode1C4 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c4 color '..WarcryColor..'')
 			end
 			--Mode 1 Column 5
 			if RecastMode1C5 == 'Erratic Flutter' then send_command('text recastmode1c5 color '..ErraticColor..'')
@@ -2495,10 +2524,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode1C5 == 'Amplification' then send_command('text recastmode1c5 color '..AmplifiColor..'')
 			elseif RecastMode1C5 == 'Regeneration' then send_command('text recastmode1c5 color '..RegenerColor..'')
 			elseif RecastMode1C5 == 'Magic Barrier' then send_command('text recastmode1c5 color '..MBarrierColor..'')
-			elseif RecastMode1C5 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode1c5 color '..AggressorColor..'')
-			elseif RecastMode1C5 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode1c5 color '..BerserkColor..'')
-			elseif RecastMode1C5 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode1c5 color '..DefenderColor..'')
-			elseif RecastMode1C5 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode1c5 color '..WarcryColor..'')
+			elseif RecastMode1C5 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c5 color '..AggressorColor..'')
+			elseif RecastMode1C5 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c5 color '..BerserkColor..'')
+			elseif RecastMode1C5 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c5 color '..DefenderColor..'')
+			elseif RecastMode1C5 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c5 color '..WarcryColor..'')
 			end
 			--Mode 1 Column 6
 			if RecastMode1C6 == 'Erratic Flutter' then send_command('text recastmode1c6 color '..ErraticColor..'')
@@ -2516,10 +2545,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode1C6 == 'Amplification' then send_command('text recastmode1c6 color '..AmplifiColor..'')
 			elseif RecastMode1C6 == 'Regeneration' then send_command('text recastmode1c6 color '..RegenerColor..'')
 			elseif RecastMode1C6 == 'Magic Barrier' then send_command('text recastmode1c6 color '..MBarrierColor..'')
-			elseif RecastMode1C6 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode1c6 color '..AggressorColor..'')
-			elseif RecastMode1C6 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode1c6 color '..BerserkColor..'')
-			elseif RecastMode1C6 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode1c6 color '..DefenderColor..'')
-			elseif RecastMode1C6 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode1c6 color '..WarcryColor..'')
+			elseif RecastMode1C6 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c6 color '..AggressorColor..'')
+			elseif RecastMode1C6 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c6 color '..BerserkColor..'')
+			elseif RecastMode1C6 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c6 color '..DefenderColor..'')
+			elseif RecastMode1C6 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode1c6 color '..WarcryColor..'')
 			end
 			--Mode 2 Column 1
 			if RecastMode2C1 == 'Erratic Flutter' then send_command('text recastmode2c1 color '..ErraticColor..'')
@@ -2537,10 +2566,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode2C1 == 'Amplification' then send_command('text recastmode2c1 color '..AmplifiColor..'')
 			elseif RecastMode2C1 == 'Regeneration' then send_command('text recastmode2c1 color '..RegenerColor..'')
 			elseif RecastMode2C1 == 'Magic Barrier' then send_command('text recastmode2c1 color '..MBarrierColor..'')
-			elseif RecastMode2C1 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode2c1 color '..AggressorColor..'')
-			elseif RecastMode2C1 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode2c1 color '..BerserkColor..'')
-			elseif RecastMode2C1 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode2c1 color '..DefenderColor..'')
-			elseif RecastMode2C1 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode2c1 color '..WarcryColor..'')
+			elseif RecastMode2C1 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c1 color '..AggressorColor..'')
+			elseif RecastMode2C1 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c1 color '..BerserkColor..'')
+			elseif RecastMode2C1 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c1 color '..DefenderColor..'')
+			elseif RecastMode2C1 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c1 color '..WarcryColor..'')
 			end
 			--Mode 2 Column 2
 			if RecastMode2C2 == 'Erratic Flutter' then send_command('text recastmode2c2 color '..ErraticColor..'')
@@ -2558,10 +2587,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode2C2 == 'Amplification' then send_command('text recastmode2c2 color '..AmplifiColor..'')
 			elseif RecastMode2C2 == 'Regeneration' then send_command('text recastmode2c2 color '..RegenerColor..'')
 			elseif RecastMode2C2 == 'Magic Barrier' then send_command('text recastmode2c2 color '..MBarrierColor..'')
-			elseif RecastMode2C2 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode2c2 color '..AggressorColor..'')
-			elseif RecastMode2C2 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode2c2 color '..BerserkColor..'')
-			elseif RecastMode2C2 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode2c2 color '..DefenderColor..'')
-			elseif RecastMode2C2 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode2c2 color '..WarcryColor..'')
+			elseif RecastMode2C2 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c2 color '..AggressorColor..'')
+			elseif RecastMode2C2 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c2 color '..BerserkColor..'')
+			elseif RecastMode2C2 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c2 color '..DefenderColor..'')
+			elseif RecastMode2C2 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c2 color '..WarcryColor..'')
 			end
 			--Mode 2 Column 3
 			if RecastMode2C3 == 'Erratic Flutter' then send_command('text recastmode2c3 color '..ErraticColor..'')
@@ -2579,10 +2608,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode2C3 == 'Amplification' then send_command('text recastmode2c3 color '..AmplifiColor..'')
 			elseif RecastMode2C3 == 'Regeneration' then send_command('text recastmode2c3 color '..RegenerColor..'')
 			elseif RecastMode2C3 == 'Magic Barrier' then send_command('text recastmode2c3 color '..MBarrierColor..'')
-			elseif RecastMode2C3 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode2c3 color '..AggressorColor..'')
-			elseif RecastMode2C3 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode2c3 color '..BerserkColor..'')
-			elseif RecastMode2C3 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode2c3 color '..DefenderColor..'')
-			elseif RecastMode2C3 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode2c3 color '..WarcryColor..'')
+			elseif RecastMode2C3 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c3 color '..AggressorColor..'')
+			elseif RecastMode2C3 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c3 color '..BerserkColor..'')
+			elseif RecastMode2C3 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c3 color '..DefenderColor..'')
+			elseif RecastMode2C3 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c3 color '..WarcryColor..'')
 			end
 			--Mode 2 Column 4
 			if RecastMode2C4 == 'Erratic Flutter' then send_command('text recastmode2c4 color '..ErraticColor..'')
@@ -2600,10 +2629,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode2C4 == 'Amplification' then send_command('text recastmode2c4 color '..AmplifiColor..'')
 			elseif RecastMode2C4 == 'Regeneration' then send_command('text recastmode2c4 color '..RegenerColor..'')
 			elseif RecastMode2C4 == 'Magic Barrier' then send_command('text recastmode2c4 color '..MBarrierColor..'')
-			elseif RecastMode2C4 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode2c4 color '..AggressorColor..'')
-			elseif RecastMode2C4 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode2c4 color '..BerserkColor..'')
-			elseif RecastMode2C4 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode2c4 color '..DefenderColor..'')
-			elseif RecastMode2C4 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode2c4 color '..WarcryColor..'')
+			elseif RecastMode2C4 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c4 color '..AggressorColor..'')
+			elseif RecastMode2C4 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c4 color '..BerserkColor..'')
+			elseif RecastMode2C4 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c4 color '..DefenderColor..'')
+			elseif RecastMode2C4 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c4 color '..WarcryColor..'')
 			end
 			--Mode 2 Column 5
 			if RecastMode2C5 == 'Erratic Flutter' then send_command('text recastmode2c5 color '..ErraticColor..'')
@@ -2621,10 +2650,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode2C5 == 'Amplification' then send_command('text recastmode2c5 color '..AmplifiColor..'')
 			elseif RecastMode2C5 == 'Regeneration' then send_command('text recastmode2c5 color '..RegenerColor..'')
 			elseif RecastMode2C5 == 'Magic Barrier' then send_command('text recastmode2c5 color '..MBarrierColor..'')
-			elseif RecastMode2C5 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode2c5 color '..AggressorColor..'')
-			elseif RecastMode2C5 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode2c5 color '..BerserkColor..'')
-			elseif RecastMode2C5 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode2c5 color '..DefenderColor..'')
-			elseif RecastMode2C5 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode2c5 color '..WarcryColor..'')
+			elseif RecastMode2C5 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c5 color '..AggressorColor..'')
+			elseif RecastMode2C5 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c5 color '..BerserkColor..'')
+			elseif RecastMode2C5 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c5 color '..DefenderColor..'')
+			elseif RecastMode2C5 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c5 color '..WarcryColor..'')
 			end
 			--Mode 2 Column 6
 			if RecastMode2C6 == 'Erratic Flutter' then send_command('text recastmode2c6 color '..ErraticColor..'')
@@ -2642,10 +2671,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode2C6 == 'Amplification' then send_command('text recastmode2c6 color '..AmplifiColor..'')
 			elseif RecastMode2C6 == 'Regeneration' then send_command('text recastmode2c6 color '..RegenerColor..'')
 			elseif RecastMode2C6 == 'Magic Barrier' then send_command('text recastmode2c6 color '..MBarrierColor..'')
-			elseif RecastMode2C6 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode2c6 color '..AggressorColor..'')
-			elseif RecastMode2C6 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode2c6 color '..BerserkColor..'')
-			elseif RecastMode2C6 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode2c6 color '..DefenderColor..'')
-			elseif RecastMode2C6 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode2c6 color '..WarcryColor..'')
+			elseif RecastMode2C6 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c6 color '..AggressorColor..'')
+			elseif RecastMode2C6 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c6 color '..BerserkColor..'')
+			elseif RecastMode2C6 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c6 color '..DefenderColor..'')
+			elseif RecastMode2C6 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode2c6 color '..WarcryColor..'')
 			end
 			--Mode 3 Column 1
 			if RecastMode3C1 == 'Erratic Flutter' then send_command('text recastmode3c1 color '..ErraticColor..'')
@@ -2663,10 +2692,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode3C1 == 'Amplification' then send_command('text recastmode3c1 color '..AmplifiColor..'')
 			elseif RecastMode3C1 == 'Regeneration' then send_command('text recastmode3c1 color '..RegenerColor..'')
 			elseif RecastMode3C1 == 'Magic Barrier' then send_command('text recastmode3c1 color '..MBarrierColor..'')
-			elseif RecastMode3C1 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode3c1 color '..AggressorColor..'')
-			elseif RecastMode3C1 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode3c1 color '..BerserkColor..'')
-			elseif RecastMode3C1 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode3c1 color '..DefenderColor..'')
-			elseif RecastMode3C1 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode3c1 color '..WarcryColor..'')
+			elseif RecastMode3C1 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c1 color '..AggressorColor..'')
+			elseif RecastMode3C1 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c1 color '..BerserkColor..'')
+			elseif RecastMode3C1 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c1 color '..DefenderColor..'')
+			elseif RecastMode3C1 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c1 color '..WarcryColor..'')
 			end
 			--Mode 3 Column 2
 			if RecastMode3C2 == 'Erratic Flutter' then send_command('text recastmode3c2 color '..ErraticColor..'')
@@ -2684,10 +2713,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode3C2 == 'Amplification' then send_command('text recastmode3c2 color '..AmplifiColor..'')
 			elseif RecastMode3C2 == 'Regeneration' then send_command('text recastmode3c2 color '..RegenerColor..'')
 			elseif RecastMode3C2 == 'Magic Barrier' then send_command('text recastmode3c2 color '..MBarrierColor..'')
-			elseif RecastMode3C2 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode3c2 color '..AggressorColor..'')
-			elseif RecastMode3C2 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode3c2 color '..BerserkColor..'')
-			elseif RecastMode3C2 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode3c2 color '..DefenderColor..'')
-			elseif RecastMode3C2 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode3c2 color '..WarcryColor..'')
+			elseif RecastMode3C2 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c2 color '..AggressorColor..'')
+			elseif RecastMode3C2 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c2 color '..BerserkColor..'')
+			elseif RecastMode3C2 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c2 color '..DefenderColor..'')
+			elseif RecastMode3C2 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c2 color '..WarcryColor..'')
 			end
 			--Mode 3 Column 3
 			if RecastMode3C3 == 'Erratic Flutter' then send_command('text recastmode3c3 color '..ErraticColor..'')
@@ -2705,10 +2734,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode3C3 == 'Amplification' then send_command('text recastmode3c3 color '..AmplifiColor..'')
 			elseif RecastMode3C3 == 'Regeneration' then send_command('text recastmode3c3 color '..RegenerColor..'')
 			elseif RecastMode3C3 == 'Magic Barrier' then send_command('text recastmode3c3 color '..MBarrierColor..'')
-			elseif RecastMode3C3 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode3c3 color '..AggressorColor..'')
-			elseif RecastMode3C3 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode3c3 color '..BerserkColor..'')
-			elseif RecastMode3C3 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode3c3 color '..DefenderColor..'')
-			elseif RecastMode3C3 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode3c3 color '..WarcryColor..'')
+			elseif RecastMode3C3 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c3 color '..AggressorColor..'')
+			elseif RecastMode3C3 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c3 color '..BerserkColor..'')
+			elseif RecastMode3C3 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c3 color '..DefenderColor..'')
+			elseif RecastMode3C3 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c3 color '..WarcryColor..'')
 			end
 			--Mode 3 Column 4
 			if RecastMode3C4 == 'Erratic Flutter' then send_command('text recastmode3c4 color '..ErraticColor..'')
@@ -2726,10 +2755,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode3C4 == 'Amplification' then send_command('text recastmode3c4 color '..AmplifiColor..'')
 			elseif RecastMode3C4 == 'Regeneration' then send_command('text recastmode3c4 color '..RegenerColor..'')
 			elseif RecastMode3C4 == 'Magic Barrier' then send_command('text recastmode3c4 color '..MBarrierColor..'')
-			elseif RecastMode3C4 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode3c4 color '..AggressorColor..'')
-			elseif RecastMode3C4 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode3c4 color '..BerserkColor..'')
-			elseif RecastMode3C4 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode3c4 color '..DefenderColor..'')
-			elseif RecastMode3C4 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode3c4 color '..WarcryColor..'')
+			elseif RecastMode3C4 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c4 color '..AggressorColor..'')
+			elseif RecastMode3C4 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c4 color '..BerserkColor..'')
+			elseif RecastMode3C4 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c4 color '..DefenderColor..'')
+			elseif RecastMode3C4 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c4 color '..WarcryColor..'')
 			end
 			--Mode 3 Column 5
 			if RecastMode3C5 == 'Erratic Flutter' then send_command('text recastmode3c5 color '..ErraticColor..'')
@@ -2747,10 +2776,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode3C5 == 'Amplification' then send_command('text recastmode3c5 color '..AmplifiColor..'')
 			elseif RecastMode3C5 == 'Regeneration' then send_command('text recastmode3c5 color '..RegenerColor..'')
 			elseif RecastMode3C5 == 'Magic Barrier' then send_command('text recastmode3c5 color '..MBarrierColor..'')
-			elseif RecastMode3C5 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode3c5 color '..AggressorColor..'')
-			elseif RecastMode3C5 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode3c5 color '..BerserkColor..'')
-			elseif RecastMode3C5 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode3c5 color '..DefenderColor..'')
-			elseif RecastMode3C5 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode3c5 color '..WarcryColor..'')
+			elseif RecastMode3C5 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c5 color '..AggressorColor..'')
+			elseif RecastMode3C5 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c5 color '..BerserkColor..'')
+			elseif RecastMode3C5 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c5 color '..DefenderColor..'')
+			elseif RecastMode3C5 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c5 color '..WarcryColor..'')
 			end
 			--Mode 3 Column 6
 			if RecastMode3C6 == 'Erratic Flutter' then send_command('text recastmode3c6 color '..ErraticColor..'')
@@ -2768,10 +2797,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode3C6 == 'Amplification' then send_command('text recastmode3c6 color '..AmplifiColor..'')
 			elseif RecastMode3C6 == 'Regeneration' then send_command('text recastmode3c6 color '..RegenerColor..'')
 			elseif RecastMode3C6 == 'Magic Barrier' then send_command('text recastmode3c6 color '..MBarrierColor..'')
-			elseif RecastMode3C6 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode3c6 color '..AggressorColor..'')
-			elseif RecastMode3C6 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode3c6 color '..BerserkColor..'')
-			elseif RecastMode3C6 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode3c6 color '..DefenderColor..'')
-			elseif RecastMode3C6 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode3c6 color '..WarcryColor..'')
+			elseif RecastMode3C6 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c6 color '..AggressorColor..'')
+			elseif RecastMode3C6 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c6 color '..BerserkColor..'')
+			elseif RecastMode3C6 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c6 color '..DefenderColor..'')
+			elseif RecastMode3C6 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode3c6 color '..WarcryColor..'')
 			end
 			--Mode 4 Column 1
 			if RecastMode4C1 == 'Erratic Flutter' then send_command('text recastmode4c1 color '..ErraticColor..'')
@@ -2789,10 +2818,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode4C1 == 'Amplification' then send_command('text recastmode4c1 color '..AmplifiColor..'')
 			elseif RecastMode4C1 == 'Regeneration' then send_command('text recastmode4c1 color '..RegenerColor..'')
 			elseif RecastMode4C1 == 'Magic Barrier' then send_command('text recastmode4c1 color '..MBarrierColor..'')
-			elseif RecastMode4C1 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode4c1 color '..AggressorColor..'')
-			elseif RecastMode4C1 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode4c1 color '..BerserkColor..'')
-			elseif RecastMode4C1 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode4c1 color '..DefenderColor..'')
-			elseif RecastMode4C1 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode4c1 color '..WarcryColor..'')
+			elseif RecastMode4C1 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c1 color '..AggressorColor..'')
+			elseif RecastMode4C1 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c1 color '..BerserkColor..'')
+			elseif RecastMode4C1 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c1 color '..DefenderColor..'')
+			elseif RecastMode4C1 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c1 color '..WarcryColor..'')
 			end
 			--Mode 4 Column 2
 			if RecastMode4C2 == 'Erratic Flutter' then send_command('text recastmode4c2 color '..ErraticColor..'')
@@ -2810,10 +2839,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode4C2 == 'Amplification' then send_command('text recastmode4c2 color '..AmplifiColor..'')
 			elseif RecastMode4C2 == 'Regeneration' then send_command('text recastmode4c2 color '..RegenerColor..'')
 			elseif RecastMode4C2 == 'Magic Barrier' then send_command('text recastmode4c2 color '..MBarrierColor..'')
-			elseif RecastMode4C2 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode4c2 color '..AggressorColor..'')
-			elseif RecastMode4C2 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode4c2 color '..BerserkColor..'')
-			elseif RecastMode4C2 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode4c2 color '..DefenderColor..'')
-			elseif RecastMode4C2 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode4c2 color '..WarcryColor..'')
+			elseif RecastMode4C2 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c2 color '..AggressorColor..'')
+			elseif RecastMode4C2 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c2 color '..BerserkColor..'')
+			elseif RecastMode4C2 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c2 color '..DefenderColor..'')
+			elseif RecastMode4C2 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c2 color '..WarcryColor..'')
 			end
 			--Mode 4 Column 3
 			if RecastMode4C3 == 'Erratic Flutter' then send_command('text recastmode4c3 color '..ErraticColor..'')
@@ -2831,10 +2860,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode4C3 == 'Amplification' then send_command('text recastmode4c3 color '..AmplifiColor..'')
 			elseif RecastMode4C3 == 'Regeneration' then send_command('text recastmode4c3 color '..RegenerColor..'')
 			elseif RecastMode4C3 == 'Magic Barrier' then send_command('text recastmode4c3 color '..MBarrierColor..'')
-			elseif RecastMode4C3 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode4c3 color '..AggressorColor..'')
-			elseif RecastMode4C3 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode4c3 color '..BerserkColor..'')
-			elseif RecastMode4C3 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode4c3 color '..DefenderColor..'')
-			elseif RecastMode4C3 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode4c3 color '..WarcryColor..'')
+			elseif RecastMode4C3 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c3 color '..AggressorColor..'')
+			elseif RecastMode4C3 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c3 color '..BerserkColor..'')
+			elseif RecastMode4C3 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c3 color '..DefenderColor..'')
+			elseif RecastMode4C3 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c3 color '..WarcryColor..'')
 			end
 			--Mode 4 Column 4
 			if RecastMode4C4 == 'Erratic Flutter' then send_command('text recastmode4c4 color '..ErraticColor..'')
@@ -2852,10 +2881,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode4C4 == 'Amplification' then send_command('text recastmode4c4 color '..AmplifiColor..'')
 			elseif RecastMode4C4 == 'Regeneration' then send_command('text recastmode4c4 color '..RegenerColor..'')
 			elseif RecastMode4C4 == 'Magic Barrier' then send_command('text recastmode4c4 color '..MBarrierColor..'')
-			elseif RecastMode4C4 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode4c4 color '..AggressorColor..'')
-			elseif RecastMode4C4 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode4c4 color '..BerserkColor..'')
-			elseif RecastMode4C4 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode4c4 color '..DefenderColor..'')
-			elseif RecastMode4C4 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode4c4 color '..WarcryColor..'')
+			elseif RecastMode4C4 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c4 color '..AggressorColor..'')
+			elseif RecastMode4C4 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c4 color '..BerserkColor..'')
+			elseif RecastMode4C4 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c4 color '..DefenderColor..'')
+			elseif RecastMode4C4 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c4 color '..WarcryColor..'')
 			end
 			--Mode 4 Column 5
 			if RecastMode4C5 == 'Erratic Flutter' then send_command('text recastmode4c5 color '..ErraticColor..'')
@@ -2873,10 +2902,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode4C5 == 'Amplification' then send_command('text recastmode4c5 color '..AmplifiColor..'')
 			elseif RecastMode4C5 == 'Regeneration' then send_command('text recastmode4c5 color '..RegenerColor..'')
 			elseif RecastMode4C5 == 'Magic Barrier' then send_command('text recastmode4c5 color '..MBarrierColor..'')
-			elseif RecastMode4C5 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode4c5 color '..AggressorColor..'')
-			elseif RecastMode4C5 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode4c5 color '..BerserkColor..'')
-			elseif RecastMode4C5 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode4c5 color '..DefenderColor..'')
-			elseif RecastMode4C5 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode4c5 color '..WarcryColor..'')
+			elseif RecastMode4C5 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c5 color '..AggressorColor..'')
+			elseif RecastMode4C5 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c5 color '..BerserkColor..'')
+			elseif RecastMode4C5 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c5 color '..DefenderColor..'')
+			elseif RecastMode4C5 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c5 color '..WarcryColor..'')
 			end
 			--Mode 4 Column 6
 			if RecastMode4C6 == 'Erratic Flutter' then send_command('text recastmode4c6 color '..ErraticColor..'')
@@ -2894,10 +2923,10 @@ windower.register_event('prerender', function()
 			elseif RecastMode4C6 == 'Amplification' then send_command('text recastmode4c6 color '..AmplifiColor..'')
 			elseif RecastMode4C6 == 'Regeneration' then send_command('text recastmode4c6 color '..RegenerColor..'')
 			elseif RecastMode4C6 == 'Magic Barrier' then send_command('text recastmode4c6 color '..MBarrierColor..'')
-			elseif RecastMode4C6 == 'Aggressor' and player.sub_job == 'WAR' then send_command('text recastmode4c6 color '..AggressorColor..'')
-			elseif RecastMode4C6 == 'Berserk' and player.sub_job == 'WAR' then send_command('text recastmode4c6 color '..BerserkColor..'')
-			elseif RecastMode4C6 == 'Defender' and player.sub_job == 'WAR' then send_command('text recastmode4c6 color '..DefenderColor..'')
-			elseif RecastMode4C6 == 'Warcry' and player.sub_job == 'WAR' then send_command('text recastmode4c6 color '..WarcryColor..'')
+			elseif RecastMode4C6 == 'Aggressor' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c6 color '..AggressorColor..'')
+			elseif RecastMode4C6 == 'Berserk' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c6 color '..BerserkColor..'')
+			elseif RecastMode4C6 == 'Defender' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c6 color '..DefenderColor..'')
+			elseif RecastMode4C6 == 'Warcry' and player.sub_job == 'WAR' and player.sub_job_level >= 1 then send_command('text recastmode4c6 color '..WarcryColor..'')
 			end
 		end
 	end
