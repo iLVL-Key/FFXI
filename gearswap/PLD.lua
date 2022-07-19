@@ -530,8 +530,7 @@ if HUD == 'On' then
 	else
 		REMA = false --If we do not have a REMA equipped, we set it to false
 	end
-	windower.add_to_chat(8,'Creating Text objects for HUD...')
-	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
+		--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
 	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
@@ -1758,7 +1757,6 @@ function file_unload()
 	end
 	if HUD == 'On' then
 		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text phalanx delete;text crusade delete;text palisade delete;text reprisal delete;text defender delete;text cocoon delete;text enlight delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
-		windower.add_to_chat(8,'Deleting Text objects for HUD...')
 	end
 end
 
