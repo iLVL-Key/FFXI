@@ -32,6 +32,24 @@ Adjust the FontSize, LineSpacer, and ColumnSpacer options below as needed.
 
 Recommended Windower Addons: Text
 
+-------------------------------------------
+--               PRO TIPS                --
+-------------------------------------------
+
+There are 3 Modes available in this file:
+Auto-		Will decide gear based on wether or not the game thinks you are in combat. Spells will
+			use their specific gear sets by themselves when you are not in combat (so you can get full
+			gear bonuses), and will override them with the SIRD set if you are in combat. Will use
+			idle/tank set if disengaged but in combat (ie kiting), or idle/refresh set if disengaged
+			and not in combat.
+Combat-		Gear set choices will always behave as if you are in combat.
+Neutral-	Gear set choices will always behave as if you are not in combat.
+
+Auto should work fine in most cases, but be aware that the game isn't always correct about when you are
+in combat. For example, if you run by a mob and aggro it, you'll notice the battle music does not start.
+If you are kiting a mob, and it goes yellow, the game will think you are out of combat. You can either
+keep up actions on the mob to keep it claimed (voke, flash, etc) or switch into Combat mode manually.
+
 --]]
 
 -------------------------------------------
@@ -55,7 +73,7 @@ UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (E), or Remedy (R)
 AutoMajesty		=	'On'	--[On/Off]		Automatically activates Majesty before a cure/protect when Majesty is down.
 AutoMajWindow	=	45		--				Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
 AutoDefender	=	'On'	--[On/Off]		Automatically activates Defender after other defensive or hate generating abilities/spells when
-							--				Defender is down and in Tank mode.
+							--				Defender is down and in Combat mode.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -103,13 +121,20 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-HUDBGTrans = 		'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-TPReturnWait =		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
-Debug =				'Off'	--[On/Off]
+StartMode		=	'Auto'	--[Auto/Combat/Neutral]
+							--	Determines the Mode you will start in. Current Mode can be changed at any time by using any of the 
+							--	three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
+RemoveAuto		=	'No'	--[Yes/No]
+							--	If you don't like the Auto functionality and just want to remove it entirely
+
+HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+TPReturnWait	=	'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
+Debug			=	'Off'	--[On/Off]
 
 --Color values in RGB for the HUD gear modes
-Refreshcolor =		'125 125 255'	--Refresh
-Tankcolor =			'255 125 125'	--Tank
+Autocolor		=	'125 200 255'	--Auto Mode
+Combatcolor		=	'255 125 125'	--Combat Mode
+Neutralcolor	=	'150 255 150'	--Neutral Mode
 
 --Color values in RGB for the HUD Aftermath status
 Aftermath1color =	'0 127 255'		--Aftermath Level 1
@@ -158,7 +183,7 @@ function get_sets()
 	-- Enmity (full Enmity+ for spells/abilities)
 	sets.enmity = {
 		ammo="Sapience Orb",
-		head="Souv. Schaller +1",
+		head="Loess Barbuta +1",
 		body="Souveran Cuirass",
 		hands="Souv. Handschuhs",
 		legs="Souveran Diechlings",
@@ -168,7 +193,7 @@ function get_sets()
 		left_ear="Cryptic Earring",
 		right_ear="Friomisi Earring",
 		left_ring="Petrov Ring",
-		right_ring="Vengeful Ring",
+		right_ring="Defending Ring", --No enmity but I want to have SOME DT
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
@@ -194,9 +219,7 @@ function get_sets()
 	}
 
 	-- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
-	-- NOTE: This specific set is not used in the file itself, this is for your own organization.
-	-- Use this as a guide to make sure you get to 102% SIRD, then copy and paste these slots
-	-- into the next 7 sets (healing through cursna) and build/define slots around it.
+	-- NOTE: This set gets combined with (and overwrites) the next 6 sets (healing through cursna) based on Mode and whether or not you are in combat
 	sets.sird = {
 		ammo="Staunch Tathlum",		--10 SIRD
 		head="Souv. Schaller +1",	--20 SIRD
@@ -206,82 +229,56 @@ function get_sets()
 		waist="Rumination Sash",	--10 SIRD
 	}
 
-	-- Healing (SIRD, Cure Potency, Enmity)
+	-- Healing (Cure Potency, Enmity)
 	sets.healing = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
+		head="Souv. Schaller +1",
 		body="Souveran Cuirass",
 		hands="Souv. Handschuhs",
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		legs="Souveran Diechlings",
+		neck="Phalaina Locket",
+		waist="Austerity Belt",
+		left_ear="Nourish. Earring",
+		right_ear="Mendi. Earring",
+		left_ring="Stikini Ring +1",
+		right_ring="Stikini Ring +1",
 	}
 
-	-- Enmity Spells (SIRD)
+	-- Enmity Spells (Fast Cast, will not be used to cast faster but instead to help reduce recast)
 	-- Combines with Enmity set
 	-- Flash, Holy, Banish, BLU spells use this.
 	sets.enmityspells = set_combine(sets.enmity, {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		--head="Carmine Mask +1",
+		--feet="Carmine Greaves 1",
 	})
 
 
-	-- Enlight (SIRD, Divine Magic Skill, Enmity)
+	-- Enlight (Divine Magic Skill)
 	sets.enlight = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		left_ring="Stikini Ring +1",
+		right_ring="Stikini Ring +1",
 	}
 
-	-- Phalanx (SIRD, Phalanx, Enhancing Magic Duration, Enmity)
+	-- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 	sets.phalanx = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
 		hands="Souv. Handschuhs",
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		right_ear="Andoaa Earring",
+		left_ring="Stikini Ring +1",
+		right_ring="Stikini Ring +1",
 	}
 
-	-- Enhancing Magic (SIRD, Enhancing Magic Duration, Enmity)
-	-- Crusade and Reprisal use this.
+	-- Enhancing Magic (Enhancing Magic Duration)
+	-- Crusade, Reprisal, Protect, and Shell use this.
 	sets.enhancing = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		right_ear="Andoaa Earring",
+		left_ring="Stikini Ring +1",
+		right_ring="Stikini Ring +1",
 	}
 
-	-- Buff (SIRD, Conserve MP)
-	-- Protect and Shell use this.
-	sets.buff = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
-	}
-
-	-- Cursna (Cursna+, Healing Magic)
+	-- Cursna (Holy Water+)
 	sets.cursna = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
-		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		--neck="Nicander's Necklace",
+		--left_ring="Purity Ring",
+		--right_ring="Blenmot's Ring +1",
 	}
 
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
@@ -289,9 +286,9 @@ function get_sets()
 		ammo="Aurgelmir Orb",
 		head="Sakpata's Helm",
 		body="Sakpata's Plate",
-		hands="Valorous Mitts",
+		hands="Sakpata's Gauntlets", --Odyssean Gauntlets (2+5)
 		legs="Sakpata's Cuisses",
-		feet="Valorous Greaves",
+		feet="Sulev. Leggings +2",
 		neck="Rep. Plat. Medal",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
@@ -303,12 +300,13 @@ function get_sets()
 	-- Savage Blade (50% STR, 50% MND mod)
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 	sets.sav = set_combine(sets.ws, {
-
+		neck="Fotia Gorget",
 	})
 
 	-- Requiescat (~80% MND mod)
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 	sets.req = set_combine(sets.ws, {
+		neck="Fotia Gorget",
 		waist="Fotia Belt",
 		left_ring="Stikini Ring +1",
 		right_ring="Metamor. Ring +1",
@@ -321,8 +319,9 @@ function get_sets()
 		head="Flam. Zucchetto +2",
 		body="Flamma Korazin +2",
 		hands="Nyame Gauntlets",
-		legs="Flamma Dirs +1",
+		legs="Flamma Dirs +2",
 		feet="Flam. Gambieras +2",
+		neck="Fotia Gorget",
 		waist="Fotia Belt",
 		right_ear="Mache Earring +1",
 		left_ring="Hetairoi Ring",
@@ -331,6 +330,7 @@ function get_sets()
 	-- Atonement (Fotia Neck/Belt)
 	-- Combines with Enmity set, only necessary to set the slots with specific desired stats
 	sets.ato = set_combine(sets.enmity, {
+		neck="Fotia Gorget",
 		waist="Fotia Belt",
 	})
 
@@ -341,7 +341,7 @@ function get_sets()
 
 	-- Holy Circle (Enhances Holy Circle gear)
 	sets.holycircle = set_combine(sets.enmity, {
-
+		feet="Gallant Leggings",
 	})
 
 	-- Shield Bash (Enhances Shield Bash gear)
@@ -376,7 +376,7 @@ function get_sets()
 
 	-- Divine Emblem (Enhances Divine Emblem gear)
 	sets.divineemblem = {
-
+		feet="Chev. Sabatons +1",
 	}
 
 	-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
@@ -406,11 +406,11 @@ function get_sets()
 
 	-- Unity Trust Gear
 	sets.unity = {
-		--body="Yoran Unity Shirt",
+		body="Sylvie Unity Shirt",
 	}
 
 end
-TopVersion = 'Defense Bonus' --Leave this alone, used for debugging purposes
+TopVersion = 'Resist Sleep' --Leave this alone, used for debugging purposes
 
 
 
@@ -422,8 +422,8 @@ TopVersion = 'Defense Bonus' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Defense Bonus'
-FileVersion = '07.18.22'
+BottomVersion = 'Resist Sleep'
+FileVersion = '08.08.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -433,6 +433,12 @@ FileVersion = '07.18.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+08.08.22 (Version Compatibility Codename: Resist Sleep)
+-Overhauled the Mode functionality. There are now 3 modes: Auto, Combat, and Neutral. Combat and Neutral are the basic modes that can be selected individually or Auto will switch between the two in a (mostly) intelligent manner. Combat has a focus on tank sets and SIRD, while Neutral is for refresh and maximizing gear bonuses for buffs. What auto decides is based off when the game thinks you are in combat. This works just fine in most cases, but is not always exactly correct, so you can manually rotate between modes as needed.
+-Removed the Buffs set. Protect and Shell were using this, they now use the Enhancing set instead. (Thanks to Mailani for the catch)
+-Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
+-code cleanup
 
 07.18.22 (Version Compatibility Codename: Defense Bonus)
 -Updated AutoMajesty to now re-up Majesty before it wears off, exact timing window can be adjusted in the Options.
@@ -499,7 +505,7 @@ TownZones = S{
 --              FILE LOAD                --
 -------------------------------------------
 
-Mode =	'Tank' --sets the starting mode
+Mode = StartMode --sets the starting mode (selected in the Options)
 NotiLowMPToggle = 'Off' --start with the toggle off for the Low MP Notification so that it can trigger
 RRRCountdown = ReraiseReminderTimer
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
@@ -515,6 +521,11 @@ PhalanxRecast = 0
 ReprisalRecast = 0
 PalisadeRecast = 0
 EnlightRecast = 0
+if player.in_combat == true then
+	Combat = true
+elseif player.in_combat == false then
+	Combat = false
+end
 if HUD == 'On' then
 	--Space out each line and column properly
 	HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
@@ -530,7 +541,7 @@ if HUD == 'On' then
 	else
 		REMA = false --If we do not have a REMA equipped, we set it to false
 	end
-		--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
+	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
 	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
@@ -538,7 +549,13 @@ if HUD == 'On' then
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
 	--Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
 	send_command('wait .1;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
-	send_command('wait .1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color 255 50 50;text mode bg_transparency 1') --Mode
+	if Mode == 'Auto' then
+		send_command('wait .1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Autocolor..';text mode bg_transparency 1') --Auto Mode
+	elseif Mode == 'Combat' then
+		send_command('wait .1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Combatcolor..';text mode bg_transparency 1') --Combat Mode
+	elseif Mode == 'Neutral' then
+		send_command('wait .1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Neutralcolor..';text mode bg_transparency 1') --Neutral Mode
+	end
 	send_command('wait .1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
 	send_command('wait .1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
 	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
@@ -580,15 +597,27 @@ AutoLockstyleRun = true
 
 function self_command(command)
 	if command == 'Mode' then
-		if Mode == 'Refresh' then
-			Mode = 'Tank'
+		if Mode == 'Auto' then
+			Mode = 'Combat'
 			if HUD == 'On' then
-				send_command('text mode color '..Tankcolor..'')
+				send_command('text mode color '..Combatcolor..'')
 			end
-		elseif Mode == 'Tank' then
-			Mode = 'Refresh'
+		elseif Mode == 'Combat' then
+			Mode = 'Neutral'
 			if HUD == 'On' then
-				send_command('text mode color '..Refreshcolor..'')
+				send_command('text mode color '..Neutralcolor..'')
+			end
+		elseif Mode == 'Neutral' then
+			if RemoveAuto == 'No' then
+				Mode = 'Auto'
+				if HUD == 'On' then
+					send_command('text mode color '..Autocolor..'')
+				end
+			else
+				Mode = 'Combat'
+				if HUD == 'On' then
+					send_command('text mode color '..Combatcolor..'')
+				end
 			end
 		end
 		if HUD == 'On' then
@@ -613,7 +642,7 @@ function self_command(command)
 			elseif player.status == "Engaged" then
 				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
 			elseif player.status == "Idle" then
-				if Mode == 'Tank' then
+				if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then
 					send_command('text notifications text "Status: Kiting";text notifications color 255 255 255')
 				else
 					send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
@@ -762,8 +791,9 @@ function self_command(command)
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'TPReturnWait: '..(''..TPReturnWait..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
-		windower.add_to_chat(200,'Refreshcolor: '..(''..Refreshcolor..''):color(8)..'')
-		windower.add_to_chat(200,'Tankcolor: '..(''..Tankcolor..''):color(8)..'')
+		windower.add_to_chat(200,'Autocolor: '..(''..Autocolor..''):color(8)..'')
+		windower.add_to_chat(200,'Combatcolor: '..(''..Combatcolor..''):color(8)..'')
+		windower.add_to_chat(200,'Neutralcolor: '..(''..Neutralcolor..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
@@ -833,12 +863,24 @@ function choose_set()
 				send_command('text notifications text "Status: Resting";text notifications color 255 255 255')
 			end
 		end
-		if Mode == 'Refresh' then
+		if Mode == 'Auto' then
+			if player.in_combat == false then --if we're resting and NOT in combat (ex: recovering after a fight) we equip the refresh/rest sets
+				equip(set_combine(sets.refresh, sets.rest))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
+				end
+			else -- if we're resting and ARE in combat (ex: group is engaged on a mob and we're weak but nearby) we equip the tank/rest sets
+				equip(set_combine(sets.tank, sets.rest))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tank + Rest]')
+				end
+			end
+		elseif Mode == 'Neutral' then
 			equip(set_combine(sets.refresh, sets.rest))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
 			end
-		elseif Mode == 'Tank' then
+		elseif Mode == 'Combat' then
 			equip(set_combine(sets.tank, sets.rest))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Tank + Rest]')
@@ -854,61 +896,73 @@ function choose_set()
 				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
 			end
 		end
-		if Mode == 'Refresh' then
+		if Mode == 'Auto' then -- if we're engaged we automatically get put into combat so we equip the tank set
+			equip(sets.tank)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Tank]')
+			end
+		elseif Mode == 'Neutral' then
 			equip(sets.refresh)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tank + Refresh]')
+				windower.add_to_chat(8,'[Equipped Set: Refresh]')
 			end
-		elseif Mode == 'Tank' then
+		elseif Mode == 'Combat' then
 			equip(sets.tank)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Tank]')
 			end
 		end
-	elseif  player.status == "Idle" then 
+	elseif player.status == "Idle" then 
 		if HUD == 'On' then
 			if buffactive['weakness'] then
 				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
 			elseif player.mpp <= 20 then
 				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
-			elseif Mode == 'Tank' then
+			elseif Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then
 				send_command('text notifications text "Status: Kiting";text notifications color 255 255 255')
 			else
 				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
 			end
 		end
 		if AdoulinZones:contains(world.area) then
-		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
 			equip(set_combine(sets.refresh, sets.idle, sets.adoulin))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Adoulin]')
 			end
 		elseif BastokZones:contains(world.area) then
-		-- elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
 			equip(set_combine(sets.refresh, sets.idle, sets.bastok))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Bastok]')
 			end
 		elseif SandyZones:contains(world.area) then
-		-- elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
 			equip(set_combine(sets.refresh, sets.idle, sets.sandoria))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + San d\'Oria]')
 			end
 		elseif WindyZones:contains(world.area) then
-		-- elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
 			equip(set_combine(sets.refresh, sets.idle, sets.windurst))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Windurst]')
 			end
 		elseif TownZones:contains(world.area) then
-		-- elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			equip(set_combine(sets.refresh, sets.idle, sets.town))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Town]')
 			end
 		else
-			if Mode == 'Tank' then
+			if Mode == 'Auto' then
+				if player.in_combat == false then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
+					equip(set_combine(sets.refresh, sets.idle))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Refresh + Idle]')
+					end
+				else -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
+					equip(set_combine(sets.tank, sets.idle))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Tank + Idle]')
+					end
+				end
+			elseif Mode == 'Combat' then
 				equip(set_combine(sets.tank, sets.idle))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Tank + Idle]')
@@ -1143,39 +1197,148 @@ end
 
 function midcast(spell)
 	if spell.english == 'Cursna' then
-		equip(sets.cursna)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Cursna]')
+		if Mode == 'Auto' then
+			if player.in_combat == false then --not in combat, no need for SIRD
+				equip(sets.cursna)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Cursna]')
+				end
+			else -- in combat, so we need SIRD
+				equip(set_combine(sets.cursna, sets.sird))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Cursna + SIRD]')
+				end
+			end
+		elseif Mode == 'Neutral' then
+			equip(sets.cursna)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Cursna]')
+			end	
+		elseif Mode == 'Combat' then
+			equip(set_combine(sets.cursna, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Cursna + SIRD]')
+			end		
 		end
 	elseif string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
-		equip(sets.healing)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Healing]')
+		if Mode == 'Auto' then
+			if player.in_combat == false then --not in combat, no need for SIRD
+				equip(sets.healing)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Healing]')
+				end
+			else -- in combat, so we need SIRD
+				equip(set_combine(sets.healing, sets.sird))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Healing + SIRD]')
+				end
+			end
+		elseif Mode == 'Neutral' then
+			equip(sets.healing)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Healing]')
+			end		
+		elseif Mode == 'Combat' then
+			equip(set_combine(sets.healing, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Healing + SIRD]')
+			end		
 		end
 	elseif spell.english == 'Flash' or string.find(spell.english,'Holy') or string.find(spell.english,'Banish') or spell.type == "BlueMagic" then
-		equip(sets.enmityspells)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Enmity Spells]')
+		if Mode == 'Auto' then
+			if player.in_combat == false then --not in combat, no need for SIRD
+				equip(sets.enmityspells)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Enmity Spells]')
+				end
+			else -- in combat, so we need SIRD
+				equip(set_combine(sets.enmityspells, sets.sird))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
+				end
+			end
+		elseif Mode == 'Neutral' then
+			equip(sets.enmityspells)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enmity Spells]')
+			end
+		elseif Mode == 'Combat' then
+			equip(set_combine(sets.enmityspells, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
+			end		
 		end
 	elseif string.find(spell.english,'Enlight') then
-		equip(sets.enlight)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Enlight]')
+		if Mode == 'Auto' then
+			if player.in_combat == false then --not in combat, no need for SIRD
+				equip(sets.enlight)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Enlight]')
+				end
+			else -- in combat, so we need SIRD
+				equip(set_combine(sets.enlight, sets.sird))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Enlight Spells + SIRD]')
+				end
+			end
+		elseif Mode == 'Neutral' then
+			equip(sets.enlight)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enlight]')
+			end
+		elseif Mode == 'Combat' then
+			equip(set_combine(sets.enlight, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enlight Spells + SIRD]')
+			end		
 		end
 	elseif spell.english == 'Phalanx' then
-		equip(sets.phalanx)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Phalanx]')
+		if Mode == 'Auto' then
+			if player.in_combat == false then --not in combat, no need for SIRD
+				equip(sets.phalanx)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Phalanx]')
+				end
+			else -- in combat, so we need SIRD
+				equip(set_combine(sets.phalanx, sets.sird))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
+				end
+			end
+		elseif Mode == 'Neutral' then
+			equip(sets.phalanx)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Phalanx]')
+			end
+		elseif Mode == 'Combat' then
+			equip(set_combine(sets.phalanx, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
+			end		
 		end
-	elseif spell.english == 'Crusade' or spell.english == 'Reprisal' then
-		equip(sets.enhancing)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Enhancing Magic]')
-		end
-	elseif string.find(spell.english,'Protect') or string.find(spell.english,'Shell') then
-		equip(sets.buff)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Buff]')
+	elseif spell.english == 'Crusade' or spell.english == 'Reprisal' or string.find(spell.english,'Protect') or string.find(spell.english,'Shell') then
+		if Mode == 'Auto' then
+			if player.in_combat == false then --not in combat, no need for SIRD
+				equip(sets.enhancing)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Enhancing Magic]')
+				end
+			else -- in combat, so we need SIRD
+				equip(set_combine(sets.enhancing, sets.sird))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
+				end
+			end
+		elseif Mode == 'Neutral' then
+			equip(sets.enhancing)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enhancing Magic]')
+			end
+		elseif Mode == 'Combat' then
+			equip(set_combine(sets.enhancing, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
+			end		
 		end
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
@@ -1191,9 +1354,9 @@ function aftercast(spell)
 	if spell.type == 'WeaponSkill' and not spell.interrupted and HUD == 'On' and NotiTPReturn == 'On' then
 		send_command('wait '..TPReturnWait..';gs c TPReturn')
 	--Put Defender up afterwards if we're doing active tank things:
-	elseif AutoDefender == 'On' and (spell.english == 'Provoke' or spell.english == 'Holy Circle' or spell.english == 'Shield Bash' or spell.english == 'Sentinel' or spell.english == 'Rampart') and not buffactive['Defender'] and not buffactive['Amnesia'] and Mode == 'Tank' and player.sub_job == 'WAR' and player.sub_job_level >= 1 and DefenderRecast == 0 then
+	elseif AutoDefender == 'On' and (spell.english == 'Provoke' or spell.english == 'Holy Circle' or spell.english == 'Shield Bash' or spell.english == 'Sentinel' or spell.english == 'Rampart') and not buffactive['Defender'] and not buffactive['Amnesia'] and (Mode == 'Tank' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level >= 1 and DefenderRecast == 0 then
 		send_command('wait .5;input /ja Defender <me>')
-	elseif (spell.english == 'Flash' or spell.english == 'Phalanx' or spell.english == 'Reprisal' or spell.english == 'Crusade') and not buffactive['Defender'] and AutoDefender == 'On' and Mode == 'Tank' and player.sub_job == 'WAR' and player.sub_job_level >= 1 and DefenderRecast == 0 then
+	elseif (spell.english == 'Flash' or spell.english == 'Phalanx' or spell.english == 'Reprisal' or spell.english == 'Crusade') and not buffactive['Defender'] and AutoDefender == 'On' and (Mode == 'Tank' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level >= 1 and DefenderRecast == 0 then
 		send_command('wait 3;input /ja Defender <me>')
 	elseif NotiLowMP =='On' and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off (done below)
@@ -1434,31 +1597,44 @@ windower.register_event('prerender', function()
 		if buffactive['Doom'] and NotiDoom == 'On' then
 			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
 		elseif buffactive['Charm'] and NotiCharm == 'On' then
-			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Terror'] and NotiTerror == 'On' then
-			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
-			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Sleep'] and NotiSleep == 'On' then
-			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Stun'] and NotiStun == 'On' then
-			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Amnesia'] and NotiAmnesia == 'On' then
-			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Silence'] and NotiSilence == 'On' then
-			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Mute'] and NotiMute == 'On' then
-			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Plague'] and NotiPlague == 'On' then
-			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Paralysis'] and NotiPara == 'On' then
-			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Encumbrance'] and NotiEncumbrance == 'On' then
-			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Curse'] and NotiCurse == 'On' then
-			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		else
 			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
+		end
+		if Mode == 'Auto' and player.in_combat == true then
+			if Combat == false then
+				Combat = true
+				choose_set()
+				send_command('text mode text "Mode: Auto (Combat)";text mode color '..Autocolor..'')
+			end
+		elseif Mode =='Auto' and player.in_combat == false then
+			if Combat == true then
+				Combat = false
+				choose_set()
+				send_command('text mode text "Mode: Auto (Neutral)";text mode color '..Autocolor..'')
+			end
 		end
 	end
 	if os.time() > Heartbeat then
@@ -1497,13 +1673,21 @@ windower.register_event('prerender', function()
 			if NotiDoom == 'On' and buffactive['Doom'] then 
 				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
 			end
-			if Mode == "Tank" then
-				if buffactive['Enmity Boost'] and buffactive['Phalanx'] and buffactive['Reprisal'] and buffactive['Palisade'] and (buffactive['Defense Boost'] or buffactive['Defender']) then
-					send_command('text mode text "Mode: Turtle"')
+
+			if buffactive['Enmity Boost'] and buffactive['Phalanx'] and (buffactive['Reprisal'] or buffactive['Palisade']) and (buffactive['Defense Boost'] or buffactive['Defender']) and player.in_combat == true then
+				send_command('text mode text "Mode: '..Mode..' (Turtle)"')
+			else
+				if Mode == 'Auto' then
+					if player.in_combat == true then
+						send_command('text mode text "Mode: '..Mode..' (Combat)"')
+					else
+						send_command('text mode text "Mode: '..Mode..' (Neutral)"')
+					end
 				else
 					send_command('text mode text "Mode: '..Mode..'"')
 				end
 			end
+
 			if HUDRecast == 'On' then --using the HUDRecast
 				--HUDRecast goes in Line 1:
 				if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
