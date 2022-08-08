@@ -398,7 +398,7 @@ function get_sets()
 
 	-- Unity Trust Gear
 	sets.unity = {
-		--body="Yoran Unity Shirt",
+		body="Sylvie Unity Shirt",
 	}
 
 end
@@ -415,7 +415,7 @@ TopVersion = 'Inferno' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Inferno'
-FileVersion = '07.18.22'
+FileVersion = '08.08.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -425,6 +425,9 @@ FileVersion = '07.18.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+08.08.22 (Version Compatibility Codename: Inferno)
+-Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 
 07.18.22 (Version Compatibility Codename: Inferno)
 -Overhauled how area checks are handled. Uses tables now for groups of areas.
@@ -1439,29 +1442,29 @@ windower.register_event('prerender', function()
 		if buffactive['Doom'] and NotiDoom == 'On' then
 			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
 		elseif buffactive['Charm'] and NotiCharm == 'On' then
-			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Terror'] and NotiTerror == 'On' then
-			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
-			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Sleep'] and NotiSleep == 'On' then
-			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Stun'] and NotiStun == 'On' then
-			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Amnesia'] and NotiAmnesia == 'On' then
-			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Silence'] and NotiSilence == 'On' then
-			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Mute'] and NotiMute == 'On' then
-			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Plague'] and NotiPlague == 'On' then
-			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Paralysis'] and NotiPara == 'On' then
-			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Encumbrance'] and NotiEncumbrance == 'On' then
-			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Curse'] and NotiCurse == 'On' then
-			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		else
 			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
 		end
