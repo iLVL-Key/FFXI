@@ -51,6 +51,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts. 
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (or Remedy) instead of spell when you are silenced.
 AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
+AutoEntrust		=	'On'	--[On/Off]		Automatically uses Entrust when you cast an Indi- spell on a party member.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -369,11 +370,11 @@ function get_sets()
 
 	-- Unity Trust Gear
 	sets.unity = {
-		--body="Yoran Unity Shirt",
+		body="Sylvie Unity Shirt",
 	}
 
 end
-TopVersion = 'Indi-Voidance' --Leave this alone, used for debugging purposes
+TopVersion = 'Geo-Poison' --Leave this alone, used for debugging purposes
 
 
 
@@ -385,8 +386,8 @@ TopVersion = 'Indi-Voidance' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Indi-Voidance'
-FileVersion = '07.18.22'
+BottomVersion = 'Geo-Poison'
+FileVersion = '08.08.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -396,6 +397,11 @@ FileVersion = '07.18.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+08.08.22 (Version Compatibility Codename: Geo-Poison)
+-Added AutoEntrust option. Automatically uses Entrust when you cast an Indi- spell on a party member.
+-Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
+-code cleanup
 
 07.18.22 (Version Compatibility Codename: Indi-Voidance)
 -Adjusted some gear sets and logic in their usage. (removed the Luopan set and renamed Combinedskill to Geomancy)
@@ -838,31 +844,26 @@ function choose_set()
 			end
 		end
 		if AdoulinZones:contains(world.area) then
-		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
 			equip(set_combine(sets.idle, sets.adoulin))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Adoulin]')
 			end
 		elseif BastokZones:contains(world.area) then
-		-- elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
 			equip(set_combine(sets.idle, sets.bastok))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Bastok]')
 			end
 		elseif SandyZones:contains(world.area) then
-		-- elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
 			equip(set_combine(sets.idle, sets.sandoria))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + San d\'Oria]')
 			end
 		elseif WindyZones:contains(world.area) then
-		-- elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
 			equip(set_combine(sets.idle, sets.windurst))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Windurst]')
 			end
 		elseif TownZones:contains(world.area) then
-		-- elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			equip(set_combine(sets.idle, sets.town))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Town]')
@@ -1063,10 +1064,14 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Cursna]')
 		end
-	--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle before casting:
-	elseif string.find(spell.english,'Geo-') and pet.isvalid == true and AutoFullCircle == 'On' and windower.ffxi.get_ability_recasts()[243] == 0 then
+	--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle before casting
+	elseif string.find(spell.english,'Geo-') and pet.isvalid == true and AutoFullCircle == 'On' and windower.ffxi.get_ability_recasts()[243] == 0 and not buffactive['Amnesia'] then
 		cancel_spell()
 		send_command('input /ja "Full Circle" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+	--if we're casting an Indi- spell on a party member we use Entrust first
+	elseif string.find(spell.english,'Indi-') and AutoEntrust == 'On' and windower.ffxi.get_ability_recasts()[93] == 0 and not buffactive['Amnesia'] and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
+		cancel_spell()
+		send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
@@ -1360,29 +1365,29 @@ windower.register_event('prerender', function()
 		if buffactive['Doom'] and NotiDoom == 'On' then
 			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
 		elseif buffactive['Charm'] and NotiCharm == 'On' then
-			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Terror'] and NotiTerror == 'On' then
-			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Petrification'] and NotiPetrification == 'On' then
-			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Sleep'] and NotiSleep == 'On' then
-			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Stun'] and NotiStun == 'On' then
-			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Amnesia'] and NotiAmnesia == 'On' then
-			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Silence'] and NotiSilence == 'On' then
-			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Mute'] and NotiMute == 'On' then
-			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Plague'] and NotiPlague == 'On' then
-			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PLAGUE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Paralysis'] and NotiPara == 'On' then
-			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« PARALYSIS »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Encumbrance'] and NotiEncumbrance == 'On' then
-			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Curse'] and NotiCurse == 'On' then
-			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50')
+			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		else
 			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
 		end
