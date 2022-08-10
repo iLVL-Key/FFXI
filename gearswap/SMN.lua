@@ -35,9 +35,9 @@ Recommended Windower Addons: Text
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleField 	=	'6'		--[1-20]		Your Lockstyle set when in a field zone.
+LockstyleCombat =	'6'		--[1-20]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
-							--				If you do not want a separate town lockstyle, set this to the same as LockstyleField.
+							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'4'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
@@ -138,7 +138,7 @@ function get_sets()
 		ammo="Sancus Sachet",
 		head="Beckoner's Horn +1",
 		body="Beck. Doublet +1",
-		hands="Asteria Mitts +1",
+		hands="Lamassu Mitts +1",
 		legs="Assid. Pants +1",
 		feet="Herald's Gaiters",
 		neck="Caller's Pendant",
@@ -402,7 +402,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Inferno' --Leave this alone, used for debugging purposes
+TopVersion = 'Earthen Fury' --Leave this alone, used for debugging purposes
 
 
 
@@ -414,8 +414,8 @@ TopVersion = 'Inferno' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Inferno'
-FileVersion = '08.08.22'
+BottomVersion = 'Earthen Fury'
+FileVersion = '08.10.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -426,8 +426,12 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.08.22 (Version Compatibility Codename: Inferno)
+08.10.22 (Version Compatibility Codename: Earthen Fury)
+-Added Leafallia to list of towns.
+-Adjusted abilities to not equip their gear sets if they are still on cooldown.
+-Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
+-Updated Version Compatibility Codename to Earthen Fury.
 
 07.18.22 (Version Compatibility Codename: Inferno)
 -Overhauled how area checks are handled. Uses tables now for groups of areas.
@@ -495,7 +499,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -697,7 +701,7 @@ function self_command(command)
 		windower.add_to_chat(3,'--                  Options                  --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'AutoLockstyle: '..(''..AutoLockstyle..''):color(8)..'')
-		windower.add_to_chat(200,'LockstyleField: '..(''..LockstyleField..''):color(8)..'')
+		windower.add_to_chat(200,'LockstyleCombat: '..(''..LockstyleCombat..''):color(8)..'')
 		windower.add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
 		windower.add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
 		windower.add_to_chat(200,'Page: '..(''..Page..''):color(8)..'')
@@ -772,7 +776,7 @@ function self_command(command)
 		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
-			send_command('input /lockstyleset '..LockstyleField..'')
+			send_command('input /lockstyleset '..LockstyleCombat..'')
 		end
 	elseif command == 'Radialens' then
 		--we put this wait in to check what zone we're in when the Radialens wears so that it doesn't trigger when we're simply zoning out of an Escha zone
@@ -1066,12 +1070,16 @@ function precast(spell)
 	elseif spell.english == 'Astral Conduit' and ACTimer == 'On' then
 		send_command('input /echo [Astral Conduit] 1:00;wait 30;input /echo [Astral Conduit] 0:30;wait 10;input /echo [Astral Conduit] 0:20;wait 10;input /echo [Astral Conduit] 0:10')
 	elseif spell.english == 'Elemental Siphon' then
-		equip(sets.elementalsiphon)
+		if windower.ffxi.get_ability_recasts()[175] <= 1 then
+			equip(sets.elementalsiphon)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Elemental Siphon]')
 		end
 	elseif spell.english == 'Mana Cede' then
-		equip(sets.manacede)
+		if windower.ffxi.get_ability_recasts()[71] <= 1 then
+			equip(sets.manacede)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Mana Cede]')
 		end
@@ -1337,10 +1345,8 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if buff == 15 and NotiDoom == 'On' then
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
+	if buff == 15 and AlertSounds == 'On' then --Doom
+		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 	end
 end)
 
