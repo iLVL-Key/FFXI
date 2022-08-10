@@ -57,9 +57,9 @@ keep up actions on the mob to keep it claimed (voke, flash, etc) or switch into 
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleField	=	'5'		--[1-20]		Your Lockstyle set when in a field zone.
+LockstyleCombat	=	'5'		--[1-20]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
-							--				If you do not want a separate town lockstyle, set this to the same as LockstyleField.
+							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'3'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
@@ -423,7 +423,7 @@ TopVersion = 'Resist Sleep' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Resist Sleep'
-FileVersion = '08.08.22'
+FileVersion = '08.10.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -434,10 +434,14 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.08.22 (Version Compatibility Codename: Resist Sleep)
+08.10.22 (Version Compatibility Codename: Resist Sleep)
 -Overhauled the Mode functionality. There are now 3 modes: Auto, Combat, and Neutral. Combat and Neutral are the basic modes that can be selected individually or Auto will switch between the two in a (mostly) intelligent manner. Combat has a focus on tank sets and SIRD, while Neutral is for refresh and maximizing gear bonuses for buffs. What auto decides is based off when the game thinks you are in combat. This works just fine in most cases, but is not always exactly correct, so you can manually rotate between modes as needed.
+-Added Leafallia to list of towns.
+-Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Removed the Buffs set. Protect and Shell were using this, they now use the Enhancing set instead. (Thanks to Mailani for the catch)
+-Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
+-Updated Version Compatibility Codename to Resist Sleep.
 -code cleanup
 
 07.18.22 (Version Compatibility Codename: Defense Bonus)
@@ -498,7 +502,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -737,7 +741,7 @@ function self_command(command)
 		windower.add_to_chat(3,'--                  Options                  --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'AutoLockstyle: '..(''..AutoLockstyle..''):color(8)..'')
-		windower.add_to_chat(200,'LockstyleField: '..(''..LockstyleField..''):color(8)..'')
+		windower.add_to_chat(200,'LockstyleCombat: '..(''..LockstyleCombat..''):color(8)..'')
 		windower.add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
 		windower.add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
 		windower.add_to_chat(200,'Page: '..(''..Page..''):color(8)..'')
@@ -817,7 +821,7 @@ function self_command(command)
 		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
-			send_command('input /lockstyleset '..LockstyleField..'')
+			send_command('input /lockstyleset '..LockstyleCombat..'')
 		end
 	elseif command == 'Radialens' then
 		--we put this wait in to check what zone we're in when the Radialens wears so that it doesn't trigger when we're simply zoning out of an Escha zone
@@ -1131,42 +1135,58 @@ function precast(spell)
 	elseif spell.english == 'Intervene' and IntTimer == 'On' then
 		send_command('input /echo [Intervene] 30 seconds;wait 10;input /echo [Intervene] 20 seconds;wait 10;input /echo [Intervene] 10 seconds')
 	elseif spell.english == 'Holy Circle' then
-		equip(sets.holycircle)
+		if windower.ffxi.get_ability_recasts()[74] <= 1 then
+			equip(sets.holycircle)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Holy Circle + Enmity]')
 		end
 	elseif spell.english == 'Shield Bash' then
-		equip(sets.shieldbash)
+		if windower.ffxi.get_ability_recasts()[73] <= 1 then
+			equip(sets.shieldbash)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Shield Bash + Enmity]')
 		end
 	elseif spell.english == 'Sentinel' then
-		equip(sets.sentinel)
+		if windower.ffxi.get_ability_recasts()[75] <= 1 then
+			equip(sets.sentinel)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Sentinel + Enmity]')
 		end
 	elseif spell.english == 'Cover' then
-		equip(sets.cover)
+		if windower.ffxi.get_ability_recasts()[76] <= 1 then
+			equip(sets.cover)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Cover]')
 		end
 	elseif spell.english == 'Rampart' then
-		equip(sets.rampart)
+		if windower.ffxi.get_ability_recasts()[77] <= 1 then
+			equip(sets.rampart)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Rampart + Enmity]')
 		end
 	elseif spell.english == 'Fealty' then
-		equip(sets.fealty)
+		if windower.ffxi.get_ability_recasts()[78] <= 1 then
+			equip(sets.fealty)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Fealty]')
 		end
 	elseif spell.english == 'Chivalry' then
-		equip(sets.chivalry)
+		if windower.ffxi.get_ability_recasts()[79] <= 1 then
+			equip(sets.chivalry)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Chivalry]')
 		end
 	elseif spell.english == 'Divine Emblem' then
-		equip(sets.divineemblem)
+		if windower.ffxi.get_ability_recasts()[80] <= 1 then
+			equip(sets.divineemblem)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Divine Emblem]')
 		end
@@ -1483,13 +1503,11 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if (buff == 2 or buff == 19) then
+	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the Vim Torque to wake us up
 		equip({neck="Vim Torque"})
 	end
-	if buff == 15 and NotiDoom == 'On' then
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
+	if buff == 15 and AlertSounds == 'On' then --Doom
+		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 	end
 end)
 
@@ -1565,10 +1583,7 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
 		end
-	elseif buff == 2 or buff == 19 then --lose sleep, we of course clear debuffs but also run choose_set since we had equipped the OpoOpo
-		if HUD == 'On' then
-			send_command('gs c ClearDebuffs')
-		end
+	elseif buff == 2 or buff == 19 then --lose sleep, run choose_set since we had equipped the Vim Torque to wake us up
 		choose_set()
 	end
 end)
