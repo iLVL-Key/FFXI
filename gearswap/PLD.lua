@@ -447,7 +447,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Updated Version Compatibility Codename to Resist Sleep.
--code cleanup
+-Code cleanup
 
 07.18.22 (Version Compatibility Codename: Defense Bonus)
 -Updated AutoMajesty to now re-up Majesty before it wears off, exact timing window can be adjusted in the Options.
@@ -1646,17 +1646,23 @@ windower.register_event('prerender', function()
 		else
 			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
 		end
-		if Mode == 'Auto' and player.in_combat == true then
+	end
+	if Mode == 'Auto' then
+		if player.in_combat == true then
 			if Combat == false then
 				Combat = true
 				choose_set()
-				send_command('text mode text "Mode: Auto (Combat)";text mode color '..Autocolor..'')
+				if HUD == 'On' then
+					send_command('text mode text "Mode: Auto (Combat)";text mode color '..Autocolor..'')
+				end
 			end
-		elseif Mode =='Auto' and player.in_combat == false then
+		elseif player.in_combat == false then
 			if Combat == true then
 				Combat = false
 				choose_set()
-				send_command('text mode text "Mode: Auto (Neutral)";text mode color '..Autocolor..'')
+				if HUD == 'On' then
+					send_command('text mode text "Mode: Auto (Neutral)";text mode color '..Autocolor..'')
+				end
 			end
 		end
 	end
@@ -1696,7 +1702,6 @@ windower.register_event('prerender', function()
 			if NotiDoom == 'On' and buffactive['Doom'] then 
 				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
 			end
-
 			if buffactive['Enmity Boost'] and buffactive['Phalanx'] and (buffactive['Reprisal'] or buffactive['Palisade']) and (buffactive['Defense Boost'] or buffactive['Defender']) and player.in_combat == true then
 				send_command('text mode text "Mode: '..Mode..' (Turtle)"')
 			else
@@ -1710,7 +1715,6 @@ windower.register_event('prerender', function()
 					send_command('text mode text "Mode: '..Mode..'"')
 				end
 			end
-
 			if HUDRecast == 'On' then --using the HUDRecast
 				--HUDRecast goes in Line 1:
 				if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
