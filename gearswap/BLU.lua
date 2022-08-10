@@ -1,11 +1,11 @@
 -------------------------------------------
 -- Keys Gearswap lua file for Blue Mage  --
 -------------------------------------------
+--[[
 
 -------------------------------------------
 --                 NOTES                 --
 -------------------------------------------
---[[
 
 Place both this file and the sounds folder inside the GearSwap data folder
 	/addons/GearSwap/data/sounds/
@@ -73,9 +73,9 @@ into your chatlog directly.
 --                OPTIONS                --
 -------------------------------------------
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleField	=	'2'		--[1-20]		Your Lockstyle set when in a field zone.
+LockstyleCombat	=	'2'		--[1-20]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
-							--				If you do not want a separate town lockstyle, set this to the same as LockstyleField.
+							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'1'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
@@ -89,6 +89,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (E), or Remedy (R) instead of spell when you are silenced.
 OccShadows		=	12		--				How many shadows does your Occultation create (caps 12 at 600 Blue Magic skill)
+CharmNaked		=	'On'	--[On/Off]		Automatically strips you naked (except weapons) when you're charmed so you don't murder anyone and allowing you to be more easily slept.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -100,11 +101,13 @@ FontSize		=	12		--				Font size. Changing this will require you to adjust the Sp
 LineSpacer		=	20		--				Space in pixels between each Line of the HUD
 ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
 HUDRecast		=	'On'	--[On/Off]		Displays common spells/abilities and their recast status
+
 --HUD Mode Names
 Mode1Name = 'General'
 Mode2Name = 'Melee'
 Mode3Name = 'Nuke'
 Mode4Name = 'NONE'
+
 --HUD Recast Spells
 --  The first column here MUST be input exactly as they are spelled in-game.
 --  The second column here is for the shorthand to be used in the HUD.
@@ -507,7 +510,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Pollen' --Leave this alone, used for debugging purposes
+TopVersion = 'Sandspin' --Leave this alone, used for debugging purposes
 
 
 
@@ -519,8 +522,8 @@ TopVersion = 'Pollen' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Pollen'
-FileVersion = '08.08.22'
+BottomVersion = 'Sandspin'
+FileVersion = '08.10.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -531,10 +534,16 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.08.22 (Version Compatibility Codename: Pollen)
+08.10.22 (Version Compatibility Codename: Sandspin)
+-Added Leafallia to list of towns.
+-Added equipping the DT Override set when petrified.
+-Added option to remove all gear (except weapons) when you are charmed.
+-Adjusted abilities to not equip their gear sets if they are still on cooldown.
+-Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Fixed an issue where resting would combine the Rest set with the DT Override set regardless of DT Override being on or off.
--Removed the leftover Enmity gear set. The functionality for this set was removed in a previous version, I simply forgot to remove the gear set. While technically this change is in the top section it doesn't affect how the file functions so I did not change the Version Compatibility Codename.
+-Removed the leftover Enmity gear set. The functionality for this set was removed in a previous version, I simply forgot to remove the gear set.
+-Updated Version Compatibility Codename to Sandspin.
 
 07.18.22 (Version Compatibility Codename: Pollen)
 -Overhauled how area checks are handled. Uses tables now for groups of areas.
@@ -750,7 +759,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -1071,7 +1080,7 @@ function self_command(command)
 		windower.add_to_chat(3,'--                  Options                  --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'AutoLockstyle: '..(''..AutoLockstyle..''):color(8)..'')
-		windower.add_to_chat(200,'LockstyleField: '..(''..LockstyleField..''):color(8)..'')
+		windower.add_to_chat(200,'LockstyleBattle: '..(''..LockstyleBattle..''):color(8)..'')
 		windower.add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
 		windower.add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
 		windower.add_to_chat(200,'Page: '..(''..Page..''):color(8)..'')
@@ -1085,6 +1094,7 @@ function self_command(command)
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'UseEcho: '..(''..UseEcho..''):color(8)..'')
 		windower.add_to_chat(200,'OccShadows: '..(''..OccShadows..''):color(8)..'')
+		windower.add_to_chat(200,'CharmNaked: '..(''..CharmNaked..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
 		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
@@ -1211,7 +1221,7 @@ function self_command(command)
 		if TownZones:contains(world.area) then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
-			send_command('input /lockstyleset '..LockstyleField..'')
+			send_command('input /lockstyleset '..LockstyleCombat..'')
 		end
 	elseif command == 'Radialens' then
 		--we put this wait in to check what zone we're in when the Radialens wears so that it doesn't trigger when we're simply zoning out of an Escha zone
@@ -1498,22 +1508,30 @@ function precast(spell)
 	elseif spell.english == 'Unbridled Wisdom' and UWTimer == 'On' then
 		send_command('input /echo [Unbridled Wisdom] 60 seconds;wait 31;input /echo [Unbridled Wisdom] 30 seconds;wait 20;input /echo [Unbridled Wisdom] 10 seconds')
 	elseif spell.english == 'Chain Affinity' then
-		equip(sets.chainaffinity)
+		if windower.ffxi.get_ability_recasts()[181] <= 1 then
+			equip(sets.chainaffinity)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Chain Affinity]')
 		end
 	elseif spell.english == 'Burst Affinity' then
-		equip(sets.burstaffinity)
+		if windower.ffxi.get_ability_recasts()[182] <= 1 then
+			equip(sets.burstaffinity)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Burst Affinity]')
 		end
 	elseif spell.english == 'Diffusion' then
-		equip(sets.diffusion)
+		if windower.ffxi.get_ability_recasts()[184] <= 1 then
+			equip(sets.diffusion)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Diffusion]')
 		end
 	elseif spell.english == 'Efflux' then
-		equip(sets.efflux)
+		if windower.ffxi.get_ability_recasts()[185] <= 1 then
+			equip(sets.efflux)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Efflux]')
 		end
@@ -1801,12 +1819,21 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if (buff == 2 or buff == 19) then
-		equip({neck="Opo-opo Necklace"})
+	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the DT Override set and the Opo-opo Necklace for free TP
+		equip(set_combine({neck="Opo-opo Necklace"}, sets.dtoverride))
 	end
-	if buff == 15 and NotiDoom == 'On' then
+	if buff == 7 then --If we get petrified, equip the DT Override set
+		equip(sets.dtoverride)
+	end
+	if buff == 15 and AlertSounds == 'On' then --Doom
+		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+	end
+	if buff == 17 then --Charm
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if CharmNaked == 'Yes' then
+			equip({head=empty, body=empty, hands=empty, legs=empty, feet=empty, neck=empty, waist=empty, left_ear=empty, right_ear=empty, left_ring=empty, right_ring=empty, back=empty})
 		end
 	end
 end)
@@ -1883,10 +1910,7 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
 		end
-	elseif buff == 2 or buff == 19 then --lose sleep, we of course clear debuffs but also run choose_set since we had equipped the OpoOpo
-		if HUD == 'On' then
-			send_command('gs c ClearDebuffs')
-		end
+	elseif buff == 2 or buff == 19 or buff == 7 or buff == 17 then --lose sleep, petrify, or charm run choose_set since we chenged gear for those
 		choose_set()
 	elseif buff == 36 then --lose blink, clear shadow count to 0
 		ShadowCount = 0
