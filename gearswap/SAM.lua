@@ -1,11 +1,11 @@
 -------------------------------------------
 --  Keys Gearswap lua file for Samurai   --
 -------------------------------------------
+--[[
 
 -------------------------------------------
 --                 NOTES                 --
 -------------------------------------------
---[[
 
 Place both this file and the sounds folder inside the GearSwap data folder
 	/addons/GearSwap/data/sounds/
@@ -37,9 +37,9 @@ Recommended Windower Addons: Text
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleField	=	'3'		--[1-20]		Your Lockstyle set when in a field zone.
+LockstyleCombat	=	'3'		--[1-20]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
-							--				If you do not want a separate town lockstyle, set this to the same as LockstyleField.
+							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'2'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
@@ -49,6 +49,7 @@ DTCtrlPlus		=	'd'		--				Sets the keyboard shortcut you would like to activate t
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
+CharmNaked		=	'On'	--[On/Off]		Automatically strips you naked (except weapons) when you're charmed so you don't murder anyone and allowing you to be more easily slept.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -114,7 +115,8 @@ Aftermath3color	=	'255 255 50'	--Aftermath Level 3
 
 function get_sets()
 
-	-- Hasso ()
+	-- Hasso (Hasso+, Double/Triple/Quad Attack+, DEX+, Accuracy+, Attack+)
+	-- This is the main DPS set.
 	sets.hasso = {
 		ammo="Aurgelmir Orb",
 		head="Mpaca's Cap",
@@ -135,6 +137,7 @@ function get_sets()
 	}
 
 	-- Seigan ()
+	-- Intended as a more defense oriented set for when you have to put Seigan up.
 	sets.seigan = {
 		ammo="Aurgelmir Orb",
 		head="Nyame Helm",
@@ -262,7 +265,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Tachi: Enpi' --Leave this alone, used for debugging purposes
+TopVersion = 'Tachi: Hobaku' --Leave this alone, used for debugging purposes
 
 
 
@@ -274,8 +277,8 @@ TopVersion = 'Tachi: Enpi' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Tachi: Enpi'
-FileVersion = '08.08.22'
+BottomVersion = 'Tachi: Hobaku'
+FileVersion = '08.10.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -286,9 +289,16 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.08.22 (Version Compatibility Codename: Tachi: Enpi)
+08.10.22 (Version Compatibility Codename: Tachi: Hobaku)
+-Added Leafallia to list of towns.
+-Added equipping the DT Override set when petrified.
+-Added option to remove all gear (except weapons) when you are charmed.
+-Adjusted abilities to not equip their gear sets if they are still on cooldown.
+-Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Fixed a duplicate line in the sleep debuff code.
+-Updated Version Compatibility Codename to Tachi: Hobaku.
+-code cleanup.
 
 07.18.22 (Version Compatibility Codename: Tachi: Enpi)
 -Overhauled how area checks are handled. Uses tables now for groups of areas.
@@ -340,7 +350,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -550,7 +560,7 @@ function self_command(command)
 		windower.add_to_chat(3,'--                  Options                  --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'AutoLockstyle: '..(''..AutoLockstyle..''):color(8)..'')
-		windower.add_to_chat(200,'LockstyleField: '..(''..LockstyleField..''):color(8)..'')
+		windower.add_to_chat(200,'LockstyleCombat: '..(''..LockstyleCombat..''):color(8)..'')
 		windower.add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
 		windower.add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
 		windower.add_to_chat(200,'Page: '..(''..Page..''):color(8)..'')
@@ -625,7 +635,7 @@ function self_command(command)
 		if TownZones:contains(world.area) then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
-			send_command('input /lockstyleset '..LockstyleField..'')
+			send_command('input /lockstyleset '..LockstyleCombat..'')
 		end
 	elseif command == 'Radialens' then
 		--we put this wait in to check what zone we're in when the Radialens wears so that it doesn't trigger when we're simply zoning out of an Escha zone
@@ -921,11 +931,6 @@ function precast(spell)
 		end
 	elseif spell.english == 'Yaegasumi' and IntTimer == 'On' then
 		send_command('input /echo [Yaegasumi] 40 seconds;wait 10;input /echo [Yaegasumi] 30 seconds;wait 10;input /echo [Yaegasumi] 20 seconds;wait 10;input /echo [Yaegasumi] 10 seconds')
-	elseif spell.english == 'Holy Circle' then
-		equip(sets.holycircle)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Holy Circle + Enmity]')
-		end
 	elseif spell.english == 'Hasso' then
 		Mode = 'Hasso' --Set Mode to Hasso when we use it
 		choose_set() --Instead of directly equipping sets.hasso, we run through the choose_set function to choose based on our status.
@@ -933,32 +938,44 @@ function precast(spell)
 		Mode = 'Seigan' --Set Mode to Seigan when we use it
 		choose_set() --Instead of directly equipping sets.seigan, we run through the choose_set function to choose based on our status.
 	elseif spell.english == 'Meditate' then
-		equip(sets.meditate)
+		if windower.ffxi.get_ability_recasts()[134] <= 1 then
+			equip(sets.meditate)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Meditate]')
 		end
 	elseif string.find(spell.english,'Jump') then --Any Jump ability
-		equip(sets.jump)
+		if windower.ffxi.get_ability_recasts()[158] <= 1 then
+			equip(sets.jump)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Jump]')
 		end
 	elseif spell.english == 'Warding Circle' then
-		equip(sets.wardingcircle)
+		if windower.ffxi.get_ability_recasts()[135] <= 1 then
+			equip(sets.wardingcircle)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Warding Circle]')
 		end
 	elseif spell.english == 'Shikikoyo' then
-		equip(sets.shikikoyo)
+		if windower.ffxi.get_ability_recasts()[136] <= 1 then
+			equip(sets.shikikoyo)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Shikikoyo]')
 		end
 	elseif spell.english == 'Blade Bash' then
-		equip(sets.bladebash)
+		if windower.ffxi.get_ability_recasts()[137] <= 1 then
+			equip(sets.bladebash)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Blade Bash]')
 		end
 	elseif spell.english == 'Sengikori' then
-		equip(sets.sengikori)
+		if windower.ffxi.get_ability_recasts()[141] <= 1 then
+			equip(sets.sengikori)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Sengikori]')
 		end
@@ -1096,12 +1113,21 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if (buff == 2 or buff == 19) then
+	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the Vim Torque to wake us up
 		equip({neck="Vim Torque"})
 	end
-	if buff == 15 and NotiDoom == 'On' then
+	if buff == 7 then --If we get petrified, equip the DT Override set
+		equip(sets.dtoverride)
+	end
+	if buff == 15 and AlertSounds == 'On' then --Doom
+		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+	end
+	if buff == 17 then --Charm
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if CharmNaked == 'Yes' then
+			equip({head=empty, body=empty, hands=empty, legs=empty, feet=empty, neck=empty, waist=empty, left_ear=empty, right_ear=empty, left_ring=empty, right_ring=empty, back=empty})
 		end
 	end
 end)
@@ -1178,10 +1204,7 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
 		end
-	elseif buff == 2 or buff == 19 then --lose sleep, we of course clear debuffs but also run choose_set since we had equipped the OpoOpo
-		if HUD == 'On' then
-			send_command('gs c ClearDebuffs')
-		end
+	elseif buff == 2 or buff == 19 or buff == 7 or buff == 17 then --lose sleep, petrify, or charm run choose_set since we chenged gear for those
 		choose_set()
 	end
 end)
