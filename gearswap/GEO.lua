@@ -374,7 +374,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Geo-Poison' --Leave this alone, used for debugging purposes
+TopVersion = 'Indi-Precision' --Leave this alone, used for debugging purposes
 
 
 
@@ -386,8 +386,8 @@ TopVersion = 'Geo-Poison' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Geo-Poison'
-FileVersion = '08.08.22'
+BottomVersion = 'Indi-Precision'
+FileVersion = '08.10.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -398,9 +398,13 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.08.22 (Version Compatibility Codename: Geo-Poison)
+08.10.22 (Version Compatibility Codename: Indi-Precision)
 -Added AutoEntrust option. Automatically uses Entrust when you cast an Indi- spell on a party member.
+-Added Leafallia to list of towns.
+-Adjusted abilities to not equip their gear sets if they are still on cooldown.
+-Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
+-Updated Version Compatibility Codename to Indi-Precision.
 -code cleanup
 
 07.18.22 (Version Compatibility Codename: Indi-Voidance)
@@ -482,7 +486,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -1041,22 +1045,30 @@ function precast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Full Circle]')
 		end
 	elseif spell.english == 'Radial Arcana' then
-		equip(sets.radialarcana)
+		if windower.ffxi.get_ability_recasts()[252] <= 1 then
+			equip(sets.radialarcana)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Radial Arcana]')
 		end
 	elseif spell.english == 'Mending Halation' then
-		equip(sets.mendinghalation)
+		if windower.ffxi.get_ability_recasts()[251] <= 1 then
+			equip(sets.mendinghalation)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Mending Halation]')
 		end
 	elseif spell.english == 'Collimated Fervor' then
-		equip(sets.collimatedfervor)
+		if windower.ffxi.get_ability_recasts()[245] <= 1 then
+			equip(sets.collimatedfervor)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Collimated Fervor]')
 		end
 	elseif spell.english == 'Life Cycle' then
-		equip(sets.lifecycle)
+		if windower.ffxi.get_ability_recasts()[246] <= 1 then
+			equip(sets.lifecycle)
+		end
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Life Cycle]')
 		end
@@ -1261,9 +1273,15 @@ end)
 -------------------------------------------
 
 windower.register_event('gain buff', function(buff)
-	if buff == 15 and NotiDoom == 'On' then
+	if buff == 15 and AlertSounds == 'On' then --Doom
+		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+	end
+	if buff == 17 then --Charm
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if CharmNaked == 'Yes' then
+			equip(sets.naked)
 		end
 	end
 	if HUD == 'On' then
@@ -1336,8 +1354,6 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
 		end
-	-- elseif (buff == 2 or buff == 19 or buff == 6 or buff == 7 or buff == 9 or buff ==20 or buff == 10 or buff == 14 or buff == 17 or buff == 15 or buff == 16 or buff == 28 or buff == 29 or buff == 31 or buff == 4 or buff == 566) and HUD == 'On' then
-		-- send_command('gs c ClearDebuffs') --clear debuffs if any debuffs wear off
 	elseif buff == 612 and HUD == 'On' then
 		send_command('text indicolure text "None";text indicolure color 255 50 50')
 	end
