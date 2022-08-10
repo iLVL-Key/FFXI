@@ -20,6 +20,11 @@ To switch between gear modes, use any of these three options:
 	CTRL+G
 	(Default is G, can be changed in the settings)
 
+To use /BLU AOE spells, create a macro with the following:
+	/console BLUAOE
+This will cycle through Sheep Song, Soporific, Stinking Gas, Geist Wall, Sound Blast, and Jettatura, in that order, as recasts timers allow.
+Jettatura is last because it is only a small conal gaze, I recommend having that on it's own macro mostly for single target hate.
+
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
 
@@ -811,7 +816,6 @@ function self_command(command)
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
 			if TownZones:contains(world.area) then
-			-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 				send_command('wait 5;gs c Choose Set')
 			end
 		else
@@ -823,7 +827,6 @@ function self_command(command)
 		send_command('wait 5;gs c Lockstyle')
 	elseif command == 'Lockstyle' then
 		if TownZones:contains(world.area) then
-		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
 			send_command('input /lockstyleset '..LockstyleCombat..'')
