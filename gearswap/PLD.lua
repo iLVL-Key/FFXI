@@ -224,7 +224,7 @@ function get_sets()
 	}
 
 	-- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
-	-- NOTE: This set gets combined with (and overwrites) the next 6 sets (healing through cursna) based on Mode and whether or not you are in combat
+	-- NOTE: This set gets combined with (and overwrites) the next 5 sets (Healing through Enhancing) based on Mode and whether or not you are in combat
 	sets.sird = {
 		ammo="Staunch Tathlum",		--10 SIRD
 		head="Souv. Schaller +1",	--20 SIRD
@@ -279,11 +279,11 @@ function get_sets()
 		right_ring="Stikini Ring +1",
 	}
 
-	-- Cursna (Holy Water+)
-	sets.cursna = {
-		--neck="Nicander's Necklace",
-		--left_ring="Purity Ring",
-		--right_ring="Blenmot's Ring +1",
+	-- Holy Water (Holy Water+)
+	sets.hwater = {
+		neck="Nicander's Necklace",
+		ring1="Blenmot's Ring +1",
+		ring2="Blenmot's Ring +1",
 	}
 
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
@@ -428,7 +428,7 @@ TopVersion = 'Resist Sleep' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Resist Sleep'
-FileVersion = '08.10.22'
+FileVersion = '08.13.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -439,10 +439,13 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.10.22 (Version Compatibility Codename: Resist Sleep)
+08.13.22 (Version Compatibility Codename: Resist Sleep)
 -Overhauled the Mode functionality. There are now 3 modes: Auto, Combat, and Neutral. Combat and Neutral are the basic modes that can be selected individually or Auto will switch between the two in a (mostly) intelligent manner. Combat has a focus on tank sets and SIRD, while Neutral is for refresh and maximizing gear bonuses for buffs. What auto decides is based off when the game thinks you are in combat. This works just fine in most cases, but is not always exactly correct, so you can manually rotate between modes as needed.
 -Added Leafallia to list of towns.
+-Changed the Cursna set to Holy Water.
+-Adjusted the Vim Torque code to first remove Stoneskin if its up for us, then check that we're not already poisoned and HP is above 50.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
+-Curing while in combat will now fill in any undefined slots from the Healing set with the Enmity set.
 -Removed the Buffs set. Protect and Shell were using this, they now use the Enhancing set instead. (Thanks to Mailani for the catch)
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
@@ -1201,9 +1204,9 @@ function precast(spell)
 	elseif spell.english == 'Majesty' and not spell.interrupted then
 		MajestyTimer = 180
 	elseif spell.english == 'Holy Water' then
-		equip(sets.cursna)
+		equip(sets.hwater)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Cursna]')
+			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
@@ -1224,31 +1227,7 @@ end
 -------------------------------------------
 
 function midcast(spell)
-	if spell.english == 'Cursna' then
-		if Mode == 'Auto' then
-			if player.in_combat == false then --not in combat, no need for SIRD
-				equip(sets.cursna)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Cursna]')
-				end
-			else -- in combat, so we need SIRD
-				equip(set_combine(sets.cursna, sets.sird))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Cursna + SIRD]')
-				end
-			end
-		elseif Mode == 'Neutral' then
-			equip(sets.cursna)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Cursna]')
-			end	
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.cursna, sets.sird))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Cursna + SIRD]')
-			end		
-		end
-	elseif string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
+	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
 		if Mode == 'Auto' then
 			if player.in_combat == false then --not in combat, no need for SIRD
 				equip(sets.healing)
@@ -1256,9 +1235,9 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Healing]')
 				end
 			else -- in combat, so we need SIRD
-				equip(set_combine(sets.healing, sets.sird))
+				equip(set_combine(sets.enmity, sets.healing, sets.sird))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Healing + SIRD]')
+					windower.add_to_chat(8,'[Equipped Set: Enmity + Healing + SIRD]')
 				end
 			end
 		elseif Mode == 'Neutral' then
@@ -1267,9 +1246,9 @@ function midcast(spell)
 				windower.add_to_chat(8,'[Equipped Set: Healing]')
 			end		
 		elseif Mode == 'Combat' then
-			equip(set_combine(sets.healing, sets.sird))
+			equip(set_combine(sets.enmity, sets.healing, sets.sird))
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Healing + SIRD]')
+				windower.add_to_chat(8,'[Equipped Set: Enmity + Healing + SIRD]')
 			end		
 		end
 	elseif spell.english == 'Flash' or string.find(spell.english,'Holy') or string.find(spell.english,'Banish') or spell.type == "BlueMagic" then
@@ -1511,8 +1490,13 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the Vim Torque to wake us up
-		equip({neck="Vim Torque"})
+	if buff == 2 or buff == 19 then --If we get slept,
+		if buffactive['Stoneskin'] then --first remove stoneskin if its up,
+			send_command('cancel 37')
+		end
+		if not buffactive['Poison'] and player.hp > 50 then --then as long as we're not already poisoned and have more than 50 HP,
+			equip({neck="Vim Torque"}) --equip the Vim Torque to wake us up
+		end
 	end
 	if buff == 15 and AlertSounds == 'On' then --Doom
 		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
