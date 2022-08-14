@@ -409,12 +409,13 @@ Only when the Version Compatibility Codename changes will you need to update the
 08.13.22 (Version Compatibility Codename: Indi-Precision)
 -Added AutoEntrust option. Automatically uses Entrust when you cast an Indi- spell on a party member.
 -Added Leafallia to list of towns.
+-Added cancelling Stonekin if its preventing poison from removing sleep.
 -Split the Cursna set into Cursna and Holy Water.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Updated Version Compatibility Codename to Indi-Precision.
--code cleanup
+-Code cleanup
 
 07.18.22 (Version Compatibility Codename: Indi-Voidance)
 -Adjusted some gear sets and logic in their usage. (removed the Luopan set and renamed Combinedskill to Geomancy)
@@ -1282,6 +1283,9 @@ end)
 -------------------------------------------
 
 windower.register_event('gain buff', function(buff)
+	if buff == 2 or buff == 19 and buffactive['Stoneskin'] then --If we get slept, remove stoneskin if its on
+		send_command('cancel 37')
+	end
 	if buff == 15 and AlertSounds == 'On' then --Doom
 		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 	end
