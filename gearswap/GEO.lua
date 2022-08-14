@@ -302,13 +302,21 @@ function get_sets()
 
 	-- Cursna (Cursna, Healing Magic)
 	sets.cursna = {
-		head="Vanya Hood", --10
+		head="Vanya Hood",
 		body="Vanya Robe",
 		hands="Vanya Cuffs",
 		legs="Vanya Slops",
-		feet="Vanya Clogs", --5
-		left_ring="Stikini Ring +1",
-		right_ring="Stikini Ring +1",
+		feet="Vanya Clogs",
+		neck="Nicander's Necklace",
+		ring1="Haoma's Ring",
+		ring2="Haoma's Ring",
+	}
+
+	-- Holy Water (Holy Water+)
+	sets.hwater = {
+		neck="Nicander's Necklace",
+		ring1="Blenmot's Ring +1",
+		ring2="Blenmot's Ring +1",
 	}
 
 	-- Bolster (Enhances Bolster gear)
@@ -387,7 +395,7 @@ TopVersion = 'Indi-Precision' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Indi-Precision'
-FileVersion = '08.10.22'
+FileVersion = '08.13.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -398,9 +406,10 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.10.22 (Version Compatibility Codename: Indi-Precision)
+08.13.22 (Version Compatibility Codename: Indi-Precision)
 -Added AutoEntrust option. Automatically uses Entrust when you cast an Indi- spell on a party member.
 -Added Leafallia to list of towns.
+-Split the Cursna set into Cursna and Holy Water.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
@@ -1073,9 +1082,9 @@ function precast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Life Cycle]')
 		end
 	elseif spell.english == 'Holy Water' then
-		equip(sets.cursna)
+		equip(sets.hwater)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Cursna]')
+			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
 	--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle before casting
 	elseif string.find(spell.english,'Geo-') and pet.isvalid == true and AutoFullCircle == 'On' and windower.ffxi.get_ability_recasts()[243] == 0 and not buffactive['Amnesia'] then
