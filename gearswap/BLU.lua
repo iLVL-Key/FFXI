@@ -544,6 +544,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 
 08.13.22 (Version Compatibility Codename: Sandspin)
 -Added Leafallia to list of towns.
+-Added cancelling Stonekin if its preventing poison from removing sleep, otherwise equip the Opo-opo Necklace per usual.
 -Added equipping the DT Override set when petrified, stunned, or terrored.
 -Added option to remove all gear (except weapons) when you are charmed.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
@@ -1828,9 +1829,18 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the DT Override set and the Opo-opo Necklace for free TP
-		equip(set_combine({neck="Opo-opo Necklace"}, sets.dtoverride))
+	if (buff == 2 or buff == 19) then --If we get put to sleep,
+		if buffactive['Stoneskin'] and buffactive['Poison'] then --first check and remove stoneskin if its up and we're poisoned
+			send_command('cancel 37')
+		else
+			equip(set_combine({neck="Opo-opo Necklace"}, sets.dtoverride)) --otherwise, equip the DT Override set and the Opo-opo Necklace for free TP
+		end
 	end
+
+	if buff == 2 or buff == 19 and buffactive['Stoneskin'] then --If we get slept, remove stoneskin if its on
+		send_command('cancel 37')
+	end
+
 	if buff == 7 or Buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the DT Override set
 		equip(sets.dtoverride)
 	end
