@@ -123,26 +123,24 @@ function get_sets()
 		body="Mpaca's Doublet",
 		hands="Wakido Kote +3",
 		legs="Ken. Hakama +1",
-		feet="Mpaca's Boots",
+		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
 		waist="Windbuffet Belt +1",
 		left_ear="Brutal Earring",
 		right_ear="Cessance Earring",
 		left_ring="Hetairoi Ring",
-		right_ring="Ilabrat Ring",
+		right_ring="Niqmaddu Ring",
 		--right_ring="Regal Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
-
-		--right_ring="Niqmaddu Ring",
 	}
 
 	-- Seigan ()
 	-- Intended as a more defense oriented set for when you have to put Seigan up.
 	sets.seigan = {
 		ammo="Aurgelmir Orb",
-		head="Nyame Helm",
+		head="Nyame Helm", --Kasuga Kabuto
 		body="Mpaca's Doublet",
-		hands="Nyame Gauntlets",
+		hands="Mpaca's Gloves",
 		legs="Sakonji Haidate +3",
 		feet="Mpaca's Boots",
 		neck="Sam. Nodowa +2",
@@ -150,10 +148,8 @@ function get_sets()
 		left_ear="Brutal Earring",
 		right_ear="Cessance Earring",
 		left_ring="Hetairoi Ring",
-		right_ring="Regal Ring",
+		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
-
-		--right_ring="Niqmaddu Ring",
 	}
 
 	-- Idle ()
@@ -172,6 +168,7 @@ function get_sets()
 		body="Nyame Mail",
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets",
+		left_ring="Defending Ring",
 	}
 
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
@@ -234,6 +231,13 @@ function get_sets()
 		feet="Sak. Sune-Ate +3",
 	}
 
+	-- Holy Water (Holy Water+)
+	sets.hwater = {
+		neck="Nicander's Necklace",
+		ring1="Blenmot's Ring +1",
+		ring2="Blenmot's Ring +1",
+	}
+
 	-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
 	sets.town = set_combine(sets.idle, {
 
@@ -278,7 +282,7 @@ TopVersion = 'Tachi: Hobaku' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Tachi: Hobaku'
-FileVersion = '08.10.22'
+FileVersion = '08.13.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -289,10 +293,12 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.10.22 (Version Compatibility Codename: Tachi: Hobaku)
+08.13.22 (Version Compatibility Codename: Tachi: Hobaku)
 -Added Leafallia to list of towns.
--Added equipping the DT Override set when petrified.
+-Added equipping the DT Override set when petrified, stunned, or terrored.
 -Added option to remove all gear (except weapons) when you are charmed.
+-Added a Holy Water set.
+-Adjusted the Vim Torque code to first remove Stoneskin if its up for us, then check that we're not already poisoned and HP is above 50.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
@@ -981,6 +987,11 @@ function precast(spell)
 		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
+	elseif spell.english == 'Holy Water' then
+		equip(sets.hwater)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
+		end
 	end
 end
 
@@ -1113,10 +1124,15 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the Vim Torque to wake us up
-		equip({neck="Vim Torque"})
+	if buff == 2 or buff == 19 then --If we get slept,
+		if buffactive['Stoneskin'] then --first remove stoneskin if its up,
+			send_command('cancel 37')
+		end
+		if not buffactive['Poison'] and player.hp > 50 then --then as long as we're not already poisoned and have more than 50 HP,
+			equip({neck="Vim Torque"}) --equip the Vim Torque to wake us up
+		end
 	end
-	if buff == 7 then --If we get petrified, equip the DT Override set
+	if buff == 7 or Buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the DT Override set
 		equip(sets.dtoverride)
 	end
 	if buff == 15 and AlertSounds == 'On' then --Doom
