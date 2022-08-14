@@ -325,18 +325,23 @@ function get_sets()
 		back="Solemnity Cape",
 	}
 
-	-- Healing (Cure Potency, Healing Magic)
-	sets.healing = {
-		head="Vanya Hood", --10
+	-- Cursna (Cursna, Healing Magic)
+	sets.cursna = {
+		head="Vanya Hood",
 		body="Vanya Robe",
 		hands="Vanya Cuffs",
 		legs="Vanya Slops",
-		feet="Vanya Clogs", --5
-		neck="Unmoving Collar +1",
-		left_ear="Mendi. Earring", --5
-		left_ring="Stikini Ring +1",
-		right_ring="Stikini Ring +1",
-		back="Solemnity Cape", --7
+		feet="Vanya Clogs",
+		neck="Nicander's Necklace",
+		ring1="Haoma's Ring",
+		ring2="Haoma's Ring",
+	}
+
+	-- Holy Water (Holy Water+)
+	sets.hwater = {
+		neck="Nicander's Necklace",
+		ring1="Blenmot's Ring +1",
+		ring2="Blenmot's Ring +1",
 	}
 
 	-- Refresh (Refresh augmenting gear, not Refresh+)
@@ -415,7 +420,7 @@ TopVersion = 'Earthen Fury' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Earthen Fury'
-FileVersion = '08.10.22'
+FileVersion = '08.13.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -426,8 +431,10 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.10.22 (Version Compatibility Codename: Earthen Fury)
+08.13.22 (Version Compatibility Codename: Earthen Fury)
 -Added Leafallia to list of towns.
+-Added cancelling Stonekin if its up and we get slept with poison on.
+-Split the Cursna set into Cursna and Holy Water.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
@@ -1084,9 +1091,9 @@ function precast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Mana Cede]')
 		end
 	elseif spell.english == 'Holy Water' then
-		equip(sets.cursna)
+		equip(sets.hwater)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Cursna]')
+			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
 	--if we're casting an avatar with one already out, we'll use Release before casting:
 	elseif (Avatars:contains(spell.english) or Spirits:contains(spell.english)) and pet.isvalid == true and AutoRelease == 'On' and windower.ffxi.get_ability_recasts()[172] == 0 then
@@ -1344,6 +1351,9 @@ windower.register_event('gain buff', function(buff)
 				windower.add_to_chat(220,'<< Aftermath: Active (DT/Refresh) >>')
 			end
 		end
+	end
+	if buff == 2 or buff == 19 and buffactive['Stoneskin'] then --If we get slept, remove stoneskin if its on
+		send_command('cancel 37')
 	end
 	if buff == 15 and AlertSounds == 'On' then --Doom
 		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
