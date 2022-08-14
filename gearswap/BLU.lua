@@ -425,7 +425,6 @@ function get_sets()
 		hands="Jhakri Cuffs +2",
 		legs="Pinga Pants",
 		feet="Nyame Sollerets", -- just for the HP
-		--feet="Medium's Sabots",
 		neck="Phalaina Locket",
 		waist="Eschan Stone", --just for the HP
 		left_ear="Mendi. Earring",
@@ -449,7 +448,16 @@ function get_sets()
 
 	-- Cursna (Cursna+, Healing Magic)
 	sets.cursna = {
+		neck="Nicander's Necklace",
+		ring1="Haoma's Ring",
+		ring2="Haoma's Ring",
+	}
 
+	-- Holy Water (Holy Water+)
+	sets.hwater = {
+		neck="Nicander's Necklace",
+		ring1="Blenmot's Ring +1",
+		ring2="Blenmot's Ring +1",
 	}
 
 	-- Azure Lore
@@ -523,7 +531,7 @@ TopVersion = 'Sandspin' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Sandspin'
-FileVersion = '08.10.22'
+FileVersion = '08.13.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -534,11 +542,12 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.10.22 (Version Compatibility Codename: Sandspin)
+08.13.22 (Version Compatibility Codename: Sandspin)
 -Added Leafallia to list of towns.
--Added equipping the DT Override set when petrified.
+-Added equipping the DT Override set when petrified, stunned, or terrored.
 -Added option to remove all gear (except weapons) when you are charmed.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
+-Split the Cursna set into Cursna and Holy Water.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Fixed an issue where resting would combine the Rest set with the DT Override set regardless of DT Override being on or off.
@@ -1536,9 +1545,9 @@ function precast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Efflux]')
 		end
 	elseif spell.english == 'Holy Water' then
-		equip(sets.cursna)
+		equip(sets.hwater)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Cursna]')
+			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
@@ -1822,7 +1831,7 @@ windower.register_event('gain buff', function(buff)
 	if (buff == 2 or buff == 19) then --If we get put to sleep, equip the DT Override set and the Opo-opo Necklace for free TP
 		equip(set_combine({neck="Opo-opo Necklace"}, sets.dtoverride))
 	end
-	if buff == 7 then --If we get petrified, equip the DT Override set
+	if buff == 7 or Buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the DT Override set
 		equip(sets.dtoverride)
 	end
 	if buff == 15 and AlertSounds == 'On' then --Doom
