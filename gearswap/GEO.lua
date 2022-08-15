@@ -172,7 +172,7 @@ function get_sets()
 		feet="Nyame Sollerets",
 		neck="Rep. Plat. Medal",
 		waist="Windbuffet Belt +1",
-		left_ear="Brutal Earring",
+		left_ear="Mache Earring +1",
 		right_ear="Cessance Earring",
 		left_ring="Hetairoi Ring",
 		right_ring="Petrov Ring",
@@ -198,6 +198,22 @@ function get_sets()
 	-- Hexa Strike (combines with Weapon Skill set above)
 	sets.hexa = set_combine(sets.ws, {
 		waist="Fotia Belt",
+	})
+
+	-- Cataclysm (combines with Weapon Skill set above)
+	sets.cata = set_combine(sets.ws, {
+    head="Pixie Hairpin +1",
+    body="Amalric Doublet +1",
+    hands="Amalric Gages +1",
+    legs="Amalric Slops +1",
+    feet="Amalric Nails +1",
+    neck="Baetyl Pendant",
+    waist="Acuity Belt +1",
+    left_ear="Malignance Earring",
+    right_ear="Regal Earring",
+    left_ring="Archon Ring",
+    right_ring="Metamor. Ring +1",
+    back="Aurist's Cape +1",
 	})
 
 	-- Fast Cast (cap is 80%)
@@ -395,7 +411,7 @@ TopVersion = 'Indi-Precision' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Indi-Precision'
-FileVersion = '08.13.22'
+FileVersion = '08.14.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -406,10 +422,11 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-08.13.22 (Version Compatibility Codename: Indi-Precision)
+08.14.22 (Version Compatibility Codename: Indi-Precision)
 -Added AutoEntrust option. Automatically uses Entrust when you cast an Indi- spell on a party member.
 -Added Leafallia to list of towns.
 -Added cancelling Stonekin if its preventing poison from removing sleep.
+-Added a Cataclysm set.
 -Split the Cursna set into Cursna and Holy Water.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
@@ -1028,6 +1045,11 @@ function precast(spell)
 			equip(sets.hexa)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Hexa Strike]')
+			end
+		elseif spell.english == 'Cataclysm' then
+			equip(sets.cata)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Cataclysm]')
 			end
 		else
 			equip(sets.ws)
