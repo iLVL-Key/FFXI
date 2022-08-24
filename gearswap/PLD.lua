@@ -21,7 +21,7 @@ To switch between gear modes, use any of these three options:
 	(Default is G, can be changed in the settings)
 
 To use /BLU AOE spells, create a macro with the following:
-	/console BLUAOE
+	/console gs c BLUAOE
 This will cycle through Sheep Song, Soporific, Stinking Gas, Geist Wall, Sound Blast, and Jettatura, in that order, as recasts timers allow.
 Jettatura is last because it is only a small conal gaze, I recommend having that on it's own macro mostly for single target hate.
 
@@ -164,8 +164,8 @@ function get_sets()
 		waist="Flume Belt",
 		left_ear="Cryptic Earring",
 		right_ear="Ethereal Earring",
-		left_ring="Petrov Ring",
-		right_ring="Defending Ring",
+		left_ring="Moonbeam Ring",
+		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
@@ -189,11 +189,11 @@ function get_sets()
 	sets.enmity = {
 		ammo="Sapience Orb",
 		head="Loess Barbuta +1",
-		body="Souveran Cuirass",
-		hands="Souv. Handschuhs",
-		legs="Souveran Diechlings",
+		body="Souv. Cuirass +1",
+		hands="Souv. Handsch. +1",
+		legs="Souv. Diechlings +1",
 		feet="Eschite Greaves",
-		neck="Unmoving Collar +1",
+		neck="Moonlight Necklace",
 		waist="Creed Baudrier",
 		left_ear="Cryptic Earring",
 		right_ear="Friomisi Earring",
@@ -202,6 +202,14 @@ function get_sets()
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
+	-- Enmity Spells (Fast Cast, will not be used to cast faster but instead to help reduce recast)
+	-- Combines with Enmity set
+	-- Flash, Holy, Banish, BLU spells use this.
+	sets.enmityspells = set_combine(sets.enmity, {
+		head="Carmine Mask +1",
+		feet="Carmine Greaves +1",
+	})
+
 	-- Rest
 	sets.rest = {
 		waist="Austerity Belt",
@@ -209,18 +217,18 @@ function get_sets()
 
 	-- Fast Cast (cap is 80%)
 	sets.fastcast = {
-		ammo="Sapience Orb",
-		head="Sakpata's Helm",
+		ammo="Sapience Orb", --2
+		head="Carmine Mask +1", --14
 		body="Nyame Mail",
-		hands="Leyline Gloves",
+		hands="Leyline Gloves", --5+1
 		legs="Nyame Flanchard",
-		feet="Nyame Sollerets",
-		neck="Baetyl Pendant",
-		waist="Sailfi Belt +1",
-		left_ear="Loquac. Earring",
-		right_ear="Etiolation Earring",
-		left_ring="Prolix Ring",
-		right_ring="Kishar Ring",
+		feet="Carmine Greaves +1", --8
+		neck="Baetyl Pendant", --4
+		waist="Flume Belt",
+		left_ear="Loquac. Earring", --2
+		right_ear="Etiolation Earring", --1
+		left_ring="Prolix Ring", --2
+		right_ring="Kishar Ring", --4
 	}
 
 	-- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
@@ -230,16 +238,16 @@ function get_sets()
 		head="Souv. Schaller +1",	--20 SIRD
 		legs="Founder's Hose",		--30 SIRD
 		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonbeam Necklace",	--10 SIRD
+		neck="Moonlight Necklace",	--10 SIRD
 		waist="Rumination Sash",	--10 SIRD
 	}
 
 	-- Healing (Cure Potency, Enmity)
 	sets.healing = {
 		head="Souv. Schaller +1",
-		body="Souveran Cuirass",
-		hands="Souv. Handschuhs",
-		legs="Souveran Diechlings",
+		body="Souv. Cuirass +1",
+		hands="Souv. Handsch. +1",
+		legs="Souv. Diechlings",
 		neck="Phalaina Locket",
 		waist="Austerity Belt",
 		left_ear="Nourish. Earring",
@@ -247,15 +255,6 @@ function get_sets()
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 	}
-
-	-- Enmity Spells (Fast Cast, will not be used to cast faster but instead to help reduce recast)
-	-- Combines with Enmity set
-	-- Flash, Holy, Banish, BLU spells use this.
-	sets.enmityspells = set_combine(sets.enmity, {
-		--head="Carmine Mask +1",
-		--feet="Carmine Greaves 1",
-	})
-
 
 	-- Enlight (Divine Magic Skill)
 	sets.enlight = {
@@ -265,15 +264,18 @@ function get_sets()
 
 	-- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 	sets.phalanx = {
-		hands="Souv. Handschuhs",
+		body="Shab. Cuirass +1",
+		hands="Souv. Handsch. +1",
+		legs="Sakpata's Cuisses",
 		right_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 	}
 
-	-- Enhancing Magic (Enhancing Magic Duration)
+	-- Enhancing Magic (Enhancing Magic Duration, Enhancing Magic Skill)
 	-- Crusade, Reprisal, Protect, and Shell use this.
 	sets.enhancing = {
+		body="Shab. Cuirass +1",
 		right_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -428,7 +430,7 @@ TopVersion = 'Resist Sleep' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Resist Sleep'
-FileVersion = '08.13.22'
+FileVersion = '08.23.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -439,11 +441,15 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+08.23.22 (Version Compatibility Codename: Resist Sleep)
+-Adjusted what the fastcast set ignores to include all "Ring" items (previously would ignore only Warp and Dimensional Rings specifically, will now also ignore XP/CP rings)
+-Fixed the macro needed for BLU Aoe spells in the Notes section
+
 08.13.22 (Version Compatibility Codename: Resist Sleep)
 -Overhauled the Mode functionality. There are now 3 modes: Auto, Combat, and Neutral. Combat and Neutral are the basic modes that can be selected individually or Auto will switch between the two in a (mostly) intelligent manner. Combat has a focus on tank sets and SIRD, while Neutral is for refresh and maximizing gear bonuses for buffs. What auto decides is based off when the game thinks you are in combat. This works just fine in most cases, but is not always exactly correct, so you can manually rotate between modes as needed.
 -Added Leafallia to list of towns.
 -Changed the Cursna set to Holy Water.
--Adjusted the Vim Torque code to first remove Stoneskin if its up for us, then check that we're not already poisoned and HP is above 50.
+-Adjusted the Vim Torque code to first remove Stoneskin if its up, then check that we're not already poisoned and HP is above 50.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Curing while in combat will now fill in any undefined slots from the Healing set with the Enmity set.
 -Removed the Buffs set. Protect and Shell were using this, they now use the Enhancing set instead. (Thanks to Mailani for the catch)
@@ -1214,7 +1220,7 @@ function precast(spell)
 	elseif AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not buffactive['Majesty'] and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[150] == 0 then
 		cancel_spell()
 		send_command('input /ja Majesty <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
-	elseif not (spell.english == 'Warp Ring' or spell.english == 'Dim. Ring (Dem)' or spell.english == 'Dim. Ring (Holla)' or spell.english == 'Dim. Ring (Mea)' or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
