@@ -76,9 +76,10 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (E), or Remedy (R) instead of spell when you are silenced.
 AutoMajesty		=	'On'	--[On/Off]		Automatically activates Majesty before a cure/protect when Majesty is down.
-AutoMajWindow	=	45		--				Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
+AutoMajWindow	=	60		--				Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
 AutoDefender	=	'On'	--[On/Off]		Automatically activates Defender after other defensive or hate generating abilities/spells when
 							--				Defender is down and in Combat mode.
+UseMaxHP		=	'On'	--[On/Off]		Activates your Max HP gear set when you cure yourself at or near full HP%.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -131,6 +132,8 @@ StartMode		=	'Auto'	--[Auto/Combat/Neutral]
 							--	three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 RemoveAuto		=	'No'	--[Yes/No]
 							--	If you don't like the Auto functionality and just want to remove it entirely
+MaxHPThreshold	=	70		--  If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
+							--  Once it is activated, going below this will deactivate it.
 
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 TPReturnWait	=	'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
@@ -155,19 +158,36 @@ function get_sets()
 	-- Tank (Damage Taken-, Evasion, Magic Evasion, Enmity+, VIT, Defense)
 	sets.tank = {
 		ammo="Staunch Tathlum",
-		head="Sakpata's Helm",
-		body="Sakpata's Plate", -- 5 Sakpata + Defending ring caps DT, any additional pieces with any form of DT are wasted
+		head="Chev. Armet +2",
+		body="Sakpata's Plate",
 		hands="Sakpata's Gauntlets",
-		legs="Sakpata's Cuisses",
-		feet="Sakpata's Leggings",
+		legs="Chev. Cuisses +2",
+		feet="Rev. Leggings +3",
 		neck="Unmoving Collar +1",
-		waist="Flume Belt",
-		left_ear="Cryptic Earring",
-		right_ear="Ethereal Earring",
+		waist="Carrier's Sash",
+		left_ear="Thureous Earring",
+		right_ear="Tuisto Earring",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
+
+	-- MAX HP (HP-focused tank gear, inherits any leftover slots from the Tank set above)
+	-- NOTE: This set is only used when the "UseMaxHP" option is set to 'On'.
+	sets.maxhp = set_combine(sets.tank, {
+		head="Souv. Schaller +1",
+		body="Souv. Cuirass +1",
+		hands="Souv. Handsch. +1",
+		legs="Souv. Diechlings +1",
+		feet="Souveran Schuhs +1",
+		neck="Unmoving Collar +1",
+		waist="Creed Baudrier",
+		left_ear="Etiolation Earring",
+		right_ear="Tuisto Earring",
+		left_ring="Moonbeam Ring",
+		right_ring="Moonbeam Ring",
+		back="Moonbeam Cape",
+	})
 
 	-- Refresh (only need Refresh gear in here, will inherit the rest from the Tank set above)
 	sets.refresh = set_combine(sets.tank, {
@@ -180,7 +200,7 @@ function get_sets()
 	})
 
 	-- Idle (Movement speed)
-	-- Combines with Tank/Refresh set based on current mode
+	-- Combines with Tank/Max HP/Refresh set based on current mode
 	sets.idle = {
 		legs="Carmine Cuisses +1",
 	}
@@ -196,7 +216,7 @@ function get_sets()
 		neck="Moonlight Necklace",
 		waist="Creed Baudrier",
 		left_ear="Cryptic Earring",
-		right_ear="Friomisi Earring",
+		right_ear="Tuisto Earring",
 		left_ring="Petrov Ring",
 		right_ring="Defending Ring", --No enmity but I want to have SOME DT
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
@@ -219,16 +239,17 @@ function get_sets()
 	sets.fastcast = {
 		ammo="Sapience Orb", --2
 		head="Carmine Mask +1", --14
-		body="Nyame Mail",
+		body="Souv. Cuirass +1",
 		hands="Leyline Gloves", --5+1
-		legs="Nyame Flanchard",
+		legs="Souv. Diechlings +1",
 		feet="Carmine Greaves +1", --8
-		neck="Baetyl Pendant", --4
-		waist="Flume Belt",
+		neck="Unmoving Collar +1",
+		waist="Creed Baudrier",
 		left_ear="Loquac. Earring", --2
-		right_ear="Etiolation Earring", --1
-		left_ring="Prolix Ring", --2
-		right_ring="Kishar Ring", --4
+		right_ear="Tuisto Earring",
+		left_ring="Moonbeam Ring",
+		right_ring="Moonbeam Ring",
+		--Need a fastcast ambu cape
 	}
 
 	-- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
@@ -237,23 +258,24 @@ function get_sets()
 		ammo="Staunch Tathlum",		--10 SIRD
 		head="Souv. Schaller +1",	--20 SIRD
 		legs="Founder's Hose",		--30 SIRD
-		feet="Eschite Greaves",		--15 SIRD
-		neck="Moonlight Necklace",	--10 SIRD
-		waist="Rumination Sash",	--10 SIRD
+		feet="Odyssean Greaves",	--20 SIRD
+		neck="Moonlight Necklace",	--15 SIRD
 	}
 
-	-- Healing (Cure Potency, Enmity)
+	-- Healing (Cure Potency, HP+, Enmity)
 	sets.healing = {
 		head="Souv. Schaller +1",
 		body="Souv. Cuirass +1",
 		hands="Souv. Handsch. +1",
-		legs="Souv. Diechlings",
+		legs="Souv. Diechlings +1",
+		feet="Souveran Schuhs +1",
 		neck="Phalaina Locket",
-		waist="Austerity Belt",
+		waist="Creed Baudrier",
 		left_ear="Nourish. Earring",
 		right_ear="Mendi. Earring",
-		left_ring="Stikini Ring +1",
-		right_ring="Stikini Ring +1",
+		left_ring="Moonbeam Ring",
+		right_ring="Moonbeam Ring",
+		back="Moonbeam Cape",
 	}
 
 	-- Enlight (Divine Magic Skill)
@@ -267,7 +289,7 @@ function get_sets()
 		body="Shab. Cuirass +1",
 		hands="Souv. Handsch. +1",
 		legs="Sakpata's Cuisses",
-		right_ear="Andoaa Earring",
+		feet="Souveran Schuhs +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 	}
@@ -276,7 +298,6 @@ function get_sets()
 	-- Crusade, Reprisal, Protect, and Shell use this.
 	sets.enhancing = {
 		body="Shab. Cuirass +1",
-		right_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 	}
@@ -296,39 +317,30 @@ function get_sets()
 		hands="Sakpata's Gauntlets", --Odyssean Gauntlets (2+5)
 		legs="Sakpata's Cuisses",
 		feet="Sulev. Leggings +2",
-		neck="Rep. Plat. Medal",
+		neck="Unmoving Collar +1",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
 		left_ring="Karieyh Ring +1",
-		right_ring="Regal Ring",
+		right_ring="Moonbeam Ring",
+		back="Moonbeam Cape",
 	}
 
 	-- Savage Blade (50% STR, 50% MND mod)
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 	sets.sav = set_combine(sets.ws, {
-		neck="Fotia Gorget",
+		
 	})
 
 	-- Requiescat (~80% MND mod)
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 	sets.req = set_combine(sets.ws, {
-		neck="Fotia Gorget",
 		waist="Fotia Belt",
-		left_ring="Stikini Ring +1",
-		right_ring="Metamor. Ring +1",
-		--right_ring="Rufescent Ring",
 	})
 
 	-- Chant du Cygne (80% DEX mod)
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 	sets.cdc = set_combine(sets.ws, {
-		head="Flam. Zucchetto +2",
-		body="Flamma Korazin +2",
-		hands="Nyame Gauntlets",
-		legs="Flamma Dirs +2",
-		feet="Flam. Gambieras +2",
-		neck="Fotia Gorget",
 		waist="Fotia Belt",
 		right_ear="Mache Earring +1",
 		left_ring="Hetairoi Ring",
@@ -337,7 +349,6 @@ function get_sets()
 	-- Atonement (Fotia Neck/Belt)
 	-- Combines with Enmity set, only necessary to set the slots with specific desired stats
 	sets.ato = set_combine(sets.enmity, {
-		neck="Fotia Gorget",
 		waist="Fotia Belt",
 	})
 
@@ -417,7 +428,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Resist Sleep' --Leave this alone, used for debugging purposes
+TopVersion = 'Shield Mastery' --Leave this alone, used for debugging purposes
 
 
 
@@ -429,8 +440,8 @@ TopVersion = 'Resist Sleep' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Resist Sleep'
-FileVersion = '08.23.22'
+BottomVersion = 'Shield Mastery'
+FileVersion = '09.07.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -440,6 +451,11 @@ FileVersion = '08.23.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+09.07.22 (Version Compatibility Codename: Shield Mastery)
+-Added Max HP set and acompanying option to use it. Activates if you cure yourself while at or near capped HP% and will attempt to stay in it until your HP% falls too low, then switches back to your normal Tank set.
+-Added all DOTs to the rule that removes Stoneskin if asleep.
+-Updated Version Compatibility Codename to Shield Mastery.
 
 08.23.22 (Version Compatibility Codename: Resist Sleep)
 -Adjusted what the fastcast set ignores to include all "Ring" items (previously would ignore only Warp and Dimensional Rings specifically, will now also ignore XP/CP rings)
@@ -539,6 +555,7 @@ PhalanxRecast = 0
 ReprisalRecast = 0
 PalisadeRecast = 0
 EnlightRecast = 0
+MaxHP = false
 if player.in_combat == true then
 	Combat = true
 elseif player.in_combat == false then
@@ -769,6 +786,7 @@ function self_command(command)
 		windower.add_to_chat(200,'AutoMajesty: '..(''..AutoMajesty..''):color(8)..'')
 		windower.add_to_chat(200,'AutoMajWindow: '..(''..AutoMajWindow..''):color(8)..'')
 		windower.add_to_chat(200,'AutoDefender: '..(''..AutoDefender..''):color(8)..'')
+		windower.add_to_chat(200,'UseMaxHP: '..(''..UseMaxHP..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
 		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
@@ -811,6 +829,7 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
 		windower.add_to_chat(200,'RemoveAuto: '..(''..RemoveAuto..''):color(8)..'')
+		windower.add_to_chat(200,'MaxHPThreshold: '..(''..MaxHPThreshold..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'TPReturnWait: '..(''..TPReturnWait..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
@@ -917,20 +936,22 @@ function choose_set()
 				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
 			end
 		end
-		if Mode == 'Auto' then -- if we're engaged we automatically get put into combat so we equip the tank set
-			equip(sets.tank)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tank]')
+		if Mode == 'Auto' or Mode == 'Combat' then -- if we're engaged we automatically get put into combat
+			if MaxHP == true then
+				equip(sets.maxhp)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Max HP]')
+				end
+			else
+				equip(sets.tank)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tank]')
+				end
 			end
 		elseif Mode == 'Neutral' then
 			equip(sets.refresh)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh]')
-			end
-		elseif Mode == 'Combat' then
-			equip(sets.tank)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tank]')
 			end
 		end
 	elseif player.status == "Idle" then 
@@ -971,27 +992,29 @@ function choose_set()
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Idle + Town]')
 			end
 		else
-			if Mode == 'Auto' then
-				if player.in_combat == false then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
-					equip(set_combine(sets.refresh, sets.idle))
+			if (Mode == 'Auto' and player.in_combat == true) or Mode == 'Combat' then -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
+				if MaxHP == true then
+					equip(set_combine(sets.maxhp, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Refresh + Idle]')
+						windower.add_to_chat(8,'[Equipped Set: Max HP + Idle]')
 					end
-				else -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
+				else
 					equip(set_combine(sets.tank, sets.idle))
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: Tank + Idle]')
 					end
 				end
-			elseif Mode == 'Combat' then
-				equip(set_combine(sets.tank, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank + Idle]')
-				end
-			else
-				equip(set_combine(sets.refresh, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Refresh + Idle]')
+			elseif (Mode == 'Auto' and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
+				if MaxHP == true then
+					equip(set_combine(sets.maxhp, sets.idle))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Max HP + Idle]')
+					end
+				else
+					equip(set_combine(sets.refresh, sets.idle))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Refresh + Idle]')
+					end
 				end
 			end
 		end
@@ -1234,124 +1257,78 @@ end
 
 function midcast(spell)
 	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
-		if Mode == 'Auto' then
-			if player.in_combat == false then --not in combat, no need for SIRD
-				equip(sets.healing)
+		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then -- in combat, so we need SIRD
+			if player.hpp >= MaxHPThreshold and spell.target.type == 'SELF' and UseMaxHP == 'On' then
+				equip(set_combine(sets.maxhp, sets.sird))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Healing]')
+					windower.add_to_chat(8,'[Equipped Set: Max HP + SIRD]')
 				end
-			else -- in combat, so we need SIRD
+			else
 				equip(set_combine(sets.enmity, sets.healing, sets.sird))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Enmity + Healing + SIRD]')
 				end
 			end
-		elseif Mode == 'Neutral' then
-			equip(sets.healing)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Healing]')
-			end		
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.enmity, sets.healing, sets.sird))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Enmity + Healing + SIRD]')
-			end		
-		end
-	elseif spell.english == 'Flash' or string.find(spell.english,'Holy') or string.find(spell.english,'Banish') or spell.type == "BlueMagic" then
-		if Mode == 'Auto' then
-			if player.in_combat == false then --not in combat, no need for SIRD
-				equip(sets.enmityspells)
+		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
+			if spell.target.type == 'SELF' then
+				equip(sets.maxhp)
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Enmity Spells]')
-				end
-			else -- in combat, so we need SIRD
-				equip(set_combine(sets.enmityspells, sets.sird))
+					windower.add_to_chat(8,'[Equipped Set: Max HP]')
+				end			
+			else
+				equip(sets.healing)
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
+					windower.add_to_chat(8,'[Equipped Set: Healing]')
 				end
 			end
-		elseif Mode == 'Neutral' then
+		end
+	elseif spell.english == 'Flash' or string.find(spell.english,'Holy') or string.find(spell.english,'Banish') or spell.type == "BlueMagic" then
+		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then -- in combat, so we need SIRD
+			equip(set_combine(sets.enmityspells, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
+			end
+		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.enmityspells)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enmity Spells]')
 			end
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.enmityspells, sets.sird))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
-			end		
 		end
 	elseif string.find(spell.english,'Enlight') then
-		if Mode == 'Auto' then
-			if player.in_combat == false then --not in combat, no need for SIRD
-				equip(sets.enlight)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Enlight]')
-				end
-			else -- in combat, so we need SIRD
-				equip(set_combine(sets.enlight, sets.sird))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Enlight Spells + SIRD]')
-				end
+		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then -- in combat, so we need SIRD
+			equip(set_combine(sets.enlight, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enlight Spells + SIRD]')
 			end
-		elseif Mode == 'Neutral' then
+		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.enlight)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enlight]')
 			end
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.enlight, sets.sird))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Enlight Spells + SIRD]')
-			end		
 		end
 	elseif spell.english == 'Phalanx' then
-		if Mode == 'Auto' then
-			if player.in_combat == false then --not in combat, no need for SIRD
-				equip(sets.phalanx)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Phalanx]')
-				end
-			else -- in combat, so we need SIRD
-				equip(set_combine(sets.phalanx, sets.sird))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
-				end
+		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then -- in combat, so we need SIRD
+			equip(set_combine(sets.phalanx, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
 			end
-		elseif Mode == 'Neutral' then
+		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.phalanx)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Phalanx]')
 			end
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.phalanx, sets.sird))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
-			end		
 		end
 	elseif spell.english == 'Crusade' or spell.english == 'Reprisal' or string.find(spell.english,'Protect') or string.find(spell.english,'Shell') then
-		if Mode == 'Auto' then
-			if player.in_combat == false then --not in combat, no need for SIRD
-				equip(sets.enhancing)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Enhancing Magic]')
-				end
-			else -- in combat, so we need SIRD
-				equip(set_combine(sets.enhancing, sets.sird))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
-				end
+		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then -- in combat, so we need SIRD
+			equip(set_combine(sets.enhancing, sets.sird))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
 			end
-		elseif Mode == 'Neutral' then
+		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.enhancing)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enhancing Magic]')
 			end
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.enhancing, sets.sird))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
-			end		
 		end
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
@@ -1363,6 +1340,12 @@ end
 -------------------------------------------
 
 function aftercast(spell)
+	if (string.find(spell.english,'Cur') and spell.type == "WhiteMagic" and spell.target.type == 'SELF') and UseMaxHP == 'On' then
+		MaxHP = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'MaxHP set to True')
+		end
+	end
 	choose_set()
 	if spell.type == 'WeaponSkill' and not spell.interrupted and HUD == 'On' and NotiTPReturn == 'On' then
 		send_command('wait '..TPReturnWait..';gs c TPReturn')
@@ -1387,6 +1370,19 @@ function aftercast(spell)
 		send_command('wait 3; input /ja Majesty <me>')
 	end
 end
+
+-------------------------------------------
+--              HP% CHANGE               --
+-------------------------------------------
+
+windower.register_event('hpp change',function()
+	if player.hpp <= MaxHPThreshold and MaxHP == true and UseMaxHP == 'On' then --when HP% goes below a certain amount, turn off the MaxHP flag
+		MaxHP = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'MaxHP set to False')
+		end
+	end
+end)
 
 -------------------------------------------
 --             STATUS CHANGE             --
@@ -1500,7 +1496,7 @@ windower.register_event('gain buff', function(buff)
 		if buffactive['Stoneskin'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
 		end
-		if not buffactive['Poison'] and player.hp > 50 then --then as long as we're not already poisoned and have more than 50 HP,
+		if not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already DOT'd and have more than 50 HP,
 			equip({neck="Vim Torque"}) --equip the Vim Torque to wake us up
 		end
 	end
