@@ -88,7 +88,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (E), or Remedy (R) instead of spell when you are silenced.
-OccShadows		=	12		--				How many shadows does your Occultation create (caps 12 at 600 Blue Magic skill)
+OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill)
 CharmNaked		=	'On'	--[On/Off]		Automatically strips you naked (except weapons) when you're charmed so you don't murder anyone and allowing you to be more easily slept.
 
 -- Heads Up Display --
@@ -106,7 +106,7 @@ HUDRecast		=	'On'	--[On/Off]		Displays common spells/abilities and their recast 
 Mode1Name = 'General'
 Mode2Name = 'Melee'
 Mode3Name = 'Nuke'
-Mode4Name = 'NONE'
+Mode4Name = 'Support'
 
 --HUD Recast Spells
 --  The first column here MUST be input exactly as they are spelled in-game.
@@ -118,7 +118,7 @@ RecastMode1C2 =	'Battery Charge'	RecastMode1C2SH = 'Battery'	--Column 2
 RecastMode1C3 =	'Occultation'		RecastMode1C3SH = 'Occult'	--Column 3
 RecastMode1C4 =	'Diamondhide'		RecastMode1C4SH = 'Diamond'	--Column 4
 RecastMode1C5 =	'Barrier Tusk'		RecastMode1C5SH = 'Barrier'	--Column 5
-RecastMode1C6 =	'NONE'				RecastMode1C6SH = 'NONE'	--Column 6
+RecastMode1C6 =	'Reactor Cool'		RecastMode1C6SH = 'Reactor'	--Column 6
 --Mode 2
 RecastMode2C1 =	'Erratic Flutter'	RecastMode2C1SH = 'Erratic'	--Column 1
 RecastMode2C2 =	'Occultation'		RecastMode2C2SH = 'Occult'	--Column 2
@@ -134,10 +134,10 @@ RecastMode3C4 =	'Diamondhide'		RecastMode3C4SH = 'Diamond'	--Column 4
 RecastMode3C5 =	'Barrier Tusk'		RecastMode3C5SH = 'Barrier'	--Column 5
 RecastMode3C6 =	'Cocoon'			RecastMode3C6SH = 'Cocoon'	--Column 6
 --Mode 4
-RecastMode4C1 =	'NONE'				RecastMode4C1SH = 'NONE'	--Column 1
-RecastMode4C2 =	'NONE'				RecastMode4C2SH = 'NONE'	--Column 2
-RecastMode4C3 =	'NONE'				RecastMode4C3SH = 'NONE'	--Column 3
-RecastMode4C4 =	'NONE'				RecastMode4C4SH = 'NONE'	--Column 4
+RecastMode4C1 =	'Erratic Flutter'	RecastMode4C1SH = 'Erratic'	--Column 1
+RecastMode4C2 =	'Battery Charge'	RecastMode4C2SH = 'Battery'	--Column 2
+RecastMode4C3 =	'Occultation'		RecastMode4C3SH = 'Occult'	--Column 3
+RecastMode4C4 =	'Diamondhide'		RecastMode4C4SH = 'Diamond'	--Column 4
 RecastMode4C5 =	'NONE'				RecastMode4C5SH = 'NONE'	--Column 5
 RecastMode4C6 =	'NONE'				RecastMode4C6SH = 'NONE'	--Column 6
 
@@ -201,7 +201,7 @@ function get_sets()
 	sets.idle = {
 		ammo="Staunch Tathlum",
 		head="Rawhide Mask",
-		body="Jhakri Robe +2",
+		body="Hashishin Mintan +2",
 		hands="Serpentes Cuffs",
 		legs="Carmine Cuisses +1",
 		feet="Serpentes Sabots",
@@ -218,7 +218,7 @@ function get_sets()
 
 	-- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack, Refresh, Regain, Regen)
 	sets.dps = {
-		ammo="Aurgelmir Orb",
+		ammo="Coiste Bodhar",
 		head="Adhemar Bonnet +1",
 		body="Adhemar Jacket +1",
 		hands="Adhemar Wrist. +1",
@@ -237,10 +237,11 @@ function get_sets()
 	-- Will override all other gear sets and inherit unused slots from them
 	sets.dtoverride = {
 		head="Nyame Helm",
-		body="Nyame Mail",
+		body="Malignance Tabard",
 		hands="Nyame Gauntlets",
-		legs="Nyame Flanchard",
+		legs="Hashishin Tayt +2",
 		feet="Nyame Sollerets",
+		right_ring="Defending Ring",
 	}
 
 	-- Rest
@@ -251,11 +252,11 @@ function get_sets()
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
 		ammo="Aurgelmir Orb",
-		head="Herculean Helm",
+		head="Hashishin Kavuk +2",
 		body="Assim. Jubbah +3",
 		hands="Jhakri Cuffs +2",
 		legs="Luhlaza Shalwar +3",
-		feet={ name="Herculean Boots", augments={'Accuracy+8','Weapon skill damage +5%','STR+10','Attack+3',}},
+		feet="Nyame Sollerets",
 		neck="Mirage Stole +2",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
@@ -322,15 +323,15 @@ function get_sets()
 	-- Physical Spells (STR, Accuracy, Attack)	(Macc only affects add'l effects landing, NOT the damage from the physical spell itself)
 	sets.physical = {
 		ammo="Aurgelmir Orb",
-		head="Jhakri Coronal +2",
-		body="Assim. Jubbah +3",
-		hands="Jhakri Cuffs +2",
-		legs="Jhakri Slops +2",
-		feet="Jhakri Pigaches +2",
+		head="Hashishin Kavuk +2",
+		body="Hashishin Mintan +2",
+		hands="Hashi. Bazu. +2",
+		legs="Hashishin Tayt +2",
+		feet="Hashi. Basmak +2",
 		neck="Mirage Stole +2",
 		waist="Sailfi Belt +1",
-		left_ear="Steelflash Earring",
-		right_ear="Bladeborn Earring",
+		left_ear="Mache Earring +1",
+		right_ear="Odr Earring",
 		left_ring="Ilabrat Ring",
 		right_ring="Jhakri Ring",
 		back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
@@ -343,7 +344,7 @@ function get_sets()
 		hands="Amalric Gages +1",
 		legs="Amalric Slops +1",
 		feet="Amalric Nails +1",
-		neck="Baetyl Pendant",
+		neck="Sibyl Scarf",
 		waist="Eschan Stone",
 		left_ear="Friomisi Earring",
 		right_ear="Regal Earring",
@@ -377,10 +378,10 @@ function get_sets()
 		--ammo="Pemphredo Tathlum",
 		ammo="Mavi Tathlum",
 		head="Assim. Keffiyeh +3",
-		body="Jhakri Robe +2",
+		body="Hashishin Mintan +2",
 		hands="Rawhide Gloves",
-		legs="Assim. Shalwar +3",
-		feet="Jhakri Pigaches +2",
+		legs="Hashishin Tayt +2",
+		feet="Hashi. Basmak +2",
 		neck="Mirage Stole +2",
 		waist="Acuity Belt +1",
 		left_ear="Njordr Earring",
@@ -409,7 +410,7 @@ function get_sets()
 		head="Luh. Keffiyeh +3",
 		body="Assim. Jubbah +3",
 		hands="Rawhide Gloves",
-		legs="Hashishin Tayt +1",
+		legs="Hashishin Tayt +2",
 		feet="Luhlaza Charuqs +3",
 		neck="Mirage Stole +2",
 		left_ear="Njordr Earring",
@@ -418,11 +419,11 @@ function get_sets()
 		back="Cornflower Cape",
 	}
 
-	-- Healing (Cure Potency)
+	-- Healing (Cure Potency, MND+)
 	sets.healing = {
-		head="Jhakri Coronal +2",
-		body="Jhakri Robe +2",
-		hands="Jhakri Cuffs +2",
+		head="Assim. Keffiyeh +3",
+		body="Hashishin Mintan +2",
+		hands="Hashi. Bazu +2",
 		legs="Pinga Pants",
 		feet="Nyame Sollerets", -- just for the HP
 		neck="Phalaina Locket",
@@ -467,14 +468,14 @@ function get_sets()
 
 	-- Chain Affinity (must remain equipped during midcast)
 	sets.chainaffinity = {
-		head="Hashishin Kavuk +1",
+		head="Hashishin Kavuk +2",
 		feet="Assim. Charuqs +2",
 	}
 
 	-- Burst Affinity (must remain equipped during midcast)
 	sets.burstaffinity = {
 		legs="Assim. Shalwar +3",
-		feet="Hashi. Basmak +1",
+		feet="Hashi. Basmak +2",
 	}
 
 	-- Diffusion (must remain equipped during midcast)
@@ -484,7 +485,7 @@ function get_sets()
 
 	-- Efflux
 	sets.efflux = {
-		legs="Hashishin Tayt +1",
+		legs="Hashishin Tayt +2",
 	}
 
 	-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
@@ -531,7 +532,7 @@ TopVersion = 'Sandspin' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Sandspin'
-FileVersion = '08.13.22'
+FileVersion = '09.29.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -542,9 +543,22 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+09.29.22 (Version Compatibility Codename: Sandspin)
+-Added missing listings in the /fileinfo printout for a few Notifications.
+-Added Silver Knife to list of Adoulin/Town areas.
+-Fixed an issue where the spell cooldown timer would continue during the brief period between setting your spells right after setting them a first time, showing the new spell set name with the old timer attached to it.
+-Removed Gearswaps built-in showswaps function from the files debug mode.
+
+09.04.22 (Version Compatibility Codename: Sandspin)
+-Added all DOTs to the rule that removes Stoneskin if asleep.
+
+08.28.22 (Version Compatibility Codename: Sandspin)
+-Adjusted what the fastcast set ignores to include all "Ring" items (previously would ignore only Warp and Dimensional Rings specifically, will now also ignore XP/CP rings)
+-Fixed the Earth set name so it equips properly.
+
 08.13.22 (Version Compatibility Codename: Sandspin)
 -Added Leafallia to list of towns.
--Added cancelling Stonekin if its preventing poison from removing sleep, otherwise equip the Opo-opo Necklace per usual.
+-Added cancelling Stoneskin if its preventing poison from removing sleep, otherwise equip the Opo-opo Necklace per usual.
 -Added equipping the DT Override set when petrified, stunned, or terrored.
 -Added option to remove all gear (except weapons) when you are charmed.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
@@ -753,7 +767,7 @@ Healing = S{
 -------------------------------------------
 
 AdoulinZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
     }
 
 BastokZones = S{
@@ -769,7 +783,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -884,7 +898,6 @@ if BLUAlert == 'On' then
 end
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -902,6 +915,7 @@ function self_command(command)
 		end
 		choose_set()
 		Mode = 'Mode1'
+		SpellSetCooldown = 0
 	elseif command == 'Mode2' then
 		if HUD == 'On' then
 			send_command('text mode text "Mode: '..Mode2Name..';text mode color '..Mode2color..'')
@@ -910,6 +924,7 @@ function self_command(command)
 		end
 		choose_set()
 		Mode = 'Mode2'
+		SpellSetCooldown = 0
 	elseif command == 'Mode3' then
 		if HUD == 'On' then
 			send_command('text mode text "Mode: '..Mode3Name..';text mode color '..Mode3color..'')
@@ -918,6 +933,7 @@ function self_command(command)
 		end
 		choose_set()
 		Mode = 'Mode3'
+		SpellSetCooldown = 0
 	elseif command == 'Mode4' then
 		if HUD == 'On' then
 			send_command('text mode text "Mode: '..Mode4Name..';text mode color '..Mode4color..'')
@@ -926,6 +942,7 @@ function self_command(command)
 		end
 		choose_set()
 		Mode = 'Mode4'
+		SpellSetCooldown = 0
 	elseif command == 'DT' then
 		if DTOverride == 'Off' then
 			DTOverride = 'On'
@@ -1186,6 +1203,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
+		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -1557,7 +1577,7 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Magical]')
 		end
-	elseif not (spell.english == 'Warp Ring' or spell.english == 'Dim. Ring (Dem)' or spell.english == 'Dim. Ring (Holla)' or spell.english == 'Dim. Ring (Mea)' or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
@@ -1600,7 +1620,7 @@ function midcast(spell)
 				end
 			end
 		elseif Earth:contains(spell.english) then
-			equip(sets.earth)
+			equip(sets.magical.earth)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Earth]')
 			end
@@ -1830,17 +1850,12 @@ windower.register_event('gain buff', function(buff)
 		end
 	end
 	if (buff == 2 or buff == 19) then --If we get put to sleep,
-		if buffactive['Stoneskin'] and buffactive['Poison'] then --first check and remove stoneskin if its up and we're poisoned
+		if buffactive['Stoneskin'] and (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) then --first check and remove stoneskin if its up and we're DOT'd
 			send_command('cancel 37')
 		else
 			equip(set_combine({neck="Opo-opo Necklace"}, sets.dtoverride)) --otherwise, equip the DT Override set and the Opo-opo Necklace for free TP
 		end
 	end
-
-	if buff == 2 or buff == 19 and buffactive['Stoneskin'] then --If we get slept, remove stoneskin if its on
-		send_command('cancel 37')
-	end
-
 	if buff == 7 or Buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the DT Override set
 		equip(sets.dtoverride)
 	end
@@ -3111,6 +3126,18 @@ windower.register_event('incoming text',function(org)
 		elseif org:find('Water') then
 			send_command('input /p Water <call14>')
 		end
+	elseif NotiSortie == 'On' and org:find('Degei') then
+		if org:find('Flaming Kick') then
+			send_command('input /p Water (Flaming Kick) <call14>')
+		elseif org:find('Flashflood') then
+			send_command('input /p Lightning (Flashflood) <call14>')
+		elseif org:find('Icy Grasp') then
+			send_command('input /p Fire (Icy Grasp) <call14>')
+		elseif org:find('Eroding Flesh') then
+			send_command('input /p Wind (Eroding Flesh) <call14>')
+		elseif org:find('Fulminous Smash') then
+			send_command('input /p Earth (Fulminous Smash) <call14>')
+		end
 	end
 end)
 
@@ -3121,9 +3148,6 @@ end)
 function file_unload()
 	if BLUAlert == 'On' then
 		send_command('lua unload blualert') --unload the blualert plugin
-	end
-	if Debug == 'On' then
-		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
 	end
 	if HUD == 'On' then
 		--delete the different text objects
