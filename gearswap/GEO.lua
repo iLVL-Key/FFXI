@@ -117,11 +117,11 @@ function get_sets()
 	-- Idle (Movement Speed, Refresh, Regen, Damage Taken-, Enmity-)
 	-- Used when you do NOT have a Luopan bubble out.
 	sets.idle = {
-		main="Bolelabunga",
-		sub="Genmei Shield",
+		main="Idris",
+		sub="Ammurapi Shield",
 		range="Dunna",
 		head="Befouled Crown",
-		body="Agwu's Robe",
+		body="Azimuth Coat +2",
 		hands="Bagua Mitaines +3",
 		legs="Nyame Flanchard",
 		feet="Geo. Sandals +3",
@@ -139,7 +139,7 @@ function get_sets()
 	-- Combines with Idle set, only necessary to set the slots with specific desired stats
 	sets.luopan = set_combine(sets.idle, {
 		main="Idris",
-		head="Azimuth Hood +1",
+		head="Azimuth Hood +2",
 		hands="Geomancy Mitaines +3",
 		legs="Nyame Flanchard",
 		feet="Bagua Sandals +3",
@@ -150,11 +150,10 @@ function get_sets()
 	-- DT Override (Damage Taken-, Magic Evasion)
 	-- Will override all other gear sets but still inherit unused slots from them
 	sets.dtoverride = {
-		head="Nyame Helm",
+		head="Azimuth Hood +2",
 		body="Nyame Mail",
-		hands="Nyame Gauntlets",
+		hands="Azimuth Gloves +2",
 		legs="Nyame Flanchard",
-		feet="Nyame Sollerets",
 		left_ring="Defending Ring",
 	}
 
@@ -165,12 +164,12 @@ function get_sets()
 
 	-- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack, Refresh, Regain, Regen)
 	sets.dps = {
-		head="Nyame Helm",
-		body="Nyame Mail",
-		hands="Nyame Gauntlets",
-		legs="Nyame Flanchard",
-		feet="Nyame Sollerets",
-		neck="Rep. Plat. Medal",
+		head="Azimuth Hood +2",
+		body="Azimuth Coat +2",
+		hands="Azimuth Gloves +2",
+		legs="Azimuth Tights +2",
+		feet="Azimuth Gaiters +2",
+		neck="Ziel Charm",
 		waist="Windbuffet Belt +1",
 		left_ear="Mache Earring +1",
 		right_ear="Cessance Earring",
@@ -197,30 +196,31 @@ function get_sets()
 
 	-- Hexa Strike (combines with Weapon Skill set above)
 	sets.hexa = set_combine(sets.ws, {
+		neck="Fotia Gorget",
 		waist="Fotia Belt",
 	})
 
 	-- Cataclysm (combines with Weapon Skill set above)
 	sets.cata = set_combine(sets.ws, {
-    head="Pixie Hairpin +1",
-    body="Amalric Doublet +1",
-    hands="Amalric Gages +1",
-    legs="Amalric Slops +1",
-    feet="Amalric Nails +1",
-    neck="Baetyl Pendant",
-    waist="Acuity Belt +1",
-    left_ear="Malignance Earring",
-    right_ear="Regal Earring",
-    left_ring="Archon Ring",
-    right_ring="Metamor. Ring +1",
-    back="Aurist's Cape +1",
+		head="Pixie Hairpin +1",
+		body="Amalric Doublet +1",
+		hands="Amalric Gages +1",
+		legs="Amalric Slops +1",
+		feet="Amalric Nails +1",
+		neck="Baetyl Pendant",
+		waist="Acuity Belt +1",
+		left_ear="Malignance Earring",
+		right_ear="Regal Earring",
+		left_ring="Archon Ring",
+		right_ring="Metamor. Ring +1",
+		back="Aurist's Cape +1",
 	})
 
 	-- Fast Cast (cap is 80%)
 	sets.fastcast = {
 		head="Amalric Coif +1", --11%
 		body="Agwu's Robe", --8%
-	    hands="Amalric Gages +1", --SIRD 11%
+	    hands="Leyline Gloves", --5+1
 		legs="Geomancy Pants", --9%???
 		feet="Amalric Nails +1", --6%
 		neck="Baetyl Pendant", --4%
@@ -235,11 +235,11 @@ function get_sets()
 	-- Geomancy (Geomancy+, Geomancy Skill, Handbell Skill, Indicolure duration+, Lupoan duration+)
 	sets.geomancy = {
 		main="Idris",
-		head="Azimuth Hood +1",
+		head="Azimuth Hood +2",
 		body="Bagua Tunic",
 		hands="Geomancy Mitaines +3",
 		legs="Bagua Pants +3",
-		feet="Azimuth Gaiters +1",
+		feet="Azimuth Gaiters +2",
 		neck="Bagua Charm +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -263,12 +263,13 @@ function get_sets()
 
 	-- Magic Accuracy (Magic Accuracy)
 	sets.magicaccuracy = {
-		head="Jhakri Coronal +2",
-		body="Jhakri Robe +2",
-		hands="Jhakri Cuffs +2",
-		legs="Jhakri Slops +2",
-		feet="Jhakri Pigaches +2",
+		head="Azimuth Hood +2",
+		body="Azimuth Coat +2",
+		hands="Geo. Mitaines +3",
+		legs="Azimuth Tights +2",
+		feet="Geo. Sandals +3",
 		waist="Acuity Belt +1",
+		left_ear="Malignance Earring",
 		right_ear="Regal Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Metamor. Ring +1",
@@ -289,15 +290,14 @@ function get_sets()
 		back="Solemnity Cape",
 	}
 
-	-- Healing (Cure Potency, Healing Magic)
+	-- Healing (Cure Potency, Healing Magic Skill)
 	sets.healing = {
-		main="Tamaxchi", --22
 		head="Vanya Hood", --10
-		body="Vanya Robe",
+		body="Vrikodara Jupon", --13
 		hands="Vanya Cuffs",
 		legs="Vanya Slops",
 		feet="Vanya Clogs", --5
-		neck="Unmoving Collar +1",
+		neck="Nodens Gorget", --5
 		left_ear="Mendi. Earring", --5
 		right_ear="Regal Earring",
 		left_ring="Stikini Ring +1",
@@ -305,9 +305,22 @@ function get_sets()
 		back="Solemnity Cape", --7
 	}
 
-	-- Aspir/Drain (Aspir/Drain, Dark Magic)
-	sets.aspirdrain = set_combine(sets.buff, {
+	-- Aspir/Drain (Aspir/Drain, Dark Magic Skill)
+	-- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
+	sets.aspirdrain = set_combine(sets.magicaccuracy, {
+		head="Bagua Galero",
+		feet="Agwu's Pigaches",
 		neck="Erra Pendant",
+		waist="Fucho-no-obi",
+		left_ring="Evanescence Ring",
+	})
+
+	-- Enfeeble (Enfeebling Magic Skill)
+	-- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
+	sets.enfeeble = set_combine(sets.magicaccuracy, {
+		main="Gada",
+		left_ring="Kishar Ring",
+		back="Lifestream Cape",
 	})
 
 	-- Refresh (Refresh augmenting gear, not Refresh+)
@@ -342,7 +355,7 @@ function get_sets()
 
 	-- Full Circle (Enhances Curative Recantation gear)
 	sets.fullcircle = {
-		head="Azimuth Hood +1",
+		head="Azimuth Hood +2",
 		hands="Bagua Mitaines +3",
 	}
 
@@ -398,7 +411,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Indi-Precision' --Leave this alone, used for debugging purposes
+TopVersion = 'Indi-Regen' --Leave this alone, used for debugging purposes
 
 
 
@@ -410,8 +423,8 @@ TopVersion = 'Indi-Precision' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Indi-Precision'
-FileVersion = '08.14.22'
+BottomVersion = 'Indi-Regen'
+FileVersion = '09.29.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -422,10 +435,21 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+09.29.22 (Version Compatibility Codename: Indi-Regen)
+-Added missing listings in the /fileinfo printout for a few Notifications.
+-Added Silver Knife to list of Adoulin/Town areas.
+-Removed Gearswaps built-in showswaps function from the files debug mode.
+
+09.07.22 (Version Compatibility Codename: Indi-Regen)
+-Added Enfeebling set.
+-Adjusted the Aspir/Drain set to combine with the Magic Accuracy set instead of the Buff set.
+-Adjusted what the fastcast set ignores to include all "Ring" items (previously would ignore only Warp and Dimensional Rings specifically, will now also ignore XP/CP rings)
+-Updated Version Compatibility Codename to Indi-Regen.
+
 08.14.22 (Version Compatibility Codename: Indi-Precision)
 -Added AutoEntrust option. Automatically uses Entrust when you cast an Indi- spell on a party member.
 -Added Leafallia to list of towns.
--Added cancelling Stonekin if its preventing poison from removing sleep.
+-Added cancelling Stoneskin if its preventing poison from removing sleep.
 -Added a Cataclysm set.
 -Split the Cursna set into Cursna and Holy Water.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
@@ -497,7 +521,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -------------------------------------------
 
 AdoulinZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
     }
 
 BastokZones = S{
@@ -513,7 +537,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -566,11 +590,12 @@ if HUD == 'On' then
 	send_command('wait .1;text entrustlabel create "Entrust";wait .3;text entrustlabel size '..FontSize..';text entrustlabel pos '..HUDposXColumn5..' -100;text entrustlabel color 255 255 255;text entrustlabel bg_transparency 1') --Entrust
 	send_command('wait .1;text entrust create "'..Entrust..'";wait .3;text entrust size '..FontSize..';text entrust pos '..HUDposXColumn5..' -100;text entrust color 255 50 50;text entrust bg_transparency 1') --Entrust
 	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('wait .2;text blaze create "[ Blaze ]";wait .3;text blaze size '..FontSize..';text blaze pos '..HUDposXColumn1..' -100;text blaze bg_transparency 1')
-	send_command('wait .2;text lasting create "[ Lasting ]";wait .3;text lasting size '..FontSize..';text lasting pos '..HUDposXColumn1..' -100;text lasting bg_transparency 1')
-	send_command('wait .2;text dematerialize create "[ Demat. ]";wait .3;text dematerialize size '..FontSize..';text dematerialize pos '..HUDposXColumn1..' -100;text dematerialize bg_transparency 1')
-	send_command('wait .2;text life create "[ Life ]";wait .3;text life size '..FontSize..';text life pos '..HUDposXColumn1..' -100;text life bg_transparency 1')
 	send_command('wait .2;text radial create "[ Radial ]";wait .3;text radial size '..FontSize..';text radial pos '..HUDposXColumn1..' -100;text radial bg_transparency 1')
+	send_command('wait .2;text blaze create "[ Blaze ]";wait .3;text blaze size '..FontSize..';text blaze pos '..HUDposXColumn1..' -100;text blaze bg_transparency 1')
+	send_command('wait .2;text dematerialize create "[ Demat. ]";wait .3;text dematerialize size '..FontSize..';text dematerialize pos '..HUDposXColumn1..' -100;text dematerialize bg_transparency 1')
+	send_command('wait .2;text lasting create "[ Eclp/Last ]";wait .3;text lasting size '..FontSize..';text lasting pos '..HUDposXColumn1..' -100;text lasting bg_transparency 1')
+	send_command('wait .2;text life create "[ Life ]";wait .3;text life size '..FontSize..';text life pos '..HUDposXColumn1..' -100;text life bg_transparency 1')
+
 else
 	windower.add_to_chat(8,'Keys GEOMANCER file ver: '..FileVersion..'')
 	windower.add_to_chat(8,'Type //fileinfo for more information')
@@ -591,7 +616,6 @@ send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboar
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -751,6 +775,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
+		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -776,8 +803,6 @@ function self_command(command)
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
 			if TownZones:contains(world.area) then
-			-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
-				send_command('wait 5;gs c Choose Set')
 			end
 		else
 			send_command('wait 5;gs c Choose Set')
@@ -788,7 +813,6 @@ function self_command(command)
 		send_command('wait 5;gs c Lockstyle')
 	elseif command == 'Lockstyle' then
 		if TownZones:contains(world.area) then
-		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
 			send_command('input /lockstyleset '..LockstyleField..'')
@@ -1124,7 +1148,7 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Elemental]')
 		end
-	elseif not (spell.english == 'Warp Ring' or spell.english == 'Dim. Ring (Dem)' or spell.english == 'Dim. Ring (Holla)' or spell.english == 'Dim. Ring (Mea)' or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
@@ -1144,6 +1168,11 @@ function midcast(spell)
 		end
 	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
 		equip(sets.elemental)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Elemental]')
+		end
+	elseif spell.skill == 'Enfeebling Magic' then
+		equip(sets.enfeeble)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Elemental]')
 		end
@@ -1664,9 +1693,6 @@ end)
 -------------------------------------------
 
 function file_unload()
-	if Debug == 'On' then
-		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
-	end
 	if HUD == 'On' then
 		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text bg4 delete;text indicolure delete;text indicolurelabel delete;text geocolure delete;text geocolurelabel delete;text entrust delete;text entrustlabel delete;text blaze delete;text lasting delete;text dematerialize delete;text life delete;text radial delete;text loading delete;text notifications delete;text debuffs delete') --delete the different text objects
 	end
