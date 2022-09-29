@@ -20,10 +20,11 @@ To switch between gear modes, use any of these three options:
 	CTRL+G
 	(Default is G, can be changed in the settings)
 
-To use /BLU AOE spells, create a macro with the following:
-	/console gs c BLUAOE
-This will cycle through Sheep Song, Soporific, Stinking Gas, Geist Wall, Sound Blast, and Jettatura, in that order, as recasts timers allow.
-Jettatura is last because it is only a small conal gaze, I recommend having that on it's own macro mostly for single target hate.
+To use /BLU AOE spells, use a macro for Sheep Song and it will cycle through Sheep Song, Geist Wall,
+Stinking Gas, and Soporific, in that order, as recasts timers allow.
+
+To use /BLU Single target spells, use a macro for Flash and it will cycle through Flash, Jettatura,
+and Blank Gaze, in that order, as recasts timers and distance allow.
 
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
@@ -403,11 +404,11 @@ function get_sets()
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
 		ammo="Aurgelmir Orb",
-		head="Sakpata's Helm",
-		body="Sakpata's Plate",
+		head="Nyame Helm",
+		body="Nyame Mail",
 		hands="Sakpata's Gauntlets", --Odyssean Gauntlets (2+5)
 		legs="Sakpata's Cuisses",
-		feet="Sulev. Leggings +2",
+		feet="Nyame Sollerets",
 		neck="Unmoving Collar +1",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
@@ -519,7 +520,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Shield Mastery' --Leave this alone, used for debugging purposes
+TopVersion = 'Invincible' --Leave this alone, used for debugging purposes
 
 
 
@@ -531,8 +532,8 @@ TopVersion = 'Shield Mastery' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Shield Mastery'
-FileVersion = '09.10.22'
+BottomVersion = 'Invincible'
+FileVersion = '09.29.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -542,6 +543,13 @@ FileVersion = '09.10.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+09.29.22 (Version Compatibility Codename: Invincible)
+-Overhauled how enmity spells are handled. No more macro with a custom command in it. If you are /BLU, just use a macro for Sheep Song and it will cast Sheep Song, Geist Wall, Stinking Gas, or Soporific, in that order, as recasts timers allow. Additionally, now you can use a macro for Flash and it will cast Flash, then if you are /BLU, Jettatura or Blank Gaze depending on recast timers and distance to target.
+-Added missing listings in the /fileinfo printout for a few Notifications.
+-Added Silver Knife to list of Adoulin/Town areas.
+-Removed Gearswaps built-in showswaps function from the files debug mode.
+-Updated Version Compatibility Codename to Invincible.
 
 09.10.22 (Version Compatibility Codename: Shield Mastery)
 -Added AutoDEmblem option. Automatically activates Divine Emblem before a Flash when Divine Emblem is up.
@@ -610,7 +618,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -------------------------------------------
 
 AdoulinZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
     }
 
 BastokZones = S{
@@ -626,7 +634,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -715,7 +723,6 @@ send_command('alias mode gs c Mode') --creates the Mode aliase
 send_command('bind ^'..ModeCtrlPlus..' gs c Mode') --creates the gear mode keyboard shortcut
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -832,8 +839,9 @@ function self_command(command)
 		windower.add_to_chat(8,'(Copy and paste each set from this file to the new one)')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--                   Notes                   --')
+		windower.add_to_chat(3,'--                   NOTES                   --')
 		windower.add_to_chat(3,'-------------------------------------------')
+		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Place both this file and the sounds folder')
 		windower.add_to_chat(8,'inside the GearSwap data folder')
 		windower.add_to_chat(200,'ex:     /addons/GearSwap/data/sounds/')
@@ -848,11 +856,19 @@ function self_command(command)
 		windower.add_to_chat(200,'        CTRL+G')
 		windower.add_to_chat(8,'        (Default is G, can be changed in the settings)')
 		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'To use /BLU AOE spells, use a macro for Sheep Song and it will')
+		windower.add_to_chat(8,'cycle through Sheep Song, Geist Wall, Stinking Gas, and Soporific,')
+		windower.add_to_chat(8,'in that order, as recasts timers allow.')
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'To use /BLU Single target spells, use a macro for Flash and it')
+		windower.add_to_chat(8,'will cycle through Flash, Jettatura, and Blank Gaze, in that order,')
+		windower.add_to_chat(8,'as recasts timers and distance allow.')
+		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Run the Lockstyle function yourself at any time by typing')
 		windower.add_to_chat(200,'        //lockstyle or //lstyle')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'For the HUD function, suggested placement')
-		windower.add_to_chat(8,'is center screen, just above your chat log.')
+		windower.add_to_chat(8,'For the HUD function, suggested placement is')
+		windower.add_to_chat(8,'center screen, just above your chat log.')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'IMPORTANT:')
 		windower.add_to_chat(8,'When you load this file for the first time, your HUD')
@@ -861,6 +877,31 @@ function self_command(command)
 		windower.add_to_chat(8,'and ColumnSpacer options below as needed.')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Recommended Windower Addons: Text')
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'-------------------------------------------')
+		windower.add_to_chat(8,'--               PRO TIPS                --')
+		windower.add_to_chat(8,'-------------------------------------------')
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'There are 3 Modes available in this file:')
+		windower.add_to_chat(200,'Auto-')
+		windower.add_to_chat(8,'Will decide gear based on wether or not the game thinks you are in')
+		windower.add_to_chat(8,'combat. Spells will use their specific gear sets by themselves when')
+		windower.add_to_chat(8,'you are not in combat (so you can get full gear bonuses), and will')
+		windower.add_to_chat(8,'override them with the SIRD set if you are in combat. Will use')
+		windower.add_to_chat(8,'idle/tank set if disengaged but in combat (ie kiting), or')
+		windower.add_to_chat(8,'idle/refresh set if disengaged and not in combat.')
+		windower.add_to_chat(200,'Combat-')
+		windower.add_to_chat(8,'Gear set choices will always behave as if you are in combat.')
+		windower.add_to_chat(200,'Neutral-')
+		windower.add_to_chat(8,'Gear set choices will always behave as if you are not in combat.')
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'Auto should work fine in most cases, but be aware that the game')
+		windower.add_to_chat(8,'isn\'t always correct about when you are in combat. For example,')
+		windower.add_to_chat(8,'if you run by a mob and aggro it, you\'ll notice the battle music')
+		windower.add_to_chat(8,'does not start. If you are kiting a mob, and it goes yellow, the')
+		windower.add_to_chat(8,'game will think you are out of combat. You can either keep up')
+		windower.add_to_chat(8,'actions on the mob to keep it claimed (voke, flash, etc) or switch')
+		windower.add_to_chat(8,'into Combat mode manually.')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(3,'--                  Options                  --')
@@ -905,6 +946,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
+		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -966,20 +1010,6 @@ function self_command(command)
 		end
 	elseif command == 'NotiLowMPToggle' then
 		NotiLowMPToggle = 'Off'
-	elseif command == 'BLUAOE' then
-		if windower.ffxi.get_spell_recasts()[584] == 0 then --Sheep Song
-			send_command('input /ma "Sheep Song" <stnpc>')
-		elseif windower.ffxi.get_spell_recasts()[598] == 0 then --Soporific
-			send_command('input /ma "Soporific" <stnpc>')
-		elseif windower.ffxi.get_spell_recasts()[537] == 0 then --Stinking Gas
-			send_command('input /ma "Stinking Gas" <stnpc>')
-		elseif windower.ffxi.get_spell_recasts()[605] == 0 then --Geist Wall
-			send_command('input /ma "Geist Wall" <stnpc>')
-		elseif windower.ffxi.get_spell_recasts()[572] == 0 then --Sound Blast
-			send_command('input /ma "Sound Blast" <stnpc>')
-		elseif windower.ffxi.get_spell_recasts()[575] == 0 then --Jettatura
-			send_command('input /ma "Jettatura" <stnpc>')
-		end
 	end
 end
 
@@ -1338,9 +1368,33 @@ function precast(spell)
 	elseif AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not buffactive['Majesty'] and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[150] == 0 then
 		cancel_spell()
 		send_command('input /ja Majesty <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
-	elseif AutoDEmblem == 'On' and spell.english == 'Flash' and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[80] == 0 then
-		cancel_spell()
-		send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..'')
+	elseif spell.english == "Flash" then
+		if windower.ffxi.get_spell_recasts()[112] == 0 then
+			if AutoDEmblem == 'On' and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[80] == 0 then
+				cancel_spell()
+				send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..'')
+			end
+			equip(sets.fastcast)
+		elseif windower.ffxi.get_spell_recasts()[575] == 0 and spell.target.distance <= 9 and player.sub_job == 'BLU' and player.sub_job_level >= 1 then
+			cancel_spell()
+			send_command('input /ma "Jettatura" '..spell.target.raw..'')
+		elseif windower.ffxi.get_spell_recasts()[537] == 0 and player.sub_job == 'BLU' and player.sub_job_level >= 1 then
+			cancel_spell()
+			send_command('input /ma "Blank Gaze" '..spell.target.raw..'')
+		end
+	elseif spell.english == "Sheep Song" then
+		if windower.ffxi.get_spell_recasts()[584] == 0 then
+			equip(sets.fastcast)
+		elseif windower.ffxi.get_spell_recasts()[605] == 0 then
+			cancel_spell()
+			send_command('input /ma "Geist Wall" '..spell.target.raw..'')
+		elseif windower.ffxi.get_spell_recasts()[537] == 0 then
+			cancel_spell()
+			send_command('input /ma "Stinking Gas" '..spell.target.raw..'')
+		elseif windower.ffxi.get_spell_recasts()[598] == 0 then
+			cancel_spell()
+			send_command('input /ma "Soporific" '..spell.target.raw..'')
+		end
 	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 		if Debug == 'On' then
@@ -2052,9 +2106,6 @@ end)
 -------------------------------------------
 
 function file_unload()
-	if Debug == 'On' then
-		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
-	end
 	if HUD == 'On' then
 		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text phalanx delete;text crusade delete;text palisade delete;text reprisal delete;text defender delete;text cocoon delete;text enlight delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
 	end
@@ -2066,9 +2117,23 @@ end
 --            KEYS NOTEPAD               --
 -------------------------------------------
 
-Default text size is 12
-Large 15 (+24)
-Medium 12 (+20)
-Small 9 (+15)
+/BLU spells:
+30 points: (sub job 50 or under)
+Cocoon			-Cast for defense
+Blank Gaze		-Cast for single target hate
+Jettatura		-Cast for single target/narrow frontal cone hate
+Sheep Song 		-Cast for AOE hate
+Geist Wall		-Cast for AOE hate
+Stinking Gas	-Cast for AOE hate
+Soporific		-Cast for AOE hate
+Wild Oats		-Beast Killer trait
+Sprout Smack	-Beast Killer trait
+Foot Kick		-Lizard Killer trait
+Claw Cyclone	-Lizard Killer trait
+Power Attack	-Plantoid Killer trait
+Mandibular Bite	-Plantoid Killer trait
+35 points: (sub job 51 or higher)
+Feather Storm	-HP+5 trait
+Helldive		-HP+5 trait
 
  --]]
