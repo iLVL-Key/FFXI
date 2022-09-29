@@ -50,6 +50,20 @@ AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (or Remedy) instead of spell when you are silenced.
 AutoRelease		=	'On'	--[On/Off]		Automatically uses Release when you summon an avatar with one already out.
 
+-- Avatar Macro Pages --
+HomePage		=	'1'		--[1-10]		This is your starting macro page with all your summoning macros on them
+IfritPage		=	'2'		--[1-10]		Individual macro pages for avatars
+TitanPage		=	'3'		--[1-10]
+LeviathanPage	=	'4'		--[1-10]
+GarudaPage		=	'5'		--[1-10]
+ShivaPage		=	'6'		--[1-10]
+RamuhPage		=	'7'		--[1-10]
+CarbunclePage	=	'8'		--[1-10]
+FenrirPage		=	'9'		--[1-10]
+CaitSithPage	=	'8'		--[1-10]
+SirenPage		=	'10'	--[1-10]
+DiabolosPage	=	'9'		--[1-10]
+
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
 HUDposX			=	967		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -113,15 +127,15 @@ function get_sets()
 	-- Used when you do NOT have an avatar out.
 	sets.idle = {
 		main="Malignance Pole",
-		sub="Enki Strap",
+		sub="Vox Grip",
 		ammo="Staunch Tathlum",
-		head="Beckoner's Horn +1",
+		head="Beckoner's Horn +2",
 		body="Amalric Doublet +1",
 		hands="Asteria Mitts +1",
 		legs="Assid. Pants +1",
 		feet="Herald's Gaiters",
 		neck="Twilight Torque",
-		waist="Carrier's Sash",
+		waist="Regal Belt",
 		left_ear="Lugalbanda Earring",
 		right_ear="Ethereal Earring",
 		left_ring="Stikini Ring +1",
@@ -135,9 +149,9 @@ function get_sets()
 	sets.avatar = set_combine(sets.idle, {
 		main="Gridarvor",
 		sub="Vox Grip",
-		ammo="Sancus Sachet",
-		head="Beckoner's Horn +1",
-		body="Beck. Doublet +1",
+		ammo="Sancus Sachet +1",
+		head="Beckoner's Horn +2",
+		body="Beck. Doublet +2",
 		hands="Lamassu Mitts +1",
 		legs="Assid. Pants +1",
 		feet="Herald's Gaiters",
@@ -153,11 +167,11 @@ function get_sets()
 	-- DT Override (Damage Taken-, Magic Evasion)
 	-- Will override all other gear sets but still inherit unused slots from them
 	sets.dtoverride = {
-		head="Nyame Helm",
-		body="Nyame Mail",
+		body="Beck. Doublet +2",
 		hands="Nyame Gauntlets",
-		legs="Nyame Flanchard",
+		legs="Beck. Spats +2",
 		feet="Nyame Sollerets",
+		neck="Smn. Collar +2",
 		right_ring="Defending Ring",
 	}
 
@@ -180,8 +194,7 @@ function get_sets()
 	sets.fastcast = {
 		head="Amalric Coif +1", --11%
 		body="Amalric Doublet +1", --4% (from augment)
-	    hands="Amalric Gages +1", --SIRD 11%
-		legs="Enticer's Pants",
+	    hands="Leyline Gloves", --5+1
 		feet="Amalric Nails +1", --6%
 		neck="Baetyl Pendant", --4%
 		waist="Witful Belt", --3%
@@ -196,11 +209,13 @@ function get_sets()
 	sets.bpdelay = {
 		main="Espiritus",
 		sub="Vox Grip",
-		ammo="Sancus Sachet",
-		head="Beckoner's Horn +1",
+		ammo="Sancus Sachet +1",
+		head="Beckoner's Horn +2",
 		body="Con. Doublet +3",
 		hands="Lamassu Mitts +1",
+		legs="Beck. Spats +2",
 		neck="Melic Torque",
+		waist="Kobo Obi",
 		left_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -211,18 +226,18 @@ function get_sets()
 	sets.bpragephysical = {
 		main="Gridarvor",
 		sub="Elan Strap",
-		ammo="Sancus Sachet",
+		ammo="Sancus Sachet +1",
 		head={ name="Merlinic Hood", augments={'Blood Pact Dmg.+10','Pet: DEX+3',}},
 		body="Con. Doublet +3",
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
 		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
-		neck="Shulmanu Collar",
+		neck="Smn. Collar +2",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
 		right_ear="Gelos Earring",
-		left_ring="Varar Ring",
-		right_ring="Varar Ring",
+		left_ring="Varar Ring +1",
+		right_ring="Varar Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
 	}
 
@@ -230,18 +245,18 @@ function get_sets()
 	sets.bpragemagical = {
 		main="Grioavolr",
 		sub="Elan Strap",
-		ammo="Sancus Sachet",
+		ammo="Sancus Sachet +1",
 		head={ name="Merlinic Hood", augments={'Blood Pact Dmg.+10','Pet: DEX+3',}},
 		body="Con. Doublet +3",
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
 		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
-		neck="Melic Torque",
-		waist="Incarnation Sash",
+		neck="Smn. Collar +2",
+		waist="Regal Belt",
 		left_ear="Lugalbanda Earring",
 		right_ear="Gelos Earring",
-		left_ring="Varar Ring",
-		right_ring="Varar Ring",
+		left_ring="Varar Ring +1",
+		right_ring="Varar Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
 	}
 
@@ -249,18 +264,18 @@ function get_sets()
 	sets.bpragehybrid = {
 		main="Grioavolr",
 		sub="Elan Strap",
-		ammo="Sancus Sachet",
+		ammo="Sancus Sachet +1",
 		head={ name="Merlinic Hood", augments={'Blood Pact Dmg.+10','Pet: DEX+3',}},
 		body="Con. Doublet +3",
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
 		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
-		neck="Melic Torque",
+		neck="Smn. Collar +2",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
 		right_ear="Gelos Earring",
-		left_ring="Varar Ring",
-		right_ring="Varar Ring",
+		left_ring="Varar Ring +1",
+		right_ring="Varar Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
 	}
 
@@ -269,11 +284,13 @@ function get_sets()
 		main="Grioavolr",
 		main="Espiritus",
 		sub="Vox Grip",
-		ammo="Sancus Sachet",
-		head="Beckoner's Horn +1",
-		body="Beck. Doublet +1",
+		ammo="Sancus Sachet +1",
+		head="Beckoner's Horn +2",
+		body="Beck. Doublet +2",
 		hands="Lamassu Mitts +1",
+		legs="Beck. Spats +2",
 		neck="Melic Torque",
+		waist="Kobo Obi",
 		left_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -284,31 +301,17 @@ function get_sets()
 	sets.bpwarddebuff = {
 		main="Grioavolr",
 		sub="Vox Grip",
-		ammo="Sancus Sachet",
-		head="Beckoner's Horn +1",
-		body="Beck. Doublet +1",
+		ammo="Sancus Sachet +1",
+		head="Beckoner's Horn +2",
+		body="Beck. Doublet +2",
 		hands="Lamassu Mitts +1",
+		legs="Beck. Spats +2",
 		neck="Adad Amulet",
 		waist="Incarnation Sash",
 		left_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
-	}
-
-	-- Elemental Spells (Magic Attack Bonus, Magic Damage, INT, Magic Accuracy)
-	sets.elemental = {
-		body="Cohort Cloak +1",
-		hands="Amalric Gages +1",
-		legs="Amalric Slops +1",
-		feet="Amalric Nails +1",
-		neck="Baetyl Pendant",
-		waist="Eschan Stone",
-		left_ear="Friomisi Earring",
-		right_ear="Halasz Earring",
-		left_ring="Shiva Ring +1",
-		right_ring="Metamor. Ring +1",
-		back="Aurist's Cape +1",
 	}
 
 	-- Buff (Conserve MP)
@@ -420,7 +423,7 @@ TopVersion = 'Earthen Fury' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Earthen Fury'
-FileVersion = '08.13.22'
+FileVersion = '09.29.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -431,9 +434,21 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+09.29.22 (Version Compatibility Codename: Earthen Fury)
+-Added missing listings in the /fileinfo printout for a few Notifications.
+-Added Silver Knife to list of Adoulin/Town areas.
+-Removed the Elemental gear set.
+-Removed Gearswaps built-in showswaps function from the files debug mode.
+
+08.24.22 (Version Compatibility Codename: Earthen Fury)
+-Added Avatar Macro Pages. These will automatically swap to the correct pages for each avatar when you summon them, or go back to your "home page" when they are released or die.
+-Adjusted what the fastcast set ignores to include all "Ring" items (previously would ignore only Warp and Dimensional Rings specifically, will now also ignore XP/CP rings)
+-Fixed gear sets not equipping properly after bloodpacts or summoning an avatar.
+-Code cleanup
+
 08.13.22 (Version Compatibility Codename: Earthen Fury)
 -Added Leafallia to list of towns.
--Added cancelling Stonekin if its up and we get slept with poison on.
+-Added cancelling Stoneskin if its preventing poison from removing sleep.
 -Split the Cursna set into Cursna and Holy Water.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
@@ -490,7 +505,7 @@ BPWardDebuff = S{
 -------------------------------------------
 
 AdoulinZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
     }
 
 BastokZones = S{
@@ -506,7 +521,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -520,6 +535,11 @@ Heartbeat = 0 --set to 0 just to start the Heartbeat running
 LoadDelay = 3 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
 LoadHUD = false --starts false then switched to true after the LoadDelay
 ShowHUD = true --this changes to false when we are in a cutscene
+if pet.isvalid then
+	PetPresent = true
+else
+	PetPresent = false
+end
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 FavorRecast = 0
 SiphonRecast = 0
@@ -573,7 +593,6 @@ send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboar
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -720,6 +739,18 @@ function self_command(command)
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'UseEcho: '..(''..UseEcho..''):color(8)..'')
 		windower.add_to_chat(200,'AutoRelease: '..(''..AutoRelease..''):color(8)..'')
+		windower.add_to_chat(200,'HomePage: '..(''..HomePage..''):color(8)..'')
+		windower.add_to_chat(200,'IfritPage: '..(''..IfritPage..''):color(8)..'')
+		windower.add_to_chat(200,'TitanPage: '..(''..TitanPage..''):color(8)..'')
+		windower.add_to_chat(200,'LeviathanPage: '..(''..LeviathanPage..''):color(8)..'')
+		windower.add_to_chat(200,'GarudaPage: '..(''..GarudaPage..''):color(8)..'')
+		windower.add_to_chat(200,'ShivaPage: '..(''..ShivaPage..''):color(8)..'')
+		windower.add_to_chat(200,'RamuhPage: '..(''..RamuhPage..''):color(8)..'')
+		windower.add_to_chat(200,'CarbunclePage: '..(''..CarbunclePage..''):color(8)..'')
+		windower.add_to_chat(200,'FenrirPage: '..(''..FenrirPage..''):color(8)..'')
+		windower.add_to_chat(200,'CaitSithPage: '..(''..CaitSithPage..''):color(8)..'')
+		windower.add_to_chat(200,'SirenPage: '..(''..SirenPage..''):color(8)..'')
+		windower.add_to_chat(200,'DiabolosPage: '..(''..DiabolosPage..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
 		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
@@ -743,6 +774,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
+		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -768,7 +802,6 @@ function self_command(command)
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
 			if TownZones:contains(world.area) then
-			-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 				send_command('wait 5;gs c Choose Set')
 			end
 		else
@@ -780,7 +813,6 @@ function self_command(command)
 		send_command('wait 5;gs c Lockstyle')
 	elseif command == 'Lockstyle' then
 		if TownZones:contains(world.area) then
-		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" or world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" or world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" or world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" or world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			send_command('input /lockstyleset '..LockstyleTown..'')
 		else
 			send_command('input /lockstyleset '..LockstyleCombat..'')
@@ -880,31 +912,26 @@ function choose_set()
 			end
 		end
 		if AdoulinZones:contains(world.area) then
-		-- if world.area == "Western Adoulin" or world.area == "Eastern Adoulin" or world.area == "Celennia Memorial Library" then
 			equip(set_combine(sets.idle, sets.adoulin))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Adoulin]')
 			end
 		elseif BastokZones:contains(world.area) then
-		-- elseif world.area == "Bastok Markets" or world.area == "Bastok Mines" or world.area == "Metalworks" or world.area == "Port Bastok" then
 			equip(set_combine(sets.idle, sets.bastok))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Bastok]')
 			end
 		elseif SandyZones:contains(world.area) then
-		-- elseif world.area == "Chateau d'Oraguille" or world.area == "Northern San d'Oria" or world.area == "Port San d'Oria" or world.area == "Southern San d'Oria" then
 			equip(set_combine(sets.idle, sets.sandoria))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + San d\'Oria]')
 			end
 		elseif WindyZones:contains(world.area) then
-		-- elseif world.area == "Heavens Tower" or world.area == "Port Windurst" or world.area == "Windurst Walls" or world.area == "Windurst Waters" or world.area == "Windurst Woods" then
 			equip(set_combine(sets.idle, sets.windurst))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Windurst]')
 			end
 		elseif TownZones:contains(world.area) then
-		-- elseif world.area == "Lower Jeuno" or world.area == "Port Jeuno" or world.area == "Ru'Lude Gardens" or world.area == "Upper Jeuno" or world.area == "Aht Urhgan Whitegate" or world.area == "The Colosseum" or world.area == "Tavnazian Safehold" or world.area == "Southern San d'Oria [S]" or world.area == "Bastok Markets [S]" or world.area == "Windurst Waters [S]" or world.area == "Mhaura" or world.area == "Selbina" or world.area == "Rabao" or world.area == "Kazham" or world.area == "Norg" or world.area == "Nashmau" or world.area == "Mog Garden" then
 			equip(set_combine(sets.idle, sets.town))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Town]')
@@ -1054,14 +1081,14 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
 		end
-	elseif spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard' then
-	--elseif (spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard') and not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
-		if not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
+	--elseif spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard' then
+	elseif (spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard') and not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
+		--if not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
 			equip(sets.bpdelay)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: BP Delay]')
 			end
-		end
+		--end
 	elseif spell.english == 'Astral Flow' then
 		equip(sets.astralflow)
 		if Debug == 'On' then
@@ -1101,12 +1128,7 @@ function precast(spell)
 		send_command('input /pet "Release" <me>;wait 1;input /ma '..spell.english..' <me>')
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
-	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
-		equip(sets.Elemental)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Elemental]')
-		end
-	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or spell.english == 'Warp Ring' or spell.english == 'Dim. Ring (Dem)' or spell.english == 'Dim. Ring (Holla)' or spell.english == 'Dim. Ring (Mea)' or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
@@ -1119,12 +1141,7 @@ end
 -------------------------------------------
 
 function midcast(spell)
-	if spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
-		equip(sets.elemental)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Elemental]')
-		end
-	elseif spell.english == 'Refresh' then
+	if spell.english == 'Refresh' then
 		equip(set_combine(sets.buff, sets.refresh))
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Buff + Refresh]')
@@ -1185,7 +1202,6 @@ function pet_midcast(spell)
 	end
 end
 
-
 -------------------------------------------
 --              AFTERCAST                --
 -------------------------------------------
@@ -1206,8 +1222,9 @@ function aftercast(spell)
 		end		
 		send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
 	end
-
 	if spell.type == "BloodPactRage" or spell.type == "BloodPactWard" then
+		return
+	elseif spell.type == "SummonerPact" then
 		if DTOverride == "On" then
 			equip(set_combine(sets.avatar, sets.dtoverride))
 			if Debug == 'On' then
@@ -1236,6 +1253,22 @@ function aftercast(spell)
 	end
 end
 
+function pet_aftercast(spell)
+	if not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
+		if DTOverride == "On" then
+			equip(set_combine(sets.avatar, sets.dtoverride))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Avatar + DT Override]')
+			end
+		else
+			equip(sets.avatar)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Avatar]')
+			end
+		end
+	end
+end
+
 -------------------------------------------
 --             STATUS CHANGE             --
 -------------------------------------------
@@ -1252,6 +1285,7 @@ function pet_status_change(new,old)
 		end
 	end
 end
+
 -------------------------------------------
 --             SHOW/HIDE HUD             --
 -------------------------------------------
@@ -1485,6 +1519,35 @@ windower.register_event('prerender', function()
 			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
 		end
 	end
+	if pet.isvalid == true and PetPresent == false then --we have an avatar out when we did not have one out already (ie summoning)
+		PetPresent = true
+		if pet.name == "Ifrit" then
+			send_command('input /macro set '..IfritPage..'')
+		elseif pet.name == "Titan" then
+			send_command('input /macro set '..TitanPage..'')
+		elseif pet.name == "Leviathan" then
+			send_command('input /macro set '..LeviathanPage..'')
+		elseif pet.name == "Garuda" then
+			send_command('input /macro set '..GarudaPage..'')
+		elseif pet.name == "Shiva" then
+			send_command('input /macro set '..ShivaPage..'')
+		elseif pet.name == "Ramuh" then
+			send_command('input /macro set '..RamuhPage..'')
+		elseif pet.name == "Carbuncle" then
+			send_command('input /macro set '..CarbunclePage..'')
+		elseif pet.name == "Fenrir" then
+			send_command('input /macro set '..FenrirPage..'')
+		elseif pet.name == "Cait Sith" then
+			send_command('input /macro set '..CaitSithPage..'')
+		elseif pet.name == "Siren" then
+			send_command('input /macro set '..SirenPage..'')
+		elseif pet.name == "Diabolos" then
+			send_command('input /macro set '..DiabolosPage..'')
+		end
+	elseif pet.isvalid == false and PetPresent == true then --we do not have an avatar out when we previously did (ie releasing or they die)
+		PetPresent = false
+		send_command('input /macro set '..HomePage..'')
+	end
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
 		if AutoLockstyle == 'On' and AutoLockstyleRun == true and LockstyleDelay > 0 then
@@ -1514,6 +1577,9 @@ windower.register_event('prerender', function()
 					RRRCountdown = ReraiseReminderTimer --start the timer back up
 				end
 			end
+			if NotiDoom == 'On' and buffactive['Doom'] then 
+				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
+			end
 			if pet.isvalid == true then
 				send_command('text avatar text "'..pet.name..' - '..pet.hpp..'% ('..pet.status..')"')
 				if pet.name == "Carbuncle" or pet.name == "Cait Sith" or pet.name == "Alexander" or pet.name == "Light Spirit" then
@@ -1536,9 +1602,6 @@ windower.register_event('prerender', function()
 			else
 				send_command('text avatar text "No Avatar"')
 				send_command('text avatar color 255 50 50')
-			end
-			if NotiDoom == 'On' and buffactive['Doom'] then 
-				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
 			end
 			--Recast updates:
 			FavorRecast = windower.ffxi.get_ability_recasts()[176]
@@ -1699,9 +1762,6 @@ end)
 -------------------------------------------
 
 function file_unload()
-	if Debug == 'On' then
-		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
-	end
 	if HUD == 'On' then
 		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text favor delete;text siphon delete;text apogee delete;text cede delete;text convert delete;text aftermath delete;text notifications delete;text debuffs delete;text loading delete;text avatar delete') --delete the different text objects
 	end
