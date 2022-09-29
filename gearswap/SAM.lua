@@ -118,43 +118,43 @@ function get_sets()
 	-- Hasso (Hasso+, Double/Triple/Quad Attack+, DEX+, Accuracy+, Attack+)
 	-- This is the main DPS set.
 	sets.hasso = {
-		ammo="Aurgelmir Orb",
-		head="Mpaca's Cap",
-		body="Mpaca's Doublet",
-		hands="Wakido Kote +3",
-		legs="Ken. Hakama +1",
+		ammo="Coiste Bodhar",
+		head="Flam. Zucchetto +2",
+		body="Kasuga Domaru +2",
+		hands="Tatena. Gote +1",
+		legs="Kasuga Haidate +2",
 		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
-		waist="Windbuffet Belt +1",
+		waist="Ioskeha Belt +1",
 		left_ear="Brutal Earring",
-		right_ear="Cessance Earring",
+		right_ear="Schere Earring",
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
-		--right_ring="Regal Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
 	}
 
 	-- Seigan ()
 	-- Intended as a more defense oriented set for when you have to put Seigan up.
 	sets.seigan = {
-		ammo="Aurgelmir Orb",
-		head="Nyame Helm", --Kasuga Kabuto
+		ammo="Staunch Tathlum",
+		head="Kasuga Kabuto +2",
 		body="Mpaca's Doublet",
+		--body="Dagon Breast.",
 		hands="Mpaca's Gloves",
 		legs="Sakonji Haidate +3",
+		--legs="Mpaca's Hose",
 		feet="Mpaca's Boots",
 		neck="Sam. Nodowa +2",
-		waist="Windbuffet Belt +1",
+		waist="Ioskeha Belt +1",
 		left_ear="Brutal Earring",
 		right_ear="Cessance Earring",
-		left_ring="Hetairoi Ring",
+		left_ring="Defending Ring",
 		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
 	}
 
 	-- Idle ()
 	sets.idle = {
-		ammo="Knobkierrie",
 		head="Wakido Kabuto +3",
 		feet="Danzo Sune-ate",
 		neck="Rep. Plat. Medal",
@@ -164,9 +164,9 @@ function get_sets()
 	-- DT Override (Damage Taken-, Magic Evasion)
 	-- Will override all other gear sets and inherit unused slots from them
 	sets.dtoverride = {
-		head="Nyame Helm",
-		body="Nyame Mail",
-		legs="Nyame Flanchard",
+		head="Kasuga Kabuto +2",
+		body="Kasuga Domaru +2",
+		legs="Kasuga Haidate +2",
 		feet="Nyame Sollerets",
 		left_ring="Defending Ring",
 	}
@@ -176,9 +176,9 @@ function get_sets()
 		ammo="Knobkierrie",
 		head="Mpaca's Cap",
 		body="Sakonji Domaru +3",
-		hands="Valorous Mitts",
+		hands="Kasuga Kote +2",
 		legs="Wakido Haidate +3",
-		feet="Valorous Greaves",
+		feet="Nyame Sollerets",
 		neck="Sam. Nodowa +2",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
@@ -205,7 +205,7 @@ function get_sets()
 
 	-- Sengikori
 	sets.sengikori = {
-		feet="Kasuga Sune-Ate +1",
+		feet="Kasuga Sune-Ate +2",
 	}
 
 	-- Meditate
@@ -282,7 +282,7 @@ TopVersion = 'Tachi: Hobaku' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Tachi: Hobaku'
-FileVersion = '08.13.22'
+FileVersion = '09.29.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -293,18 +293,26 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+09.29.22 (Version Compatibility Codename: Tachi: Hobaku)
+-Added missing listings in the /fileinfo printout for a few Notifications.
+-Added Silver Knife to list of Adoulin/Town areas.
+-Removed Gearswaps built-in showswaps function from the files debug mode.
+
+09.04.22 (Version Compatibility Codename: Tachi: Hobaku)
+-Added all DOTs to the rule that removes Stoneskin if asleep.
+
 08.13.22 (Version Compatibility Codename: Tachi: Hobaku)
 -Added Leafallia to list of towns.
 -Added equipping the DT Override set when petrified, stunned, or terrored.
 -Added option to remove all gear (except weapons) when you are charmed.
 -Added a Holy Water set.
--Adjusted the Vim Torque code to first remove Stoneskin if its up for us, then check that we're not already poisoned and HP is above 50.
+-Adjusted the Vim Torque code to first remove Stoneskin if its up, then check that we're not already poisoned and HP is above 50.
 -Adjusted abilities to not equip their gear sets if they are still on cooldown.
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Fixed a duplicate line in the sleep debuff code.
 -Updated Version Compatibility Codename to Tachi: Hobaku.
--code cleanup.
+-Code cleanup.
 
 07.18.22 (Version Compatibility Codename: Tachi: Enpi)
 -Overhauled how area checks are handled. Uses tables now for groups of areas.
@@ -340,7 +348,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -------------------------------------------
 
 AdoulinZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
     }
 
 BastokZones = S{
@@ -356,7 +364,7 @@ WindyZones = S{
     }
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
     }
 
 -------------------------------------------
@@ -438,7 +446,6 @@ send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboar
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
-	send_command('gs showswaps')
 end
 LockstyleDelay = 3
 AutoLockstyleRun = true
@@ -598,6 +605,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
+		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -1128,7 +1138,7 @@ windower.register_event('gain buff', function(buff)
 		if buffactive['Stoneskin'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
 		end
-		if not buffactive['Poison'] and player.hp > 50 then --then as long as we're not already poisoned and have more than 50 HP,
+		if not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already poisoned and have more than 50 HP,
 			equip({neck="Vim Torque"}) --equip the Vim Torque to wake us up
 		end
 	end
@@ -1587,9 +1597,6 @@ end)
 -------------------------------------------
 
 function file_unload()
-	if Debug == 'On' then
-		send_command('gs showswaps') --turn off the built-in gearswap debug mode and turn off showswaps
-	end
 	if HUD == 'On' then
 		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text meditate delete;text sekkanoki delete;text sengikori delete;text hagakure delete;text aggressor delete;text berserk delete;text highjump delete;text superjump delete;text hasso delete;text seigan delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
 	end
