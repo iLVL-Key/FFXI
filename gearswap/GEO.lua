@@ -49,9 +49,16 @@ DTCtrlPlus		=	'd'		--				Sets the keyboard shortcut you would like to activate t
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions.
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts. 
-UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (or Remedy) instead of spell when you are silenced.
+UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
+CharmNaked		=	'A'		--[A/W/Off]		Automatically strips you naked of (A)ll gear or all gear except (W)eapons when you're charmed
+							--				so you don't murder anyone and allowing you to be more easily slept.
+AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
 AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
 AutoEntrust		=	'On'	--[On/Off]		Automatically uses Entrust when you cast an Indi- spell on a party member.
+UseOhShit		=	'On'	--[On/Off]		Equips your Oh Shit gear set when your HP gets low.
+DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
+DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
+DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -70,17 +77,17 @@ EntrustDuration	=	280		--				Duration in seconds of Entrusted Indi spells. Base 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiAftermath		=	'On'	--[On/Off]	Displays Aftermath information.
-NotiTrade			=	'Off'	--[On/Off]	Displays a notification when someone trades you.
-NotiInvite			=	'Off'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
-NotiSneak			=	'Off'	--[On/Off]	Displays a notification when Sneak is about to wear off.
-NotiInvis			=	'Off'	--[On/Off]	Displays a notification when Invisible is about to wear off.
-NotiReraise			=	'Off'	--[On/Off]	Displays a notification when reraise wears off.
-NotiFood			=	'Off'	--[On/Off]	Displays a notification when food wears off.
+NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
+NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
+NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
+NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
+NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
+NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%. Will not trigger again for another 30 seconds.
+NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiTPReturn		=	'On'	--[On/Off]	Displays your TP return after Weapon Skills.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
-ReraiseReminderTimer=	1800	--			Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
-NotiTime			=	'Off'	--[On/Off]	Displays a notification for time remaining notices.
+NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
 NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as weaknesses.
 
@@ -103,9 +110,11 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-HUDBGTrans = 		'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-TPReturnWait =		'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
-Debug =				'Off'	--[On/Off]
+OhShitThreshold	=	1000	--If your HP goes below this number, your Oh Shit gear set will activate.
+RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+TPReturnWait	=	'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
+Debug			=	'Off'	--[On/Off]
 
 
 -------------------------------------------
@@ -155,6 +164,14 @@ function get_sets()
 		hands="Azimuth Gloves +2",
 		legs="Nyame Flanchard",
 		left_ring="Defending Ring",
+	}
+
+	-- Oh Shit
+	-- Full DT- and everything you've got with Absorb or Annuls Damage
+	sets.ohshit = {
+		neck="Warder's Charm +1",
+		left_ring="Shadow Ring",
+		back="Shadow Mantle"
 	}
 
 	-- Rest
@@ -291,6 +308,7 @@ function get_sets()
 	}
 
 	-- Healing (Cure Potency, Healing Magic Skill)
+	-- NOTE: Cure Potency cap is 50%
 	sets.healing = {
 		head="Vanya Hood", --10
 		body="Vrikodara Jupon", --13
@@ -411,7 +429,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Indi-Regen' --Leave this alone, used for debugging purposes
+TopVersion = 'Indi-Attunement' --Leave this alone, used for debugging purposes
 
 
 
@@ -423,8 +441,8 @@ TopVersion = 'Indi-Regen' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Indi-Regen'
-FileVersion = '09.29.22'
+BottomVersion = 'Indi-Attunement'
+FileVersion = '10.15.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -435,10 +453,22 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-09.29.22 (Version Compatibility Codename: Indi-Regen)
+10.15.22 (Version Compatibility Codename: Indi-Attunement)
+-Added an Oh Shit gear set and accompanying option to use it. HP threshold required to activate is adjustable in the Advanced Options.
+-Added Low HP Notification.
+-Added AutoHWater option. Automatically attempts to use Holy Waters when you get Doomed until it wears off. Currently will keep trying even if you run out of Holy Waters.
+-Added DoomAlert option. Will alert your party when you are doomed. You can also customize the text that displays in party chat.
+-Added CharmNaked option. Removes all gear, or all gear except weapons, when you are charmed.
+-Added Sneak and Invisible status notification.
 -Added missing listings in the /fileinfo printout for a few Notifications.
 -Added Silver Knife to list of Adoulin/Town areas.
+-Adjusted the code that tries to wake you when you are asleep to not trigger if you are charmed.
+-Adjusted resting to equip Refresh + Rest gear sets.
+-Moved RRReminderTimer from Options to Advanced Options.
+-Fixed resting not equipping the DT Override set properly.
 -Removed Gearswaps built-in showswaps function from the files debug mode.
+-Updated Version Compatibility Codename to Indi-Attunement.
+-Code cleanup.
 
 09.07.22 (Version Compatibility Codename: Indi-Regen)
 -Added Enfeebling set.
@@ -456,7 +486,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Updated Version Compatibility Codename to Indi-Precision.
--Code cleanup
+-Code cleanup.
 
 07.18.22 (Version Compatibility Codename: Indi-Voidance)
 -Adjusted some gear sets and logic in their usage. (removed the Luopan set and renamed Combinedskill to Geomancy)
@@ -465,13 +495,13 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Fixed an issue with the Sleep debuff not showing properly in the HUD.
 -Added a Hexa Strike set since it is multi-hit in case you have Fotia Belt/Gorget.
 -Updated Version Compatibility Codename to Indi-Voidance.
--Code cleanup
+-Code cleanup.
 
 06.14.22 (Version Compatibility Codename: Indi-Poison)
 -Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
 -Removed Gearswaps built-in debugmode from the files Debug mode.
 -Moved the Updates section towards the top of the file.
--Code cleanup
+-Code cleanup.
 
 03.11.22 (Version Compatibility Codename: Indi-Poison)
 -Overhauled Debuff Notifications. Will now check which debuffs are up in real time with a list of priority for which is displayed instead of clearing the notifications entirely when any of them are removed (leaving it blank even if a different debuff was still up).
@@ -509,7 +539,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Fixed displaying DT Override status while in towns.
 -Fixed a lot calls to the Text plugin when not using the Text plugin (HUD turned off)
 -Fixed the Reraise Reminder.
--Code cleanup
+-Code cleanup.
 
 12.02.21 (Version Compatibility Codename: Indi-Regen)
 -First version
@@ -549,11 +579,17 @@ GeoColure = 'None'
 Entrust = 'None'
 NotiLowMPToggle = 'Off' --start with the toggle off for the Low MP Notification so that it can trigger
 DTOverride = "Off" --Start with the Damage Taken Override off
-RRRCountdown = ReraiseReminderTimer
+RRRCountdown = RRReminderTimer
+HWaterRecast = 0
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
 LoadDelay = 3 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
 LoadHUD = false --starts false then switched to true after the LoadDelay
 ShowHUD = true --this changes to false when we are in a cutscene
+if pet.isvalid then
+	LuopanActive = true
+else
+	LuopanActive = false
+end
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 EntrustCountdown = 0
 EntrustRecast = 0
@@ -562,6 +598,7 @@ LastingRecast = 0
 DematerializeRecast = 0
 LifeRecast = 0
 RadialRecast = 0
+OhShit = false
 if HUD == 'On' then
 	--Space out each line and column properly
 	HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
@@ -634,24 +671,32 @@ function self_command(command)
 		choose_set()
 	elseif command == 'TPReturn' then
 		if HUD == 'On' then
-			send_command('text notifications text "TP Return: '..player.tp..'";text notifications color 0 255 255')
+			send_command('text notifications text "TP Return: '..player.tp..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'TP Return: '..player.tp..'')
 		end
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
 		if HUD == 'On' then
-			if buffactive['weakness'] and DTOverride == 'On' then
-				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63')
+			if buffactive['Sneak'] and buffactive['Invisible'] then
+				send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Sneak'] then
+				send_command('text notifications text "Status: Sneak";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Invisible'] then
+				send_command('text notifications text "Status: Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['weakness'] and DTOverride == 'On' then
+				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
-					send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
+			elseif player.status == "Resting" then
+				send_command('text notifications text "Status: Resting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			elseif player.status == "Engaged" then
-				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
 			elseif player.status == "Idle" and DTOverride == "On" then
-				send_command('text notifications text "Status: Idle (DT Override)";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Idle (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
 			elseif player.status == "Idle" then
-				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
 	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
@@ -749,8 +794,14 @@ function self_command(command)
 		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'UseEcho: '..(''..UseEcho..''):color(8)..'')
+		windower.add_to_chat(200,'CharmNaked: '..(''..CharmNaked..''):color(8)..'')
+		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
 		windower.add_to_chat(200,'AutoFullCircle: '..(''..AutoFullCircle..''):color(8)..'')
 		windower.add_to_chat(200,'AutoEntrust: '..(''..AutoEntrust..''):color(8)..'')
+		windower.add_to_chat(200,'UseOhShit: '..(''..UseOhShit..''):color(8)..'')
+		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
+		windower.add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
+		windower.add_to_chat(200,'DoomOffText: '..(''..DoomOffText..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
 		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
@@ -772,9 +823,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiReraise: '..(''..NotiReraise..''):color(8)..'')
 		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowMP: '..(''..NotiLowMP..''):color(8)..'')
+		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
-		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
 		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
 		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
@@ -795,6 +846,8 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(3,'--           Advanced Options              --')
 		windower.add_to_chat(3,'-------------------------------------------')
+		windower.add_to_chat(200,'OhShitThreshold: '..(''..OhShitThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'TPReturnWait: '..(''..TPReturnWait..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
@@ -825,7 +878,7 @@ function self_command(command)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif command == 'NotiLowMPToggle' then
 		NotiLowMPToggle = 'Off'
@@ -840,34 +893,46 @@ function choose_set()
 	if player.status == "Resting" then
 		if HUD == 'On' then
 			if buffactive['weakness'] and DTOverride == 'On' then
-				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63')
+				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
-				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			elseif DTOverride == 'On' then
-				send_command('text notifications text "Status: Resting (DT Override)";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Resting (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
 			else
-				send_command('text notifications text "Status: Resting";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Resting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
-		equip(sets.rest)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Rest]')
+		if DTOverride == 'On' then
+			equip(set_combine(sets.rest, sets.dtoverride))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Rest + DT Override]')
+			end
+		else
+			equip(set_combine(sets.refresh, sets.rest))
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
+			end
 		end
 	elseif player.status == "Engaged" then
-		if DTOverride == 'On' then
+		if OhShit == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
+			equip(sets.ohshit)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Oh Shit]')
+			end
+		elseif DTOverride == 'On' then
 			equip(set_combine(sets.dps, sets.dtoverride))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: DPS + DT Override]')
 			end
 			if HUD == 'On' then
 				if buffactive['weakness'] then
-					send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63')
+					send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
 								elseif player.mpp <= 20 then
-					send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+					send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 				else
-					send_command('text notifications text "Status: Engaged (DT Override)";text notifications color 255 255 255')
+					send_command('text notifications text "Status: Engaged (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
 				end
 			end
 		else
@@ -877,26 +942,32 @@ function choose_set()
 			end
 			if HUD == 'On' then
 				if buffactive['weakness'] then
-					send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+					send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 				elseif player.mpp <= 20 and HUD == 'On' then
-					send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+					send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 				elseif HUD == 'On' then
-					send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
+					send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
 				end
 			end
 		end
 	elseif player.status == "Idle" then
 		if HUD == 'On' then
-			if buffactive['weakness'] and DTOverride == 'On' then
-				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63')
+			if buffactive['Sneak'] and buffactive['Invisible'] then
+				send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Sneak'] then
+				send_command('text notifications text "Status: Sneak";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Invisible'] then
+				send_command('text notifications text "Status: Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['weakness'] and DTOverride == 'On' then
+				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
-				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			elseif DTOverride == 'On' then
-				send_command('text notifications text "Status: Idle (DT Override)";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Idle (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
 			else
-				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
 		if AdoulinZones:contains(world.area) then
@@ -924,8 +995,13 @@ function choose_set()
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Town]')
 			end
-		elseif pet.isvalid == true then
-			if DTOverride == "On" then
+		elseif LuopanActive == true then
+			if OhShit == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
+				equip(set_combine(sets.luopan, sets.ohshit))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Luopan + Oh Shit]')
+				end
+			elseif DTOverride == "On" then
 				equip(set_combine(sets.luopan, sets.dtoverride))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Luopan + DT Override]')
@@ -937,7 +1013,12 @@ function choose_set()
 				end
 			end
 		else
-			if DTOverride == "On" then
+			if OhShit == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
+				equip(set_combine(sets.idle, sets.ohshit))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Idle + Oh Shit]')
+				end
+			elseif DTOverride == "On" then
 				equip(set_combine(sets.idle, sets.dtoverride))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Idle + DT Override]')
@@ -1039,7 +1120,7 @@ function precast(spell)
 			end
 			cancel_spell()
 			if HUD == 'On' then
-				send_command('text notifications text "«« Not Enough TP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Not Enough TP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
 				windower.add_to_chat(8,'<< Not Enough TP >>')
 			end
@@ -1050,7 +1131,7 @@ function precast(spell)
 			end
 			cancel_spell()
 			if HUD == 'On' then
-				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
 				windower.add_to_chat(8,'<< Too Far >>')
 			end
@@ -1060,7 +1141,7 @@ function precast(spell)
 			end
 			cancel_spell()
 			if HUD == 'On' then
-				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
 				windower.add_to_chat(8,'<< Too Far >>')
 			end
@@ -1083,15 +1164,15 @@ function precast(spell)
 		end
 	elseif spell.english == 'Bolster' then
 		equip(sets.bolster)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Bolster]')
+		end
 		if BolTimer == 'On' then
 			if player.equipment.body == 'Bagua Tunic' or player.equipment.body == 'Bagua Tunic +1' or player.equipment.body == 'Bagua Tunic +2' or player.equipment.body == 'Bagua Tunic +3' then --these pieces extend Bolster by 30 seconds so we adjust accordingly
 				send_command('input /echo [Bolster] 3:30;wait 30;input /echo [Bolster] 3:00;wait 30;input /echo [Bolster] 2:30;wait 30;input /echo [Bolster] 2:00;wait 30;input /echo [Bolster] 1:30;wait 30;input /echo [Bolster] 1:00;wait 30;input /echo [Bolster] 0:30;wait 10;input /echo [Bolster] 0:20;wait 10;input /echo [Bolster] 0:10')
 			else
 				send_command('input /echo [Bolster] 3:00;wait 30;input /echo [Bolster] 2:30;wait 30;input /echo [Bolster] 2:00;wait 30;input /echo [Bolster] 1:30;wait 30;input /echo [Bolster] 1:00;wait 30;input /echo [Bolster] 0:30;wait 10;input /echo [Bolster] 0:20;wait 10;input /echo [Bolster] 0:10')
 			end
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Bolster]')
 		end
 	elseif spell.english == 'Widened Compass' and WCTimer == 'On' then
 		send_command('input /echo [Widened Compass] 1:00;wait 30;input /echo [Widened Compass] 0:30;wait 10;input /echo [Widened Compass] 0:20;wait 10;input /echo [Widened Compass] 0:10')
@@ -1103,30 +1184,30 @@ function precast(spell)
 	elseif spell.english == 'Radial Arcana' then
 		if windower.ffxi.get_ability_recasts()[252] <= 1 then
 			equip(sets.radialarcana)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Radial Arcana]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Radial Arcana]')
+			end
 		end
 	elseif spell.english == 'Mending Halation' then
 		if windower.ffxi.get_ability_recasts()[251] <= 1 then
 			equip(sets.mendinghalation)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Mending Halation]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Mending Halation]')
+			end
 		end
 	elseif spell.english == 'Collimated Fervor' then
 		if windower.ffxi.get_ability_recasts()[245] <= 1 then
 			equip(sets.collimatedfervor)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Collimated Fervor]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Collimated Fervor]')
+			end
 		end
 	elseif spell.english == 'Life Cycle' then
 		if windower.ffxi.get_ability_recasts()[246] <= 1 then
 			equip(sets.lifecycle)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Life Cycle]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Life Cycle]')
+			end
 		end
 	elseif spell.english == 'Holy Water' then
 		equip(sets.hwater)
@@ -1134,7 +1215,7 @@ function precast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
 	--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle before casting
-	elseif string.find(spell.english,'Geo-') and pet.isvalid == true and AutoFullCircle == 'On' and windower.ffxi.get_ability_recasts()[243] == 0 and not buffactive['Amnesia'] then
+	elseif string.find(spell.english,'Geo-') and LuopanActive == true and AutoFullCircle == 'On' and windower.ffxi.get_ability_recasts()[243] == 0 and not buffactive['Amnesia'] then
 		cancel_spell()
 		send_command('input /ja "Full Circle" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
 	--if we're casting an Indi- spell on a party member we use Entrust first
@@ -1193,8 +1274,14 @@ function midcast(spell)
 		end
 	elseif spell.english == "Aspir" or spell.engage =="Aspir II" or spell.engage =="Aspir III" or spell.engage =="Drain" then
 		equip(sets.aspirdrain)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Aspir/Drain]')
+		end
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Unity]')
+		end
 	end
 end
 
@@ -1295,7 +1382,7 @@ function aftercast(spell)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< Low MP >>')
 		end		
@@ -1303,9 +1390,37 @@ function aftercast(spell)
 	end
 	if (spell.english == 'Full Circle' or spell.english == 'Concentric Pulse' or spell.english == 'Radial Arcana' or spell.english == 'Mending Halation') and not spell.interrupted and HUD == 'On' then
 		send_command('text geocolure text "None";text geocolure color 255 50 50')
+		LuopanActive = false
 	end
 	choose_set()
 end
+
+-------------------------------------------
+--              HP% CHANGE               --
+-------------------------------------------
+
+windower.register_event('hpp change',function()
+	if player.hp <= OhShitThreshold and OhShit == false and UseOhShit == 'On' then --when HP goes below a certain amount, turn on the OhShit flag and equip the appropriate gear set
+		OhShit = true
+		choose_set()
+		if AlertSounds == 'On' then
+			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if Debug == 'On' then
+			windower.add_to_chat(8,'OhShit set to True')
+		end
+	elseif player.hp > OhShitThreshold and OhShit == true and UseOhShit == 'On' then --when HP goes back above a certain amount, turn off the OhShit flag and equip the appropriate gear set
+		OhShit = false
+		send_command('gs c ClearNotifications')
+		choose_set()
+		if Debug == 'On' then
+			windower.add_to_chat(8,'OhShit set to False')
+		end
+	end
+	if player.hp == 0 then --if we die turn this off so it doesn't trigger the "doom is off" notification once we raise
+		Doom = false
+	end
+end)
 
 -------------------------------------------
 --             STATUS CHANGE             --
@@ -1334,24 +1449,45 @@ end)
 -------------------------------------------
 
 windower.register_event('gain buff', function(buff)
-	if buff == 2 or buff == 19 and buffactive['Stoneskin'] then --If we get slept, remove stoneskin if its on
+	if (buff == 2 or buff == 19) and buffactive['Stoneskin'] and not buffactive['Charm'] then --If we get slept, remove stoneskin if its on
 		send_command('cancel 37')
 	end
-	if buff == 15 and AlertSounds == 'On' then --Doom
-		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+	if buff == 15 then --Doom
+		if AlertSounds == 'On' then
+			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if DoomAlert == 'On' then
+			Doom = true --Setting "Doom" to true now, so that it can get set to false if we die, that way we don't announce that doom is off when we raise from the dead
+			send_command('input /p '..DoomOnText..'')
+		end
+		if AutoHWater == 'On' then
+			HWaterRecast = 3 --Set the recast timer so we can start using the Holy Waters
+		end
 	end
 	if buff == 17 then --Charm
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if CharmNaked == 'Yes' then
+		if CharmNaked == 'A' then
 			equip(sets.naked)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Naked]')
+			end
+		elseif CharmNaked == 'W' then
+			equip({head=empty, body=empty, hands=empty, legs=empty, feet=empty, neck=empty, waist=empty, left_ear=empty, right_ear=empty, left_ring=empty, right_ring=empty, back=empty})
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Naked (except for weapons)]')
+			end
 		end
 	end
 	if HUD == 'On' then
 		if buff == 612 then
+			Doom = true --Setting "Doom" to true now, so that it can get set to false if we die, that way we don't announce that doom is off when we raise from the dead
 			send_command('text indicolure text "'..IndiColure..'";text indicolure color 75 255 75')
 		end
+	end
+	if buff == 71 or buff == 69 then --Sneak or Invisible
+		send_command('gs c ClearNotifications')
 	end
 end)
 
@@ -1361,7 +1497,7 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Food Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Food Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< Food Has Worn Off >>')
 		end
@@ -1370,7 +1506,7 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Reraise Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Reraise Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< Reraise Has Worn Off >>')
 		end
@@ -1379,47 +1515,54 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Vorseal Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Vorseal Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Signet Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Signet Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Sanction Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Sanction Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Sigil Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Sigil Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 0 and HUD == 'On' then
-		send_command('text notifications text "Status: Alive ^_^";text notifications color 75 255 75')
+		send_command('text notifications text "Status: Alive ^_^";text notifications color 75 255 75;text notifications bg_transparency 1')
 	elseif buff == 1 then --Weakness
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
+			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75;text notifications bg_transparency 1')
 		end
 	elseif buff == 612 and HUD == 'On' then
 		send_command('text indicolure text "None";text indicolure color 255 50 50')
+	elseif buff == 15 then --Doom
+		if DoomAlert == 'On' and Doom == true then --"Doom" gets set to false when we die, that way we don't announce that doom is off when we raise from the dead
+			Doom = false
+			send_command('input /p '..DoomOffText..'')
+		end
+	elseif buff == 71 or buff == 69 then --Sneak or Invisible
+		send_command('gs c ClearNotifications')
 	end
 end)
 
@@ -1429,7 +1572,7 @@ windower.register_event('tp change',function()
 			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« 3000 TP »»";text notifications color 0 255 0')
+			send_command('text notifications text "«« 3000 TP »»";text notifications color 0 255 0;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< 3000 TP >>')
 		end
@@ -1481,9 +1624,25 @@ windower.register_event('prerender', function()
 			send_command('gs c Lockstyle')
 			AutoLockstyleRun = false
 		end
+		if HWaterRecast == 3 then
+			send_command('input /item "Holy Water" <me>')
+			HWaterRecast = HWaterRecast - 1
+		elseif HWaterRecast == 0 then
+			if buffactive['Doom'] then
+				HWaterRecast = 3
+			end
+		else
+			HWaterRecast = HWaterRecast - 1
+		end
 		if HUD == 'On' and LoadHUD == true then
 			if player.hp == 0 then --are we dead?
-				send_command('text notifications text "Status: Dead X_x";text notifications color 255 50 50')
+				send_command('text notifications text "Status: Dead X_x";text notifications color 255 50 50;text notifications bg_transparency 1')
+				if OhShit == true then
+					OhShit = false
+					if Debug == 'On' then
+						windower.add_to_chat(8,'OhShit set to False')
+					end
+				end
 			end
 			if EntrustCountdown > 0 then
 				EntrustCountdown = EntrustCountdown -1
@@ -1503,20 +1662,22 @@ windower.register_event('prerender', function()
 							windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 						end
 						if HUD == 'On' then
-							send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50')
+							send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 						else
 							windower.add_to_chat(8,'<< No Reraise >>')
 						end
 					end
-					RRRCountdown = ReraiseReminderTimer --start the timer back up
+					RRRCountdown = RRReminderTimer --start the timer back up
 				end
 			end
 			if pet.isvalid == true then
 				send_command('text geocolurelabel text "Luopan - '..pet.hpp..'%"')
 				send_command('text geocolure text "'..GeoColure..'";text geocolure color 0 255 0')
+				LuopanActive = true
 			else
 				send_command('text geocolurelabel text "Luopan"')
 				send_command('text geocolure text "None";text geocolure color 255 50 50')
+				LuopanActive = false
 				BlazeActive = false
 				DematerializeActive = false
 				LastingActive = false
@@ -1526,6 +1687,9 @@ windower.register_event('prerender', function()
 			end
 			if NotiDoom == 'On' and buffactive['Doom'] then 
 				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
+			end
+			if NotiLowHP == 'On' and OhShit == true then
+				send_command('text notifications text "Status: LOW HP";text notifications bg_transparency 200;text notifications color 0 0 0;text notifications bg_color 255 255 255;wait .5;text notifications bg_color 255 204 51')
 			end
 			--Recast updates:
 			EntrustRecast = windower.ffxi.get_ability_recasts()[93]
@@ -1610,16 +1774,16 @@ windower.register_event('incoming text',function(org)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
 		if NotiTrade == 'On' and HUD == 'On' then
-			send_command('text notifications text "«« Trade Request »»";text notifications color 255 255 50')
+			send_command('text notifications text "«« Trade Request »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.')then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if NotiSneak == 'On' and HUD == 'On' and org:find('Sneak') then
-			send_command('text notifications text "«« Sneak Wearing »»";text notifications color 255 100 100')
+			send_command('text notifications text "«« Sneak Wearing »»";text notifications color 255 100 100;text notifications bg_transparency 1')
 		elseif NotiInvis == 'On' and HUD == 'On' and org:find('Invisible') then
-			send_command('text notifications text "«« Invisible Wearing »»";text notifications color 255 100 100')
+			send_command('text notifications text "«« Invisible Wearing »»";text notifications color 255 100 100;text notifications bg_transparency 1')
 		end
 	elseif org:find('Lost key item') and org:find('Radialens') then
 		send_command('gs c Radialens')
@@ -1628,9 +1792,9 @@ windower.register_event('incoming text',function(org)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
 		if NotiInvite == 'On' and HUD == 'On' and org:find('party') and not org:find('alliance') then
-			send_command('text notifications text "«« Party Invite »»";text notifications color 255 255 50')
+			send_command('text notifications text "«« Party Invite »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		elseif NotiInvite == 'On' and HUD == 'On' and org:find('alliance') then
-			send_command('text notifications text "«« Alliance Invite »»";text notifications color 255 255 50')
+			send_command('text notifications text "«« Alliance Invite »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		end
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
@@ -1638,21 +1802,21 @@ windower.register_event('incoming text',function(org)
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
 			if NotiTime == 'On' and HUD == 'On' then
-				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50')
+				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
 			if NotiTime == 'On' and HUD == 'On' then
-				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50')
+				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
 			if NotiTime == 'On' and HUD == 'On' then
-				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50')
+				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		end
 	elseif NotiOmen == 'On' and org:find('You find a') then
@@ -1673,15 +1837,15 @@ windower.register_event('incoming text',function(org)
 		send_command('input /p Plouton pop! <call14>')
 	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
 		if org:find('Lightning') then
-			send_command('input /p Lightning <call14>')
+			send_command('input /p Thunder <call14>')
 		elseif org:find('Fire') then
 			send_command('input /p Fire <call14>')
 		elseif org:find('Wind') then
-			send_command('input /p Wind <call14>')
+			send_command('input /p Aero <call14>')
 		elseif org:find('Earth') then
-			send_command('input /p Earth <call14>')
+			send_command('input /p Stone <call14>')
 		elseif org:find('Ice') then
-			send_command('input /p Ice <call14>')
+			send_command('input /p Blizzard <call14>')
 		elseif org:find('Water') then
 			send_command('input /p Water <call14>')
 		end
