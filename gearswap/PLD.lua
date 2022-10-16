@@ -21,10 +21,10 @@ To switch between gear modes, use any of these three options:
 	(Default is G, can be changed in the settings)
 
 To use /BLU AOE spells, use a macro for Sheep Song and it will cycle through Sheep Song, Geist Wall,
-Stinking Gas, and Soporific, in that order, as recasts timers allow.
+Stinking Gas, and Soporific, in that order, as recast timers allow.
 
 To use /BLU Single target spells, use a macro for Flash and it will cycle through Flash, Jettatura,
-and Blank Gaze, in that order, as recasts timers and distance allow.
+and Blank Gaze, in that order, as recast timers and distance allow (or if you are /WAR it will also Provoke).
 
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
@@ -71,17 +71,22 @@ Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or O
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
 InvTimer		=	'On'	--[On/Off]		Displays a timer for Invincible in echo.
 IntTimer		=	'On'	--[On/Off]		Displays a timer for Intervene in echo.
-ModeCtrlPlus	=	'g'		--				Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
-UseEcho			=	'R'		--[E/R/Off]		Automatically uses an Echo Drop (E), or Remedy (R) instead of spell when you are silenced.
-AutoMajesty		=	'On'	--[On/Off]		Automatically activates Majesty before a cure/protect when Majesty is down.
-AutoMajWindow	=	60		--				Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
+UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
+CharmNaked		=	'A'		--[A/W/Off]		Automatically strips you naked of (A)ll gear or all gear except (W)eapons when you're charmed
+							--				so you don't murder anyone and allowing you to be more easily slept.
+AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
+AutoMajesty		=	'On'	--[On/Off]		Automatically activates and keeps Majesty active.
+AutoDefender	=	'On'	--[On/Off]		Automatically activates and keeps Defender active.
 AutoDEmblem		=	'On'	--[On/Off]		Automatically activates Divine Emblem before a Flash when Divine Emblem is up.
-AutoDefender	=	'On'	--[On/Off]		Automatically activates Defender after other defensive or hate generating abilities/spells when
-							--				Defender is down and in Combat mode.
-UseMaxHP		=	'On'	--[On/Off]		Activates your Max HP gear set when you cure yourself at or near full HP%.
+UseMaxHP		=	'On'	--[On/Off]		Equips your Max HP gear set when you cure yourself at or near full HP%.
+UseOhShit		=	'On'	--[On/Off]		Equips your Oh Shit gear set when your HP gets low.
+AutoSentinel	=	'On'	--[On/Off]		Attempts to activate Sentinel when your HP gets critically low.
+DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
+DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
+DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
 HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
@@ -97,17 +102,17 @@ HUDRecast		=	'On'	--[On/Off]		Displays common spells/abilities and their recast 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiAftermath		=	'On'	--[On/Off]	Displays Aftermath information.
-NotiTrade			=	'Off'	--[On/Off]	Displays a notification when someone trades you.
-NotiInvite			=	'Off'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
-NotiSneak			=	'Off'	--[On/Off]	Displays a notification when Sneak is about to wear off.
-NotiInvis			=	'Off'	--[On/Off]	Displays a notification when Invisible is about to wear off.
-NotiReraise			=	'Off'	--[On/Off]	Displays a notification when reraise wears off.
-NotiFood			=	'Off'	--[On/Off]	Displays a notification when food wears off.
+NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
+NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
+NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
+NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
+NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
+NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%. Will not trigger again for another 30 seconds.
+NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiTPReturn		=	'On'	--[On/Off]	Displays your TP return after Weapon Skills.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
-ReraiseReminderTimer=	1800	--			Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
-NotiTime			=	'Off'	--[On/Off]	Displays a notification for time remaining notices.
+NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
 NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as weaknesses.
 
@@ -130,13 +135,17 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 -------------------------------------------
 
 StartMode		=	'Auto'	--[Auto/Combat/Neutral]
-							--	Determines the Mode you will start in. Current Mode can be changed at any time by using any of the 
-							--	three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
+							--Determines the Mode you will start in. Current Mode can be changed at any time by using any of the 
+							--three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 RemoveAuto		=	'No'	--[Yes/No]
-							--	If you don't like the Auto functionality and just want to remove it entirely
-MaxHPThreshold	=	70		--  If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
-							--  Once it is activated, going below this will deactivate it.
-
+ModeCtrlPlus	=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
+AutoMajWindow	=	60		--Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
+							--If you don't like the Auto functionality and just want to remove it entirely
+MaxHPThreshold	=	70		--If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
+							--Once it is activated, going below this will deactivate it.
+OhShitThreshold	=	1000	--If your HP goes below this number, your Oh Shit gear set will activate.
+AutSntThreshold	=	500		--If your HP goes below this number, Sentinel will activate.
+RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 TPReturnWait	=	'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
 Debug			=	'Off'	--[On/Off]
@@ -209,6 +218,19 @@ function get_sets()
 		back="Moonbeam Cape",
 	})
 
+	-- Oh Shit
+	-- Full DT- and everything you've got with Absorb or Annuls Damage
+	sets.ohshit = {
+		head="Chev. Armet +2",
+		body="Chev. Cuirass +2",
+		hands="Chev. Gauntlets +2",
+		legs="Chev. Cuisses +2",
+		feet="Chev. Sabatons +2",
+		neck="Warder's Charm +1",
+		left_ring="Shadow Ring",
+		back="Shadow Mantle"
+	}
+
 	-- Refresh (only need Refresh gear in here, will inherit the rest from the Tank set above)
 	sets.refresh = set_combine(sets.tank, {
 		ammo="Homiliary",
@@ -259,8 +281,8 @@ function get_sets()
 		waist="Creed Baudrier",
 		left_ear="Cryptic Earring",
 		right_ear="Tuisto Earring",
-		left_ring="Petrov Ring",
-		right_ring="Defending Ring", --No enmity but I want to have SOME DT
+		left_ring="Moonbeam Ring",
+		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
@@ -284,7 +306,7 @@ function get_sets()
 		neck="Moonlight Necklace",		--15 SIRD
 		waist="Audumbla Sash",			--10 SIRD
 		left_ring="Evanescence Ring",	--5 SIRD
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
 	})
 
 	-- Healing (Cure Potency, HP+, Enmity)
@@ -301,7 +323,7 @@ function get_sets()
 		right_ear="Mendi. Earring",	--5 CP
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','"Cure" potency +10%','Spell interruption rate down-10%',}},
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},
 	}
 
 	-- Healing with SIRD (102%+ SIRD, Cure Potency, HP+, Enmity)
@@ -319,7 +341,7 @@ function get_sets()
 		right_ear="Mendi. Earring",	--			5 CP
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
 	}
 
 	-- Enlight (Divine Magic Skill)
@@ -361,13 +383,17 @@ function get_sets()
 		waist="Audumbla Sash",		--10 SIRD
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
 	}
 
 	-- Enhancing Magic (Enhancing Magic Duration, Enhancing Magic Skill)
 	-- Crusade, Reprisal, Protect, and Shell use this.
 	sets.enhancing = {
 		body="Shab. Cuirass +1",
+		legs="Carmine Cuisses +1",
+		neck="Melic Torque",
+		left_ear="Mimir Earring",
+		right_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 	}
@@ -381,6 +407,8 @@ function get_sets()
 		legs="Founder's Hose",		--30 SIRD
 		feet="Odyssean Greaves",	--20 SIRD
 		neck="Moonlight Necklace",	--15 SIRD
+		left_ear="Mimir Earring",
+		right_ear="Andoaa Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
 	}
@@ -486,7 +514,7 @@ function get_sets()
 
 	-- Divine Emblem (Enhances Divine Emblem gear)
 	sets.divineemblem = {
-		feet="Chev. Sabatons +1",
+		feet="Chev. Sabatons +2",
 	}
 
 	-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
@@ -533,7 +561,7 @@ TopVersion = 'Invincible' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Invincible'
-FileVersion = '09.29.22'
+FileVersion = '10.15.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -544,12 +572,25 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-09.29.22 (Version Compatibility Codename: Invincible)
--Overhauled how enmity spells are handled. No more macro with a custom command in it. If you are /BLU, just use a macro for Sheep Song and it will cast Sheep Song, Geist Wall, Stinking Gas, or Soporific, in that order, as recasts timers allow. Additionally, now you can use a macro for Flash and it will cast Flash, then if you are /BLU, Jettatura or Blank Gaze depending on recast timers and distance to target.
+10.15.22 (Version Compatibility Codename: Invincible)
+-Overhauled how enmity spells are handled. No more macro with a custom command in it. If you are /BLU, just use a macro for Sheep Song and it will cast Sheep Song, Geist Wall, Stinking Gas, or Soporific, in that order, as recasts timers allow. Additionally, now you can use a macro for Flash and it will also use Jettatura or Blank Gaze if you are /BLU, or Provoke if you are /WAR, depending on recast timers and distance to target.
+-Added an Oh Shit gear set and accompanying option to use it. HP threshold required to activate is adjustable in the Advanced Options.
+-Added AutoSentinel option. Automatically attempts to activate Sentinel when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
+-Added Low HP Notification.
+-Added AutoHWater option. Automatically attempts to use Holy Waters when you get Doomed until it wears off. Currently will keep trying even if you run out of Holy Waters.
+-Added DoomAlert option. Will alert your party when you are doomed. You can also customize the text that displays in party chat.
+-Added CharmNaked option. Removes all gear, or all gear except weapons, when you are charmed.
+-Added Crusade, Phalanx, Cocoon, Defender, Reprisal, Palisade, and Enlight to the list of things that will trigger AutoMajesty after use.
+-Added Sneak and Invisible status notification.
 -Added missing listings in the /fileinfo printout for a few Notifications.
 -Added Silver Knife to list of Adoulin/Town areas.
+-Adjusted the code that tries to wake you when you are asleep to not trigger if you are charmed.
+-Adjusted resting to equip Refresh + Rest gear sets regardless of Mode.
+-Moved AutoMajWindow, ModeCtrlPlus, and RRReminderTimer from Options to Advanced Options.
 -Removed Gearswaps built-in showswaps function from the files debug mode.
+-Fixed looking in the hands slot for the leg pieces to augment Invincible. (Thanks to Mailani for the catch)
 -Updated Version Compatibility Codename to Invincible.
+-Code cleanup.
 
 09.10.22 (Version Compatibility Codename: Shield Mastery)
 -Added AutoDEmblem option. Automatically activates Divine Emblem before a Flash when Divine Emblem is up.
@@ -574,7 +615,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Renamed LockstyleField to LockstyleCombat. Just makes more sense.
 -Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 -Updated Version Compatibility Codename to Resist Sleep.
--Code cleanup
+-Code cleanup.
 
 07.18.22 (Version Compatibility Codename: Defense Bonus)
 -Updated AutoMajesty to now re-up Majesty before it wears off, exact timing window can be adjusted in the Options.
@@ -582,7 +623,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Fixed some errors that would show up on job change. These were caused by the Heartbeat function constantly checking for any debuffs present; when you unload the file (change job) it will delete the debuff text objects used for the HUD which will cause a split second where the debuff check freaks out. The fix was to simply disable the debuff checks in town zones.
 -Fixed an issue with the Sleep debuff not showing properly in the HUD.
 -Updated Version Compatibility Codename to Defense Bonus.
--Code cleanup
+-Code cleanup.
 
 06.14.22 (Version Compatibility Codename: Undead Killer)
 -Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
@@ -591,7 +632,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Removed Gearswaps built-in debugmode from the files Debug mode.
 -Fixed Relic Aftermath not displaying in the HUD.
 -Moved the Updates section towards the top of the file.
--Code cleanup
+-Code cleanup.
 
 03.11.22 (Version Compatibility Codename: Undead Killer)
 -Overhauled Debuff Notifications. Will now check which debuffs are up in real time with a list of priority for which is displayed instead of clearing the notifications entirely when any of them are removed (leaving it blank even if a different debuff was still up).
@@ -602,7 +643,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 
 02.02.22 (Version Compatibility Codename: Undead Killer)
 -Added Weak status notification.
--Updated "Codename" to "Version Compatibility Codename" to be more clear in its purpose. Whenever changes are made to the top portion of the file, the Version Compatibility Codename is changed and the TopVersion and BottomVersion updated to reflect the new codename. This is done so that when a new update is posted and you 
+-Updated "Codename" to "Version Compatibility Codename" to be more clear in its purpose. Whenever changes are made to the top portion of the file, the Version Compatibility Codename is changed and the TopVersion and BottomVersion updated to reflect the new codename. The idea is that the Top and Bottom Versions should always match. If you update your file after the VCC changes and only update the bottom without also doing the top, they will then no longer match making it easier to help find a problem later.
 -Updated how the HUD loading is handled. The loading is now smoother and objects don't overlap eachother while loading.
 -Fixed gear not fully equipping in towns.
 -Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
@@ -641,14 +682,15 @@ TownZones = S{
 --              FILE LOAD                --
 -------------------------------------------
 
-Mode = StartMode --sets the starting mode (selected in the Options)
+Mode = StartMode --sets the starting mode (selected in the Advanced Options)
 NotiLowMPToggle = 'Off' --start with the toggle off for the Low MP Notification so that it can trigger
-RRRCountdown = ReraiseReminderTimer
+RRRCountdown = RRReminderTimer
+HWaterRecast = 0
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
 LoadDelay = 3 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
 LoadHUD = false --starts false then switched to true after the LoadDelay
 ShowHUD = true --this changes to false when we zone or are in a cutscene
-MajestyTimer = 180
+MajestyTimer = 0
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 DefenderRecast = 0
 CocoonRecast = 0
@@ -658,6 +700,7 @@ ReprisalRecast = 0
 PalisadeRecast = 0
 EnlightRecast = 0
 MaxHP = false
+OhShit = false
 if player.in_combat == true then
 	Combat = true
 elseif player.in_combat == false then
@@ -719,7 +762,7 @@ if Page ~= "Off" then
 	send_command('input /macro set '..Page..'')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
-send_command('alias mode gs c Mode') --creates the Mode aliase
+send_command('alias mode gs c Mode') --creates the Mode alias
 send_command('bind ^'..ModeCtrlPlus..' gs c Mode') --creates the gear mode keyboard shortcut
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
@@ -765,24 +808,30 @@ function self_command(command)
 	elseif command == 'TPReturn' then
 		Notifications = 'TP Return: '..player.tp..''
 		if HUD == 'On' then
-			send_command('text notifications text "'..Notifications..'";text notifications color 0 255 255')
+			send_command('text notifications text "'..Notifications..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,''..Notifications..'')
 		end
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
 		if HUD == 'On' then 
-			if buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+			if buffactive['Sneak'] and buffactive['Invisible'] then
+				send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Sneak'] then
+				send_command('text notifications text "Status: Sneak";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Invisible'] then
+				send_command('text notifications text "Status: Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['weakness'] then
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
-				send_command('text notifications text "«« Low MP »»";text notifications color 205 133 63')
+				send_command('text notifications text "«« Low MP »»";text notifications color 205 133 63;text notifications bg_transparency 1')
+			elseif player.status == "Resting" then
+				send_command('text notifications text "Status: Resting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			elseif player.status == "Engaged" then
-				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
+			elseif player.status == "Idle" and (Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true)) then
+					send_command('text notifications text "Status: Kiting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			elseif player.status == "Idle" then
-				if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then
-					send_command('text notifications text "Status: Kiting";text notifications color 255 255 255')
-				else
-					send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
-				end
+				send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
 	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
@@ -860,9 +909,9 @@ function self_command(command)
 		windower.add_to_chat(8,'cycle through Sheep Song, Geist Wall, Stinking Gas, and Soporific,')
 		windower.add_to_chat(8,'in that order, as recasts timers allow.')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'To use /BLU Single target spells, use a macro for Flash and it')
-		windower.add_to_chat(8,'will cycle through Flash, Jettatura, and Blank Gaze, in that order,')
-		windower.add_to_chat(8,'as recasts timers and distance allow.')
+		windower.add_to_chat(8,'To use /BLU Single target spells, use a macro for Flash and it will')
+		windower.add_to_chat(8,'cycle through Flash, Jettatura, and Blank Gaze, in that order, as recast')
+		windower.add_to_chat(8,'timers and distance allow (or if you are /WAR it will also Provoke).')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Run the Lockstyle function yourself at any time by typing')
 		windower.add_to_chat(200,'        //lockstyle or //lstyle')
@@ -914,15 +963,20 @@ function self_command(command)
 		windower.add_to_chat(200,'Chat: '..(''..Chat..''):color(8)..'')
 		windower.add_to_chat(200,'InvTimer: '..(''..InvTimer..''):color(8)..'')
 		windower.add_to_chat(200,'IntTimer: '..(''..IntTimer..''):color(8)..'')
-		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
 		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'UseEcho: '..(''..UseEcho..''):color(8)..'')
+		windower.add_to_chat(200,'CharmNaked: '..(''..CharmNaked..''):color(8)..'')
+		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
 		windower.add_to_chat(200,'AutoMajesty: '..(''..AutoMajesty..''):color(8)..'')
-		windower.add_to_chat(200,'AutoMajWindow: '..(''..AutoMajWindow..''):color(8)..'')
-		windower.add_to_chat(200,'AutoDEmblem: '..(''..AutoDEmblem..''):color(8)..'')
 		windower.add_to_chat(200,'AutoDefender: '..(''..AutoDefender..''):color(8)..'')
+		windower.add_to_chat(200,'AutoDEmblem: '..(''..AutoDEmblem..''):color(8)..'')
 		windower.add_to_chat(200,'UseMaxHP: '..(''..UseMaxHP..''):color(8)..'')
+		windower.add_to_chat(200,'UseOhShit: '..(''..UseOhShit..''):color(8)..'')
+		windower.add_to_chat(200,'AutoSentinel: '..(''..AutoSentinel..''):color(8)..'')
+		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
+		windower.add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
+		windower.add_to_chat(200,'DoomOffText: '..(''..DoomOffText..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
 		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
@@ -943,9 +997,9 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiReraise: '..(''..NotiReraise..''):color(8)..'')
 		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowMP: '..(''..NotiLowMP..''):color(8)..'')
+		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
-		windower.add_to_chat(200,'ReraiseReminderTimer: '..(''..ReraiseReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
 		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
 		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
@@ -968,7 +1022,12 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
 		windower.add_to_chat(200,'RemoveAuto: '..(''..RemoveAuto..''):color(8)..'')
+		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
+		windower.add_to_chat(200,'AutoMajWindow: '..(''..AutoMajWindow..''):color(8)..'')
 		windower.add_to_chat(200,'MaxHPThreshold: '..(''..MaxHPThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'OhShitThreshold: '..(''..OhShitThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'AutSntThreshold: '..(''..AutSntThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'TPReturnWait: '..(''..TPReturnWait..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
@@ -1006,7 +1065,7 @@ function self_command(command)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif command == 'NotiLowMPToggle' then
 		NotiLowMPToggle = 'Off'
@@ -1020,48 +1079,34 @@ end
 function choose_set()
 	if player.status == "Resting" then
 		if HUD == 'On' then
-			if buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+			if buffactive['Weakness'] then
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
-				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
-				send_command('text notifications text "Status: Resting";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Resting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
-		if Mode == 'Auto' then
-			if player.in_combat == false then --if we're resting and NOT in combat (ex: recovering after a fight) we equip the refresh/rest sets
-				equip(set_combine(sets.refresh, sets.rest))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
-				end
-			else -- if we're resting and ARE in combat (ex: group is engaged on a mob and we're weak but nearby) we equip the tank/rest sets
-				equip(set_combine(sets.tank, sets.rest))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank + Rest]')
-				end
-			end
-		elseif Mode == 'Neutral' then
-			equip(set_combine(sets.refresh, sets.rest))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
-			end
-		elseif Mode == 'Combat' then
-			equip(set_combine(sets.tank, sets.rest))
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tank + Rest]')
-			end
+		equip(set_combine(sets.refresh, sets.rest)) --No matter what Mode we're in, if we're resting its because we need MP so we equip the Refresh set along with the Rest set
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Refresh + Rest]')
 		end
 	elseif player.status == "Engaged" then
 		if HUD == 'On' then
-			if buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+			if buffactive['Weakness'] then
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 and HUD == 'On' then
-				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			elseif HUD == 'On' then
-				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
-		if Mode == 'Auto' or Mode == 'Combat' then -- if we're engaged we automatically get put into combat
+		if OhShit == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
+			equip(sets.ohshit)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Oh Shit]')
+			end
+		elseif Mode == 'Auto' or Mode == 'Combat' then -- if we're engaged we automatically get put into combat
 			if MaxHP == true then
 				equip(sets.maxhp)
 				if Debug == 'On' then
@@ -1079,16 +1124,22 @@ function choose_set()
 				windower.add_to_chat(8,'[Equipped Set: Refresh]')
 			end
 		end
-	elseif player.status == "Idle" then 
+	elseif player.status == "Idle" then
 		if HUD == 'On' then
-			if buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63')
+			if buffactive['Sneak'] and buffactive['Invisible'] then
+				send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Sneak'] then
+				send_command('text notifications text "Status: Sneak";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Invisible'] then
+				send_command('text notifications text "Status: Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+			elseif buffactive['Weakness'] then
+				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
-				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			elseif Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then
-				send_command('text notifications text "Status: Kiting";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Kiting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			else
-				send_command('text notifications text "Status: Idle";text notifications color 255 255 255')
+				send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
 		if AdoulinZones:contains(world.area) then
@@ -1117,7 +1168,12 @@ function choose_set()
 				windower.add_to_chat(8,'[Equipped Set: Refresh + Movement Speed + Town]')
 			end
 		else
-			if (Mode == 'Auto' and player.in_combat == true) or Mode == 'Combat' then -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
+			if OhShit == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set (plus movement speed to <{Run away!}>)
+				equip(set_combine(sets.ohshit, sets.movementspeed))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Oh Shit + Movement Speed]')
+				end
+			elseif (Mode == 'Auto' and player.in_combat == true) or Mode == 'Combat' then -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
 				if MaxHP == true then
 					equip(set_combine(sets.maxhp, sets.movementspeed))
 					if Debug == 'On' then
@@ -1233,7 +1289,7 @@ function precast(spell)
 			end
 			cancel_spell()
 			if HUD == 'On' then
-				send_command('text notifications text "«« Not Enough TP »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Not Enough TP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
 				windower.add_to_chat(8,'<< Not Enough TP >>')
 			end
@@ -1244,7 +1300,7 @@ function precast(spell)
 			end
 			cancel_spell()
 			if HUD == 'On' then
-				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
 				windower.add_to_chat(8,'<< Too Far >>')
 			end
@@ -1254,7 +1310,7 @@ function precast(spell)
 			end
 			cancel_spell()
 			if HUD == 'On' then
-				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50')
+				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			else
 				windower.add_to_chat(8,'<< Too Far >>')
 			end
@@ -1287,73 +1343,73 @@ function precast(spell)
 		end
 	elseif spell.english == 'Invincible' then
 		equip(sets.invincible)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Invincible]')
+		end
 		if InvTimer == 'On' then
-			if player.equipment.hands == 'Valor Breeches +2' or player.equipment.hands == 'Caballarius Breeches' or player.equipment.hands == 'Caballarius Breeches +1' or player.equipment.hands == 'Caballarius Breeches +2' or player.equipment.hands == 'Caballarius Breeches +3' then --these pieces extend Invincible by 10 seconds so we adjust accordingly
+			if player.equipment.legs == 'Valor Breeches +2' or player.equipment.legs == 'Caballarius Breeches' or player.equipment.legs == 'Caballarius Breeches +1' or player.equipment.legs == 'Caballarius Breeches +2' or player.equipment.legs == 'Caballarius Breeches +3' then --these pieces extend Invincible by 10 seconds so we adjust accordingly
 				send_command('input /echo [Invincible] 40 seconds;wait 10;input /echo [Invincible] 30 seconds;wait 10;input /echo [Invincible] 20 seconds;wait 10;input /echo [Invincible] 10 seconds')
 			else
 				send_command('input /echo [Invincible] 30 seconds;wait 10;input /echo [Invincible] 20 seconds;wait 10;input /echo [Invincible] 10 seconds')
 			end
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Invincible]')
 		end
 	elseif spell.english == 'Intervene' and IntTimer == 'On' then
 		send_command('input /echo [Intervene] 30 seconds;wait 10;input /echo [Intervene] 20 seconds;wait 10;input /echo [Intervene] 10 seconds')
 	elseif spell.english == 'Holy Circle' then
 		if windower.ffxi.get_ability_recasts()[74] <= 1 then
 			equip(sets.holycircle)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Holy Circle + Enmity]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Holy Circle + Enmity]')
+			end
 		end
 	elseif spell.english == 'Shield Bash' then
 		if windower.ffxi.get_ability_recasts()[73] <= 1 then
 			equip(sets.shieldbash)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Shield Bash + Enmity]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Shield Bash + Enmity]')
+			end
 		end
 	elseif spell.english == 'Sentinel' then
 		if windower.ffxi.get_ability_recasts()[75] <= 1 then
 			equip(sets.sentinel)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Sentinel + Enmity]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Sentinel + Enmity]')
+			end
 		end
 	elseif spell.english == 'Cover' then
 		if windower.ffxi.get_ability_recasts()[76] <= 1 then
 			equip(sets.cover)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Cover]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Cover]')
+			end
 		end
 	elseif spell.english == 'Rampart' then
 		if windower.ffxi.get_ability_recasts()[77] <= 1 then
 			equip(sets.rampart)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Rampart + Enmity]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Rampart + Enmity]')
+			end
 		end
 	elseif spell.english == 'Fealty' then
 		if windower.ffxi.get_ability_recasts()[78] <= 1 then
 			equip(sets.fealty)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Fealty]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Fealty]')
+			end
 		end
 	elseif spell.english == 'Chivalry' then
 		if windower.ffxi.get_ability_recasts()[79] <= 1 then
 			equip(sets.chivalry)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Chivalry]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Chivalry]')
+			end
 		end
 	elseif spell.english == 'Divine Emblem' then
 		if windower.ffxi.get_ability_recasts()[80] <= 1 then
 			equip(sets.divineemblem)
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Divine Emblem]')
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Divine Emblem]')
+			end
 		end
 	elseif spell.english == 'Majesty' and not spell.interrupted then
 		MajestyTimer = 180
@@ -1375,16 +1431,25 @@ function precast(spell)
 				send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..'')
 			end
 			equip(sets.fastcast)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
+			end
 		elseif windower.ffxi.get_spell_recasts()[575] == 0 and spell.target.distance <= 9 and player.sub_job == 'BLU' and player.sub_job_level >= 1 then
 			cancel_spell()
 			send_command('input /ma "Jettatura" '..spell.target.raw..'')
 		elseif windower.ffxi.get_spell_recasts()[537] == 0 and player.sub_job == 'BLU' and player.sub_job_level >= 1 then
 			cancel_spell()
 			send_command('input /ma "Blank Gaze" '..spell.target.raw..'')
+		elseif windower.ffxi.get_ability_recasts()[5] == 0 and spell.target.distance <= 17.8 and player.sub_job == 'WAR' and player.sub_job_level >= 1 then
+			cancel_spell()
+			send_command('input /ja "Provoke" '..spell.target.raw..'')
 		end
 	elseif spell.english == "Sheep Song" then
 		if windower.ffxi.get_spell_recasts()[584] == 0 then
 			equip(sets.fastcast)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
+			end
 		elseif windower.ffxi.get_spell_recasts()[605] == 0 then
 			cancel_spell()
 			send_command('input /ma "Geist Wall" '..spell.target.raw..'')
@@ -1475,7 +1540,7 @@ function midcast(spell)
 				windower.add_to_chat(8,'[Equipped Set: Phalanx]')
 			end
 		end
-	elseif spell.english == 'Crusade' or spell.english == 'Reprisal' or string.find(spell.english,'Protect') or string.find(spell.english,'Shell') then
+	elseif spell.skill == "Enhancing Magic" then
 		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then -- in combat, so we need SIRD
 			equip(sets.enhancingsird)
 			if Debug == 'On' then
@@ -1517,13 +1582,13 @@ function aftercast(spell)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< Low MP >>')
 		end		
 		send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
 	end
-	if AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and buffactive['Majesty'] and MajestyTimer <= AutoMajWindow and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[150] == 0 then
+	if AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect') or spell.english == 'Crusade' or spell.english == 'Phalanx' or spell.english == 'Cocoon' or spell.english == 'Defender' or spell.english == 'Reprisal' or spell.english == 'Palisade' or spell.english == 'Enlight') and MajestyTimer <= AutoMajWindow and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[150] == 0 then
 		send_command('wait 3; input /ja Majesty <me>')
 	end
 end
@@ -1533,11 +1598,35 @@ end
 -------------------------------------------
 
 windower.register_event('hpp change',function()
-	if player.hpp <= MaxHPThreshold and MaxHP == true and UseMaxHP == 'On' then --when HP% goes below a certain amount, turn off the MaxHP flag
+	if player.hpp <= MaxHPThreshold and MaxHP == true and UseMaxHP == 'On' then --when HP% goes below a certain amount, turn off the MaxHP flag and equip the appropriate gear set
 		MaxHP = false
+		choose_set()
 		if Debug == 'On' then
 			windower.add_to_chat(8,'MaxHP set to False')
 		end
+	end
+	if player.hp <= OhShitThreshold and OhShit == false and UseOhShit == 'On' then --when HP goes below a certain amount, turn on the OhShit flag and equip the appropriate gear set
+		OhShit = true
+		choose_set()
+		if AlertSounds == 'On' then
+			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if Debug == 'On' then
+			windower.add_to_chat(8,'OhShit set to True')
+		end
+	elseif player.hp > OhShitThreshold and OhShit == true and UseOhShit == 'On' then --when HP goes back above a certain amount, turn off the OhShit flag and equip the appropriate gear set
+		OhShit = false
+		send_command('gs c ClearNotifications')
+		choose_set()
+		if Debug == 'On' then
+			windower.add_to_chat(8,'OhShit set to False')
+		end
+	end
+	if player.hp <= AutSntThreshold and not (buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and windower.ffxi.get_ability_recasts()[75] == 0 then
+		send_command('input /ja Sentinel <me>;wait 1;input /ja Sentinel <me>') --we do this twice to make a little extra sure it activates just in case we're doing something else at the time
+	end
+	if player.hp == 0 then --if we die turn this off so it doesn't trigger the "doom is off" notification once we raise
+		Doom = false
 	end
 end)
 
@@ -1649,16 +1738,47 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	end
-	if buff == 2 or buff == 19 then --If we get slept,
+	if (buff == 2 or buff == 19) and not buffactive['Charm'] then --If we get slept,
 		if buffactive['Stoneskin'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
 		end
-		if not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already DOT'd and have more than 50 HP,
+		if not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already DOT'd, have more than 50 HP, and are engaged,
 			equip({neck="Vim Torque"}) --equip the Vim Torque to wake us up
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Item: Vim Tourque]')
+			end
 		end
 	end
-	if buff == 15 and AlertSounds == 'On' then --Doom
-		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+	if buff == 15 then --Doom
+		if AlertSounds == 'On' then
+			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if DoomAlert == 'On' then
+			Doom = true --Setting "Doom" to true now, so that it can get set to false if we die, that way we don't announce that doom is off when we raise from the dead
+			send_command('input /p '..DoomOnText..'')
+		end
+		if AutoHWater == 'On' then
+			HWaterRecast = 3 --Set the recast timer so we can start using the Holy Waters
+		end
+	end
+	if buff == 17 then --Charm
+		if AlertSounds == 'On' then
+			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		end
+		if CharmNaked == 'A' then
+			equip(sets.naked)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Naked]')
+			end
+		elseif CharmNaked == 'W' then
+			equip({head=empty, body=empty, hands=empty, legs=empty, feet=empty, neck=empty, waist=empty, left_ear=empty, right_ear=empty, left_ring=empty, right_ring=empty, back=empty})
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Naked (except for weapons)]')
+			end
+		end
+	end
+	if buff == 71 or buff == 69 then --Sneak or Invisible
+		send_command('gs c ClearNotifications')
 	end
 end)
 
@@ -1668,7 +1788,7 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
 		end
 		if HUD == 'On' then
-			send_command('text aftermath text "Aftermath: None";text aftermath color 255 50 50')
+			send_command('text aftermath text "Aftermath: None";text aftermath color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(39,'<< Aftermath Off >>')
 		end
@@ -1677,7 +1797,7 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Food Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Food Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< Food Has Worn Off >>')
 		end
@@ -1686,7 +1806,7 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Reraise Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Reraise Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< Reraise Has Worn Off >>')
 		end
@@ -1695,47 +1815,54 @@ windower.register_event('lose buff', function(buff)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Vorseal Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Vorseal Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Signet Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Signet Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Sanction Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Sanction Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Sigil Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Sigil Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50')
+			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
 	elseif buff == 0 and HUD == 'On' then --No longer dead (Raise/HP)
-		send_command('text notifications text "Status: Alive ^_^";text notifications color 75 255 75')
+		send_command('text notifications text "Status: Alive ^_^";text notifications color 75 255 75;text notifications bg_transparency 1')
 	elseif buff == 1 then --Weakness
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75')
+			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75;text notifications bg_transparency 1')
 		end
 	elseif buff == 2 or buff == 19 then --lose sleep, run choose_set since we had equipped the Vim Torque to wake us up
 		choose_set()
+	elseif buff == 15 then --Doom
+		if DoomAlert == 'On' and Doom == true then --"Doom" gets set to false when we die, that way we don't announce that doom is off when we raise from the dead
+			Doom = false
+			send_command('input /p '..DoomOffText..'')
+		end
+	elseif buff == 71 or buff == 69 then --Sneak or Invisible
+		send_command('gs c ClearNotifications')
 	end
 end)
 
@@ -1746,7 +1873,7 @@ windower.register_event('tp change',function()
 			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
 		end
 		if HUD == 'On' then
-			send_command('text notifications text "«« 3000 TP »»";text notifications color 75 255 75')
+			send_command('text notifications text "«« 3000 TP »»";text notifications color 75 255 75;text notifications bg_transparency 1')
 		else
 			windower.add_to_chat(8,'<< 3000 TP >>')
 		end
@@ -1819,11 +1946,26 @@ windower.register_event('prerender', function()
 		end
 		if AutoMajesty == 'On' and buffactive['Majesty'] then
 			MajestyTimer = MajestyTimer - 1
-			--windower.add_to_chat(8,'MajestyTimer = '..MajestyTimer..'')
+		end
+		if HWaterRecast == 3 then
+			send_command('input /item "Holy Water" <me>')
+			HWaterRecast = HWaterRecast - 1
+		elseif HWaterRecast == 0 then
+			if buffactive['Doom'] then
+				HWaterRecast = 3
+			end
+		else
+			HWaterRecast = HWaterRecast - 1
 		end
 		if HUD == 'On' and LoadHUD == true then
 			if player.hp == 0 then --are we dead?
-				send_command('text notifications text "Status: Dead X_x";text notifications color 255 50 50')
+				send_command('text notifications text "Status: Dead X_x";text notifications color 255 50 50;text notifications bg_transparency 1')
+				if OhShit == true then
+					OhShit = false
+					if Debug == 'On' then
+						windower.add_to_chat(8,'OhShit set to False')
+					end
+				end
 			end
 			if ReraiseReminder == 'On' then
 				if RRRCountdown > 0 then
@@ -1834,16 +1976,19 @@ windower.register_event('prerender', function()
 							windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 						end
 						if HUD == 'On' then
-							send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50')
+							send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 						else
 							windower.add_to_chat(8,'<< No Reraise >>')
 						end
 					end
-					RRRCountdown = ReraiseReminderTimer --start the timer back up
+					RRRCountdown = RRReminderTimer --start the timer back up
 				end
 			end
-			if NotiDoom == 'On' and buffactive['Doom'] then 
+			if NotiDoom == 'On' and buffactive['Doom'] then
 				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
+			end
+			if NotiLowHP == 'On' and OhShit == true then
+				send_command('text notifications text "Status: LOW HP";text notifications bg_transparency 200;text notifications color 0 0 0;text notifications bg_color 255 255 255;wait .5;text notifications bg_color 255 204 51')
 			end
 			if buffactive['Enmity Boost'] and buffactive['Phalanx'] and (buffactive['Reprisal'] or buffactive['Palisade']) and (buffactive['Defense Boost'] or buffactive['Defender']) and player.in_combat == true then
 				send_command('text mode text "Mode: '..Mode..' (Turtle)"')
@@ -2021,16 +2166,16 @@ windower.register_event('incoming text',function(org)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
 		if NotiTrade == 'On' and HUD == 'On' then
-			send_command('text notifications text "«« Trade Request »»";text notifications color 255 255 50')
+			send_command('text notifications text "«« Trade Request »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.')then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
 		if NotiSneak == 'On' and HUD == 'On' and org:find('Sneak') then
-			send_command('text notifications text "«« Sneak Wearing »»";text notifications color 255 100 100')
+			send_command('text notifications text "«« Sneak Wearing »»";text notifications color 255 100 100;text notifications bg_transparency 1')
 		elseif NotiInvis == 'On' and HUD == 'On' and org:find('Invisible') then
-			send_command('text notifications text "«« Invisible Wearing »»";text notifications color 255 100 100')
+			send_command('text notifications text "«« Invisible Wearing »»";text notifications color 255 100 100;text notifications bg_transparency 1')
 		end
 	elseif org:find('Lost key item') and org:find('Radialens') then
 		send_command('gs c Radialens')
@@ -2039,9 +2184,9 @@ windower.register_event('incoming text',function(org)
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
 		if NotiInvite == 'On' and HUD == 'On' and org:find('party') and not org:find('alliance') then
-			send_command('text notifications text "«« Party Invite »»";text notifications color 255 255 50')
+			send_command('text notifications text "«« Party Invite »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		elseif NotiInvite == 'On' and HUD == 'On' and org:find('alliance') then
-			send_command('text notifications text "«« Alliance Invite »»";text notifications color 255 255 50')
+			send_command('text notifications text "«« Alliance Invite »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		end
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
@@ -2049,21 +2194,21 @@ windower.register_event('incoming text',function(org)
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
 			if NotiTime == 'On' and HUD == 'On' then
-				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50')
+				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
 			if NotiTime == 'On' and HUD == 'On' then
-				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50')
+				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
 			if NotiTime == 'On' and HUD == 'On' then
-				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50')
+				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		end
 	elseif org:find('Style lock mode enabled.') then
@@ -2086,15 +2231,15 @@ windower.register_event('incoming text',function(org)
 		send_command('input /p Plouton pop! <call14>')
 	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
 		if org:find('Lightning') then
-			send_command('input /p Lightning <call14>')
+			send_command('input /p Thunder <call14>')
 		elseif org:find('Fire') then
 			send_command('input /p Fire <call14>')
 		elseif org:find('Wind') then
-			send_command('input /p Wind <call14>')
+			send_command('input /p Aero <call14>')
 		elseif org:find('Earth') then
-			send_command('input /p Earth <call14>')
+			send_command('input /p Stone <call14>')
 		elseif org:find('Ice') then
-			send_command('input /p Ice <call14>')
+			send_command('input /p Blizzard <call14>')
 		elseif org:find('Water') then
 			send_command('input /p Water <call14>')
 		end
