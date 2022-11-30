@@ -32,6 +32,9 @@ To activate Damage Taken Override, use any of these three options:
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
 
+Hide or show the HUD at any time by typing
+	//hidehud or //showhud
+
 For the HUD function (see options below), suggested placement is center screen, just above your chat log.
 
 IMPORTANT:
@@ -58,8 +61,6 @@ DTCtrlPlus		=	'd'		--				Sets the keyboard shortcut you would like to activate t
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
-CharmNaked		=	'A'		--[A/W/Off]		Automatically strips you naked of (A)ll gear or all gear except (W)eapons when you're charmed
-							--				so you don't murder anyone and allowing you to be more easily slept.
 AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
 UseOhShit		=	'On'	--[On/Off]		Equips your Oh Shit gear set when your HP gets low.
 DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
@@ -75,7 +76,6 @@ HUDposYLine1	=	745		--				Y position for the HUD. 0 is top of the window, increa
 FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
 LineSpacer		=	20		--				Space in pixels between each Line of the HUD
 ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
-HUDRecast		=	'On'	--[On/Off]		Displays common spells/abilities and their recast status
 
 --HUD Mode Names
 Mode1Name = 'Multi-Attack'	--Names displayed in the HUD for Hasso Mode 1, 2, and 3.
@@ -92,11 +92,11 @@ NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to
 NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiTPReturn		=	'On'	--[On/Off]	Displays your TP return after Weapon Skills.
+NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
-NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as weaknesses.
+NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as elemental weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -120,10 +120,10 @@ StartMode			=	'Mode1'	--[Mode1/Mode2/Mode3]
 								--Determines the Mode you will start in. Current Mode can be changed at any time by using any of the 
 								--three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 ModeCtrlPlus		=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
-OhShitThreshold		=	1000	--If your HP goes below this number, your Oh Shit gear set will activate.
+DangerSound			=	'C'		--[C/O] Danger Sound will play [C]onstantly or [O]nce.
+LowHPThreshold		=	1000	--If your HP goes below this number, your Oh Shit gear set will activate.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-TPReturnWait		=	'0.2'	--Adjust this timing in seconds as needed. (TP Return may not always be 100% accurate depending on lag, regain, etc.)
 Debug				=	'Off'	--[On/Off]
 
 --Color values in RGB for the HUD stances
@@ -145,9 +145,9 @@ function get_sets()
 	sets.hassomodeone = {
 		ammo="Coiste Bodhar",
 		head="Flam. Zucchetto +2",
-		body="Kasuga Domaru +2",
+		body="Kasuga Domaru +3",
 		hands="Tatena. Gote +1",
-		legs="Kasuga Haidate +2",
+		legs="Kasuga Haidate +3",
 		feet="Ryuo Sune-Ate +1",
 		neck="Sam. Nodowa +2",
 		waist="Ioskeha Belt +1",
@@ -162,9 +162,9 @@ function get_sets()
 	sets.hassomodetwo = {
 		ammo="Coiste Bodhar",
 		head="Flam. Zucchetto +2",
-		body="Kasuga Domaru +2",
+		body="Kasuga Domaru +3",
 		hands="Tatena. Gote +1",
-		legs="Kasuga Haidate +2",
+		legs="Kasuga Haidate +3",
 		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
 		waist="Ioskeha Belt +1",
@@ -179,9 +179,9 @@ function get_sets()
 	sets.hassomodethree = {
 		ammo="Coiste Bodhar",
 		head="Flam. Zucchetto +2",
-		body="Kasuga Domaru +2",
+		body="Kasuga Domaru +3",
 		hands="Tatena. Gote +1",
-		legs="Kasuga Haidate +2",
+		legs="Kasuga Haidate +3",
 		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
 		waist="Ioskeha Belt +1",
@@ -212,14 +212,6 @@ function get_sets()
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
 	}
 
-	-- Oh Shit
-	-- Full DT- and everything you've got with Absorb or Annuls Damage
-	sets.ohshit = {
-		neck="Warder's Charm +1",
-		left_ring="Shadow Ring",
-		back="Shadow Mantle"
-	}
-
 	-- Idle (Movement Speed, Regain, Regen)
 	sets.idle = {
 		head="Wakido Kabuto +3",
@@ -232,18 +224,32 @@ function get_sets()
 	-- Will override all other gear sets and inherit unused slots from them
 	sets.dtoverride = {
 		head="Kasuga Kabuto +2",
-		body="Kasuga Domaru +2",
-		legs="Kasuga Haidate +2",
+		body="Kasuga Domaru +3",
+		legs="Kasuga Haidate +3",
 		feet="Nyame Sollerets",
 		left_ring="Defending Ring",
 	}
+
+	-- Oh Shit
+	-- Full DT- and everything you've got with Absorbs or Annuls Damage
+	sets.ohshit = {
+		head="Kasuga Kabuto +2",
+		body="Kasuga Domaru +3",
+		legs="Kasuga Haidate +3",
+		feet="Nyame Sollerets",
+		neck="Warder's Charm +1",
+		left_ring="Defending Ring",
+		right_ring="Shadow Ring",
+		back="Shadow Mantle"
+	}
+
 
 	-- Weapon Skill (TP Bonus, STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
 		ammo="Knobkierrie",
 		head="Mpaca's Cap",
 		body="Sakonji Domaru +3",
-		hands="Kasuga Kote +2",
+		hands="Kasuga Kote +3",
 		legs="Wakido Haidate +3",
 		feet="Nyame Sollerets",
 		neck="Sam. Nodowa +2",
@@ -258,7 +264,8 @@ function get_sets()
 	-- Capped TP Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	-- Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
 	sets.cappedtpws = set_combine(sets.ws, {
-
+		head="Nyame Helm",
+		left_ear="Lugra Earring +1",
 	})
 
 	-- Hybrid Weapon Skill (Fotias, STR, INT, Weapon Skill Damage, Magic Attack Bonus, Attack, Double/Triple Attack)
@@ -268,7 +275,7 @@ function get_sets()
 
 	-- Sekkanoki
 	sets.sekkanoki = {
-		hands="Kasuga Kote +1",
+		hands="Kasuga Kote +3",
 	}
 
 	-- Shikikoyo
@@ -347,7 +354,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Tachi: Goten' --Leave this alone, used for debugging purposes
+TopVersion = 'Tachi: Kagero' --Leave this alone, used for debugging purposes
 
 
 
@@ -359,8 +366,8 @@ TopVersion = 'Tachi: Goten' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Tachi: Goten'
-FileVersion = '10.15.22'
+BottomVersion = 'Tachi: Kagero'
+FileVersion = '11.30.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -370,6 +377,26 @@ FileVersion = '10.15.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+11.30.22 (Version Compatibility Codename: Tachi: Kagero)
+-Overhauled how death is handled. More cleanly prevents unnecessary notifications from activating immediately upon raising (ie Reraise wearing off and Low HP).
+-Added Danger sound file. Used by Doom and Low HP.
+-Added Advanced Option for the Danger sound to play constantly while in danger or only once (with a 30 second delay to be able to play again).
+-Added WSDamage option. Displays your damage (or miss) after a Weapon Skill.
+-Added the //hidehud and //showhud alias commands.
+-Added debug lines for redefining variables.
+-Adjusted Low HP Notification to not trigger while weakened.
+-Adjusted Low HP Notification Sound to have a 30 second window after triggering where it will not trigger again.
+-Adjusted HUD text object loading timing to avoid them occasionally not loading correctly.
+-Adjusted AutoHWater option to stop and notify you once you are out of useable Holy Waters.
+-Adjusted the Trade notification to clear once the trade is complete.
+-Removed the option to turn off the HUDRecast. While I generally think the more options the better, the recasts are a main part of the HUD.
+-Removed the CharmNaked option. Apparently you can't Do Stuff while charmed ¯\_(ツ)_/¯
+-Fixed incorrect SP Ability timers when wearing gear that augments (adds additional time to) the ability.
+-Fixed ordering of Status Notifications.
+-Renamed OhShitThreshold to LowHPThreshold since it controls more than just the OhShit option.
+-Updated Version Compatibility Codename to Tachi: Kagero.
+-Code cleanup.
 
 10.15.22 (Version Compatibility Codename: Tachi: Goten)
 -Renamed Mode to Stance.
@@ -474,12 +501,39 @@ HybridWS = S{
 Mode = StartMode --sets the starting mode (selected in Advanced Options)
 Stance = 'None' --Start off without Hasso/Seigan up, this will update when either is activated
 DTOverride = "Off" --Start with the Damage Taken Override off
+NotiLowHPToggle = 'Off' --start with the toggle off for the Low HP Notification so that it can trigger
 RRRCountdown = RRReminderTimer
 HWaterRecast = 0
+HWater = true --this is used as a simple on/off for when we run out of Holy Waters
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
-LoadDelay = 3 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
+LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
 LoadHUD = false --starts false then switched to true after the LoadDelay
 ShowHUD = true --this changes to false when we zone or are in a cutscene
+LockstyleDelay = 3
+AutoLockstyleRun = true
+LowHP = false
+Doom = false
+Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
+LastWS = "WS Damage"
+if player.isallymember == true then
+	Alliance = true
+else
+	Alliance = false
+end
+if party.count >= 2 then
+	Party = true
+else
+	Party = false
+end
+if Debug == 'On' then
+	windower.add_to_chat(200,'Initial variables:')
+	windower.add_to_chat(8,'[Mode: '..Mode..' | Stance: '..Stance..' | DTOverride: '..DTOverride..' | NotiLowHpToggle: '..NotiLowHPToggle..']')
+	windower.add_to_chat(8,'[RRRCountdown: '..RRRCountdown..' | HWaterRecast: '..HWaterRecast..' | HWater: '..HWater..' | Heartbeat: '..Heartbeat..']')
+	windower.add_to_chat(8,'[LoadDelay: '..LoadDelay..' | LoadHUD: '..LoadHUD..' | ShowHUD: '..LockstyleDelay..' | AutoLockstyleRun: '..AutoLockstyleRun..']')
+	windower.add_to_chat(8,'[LowHP: '..LowHP..' | Doom: '..Doom..' | Alive: '..Alive..' | Alliance: '..Alliance..']')
+	windower.add_to_chat(8,'[Party: '..Party..']')
+end
+
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 MeditateRecast = 0
 SekkanokiRecast = 0
@@ -491,7 +545,7 @@ HighJumpRecast = 0
 SuperJumpRecast = 0
 HassoRecast = 0
 SeiganRecast = 0
-OhShit = false
+
 if HUD == 'On' then
 	--Space out each line and column properly
 	HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
@@ -502,33 +556,28 @@ if HUD == 'On' then
 	HUDposXColumn4 = HUDposXColumn3 + ColumnSpacer
 	HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
 	HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
-	if player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna' then
-		REMA = true --If we have a REMA equipped we set this toggle to true
-	else
-		REMA = false --If we do not have a REMA equipped, we set it to false
-	end
-	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
-	send_command('text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
-	send_command('text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-	send_command('text loading create "Loading Keys SAMURAI file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	send_command('wait '..LoadDelay..';gs c LoadHUD')
+	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
+	send_command('wait .5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
+	send_command('wait .6;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
+	send_command('wait .7;text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
+	send_command('wait .8;text loading create "Loading Keys SAMURAI file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 	--Create the Aftermath, Stance, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('wait .1;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
-	send_command('wait .1;text stance create "Stance: '..Stance..'";wait .3;text stance size '..FontSize..';text stance pos '..HUDposXColumn1..' -100;text stance color 255 50 50;text stance bg_transparency 1') --Stance
-	send_command('wait .1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('wait .1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+	send_command('wait .9;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
+	send_command('wait 1;text stance create "Stance: '..Stance..'";wait .3;text stance size '..FontSize..';text stance pos '..HUDposXColumn1..' -100;text stance color 255 50 50;text stance bg_transparency 1') --Stance
+	send_command('wait 1.1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
+	send_command('wait 1.2;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
 	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('wait .2;text meditate create "[ Meditate ]";wait .3;text meditate size '..FontSize..';text meditate pos '..HUDposXColumn1..' -100;text meditate bg_transparency 1')
-	send_command('wait .2;text sekkanoki create "[ Sekkanoki ]";wait .3;text sekkanoki size '..FontSize..';text sekkanoki pos '..HUDposXColumn1..' -100;text sekkanoki bg_transparency 1')
-	send_command('wait .2;text sengikori create "[ Sengikori ]";wait .3;text sengikori size '..FontSize..';text sengikori pos '..HUDposXColumn1..' -100;text sengikori bg_transparency 1')
-	send_command('wait .2;text hagakure create "[ Hagakure ]";wait .3;text hagakure size '..FontSize..';text hagakure pos '..HUDposXColumn1..' -100;text hagakure bg_transparency 1')
-	send_command('wait .2;text highjump create "[ High J. ]";wait .3;text highjump size '..FontSize..';text highjump pos '..HUDposXColumn1..' -100;text highjump bg_transparency 1')
-	send_command('wait .2;text superjump create "[ Super J. ]";wait .3;text superjump size '..FontSize..';text superjump pos '..HUDposXColumn1..' -100;text superjump bg_transparency 1')
-	send_command('wait .2;text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
-	send_command('wait .2;text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
-	send_command('wait .2;text hasso create "[ Hasso ]";wait .3;text hasso size '..FontSize..';text hasso pos '..HUDposXColumn1..' -100;text hasso bg_transparency 1')
-	send_command('wait .2;text seigan create "[ Seigan ]";wait .3;text seigan size '..FontSize..';text seigan pos '..HUDposXColumn1..' -100;text seigan bg_transparency 1')
+	send_command('wait 1.3;text meditate create "[ Meditate ]";wait .3;text meditate size '..FontSize..';text meditate pos '..HUDposXColumn1..' -100;text meditate bg_transparency 1')
+	send_command('wait 1.4;text sekkanoki create "[ Sekkanoki ]";wait .3;text sekkanoki size '..FontSize..';text sekkanoki pos '..HUDposXColumn1..' -100;text sekkanoki bg_transparency 1')
+	send_command('wait 1.5;text sengikori create "[ Sengikori ]";wait .3;text sengikori size '..FontSize..';text sengikori pos '..HUDposXColumn1..' -100;text sengikori bg_transparency 1')
+	send_command('wait 1.6;text hagakure create "[ Hagakure ]";wait .3;text hagakure size '..FontSize..';text hagakure pos '..HUDposXColumn1..' -100;text hagakure bg_transparency 1')
+	send_command('wait 1.7;text highjump create "[ High J. ]";wait .3;text highjump size '..FontSize..';text highjump pos '..HUDposXColumn1..' -100;text highjump bg_transparency 1')
+	send_command('wait 1.8;text superjump create "[ Super J. ]";wait .3;text superjump size '..FontSize..';text superjump pos '..HUDposXColumn1..' -100;text superjump bg_transparency 1')
+	send_command('wait 1.9;text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
+	send_command('wait 2.0;text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
+	send_command('wait 2.1;text hasso create "[ Hasso ]";wait .3;text hasso size '..FontSize..';text hasso pos '..HUDposXColumn1..' -100;text hasso bg_transparency 1')
+	send_command('wait 2.2;text seigan create "[ Seigan ]";wait .3;text seigan size '..FontSize..';text seigan pos '..HUDposXColumn1..' -100;text seigan bg_transparency 1')
 else
 	windower.add_to_chat(8,'Keys SAMURAI file ver: '..FileVersion..'')
 	windower.add_to_chat(8,'Type //fileinfo for more information')
@@ -546,14 +595,14 @@ if Page ~= "Off" then
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias mode gs c Mode') --creates the Mode alias
+send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
+send_command('alias showhud gs c ShowHUD') --creates the ShowHUD alias
 send_command('bind ^'..ModeCtrlPlus..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboard shortcut
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
 end
-LockstyleDelay = 3
-AutoLockstyleRun = true
 
 -------------------------------------------
 --            SELF COMMANDS              --
@@ -589,91 +638,70 @@ function self_command(command)
 				windower.add_to_chat(8,'Stance: Hasso ('..Mode1Name..')')
 			end
 		end
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Mode set to '..Mode..']')
+		end
 		choose_set()
 	elseif command == 'DT' then
 		if DTOverride == 'Off' then
 			DTOverride = 'On'
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[DTOverride set to On]')
+			end
 		elseif DTOverride == 'On' then
 			DTOverride = 'Off'
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[DTOverride set to Off]')
+			end
 		end
 		choose_set()
-	elseif command == 'TPReturn' then
-		if player.tp < 20 or player.tp > 1000 then
-			if HUD == 'On' then
-				send_command('text notifications text "«« Weapon Skill Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-			else
-				windower.add_to_chat(8,'«« Weapon Skill Missed »»')
-			end
-		else
-			if HUD == 'On' then
-				send_command('text notifications text "TP Return: '..player.tp..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			else
-				windower.add_to_chat(8,'TP Return: '..player.tp..'')
-			end			
-		end
-	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
-		if HUD == 'On' then 
-			if buffactive['weakness'] and DTOverride == 'On' then
-				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
-			elseif buffactive['weakness'] then
-				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
-			elseif player.status == "Engaged" and DTOverride == 'On' then
-				send_command('text notifications text "Status: Engaged (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
-			elseif player.status == "Engaged" then
-				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
-			elseif player.status == "Idle" then
-				if buffactive['Sneak'] and buffactive['Invisible'] then
-					send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
-				elseif buffactive['Sneak'] then
-					send_command('text notifications text "Status: Sneak";text notifications color 50 205 50;text notifications bg_transparency 1')
-				elseif buffactive['Invisible'] then
-					send_command('text notifications text "Status: Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
-				elseif buffactive['Weakness'] then
-					send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
-				elseif DTOverride == 'On' then
-					send_command('text notifications text "Status: Idle (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
-				else
-					send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
-				end
-			end
+	elseif command == 'ClearNotifications' and HUD == 'On' then --these reset the Notifications display back to a basic state
+		if buffactive['Sneak'] and buffactive['Invisible'] then
+			send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+		elseif buffactive['Sneak'] then
+			send_command('text notifications text "Status: Sneak";text notifications color 50 205 50;text notifications bg_transparency 1')
+		elseif buffactive['Invisible'] then
+			send_command('text notifications text "Status: Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
+		elseif buffactive['weakness'] and DTOverride == 'On' then
+			send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
+		elseif buffactive['weakness'] then
+			send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
+		elseif player.status == "Resting" and DTOverride == 'On' then
+			send_command('text notifications text "Status: Resting (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
+		elseif player.status == "Resting" then
+				send_command('text notifications text "Status: Resting";text notifications color 255 255 255;text notifications bg_transparency 1')
+		elseif player.status == "Engaged" and DTOverride == 'On' then
+			send_command('text notifications text "Status: Engaged (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
+		elseif player.status == "Engaged" then
+			send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
+		elseif player.status == "Idle" and DTOverride == "On" then
+			send_command('text notifications text "Status: Idle (DT Override)";text notifications color 255 255 255;text notifications bg_transparency 1')
+		elseif player.status == "Idle" then
+			send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
 		end
 	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
 		send_command('text debuffs text "";text debuffs color 255 255 255;text debuffs bg_transparency 1')
 	elseif command == 'LoadHUD' then
 		LoadHUD = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[LoadHUD set to True]')
+		end
 		send_command('text loading hide')
-		if HUDRecast == 'On' then --using the HUDRecast
-			if player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna' then
-				--if we have any REMAs equipped we place the Aftermath, Stance, Notifications, Debuff, and appropriate BG text objects into view
-				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
-				send_command('wait .7;text stance pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
-			else
-				--if we do not have any REMAs equipped we move the Stance, Notifications, Debuffs, and appropriate BG text objects into view
-				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .7;text stance pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+		send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+		send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+		send_command('wait .7;text stance pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+		send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+		send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
+		if player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna' then
+			send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+			REMA = true
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[REMA set to True]')
 			end
-		else --not using the HUDRecast
-			if player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna' then
-				--if we have any REMAs equipped we place the Aftermath, Stance, Notifications, Debuff, and appropriate BG text objects into view
-				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
-				send_command('wait .7;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine1..'')
-				send_command('wait .7;text stance pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-				send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
-			else
-				--if we do not have any REMAs equipped we move the Stance, Notifications, Debuffs, and appropriate BG text objects into view
-				send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .6;text stance pos '..HUDposXColumn1..' '..HUDposYLine1..'')
-				send_command('wait .7;text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-				send_command('wait .7;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')
+		else
+			REMA = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[REMA set to False]')
 			end
 		end
 	elseif command == 'Fileinfo' then
@@ -719,6 +747,9 @@ function self_command(command)
 		windower.add_to_chat(8,'Run the Lockstyle function yourself at any time by typing')
 		windower.add_to_chat(200,'        //lockstyle or //lstyle')
 		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'Hide or show the HUD at any time by typing')
+		windower.add_to_chat(200,'        //hidehud or //showhud')
+		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'For the HUD function, suggested placement')
 		windower.add_to_chat(8,'is center screen, just above your chat log.')
 		windower.add_to_chat(8,' ')
@@ -744,7 +775,6 @@ function self_command(command)
 		windower.add_to_chat(200,'DTCtrlPlus: '..(''..DTCtrlPlus..''):color(8)..'')
 		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
-		windower.add_to_chat(200,'CharmNaked: '..(''..CharmNaked..''):color(8)..'')
 		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
 		windower.add_to_chat(200,'UseOhShit: '..(''..UseOhShit..''):color(8)..'')
 		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
@@ -758,7 +788,6 @@ function self_command(command)
 		windower.add_to_chat(200,'FontSize: '..(''..FontSize..''):color(8)..'')
 		windower.add_to_chat(200,'LineSpacer: '..(''..LineSpacer..''):color(8)..'')
 		windower.add_to_chat(200,'ColumnSpacer: '..(''..ColumnSpacer..''):color(8)..'')
-		windower.add_to_chat(200,'HUDRecast: '..(''..HUDRecast..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- General Notifications --')
 		windower.add_to_chat(200,'Noti3000TP: '..(''..Noti3000TP..''):color(8)..'')
@@ -770,7 +799,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiReraise: '..(''..NotiReraise..''):color(8)..'')
 		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiTPReturn: '..(''..NotiTPReturn..''):color(8)..'')
+		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
 		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
@@ -794,10 +823,9 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
 		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
-		windower.add_to_chat(200,'OhShitThreshold: '..(''..OhShitThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
-		windower.add_to_chat(200,'TPReturnWait: '..(''..TPReturnWait..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,'HassoStanceColor: '..(''..HassoStanceColor..''):color(8)..'')
 		windower.add_to_chat(200,'SeiganStanceColor: '..(''..SeiganStanceColor..''):color(8)..'')
@@ -834,6 +862,32 @@ function self_command(command)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
+	elseif command == 'NotiLowHPToggle' then
+		NotiLowHPToggle = 'Off'
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[NotiLowHPToggle set to Off]')
+		end
+	elseif command == 'AliveDelay' then
+		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Alive set to True]')
+		end
+	elseif command == 'HideHUD' then
+		if HUD == 'On' and ShowHUD == true then --In a cutscene: Hide the HUD
+			ShowHUD = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[ShowHUD set to False]')
+			end
+			send_command('text bg1 hide;text bg2 hide;text bg3 hide;text meditate hide;text sekkanoki hide;text sengikori hide;text hagakure hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text hasso hide;text seigan hide;text stance hide;text notifications hide;text debuffs hide;text aftermath hide')
+		end
+	elseif command == 'ShowHUD' then
+		if HUD == 'On' and ShowHUD == false then --Out of cutscene: Show the HUD
+			ShowHUD = true
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[ShowHUD set to True]')
+			end
+			send_command('text bg1 show;text bg2 show;text bg3 show;text meditate show;text sekkanoki show;text sengikori show;text hagakure show;text aggressor show;text berserk show;text highjump show;text superjump show;text hasso show;text seigan show;text stance show;text notifications show;text debuffs show;text aftermath show')
+		end
 	end
 end
 
@@ -864,7 +918,7 @@ function choose_set()
 				send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
 			end
 		end
-		if OhShit == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
+		if LowHP == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
 			equip(sets.ohshit)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Oh Shit]')
@@ -1056,7 +1110,7 @@ function choose_set()
 					end
 				end
 			end
-		elseif OhShit == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
+		elseif LowHP == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Idle + Oh Shit]')
@@ -1253,59 +1307,47 @@ function precast(spell)
 				windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
 			end
 		end
-	elseif spell.english == 'Meikyo Shisui' then
-		if MeikTimer == 'On' then
-			send_command('input /echo [Meikyo Shisui] 30 seconds;wait 10;input /echo [Meikyo Shisui] 20 seconds;wait 10;input /echo [Meikyo Shisui] 10 seconds')
-		end
-	elseif spell.english == 'Yaegasumi' and IntTimer == 'On' then
-		send_command('input /echo [Yaegasumi] 40 seconds;wait 10;input /echo [Yaegasumi] 30 seconds;wait 10;input /echo [Yaegasumi] 20 seconds;wait 10;input /echo [Yaegasumi] 10 seconds')
 	elseif spell.english == 'Hasso' then
 		Stance = 'Hasso' --Set Stance to Hasso when we use it
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Stance set to Hasso]')
+		end
 		choose_set() --run the choose_set function to choose based on our status.
 	elseif spell.english == 'Seigan' then
 		Stance = 'Seigan' --Set Stance to Seigan when we use it
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Stance set to Seigan]')
+		end
 		choose_set() --run the choose_set function to choose based on our status.
-	elseif spell.english == 'Meditate' then
-		if windower.ffxi.get_ability_recasts()[134] <= 1 then
-			equip(sets.meditate)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Meditate]')
-			end
+	elseif spell.english == 'Meditate' and windower.ffxi.get_ability_recasts()[134] <= 1 then
+		equip(sets.meditate)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Meditate]')
 		end
-	elseif string.find(spell.english,'Jump') then --Any Jump ability
-		if windower.ffxi.get_ability_recasts()[158] <= 1 then
-			equip(sets.jump)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Jump]')
-			end
+	elseif string.find(spell.english,'Jump') and windower.ffxi.get_ability_recasts()[158] <= 1 then
+		equip(sets.jump)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Jump]')
 		end
-	elseif spell.english == 'Warding Circle' then
-		if windower.ffxi.get_ability_recasts()[135] <= 1 then
-			equip(sets.wardingcircle)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Warding Circle]')
-			end
+	elseif spell.english == 'Warding Circle' and windower.ffxi.get_ability_recasts()[135] <= 1 then
+		equip(sets.wardingcircle)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Warding Circle]')
 		end
-	elseif spell.english == 'Shikikoyo' then
-		if windower.ffxi.get_ability_recasts()[136] <= 1 then
-			equip(sets.shikikoyo)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Shikikoyo]')
-			end
+	elseif spell.english == 'Shikikoyo' and windower.ffxi.get_ability_recasts()[136] <= 1 then
+		equip(sets.shikikoyo)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Shikikoyo]')
 		end
-	elseif spell.english == 'Blade Bash' then
-		if windower.ffxi.get_ability_recasts()[137] <= 1 then
-			equip(sets.bladebash)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Blade Bash]')
-			end
+	elseif spell.english == 'Blade Bash' and windower.ffxi.get_ability_recasts()[137] <= 1 then
+		equip(sets.bladebash)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Blade Bash]')
 		end
-	elseif spell.english == 'Sengikori' then
-		if windower.ffxi.get_ability_recasts()[141] <= 1 then
-			equip(sets.sengikori)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Sengikori]')
-			end
+	elseif spell.english == 'Sengikori' and windower.ffxi.get_ability_recasts()[141] <= 1 then
+		equip(sets.sengikori)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Sengikori]')
 		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
@@ -1335,38 +1377,15 @@ end
 -------------------------------------------
 
 function aftercast(spell)
+	if spell.type == 'WeaponSkill' and not spell.interrupted and HUD == 'On' and NotiWSDamage == 'On' then
+		LastWS = spell.name --Records the WS name used for the WS Damage Notification
+	elseif spell.english == 'Meikyo Shisui' and MeikTimer == 'On' and not spell.interrupted then
+		send_command('input /echo [Meikyo Shisui] 30 seconds;wait 10;input /echo [Meikyo Shisui] 20 seconds;wait 10;input /echo [Meikyo Shisui] 10 seconds')
+	elseif spell.english == 'Yaegasumi' and IntTimer == 'On' and not spell.interrupted then
+		send_command('input /echo [Yaegasumi] 40 seconds;wait 10;input /echo [Yaegasumi] 30 seconds;wait 10;input /echo [Yaegasumi] 20 seconds;wait 10;input /echo [Yaegasumi] 10 seconds')
+	end
 	choose_set()
-	if spell.type == 'WeaponSkill' and not spell.interrupted and HUD == 'On' and NotiTPReturn == 'On' then
-		send_command('wait '..TPReturnWait..';gs c TPReturn')
-	end
 end
-
--------------------------------------------
---              HP% CHANGE               --
--------------------------------------------
-
-windower.register_event('hpp change',function()
-	if player.hp <= OhShitThreshold and OhShit == false and UseOhShit == 'On' then --when HP goes below a certain amount, turn on the OhShit flag and equip the appropriate gear set
-		OhShit = true
-		choose_set()
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
-		if Debug == 'On' then
-			windower.add_to_chat(8,'OhShit set to True')
-		end
-	elseif player.hp > OhShitThreshold and OhShit == true and UseOhShit == 'On' then --when HP goes back above a certain amount, turn off the OhShit flag and equip the appropriate gear set
-		OhShit = false
-		send_command('gs c ClearNotifications')
-		choose_set()
-		if Debug == 'On' then
-			windower.add_to_chat(8,'OhShit set to False')
-		end
-	end
-	if player.hp == 0 then --if we die turn this off so it doesn't trigger the "doom is off" notification once we raise
-		Doom = false
-	end
-end)
 
 -------------------------------------------
 --             STATUS CHANGE             --
@@ -1374,6 +1393,7 @@ end)
 
 function status_change(new,old)
 	choose_set() --run this any time your status changes (engage, disengage, rest)
+
 end
 
 -------------------------------------------
@@ -1383,9 +1403,15 @@ end
 windower.register_event('status change', function(status)
     if status == 4 and HUD == 'On' and ShowHUD == true then --In a cutscene: Hide the HUD
 		ShowHUD = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to False]')
+		end
 		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text meditate hide;text sekkanoki hide;text sengikori hide;text hagakure hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text hasso hide;text seigan hide;text stance hide;text notifications hide;text debuffs hide;text aftermath hide')
-    elseif status ~= 4  and HUD == 'On' and ShowHUD == false then --Out of cutscene: SHow the HUD
+    elseif status ~= 4  and HUD == 'On' and ShowHUD == false then --Out of cutscene: Show the HUD
 		ShowHUD = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to True]')
+		end
 		send_command('text bg1 show;text bg2 show;text bg3 show;text meditate show;text sekkanoki show;text sengikori show;text hagakure show;text aggressor show;text berserk show;text highjump show;text superjump show;text hasso show;text seigan show;text stance show;text notifications show;text debuffs show;text aftermath show')
     end
 end)
@@ -1494,31 +1520,27 @@ windower.register_event('gain buff', function(buff)
 		end
 	end
 	if buff == 15 then --Doom
-		if AlertSounds == 'On' then
+		if AlertSounds == 'On' and DangerSound == 'O' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
 		if DoomAlert == 'On' then
 			Doom = true --Setting "Doom" to true now, so that it can get set to false if we die, that way we don't announce that doom is off when we raise from the dead
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Doom set to True]')
+			end
 			send_command('input /p '..DoomOnText..'')
 		end
 		if AutoHWater == 'On' then
 			HWaterRecast = 3 --Set the recast timer so we can start using the Holy Waters
+			HWater = true
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[HWaterRecast set to 3 | HWater set to True]')
+			end
 		end
 	end
 	if buff == 17 then --Charm
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-		end
-		if CharmNaked == 'A' then
-			equip(sets.naked)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Naked]')
-			end
-		elseif CharmNaked == 'W' then
-			equip({head=empty, body=empty, hands=empty, legs=empty, feet=empty, neck=empty, waist=empty, left_ear=empty, right_ear=empty, left_ring=empty, right_ring=empty, back=empty})
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Naked (except for weapons)]')
-			end
 		end
 	end
 	if buff == 71 or buff == 69 then --Sneak or Invisible
@@ -1536,7 +1558,7 @@ windower.register_event('lose buff', function(buff)
 		else
 			windower.add_to_chat(39,'<< Aftermath Off >>')
 		end
-	elseif buff == 251 and player.hp > 0 and NotiFood == 'On' then --food wears off
+	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
@@ -1545,7 +1567,7 @@ windower.register_event('lose buff', function(buff)
 		else
 			windower.add_to_chat(8,'<< Food Has Worn Off >>')
 		end
-	elseif buff == 113 and NotiReraise == 'On' then --reraise wears off
+	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
@@ -1589,9 +1611,7 @@ windower.register_event('lose buff', function(buff)
 		if HUD == 'On' then
 			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 		end
-	elseif buff == 0 and HUD == 'On' then
-		send_command('text notifications text "Status: Alive ^_^";text notifications color 75 255 75;text notifications bg_transparency 1')
-	elseif buff == 1 then --Weakness
+	elseif buff == 1 and Alive == true then --Weakness
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
@@ -1600,11 +1620,12 @@ windower.register_event('lose buff', function(buff)
 		end
 	elseif buff == 2 or buff == 19 or buff == 7 or buff == 17 then --lose sleep, petrify, or charm run choose_set since we changed gear for those
 		choose_set()
-	elseif buff == 15 then --Doom
-		if DoomAlert == 'On' and Doom == true then --"Doom" gets set to false when we die, that way we don't announce that doom is off when we raise from the dead
-			Doom = false
-			send_command('input /p '..DoomOffText..'')
+	elseif buff == 15 and DoomAlert == 'On' and Doom == true then --Doom
+		Doom = false --"Doom" gets set to false when we die, that way we don't announce that doom is off when we raise from the dead
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Doom set to False]')
 		end
+		send_command('input /p '..DoomOffText..'')
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
 	end
@@ -1630,10 +1651,9 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
+	--Debuff checks
 	if HUD == 'On' and LoadHUD == true and not TownZones:contains(world.area) then
-		if buffactive['Doom'] and NotiDoom == 'On' then
-			send_command('text debuffs text "«« DOOM »»";text debuffs color 255 50 50')
-		elseif buffactive['Charm'] and NotiCharm == 'On' then
+		if buffactive['Charm'] and NotiCharm == 'On' then
 			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Terror'] and NotiTerror == 'On' then
 			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
@@ -1657,10 +1677,88 @@ windower.register_event('prerender', function()
 			send_command('text debuffs text "«« ENCUMBRANCE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Curse'] and NotiCurse == 'On' then
 			send_command('text debuffs text "«« CURSE »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
-		else
-			send_command('gs c ClearDebuffs') --clear debuffs if no debuffs are present
+		elseif not buffactive['Doom'] then
+			send_command('gs c ClearDebuffs') --clear debuffs if no other debuffs aside from Doom are present
 		end
 	end
+
+	--HP checks
+	if player.hp == 0 then --are we dead?
+		if Alive == true then
+			send_command('text notifications text "Status: Dead X_x";text notifications color 255 50 50;text notifications bg_transparency 1')
+			Alive = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Alive set to False]')
+			end
+			Doom = false --turn this off so it doesn't trigger the "doom is off" notification once we raise
+			if Debug == 'On' then
+				windower.add_to_chat(8,'Doom set to False]')
+			end
+			if LowHP == true then
+				LowHP = false
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[LowHP set to False]')
+				end
+			end
+		end
+	else
+		if Alive == false then
+			send_command('text notifications text "Status: Alive ^_^";text notifications color 75 255 75;text notifications bg_transparency 1')
+			send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
+		end
+		if player.hp <= LowHPThreshold then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
+			if LowHP == false and UseOhShit == 'On' then
+				choose_set()
+				LowHP = true
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[LowHP set to True]')
+				end
+			end
+			if NotiLowHP == 'On' and AlertSounds == 'On' and DangerSound == 'O' and NotiLowHPToggle == 'Off' then
+				NotiLowHPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[NotiLowHPToggle set to On]')
+				end
+				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				send_command('wait 30;gs c NotiLowHPToggle') --wait 30 sec then turns the toggle back off
+			end
+		elseif player.hp > LowHPThreshold and LowHP == true and UseOhShit == 'On' then --when HP goes back above a certain amount, turn off the LowHP flag and equip the appropriate gear set
+			send_command('gs c ClearNotifications')
+			choose_set()
+			LowHP = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[LowHP set to False]')
+			end
+		end
+	end
+
+	--Alliance/Party checks
+	if player.isallymember == true and Alliance == false then
+		Alliance = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Alliance set to True]')
+		end
+		send_command('gs c ClearNotifications')
+	elseif player.isallymember == false and Alliance == true then
+		Alliance = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Alliance set to False]')
+		end
+	end
+	if party.count >= 2 and Party == false then
+		Party = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Party set to True]')
+		end
+		send_command('gs c ClearNotifications')
+	elseif party.count == 1 and Party == true then
+		Party = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Party set to False]')
+		end
+	end
+
+	--1 second heartbeat
 	if os.time() > Heartbeat then
 		Heartbeat = os.time() --this gets updated once per second, then we do the things below
 		if AutoLockstyle == 'On' and AutoLockstyleRun == true and LockstyleDelay > 0 then
@@ -1668,29 +1766,27 @@ windower.register_event('prerender', function()
 		elseif AutoLockstyle == 'On' and AutoLockstyleRun == true and LockstyleDelay == 0 then
 			send_command('gs c Lockstyle')
 			AutoLockstyleRun = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[AutoLockstyleRun set to False]')
+			end
 		end
 		if HWaterRecast == 3 then
 			send_command('input /item "Holy Water" <me>')
 			HWaterRecast = HWaterRecast - 1
-		elseif HWaterRecast == 0 then
-			if buffactive['Doom'] then
-				HWaterRecast = 3
+		elseif HWaterRecast == 0 and HWater == true and buffactive['Doom'] then
+			HWaterRecast = 3
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[HWaterRecast set to 3]')
 			end
-		else
+		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
 		if HUD == 'On' and LoadHUD == true then
-			if player.hp == 0 then --are we dead?
-				send_command('text notifications text "Status: Dead X_x";text notifications color 255 50 50;text notifications bg_transparency 1')
-				if OhShit == true then
-					OhShit = false
-					if Debug == 'On' then
-						windower.add_to_chat(8,'OhShit set to False')
-					end
-				end
-			end
 			if buffactive['Hasso'] then --Hasso is up, so we're in Hasso Stance
 				Stance = 'Hasso'
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Stance set to Hasso]')
+				end
 				if Mode == 'Mode1' then
 					send_command('text stance text "Stance: Hasso ('..Mode1Name..')";text stance color '..HassoStanceColor..'')
 				elseif Mode == 'Mode2' then
@@ -1700,16 +1796,22 @@ windower.register_event('prerender', function()
 				end
 			elseif buffactive['Seigan'] then --Seigan is up, so we're in Seigan Stance
 				Stance = 'Seigan'
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Stance set to Seigan]')
+				end
 				send_command('text stance text "Stance: Seigan";text stance color '..SeiganStanceColor..'')
 			else --Neither Hasso or Seigan is up, no stance is set
 				Stance = 'None'
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Stance set to None]')
+				end
 				send_command('text stance text "Stance: None";text stance color 255 50 50')
 			end
 			if ReraiseReminder == 'On' then
 				if RRRCountdown > 0 then
 					RRRCountdown = RRRCountdown - 1
 				else
-					if not buffactive['Reraise'] and player.hp > 0 then --if we are dead no need to remind us about reraise
+					if not buffactive['Reraise'] and Alive == true then --if we are dead no need to remind us about reraise
 						if AlertSounds == 'On' then
 							windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 						end
@@ -1720,87 +1822,71 @@ windower.register_event('prerender', function()
 						end
 					end
 					RRRCountdown = RRReminderTimer --start the timer back up
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[RRRCountdown set to '..RRReminderTimer..']')
+					end
 				end
 			end
 			if NotiDoom == 'On' and buffactive['Doom'] then 
 				send_command('text debuffs text "«« DOOM »»";text debuffs bg_transparency 200;text debuffs color 0 0 0;text debuffs bg_color 255 255 255;wait .5;text debuffs bg_color 255 204 51')
 			end
-			if NotiLowHP == 'On' and OhShit == true then
+			if NotiLowHP == 'On' and LowHP == true and Alive == true and not buffactive['weakness'] then
 				send_command('text notifications text "Status: LOW HP";text notifications bg_transparency 200;text notifications color 0 0 0;text notifications bg_color 255 255 255;wait .5;text notifications bg_color 255 204 51')
 			end
-			if HUDRecast == 'On' then --using the HUDRecast
-				--HUDRecast goes in Line 1:
-				if Stance == 'Hasso' or Stance == 'Seigan' then --are we in Hasso or Seigan Stance?
-					send_command('text hasso pos '..HUDposXColumn1..' -100')						--Hasso is not visible
-					send_command('text seigan pos '..HUDposXColumn2..' -100')						--Seigan is not visible
-					send_command('text meditate pos '..HUDposXColumn1..' '..HUDposYLine1..'')		--Meditate goes in Column 1
-					send_command('text sekkanoki pos '..HUDposXColumn2..' '..HUDposYLine1..'')		--Sekkanoki goes in Column 2
-					send_command('text sengikori pos '..HUDposXColumn3..' '..HUDposYLine1..'')		--Sengikori goes in Column 3
-					send_command('text hagakure pos '..HUDposXColumn4..' '..HUDposYLine1..'')		--Hagakure goes in Column 4
-					if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
-						send_command('text berserk pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Berserk goes in Column 5
-						send_command('text aggressor pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Aggressor goes in Column 6
-						send_command('text highjump pos '..HUDposXColumn5..' -100')					--High Jump is not visible
-						send_command('text superjump pos '..HUDposXColumn6..' -100')				--Super Jump is not visible
-					elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then
-						send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
-						send_command('text aggressor pos '..HUDposXColumn6..' -100')				--Aggressor is not visible
-						send_command('text highjump pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--High Jump goes in Column 5
-						send_command('text superjump pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Super Jump goes in Column 6
-					else
-						send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
-						send_command('text aggressor pos '..HUDposXColumn6..' -100')				--Aggressor is not visible
-						send_command('text highjump pos '..HUDposXColumn5..' -100')					--High Jump is not visible
-						send_command('text superjump pos '..HUDposXColumn6..' -100')				--Super Jump is not visible
-					end
-				else --if not Hasso or Seigan, then we have no Stance set currently
-					send_command('text hasso pos '..HUDposXColumn1..' '..HUDposYLine1..'')			--Hasso goes in Column 1
-					send_command('text seigan pos '..HUDposXColumn2..' '..HUDposYLine1..'')			--Seigan goes in Column 2
-					send_command('text meditate pos '..HUDposXColumn1..' -100')						--Meditate goes in Column 1
-					send_command('text sekkanoki pos '..HUDposXColumn2..' -100')					--Sekkanoki goes in Column 2
-					send_command('text sengikori pos '..HUDposXColumn3..' -100')					--Sengikori goes in Column 3
-					send_command('text hagakure pos '..HUDposXColumn4..' -100')						--Hagakure goes in Column 4
-					send_command('text berserk pos '..HUDposXColumn5..' -100')						--Berserk is not visible
-					send_command('text aggressor pos '..HUDposXColumn6..' -100')					--Aggressor is not visible
-					send_command('text highjump pos '..HUDposXColumn5..' -100')						--High Jump is not visible
-					send_command('text superjump pos '..HUDposXColumn6..' -100')					--Super Jump is not visible
+			if (NotiDoom == 'On' and buffactive['Doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not buffactive['weakness']) and AlertSounds == 'On' and DangerSound == 'C' then
+				windower.play_sound(windower.addon_path..'data/sounds/Danger.wav')
+			end
+			--Moving text object to their appropriate places
+			if Stance == 'Hasso' or Stance == 'Seigan' then --are we in Hasso or Seigan Stance?
+				send_command('text hasso pos '..HUDposXColumn1..' -100')						--Hasso is not visible
+				send_command('text seigan pos '..HUDposXColumn2..' -100')						--Seigan is not visible
+				send_command('text meditate pos '..HUDposXColumn1..' '..HUDposYLine1..'')		--Meditate goes in Column 1
+				send_command('text sekkanoki pos '..HUDposXColumn2..' '..HUDposYLine1..'')		--Sekkanoki goes in Column 2
+				send_command('text sengikori pos '..HUDposXColumn3..' '..HUDposYLine1..'')		--Sengikori goes in Column 3
+				send_command('text hagakure pos '..HUDposXColumn4..' '..HUDposYLine1..'')		--Hagakure goes in Column 4
+				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					send_command('text berserk pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Berserk goes in Column 5
+					send_command('text aggressor pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Aggressor goes in Column 6
+					send_command('text highjump pos '..HUDposXColumn5..' -100')					--High Jump is not visible
+					send_command('text superjump pos '..HUDposXColumn6..' -100')				--Super Jump is not visible
+				elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
+					send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
+					send_command('text aggressor pos '..HUDposXColumn6..' -100')				--Aggressor is not visible
+					send_command('text highjump pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--High Jump goes in Column 5
+					send_command('text superjump pos '..HUDposXColumn6..' '..HUDposYLine1..'')	--Super Jump goes in Column 6
+				else
+					send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
+					send_command('text aggressor pos '..HUDposXColumn6..' -100')				--Aggressor is not visible
+					send_command('text highjump pos '..HUDposXColumn5..' -100')					--High Jump is not visible
+					send_command('text superjump pos '..HUDposXColumn6..' -100')				--Super Jump is not visible
 				end
-				--REMAs equipped:
-				if (player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna') and REMA == false then
-					--if we have any REMAs equipped we place the Aftermath text object inline with the others
-					send_command('text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')			--Background Line 3
-					send_command('text stance pos '..HUDposXColumn1..' '..HUDposYLine2..'')			--Stance goes in Line 2, Column 1
-					send_command('text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')		--Aftermath goes in Line 2, Column 4
-					send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')	--Notifications goes in Line 3, Column 1
-					send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')		--Debuffs goes in Line 3, Column 4
-					REMA = true --This toggle then gets set to true since now we have a REMA equipped
-				elseif not (player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna') and REMA == true then 
-					--if we do not have any REMAs equipped we move the Aftermath text object out of view and adjust the others
-					send_command('text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')			--Background Line 3
-					send_command('text stance pos '..HUDposXColumn1..' '..HUDposYLine2..'')			--Stance goes in Line 2, Column 1
-					send_command('text aftermath pos '..HUDposXColumn4..' -100')					--Aftermath is not visible
-					send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')	--Notifications goes in Line 3, Column 1
-					send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')		--Debuffs goes in Line 3, Column 4
-					REMA = false --This toggle gets set to false since we no longer have a REMA equipped
+			else --if not Hasso or Seigan, then we have no Stance set currently
+				send_command('text hasso pos '..HUDposXColumn1..' '..HUDposYLine1..'')			--Hasso goes in Column 1
+				send_command('text seigan pos '..HUDposXColumn2..' '..HUDposYLine1..'')			--Seigan goes in Column 2
+				send_command('text meditate pos '..HUDposXColumn1..' -100')						--Meditate goes in Column 1
+				send_command('text sekkanoki pos '..HUDposXColumn2..' -100')					--Sekkanoki goes in Column 2
+				send_command('text sengikori pos '..HUDposXColumn3..' -100')					--Sengikori goes in Column 3
+				send_command('text hagakure pos '..HUDposXColumn4..' -100')						--Hagakure goes in Column 4
+				send_command('text berserk pos '..HUDposXColumn5..' -100')						--Berserk is not visible
+				send_command('text aggressor pos '..HUDposXColumn6..' -100')					--Aggressor is not visible
+				send_command('text highjump pos '..HUDposXColumn5..' -100')						--High Jump is not visible
+				send_command('text superjump pos '..HUDposXColumn6..' -100')					--Super Jump is not visible
+			end
+			send_command('text stance pos '..HUDposXColumn1..' '..HUDposYLine2..'')				--Stance goes in Line 2, Column 1
+			send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')		--Notifications goes in Line 3, Column 1
+			send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')			--Debuffs goes in Line 3, Column 4
+			--REMAs equipped:
+			if (player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna') and REMA == false then
+				send_command('text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')		--Aftermath goes in Line 2, Column 4
+				REMA = true
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[REMA set to True]')
 				end
-			else --not using the HUDRecast
-				--REMAs equipped:
-				if (player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna') and REMA == false then
-					--if we have any REMAs equipped we place the Aftermath text object inline with the others
-					send_command('text bg3 pos '..HUDposXColumn1..' -100')							--Background Line 3 is not visible
-					send_command('text stance pos '..HUDposXColumn1..' '..HUDposYLine1..'')			--Stance goes in Line 1, Column 1
-					send_command('text aftermath pos '..HUDposXColumn4..' '..HUDposYLine1..'')		--Aftermath goes in Line 1, Column 4
-					send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')	--Notifications goes in Line 2, Column 1
-					send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')		--Debuffs goes in Line 2, Column 4
-					REMA = true
-				elseif not (player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna') and REMA == true then
-					--if we do not have any REMAs equipped we move the Aftermath text object out of view and adjust the others
-					send_command('text bg3 pos '..HUDposXColumn1..' -100')							--Background Line 3 is not visible
-					send_command('text stance pos '..HUDposXColumn1..' '..HUDposYLine1..'')			--Stance goes in Line 1, Column 1
-					send_command('text aftermath pos '..HUDposXColumn4..' -100')					--Aftermath is not visible
-					send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine2..'')	--Notifications goes in Line 2, Column 1
-					send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine2..'')		--Debuffs goes in Line 2, Column 4
-					REMA = false
+			elseif not (player.equipment.main == 'Amanomurakumo' or player.equipment.main == 'Kogarasumaru' or player.equipment.main == 'Masamune' or player.equipment.main == 'Dojikiri Yasutsuna') and REMA == true then 
+				send_command('text aftermath pos '..HUDposXColumn4..' -100')					--Aftermath is not visible
+				REMA = false
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[REMA set to False]')
 				end
 			end
 			--Recast updates:
@@ -1810,10 +1896,10 @@ windower.register_event('prerender', function()
 			HagakureRecast = windower.ffxi.get_ability_recasts()[54]
 			HassoRecast = windower.ffxi.get_spell_recasts()[138]
 			SeiganRecast = windower.ffxi.get_spell_recasts()[139]
-			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
+			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
 				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
-			elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then
+			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
 				HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
 				SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
 			end
@@ -1841,7 +1927,7 @@ windower.register_event('prerender', function()
 			elseif SeiganRecast > 0 then SeiganColor = '255 165 0'
 			else SeiganColor = '255 50 50'
 			end
-			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
+			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				if buffactive['Aggressor'] then AggressorColor = '75 255 75'
 				elseif AggressorRecast > 0 then AggressorColor = '255 165 0'
 				else AggressorColor = '255 50 50'
@@ -1850,7 +1936,7 @@ windower.register_event('prerender', function()
 				elseif BerserkRecast > 0 then BerserkColor = '255 165 0'
 				else BerserkColor = '255 50 50'
 				end
-			elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then
+			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
 				if HighJumpRecast == 0 then HighJumpColor = '255 50 50'
 				else HighJumpColor = '255 165 0'
 				end
@@ -1865,10 +1951,10 @@ windower.register_event('prerender', function()
 			send_command('text hagakure color '..HagakureColor..'')
 			send_command('text hasso color '..HassoColor..'')
 			send_command('text seigan color '..SeiganColor..'')
-			if player.sub_job == 'WAR' and player.sub_job_level >= 1 then
+			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				send_command('text aggressor color '..AggressorColor..'')
 				send_command('text berserk color '..BerserkColor..'')
-			elseif player.sub_job == 'DRG' and player.sub_job_level >= 1 then			
+			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then			
 				send_command('text highjump color '..HighJumpColor..'')
 				send_command('text superjump color '..SuperJumpColor..'')
 			end
@@ -1898,9 +1984,15 @@ end)
 -------------------------------------------
 
 function sub_job_change(newSubjob, oldSubjob)
-LockstyleDelay = 3
+	LockstyleDelay = 3
+	if Debug == 'On' then
+		windower.add_to_chat(8,'[LockstyleDelay set to 3]')
+	end
 	if AutoLockstyle == 'On' then
 		AutoLockstyleRun = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[AutoLockstyleRun set to True]')
+		end
 	end
 end
 
@@ -1959,6 +2051,14 @@ windower.register_event('incoming text',function(org)
 				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		end
+	elseif org:find('>> /item "Holy Water" <me>') then
+		HWater = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[HWater set to False]')
+		end
+		send_command('text notifications text "«« Out Of Holy Waters »»";text notifications color 255 50 50;text notifications bg_transparency 1')
+	elseif org:find('Trade complete') then
+		send_command('gs c ClearNotifications')
 	elseif NotiOmen == 'On' and org:find('You find a') then
 		if org:find('Fu\'s scale') then
 			send_command('wait 2 5;input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
@@ -1993,12 +2093,28 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
+--         WS DAMAGE NOTIFICATION        --
+-------------------------------------------
+
+windower.register_event('action',function(act)
+	if act.category == 3 and act.actor_id == player.id and not (act.param == 66 or act.param == 67 or act.param == 68) then --WS performed by me and not a Jump (Jumps classified as WSs for some reason)
+		--WSDamage = act.targets[1].actions[1].param
+		--send_command('input /echo WS Damage '..WSDamage..'')
+		if act.targets[1].actions[1].param == 0 then
+			send_command('wait .2;text notifications text "«« Weapon Skill Missed »»";text notifications color 255 0 0;text notifications bg_transparency 1')
+		else
+			send_command('wait .2;text notifications text "'..LastWS..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+		end
+	end
+end)
+
+-------------------------------------------
 --             FILE UNLOAD               --
 -------------------------------------------
 
 function file_unload()
 	if HUD == 'On' then
-		send_command('text bg1 delete;text bg2 delete;text bg3 delete;text meditate delete;text sekkanoki delete;text sengikori delete;text hagakure delete;text aggressor delete;text berserk delete;text highjump delete;text superjump delete;text hasso delete;text seigan delete;text loading delete;text stance delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
+		send_command('wait .2;text bg1 delete;text bg2 delete;text bg3 delete;text meditate delete;text sekkanoki delete;text sengikori delete;text hagakure delete;text aggressor delete;text berserk delete;text highjump delete;text superjump delete;text hasso delete;text seigan delete;text loading delete;text stance delete;text notifications delete;text debuffs delete;text aftermath delete') --delete the different text objects
 	end
 end
 
