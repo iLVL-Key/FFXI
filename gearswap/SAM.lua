@@ -124,7 +124,7 @@ DangerSound			=	'C'		--[C/O] Danger Sound will play [C]onstantly or [O]nce.
 LowHPThreshold		=	1000	--If your HP goes below this number, your Oh Shit gear set will activate.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-Debug				=	'Off'	--[On/Off]
+Debug				=	'On'	--[On/Off]
 
 --Color values in RGB for the HUD stances
 HassoStanceColor	=	'125 125 255'	--Hasso
@@ -515,24 +515,6 @@ LowHP = false
 Doom = false
 Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 LastWS = "WS Damage"
-if player.isallymember == true then
-	Alliance = true
-else
-	Alliance = false
-end
-if party.count >= 2 then
-	Party = true
-else
-	Party = false
-end
-if Debug == 'On' then
-	windower.add_to_chat(200,'Initial variables:')
-	windower.add_to_chat(8,'[Mode: '..Mode..' | Stance: '..Stance..' | DTOverride: '..DTOverride..' | NotiLowHpToggle: '..NotiLowHPToggle..']')
-	windower.add_to_chat(8,'[RRRCountdown: '..RRRCountdown..' | HWaterRecast: '..HWaterRecast..' | HWater: '..HWater..' | Heartbeat: '..Heartbeat..']')
-	windower.add_to_chat(8,'[LoadDelay: '..LoadDelay..' | LoadHUD: '..LoadHUD..' | ShowHUD: '..LockstyleDelay..' | AutoLockstyleRun: '..AutoLockstyleRun..']')
-	windower.add_to_chat(8,'[LowHP: '..LowHP..' | Doom: '..Doom..' | Alive: '..Alive..' | Alliance: '..Alliance..']')
-	windower.add_to_chat(8,'[Party: '..Party..']')
-end
 
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 MeditateRecast = 0
@@ -1732,32 +1714,6 @@ windower.register_event('prerender', function()
 		end
 	end
 
-	--Alliance/Party checks
-	if player.isallymember == true and Alliance == false then
-		Alliance = true
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Alliance set to True]')
-		end
-		send_command('gs c ClearNotifications')
-	elseif player.isallymember == false and Alliance == true then
-		Alliance = false
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Alliance set to False]')
-		end
-	end
-	if party.count >= 2 and Party == false then
-		Party = true
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Party set to True]')
-		end
-		send_command('gs c ClearNotifications')
-	elseif party.count == 1 and Party == true then
-		Party = false
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Party set to False]')
-		end
-	end
-
 	--1 second heartbeat
 	if os.time() > Heartbeat then
 		Heartbeat = os.time() --this gets updated once per second, then we do the things below
@@ -1785,7 +1741,7 @@ windower.register_event('prerender', function()
 			if buffactive['Hasso'] then --Hasso is up, so we're in Hasso Stance
 				Stance = 'Hasso'
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Stance set to Hasso]')
+					--windower.add_to_chat(8,'[Stance set to Hasso]')
 				end
 				if Mode == 'Mode1' then
 					send_command('text stance text "Stance: Hasso ('..Mode1Name..')";text stance color '..HassoStanceColor..'')
@@ -1797,13 +1753,13 @@ windower.register_event('prerender', function()
 			elseif buffactive['Seigan'] then --Seigan is up, so we're in Seigan Stance
 				Stance = 'Seigan'
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Stance set to Seigan]')
+					--windower.add_to_chat(8,'[Stance set to Seigan]')
 				end
 				send_command('text stance text "Stance: Seigan";text stance color '..SeiganStanceColor..'')
 			else --Neither Hasso or Seigan is up, no stance is set
 				Stance = 'None'
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Stance set to None]')
+					--windower.add_to_chat(8,'[Stance set to None]')
 				end
 				send_command('text stance text "Stance: None";text stance color 255 50 50')
 			end
