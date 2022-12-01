@@ -1149,8 +1149,6 @@ end
 
 function choose_set()
 	if player.status == "Resting" then
-		windower.add_to_chat(8,'Party Count = '..party.count..'')
-		windower.add_to_chat(8,'Alliance Count = '..alliance.count..'')
 		if HUD == 'On' then
 			if buffactive['Weakness'] then
 				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
