@@ -124,7 +124,7 @@ DangerSound			=	'C'		--[C/O] Danger Sound will play [C]onstantly or [O]nce.
 LowHPThreshold		=	1000	--If your HP goes below this number, your Oh Shit gear set will activate.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
-Debug				=	'On'	--[On/Off]
+Debug				=	'Off'	--[On/Off]
 
 --Color values in RGB for the HUD stances
 HassoStanceColor	=	'125 125 255'	--Hasso
