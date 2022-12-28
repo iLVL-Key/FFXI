@@ -31,7 +31,7 @@ IMPORTANT:
 When you load this file for the first time, your HUD may look all wrong. The defaults preloaded are for a screen at 3440x1400.
 Adjust the FontSize, LineSpacer, and ColumnSpacer options below as needed.
 
-Recommended Windower Addons: Text
+Required Windower Addons: Text
 --]]
 -------------------------------------------
 --                OPTIONS                --
@@ -72,7 +72,6 @@ SirenPage		=	'10'	--[1-10]
 DiabolosPage	=	'9'		--[1-10]
 
 -- Heads Up Display --
-HUD				=	'On'	--[On/Off]		A Heads Up Display for various things. Requires the Text Windower addon.
 HUDposX			=	967		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposYLine1	=	745		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
 							--				Note that this is for the first line of the HUD, the other lines will self-adjust. If you cannot
@@ -83,7 +82,7 @@ ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
-NotiAftermath		=	'On'	--[On/Off]	Displays Aftermath information.
+NotiWeapons			=	'On'	--[On/Off]	Displays weapon information.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
 NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
@@ -445,7 +444,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Clarsach Call' --Leave this alone, used for debugging purposes
+TopVersion = 'Diamond Dust' --Leave this alone, used for debugging purposes
 
 
 
@@ -457,8 +456,8 @@ TopVersion = 'Clarsach Call' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Clarsach Call'
-FileVersion = '12.06.22'
+BottomVersion = 'Diamond Dust'
+FileVersion = '12.27.22'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -468,6 +467,11 @@ FileVersion = '12.06.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+12.27.22 (Version Compatibility Codename: Diamond Dust)
+-Overhauled the Aftermath notification. Renamed to Weapons. Will now always show your equipped weapon as a default state when no aftermath is up. Will change colors based on what your current TP will give you for an Aftermath effect.
+-Removed the option to turn off the HUD. While I generally think the more options the better, the HUD is a main part of this lua.
+-Fixed occasional error messages from the Text addon when loading/reloading the file.
 
 12.06.22 (Version Compatibility Codename: Clarsach Call)
 -Overhauled Low HP notification. Notification and sound no longer activates in towns. Changed the Advanced Option from selecting "Once" or "Constant" to instead selecting the number of times the sound will repeat while your HP is low. Removed the 30 second window before triggering again.
@@ -637,37 +641,33 @@ ApogeeRecast = 0
 CedeRecast = 0
 ConvertRecast = 0
 
-if HUD == 'On' then
-	--Space out each line and column properly
-	HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
-	HUDposYLine3 = HUDposYLine2 - LineSpacer
-	HUDposXColumn1 = HUDposX
-	HUDposXColumn2 = HUDposXColumn1 + ColumnSpacer
-	HUDposXColumn3 = HUDposXColumn2 + ColumnSpacer
-	HUDposXColumn4 = HUDposXColumn3 + ColumnSpacer
-	HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
-	HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
-	send_command('wait '..LoadDelay..';gs c LoadHUD')
-	--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('wait .5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
-	send_command('wait .6;text loading create "Loading Keys SUMMONER file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
-	send_command('wait .7;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
-	send_command('wait .8;text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-	--Create the Aftermath, Avatar, Notifications and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('wait .9;text aftermath create "Aftermath: None";wait .3;text aftermath size '..FontSize..';text aftermath pos '..HUDposXColumn4..' -100;text aftermath color 255 50 50;text aftermath bg_transparency 1') --Aftermath
-	send_command('wait 1.0;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
-	send_command('wait 1.1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
-	send_command('wait 1.2;text avatar create "No Avatar";wait .3;text avatar size '..FontSize..';text avatar pos '..HUDposXColumn1..' -100;text avatar color 255 255 255;text avatar bg_transparency 1') --Avatar
-	--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
-	send_command('wait 1.3;text favor create "[ A. Favor ]";wait .3;text favor size '..FontSize..';text favor pos '..HUDposXColumn1..' -100;text favor bg_transparency 1')
-	send_command('wait 1.4;text siphon create "[ E. Siphon ]";wait .3;text siphon size '..FontSize..';text siphon pos '..HUDposXColumn1..' -100;text siphon bg_transparency 1')
-	send_command('wait 1.5;text apogee create "[ Apogee ]";wait .3;text apogee size '..FontSize..';text apogee pos '..HUDposXColumn1..' -100;text apogee bg_transparency 1')
-	send_command('wait 1.6;text cede create "[ M. Cede ]";wait .3;text cede size '..FontSize..';text cede pos '..HUDposXColumn1..' -100;text cede bg_transparency 1')
-	send_command('wait 1.7;text convert create "[ Convert ]";wait .3;text convert size '..FontSize..';text convert pos '..HUDposXColumn1..' -100;text convert bg_transparency 1')
-else
-	windower.add_to_chat(8,'Keys SUMMONER file ver: '..FileVersion..'')
-	windower.add_to_chat(8,'Type //fileinfo for more information')
-end
+--Space out each line and column properly
+HUDposYLine2 = HUDposYLine1 - LineSpacer --Note that Line 1 is the bottom line, additional line numbers move upward on the screen
+HUDposYLine3 = HUDposYLine2 - LineSpacer
+HUDposXColumn1 = HUDposX
+HUDposXColumn2 = HUDposXColumn1 + ColumnSpacer
+HUDposXColumn3 = HUDposXColumn2 + ColumnSpacer
+HUDposXColumn4 = HUDposXColumn3 + ColumnSpacer
+HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
+HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
+send_command('wait '..LoadDelay..';gs c LoadHUD')
+--Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
+send_command('wait 1.5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
+send_command('wait 1.6;text loading create "Loading Keys SUMMONER file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
+send_command('wait 1.7;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
+send_command('wait 1.8;text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
+--Create the Aftermath, Avatar, Notifications and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
+send_command('wait 1.9;text weapons create "« Weapon loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
+send_command('wait 2.0;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
+send_command('wait 2.1;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
+send_command('wait 2.2;text avatar create "No Avatar";wait .3;text avatar size '..FontSize..';text avatar pos '..HUDposXColumn1..' -100;text avatar color 255 255 255;text avatar bg_transparency 1') --Avatar
+--Create all the HUD Recast text objects and put them above the screen for now, we'll move them to the correct place next
+send_command('wait 2.3;text favor create "[ A. Favor ]";wait .3;text favor size '..FontSize..';text favor pos '..HUDposXColumn1..' -100;text favor bg_transparency 1')
+send_command('wait 2.4;text siphon create "[ E. Siphon ]";wait .3;text siphon size '..FontSize..';text siphon pos '..HUDposXColumn1..' -100;text siphon bg_transparency 1')
+send_command('wait 2.5;text apogee create "[ Apogee ]";wait .3;text apogee size '..FontSize..';text apogee pos '..HUDposXColumn1..' -100;text apogee bg_transparency 1')
+send_command('wait 2.6;text cede create "[ M. Cede ]";wait .3;text cede size '..FontSize..';text cede pos '..HUDposXColumn1..' -100;text cede bg_transparency 1')
+send_command('wait 2.7;text convert create "[ Convert ]";wait .3;text convert size '..FontSize..';text convert pos '..HUDposXColumn1..' -100;text convert bg_transparency 1')
+
 send_command('alias lockstyle gs c Lockstyle') --creates the first lockstyle aliases
 send_command('alias lstyle gs c Lockstyle') --creates the second lockstyle aliases
 if Chat ~= "Off" then
@@ -706,7 +706,7 @@ function self_command(command)
 			end
 		end
 		choose_set()
-	elseif command == 'ClearNotifications' and HUD == 'On' then --these reset the Notifications display back to a basic state
+	elseif command == 'ClearNotifications' and LoadHUD == true then --these reset the Notifications display back to a basic state
 		if buffactive['Sneak'] and buffactive['Invisible'] then
 			send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
 		elseif buffactive['Sneak'] then
@@ -732,7 +732,7 @@ function self_command(command)
 		elseif player.status == "Idle" then
 			send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
 		end
-	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
+	elseif command == 'ClearDebuffs' and LoadHUD == true then --these reset the Debuffs display back to a basic state
 		send_command('text debuffs text "";text debuffs color 255 255 255;text debuffs bg_transparency 1')
 	elseif command == 'LoadHUD' then
 		LoadHUD = true
@@ -747,17 +747,8 @@ function self_command(command)
 			send_command('wait .7;text convert pos '..HUDposXColumn5..' '..HUDposYLine1..'')
 		end
 		send_command('wait .8;text avatar pos '..HUDposXColumn1..' '..HUDposYLine2..'')
-		if player.equipment.main == 'Claustrum' or player.equipment.main == 'Hvergelmir' or player.equipment.main == 'Khatvanga' or player.equipment.main == 'Nirvana' and NotiAftermath == 'On' then
-			send_command('wait .8;text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')
-			REMA = true
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[REMA set to True]')
-			end
-		else
-			REMA = false
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[REMA set to False]')
-			end
+		if NotiWeapons == 'On' then
+			send_command('wait .8;text weapons pos '..HUDposXColumn4..' '..HUDposYLine2..'')
 		end
 		send_command('wait .9;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
 		send_command('wait .9;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
@@ -846,7 +837,6 @@ function self_command(command)
 		windower.add_to_chat(200,'DiabolosPage: '..(''..DiabolosPage..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Heads Up Display --')
-		windower.add_to_chat(200,'HUD: '..(''..HUD..''):color(8)..'')
 		windower.add_to_chat(200,'HUDposX: '..(''..HUDposX..''):color(8)..'')
 		windower.add_to_chat(200,'HUDposYLine1: '..(''..HUDposYLine1..''):color(8)..'')
 		windower.add_to_chat(200,'FontSize: '..(''..FontSize..''):color(8)..'')
@@ -855,7 +845,7 @@ function self_command(command)
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- General Notifications --')
 		windower.add_to_chat(200,'Noti3000TP: '..(''..Noti3000TP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiAftermath: '..(''..NotiAftermath..''):color(8)..'')
+		windower.add_to_chat(200,'NotiWeapons: '..(''..NotiWeapons..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTrade: '..(''..NotiTrade..''):color(8)..'')
 		windower.add_to_chat(200,'NotiInvite: '..(''..NotiInvite..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSneak: '..(''..NotiSneak..''):color(8)..'')
@@ -917,7 +907,7 @@ function self_command(command)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -935,21 +925,17 @@ function self_command(command)
 			windower.add_to_chat(8,'[Alive set to True]')
 		end
 	elseif command == 'HideHUD' then
-		if HUD == 'On' and ShowHUD == true then --In a cutscene: Hide the HUD
-			ShowHUD = false
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[ShowHUD set to False]')
-			end
-			send_command('text bg1 hide;text bg2 hide;text bg3 hide;text favor hide;text siphon hide;text apogee hide;text cede hide;text convert hide;text aftermath hide;text notifications hide;text debuffs hide;text avatar hide')
+		ShowHUD = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to False]')
 		end
+		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text favor hide;text siphon hide;text apogee hide;text cede hide;text convert hide;text weapons hide;text notifications hide;text debuffs hide;text avatar hide')
 	elseif command == 'ShowHUD' then
-		if HUD == 'On' and ShowHUD == false then --Out of cutscene: Show the HUD
-			ShowHUD = true
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[ShowHUD set to True]')
-			end
-			send_command('text bg1 show;text bg2 show;text bg3 show;text favor show;text siphon show;text apogee show;text cede show;text convert show;text aftermath show;text notifications show;text debuffs show;text avatar show')
+		ShowHUD = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to True]')
 		end
+		send_command('text bg1 show;text bg2 show;text bg3 show;text favor show;text siphon show;text apogee show;text cede show;text convert show;text weapons show;text notifications show;text debuffs show;text avatar show')
 	end
 end
 
@@ -959,7 +945,7 @@ end
 
 function choose_set()
 	if player.status == "Resting" then
-		if HUD == 'On' then
+		if LoadHUD == true then
 			if buffactive['weakness'] and DTOverride == 'On' then
 				send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif buffactive['weakness'] then
@@ -994,7 +980,7 @@ function choose_set()
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: DPS + DT Override]')
 			end
-			if HUD == 'On' then
+			if LoadHUD == true then
 				if buffactive['weakness'] then
 					send_command('text notifications text "Status: Weak (DT Override)";text notifications color 205 133 63;text notifications bg_transparency 1')
 								elseif player.mpp <= 20 then
@@ -1008,18 +994,18 @@ function choose_set()
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: DPS]')
 			end
-			if HUD == 'On' then
+			if LoadHUD == true then
 				if buffactive['weakness'] then
 					send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
-				elseif player.mpp <= 20 and HUD == 'On' then
+				elseif player.mpp <= 20 then
 					send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
-				elseif HUD == 'On' then
+				else
 					send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
 				end
 			end
 		end
 	elseif player.status == "Idle" then
-		if HUD == 'On' then
+		if LoadHUD == true then
 			if buffactive['Sneak'] and buffactive['Invisible'] then
 				send_command('text notifications text "Status: Sneak & Invisible";text notifications color 50 205 50;text notifications bg_transparency 1')
 			elseif buffactive['Sneak'] then
@@ -1105,60 +1091,48 @@ function precast(spell)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< TERROR >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« TERROR »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 	elseif buffactive['Petrification'] then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< PETRIFICATION >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« PETRIFICATION »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 	elseif buffactive['Sleep'] then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SLEEP >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« SLEEP »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 	elseif buffactive['Stun'] then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< STUN >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« STUN »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 	elseif buffactive['Amnesia'] and (spell.type == 'WeaponSkill' or spell.type == 'JobAbility') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< AMNESIA >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« AMNESIA »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 	elseif buffactive['Silence'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< SILENCE >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« SILENCE »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 		if UseEcho == 'E' then
@@ -1170,10 +1144,8 @@ function precast(spell)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-		if HUD == 'On' then
-		send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
-		else
-			windower.add_to_chat(8,'<< MUTE >>')
+		if LoadHUD == true then
+			send_command('text debuffs text "«« MUTE »»";text debuffs color 255 50 50')
 		end
 		cancel_spell()
 	elseif spell.type == 'WeaponSkill' then
@@ -1182,14 +1154,12 @@ function precast(spell)
 				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 			end
 			cancel_spell()
-			if HUD == 'On' then
+			if LoadHUD == true then
 				send_command('text notifications text "«« Not Enough TP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 				NotiCountdown = NotiDelay
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 				end
-			else
-				windower.add_to_chat(8,'<< Not Enough TP >>')
 			end
 		end
 		if ((spell.skill == 'Marksmanship' or spell.skill == 'Archery') and spell.target.distance >= (spell.target.model_size + 23)) or ((spell.target.distance >= (spell.target.model_size + 3)) and not (spell.english == 'Starlight' or spell.english == 'Moonlight')) then
@@ -1197,14 +1167,12 @@ function precast(spell)
 				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 			end
 			cancel_spell()
-			if HUD == 'On' then
+			if LoadHUD == true then
 				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 				NotiCountdown = NotiDelay
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 				end
-			else
-				windower.add_to_chat(8,'<< Too Far >>')
 			end
 		end
 		equip(sets.ws)
@@ -1316,9 +1284,7 @@ end
 -------------------------------------------
 
 function aftercast(spell)
-	if spell.type == 'WeaponSkill' and not spell.interrupted and HUD == 'On' and NotiWSDamage == 'On' then
-		LastWS = spell.name --Records the WS name used for the WS Damage Notification
-	elseif spell.english == 'Astral Flow' and AFTimer == 'On' and not spell.interrupted then
+	if spell.english == 'Astral Flow' and AFTimer == 'On' and not spell.interrupted then
 		if player.equipment.body == 'Summoner\'s Horn +2' or player.equipment.body == 'Glyphic Horn' or player.equipment.body == 'Glyphic Horn +1' or player.equipment.body == 'Glyphic Horn +2' or player.equipment.body == 'Glyphic Horn +3' then --these pieces extend Astral Flow by 30 seconds so we adjust accordingly
 			send_command('input /echo [Astral Flow] 3:30;wait 30;input /echo [Astral Flow] 3:00;wait 30;input /echo [Astral Flow] 2:30;wait 30;input /echo [Astral Flow] 2:00;wait 30;input /echo [Astral Flow] 1:30;wait 30;input /echo [Astral Flow] 1:00;wait 30;input /echo [Astral Flow] 0:30;wait 10;input /echo [Astral Flow] 0:20;wait 10;input /echo [Astral Flow] 0:10')
 		else
@@ -1407,18 +1373,18 @@ end
 -------------------------------------------
 
 windower.register_event('status change', function(status)
-    if status == 4 and HUD == 'On' and ShowHUD == true then --In a cutscene: Hide the HUD
+    if status == 4 and ShowHUD == true then --In a cutscene: Hide the HUD
 		ShowHUD = false
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[ShowHUD set to False]')
 		end
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text favor hide;text siphon hide;text apogee hide;text cede hide;text convert hide;text aftermath hide;text notifications hide;text debuffs hide;text avatar hide')
-    elseif status ~= 4  and HUD == 'On' and ShowHUD == false then --Out of cutscene: Show the HUD
+		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text favor hide;text siphon hide;text apogee hide;text cede hide;text convert hide;text weapons hide;text notifications hide;text debuffs hide;text avatar hide')
+    elseif status ~= 4 and ShowHUD == false then --Out of cutscene: Show the HUD
 		ShowHUD = true
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[ShowHUD set to True]')
 		end
-		send_command('text bg1 show;text bg2 show;text bg3 show;text favor show;text siphon show;text apogee show;text cede show;text convert show;text aftermath show;text notifications show;text debuffs show;text avatar show')
+		send_command('text bg1 show;text bg2 show;text bg3 show;text favor show;text siphon show;text apogee show;text cede show;text convert show;text weapons show;text notifications show;text debuffs show;text avatar show')
     end
 end)
 
@@ -1427,91 +1393,11 @@ end)
 -------------------------------------------
 
 windower.register_event('gain buff', function(buff)
-	if buff == 270 and NotiAftermath =='On' then --Aftermath: Lv. 1
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
-		end
-		if player.equipment.main == 'Hvergelmir' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 1 (30% Triple Dmg)";text aftermath color '..Aftermath1color..'')
-			else
-				windower.add_to_chat(220,'<< Aftermath: Level 1 (30% Triple Damage) >>')
-			end
-		elseif player.equipment.main == 'Khatvanga' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 1 (4-Step Ultimate)";text aftermath color '..Aftermath1color..'')
-			else
-				windower.add_to_chat(220,'<< Aftermath: Level 1 (4-Step Ultimate) >>')
-			end
-		elseif player.equipment.main == 'Nirvana' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 1 (Accuracy)";text aftermath color '..Aftermath1color..'')
-			else
-				windower.add_to_chat(220,'<< Aftermath: Level 1 (Accuracy) >>')
-			end
-		end
-	elseif buff == 271 and NotiAftermath == 'On' then --Aftermath: Lv. 2
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
-		end
-		if player.equipment.main == 'Hvergelmir' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 2 (40% Triple Dmg)";text aftermath color '..Aftermath2color..'')
-			else
-				windower.add_to_chat(204,'<< Aftermath: Level 2 (40% Triple Damage) >>')
-			end
-		elseif player.equipment.main == 'Khatvanga' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 2 (3-Step Ultimate)";text aftermath color '..Aftermath2color..'')
-			else
-				windower.add_to_chat(204,'<< Aftermath: Level 2 (3-Step Ultimate) >>')
-			end
-		elseif player.equipment.main == 'Nirvana' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 2 (Attack)";text aftermath color '..Aftermath2color..'')
-			else
-				windower.add_to_chat(204,'<< Aftermath: Level 2 (Attack) >>')
-			end
-		end
-	elseif buff == 272 and NotiAftermath == 'On' then --Aftermath: Lv. 3
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
-		end
-		if player.equipment.main == 'Hvergelmir' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 3 (50% Triple Dmg)";text aftermath color '..Aftermath3color..'')
-			else
-				windower.add_to_chat(50,'<< Aftermath: Level 3 (50% Triple Damage) >>')
-			end
-		elseif player.equipment.main == 'Khatvanga' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 3 (2-Step Ultimate)";text aftermath color '..Aftermath3color..'')
-			else
-				windower.add_to_chat(50,'<< Aftermath: Level 3 (2-Step Ultimate) >>')
-			end
-		elseif player.equipment.main == 'Nirvana' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Level 3 (Occ. Att. 2-3x)";text aftermath color '..Aftermath3color..'')
-			else
-				windower.add_to_chat(50,'<< Aftermath: Level 3 (Occ. Att. 2-3x) >>')
-			end
-		end
-	elseif buff == 273 and NotiAftermath =='On' then --Relic Aftermath
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
-		end
-		if player.equipment.main == 'Claustrum' then
-			if HUD == 'On' then
-				send_command('wait 1;text aftermath text "Aftermath: Active (DT/Refresh)";text aftermath color '..Aftermath3color..'')
-			else
-				windower.add_to_chat(220,'<< Aftermath: Active (DT/Refresh) >>')
-			end
-		end
-	end
-	if (buff == 2 or buff == 19) and buffactive['Stoneskin'] and not buffactive['Charm'] then --If we get slept, remove stoneskin if its on
+	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds == 'On' and NotiWeapons == 'On' then --Aftermath
+		windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
+	elseif (buff == 2 or buff == 19) and buffactive['Stoneskin'] and not buffactive['Charm'] then --If we get slept, remove stoneskin if its on
 		send_command('cancel 37')
-	end
-	if buff == 15 then --Doom
+	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[DangerCountdown set to '..DangerRepeat..']')
@@ -1530,58 +1416,45 @@ windower.register_event('gain buff', function(buff)
 				windower.add_to_chat(8,'[HWaterRecast set to 3 | HWater set to True]')
 			end
 		end
-	end
-	if buff == 17 then --Charm
+	elseif buff == 17 then --Charm
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
 		end
-	end
-	if buff == 71 or buff == 69 then --Sneak or Invisible
+	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
 	end
 end)
 
 windower.register_event('lose buff', function(buff)
-	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and NotiAftermath =='On' then --lose any aftermath
-		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		end
-		if HUD == 'On' then
-			send_command('text aftermath text "Aftermath: None";text aftermath color 255 50 50')
-		else
-			windower.add_to_chat(39,'<< Aftermath Off >>')
-		end
+	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' and NotiWeapons == 'On' then --lose any aftermath
+		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Food Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
-		else
-			windower.add_to_chat(8,'<< Food Has Worn Off >>')
 		end
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Reraise Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
-		else
-			windower.add_to_chat(8,'<< Reraise Has Worn Off >>')
 		end
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Vorseal Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -1592,7 +1465,7 @@ windower.register_event('lose buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Signet Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -1603,7 +1476,7 @@ windower.register_event('lose buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Sanction Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -1614,7 +1487,7 @@ windower.register_event('lose buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Sigil Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -1625,7 +1498,7 @@ windower.register_event('lose buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -1636,7 +1509,7 @@ windower.register_event('lose buff', function(buff)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
@@ -1662,17 +1535,16 @@ end)
 
 windower.register_event('tp change',function()
 	if player.tp == 3000 and Noti3000TP == 'On' then
+		Notifications = '«« 3000 TP »»'
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
 		end
-		if HUD == 'On' then
-			send_command('text notifications text "«« 3000 TP »»";text notifications color 0 255 0;text notifications bg_transparency 1')
+		if LoadHUD == true then
+			send_command('text notifications text "«« 3000 TP »»";text notifications color '..Aftermath3color..';text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
-		else
-			windower.add_to_chat(8,'<< 3000 TP >>')
 		end
 	end
 end)
@@ -1683,8 +1555,102 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
+
+	--Aftermath checks
+	if LoadHUD == true then
+		if player.equipment.main == 'Claustrum' then
+			if buffactive['Aftermath'] then
+				send_command('text weapons text "Aftermath: Active (DT/Refresh)";text weapons color '..Aftermath3color..'')
+			elseif player.tp > 1000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+			else
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+			end
+		elseif player.equipment.main == 'Hvergelmir' then
+			if buffactive['Aftermath: Lv.1'] then
+				if player.tp == 3000 then
+					send_command('text weapons text "Aftermath: Level 1 (30% Triple Dmg)";text weapons color '..Aftermath3color..'')
+				elseif player.tp < 3000 and player.tp >= 2000 then
+					send_command('text weapons text "Aftermath: Level 1 (30% Triple Dmg)";text weapons color '..Aftermath2color..'')
+				else
+					send_command('text weapons text "Aftermath: Level 1 (30% Triple Dmg)";text weapons color '..Aftermath1color..'')
+				end
+			elseif buffactive['Aftermath: Lv.2'] then
+				if player.tp == 3000 then
+					send_command('text weapons text "Aftermath: Level 2 (40% Triple Dmg)";text weapons color '..Aftermath3color..'')
+				else
+					send_command('text weapons text "Aftermath: Level 2 (40% Triple Dmg)";text weapons color '..Aftermath2color..'')
+				end
+			elseif buffactive['Aftermath: Lv.3'] then
+				send_command('text weapons text "Aftermath: Level 3 (50% Triple Dmg)";text weapons color '..Aftermath3color..'')
+			elseif player.tp == 3000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+			elseif player.tp < 3000 and player.tp >= 2000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath2color..'')
+			elseif player.tp < 2000 and player.tp >= 1000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath1color..'')
+			else
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+			end
+		elseif player.equipment.main == 'Nirvana' then
+			if buffactive['Aftermath: Lv.1'] then
+				if player.tp == 3000 then
+					send_command('text weapons text "Aftermath: Level 1 (Accuracy)";text weapons color '..Aftermath3color..'')
+				elseif player.tp < 3000 and player.tp >= 2000 then
+					send_command('text weapons text "Aftermath: Level 1 (Accuracy)";text weapons color '..Aftermath2color..'')
+				else
+					send_command('text weapons text "Aftermath: Level 1 (Accuracy)";text weapons color '..Aftermath1color..'')
+				end
+			elseif buffactive['Aftermath: Lv.2'] then
+				if player.tp == 3000 then
+					send_command('text weapons text "Aftermath: Level 2 (Attack)";text weapons color '..Aftermath3color..'')
+				else
+					send_command('text weapons text "Aftermath: Level 2 (Attack)";text weapons color '..Aftermath2color..'')
+				end
+			elseif buffactive['Aftermath: Lv.3'] then
+				send_command('text weapons text "Aftermath: Level 3 (Occ. Att. 2-3x)";text weapons color '..Aftermath3color..'')
+			elseif player.tp == 3000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+			elseif player.tp < 3000 and player.tp >= 2000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath2color..'')
+			elseif player.tp < 2000 and player.tp >= 1000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath1color..'')
+			else
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+			end
+		elseif player.equipment.main == 'Khatvanga' then
+			if buffactive['Aftermath: Lv.1'] then
+				if player.tp == 3000 then
+					send_command('text weapons text "Aftermath: Level 1 (4-Step Ultimate)";text weapons color '..Aftermath3color..'')
+				elseif player.tp < 3000 and player.tp >= 2000 then
+					send_command('text weapons text "Aftermath: Level 1 (4-Step Ultimate)";text weapons color '..Aftermath2color..'')
+				else
+					send_command('text weapons text "Aftermath: Level 1 (4-Step Ultimate)";text weapons color '..Aftermath1color..'')
+				end
+			elseif buffactive['Aftermath: Lv.2'] then
+				if player.tp == 3000 then
+					send_command('text weapons text "Aftermath: Level 2 (3-Step Ultimate)";text weapons color '..Aftermath3color..'')
+				else
+					send_command('text weapons text "Aftermath: Level 2 (3-Step Ultimate)";text weapons color '..Aftermath2color..'')
+				end
+			elseif buffactive['Aftermath: Lv.3'] then
+				send_command('text weapons text "Aftermath: Level 3 (2-Step Ultimate)";text weapons color '..Aftermath3color..'')
+			elseif player.tp == 3000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+			elseif player.tp < 3000 and player.tp >= 2000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath2color..'')
+			elseif player.tp < 2000 and player.tp >= 1000 then
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath1color..'')
+			else
+				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+			end
+		else
+			send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+		end
+	end
+
 	--Debuff checks
-	if HUD == 'On' and LoadHUD == true and not (TownZones:contains(world.area) or player.target.name == 'Pilgrim Moogle') then
+	if LoadHUD == true and not (TownZones:contains(world.area) or player.target.name == 'Pilgrim Moogle') then
 		if buffactive['Charm'] and NotiCharm == 'On' then
 			send_command('text debuffs text "«« CHARM »»";text debuffs color 255 50 50;text debuffs bg_transparency 1')
 		elseif buffactive['Terror'] and NotiTerror == 'On' then
@@ -1757,14 +1723,12 @@ windower.register_event('prerender', function()
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if HUD == 'On' then
+		if LoadHUD == true then
 			send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
-		else
-			windower.add_to_chat(8,'<< Low MP >>')
 		end		
 		send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
 	end
@@ -1846,7 +1810,12 @@ windower.register_event('prerender', function()
 		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
-		if HUD == 'On' and LoadHUD == true then
+		if player.equipment.main == nil or player.equipment.sub == nil then
+			EquipMain = 'Weapon loading...'
+		else
+			EquipMain = player.equipment.main
+		end
+		if LoadHUD == true then
 			if ReraiseReminder == 'On' then
 				if RRRCountdown > 0 then
 					RRRCountdown = RRRCountdown - 1
@@ -1855,14 +1824,10 @@ windower.register_event('prerender', function()
 						if AlertSounds == 'On' then
 							windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 						end
-						if HUD == 'On' then
-							send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50;text notifications bg_transparency 1')
-							NotiCountdown = NotiDelay
-							if Debug == 'On' then
-								windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
-							end
-						else
-							windower.add_to_chat(8,'<< No Reraise >>')
+						send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50;text notifications bg_transparency 1')
+						NotiCountdown = NotiDelay
+						if Debug == 'On' then
+							windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 						end
 					end
 					RRRCountdown = RRReminderTimer --start the timer back up
@@ -1917,19 +1882,6 @@ windower.register_event('prerender', function()
 				send_command('text avatar text "No Avatar"')
 				send_command('text avatar color 255 50 50')
 			end
-			if player.equipment.main == 'Claustrum' or player.equipment.main == 'Hvergelmir' or player.equipment.main == 'Khatvanga' or player.equipment.main == 'Nirvana' and NotiAftermath == 'On' then
-				send_command('text aftermath pos '..HUDposXColumn4..' '..HUDposYLine2..'')	--Aftermath goes in Line 2, Column 4
-				REMA = true
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[REMA set to True]')
-				end
-			else
-				send_command('text aftermath pos '..HUDposXColumn4..' -100')				--Aftermath is not visible
-				REMA = false
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[REMA set to False]')
-				end
-			end
 			--Recast updates:
 			FavorRecast = windower.ffxi.get_ability_recasts()[176]
 			SiphonRecast = windower.ffxi.get_ability_recasts()[175]
@@ -1980,10 +1932,8 @@ windower.register_event('zone change',function()
 	if ZoneGear ~= 'Off' then
 		send_command('gs c Zone Gear') --equip appropriate gear on zone
 	end
-	if HUD =='On' then
-		send_command('gs c ClearNotifications') --clear any notifications on zone
-		send_command('gs c ClearDebuffs') --clear any debuffs on zone
-	end
+	send_command('gs c ClearNotifications') --clear any notifications on zone
+	send_command('gs c ClearDebuffs') --clear any debuffs on zone
 end)
 
 -------------------------------------------
@@ -2007,21 +1957,21 @@ end
 --        INCOMING TEXT CHECKS           --
 -------------------------------------------
 
-windower.register_event('incoming text',function(org)     
+windower.register_event('incoming text',function(org)
 	if org:find('wishes to trade with you') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
-		if NotiTrade == 'On' and HUD == 'On' then
+		if NotiTrade == 'On' and LoadHUD == true then
 			send_command('text notifications text "«« Trade Request »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.')then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
-		if NotiSneak == 'On' and HUD == 'On' and org:find('Sneak') then
+		if NotiSneak == 'On' and LoadHUD == true and org:find('Sneak') then
 			send_command('text notifications text "«« Sneak Wearing »»";text notifications color 255 100 100;text notifications bg_transparency 1')
-		elseif NotiInvis == 'On' and HUD == 'On' and org:find('Invisible') then
+		elseif NotiInvis == 'On' and LoadHUD == true and org:find('Invisible') then
 			send_command('text notifications text "«« Invisible Wearing »»";text notifications color 255 100 100;text notifications bg_transparency 1')
 		end
 	elseif org:find('Lost key item') and org:find('Radialens') then
@@ -2030,9 +1980,9 @@ windower.register_event('incoming text',function(org)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
 		end
-		if NotiInvite == 'On' and HUD == 'On' and org:find('party') and not org:find('alliance') then
+		if NotiInvite == 'On' and LoadHUD == true and org:find('party') and not org:find('alliance') then
 			send_command('text notifications text "«« Party Invite »»";text notifications color 255 255 50;text notifications bg_transparency 1')
-		elseif NotiInvite == 'On' and HUD == 'On' and org:find('alliance') then
+		elseif NotiInvite == 'On' and LoadHUD == true and org:find('alliance') then
 			send_command('text notifications text "«« Alliance Invite »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 		end
 		NotiCountdown = 180
@@ -2044,21 +1994,21 @@ windower.register_event('incoming text',function(org)
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if NotiTime == 'On' and HUD == 'On' then
+			if NotiTime == 'On' and LoadHUD == true then
 				send_command('text notifications text "«« 15 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if NotiTime == 'On' and HUD == 'On' then
+			if NotiTime == 'On' and LoadHUD == true then
 				send_command('text notifications text "«« 10 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
 				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 			end
-			if NotiTime == 'On' and HUD == 'On' then
+			if NotiTime == 'On' and LoadHUD == true then
 				send_command('text notifications text "«« 5 Minutes Remaining »»";text notifications color 255 255 50;text notifications bg_transparency 1')
 			end
 		end
@@ -2116,9 +2066,8 @@ end)
 --         WS DAMAGE NOTIFICATION        --
 -------------------------------------------
 
-local weaponskills = require('resources').weapon_skills
-
 windower.register_event('action',function(act)
+	local weaponskills = require('resources').weapon_skills
 	if act.category == 3 and act.actor_id == player.id and not (act.param == 66 or act.param == 67 or act.param == 68 or act.param == 46) and NotiWSDamage == 'On' then --WS performed by me and not Jump, High Jump, Super Jump, Shield Bash (classified as WSs for some reason)
 		if act.targets[1].actions[1].param == 0 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
@@ -2137,9 +2086,7 @@ end)
 -------------------------------------------
 
 function file_unload()
-	if HUD == 'On' then
-		send_command('wait .2;text bg1 delete;text bg2 delete;text bg3 delete;text favor delete;text siphon delete;text apogee delete;text cede delete;text convert delete;text aftermath delete;text notifications delete;text debuffs delete;text loading delete;text avatar delete') --delete the different text objects
-	end
+	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text favor delete;text siphon delete;text apogee delete;text cede delete;text convert delete;text weapons delete;text notifications delete;text debuffs delete;text loading delete;text avatar delete') --delete the different text objects
 end
 
 --[[
