@@ -111,7 +111,7 @@ function update_main()
 		windower.send_command('text main show')
 		main_show = true
 	end
-	windower.send_command('text main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' - '..game_time..' - '..weather..' | Inventory: '..inventory..'"')
+	windower.send_command('text main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
 end
 
 windower.register_event('prerender', function()
