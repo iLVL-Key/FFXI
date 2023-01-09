@@ -32,6 +32,7 @@ _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
 
+local update_flood_delay = 20 --delay in seconds before the update can be called again
 
 local weaponskills = require('resources').weapon_skills
 local miss = {}
@@ -42,6 +43,7 @@ local say = windower.chat.input
 function log(...) windower.add_to_chat(207,...) end
 
 local Heartbeat = 0
+local update_flood_timer = 0
 local Run = false
 
 MostMisses = 0
@@ -79,7 +81,7 @@ LowTarget = ""
 function get_actor(id)
     local actor = windower.ffxi.get_mob_by_id(id)
     if not actor.in_alliance and not actor.in_party then
-        return false
+		return false
     else
         return actor
     end
@@ -90,6 +92,10 @@ windower.register_event('action',function(act)
 	if act.category == 3 and not (act.param == 66 or act.param == 67 or act.param == 68 or act.param == 77 or act.param == 137 or act.param == 260 or act.param == 293 or act.param == 46 or act.param == 285) and Run then
 	--WSs (specifically excluding Jumps, Shield Bash, Bounty Shot, classified as WSs for some reason)
 		local actor = get_actor(act.actor_id)
+
+		if actor == false then
+			return
+		end
 
 		local data = {}
 		data.actor = actor.id
@@ -386,6 +392,10 @@ windower.register_event('addon command',function(arg)
 			say('/p Leaderboard unpaused.')
 		end
 	elseif arg == 'update' then
+		if update_flood_timer ~= 0 then
+			return
+		end
+		update_flood_timer = update_flood_delay
 		if FifthDamage ~= 0 then
 			say('/p \r--High Score Leaderboard--\rNo.1: '..FirstName..' ('..FirstDamage..')\rNo.2: '..SecondName..' ('..SecondDamage..')\rNo.3: '..ThirdName..' ('..ThirdDamage..')\rNo.4: '..FourthName..' ('..FourthDamage..')\rNo.5: '..FifthName..' ('..FifthDamage..')')
 		elseif FourthDamage ~= 0 then
@@ -463,4 +473,13 @@ windower.register_event('incoming text',function(org)
 		cmd('lb update')
 	end
 	
+end)
+
+windower.register_event('prerender', function()
+	if os.time() > Heartbeat then
+		Heartbeat = os.time()
+		if update_flood_timer >= 1 then
+			update_flood_timer = update_flood_timer - 1
+		end
+	end
 end)
