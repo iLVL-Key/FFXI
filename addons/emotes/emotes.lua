@@ -62,7 +62,7 @@ windower.register_event('addon command',function(arg)
 		monster = false
 		npc_character = false
 		npc_object = false
-		if emote_target.spawn_type == 1 or (emote_target.spawn_type == 13 and emote_target.name ~= self_name) then
+		if emote_target.spawn_type == 1 or emote_target.spawn_type == 9 or (emote_target.spawn_type == 13 and emote_target.name ~= self_name) then
 			player = true
 		elseif emote_target.spawn_type == 13 then
 			self = true
