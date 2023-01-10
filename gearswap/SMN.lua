@@ -6,6 +6,9 @@
 --                 NOTES                 --
 -------------------------------------------
 
+Updates to this file and other GearSwap files and addons can be found at
+https://github.com/iLVL-Key/FFXI
+
 Place both this file and the sounds folder inside the GearSwap data folder
 ex:	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/SMN.lua
@@ -94,8 +97,6 @@ NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
-NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
-NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as elemental weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -119,7 +120,7 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
-NotiDelay		=	5		--Delay in seconds before certain notifications will automatically clear.
+NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug			=	'Off'	--[On/Off]
 
@@ -444,7 +445,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Diamond Dust' --Leave this alone, used for debugging purposes
+TopVersion = 'Judgment Bolt' --Leave this alone, used for debugging purposes
 
 
 
@@ -456,8 +457,8 @@ TopVersion = 'Diamond Dust' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Diamond Dust'
-FileVersion = '12.27.22'
+BottomVersion = 'Judgment Bolt'
+FileVersion = '01.10.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -468,10 +469,17 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+01.10.23 (Version Compatibility Codename: Judgment Bolt)
+-Adjusted HUD to automatically hide during zoning.
+-Removed Omen and Vagary notifications. Those have been spun out into their own windower addon called Callouts.
+-Updated Version Compatibility Codename to Judgment Bolt.
+
 12.27.22 (Version Compatibility Codename: Diamond Dust)
 -Overhauled the Aftermath notification. Renamed to Weapons. Will now always show your equipped weapon as a default state when no aftermath is up. Will change colors based on what your current TP will give you for an Aftermath effect.
 -Removed the option to turn off the HUD. While I generally think the more options the better, the HUD is a main part of this lua.
 -Fixed occasional error messages from the Text addon when loading/reloading the file.
+-Updated Version Compatibility Codename to Diamond Dust.
+-Code cleanup.
 
 12.06.22 (Version Compatibility Codename: Clarsach Call)
 -Overhauled Low HP notification. Notification and sound no longer activates in towns. Changed the Advanced Option from selecting "Once" or "Constant" to instead selecting the number of times the sound will repeat while your HP is low. Removed the 30 second window before triggering again.
@@ -857,8 +865,6 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
-		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
-		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -1556,6 +1562,22 @@ end)
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
 
+	--Zoning check for HUD
+	local pos = windower.ffxi.get_position()
+	if pos == "(?-?)" and ShowHUD then
+		windower.send_command('gs c HideHUD')
+		ShowHUD = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to False]')
+		end
+	elseif pos ~= "(?-?)" and not ShowHUD then
+		windower.send_command('gs c ShowHUD')
+		ShowHUD = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to True]')
+		end
+	end
+
 	--Aftermath checks
 	if LoadHUD == true then
 		if player.equipment.main == 'Claustrum' then
@@ -2029,36 +2051,6 @@ windower.register_event('incoming text',function(org)
 		send_command('text notifications text "«« Out Of Holy Waters »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 	elseif org:find('Trade complete') then
 		send_command('gs c ClearNotifications')
-	elseif NotiOmen == 'On' and org:find('You find a') then
-		if org:find('Fu\'s scale') then
-			send_command('input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
-		elseif org:find('Gin\'s scale') then
-			send_command('input /p Gin\'s Scale: THF, NIN, DNC, RUN <call14>')
-		elseif org:find('Kei\'s scale') then
-			send_command('input /p Kei\'s Scale: WHM, BLM, RDM, BLU, SCH <call14>')
-		elseif org:find('Kin\'s scale') then
-			send_command('input /p Kin\'s Scale: WAR, MNK, PLD, DRK, SAM <call14>')
-		elseif org:find('Kyou\'s scale') then
-			send_command('input /p Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
-		end
-	elseif NotiVagary == 'On' and org:find('You pitiful lot will never learn') then
-		send_command('input /p Perfidien pop! <call14>')
-	elseif NotiVagary == 'On' and org:find('the void calls') then
-		send_command('input /p Plouton pop! <call14>')
-	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
-		if org:find('Lightning') then
-			send_command('input /p Thunder <call14>')
-		elseif org:find('Fire') then
-			send_command('input /p Fire <call14>')
-		elseif org:find('Wind') then
-			send_command('input /p Aero <call14>')
-		elseif org:find('Earth') then
-			send_command('input /p Stone <call14>')
-		elseif org:find('Ice') then
-			send_command('input /p Blizzard <call14>')
-		elseif org:find('Water') then
-			send_command('input /p Water <call14>')
-		end
 	end
 end)
 
