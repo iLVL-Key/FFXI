@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '01.08.23'
+_addon.version = '01.10.23'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
@@ -36,7 +36,7 @@ local command = windower.send_command
 
 
 --Default Chat mode on load.
-chatmode = 'p'
+chatmode = 'echo'
 --Party (p) and Echo (echo) are the two that can be toggled between via command but any can be used for default (careful!)
 
 
@@ -49,6 +49,7 @@ windower.register_event('action',function(act)
 
 	local actor = windower.ffxi.get_mob_by_id(act.actor_id)
 	local targets = act.targets
+	local target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name or 'Unknown'
 
 	if act.category == 7 then
 		if actor.name == "Aita" or actor.name == "Degei" then
@@ -82,6 +83,11 @@ windower.register_event('action',function(act)
 		elseif actor.name == "Glassy Thinker" then
 			if res.monster_abilities[targets[1].actions[1].param].en == 'Pain Sync' then 
 				chat('/'..chatmode..' PAIN SYNC <call14>')
+			end
+
+		elseif actor.name == "OU" or actor.name == "Kin" then
+			if res.monster_abilities[targets[1].actions[1].param].en == 'Target' then
+				chat('/'..chatmode..' Target used on '..target_name..' <call14>')
 			end
 		end
 
@@ -130,29 +136,29 @@ end)
 
 
 function display_help()
-	windower.add_to_chat(200,'Callouts: '..('Use \'//co chatmode\' to switch between Echo and Party chat modes'):color(8)..'')
-	windower.add_to_chat(200,'Callouts: '..('Current callouts:'):color(8)..'')
-	windower.add_to_chat(200,'Callouts: '..('Omen (Scales, Pain Sync)'):color(8)..'')
-	windower.add_to_chat(200,'Callouts: '..('Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
-	windower.add_to_chat(200,'Callouts: '..('Sortie (weaknesses)'):color(8)..'')
+	windower.add_to_chat(200,'[Callouts] '..('Use \'//co chatmode\' to switch between Echo and Party chat modes'):color(8)..'')
+	windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
+	windower.add_to_chat(200,'[Callouts] '..('Omen (Scales, Pain Sync)'):color(8)..'')
+	windower.add_to_chat(200,'[Callouts] '..('Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
+	windower.add_to_chat(200,'[Callouts] '..('Sortie (weaknesses)'):color(8)..'')
 end
 
-windower.register_event('addon command', function(cmd, ...)
+windower.register_event('addon command', function(addcmd)
 
-	if cmd == 'help' then
+	if addcmd == 'help' then
 		display_help()
 
-	elseif cmd == 'chatmode' then
+	elseif addcmd == 'chatmode' then
 		if chatmode == 'echo' then
 			chatmode = 'p'
-			windower.add_to_chat(200,'Callouts: '..('Chat mode is now set to Party'):color(8)..'')
+			windower.add_to_chat(200,'[Callouts] '..('Chat mode is now set to Party'):color(8)..'')
 		else
 			chatmode = 'echo'
-			windower.add_to_chat(200,'Callouts: '..('Chat mode is now set to Echo'):color(8)..'')
+			windower.add_to_chat(200,'[Callouts] '..('Chat mode is now set to Echo'):color(8)..'')
 		end
 
 	else
-		windower.add_to_chat(200,'Callouts: '..('Invalid command'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Unknown command'):color(8)..'')
 		display_help()
 	end
 	
