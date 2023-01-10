@@ -6,6 +6,9 @@
 --                 NOTES                 --
 -------------------------------------------
 
+Updates to this file and other GearSwap files and addons can be found at
+https://github.com/iLVL-Key/FFXI
+
 Place both this file and the sounds folder inside the GearSwap data folder
 ex:	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/GEO.lua
@@ -84,8 +87,6 @@ NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
-NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
-NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as elemental weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -109,7 +110,7 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
-NotiDelay		=	5		--Delay in seconds before certain notifications will automatically clear.
+NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug			=	'Off'	--[On/Off]
 
@@ -188,8 +189,8 @@ function get_sets()
 		head="Azimuth Hood +3",
 		body="Azimuth Coat +3",
 		hands="Azimuth Gloves +3",
-		legs="Azimuth Tights +2",
-		feet="Azimuth Gaiters +2",
+		legs="Azimuth Tights +3",
+		feet="Azimuth Gaiters +3",
 		neck="Ziel Charm",
 		waist="Windbuffet Belt +1",
 		left_ear="Mache Earring +1",
@@ -262,7 +263,7 @@ function get_sets()
 		body="Bagua Tunic",
 		hands="Geomancy Mitaines +3",
 		legs="Bagua Pants +3",
-		feet="Azimuth Gaiters +2",
+		feet="Azimuth Gaiters +3",
 		neck="Bagua Charm +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -292,8 +293,9 @@ function get_sets()
 		head="Azimuth Hood +3",
 		body="Azimuth Coat +3",
 		hands="Geo. Mitaines +3",
-		legs="Azimuth Tights +2",
+		legs="Azimuth Tights +3",
 		feet="Geo. Sandals +3",
+		neck="Incanter's Torque",
 		waist="Acuity Belt +1",
 		left_ear="Malignance Earring",
 		right_ear="Regal Earring",
@@ -438,7 +440,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Indi-Refresh' --Leave this alone, used for debugging purposes
+TopVersion = 'Indi-CHR' --Leave this alone, used for debugging purposes
 
 
 
@@ -450,8 +452,8 @@ TopVersion = 'Indi-Refresh' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Indi-Refresh'
-FileVersion = '12.27.22'
+BottomVersion = 'Indi-CHR'
+FileVersion = '01.10.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -462,13 +464,18 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
+01.10.23 (Version Compatibility Codename: Indi-CHR)
+-Adjusted HUD to automatically hide during zoning.
+-Removed Omen and Vagary notifications. Those have been spun out into their own windower addon called Callouts.
+-Updated Version Compatibility Codename to Indi-CHR.
+
 12.27.22 (Version Compatibility Codename: Indi-Refresh)
 -Removed the option to turn off the HUD. While I generally think the more options the better, the HUD is a main part of this lua.
 -Fixed occasional error messages from the Text addon when loading/reloading the file.
 -Updated Version Compatibility Codename to Indi-Refresh.
 -Code cleanup.
 
-12.27.22 (Version Compatibility Codename: Indi-Barrier)
+12.06.22 (Version Compatibility Codename: Indi-Barrier)
 -Overhauled Low HP notification. Notification and sound no longer activates in towns. Changed the Advanced Option from selecting "Once" or "Constant" to instead selecting the number of times the sound will repeat while your HP is low. Removed the 30 second window before triggering again.
 -Adjusted certain notification to now automatically clear after a short delay.
 -Removed the option for using the OhShit gear set. The gear set itself still remains and funtionality has not changed. Having the option was redundant as you can simply leave the set empty.
@@ -871,8 +878,6 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
-		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
-		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -1319,6 +1324,11 @@ function midcast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Aspir/Drain]')
 		end
+	elseif spell.english == "Absorb-TP" then
+		equip(sets.magicaccuracy)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Magic Accuracy]')
+		end
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
 		if Debug == 'On' then
@@ -1648,6 +1658,23 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
+
+	--Zoning check for HUD
+	local pos = windower.ffxi.get_position()
+	if pos == "(?-?)" and ShowHUD then
+		windower.send_command('gs c HideHUD')
+		ShowHUD = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to False]')
+		end
+	elseif pos ~= "(?-?)" and not ShowHUD then
+		windower.send_command('gs c ShowHUD')
+		ShowHUD = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to True]')
+		end
+	end
+
 	--Debuff checks
 	if LoadHUD == true and not (TownZones:contains(world.area) or player.target.name == 'Pilgrim Moogle') then
 		if buffactive['Charm'] and NotiCharm == 'On' then
@@ -2011,36 +2038,6 @@ windower.register_event('incoming text',function(org)
 		send_command('text notifications text "«« Out Of Holy Waters »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 	elseif org:find('Trade complete') then
 		send_command('gs c ClearNotifications')
-	elseif NotiOmen == 'On' and org:find('You find a') then
-		if org:find('Fu\'s scale') then
-			send_command('input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
-		elseif org:find('Gin\'s scale') then
-			send_command('input /p Gin\'s Scale: THF, NIN, DNC, RUN <call14>')
-		elseif org:find('Kei\'s scale') then
-			send_command('input /p Kei\'s Scale: WHM, BLM, RDM, BLU, SCH <call14>')
-		elseif org:find('Kin\'s scale') then
-			send_command('input /p Kin\'s Scale: WAR, MNK, PLD, DRK, SAM <call14>')
-		elseif org:find('Kyou\'s scale') then
-			send_command('input /p Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
-		end
-	elseif NotiVagary == 'On' and org:find('You pitiful lot will never learn') then
-		send_command('input /p Perfidien pop! <call14>')
-	elseif NotiVagary == 'On' and org:find('the void calls') then
-		send_command('input /p Plouton pop! <call14>')
-	elseif NotiVagary == 'On' and org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
-		if org:find('Lightning') then
-			send_command('input /p Thunder <call14>')
-		elseif org:find('Fire') then
-			send_command('input /p Fire <call14>')
-		elseif org:find('Wind') then
-			send_command('input /p Aero <call14>')
-		elseif org:find('Earth') then
-			send_command('input /p Stone <call14>')
-		elseif org:find('Ice') then
-			send_command('input /p Blizzard <call14>')
-		elseif org:find('Water') then
-			send_command('input /p Water <call14>')
-		end
 	end
 end)
 
