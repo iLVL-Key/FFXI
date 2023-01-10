@@ -6,6 +6,9 @@
 --                 NOTES                 --
 -------------------------------------------
 
+Updates to this file and other GearSwap files and addons can be found at
+https://github.com/iLVL-Key/FFXI
+
 Place both this file and the sounds folder inside the GearSwap data folder
 	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/SAM.lua
@@ -76,10 +79,10 @@ LineSpacer		=	20		--				Space in pixels between each Line of the HUD
 ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
 
 --HUD Mode Names
-Mode1Name = 'Multi-Attack'	--Names displayed in the HUD for Hasso Mode 1, 2, and 3.
-Mode2Name = 'All-Round'		--Change these as you see fit if you want to use them for different types of gear.
-Mode3Name = 'High Accuracy'
-Mode4Name = 'Subtle Blow'
+Mode1Name = 'Multi-Attack'		--Names displayed in the HUD for Hasso Mode 1, 2, 3, and 4.
+Mode2Name = 'High Accuracy'		--Change these as you see fit if you want to use them for different types of gear.
+Mode3Name = 'All-Round'			--NOTE: Mode 2 is the Hasso Accuracy set which is linked to the Accuracy Weapon Skill set.
+Mode4Name = 'Subtle Blow'		--(Using a weapon skill while in mode 2 will default to the Accuracy WS set instead of the standard WS set)
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
@@ -94,8 +97,6 @@ NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
-NotiOmen			=	'On'	--[On/Off]	Party chat notifications for Scale drops in Omen.
-NotiVagary			=	'On'	--[On/Off]	Party chat notifications for Perfidien and Plouton popping, as well as elemental weaknesses.
 
 -- Debuff Notifications --
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
@@ -118,10 +119,10 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 ModeCtrlPlus		=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
-CappedTPThreshhold	=	2250	--Using a WS with above this much TP will use the Capped TP WS set instead.
+CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
-NotiDelay			=	5		--Delay in seconds before certain notifications will automatically clear.
+NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug				=	'Off'	--[On/Off]
 
@@ -140,7 +141,8 @@ Aftermath3color		=	'255 255 50'	--Aftermath Level 3
 
 function get_sets()
 
-	-- Hasso Mode 1 (Example: Hasso+, with a focus on Multi-Attack, Zanshin, and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
+	-- Hasso Standard (Example: Hasso+, with a focus on Multi-Attack, Zanshin, and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
+	-- NOTE: This is your standard melee set.
 	sets.hassomodeone = {
 		ammo="Coiste Bodhar",
 		head="Flam. Zucchetto +2",
@@ -157,7 +159,8 @@ function get_sets()
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
 	}
 
-	-- Hasso Mode 2 (Example: Hasso+, with a mix of Multi-Attack, Zanshin, Store TP, DEX, Accuracy, and Attack)
+	-- Hasso Accuracy (Example: Hasso+, with a focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Zanshin, Store TP, and Attack)
+	-- NOTE: This is a special mode for accuracy. When in this mode, weapon skills will default to the Accuracy Weapon Skill set.
 	sets.hassomodetwo = {
 		ammo="Coiste Bodhar",
 		head="Flam. Zucchetto +2",
@@ -174,7 +177,7 @@ function get_sets()
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
 	}
 
-	-- Hasso Mode 3 (Example: Hasso+, with a focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Zanshin, Store TP, DEX, Accuracy, and Attack)
+	-- Hasso Mode 3 (Example: Hasso+, with a mix of Multi-Attack, Zanshin, Store TP, DEX, Accuracy, and Attack)
 	sets.hassomodethree = {
 		ammo="Coiste Bodhar",
 		head="Flam. Zucchetto +2",
@@ -209,10 +212,10 @@ function get_sets()
 	}
 
 	-- Seigan (Seigan+, Third Eye+, Counter, DT-)
-	-- Intended as a more defense oriented set for when you have to put Seigan up.
+	-- NOTE: Intended as a more defense oriented set for when you have to put Seigan up.
 	sets.seigan = {
 		ammo="Staunch Tathlum",
-		head="Kasuga Kabuto +2",
+		head="Kasuga Kabuto +3",
 		body="Dagon Breast.",
 		--body="Mpaca's Doublet",
 		hands="Mpaca's Gloves",
@@ -237,9 +240,9 @@ function get_sets()
 	}
 
 	-- DT Override (Damage Taken-, Magic Evasion)
-	-- Will override all other gear sets and inherit unused slots from them
+	-- NOTE: Will override all other gear sets and inherit unused slots from them
 	sets.dtoverride = {
-		head="Kasuga Kabuto +2",
+		head="Kasuga Kabuto +3",
 		body="Kasuga Domaru +3",
 		legs="Kasuga Haidate +3",
 		feet="Nyame Sollerets",
@@ -249,7 +252,7 @@ function get_sets()
 	-- Oh Shit
 	-- Full DT- and everything you've got with Absorbs or Annuls Damage
 	sets.ohshit = {
-		head="Kasuga Kabuto +2",
+		head="Kasuga Kabuto +3",
 		body="Kasuga Domaru +3",
 		legs="Kasuga Haidate +3",
 		feet="Nyame Sollerets",
@@ -258,7 +261,6 @@ function get_sets()
 		right_ring="Shadow Ring",
 		back="Shadow Mantle"
 	}
-
 
 	-- Weapon Skill (TP Bonus, STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
@@ -277,8 +279,26 @@ function get_sets()
 		back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
 	}
 
+	-- Accuracy Weapon Skill (TP Bonus, STR, Weapon Skill Damage, Attack, Double/Triple Attack)
+	-- NOTE: This is a special set for weapon skill accuracy. When in the Hasso Accuracy mode (mode 2), weapon skills will use this set.
+	sets.accws = {
+		ammo="Knobkierrie",
+		head="Mpaca's Cap",
+		body="Sakonji Domaru +3",
+		hands="Kasuga Kote +3",
+		legs="Wakido Haidate +3",
+		feet="Nyame Sollerets",
+		neck="Sam. Nodowa +2",
+		waist="Sailfi Belt +1",
+		left_ear="Moonshade Earring",
+		right_ear="Thrud Earring",
+		left_ring="Karieyh Ring +1",
+		right_ring="Regal Ring",
+		back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
+	}
+
 	-- Capped TP Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
-	-- Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
+	-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
 	sets.cappedtpws = set_combine(sets.ws, {
 		head="Nyame Helm",
 		left_ear="Lugra Earring +1",
@@ -288,6 +308,26 @@ function get_sets()
 	sets.hybridws = set_combine(sets.ws, {
 
 	})
+
+	-- Hachirin-no-obi
+	sets.hachirin = set_combine(sets.hybridws,sets.ws, {
+		--waist="Hachirin-no-obi",
+	})
+
+	-- Tachi: Ageha (Magic Accuracy)
+	sets.ageha = set_combine(sets.ws, {
+		head="Kasuga Kabuto +3",
+		body="Kasuga Domaru +3",
+		hands="Kasuga Kote +3",
+		legs="Kasuga Haidate +3",
+		feet="Kasuga Sune-Ate +3",
+	})
+
+	-- Ygnas's Resolve +1
+	-- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
+	sets.ygnas = {
+		--neck="Ygnas's Resolve +1",
+	}
 
 	-- Sekkanoki
 	sets.sekkanoki = {
@@ -306,7 +346,7 @@ function get_sets()
 
 	-- Sengikori
 	sets.sengikori = {
-		feet="Kasuga Sune-Ate +2",
+		feet="Kasuga Sune-Ate +3",
 	}
 
 	-- Meditate
@@ -370,7 +410,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Tachi: Koki' --Leave this alone, used for debugging purposes
+TopVersion = 'Tachi: Yukikaze' --Leave this alone, used for debugging purposes
 
 
 
@@ -382,8 +422,8 @@ TopVersion = 'Tachi: Koki' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Tachi: Koki'
-FileVersion = '12.29.22'
+BottomVersion = 'Tachi: Yukikaze'
+FileVersion = '01.10.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -393,6 +433,16 @@ FileVersion = '12.29.22'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+01.10.23 (Version Compatibility Codename: Tachi: Yukikaze)
+-Added Tachi: Ageha set.
+-Added High Accuracy Weapon Skill set. This set is linked to Hasso Mode 2, which is a special set for when you need high accuracy.
+-Added Hachirin-no-obi set. Will use the Hachirin-no-obi based on day/weather/scholar weather conditions.
+-Added Ygnas's Resolve +1 set. Will use the Ygnas's Resolve +1 when you are in a Reive battle.
+-Adjusted precast for when both Meikyo Shisui and Sekkanoki is up to combine those two sets with the appropriate Weapon Skill set.
+-Adjusted HUD to automatically hide during zoning.
+-Removed Omen and Vagary notifications. Those have been spun out into their own windower addon called Callouts.
+-Updated Version Compatibility Codename to Tachi: Yukikaze.
 
 12.29.22 (Version Compatibility Codename: Tachi: Koki)
 -Overhauled the Aftermath notification. Renamed to Weapons. Will now always show your equipped weapon as a default state when no aftermath is up. Will change colors based on what your current TP will give you for an Aftermath effect.
@@ -798,8 +848,6 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
-		windower.add_to_chat(200,'NotiOmen: '..(''..NotiOmen..''):color(8)..'')
-		windower.add_to_chat(200,'NotiVagary: '..(''..NotiVagary..''):color(8)..'')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -1305,11 +1353,57 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		if buffactive['Sekkanoki'] then
+		if buffactive['Sekkanoki'] and buffactive['Meikyo Shisui']then
 			if HybridWS:contains(spell.english) then
-				equip(set_combine(sets.hybridws, sets.sekkanoki))
+				if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+					equip(set_combine(sets.hachirin, sets.meikyoshisui, sets.sekkanoki))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Meikyo Shisui + Sekkanoki]')
+					end
+				else
+					equip(set_combine(sets.hybridws, sets.meikyoshisui, sets.sekkanoki))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Meikyo Shisui + Sekkanoki]')
+					end
+				end
+			elseif spell.english == 'Tachi: Ageha' then
+				equip(set_combine(sets.ageha, sets.meikyoshisui, sets.sekkanoki))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Sekkanoki]')
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui + Sekkanoki]')
+				end
+			elseif Mode == 'Mode2' then
+				equip(set_combine(sets.accws, sets.meikyoshisui, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Meikyo Shisui + Sekkanoki]')
+				end
+			else
+				equip(set_combine(sets.ws, sets.meikyoshisui, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Meikyo Shisui + Sekkanoki]')
+				end
+			end
+		elseif buffactive['Sekkanoki'] then
+			if HybridWS:contains(spell.english) then
+				if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+					equip(set_combine(sets.hachirin, sets.sekkanoki))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Sekkanoki]')
+					end
+				else
+					equip(set_combine(sets.hybridws, sets.sekkanoki))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Sekkanoki]')
+					end
+				end
+			elseif spell.english == 'Tachi: Ageha' then
+				equip(set_combine(sets.ageha, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Sekkanoki]')
+				end
+			elseif Mode == 'Mode2' then
+				equip(set_combine(sets.accws, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Sekkanoki]')
 				end
 			else
 				equip(set_combine(sets.ws, sets.sekkanoki))
@@ -1319,9 +1413,26 @@ function precast(spell)
 			end
 		elseif buffactive['Meikyo Shisui'] then
 			if HybridWS:contains(spell.english) then
-				equip(set_combine(sets.hybridws, sets.meikyoshisui))
+				if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+					equip(set_combine(sets.hachirin, sets.meikyoshisui))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Meikyo Shisui]')
+					end
+				else
+					equip(set_combine(sets.hybridws, sets.meikyoshisui))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Meikyo Shisui]')
+					end
+				end
+			elseif spell.english == 'Tachi: Ageha' then
+				equip(set_combine(sets.ageha, sets.meikyoshisui))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Meikyo Shisui]')
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui]')
+				end
+			elseif Mode == 'Mode2' then
+				equip(set_combine(sets.accws, sets.meikyoshisui))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Meikyo Shisui]')
 				end
 			else
 				equip(set_combine(sets.ws, sets.meikyoshisui))
@@ -1330,19 +1441,67 @@ function precast(spell)
 				end
 			end
 		elseif HybridWS:contains(spell.english) then
-			equip(sets.hybridws)
+			if buffactive['Reive Mark'] and (((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1))) then
+				equip(set_combine(sets.hachirin, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Ygnas\'s Resolve]')
+				end				
+			elseif ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+				equip(sets.hachirin)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill]')
+				end				
+			elseif buffactive['Reive Mark'] then
+				equip(set_combine(sets.hybridws, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Ygnas\'s Resolve]')
+				end
+			else
+				equip(sets.hybridws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill]')
+				end
+			end
+		elseif spell.english == 'Tachi: Ageha' then
+			equip(sets.ageha)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill]')
-			end			
+				windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha]')
+			end
+		elseif Mode == 'Mode2' then
+			if buffactive['Reive Mark'] then
+				equip(set_combine(sets.accws, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Ygnas\'s Resolve]')
+				end
+			else
+				equip(sets.accws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill]')
+				end
+			end
 		elseif player.tp >= CappedTPThreshhold then
-			equip(sets.cappedtpws)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill]')
+			if buffactive['Reive Mark'] then
+				equip(set_combine(sets.cappedtpws, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill + Ygnas\'s Resolve]')
+				end
+			else
+				equip(sets.cappedtpws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill]')
+				end
 			end
 		else
-			equip(sets.ws)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
+			if buffactive['Reive Mark'] then
+				equip(set_combine(sets.ws, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Ygnas\'s Resolve]')
+				end
+			else
+				equip(sets.ws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
+				end
 			end
 		end
 	elseif spell.english == 'Meditate' and windower.ffxi.get_ability_recasts()[134] <= 1 then
@@ -1670,7 +1829,23 @@ end)
 
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
-	
+
+	--Zoning check for HUD
+	local pos = windower.ffxi.get_position()
+	if pos == "(?-?)" and ShowHUD then
+		windower.send_command('gs c HideHUD')
+		ShowHUD = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to False]')
+		end
+	elseif pos ~= "(?-?)" and not ShowHUD then
+		windower.send_command('gs c ShowHUD')
+		ShowHUD = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to True]')
+		end
+	end
+
 	--Aftermath checks
 	if LoadHUD == true then
 		if player.equipment.main == 'Amanomurakumo' then
@@ -2192,36 +2367,6 @@ windower.register_event('incoming text',function(org)
 		end
 	elseif org:find('Trade complete') then
 		send_command('gs c ClearNotifications')
-	elseif NotiOmen == 'On' and org:find('You find a') then
-		if org:find('Fu\'s scale') then
-			send_command('wait 2 5;input /p Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
-		elseif org:find('Gin\'s scale') then
-			send_command('wait 2 5;input /p Gin\'s Scale: THF, NIN, DNC, RUN <call14>')
-		elseif org:find('Kei\'s scale') then
-			send_command('wait 2 5;input /p Kei\'s Scale: WHM, BLM, RDM, BLU, SCH <call14>')
-		elseif org:find('Kin\'s scale') then
-			send_command('wait 2 5;input /p Kin\'s Scale: WAR, MNK, PLD, DRK, SAM <call14>')
-		elseif org:find('Kyou\'s scale') then
-			send_command('wait 2 5;input /p Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
-		end
-	elseif NotiVagary == 'On' and org:find('You pitiful lot will never learn') then
-		send_command('input /p Perfidien pop! <call14>')
-	elseif NotiVagary == 'On' and org:find('the void calls') then
-		send_command('input /p Plouton pop! <call14>')
-	elseif NotiVagary == 'On' and (org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?')) then
-		if org:find('Lightning') then
-			send_command('input /p Thunder <call14>')
-		elseif org:find('Fire') then
-			send_command('input /p Fire <call14>')
-		elseif org:find('Wind') then
-			send_command('input /p Aero <call14>')
-		elseif org:find('Earth') then
-			send_command('input /p Stone <call14>')
-		elseif org:find('Ice') then
-			send_command('input /p Blizzard <call14>')
-		elseif org:find('Water') then
-			send_command('input /p Water <call14>')
-		end
 	end
 end)
 
