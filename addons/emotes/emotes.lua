@@ -27,9 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Emotes'
-_addon.version = '01.08.23'
+_addon.version = '01.11.23'
 _addon.author = 'Key'
 _addon.commands = {'emotes','emote','em'}
+
+require 'logger'
+
 
 -------------------
 --Gender Override--
@@ -37,23 +40,23 @@ local gender = '' --m/f/n (n will use they/them, leave blank to use games builti
 -------------------
 
 
-
 local chat = windower.chat.input
 local cmd = windower.send_command
 function log(...) windower.add_to_chat(207,...) end
 
-windower.register_event('addon command',function(arg)
+windower.register_event('addon command',function(addcmd)
 	local emote_target = windower.ffxi.get_mob_by_target('t') or windower.ffxi.get_mob_by_target('me')
-	--(we use the 'me' in there in case 't' is nil)
+	--we use the 'me' in there in case 't' is nil(no target)
+	local self_race_num = windower.ffxi.get_mob_by_target('me').race
 	local self_name = windower.ffxi.get_mob_by_target('me').name
 
 		if gender == 'n' then
 			hishertheir = 'their'
 			himselfherselfthemself = 'themself'
-		elseif gender == 'm' or (emote_target.race == 1 or emote_target.race == 3 or emote_target.race == 5 or emote_target.race == 8 or emote_target.race == 31) then
+		elseif gender == 'm' or (self_race_num == 1 or self_race_num == 3 or self_race_num == 5 or self_race_num == 8 or self_race_num == 31) then
 			hishertheir = 'his'
 			himselfherselfthemself = 'himself'
-		elseif gender == 'f' or (emote_target.race == 2 or emote_target.race == 4 or emote_target.race == 6 or emote_target.race == 7 or emote_target.race == 29 or emote_target.race == 30) then
+		elseif gender == 'f' or (self_race_num == 2 or self_race_num == 4 or self_race_num == 6 or self_race_num == 7 or self_race_num == 29 or self_race_num == 30) then
 			hishertheir = 'her'
 			himselfherselfthemself = 'herself'
 		end
@@ -73,30 +76,44 @@ windower.register_event('addon command',function(arg)
 		elseif emote_target.spawn_type == 2 or emote_target.spawn_type == 34 then
 			npc_object = true
 		end
+		if self_race_num == 1 or self_race_num == 2 then
+			self_race = 'Hume'
+		elseif self_race_num == 3 or self_race_num == 4 then
+			self_race = 'Elvaan'
+		elseif self_race_num == 5 or self_race_num == 6 then
+			self_race = 'Tarutaru'
+		elseif self_race_num == 7 then
+			self_race = 'Mithra'
+		elseif self_race_num == 8 then
+			self_race = 'Galka'
+		end
 
 
 
+	if addcmd == 'list' then
+		log('[Emotes] List of current emotes')
+		log('[Emotes] - blowkiss')
+		log('[Emotes] - boop (w/ motion)')
+		log('[Emotes] - coldone/beer/soda')
+		log('[Emotes] - congratulations/congrats/grats (w/ motion)')
+		log('[Emotes] - cookie')
+		log('[Emotes] - dab')
+		log('[Emotes] - facepalm')
+		log('[Emotes] - fistbump/fbump/bump')
+		log('[Emotes] - flex')
+		log('[Emotes] - gag (w/ motion)')
+		log('[Emotes] - grovel (w/ motion)')
+		log('[Emotes] - handover/hand')
+		log('[Emotes] - highfive/hfive')
+		log('[Emotes] - playdead')
+		log('[Emotes] - pose')
+		log('[Emotes] - sing')
+		log('[Emotes] - squint')
+		log('[Emotes] - tag (w/ motion)')
+		log('[Emotes] - thumbsup')
+		log('[Emotes] - whistle')
 
-	if arg == 'list' then
-		log('Emotes: List of current emotes')
-		log('Emotes: - blowkiss')
-		log('Emotes: - boop (w/ motion)')
-		log('Emotes: - congratulations/congrats/grats (w/ motion)')
-		log('Emotes: - cookie')
-		log('Emotes: - dab')
-		log('Emotes: - facepalm')
-		log('Emotes: - fistbump')
-		log('Emotes: - flex')
-		log('Emotes: - grovel (w/ motion)')
-		log('Emotes: - handover/hand')
-		log('Emotes: - highfive/hfive')
-		log('Emotes: - playdead')
-		log('Emotes: - pose')
-		log('Emotes: - squint')
-		log('Emotes: - tag (w/ motion)')
-		log('Emotes: - thumbsup')
-
-	elseif arg == 'blowkiss' then
+	elseif addcmd == 'blowkiss' then
 		if self then
 			chat('/em blows a kiss.')
 		elseif player or npc_character then
@@ -105,7 +122,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em blows the '..emote_target.name..' a kiss.')
 		end
 
-	elseif arg == 'boop' then
+	elseif addcmd == 'boop' then
 		if self then
 			chat('/em boops '..hishertheir..' own nose.')
 		elseif player or npc_character then
@@ -116,7 +133,16 @@ windower.register_event('addon command',function(arg)
 			chat('/point motion')
 		end
 
-	elseif arg == 'congratulations' or arg == 'congrats' or arg == 'grats' then
+	elseif addcmd == 'coldone' or addcmd == 'beer' or addcmd == 'soda' then
+		if self then
+			chat('/em cracks open a cold one.')
+		elseif player or npc_character then
+			chat('/em tosses '..emote_target.name..' a cold one.')
+		elseif monster or npc_object then
+			chat('/em chugs a cold one in front of the '..emote_target.name..'.')
+		end
+
+	elseif addcmd == 'congratulations' or addcmd == 'congrats' or addcmd == 'grats' then
 		if self then
 			chat('/em offers '..hishertheir..' congratulations.')
 			cmd('input /clap motion;wait 2;input cheer motion')
@@ -128,7 +154,7 @@ windower.register_event('addon command',function(arg)
 			cmd('input /clap motion;wait 2;input /cheer motion')
 		end
 
-	elseif arg == 'cookie' then
+	elseif addcmd == 'cookie' then
 		if self then
 			chat('/em munches on a cookie.')
 		elseif player or npc_character then
@@ -137,7 +163,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em offers the '..emote_target.name..' a cookie.')
 		end
 
-	elseif arg == 'dab' then
+	elseif addcmd == 'dab' then
 		if self then
 			chat('/em quietly dabs to '..himselfherselfthemself..'.')
 		elseif player or npc_character then
@@ -146,7 +172,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em quickly dabs at the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'facepalm' then
+	elseif addcmd == 'facepalm' then
 		if self then
 			chat('/em quietly facepalms to '..himselfherselfthemself..'.')
 		elseif player or npc_character then
@@ -155,7 +181,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em looks at the '..emote_target.name..' and facepalms.')
 		end
 
-	elseif arg == 'fistbump' then
+	elseif addcmd == 'fistbump' or addcmd == 'fbump' or addcmd == 'bump' then
 		if self then
 			chat('/em leaves '..hishertheir..' fist out for a bump.')
 		elseif player or npc_character then
@@ -164,7 +190,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em fistbumps the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'flex' then
+	elseif addcmd == 'flex' then
 		if self then
 			chat('/em flexes.')
 		elseif player or npc_character then
@@ -173,7 +199,19 @@ windower.register_event('addon command',function(arg)
 			chat('/em flexes on the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'grovel' then
+	elseif addcmd == 'gag' then
+		if self then
+			chat('/em gags and '..hishertheir..' face turns a sickly shade of green.')
+			chat('/think motion')
+		elseif player or npc_character then
+			chat('/em looks at '..emote_target.name..' and '..hishertheir..' face turns a sickly shade of green.')
+			chat('/think motion')
+		elseif monster or npc_object then
+			chat('/em looks at the '..emote_target.name..' and '..hishertheir..' face turns a sickly shade of green.')
+			chat('/think motion')
+		end
+
+	elseif addcmd == 'grovel' then
 		if self then
 			chat('/em grovels.')
 			chat('/kneel motion')
@@ -185,7 +223,7 @@ windower.register_event('addon command',function(arg)
 			chat('/kneel motion')
 		end
 
-	elseif arg == 'handover' or arg == 'hand' then
+	elseif addcmd == 'handover' or addcmd == 'hand' then
 		if self then
 			chat('/em looks at something in '..hishertheir..' hand.')
 		elseif player or npc_character then
@@ -194,7 +232,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em hands something to the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'highfive' or arg == 'hfive' then
+	elseif addcmd == 'highfive' or addcmd == 'hfive' then
 		if self then
 			chat('/em holds '..hishertheir..' hand up for a high-five.')
 		elseif player or npc_character then
@@ -203,7 +241,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em high-fives the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'playdead' then
+	elseif addcmd == 'playdead' then
 		if self then
 			chat('/em plays dead.')
 		elseif player or npc_character then
@@ -212,7 +250,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em plays dead in front of the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'pose' then
+	elseif addcmd == 'pose' then
 		if self then
 			chat('/em strikes a pose.')
 		elseif player or npc_character then
@@ -221,7 +259,16 @@ windower.register_event('addon command',function(arg)
 			chat('/em strikes a pose for the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'squint' then
+	elseif addcmd == 'sing' then
+		if self then
+			chat('/em sings the song of '..hishertheir..' people.')
+		elseif player or npc_character then
+			chat('/em sings the song of '..hishertheir..' people for '..emote_target.name..'.')
+		elseif monster or npc_object then
+			chat('/em sings the song of '..hishertheir..' people for the '..emote_target.name..'.')
+		end
+
+	elseif addcmd == 'squint' then
 		if self then
 			chat('/em squints.')
 		elseif player or npc_character then
@@ -230,7 +277,7 @@ windower.register_event('addon command',function(arg)
 			chat('/em squints at the '..emote_target.name..'.')
 		end
 
-	elseif arg == 'tag' then
+	elseif addcmd == 'tag' then
 		if self then
 			chat('/em looks around for someone to tag.')
 		elseif player or npc_character then
@@ -241,7 +288,7 @@ windower.register_event('addon command',function(arg)
 			chat('/point motion')
 		end
 
-	elseif arg == 'thumbsup' then
+	elseif addcmd == 'thumbsup' then
 		if self then
 			chat('/em gives a thumbs up.')
 		elseif player or npc_character then
@@ -250,10 +297,19 @@ windower.register_event('addon command',function(arg)
 			chat('/em gives the '..emote_target.name..' a thumbs up.')
 		end
 
+	elseif addcmd == 'whistle' then
+		if self then
+			chat('/em whistles to '..himselfherselfthemself..'.')
+		elseif player or npc_character then
+			chat('/em whistles to '..emote_target.name..'.')
+		elseif monster or npc_object then
+			chat('/em whistles to the '..emote_target.name..'.')
+		end
 
 
 
-	elseif arg == 'test' then
+
+	elseif addcmd == 'test' then
 		log('['..emote_target.name..'] [Self_name: '..self_name..'] - [spawn_type = '..emote_target.spawn_type..'] [race = '..emote_target.race..' ]')
 		if self then
 			log('[self]')
@@ -272,10 +328,14 @@ windower.register_event('addon command',function(arg)
 		end
 		log('--------------------------')
 
-	else
-		log('Emotes: Unrecognized emote. type \'//em list\' for current emotes.')
-	end
+	elseif addcmd == 'reload' then
+        cmd('lua r emotes')
+        return
 
+	else
+		log('[Emotes] Unrecognized emote. type \'//em list\' for current emotes.')
+
+	end
 end)
 
 --[[
@@ -303,7 +363,7 @@ jump
 kneel
 laugh
 no
-nod (same as yes
+nod (same as yes)
 panic
 point
 poke (same as doubt but slightly slower)
@@ -318,7 +378,7 @@ surprised (same as shocked)
 think
 toss
 upset
-wave (same as farell and goodbye)
+wave (same as farewell and goodbye)
 welcome
 yes (same as nod)
 
