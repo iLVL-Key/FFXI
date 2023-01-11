@@ -51,7 +51,7 @@ windower.register_event('action',function(act)
 	local targets = act.targets
 	local target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name or 'Unknown'
 
-	if act.category == 7 then
+	if act.category == 7 and not act.param == 28787 then --28787 indicates failure (paralyzed)
 		if actor.name == "Aita" or actor.name == "Degei" then
 			if res.monster_abilities[targets[1].actions[1].param].en == 'Flaming Kick' then 
 				chat('/'..chatmode..' Water (Flaming Kick) <call14>')
