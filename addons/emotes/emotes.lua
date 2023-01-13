@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Emotes'
-_addon.version = '01.11.23'
+_addon.version = '01.12.23'
 _addon.author = 'Key'
 _addon.commands = {'emotes','emote','em'}
 
@@ -94,7 +94,7 @@ windower.register_event('addon command',function(addcmd)
 		log('[Emotes] List of current emotes')
 		log('[Emotes] - blowkiss')
 		log('[Emotes] - boop (w/ motion)')
-		log('[Emotes] - coldone/beer/soda')
+		log('[Emotes] - coldone/beer/soda (w/ motion)')
 		log('[Emotes] - congratulations/congrats/grats (w/ motion)')
 		log('[Emotes] - cookie')
 		log('[Emotes] - dab')
@@ -109,6 +109,7 @@ windower.register_event('addon command',function(addcmd)
 		log('[Emotes] - pose')
 		log('[Emotes] - sing')
 		log('[Emotes] - squint')
+		log('[Emotes] - taco')
 		log('[Emotes] - tag (w/ motion)')
 		log('[Emotes] - thumbsup')
 		log('[Emotes] - whistle')
@@ -138,6 +139,7 @@ windower.register_event('addon command',function(addcmd)
 			chat('/em cracks open a cold one.')
 		elseif player or npc_character then
 			chat('/em tosses '..emote_target.name..' a cold one.')
+			chat('/toss motion')
 		elseif monster or npc_object then
 			chat('/em chugs a cold one in front of the '..emote_target.name..'.')
 		end
@@ -275,6 +277,15 @@ windower.register_event('addon command',function(addcmd)
 			chat('/em squints at '..emote_target.name..'.')
 		elseif monster or npc_object then
 			chat('/em squints at the '..emote_target.name..'.')
+		end
+
+	elseif addcmd == 'taco' then
+		if self then
+			chat('/em munches on a tasty taco.')
+		elseif player or npc_character then
+			chat('/em offers '..emote_target.name..' a taco.')
+		elseif monster or npc_object then
+			chat('/em offers the '..emote_target.name..' a taco.')
 		end
 
 	elseif addcmd == 'tag' then
