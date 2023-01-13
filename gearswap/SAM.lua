@@ -304,14 +304,21 @@ function get_sets()
 		left_ear="Lugra Earring +1",
 	})
 
-	-- Hybrid Weapon Skill (Fotias, STR, INT, Weapon Skill Damage, Magic Attack Bonus, Attack, Double/Triple Attack)
+	-- Hybrid Weapon Skill (Magic Attack Bonu, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
 	sets.hybridws = set_combine(sets.ws, {
-
-	})
-
-	-- Hachirin-no-obi
-	sets.hachirin = set_combine(sets.hybridws,sets.ws, {
-		--waist="Hachirin-no-obi",
+		ammo="Knobkierrie",
+		head="Nyame Helm",
+		body="Nyame Mail",
+		hands="Nyame Gauntlets",
+		legs="Nyame Flanchard",
+		feet="Nyame Sollerets",
+		neck="Baetyl Pendant",
+		waist="Eschan Stone",
+		left_ear="Friomisi Earring",
+		right_ear="Thrud Earring",
+		left_ring="Karieyh Ring +1",
+		right_ring="Regal Ring",
+		back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
 	})
 
 	-- Tachi: Ageha (Magic Accuracy)
@@ -321,6 +328,26 @@ function get_sets()
 		hands="Kasuga Kote +3",
 		legs="Kasuga Haidate +3",
 		feet="Kasuga Sune-Ate +3",
+		left_ring="Stikini Ring +1",
+		right_ring="Stikini Ring +1",
+	})
+
+	-- Tachi: Shoha
+	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
+	sets.shoha = set_combine(sets.ws, {
+		waist="Fotia Belt",
+		left_ring="Niqmaddu Ring",
+	})
+
+	-- Stardiver
+	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
+	sets.stardiver = set_combine(sets.ws, {
+
+	})
+
+	-- Hachirin-no-obi
+	sets.hachirin = set_combine(sets.hybridws,sets.ws, {
+		--waist="Hachirin-no-obi",
 	})
 
 	-- Ygnas's Resolve +1
@@ -423,7 +450,7 @@ TopVersion = 'Tachi: Yukikaze' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Tachi: Yukikaze'
-FileVersion = '01.10.23'
+FileVersion = '01.13.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -434,13 +461,14 @@ If the new updates Version Compatibility Codename matches your current files Top
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
 
-01.10.23 (Version Compatibility Codename: Tachi: Yukikaze)
--Added Tachi: Ageha set.
+01.13.23 (Version Compatibility Codename: Tachi: Yukikaze)
+-Added Tachi: Ageha, Tachi: Shoha, and Stardiver sets.
 -Added High Accuracy Weapon Skill set. This set is linked to Hasso Mode 2, which is a special set for when you need high accuracy.
 -Added Hachirin-no-obi set. Will use the Hachirin-no-obi based on day/weather/scholar weather conditions.
 -Added Ygnas's Resolve +1 set. Will use the Ygnas's Resolve +1 when you are in a Reive battle.
 -Adjusted precast for when both Meikyo Shisui and Sekkanoki is up to combine those two sets with the appropriate Weapon Skill set.
 -Adjusted HUD to automatically hide during zoning.
+-Adjusted Macro Page timing. Should fix occasional issue with macros deleting themselves.
 -Removed Omen and Vagary notifications. Those have been spun out into their own windower addon called Callouts.
 -Updated Version Compatibility Codename to Tachi: Yukikaze.
 
@@ -655,7 +683,7 @@ if Book ~= "Off" then
 	send_command('input /macro book '..Book..'')
 end
 if Page ~= "Off" then
-	send_command('input /macro set '..Page..'')
+	send_command('wait 2;input /macro set '..Page..'')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias mode gs c Mode') --creates the Mode alias
@@ -1371,6 +1399,16 @@ function precast(spell)
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui + Sekkanoki]')
 				end
+			elseif spell.english == 'Tachi: Shoha' then
+				equip(set_combine(sets.shoha, sets.meikyoshisui, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Meikyo Shisui + Sekkanoki]')
+				end
+			elseif spell.english == 'Tachi: Stardiver' then
+				equip(set_combine(sets.stardiver, sets.meikyoshisui, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Stardiver + Meikyo Shisui + Sekkanoki]')
+				end
 			elseif Mode == 'Mode2' then
 				equip(set_combine(sets.accws, sets.meikyoshisui, sets.sekkanoki))
 				if Debug == 'On' then
@@ -1400,6 +1438,16 @@ function precast(spell)
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Sekkanoki]')
 				end
+			elseif spell.english == 'Tachi: Shoha' then
+				equip(set_combine(sets.shoha, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Sekkanoki]')
+				end
+			elseif spell.english == 'Tachi: Stardiver' then
+				equip(set_combine(sets.stardiver, sets.sekkanoki))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Stardiver + Sekkanoki]')
+				end
 			elseif Mode == 'Mode2' then
 				equip(set_combine(sets.accws, sets.sekkanoki))
 				if Debug == 'On' then
@@ -1428,6 +1476,16 @@ function precast(spell)
 				equip(set_combine(sets.ageha, sets.meikyoshisui))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui]')
+				end
+			elseif spell.english == 'Tachi: Shoha' then
+				equip(set_combine(sets.shoha, sets.meikyoshisui))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Meikyo Shisui]')
+				end
+			elseif spell.english == 'Stardiver' then
+				equip(set_combine(sets.stardiver, sets.meikyoshisui))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Stardiver + Meikyo Shisui]')
 				end
 			elseif Mode == 'Mode2' then
 				equip(set_combine(sets.accws, sets.meikyoshisui))
@@ -1466,6 +1524,16 @@ function precast(spell)
 			equip(sets.ageha)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha]')
+			end
+		elseif spell.english == 'Tachi: Shoha' then
+			equip(sets.shoha)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Shoha: Ageha]')
+			end
+		elseif spell.english == 'Stardiver' then
+			equip(sets.stardiver)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Stardiver]')
 			end
 		elseif Mode == 'Mode2' then
 			if buffactive['Reive Mark'] then
