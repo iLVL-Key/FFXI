@@ -263,7 +263,7 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/joy motion')
 		end
 
-	elseif original == 'hifive' or original == '/hfive' then
+	elseif original == '/highfive' or original == '/hifive' or original == '/hfive' then
 		if self then
 			chat('/em holds '..hishertheir..' hand up for a high-five.')
 		elseif player or npc_character then
@@ -272,7 +272,7 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em high-fives the '..emote_target.name..'.')
 		end
 
-	elseif original == 'hug' then
+	elseif original == '/hug' then
 		if self then
 			chat('/em spreads '..hishertheir..' arms open wide for a hug.')
 		elseif player or npc_character then
