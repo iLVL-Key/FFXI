@@ -36,7 +36,7 @@ require 'logger'
 
 --------------------
 --Pronoun Override--
-local pronoun = 'b' --b/m/f/t ([b]uiltin determined by the game, [m]ale, [f]emale, [t]hey/them)
+local pronoun = 'm' --b/m/f/t ([b]uiltin determined by the game, [m]ale, [f]emale, [t]hey/them)
 --------------------
 
 
@@ -182,9 +182,19 @@ windower.register_event('outgoing text',function(original,modified)
 		if self then
 			chat('/em leaves '..hishertheir..' fist out for a bump.')
 		elseif player or npc_character then
-			chat('/em gives '..emote_target.name..' a fistbump.')
+			chat('/em gives '..emote_target.name..' a fist bump.')
 		elseif monster or npc_object then
-			chat('/em fistbumps the '..emote_target.name..'.')
+			chat('/em fist bumps the '..emote_target.name..'.')
+		end
+
+	elseif original == '/fistpump' or original == '/fpump' or original == '/pump' then
+		if self then
+			chat('/em pumps '..hishertheir..' fist with excitement.')
+			chat('/think motion')
+		elseif player or npc_character then
+			chat('/em gives an excited fist pump for '..emote_target.name..'.')
+		elseif monster or npc_object then
+			chat('/em fist pumps in front of the '..emote_target.name..'.')
 		end
 
 	elseif original == '/flex' then
@@ -262,6 +272,15 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em high-fives the '..emote_target.name..'.')
 		end
 
+	elseif original == 'hug' then
+		if self then
+			chat('/em spreads '..hishertheir..' arms open wide for a hug.')
+		elseif player or npc_character then
+			chat('/em hugs '..emote_target.name..'.')
+		elseif monster or npc_object then
+			chat('/em hugs the '..emote_target.name..'.')
+		end
+
 	elseif original == '/playdead' then
 		if self then
 			chat('/em plays dead.')
@@ -336,15 +355,6 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em gives the '..emote_target.name..' a thumbs up.')
 		end
 
---[[	elseif original == '/whistle' then
-		if self then
-			chat('/em whistles to '..himselfherselfthemself..'.')
-		elseif player or npc_character then
-			chat('/em whistles to '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em whistles to the '..emote_target.name..'.')
-		end
-]]--
 	end
 
 end)
@@ -352,33 +362,34 @@ end)
 windower.register_event('addon command',function(addcmd)
 
 	if addcmd == 'list' then
-		log('[Emotes] List of current emotes')
-		log('[Emotes] - blame')
-		log('[Emotes] - blowkiss')
-		log('[Emotes] - boop (w/ motion)')
-		log('[Emotes] - butt')
-		log('[Emotes] - coldone/beer/soda (w/ motion)')
-		log('[Emotes] - congratulations/congrats/grats (w/ motion)')
-		log('[Emotes] - cookie')
-		log('[Emotes] - dab')
-		log('[Emotes] - facepalm')
-		log('[Emotes] - fistbump/fbump/bump')
-		log('[Emotes] - flex')
-		log('[Emotes] - gag (w/ motion)')
-		log('[Emotes] - gasp (w/ motion)')
-		log('[Emotes] - grovel (w/ motion)')
-		log('[Emotes] - handover/hand')
-		log('[Emotes] - happy/glad')
-		log('[Emotes] - hifive/hfive')
-		log('[Emotes] - playdead')
-		log('[Emotes] - popcorn')
-		log('[Emotes] - pose')
-		log('[Emotes] - sing')
-		log('[Emotes] - squint')
-		log('[Emotes] - taco')
-		log('[Emotes] - tag (w/ motion)')
-		log('[Emotes] - thumbsup')
-		--log('[Emotes] - whistle') -- does not work correctly with the Shortcuts addon loaded
+		windower.add_to_chat(200,'[Emotes] '..('Current Emotes:'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- blame'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- blowkiss'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- boop (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- butt'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- coldone/beer/soda (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- congratulations/congrats/grats (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- cookie'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- dab'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- facepalm'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- fistbump/fbump/bump'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- fistpump/fpump/pump'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- flex'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- gag (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- gasp (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- grovel (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- handover/hand'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- happy/glad'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- hifive/hfive'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- hug'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- playdead'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- popcorn'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- pose'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- sing'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- squint'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- taco'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- tag (w/ motion)'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- thumbsup'):color(8)..'')
 
 	elseif addcmd == 'reload' then
         cmd('lua r emotes')
