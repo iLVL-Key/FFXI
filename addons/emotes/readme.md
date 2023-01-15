@@ -32,13 +32,15 @@ All commands must be prefixed with either `//emotes` or `//em` (ex. `//em help`)
 - dab
 - facepalm
 - fistbump/fbump/bump
+- fistpump/fpump/pump
 - flex
 - gag (w/ motion)
 - gasp (w/ motion)
 - grovel (w/ motion)
 - handover/hand
 - happy/glad
-- hifive/hfive
+- highfive/hifive/hfive
+- hug
 - playdead
 - popcorn
 - pose
