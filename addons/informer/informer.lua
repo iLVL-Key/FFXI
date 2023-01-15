@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '01.08.23'
+_addon.version = '01.14.23'
 _addon.author = 'Key'
 _addon.commands = {'info','informer'}
 
@@ -52,21 +52,27 @@ bg_transparency = 175
 
 --Unless you know what you're doing, leave everything under here alone.
 
-main_show = true
+informer_main_show = true
 
-function create_objects()
-	windower.send_command('text main create " Loading...";wait .3;text main size '..font_size..';text main pos '..x_pos..' '..y_pos..';text main transparency '..text_transparency..';text main bg_transparency '..bg_transparency..'')
+function create_informer_main()
+	windower.send_command('text informer_main create " Loading...";wait .3;text informer_main size '..font_size..';text informer_main pos '..x_pos..' '..y_pos..';text informer_main transparency '..text_transparency..';text informer_main bg_transparency '..bg_transparency..'')
 end
 
-function delete_objects()
-	windower.send_command('text main delete') --delete all Objects
+function show_informer_main()
+	windower.send_command('text informer_main show')
+	informer_main_show = true
 end
 
-function display_help()
-	windower.add_to_chat(200,'Informer: '..('Hello.'):color(8)..'')
+function hide_informer_main()
+	windower.send_command('text informer_main hide')
+	informer_main_show = false
 end
 
-function update_main()
+function delete_informer_main()
+	windower.send_command('text informer_main delete') --delete all Objects
+end
+
+function update_informer_main()
 	local player = windower.ffxi.get_player()
 	local items = windower.ffxi.get_bag_info(0)
 	local game = windower.ffxi.get_info()
@@ -104,41 +110,35 @@ function update_main()
 	else
 		direction = "    "
 	end
-	if pos == "(?-?)" and main_show then
-		windower.send_command('text main hide')
-		main_show = false
-	elseif pos ~= "(?-?)" and not main_show then
-		windower.send_command('text main show')
-		main_show = true
+	if pos == "(?-?)" and informer_main_show then
+		hide_informer_main()
+	elseif pos ~= "(?-?)" and not informer_main_show then
+		show_informer_main()
 	end
-	windower.send_command('text main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
+	windower.send_command('text informer_main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
 end
 
 windower.register_event('prerender', function()
 
 	if windower.ffxi.get_player() ~= nil then
-		update_main()
+		update_informer_main()
 	end
 
 end)
 
-windower.register_event('load', create_objects)
-windower.register_event('login', create_objects)
-windower.register_event('logout', delete_objects)
-windower.register_event('unload', delete_objects)
+windower.register_event('load', create_informer_main)
+windower.register_event('login', create_informer_main)
+windower.register_event('logout', delete_informer_main)
+windower.register_event('unload', delete_informer_main)
 
 
-windower.register_event('addon command', function(cmd, ...)
+windower.register_event('addon command',function(addcmd)
 
-	if cmd == 'help' then
-		display_help()
-	elseif cmd == 'test' then
-		--local testname = windower.ffxi.get_mob_by_target('p1')
-		local player = windower.ffxi.get_player()
-		windower.send_command('input /echo '..player.m_level..'')
+	if addcmd == 'reload' then
+		windower.send_command('lua r informer')
+        return
 	else
-		windower.add_to_chat(200,'Informer: '..('Invalid command'):color(8)..'')
-		display_help()
+		windower.add_to_chat(200,'[Informer] '..('This addon has no commands, but I hope you have a great day :)'):color(8)..'')
 	end
 	
 end)
