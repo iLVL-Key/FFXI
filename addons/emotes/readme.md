@@ -12,14 +12,14 @@ local pronoun = 'b' --b/m/f/t ([b]uiltin determined by the game, [m]ale, [f]emal
 ```
 
 ### Commands
-All commands must be prefixed with either `//emotes` or `//em` (ex. `//em help`)
-* help- displays the list of commands in-game.
-* list - list the current emotes.
-* pronoun - display the current pronoun used.
-* pronounb - change the current pronoun to use the games built-in pronouns for your character
-* pronounm - change the current pronoun to male.
-* pronounf - change the current pronoun to female.
-* pronount - change the current pronoun to they/them.
+All commands must be prefixed with either `//emotes` or `//em` (ex. `//em pro t`)
+- help- displays the list of commands in-game.
+- list - list the current emotes.
+- pronoun/pro - display the current pronoun used.
+  - builtin/b - change the current pronoun to use the games built-in pronouns for your character
+  - male/m - change the current pronoun to male.
+  - female/f - change the current pronoun to female.
+  - theythem/t - change the current pronoun to they/them.
 
 ### Current Emotes
 - blame
