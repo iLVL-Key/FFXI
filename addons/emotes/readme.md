@@ -11,7 +11,7 @@ local pronoun = 'b' --b/m/f/t ([b]uiltin determined by the game, [m]ale, [f]emal
 --------------------
 ```
 
-### commands
+### Commands
 All commands must be prefixed with either `//emotes` or `//em` (ex. `//em help`)
 * help- displays the list of commands in-game.
 * list - list the current emotes.
@@ -20,3 +20,30 @@ All commands must be prefixed with either `//emotes` or `//em` (ex. `//em help`)
 * pronounm - change the current pronoun to male.
 * pronounf - change the current pronoun to female.
 * pronount - change the current pronoun to they/them.
+
+### Current Emotes
+- blame
+- blowkiss
+- boop (w/ motion)
+- butt
+- coldone/beer/soda (w/ motion)
+- congratulations/congrats/grats (w/ motion)
+- cookie
+- dab
+- facepalm
+- fistbump/fbump/bump
+- flex
+- gag (w/ motion)
+- gasp (w/ motion)
+- grovel (w/ motion)
+- handover/hand
+- happy/glad
+- hifive/hfive
+- playdead
+- popcorn
+- pose
+- sing
+- squint
+- taco
+- tag (w/ motion)
+- thumbsup
