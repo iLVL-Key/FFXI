@@ -1,7 +1,7 @@
 # Emotes
 Expands upon the games built-in emotes.
 
-Uses "single slash" commands just like the built-in emotes so they feel more normal to use.  
+Uses "single slash" commands just like the built-in emotes so they feel more natural to use.  
 Can tell the difference between targeting nothing/yourself, another player, a monster, an npc, and an object.  
 You can change the default preferred pronoun near the top of the file, or change it at any time with a command
 ```
