@@ -34,10 +34,10 @@ _addon.commands = {'emotes','emote','em'}
 require 'logger'
 
 
--------------------
---Gender Override--
-local gender = 'm' --m/f/n (n will use they/them, leave blank to use games builtin gender for characters)
--------------------
+--------------------
+--Pronoun Override--
+local pronoun = 'b' --b/m/f/t ([b]uiltin determined by the game, [m]ale, [f]emale, [t]hey/them)
+--------------------
 
 
 local chat = windower.chat.input
@@ -48,18 +48,27 @@ function log(...) windower.add_to_chat(207,...) end
 windower.register_event('outgoing text',function(original,modified)
 
 	local self_name = windower.ffxi.get_mob_by_target('me').name
+	local self_race_num = windower.ffxi.get_mob_by_target('me').race
 	local emote_target = windower.ffxi.get_mob_by_target('t') or windower.ffxi.get_mob_by_target('me')
 	--we use the 'me' in there in case 't' is nil(no target)
 
-	if gender == 'n' then
+	if pronoun == 't' then
 		hishertheir = 'their'
 		himselfherselfthemself = 'themself'
-	elseif gender == 'm' or (self_race_num == 1 or self_race_num == 3 or self_race_num == 5 or self_race_num == 8 or self_race_num == 31) then
+	elseif pronoun == 'm' then
 		hishertheir = 'his'
 		himselfherselfthemself = 'himself'
-	elseif gender == 'f' or (self_race_num == 2 or self_race_num == 4 or self_race_num == 6 or self_race_num == 7 or self_race_num == 29 or self_race_num == 30) then
+	elseif pronoun == 'f' then
 		hishertheir = 'her'
 		himselfherselfthemself = 'herself'
+	else
+		if self_race_num == 1 or self_race_num == 3 or self_race_num == 5 or self_race_num == 8 or self_race_num == 31 then
+			hishertheir = 'his'
+			himselfherselfthemself = 'himself'
+		elseif self_race_num == 2 or self_race_num == 4 or self_race_num == 6 or self_race_num == 7 or self_race_num == 29 or self_race_num == 30 then
+			hishertheir = 'her'
+			himselfherselfthemself = 'herself'
+		end
 	end
 	self = false
 	player = false
@@ -78,7 +87,7 @@ windower.register_event('outgoing text',function(original,modified)
 		npc_object = true
 	end
 
-	elseif original == '/blame' then
+	if original == '/blame' then
 		if self then
 			chat('/em blames '..himselfherselfthemself..'.')
 		elseif player or npc_character then
@@ -89,7 +98,7 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/point motion')
 		end
 
-	if original == '/blowkiss' then
+	elseif original == '/blowkiss' then
 		if self then
 			chat('/em blows a kiss.')
 		elseif player or npc_character then
@@ -335,8 +344,8 @@ windower.register_event('outgoing text',function(original,modified)
 		elseif monster or npc_object then
 			chat('/em whistles to the '..emote_target.name..'.')
 		end
-
-	end]]--
+]]--
+	end
 
 end)
 
@@ -369,11 +378,44 @@ windower.register_event('addon command',function(addcmd)
 		log('[Emotes] - taco')
 		log('[Emotes] - tag (w/ motion)')
 		log('[Emotes] - thumbsup')
-		--log('[Emotes] - whistle') -- does not work with Shortcuts addon loaded
+		--log('[Emotes] - whistle') -- does not work correctly with the Shortcuts addon loaded
 
 	elseif addcmd == 'reload' then
         cmd('lua r emotes')
         return
+
+	elseif addcmd == 'help' then
+		windower.add_to_chat(200,'[Emotes] '..('Commands:'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('list - list the current emotes.'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('pronoun - display the current pronoun used.'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('pronounb/m/f/t- change the current pronoun to [b]uilt-in, [m]ale, [f]emale, or [t]hey/them.'):color(8)..'')
+
+	elseif addcmd == 'pronoun' then
+		if pronoun == 'b' then
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Built-in'):color(8)..'')
+		elseif pronoun == 'm' then
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Male'):color(8)..'')
+		elseif pronoun == 'f' then
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Female'):color(8)..'')
+		elseif pronoun == 't' then
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to They/Them'):color(8)..'')
+		end
+
+	elseif addcmd == 'pronounb' then
+		pronoun = 'b'
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Built-in'):color(8)..'')
+
+	elseif addcmd == 'pronounm' then
+		pronoun = 'm'
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Male'):color(8)..'')
+
+	elseif addcmd == 'pronounf' then
+		pronoun = 'f'
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Female'):color(8)..'')
+
+	elseif addcmd == 'pronount' then
+		pronoun = 't'
+			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to They/Them'):color(8)..'')
 
 	else
 		log('[Emotes] Unrecognized command. type \'//em list\' for current emotes.')
