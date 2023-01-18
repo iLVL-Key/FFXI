@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Emotes'
-_addon.version = '01.14.23'
+_addon.version = '01.17.23'
 _addon.author = 'Key'
 _addon.commands = {'emotes','emote','em'}
 
@@ -141,7 +141,7 @@ windower.register_event('outgoing text',function(original,modified)
 	elseif original == '/congratulations' or original == '/congrats' or original == '/grats' then
 		if self then
 			chat('/em offers '..hishertheir..' congratulations.')
-			cmd('input /clap motion;wait 2;input cheer motion')
+			cmd('input /clap motion;wait 2;input /cheer motion')
 		elseif player or npc_character then
 			chat('/em congratulates '..emote_target.name..'.')
 			cmd('input /clap motion;wait 2;input /cheer motion')
