@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '01.12.23'
+_addon.version = '01.17.23'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
@@ -36,7 +36,7 @@ local cmd = windower.send_command
 
 
 --Default Chat mode on load.
-chatmode = 'p'
+chatmode = 'e'
 --Party (p) and Echo (echo) are the two that can be toggled between via command but any can be used for default (careful!)
 
 
@@ -50,48 +50,58 @@ windower.register_event('action',function(act)
 	local actor = windower.ffxi.get_mob_by_id(act.actor_id)
 	local target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name or 'Unknown'
 
-	if act.category == 7 and not act.category == nil then
+	if act.category == 7 then
 
 		if actor.name == "Aita" or actor.name == "Degei" then
-			if res.monster_abilities[act.targets[1].actions[1].param].en == 'Flaming Kick' then 
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Flaming Kick' then
 				chat('/'..chatmode..' Water (Flaming Kick) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Flashflood' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Flashflood' then
 				chat('/'..chatmode..' Thunder (Flashflood) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Icy Grasp' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Icy Grasp' then
 				chat('/'..chatmode..' Fire (Icy Grasp) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Eroding Flesh' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Eroding Flesh' then
 				chat('/'..chatmode..' Aero (Eroding Flesh) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Fulminous Smash' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Fulminous Smash' then
 				chat('/'..chatmode..' Stone (Fulminous Smash) <call14>')
 			end
 
 		elseif actor.name == "Aminon" then
-			if res.monster_abilities[act.targets[1].actions[1].param].en == 'Demonfire' then 
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Demonfire' then
 				chat('/'..chatmode..' Water (Demon Fire) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Torrential Pain' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Torrential Pain' then
 				chat('/'..chatmode..' Thunder (Torrential Pain) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Frozen Blood' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Frozen Blood' then
 				chat('/'..chatmode..' Fire (Frozen Blood) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ensepulcher' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ensepulcher' then
 				chat('/'..chatmode..' Aero (Ensepulcher) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ceaseless Surge' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ceaseless Surge' then
 				chat('/'..chatmode..' Stone (Ceaseless Surge) <call14>')
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Blast of Reticence' then 
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Blast of Reticence' then
 				chat('/'..chatmode..' Blizzard (Blast of Reticence) <call14>')
 			end
 
 		elseif actor.name == "Glassy Thinker" then
-			if res.monster_abilities[act.targets[1].actions[1].param].en == 'Pain Sync' then 
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Pain Sync' then
 				chat('/'..chatmode..' PAIN SYNC <call14>')
 			end
 
-		elseif actor.name == "OU" or actor.name == "Kin" then
-			if res.monster_abilities[act.targets[1].actions[1].param].en == 'Target' then
+		elseif actor.name == "Ou" or actor.name == "Kin" then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Target' then
 				chat('/'..chatmode..' Target used on '..target_name..' <call14>')
 			end
 
 		elseif actor.name == "Bumba" then
-			if res.monster_abilities[act.targets[1].actions[1].param].en == 'Perfect Dodge' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Perfect Dodge' then
 				chat('/'..chatmode..' Perfect Dodge <call14>')
 				chat:schedule(30,'/'..chatmode..' Perfect Dodge is off <call14>')
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Invincible' then
