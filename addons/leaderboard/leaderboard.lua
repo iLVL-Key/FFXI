@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '01.16.23'
+_addon.version = '01.21.23'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -142,10 +142,9 @@ function get_actor(id) ---------------------------------------------------------
 end
 
 windower.register_event('action',function(act)
-
+--print(''..act.category..'')
 	--Cures
 	if act.category == 4 or act.category == 6 or act.category == 14 or act.category == 5 or act.category == 11 and Run then
-
 		local actor = get_actor(act.actor_id)
 
 		if actor == false then
@@ -218,7 +217,8 @@ windower.register_event('action',function(act)
 		end
 
 	--Weapon Skills
-	elseif act.category == 3 and not (act.param == 26 or act.param == 28 or act.param == 46 or act.param == 66 or act.param == 67 or act.param == 68 or act.param == 77 or act.param == 82 or act.param == 125 or act.param == 126 or act.param == 127 or act.param == 128 or act.param == 129 or act.param == 130 or act.param == 131 or act.param == 132 or act.param == 137 or act.param == 168 or act.param == 260 or act.param == 285 or act.param == 293 or act.param == 329 or act.param == 344 or act.param == 353 or act.param == 368) and Run then
+	elseif act.category == 3 and Run then
+		--print(''..weaponskills[act.param].english..' ('..act.param..')')
 		local actor = get_actor(act.actor_id)
 
 		if actor == false then
@@ -232,13 +232,14 @@ windower.register_event('action',function(act)
 		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
 	    data.damage = act.targets[1].actions[1].param
 		data.ws = weaponskills[act.param] and weaponskills[act.param].english or 'Unknown'
+		data.jabils = jabils[act.param] and jabils[act.param].english or 'Unknown'
 
-		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' then
+		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' or data.jabils == 'Eagle Eye Shot' or data.jabils == 'Mijin Gakure' or data.jabils == 'Shield Bash' or data.jabils == 'Jump' or data.jabils == 'High Jump' or data.jabils == 'Super Jump' or data.jabils == 'Weapon Bash' or data.jabils == 'Chi Blast' or data.jabils == 'Fire Shot' or data.jabils == 'Ice Shot' or data.jabils == 'Wind Shot' or data.jabils == 'Earth Shot' or data.jabils == 'Thunder Shot' or data.jabils == 'Water Shot' or data.jabils == 'Light Shot' or data.jabils == 'Dark Shot' or data.jabils == 'Blade Bash' or data.jabils == 'Spirit Jump' or data.jabils == 'Bounty Shot' or data.jabils == 'Soul Jump' or data.jabils == 'Intervene' or data.jabils == 'Swipe' or data.jabils == 'Concentric Pulse' or data.jabils == 'Lunge' then
 			return
 		end
 
 		--Whiffs
-		if act.targets[1].actions[1].message == 188 then --Uses Weapon Skill, but misses
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or data.damage == 0 then --Uses Weapon Skill, but misses or hit for 0
 			local whiffs = whiff[data.actor_name] or 0
 			whiff[data.actor_name] = whiffs+1
 			if not Silent then
@@ -262,13 +263,13 @@ windower.register_event('action',function(act)
 					--First Place extends their lead (or the first whiff)
 					WhiffFirstName = data.actor_name
 					WhiffFirstAmount = whiff[data.actor_name]
-				elseif data.actor_name == CureSecondName then
+				elseif data.actor_name == WhiffSecondName then
 					--Second Place moves into First Place
 					WhiffSecondName = WhiffFirstName
 					WhiffFirstName = data.actor_name
 					WhiffSecondAmount = WhiffFirstAmount
 					WhiffFirstAmount = whiff[data.actor_name]
-				else
+				elseif data.actor_name ~= WhiffFirstName and data.actor_name ~= WhiffSecondName then
 					--Third Place or lower moves into First Place
 					WhiffThirdName = WhiffSecondName
 					WhiffSecondName = WhiffFirstName
@@ -833,17 +834,19 @@ windower.register_event('incoming text',function(org, modified, mode)
 	if mode == 36 and Run then
 
 		actor_name = org:match('(.*) defeats the')
-
+--print('Mode: '..mode..'   -   ['..actor_name..']   -   '..org..'')
 		kills_total = kills_total+1
 		local kills = kill[actor_name] or 0
+--print('kills_total: '..kills_total..'')
+--print('kills: ['..kills..']')
+--print('kill[actor_name]: '..kill[actor_name]..'') --attempt to concatenate field '?' (a nil value)
+		-- if kill[actor_name] == nil then  ----------------------------------------------------------trying to fix the nil value below
+			-- return
+		-- else
+			-- kill[actor_name] = kills+1  ------------------------------------------------------------------------------------------------------- nil?
+		-- end
 
-		if kill[actor_name] == nil then  ----------------------------------------------------------trying to fix the nil value below
-			return
-		else
-			kill[actor_name] = kills+1  ------------------------------------------------------------------------------------------------------- nil?
-		end
-
-		--kill[actor_name] = kills+1  ------------------------------------------------------------------------------------------------------- nil?
+		kill[actor_name] = kills+1  ------------------------------------------------------------------------------------------------------- nil?
 		if kill[actor_name] > KillFirstAmount then
 			if actor_name == KillFirstName or KillFirstAmount == 0 then
 				--First Place extends their lead (or the first kill)
@@ -881,7 +884,7 @@ windower.register_event('incoming text',function(org, modified, mode)
 			KillThirdName = actor_name
 			KillThirdAmount = kill[actor_name]
 		end
-		--say('/echo '..actor_name..' made a kill (Running Total: '..kill[actor_name]..' | Total Kills: '..kills_total..')')
+		say('/echo '..actor_name..' made a kill (Running Total: '..kill[actor_name]..' | Total Kills: '..kills_total..')')
 
 	end
 
