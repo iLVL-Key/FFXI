@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Emotes'
-_addon.version = '01.17.23'
+_addon.version = '01.21.23'
 _addon.author = 'Key'
 _addon.commands = {'emotes','emote','em'}
 
@@ -307,6 +307,15 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em strikes a pose for the '..emote_target.name..'.')
 		end
 
+	elseif original == '/shakesfist' or original == '/shakefist' original == '/fist' then
+		if self then
+			chat('/em shakes '..hishertheir..' fist.')
+		elseif player or npc_character then
+			chat('/em shakes '..hishertheir..' fist at '..emote_target.name..'.')
+		elseif monster or npc_object then
+			chat('/em shakes '..hishertheir..' fist at the '..emote_target.name..'.')
+		end
+
 	elseif original == '/sing' then
 		if self then
 			chat('/em sings the song of '..hishertheir..' people.')
@@ -384,6 +393,7 @@ windower.register_event('addon command',function(addcmd, arg)
 		windower.add_to_chat(200,'[Emotes] '..('- playdead'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- popcorn'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- pose'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- shakesfist/shakefist/fist'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- sing'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- squint'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- taco'):color(8)..'')
