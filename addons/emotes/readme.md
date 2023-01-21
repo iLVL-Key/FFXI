@@ -44,6 +44,8 @@ All commands must be prefixed with either `//emotes` or `//em` (ex. `//em pro t`
 - playdead
 - popcorn
 - pose
+- shakesfist/shakefist/fist
+- shurg
 - sing
 - squint
 - taco
