@@ -307,13 +307,22 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em strikes a pose for the '..emote_target.name..'.')
 		end
 
-	elseif original == '/shakesfist' or original == '/shakefist' original == '/fist' then
+	elseif original == '/shakesfist' or original == '/shakefist' or original == '/fist' then
 		if self then
 			chat('/em shakes '..hishertheir..' fist.')
 		elseif player or npc_character then
 			chat('/em shakes '..hishertheir..' fist at '..emote_target.name..'.')
 		elseif monster or npc_object then
 			chat('/em shakes '..hishertheir..' fist at the '..emote_target.name..'.')
+		end
+
+	elseif original == '/shrug' then
+		if self then
+			chat('/em shrugs.')
+		elseif player or npc_character then
+			chat('/em looks at '..emote_target.name..' and shrugs.')
+		elseif monster or npc_object then
+			chat('/em looks at the '..emote_target.name..' and shrugs.')
 		end
 
 	elseif original == '/sing' then
@@ -394,6 +403,7 @@ windower.register_event('addon command',function(addcmd, arg)
 		windower.add_to_chat(200,'[Emotes] '..('- popcorn'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- pose'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- shakesfist/shakefist/fist'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- shrug'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- sing'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- squint'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- taco'):color(8)..'')
