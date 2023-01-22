@@ -292,13 +292,13 @@ function get_sets()
 	sets.magicaccuracy = {
 		head="Azimuth Hood +3",
 		body="Azimuth Coat +3",
-		hands="Geo. Mitaines +3",
+		hands="Azimuth Gloves +3",
 		legs="Azimuth Tights +3",
-		feet="Geo. Sandals +3",
+		feet="Azimuth Gaiters +3",
 		neck="Incanter's Torque",
 		waist="Acuity Belt +1",
 		left_ear="Malignance Earring",
-		right_ear="Regal Earring",
+		right_ear="Azimuth Earring +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Metamor. Ring +1",
 		back="Aurist's Cape +1",
@@ -453,7 +453,7 @@ TopVersion = 'Indi-CHR' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Indi-CHR'
-FileVersion = '01.10.23'
+FileVersion = '01.21.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -463,6 +463,11 @@ FileVersion = '01.10.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+01.21.23 (Version Compatibility Codename: Indi-CHR)
+-Adjusted Macro Page timing. Should fix occasional issue with macros deleting themselves.
+-Adjusted WS Damage Notification to count blinked WSs and WSs for zero as a miss. Blinks would previously display the number of shadows as the damage number.
+-Fixed issue with WS Damage Notification where some abilities and weapon skills would occasionally gets mixed up.
 
 01.10.23 (Version Compatibility Codename: Indi-CHR)
 -Adjusted HUD to automatically hide during zoning.
@@ -706,7 +711,7 @@ if Book ~= "Off" then
 	send_command('input /macro book '..Book..'')
 end
 if Page ~= "Off" then
-	send_command('input /macro set '..Page..'')
+	send_command('wait 2;input /macro set '..Page..'')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
@@ -2047,8 +2052,9 @@ end)
 
 windower.register_event('action',function(act)
 	local weaponskills = require('resources').weapon_skills
-	if act.category == 3 and act.actor_id == player.id and not (act.param == 66 or act.param == 67 or act.param == 68 or act.param == 46) and NotiWSDamage == 'On' then --WS performed by me and not Jump, High Jump, Super Jump, Shield Bash (classified as WSs for some reason)
-		if act.targets[1].actions[1].param == 0 then
+	if act.category == 3 and act.actor_id == player.id and act.targets[1].actions[1].message == 185 then
+		--Uses Weapon Skill but misses, gets blinked, or hits for 0
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or act.targets[1].actions[1].param == 0 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 		else
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
