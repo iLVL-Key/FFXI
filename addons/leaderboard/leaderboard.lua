@@ -41,11 +41,11 @@ local jabils = require('resources').job_abilities
 local mabils = require('resources').monster_abilities
 local whiff = {}
 local cure = {}
+local nuke = {}
 local kill = {}
 local death = {}
 local cmd = windower.send_command
 local say = windower.chat.input
-function log(...) windower.add_to_chat(207,...) end
 
 local Heartbeat = 0
 local board_flood_timer = 0
@@ -92,6 +92,18 @@ LSThirdWS = ""
 LSFirstTarget = ""
 LSSecondTarget = ""
 LSThirdTarget = ""
+
+NukeFirstName = ""
+NukeSecondName = ""
+NukeThirdName = ""
+NukeFourthName = ""
+NukeFifthName = ""
+NukeFirstDamage = 0
+NukeSecondDamage = 0
+NukeThirdDamage = 0
+NukeFourthDamage = 0
+NukeFifthDamage = 0
+
 
 CureFirstName = ""
 CureSecondName = ""
@@ -142,7 +154,7 @@ function get_actor(id) ---------------------------------------------------------
 end
 
 windower.register_event('action',function(act)
---print(''..act.category..'')
+
 	--Cures
 	if act.category == 4 or act.category == 6 or act.category == 14 or act.category == 5 or act.category == 11 and Run then
 		local actor = get_actor(act.actor_id)
@@ -154,28 +166,23 @@ windower.register_event('action',function(act)
 		local data = {}
 		data.actor = actor.id
 		data.actor_name = actor.name or 'Unknown'
-		data.target = act.targets[1].id
-		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
-		data.target_count = act.target_count
-		data.amount = act.targets[1].actions[1].param
 		data.curething = (spells[act.param] and spells[act.param].english) or (jabils[act.param] and jabils[act.param].english) or (mabils[act.param] and mabils[act.param].english) or 'Unknown'
 
 		if CureThings:contains(data.curething) then
 			local cures = cure[data.actor_name] or 0
-			if data.target_count == 6 then
+			if act.target_count == 6 then
 				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param + act.targets[6].actions[1].param
-			elseif data.target_count == 5 then
+			elseif act.target_count == 5 then
 				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param
-			elseif data.target_count == 4 then
+			elseif act.target_count == 4 then
 				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param
-			elseif data.target_count == 3 then
+			elseif act.target_count == 3 then
 				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param
-			elseif data.target_count == 2 then
+			elseif act.target_count == 2 then
 				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param
 			else
-				cure[data.actor_name] = cures+data.amount
+				cure[data.actor_name] = cures + act.targets[1].actions[1].param
 			end
-			--say('/echo '..data.actor_name..' used '..data.curething..' on '..data.target_name..' for '..data.amount..' (Running Total: '..cure[data.actor_name]..' Message ID: '..act.targets[1].actions[1].message..')')
 
 			if cure[data.actor_name] > CureFirstAmount then
 				if data.actor_name == CureFirstName or CureFirstAmount == 0 then
@@ -210,7 +217,7 @@ windower.register_event('action',function(act)
 					CureSecondAmount = cure[data.actor_name]
 				end
 			elseif cure[data.actor_name] > CureThirdAmount and data.actor_name ~= CureFirstName and data.actor_name ~= CureSecondName then
-				--Third Place (or Lower) updates their best (or moves into Third Place)
+				--Third Place updates their best or somebody not already on the board moves into Third Place
 				CureThirdName = data.actor_name
 				CureThirdAmount = cure[data.actor_name]
 			end
@@ -602,18 +609,148 @@ windower.register_event('action',function(act)
 
 		end
 	end
-end)
 
-function display_help()
-	windower.add_to_chat(200,'[Leaderboard] '..('Commands:'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('start - start tracking'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('starts - start tracking in Silent Mode'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('pause/p - pause/unpause tracking)'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('silent/s - toggle Silent Mode on or off'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('c, d, hs, k, ls, w - print any of the the current leaderboards to party chat'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('end - end tracking, print the leaderboard to party chat, and reload the addon'):color(8)..'')
-	windower.add_to_chat(200,'[Leaderboard] '..('reload - reload the addon)'):color(8)..'')
-end
+	--Nukes
+	if act.category == 4 and Run then
+
+		local actor = get_actor(act.actor_id)
+
+		if actor == false then
+			return
+		end
+
+		local data = {}
+		data.actor = actor.id
+		data.actor_name = actor.name or 'Unknown'
+
+		local nukes = nuke[data.actor_name] or 0
+		if act.target_count == 6 then
+			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param + act.targets[6].actions[1].param
+		elseif act.target_count == 5 then
+			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param
+		elseif act.target_count == 4 then
+			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param
+		elseif act.target_count == 3 then
+			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param
+		elseif act.target_count == 2 then
+			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param
+		else
+			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param
+		end
+
+		if nuke[data.actor_name] > NukeFirstDamage then
+			if data.actor_name == NukeFirstName or NukeFirstDamage == 0 then 
+				--First Place extends their lead (or the first nuke)
+				NukeFirstName = data.actor_name
+				NukeFirstDamage = nuke[data.actor_name]
+			elseif data.actor_name == NukeSecondName then
+				--Second Place moves into First Place
+				NukeSecondName = NukeFirstName
+				NukeFirstName = data.actor_name
+				NukeSecondDamage = NukeFirstDamage
+				NukeFirstDamage = nuke[data.actor_name]
+			elseif data.actor_name == NukeThirdName then
+				--Third Place moves into First Place
+				NukeThirdName = NukeSecondName
+				NukeSecondName = NukeFirstName
+				NukeFirstName = data.actor_name
+				NukeThirdDamage = NukeSecondDamage
+				NukeSecondDamage = NukeFirstDamage
+				NukeFirstDamage = nuke[data.actor_name]
+			elseif data.actor_name == NukeFourthName then
+				--Fourth Place moves into First Place
+				NukeFourthName = NukeThirdName
+				NukeThirdName = NukeSecondName
+				NukeSecondName = NukeFirstName
+				NukeFirstName = data.actor_name
+				NukeFourthDamage = NukeThirdDamage
+				NukeThirdDamage = NukeSecondDamage
+				NukeSecondDamage = NukeFirstDamage
+				NukeFirstDamage = nuke[data.actor_name]
+
+			else
+				--Fifth Place or somebody not already on the board moves into First Place
+				NukeFifthName = NukeFourthName
+				NukeFourthName = NukeThirdName
+				NukeThirdName = NukeSecondName
+				NukeSecondName = NukeFirstName
+				NukeFirstName = data.actor_name
+				NukeFifthDamage = NukeFourthDamage
+				NukeFourthDamage = NukeThirdDamage
+				NukeThirdDamage = NukeSecondDamage
+				NukeSecondDamage = NukeFirstDamage
+				NukeFirstDamage = nuke[data.actor_name]
+			end
+		elseif nuke[data.actor_name] > NukeSecondDamage then
+			if data.actor_name == NukeSecondName or (data.actor_name ~= NukeFirstName and NukeSecondDamage == 0) then
+				--Second Place updates their best but stays in Second Place (or the second nuke)
+				NukeSecondName = data.actor_name
+				NukeSecondDamage = nuke[data.actor_name]
+			elseif data.actor_name == NukeThirdName then
+				--Third Place moves into Second Place
+				NukeThirdName = NukeSecondName
+				NukeSecondName = data.actor_name
+				NukeThirdDamage = NukeSecondDamage
+				NukeSecondDamage = nuke[data.actor_name]
+			elseif data.actor_name == NukeFourthName then
+				--Fourth Place moves into Second Place
+				NukeFourthName = NukeThirdName
+				NukeThirdName = NukeSecondName
+				NukeSecondName = data.actor_name
+				NukeFourthDamage = NukeThirdDamage
+				NukeThirdDamage = NukeSecondDamage
+				NukeSecondDamage = nuke[data.actor_name]
+			elseif data.actor_name ~= NukeFirstName then
+				--Fifth Place or somebody not already on the board moves into Second Place
+				NukeFifthName = NukeFourthName
+				NukeFourthName = NukeThirdName
+				NukeThirdName = NukeSecondName
+				NukeSecondName = data.actor_name
+				NukeFifthDamage = NukeFourthDamage
+				NukeFourthDamage = NukeThirdDamage
+				NukeThirdDamage = NukeSecondDamage
+				NukeSecondDamage = nuke[data.actor_name]
+			end
+		elseif nuke[data.actor_name] > NukeThirdDamage then
+			if data.actor_name == NukeThirdName or (data.actor_name ~= NukeFirstName and data.actor_name ~= NukeSecondName and NukeThirdDamage == 0) then
+				--Third Place updates their best but stays in Third Place (or the third nuke)
+				NukeThirdName = data.actor_name
+				NukeThirdDamage = nuke[data.actor_name]
+			elseif data.actor_name == NukeFourthName then
+				--Fourth Place moves into Third Place
+				NukeFourthName = NukeThirdName
+				NukeThirdName = data.actor_name
+				NukeFourthDamage = NukeThirdDamage
+				NukeThirdDamage = nuke[data.actor_name]
+			elseif data.actor_name ~= NukeFirstName and data.actor_name ~= NukeSecondName then
+				--Fifth Place or somebody not already on the board moves into Third Place
+				NukeFifthName = NukeFourthName
+				NukeFourthName = NukeThirdName
+				NukeThirdName = data.actor_name
+				NukeFifthDamage = NukeFourthDamage
+				NukeFourthDamage = NukeThirdDamage
+				NukeThirdDamage = nuke[data.actor_name]
+			end
+		elseif nuke[data.actor_name] > NukeFourthDamage then
+			if data.actor_name == NukeFourthName or (data.actor_name ~= NukeFirstName and data.actor_name ~= NukeSecondName and data.actor_name ~= NukeThirdName and NukeFourthDamage == 0) then
+				--Fourth Place updates their best but stays in Fourth Place (or the fourth nuke)
+				NukeFourthName = data.actor_name
+				NukeFourthDamage = nuke[data.actor_name]
+			elseif data.actor_name ~= NukeFirstName and data.actor_name ~= NukeSecondName and data.actor_name ~= NukeThirdName then
+				--Fifth Place or somebody not already on the board moves into Fourth Place
+				NukeFifthName = NukeFourthName
+				NukeFourthName = data.actor_name
+				NukeFifthDamage = NukeFourthDamage
+				NukeFourthDamage = nuke[data.actor_name]
+			end
+		elseif nuke[data.actor_name] > NukeFifthDamage and data.actor_name ~= NukeFirstName and data.actor_name ~= NukeSecondName and data.actor_name ~= NukeThirdName and data.actor_name ~= NukeFourthName then
+			--Fifth Place updates their best or somebody not already on the board moves into Fifth Place
+			NukeFifthName = data.actor_name
+			NukeFifthDamage = nuke[data.actor_name]
+		end
+		print(''..data.actor_name..' - '..nuke[data.actor_name]..'')
+	end
+end)
 
 windower.register_event('addon command',function(addcmd, arg)
 
@@ -621,21 +758,31 @@ windower.register_event('addon command',function(addcmd, arg)
         cmd('lua r leaderboard')
         return
 
+ 	elseif addcmd == 'help' then
+		windower.add_to_chat(200,'[Leaderboard] '..('--Commands--'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('start - start tracking'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('starts - start tracking in Silent Mode'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('pause/p - pause/unpause tracking)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('silent/s - toggle Silent Mode on or off'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('c, d, hs, k, ls, n, w - print current leaderboards to party chat'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('boards - list the different leaderboards that are tracked)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('reload - reload the addon)'):color(8)..'')
+
 	elseif addcmd == 'start' then
 		Run = true
-		say('/p Leaderboard started! Type \'!lb\' followed by \'c\' \'d\' \'hs\' \'k\' \'ls\' or \'w\' for current leaderboards')
+		say('/p Leaderboard started! Type \'!lb\' followed by \'c\' \'d\' \'hs\' \'k\' \'ls\' \'n\' or \'w\' for current leaderboards')
 		coroutine.sleep(1)
-		log('[Leaderboard] Beware - This addon uses party chat heavily.')
-		log('[Leaderboard] Print leaderboards to party with //lb c, d, hs, k, ls, or w')
-		log('[Leaderboard] //lb pause, silent, reload, or end')
+		windower.add_to_chat(200,'[Leaderboard] '..('Beware - This addon uses party chat heavily.'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, silent, boards, reload'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, d, hs, k, ls, n, or w to print current leaderboards to party chat'):color(8)..'')
 
 	elseif addcmd == 'starts' then
 		Run = true
 		Silent = true
-		log('[Leaderboard] Leaderboard started in Silent Mode')
+		windower.add_to_chat(200,'[Leaderboard] '..('Leaderboard started in Silent Mode'):color(8)..'')
 		coroutine.sleep(1)
-		log('[Leaderboard] Print leaderboards to party with //lb c, d, hs, k, ls, or w')
-		log('[Leaderboard] //lb pause, silent, reload, or end')
+		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, silent, boards, reload'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, d, hs, k, ls, n, or w to print current leaderboards to party chat'):color(8)..'')
 
 	elseif addcmd == 'pause' or addcmd == 'p' then
 		if Run == true then
@@ -649,17 +796,23 @@ windower.register_event('addon command',function(addcmd, arg)
 	elseif addcmd == 'silent' or addcmd == 's' then
 		if Silent == true then
 			Silent = false
-			log('[Leaderboard] Silent Mode off.')
+			windower.add_to_chat(200,'[Leaderboard] '..('Silent Mode off'):color(8)..'')
 		else
 			Silent = true
-			log('[Leaderboard] Silent Mode on.')
+			windower.add_to_chat(200,'[Leaderboard] '..('Silent Mode on'):color(8)..'')
 		end
 
+	elseif addcmd == 'board' or addcmd == 'boards' then
+		windower.add_to_chat(200,'[Leaderboard] '..('--Current Tracked Leaderboards--'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('c/cure - Running total of cures (up to 3 places)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('d/death - Running total of deaths (up to 3 places)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('hs/highscore - Highest individual WS damage (up to 5 places)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('k/kill - Running total of kills (up to 3 places)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('ls/lowscore - Lowest individual WS damage (up to 3 places)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('n/nuke - Running total of nukes (up to 5 places)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('w/whiffs - Running total of whiffs (up to 3 places)'):color(8)..'')
+
 	elseif addcmd == 'c' or addcmd =='cure' or addcmd =='cures' then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
 		if CureThirdAmount ~= 0 then
 			say('/p \r--Cure Leaderboard--\rNo.1: '..CureFirstName..' ('..CureFirstAmount..')\rNo.2: '..CureSecondName..' ('..CureSecondAmount..')\rNo.3: '..CureThirdName..' ('..CureThirdAmount..')')
 		elseif CureSecondAmount ~= 0 then
@@ -671,10 +824,6 @@ windower.register_event('addon command',function(addcmd, arg)
 		end
 
 	elseif addcmd == 'd' or addcmd =='death' or addcmd =='deaths' then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
 		if DeathThirdAmount ~= 0 then
 			local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
 			local DeathSecondPercent = (math.floor((DeathSecondAmount/deaths_total)*10000))/100
@@ -692,10 +841,6 @@ windower.register_event('addon command',function(addcmd, arg)
 		end
 
 	elseif addcmd == 'ls' or addcmd =='lowscore' then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
 		if LSThirdDamage ~= 999999 then
 			say('/p \r--Low Score Leaderboard--\rNo.1: '..LSFirstName..' ('..LSFirstDamage..')\rNo.2: '..LSSecondName..' ('..LSSecondDamage..')\rNo.3: '..LSThirdName..' ('..LSThirdDamage..')')
 		elseif LSSecondDamage ~= 999999 then
@@ -707,10 +852,6 @@ windower.register_event('addon command',function(addcmd, arg)
 		end
 
 	elseif addcmd == 'hs' or addcmd =='highscore' or addcmd =='hiscore' then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
 		if HSFifthDamage ~= 0 then
 			say('/p \r--High Score Leaderboard--\rNo.1: '..HSFirstName..' ('..HSFirstDamage..')\rNo.2: '..HSSecondName..' ('..HSSecondDamage..')\rNo.3: '..HSThirdName..' ('..HSThirdDamage..')\rNo.4: '..HSFourthName..' ('..HSFourthDamage..')\rNo.5: '..HSFifthName..' ('..HSFifthDamage..')')
 		elseif HSFourthDamage ~= 0 then
@@ -726,10 +867,6 @@ windower.register_event('addon command',function(addcmd, arg)
 		end
 
 	elseif addcmd == 'k' or addcmd =='kill' or addcmd =='kills' then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
 		if KillThirdAmount ~= 0 then
 			local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
 			local KillSecondPercent = math.floor((KillSecondAmount/kills_total)*10000)/100
@@ -746,11 +883,22 @@ windower.register_event('addon command',function(addcmd, arg)
 			say('/p \r--Kill Leaderboard--\rNo data yet')
 		end
 
-	elseif addcmd == 'w' or addcmd =='whiff' or addcmd =='whiffs' then
-		if board_flood_timer ~= 0 then
-			return
+	elseif addcmd == 'n' or addcmd =='nuke' or addcmd =='nukes' then
+		if NukeFifthDamage ~= 0 then
+			say('/p \r--Nuke Leaderboard--\rNo.1: '..NukeFirstName..' ('..NukeFirstDamage..')\rNo.2: '..NukeSecondName..' ('..NukeSecondDamage..')\rNo.3: '..NukeThirdName..' ('..NukeThirdDamage..')\rNo.4: '..NukeFourthName..' ('..NukeFourthDamage..')\rNo.5: '..NukeFifthName..' ('..NukeFifthDamage..')')
+		elseif NukeFourthDamage ~= 0 then
+			say('/p \r--Nuke Leaderboard--\rNo.1: '..NukeFirstName..' ('..NukeFirstDamage..')\rNo.2: '..NukeSecondName..' ('..NukeSecondDamage..')\rNo.3: '..NukeThirdName..' ('..NukeThirdDamage..')\rNo.4: '..NukeFourthName..' ('..NukeFourthDamage..')')
+		elseif NukeThirdDamage ~= 0 then
+			say('/p \r--Nuke Leaderboard--\rNo.1: '..NukeFirstName..' ('..NukeFirstDamage..')\rNo.2: '..NukeSecondName..' ('..NukeSecondDamage..')\rNo.3: '..NukeThirdName..' ('..NukeThirdDamage..')')
+		elseif NukeSecondDamage ~= 0 then
+			say('/p \r--Nuke Leaderboard--\rNo.1: '..NukeFirstName..' ('..NukeFirstDamage..')\rNo.2: '..NukeSecondName..' ('..NukeSecondDamage..')')
+		elseif NukeFirstDamage ~= 0 then
+			say('/p \r--Nuke Leaderboard--\rNo.1: '..NukeFirstName..' ('..NukeFirstDamage..')')
+		else
+			say('/p \r--Nuke Leaderboard--\rNo data yet')
 		end
-		board_flood_timer = board_flood_delay
+
+	elseif addcmd == 'w' or addcmd =='whiff' or addcmd =='whiffs' then
 		if WhiffThirdAmount ~= 0 then
 			say('/p \r--Whiff Leaderboard--\rNo.1: '..WhiffFirstName..' ('..WhiffFirstAmount..')\rNo.2: '..WhiffSecondName..' ('..WhiffSecondAmount..')\rNo.3: '..WhiffThirdName..' ('..WhiffThirdAmount..')')
 		elseif WhiffSecondAmount ~= 0 then
@@ -761,43 +909,6 @@ windower.register_event('addon command',function(addcmd, arg)
 			say('/p \r--Whiff Leaderboard--\rNo data yet')
 		end
 
-    elseif addcmd == 'end' then
-		say('/p \r--Leaderboard Final Results--')
-		if HSFifthDamage ~= 0 then
-			coroutine.sleep(2)
-			say('/p No.5: '..HSFifthName..' with a '..HSFifthWS..' for '..HSFifthDamage..' on '..HSFifthTarget..'.')
-		end
-		if HSFourthDamage ~= 0 then
-			coroutine.sleep(2)
-			say('/p No.4: '..HSFourthName..' with a '..HSFourthWS..' for '..HSFourthDamage..' on '..HSFourthTarget..'.')
-		end
-		if HSThirdDamage ~= 0 then
-			coroutine.sleep(2)
-			say('/p No.3: '..HSThirdName..' with a '..HSThirdWS..' for '..HSThirdDamage..' on '..HSThirdTarget..'.')
-		end
-		if HSSecondDamage ~= 0 then
-			coroutine.sleep(2)
-			say('/p No.2: '..HSSecondName..' with a '..HSSecondWS..' for '..HSSecondDamage..' on '..HSSecondTarget..'.')
-		end
-		if HSFirstDamage ~= 0 then
-			coroutine.sleep(2)
-			say('/p No.1: '..HSFirstName..' with a '..HSFirstWS..' for '..HSFirstDamage..' on '..HSFirstTarget..'.')
-		end
-		if LowDamage > 0 then
-			coroutine.sleep(2)
-			say('/p '..LowName..' gets a Gold Star sticker for a '..LowDamage..' damage '..LowWS..' on '..LowTarget..'.')
-		end
-		if MostMisses > 0 then
-			coroutine.sleep(2)
-			if MostMisses == 1 then
-				say('/p '..MostMissesName..' gets the OnlyFans Award for '..MostMisses..' whiff.')
-			else
-				say('/p '..MostMissesName..' gets the OnlyFans Award for '..MostMisses..' whiffs.')
-			end
-		end
-		cmd('lua r leaderboard')
-	elseif addcmd == 'help' then
-		display_help()
 	else
 		windower.add_to_chat(200,'[Leaderboard] '..('Unknown command. Type \'//em help\' for list of commands.'):color(8)..'')
 	end
@@ -808,21 +919,52 @@ windower.register_event('incoming text',function(org, modified, mode)
 	--print('Mode: '..mode..'   -   '..org..'')
 
 	if org:find('!lb c') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb c')
 	elseif org:find('!lb d') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb d')
 	elseif org:find('!lb ls') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb ls')
 	elseif org:find('!lb hs') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb hs')
 	elseif org:find('!lb k') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb k')
+	elseif org:find('!lb n') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
+		coroutine.sleep(2)
+		cmd('lb n')
 	elseif org:find('!lb w') and not org:find('Leaderboard started!')then
+		if board_flood_timer ~= 0 then
+			return
+		end
+		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb w')
 	end
@@ -884,7 +1026,7 @@ windower.register_event('incoming text',function(org, modified, mode)
 			KillThirdName = actor_name
 			KillThirdAmount = kill[actor_name]
 		end
-		say('/echo '..actor_name..' made a kill (Running Total: '..kill[actor_name]..' | Total Kills: '..kills_total..')')
+		--say('/echo '..actor_name..' made a kill (Running Total: '..kill[actor_name]..' | Total Kills: '..kills_total..')')
 
 	end
 
