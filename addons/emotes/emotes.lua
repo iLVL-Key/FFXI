@@ -10,9 +10,9 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of Emotes nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+    * Neither the name of Emotes nor the names of its contributors may be
+	  used to endorse or promote products derived from this software without
+	  specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -27,37 +27,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Emotes'
-_addon.version = '01.21.23'
+_addon.version = '01.24.23'
 _addon.author = 'Key'
 _addon.commands = {'emotes','emote','em'}
 
 require 'logger'
+config = require('config')
 
+defaults = {}
+defaults.pronoun = 'builtin'
 
---------------------
---Pronoun Override--
-local pronoun = 'b' --b/m/f/t ([b]uiltin determined by the game, [m]ale, [f]emale, [t]hey/them)
---------------------
-
+settings = config.load(defaults)
 
 local chat = windower.chat.input
 local cmd = windower.send_command
 
-
 windower.register_event('outgoing text',function(original,modified)
 
+	--current character name, race, and target
 	local self_name = windower.ffxi.get_mob_by_target('me').name
 	local self_race_num = windower.ffxi.get_mob_by_target('me').race
 	local emote_target = windower.ffxi.get_mob_by_target('t') or windower.ffxi.get_mob_by_target('me')
-	--we use the 'me' in there in case 't' is nil(no target)
 
-	if pronoun == 't' then
+	--Check what your pronoun is currently set to
+	if settings.pronoun == 'nonbinary' then
 		hishertheir = 'their'
 		himselfherselfthemself = 'themself'
-	elseif pronoun == 'm' then
+	elseif settings.pronoun == 'male' then
 		hishertheir = 'his'
 		himselfherselfthemself = 'himself'
-	elseif pronoun == 'f' then
+	elseif settings.pronoun == 'female' then
 		hishertheir = 'her'
 		himselfherselfthemself = 'herself'
 	else
@@ -69,6 +68,8 @@ windower.register_event('outgoing text',function(original,modified)
 			himselfherselfthemself = 'herself'
 		end
 	end
+
+	--reset values to false, then flip them to true depending on what is targeted
 	self = false
 	player = false
 	monster = false
@@ -86,6 +87,7 @@ windower.register_event('outgoing text',function(original,modified)
 		npc_object = true
 	end
 
+	--emotes
 	if original == '/blame' then
 		if self then
 			chat('/em blames '..himselfherselfthemself..'.')
@@ -117,7 +119,7 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/point motion')
 		end
 
-	elseif original == '/butt' then
+	elseif original == '/buttscratch' or original == 'butt' then
 		if self then
 			chat('/em scratches '..hishertheir..' butt.')
 		elseif player or npc_character then
@@ -141,13 +143,13 @@ windower.register_event('outgoing text',function(original,modified)
 	elseif original == '/congratulations' or original == '/congrats' or original == '/grats' then
 		if self then
 			chat('/em offers '..hishertheir..' congratulations.')
-			cmd('input /clap motion;wait 2;input /cheer motion')
+			cmd('input /clap motion;wait 2;input /hurray motion')
 		elseif player or npc_character then
 			chat('/em congratulates '..emote_target.name..'.')
-			cmd('input /clap motion;wait 2;input /cheer motion')
+			cmd('input /clap motion;wait 2;input /hurray motion')
 		elseif monster or npc_object then
 			chat('/em congratulates the '..emote_target.name..'.')
-			cmd('input /clap motion;wait 2;input /cheer motion')
+			cmd('input /clap motion;wait 2;input /hurray motion')
 		end
 
 	elseif original == '/cookie' then
@@ -166,6 +168,18 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em dabs on '..emote_target.name..'.')
 		elseif monster or npc_object then
 			chat('/em quickly dabs at the '..emote_target.name..'.')
+		end
+
+	elseif original == '/encourage' then
+		if self then
+			chat('/em offers '..hishertheir..' encouragement.')
+			cmd('input /clap motion;wait 2;input /cheer motion')
+		elseif player or npc_character then
+			chat('/em offers '..emote_target.name..' '..hishertheir..' encouragement.')
+			cmd('input /clap motion;wait 2;input /cheer motion')
+		elseif monster or npc_object then
+			chat('/em offers the '..emote_target.name..' '..hishertheir..' encouragement.')
+			cmd('input /clap motion;wait 2;input /cheer motion')
 		end
 
 	elseif original == '/facepalm' then
@@ -203,18 +217,6 @@ windower.register_event('outgoing text',function(original,modified)
 			chat('/em flexes on '..emote_target.name..'.')
 		elseif monster or npc_object then
 			chat('/em flexes on the '..emote_target.name..'.')
-		end
-
-	elseif original == '/gag' then
-		if self then
-			chat('/em gags and '..hishertheir..' face turns a sickly shade of green.')
-			chat('/think motion')
-		elseif player or npc_character then
-			chat('/em looks at '..emote_target.name..' and '..hishertheir..' face turns a sickly shade of green.')
-			chat('/think motion')
-		elseif monster or npc_object then
-			chat('/em looks at the '..emote_target.name..' and '..hishertheir..' face turns a sickly shade of green.')
-			chat('/think motion')
 		end
 
 	elseif original == '/gasp' then
@@ -373,26 +375,29 @@ windower.register_event('outgoing text',function(original,modified)
 		end
 
 	end
-
 end)
 
-windower.register_event('addon command',function(addcmd, arg)
+windower.register_event('addon command',function(addcmd, arg1, arg2)
 
+	--current character name, only used to print into chat for the pronoun command
+	local self_name = windower.ffxi.get_mob_by_target('me').name
+
+	--current list of emotes
 	if addcmd == 'list' then
 		windower.add_to_chat(200,'[Emotes] '..('Current Emotes:'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- blame'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- blowkiss'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- boop (w/ motion)'):color(8)..'')
-		windower.add_to_chat(200,'[Emotes] '..('- butt'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- buttscratch/butt'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- coldone/beer/soda (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- congratulations/congrats/grats (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- cookie'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- dab'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('- encourage (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- facepalm'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- fistbump/fbump/bump'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- fistpump/fpump/pump'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- flex'):color(8)..'')
-		windower.add_to_chat(200,'[Emotes] '..('- gag (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- gasp (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- grovel (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- handover/hand'):color(8)..'')
@@ -410,41 +415,69 @@ windower.register_event('addon command',function(addcmd, arg)
 		windower.add_to_chat(200,'[Emotes] '..('- tag (w/ motion)'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('- thumbsup'):color(8)..'')
 
+	--reload the addon (unlisted command)
 	elseif addcmd == 'reload' then
         cmd('lua r emotes')
         return
 
+	--list of commands
 	elseif addcmd == 'help' then
 		windower.add_to_chat(200,'[Emotes] '..('Commands:'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('list - list the current emotes.'):color(8)..'')
 		windower.add_to_chat(200,'[Emotes] '..('pronoun - display the current pronoun used.'):color(8)..'')
-		windower.add_to_chat(200,'[Emotes] '..('pronoun b/m/f/t - change the current pronoun to [b]uilt-in, [m]ale, [f]emale, or [t]hey/them.'):color(8)..'')
+		windower.add_to_chat(200,'[Emotes] '..('pronoun b/m/f/n - change the current pronoun to [b]uilt-in, [m]ale, [f]emale, or [N]on-binary.'):color(8)..'')
 
+	--change the pronouns used per character or all
 	elseif addcmd == 'pronoun' or addcmd == 'pro' then
-		if arg == 'b' or arg == 'builtin' then
-			pronoun = 'b'
-			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Built-in'):color(8)..'')
-		elseif arg == 'm' or arg == 'male' then
-			pronoun = 'm'
-			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Male'):color(8)..'')
-		elseif arg == 'f' or arg == 'female' then
-			pronoun = 'f'
-			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Female'):color(8)..'')
-		elseif arg == 't' or arg == 'they' or arg == 'them' or arg == 'theythem' then
-			pronoun = 't'
-			windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to They/Them'):color(8)..'')
+		if arg1 == 'b' or arg1 == 'builtin' or arg1 == 'game' then
+			settings.pronoun = 'builtin'
+			if arg2 == 'all' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Built-in for all characters.'):color(8)..'')
+				settings:save('all')
+			else
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Built-in for '..self_name..''):color(8)..'')
+				settings:save()
+			end
+		elseif arg1 == 'm' or arg1 == 'male' or arg1 == 'he' or arg1 == 'him' then
+			settings.pronoun = 'male'
+			if arg2 == 'all' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Male for all characters.'):color(8)..'')
+				settings:save('all')
+			else
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Male for '..self_name..''):color(8)..'')
+				settings:save()
+			end
+		elseif arg1 == 'f' or arg1 == 'female' or arg1 == 'she' or arg1 == 'her' then
+			settings.pronoun = 'female'
+			if arg2 == 'all' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Female for all characters.'):color(8)..'')
+				settings:save('all')
+			else
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Female for '..self_name..''):color(8)..'')
+				settings:save()
+			end
+		elseif arg1 == 'n' or arg1 == 'nonbinary' or arg1 == 't' or arg1 == 'they' or arg1 == 'them' or arg1 == 'theythem' then
+			settings.pronoun = 'nonbinary'
+			if arg2 == 'all' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Non-binary for all characters.'):color(8)..'')
+				settings:save('all')
+			else
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is now set to Non-binary for '..self_name..''):color(8)..'')
+				settings:save()
+			end
 		else
-			if pronoun == 'b' then
-				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Built-in'):color(8)..'')
-			elseif pronoun == 'm' then
-				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Male'):color(8)..'')
-			elseif pronoun == 'f' then
-				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Female'):color(8)..'')
-			elseif pronoun == 't' then
-				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to They/Them'):color(8)..'')
+			if settings.pronoun == 'builtin' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Built-in for '..self_name..''):color(8)..'')
+			elseif settings.pronoun == 'male' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Male for '..self_name..''):color(8)..'')
+			elseif settings.pronoun == 'female' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Female for '..self_name..''):color(8)..'')
+			elseif settings.pronoun == 'nonbinary' then
+				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Non-binary for '..self_name..''):color(8)..'')
 			end
 		end
 
+	--unknown command
 	else
 		windower.add_to_chat(200,'[Emotes] '..('Unknown command. Type \'//em help\' for list of commands.'):color(8)..'')
 
