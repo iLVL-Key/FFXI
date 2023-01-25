@@ -450,7 +450,7 @@ TopVersion = 'Tachi: Yukikaze' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Tachi: Yukikaze'
-FileVersion = '01.21.23'
+FileVersion = '01.24.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -460,6 +460,9 @@ FileVersion = '01.21.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+01.24.23 (Version Compatibility Codename: Tachi: Yukikaze)
+-Adjusted WS Damage Notification to display Skillchain damage.
 
 01.21.23 (Version Compatibility Codename: Tachi: Yukikaze)
 -Added Tachi: Ageha, Tachi: Shoha, and Stardiver sets.
@@ -2445,11 +2448,14 @@ end)
 -------------------------------------------
 
 windower.register_event('action',function(act)
+	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
 	local weaponskills = require('resources').weapon_skills
-	if act.category == 3 and act.actor_id == player.id and act.targets[1].actions[1].message == 185 then
+	if act.category == 3 and act.actor_id == player.id then
 		--Uses Weapon Skill but misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or act.targets[1].actions[1].param == 0 then
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		elseif act.targets[1].actions[1].has_add_effect == true then
+			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 		else
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		end
