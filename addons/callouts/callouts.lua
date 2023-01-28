@@ -25,20 +25,20 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '01.17.23'
+_addon.version = '01.28.23'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
 require 'logger'
+config = require('config')
 res = require 'resources'
+
+defaults = {}
+defaults.chatmode = 'echo'
+
+settings = config.load(defaults)
+
 local chat = windower.chat.input
-local cmd = windower.send_command
-
-
---Default Chat mode on load.
-chatmode = 'e'
---Party (p) and Echo (echo) are the two that can be toggled between via command but any can be used for default (careful!)
-
 
 
 --Unless you know what you're doing, leave everything under here alone.
@@ -48,74 +48,92 @@ chatmode = 'e'
 windower.register_event('action',function(act)
 
 	local actor = windower.ffxi.get_mob_by_id(act.actor_id)
-	local target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name or 'Unknown'
+	if act.targets[1].id == nil then
+		target_name = 'Unknown'
+	else
+		target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name
+	end
 
-	if act.category == 7 then
+	if act.category == 7 then -- initiation of weapon skill or monster TP move
 
-		if actor.name == "Aita" or actor.name == "Degei" then
+		if actor.name == 'Aita' or actor.name == 'Degei' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Flaming Kick' then
-				chat('/'..chatmode..' Water (Flaming Kick) <call14>')
+				chat('/%s Water (Flaming Kick)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Flashflood' then
-				chat('/'..chatmode..' Thunder (Flashflood) <call14>')
+				chat('/%s Thunder (Flashflood)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Icy Grasp' then
-				chat('/'..chatmode..' Fire (Icy Grasp) <call14>')
+				chat('/%s Fire (Icy Grasp)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Eroding Flesh' then
-				chat('/'..chatmode..' Aero (Eroding Flesh) <call14>')
+				chat('/%s Aero (Eroding Flesh)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Fulminous Smash' then
-				chat('/'..chatmode..' Stone (Fulminous Smash) <call14>')
+				chat('/%s Stone (Fulminous Smash)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor.name == "Aminon" then
+		elseif actor.name == 'Triboulex' or actor.name == 'Skomora' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Last Laugh' then
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		elseif actor.name == 'Aminon' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Demonfire' then
-				chat('/'..chatmode..' Water (Demon Fire) <call14>')
+				chat('/%s Water (Demonfire)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Torrential Pain' then
-				chat('/'..chatmode..' Thunder (Torrential Pain) <call14>')
+				chat('/%s Thunder (Torrential Pain)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Frozen Blood' then
-				chat('/'..chatmode..' Fire (Frozen Blood) <call14>')
+				chat('/%s Fire (Frozen Blood)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ensepulcher' then
-				chat('/'..chatmode..' Aero (Ensepulcher) <call14>')
+				chat('/%s Aero (Ensepulcher)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ceaseless Surge' then
-				chat('/'..chatmode..' Stone (Ceaseless Surge) <call14>')
+				chat('/%s Stone (Ceaseless Surge)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Blast of Reticence' then
-				chat('/'..chatmode..' Blizzard (Blast of Reticence) <call14>')
+				chat('/%s Blizzard (Blast of Reticence)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor.name == "Glassy Thinker" then
+		elseif actor.name == 'Glassy Thinker' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Pain Sync' then
-				chat('/'..chatmode..' PAIN SYNC <call14>')
+				chat('/%s PAIN SYNC%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor.name == "Ou" or actor.name == "Kin" then
+		elseif actor.name == 'Ou' or actor.name == 'Kin' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Target' then
-				chat('/'..chatmode..' Target used on '..target_name..' <call14>')
+				chat('/%s Target used on %s%s':format(settings.chatmode,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor.name == "Bumba" then
+		elseif actor.name == 'Bumba' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Perfect Dodge' then
-				chat('/'..chatmode..' Perfect Dodge <call14>')
-				chat:schedule(30,'/'..chatmode..' Perfect Dodge is off <call14>')
+				chat('/%s Perfect Dodge%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat:schedule(30,'/%s Perfect Dodge is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Invincible' then
-				chat('/'..chatmode..' Invincible <call14>')
-				chat:schedule(30,'/'..chatmode..' Invincible is off <call14>')
+				chat('/%s Invincible%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat:schedule(30,'/%s Invincible is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Elemental Sforzo' then
-				chat('/'..chatmode..' Elemental Sforzo <call14>')
-				chat:schedule(30,'/'..chatmode..' Elemental Sforzo is off <call14>')
+				chat('/%s Elemental Sforzo%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat:schedule(30,'/%s Elemental Sforzo is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Yaegasumi' then
-				chat('/'..chatmode..' Yaegasumi <call14>')
-				chat:schedule(45,'/'..chatmode..' Yaegasumi is off <call14>')
+				chat('/%s Yaegasumi%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat:schedule(30,'/%s Yaegasumi is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
-		end
 
+		elseif actor.name == 'Kalunga' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Volcanic Stasis' then
+				chat('/%s Full Dispel on %s%s':format(settings.chatmode,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		end
 	end
 end)
 
@@ -124,72 +142,69 @@ windower.register_event('incoming text',function(org)
 
 	if org:find('You find a') then
 		if org:find('Fu\'s scale') then
-			cmd('wait 2 5;input /'..chatmode..' Fu\'s Scale: BST, DRG, SMN, PUP <call14>')
+			chat('/%s Fu\'s Scale: BST, DRG, SMN, PUP%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Gin\'s scale') then
-			cmd('wait 2 5;input /'..chatmode..' Gin\'s Scale: THF, NIN, DNC, RUN <call14>')
+			chat('/%s Gin\'s Scale: THF, NIN, DNC, RUN%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Kei\'s scale') then
-			cmd('wait 2 5;input /'..chatmode..' Kei\'s Scale: WHM, BLM, RDM, BLU, SCH <call14>')
+			chat('/%s Kei\'s Scale: WHM, BLM, RDM, BLU, SCH%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Kin\'s scale') then
-			cmd('wait 2 5;input /'..chatmode..' Kin\'s Scale: WAR, MNK, PLD, DRK, SAM <call14>')
+			chat('/%s Kin\'s Scale: WAR, MNK, PLD, DRK, SAM%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Kyou\'s scale') then
-			cmd('wait 2 5;input /'..chatmode..' Kyou\'s Scale: BRD, RNG, COR, GEO <call14>')
+			chat('/%s Kyou\'s Scale: BRD, RNG, COR, GEO%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		end
 
 	elseif org:find('You pitiful lot will never learn') then
-		cmd('input /'..chatmode..' Perfidien pop! <call14>')
+		chat('/%s Perfidien pop!%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 
 	elseif org:find('the void calls') then
-		cmd('input /'..chatmode..' Plouton pop! <call14>')
+		chat('/%s Plouton pop!%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 
 	elseif org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
 		if org:find('Lightning') then
-			cmd('input /'..chatmode..' Thunder <call14>')
+			chat('/%s Thunder%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Fire') then
-			cmd('input /'..chatmode..' Fire <call14>')
+			chat('/%s Fire%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Wind') then
-			cmd('input /'..chatmode..' Aero <call14>')
+			chat('/%s Aero%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Earth') then
-			cmd('input /'..chatmode..' Stone <call14>')
+			chat('/%s Stone%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Ice') then
-			cmd('input /'..chatmode..' Blizzard <call14>')
+			chat('/%s Blizzard%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('Water') then
-			cmd('input /'..chatmode..' Water <call14>')
+			chat('/%s Water%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		end
 
 	end
 end)
 
-
-function display_help()
-	windower.add_to_chat(200,'[Callouts] '..('Use \'//co chatmode\' to switch between Echo and Party chat modes'):color(8)..'')
-	windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
-	windower.add_to_chat(200,'[Callouts] '..('Odyssey (Bumba 1-HRs)'):color(8)..'')
-	windower.add_to_chat(200,'[Callouts] '..('Omen (Scales, Pain Sync, Target)'):color(8)..'')
-	windower.add_to_chat(200,'[Callouts] '..('Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
-	windower.add_to_chat(200,'[Callouts] '..('Sortie (weaknesses)'):color(8)..'')
-end
-
 windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
-		display_help()
+		windower.add_to_chat(200,'[Callouts] '..('Use \'//co chatmode\' to switch between Echo and Party chat modes.'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Odyssey (Bumba 1-HRs)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Omen (Scales, Pain Sync, Target)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Sortie (weaknesses, hate resets)'):color(8)..'')
 
-	elseif addcmd == 'chatmode' then
-		if chatmode == 'echo' then
-			chatmode = 'p'
-			windower.add_to_chat(200,'[Callouts] '..('Chat mode is now set to Party'):color(8)..'')
+	elseif addcmd == 'chatmode' or addcmd == 'chat' or addcmd == 'mode' then
+		if settings.chatmode == 'echo' then
+			settings.chatmode = 'party'
+			windower.add_to_chat(200,'[Callouts] '..('Chat mode is now set to Party.'):color(8)..'')
+			settings:save()
 		else
-			chatmode = 'echo'
-			windower.add_to_chat(200,'[Callouts] '..('Chat mode is now set to Echo'):color(8)..'')
+			settings.chatmode = 'echo'
+			windower.add_to_chat(200,'[Callouts] '..('Chat mode is now set to Echo.'):color(8)..'')
+			settings:save()
 		end
 
 	elseif addcmd == 'reload' then
-        cmd('lua r callouts')
+        windower.send_command('lua r callouts')
         return
 
 	else
 		windower.add_to_chat(200,'[Callouts] '..('Unknown command'):color(8)..'')
-		display_help()
+		windower.add_to_chat(200,'[Callouts] '..('Type \'//co help\' for help.'):color(8)..'')
 	end
 	
 end)
