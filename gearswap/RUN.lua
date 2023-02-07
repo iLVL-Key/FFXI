@@ -90,8 +90,8 @@ DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed.
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
-HUDposX			=	967		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposYLine1	=	745		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+HUDposX			=	965		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposYLine1	=	794		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
 							--				Note that this is for the first line of the HUD, the other lines will self-adjust. If you cannot
 							--				see the HUD, set the x and y both to 100 to make sure it is showing up, then adjust from there.
 FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
@@ -171,11 +171,12 @@ function get_sets()
 		feet="Turms Leggings +1",
 		neck="Futhark Torque +2",
 		waist="Carrier's Sash",
-		left_ear="Genmei Earring",
-		right_ear="Erilaz Earring +1",
+		left_ear="Odnowa Earring +1",
+		right_ear="Tuisto Earring",
 		left_ring="Moonbeam Ring",
 		right_ring="Defending Ring",
-		back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
+		back="Moonlight Cape",
+		--back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
 	}
 
 	-- Kite (Damage Taken-, Evasion, Magic Evasion, Enmity+, VIT, Defense)
@@ -470,7 +471,7 @@ TopVersion = 'Max HP Boost' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Max HP Boost'
-FileVersion = '01.24.23'
+FileVersion = '02.07.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -480,6 +481,9 @@ FileVersion = '01.24.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+02.07.23 (Version Compatibility Codename: Max HP Boost)
+-Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
 
 01.24.23 (Version Compatibility Codename: Max HP Boost)
 -Adjusted WS Damage Notification to display Skillchain damage.
@@ -2455,9 +2459,9 @@ windower.register_event('action',function(act)
 		--Uses Weapon Skill but misses, gets blinked, or hits for 0
 		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-		elseif act.targets[1].actions[1].has_add_effect == true then
+		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-		else
+		elseif act.targets[1].actions[1].message == 185 then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		end
 		NotiCountdown = -1
