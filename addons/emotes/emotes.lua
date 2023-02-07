@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Emotes'
-_addon.version = '01.24.23'
+_addon.version = '02.07.23'
 _addon.author = 'Key'
 _addon.commands = {'emotes','emote','em'}
 
@@ -45,9 +45,21 @@ local cmd = windower.send_command
 windower.register_event('outgoing text',function(original,modified)
 
 	--current character name, race, and target
-	local self_name = windower.ffxi.get_mob_by_target('me').name
-	local self_race_num = windower.ffxi.get_mob_by_target('me').race
-	local emote_target = windower.ffxi.get_mob_by_target('t') or windower.ffxi.get_mob_by_target('me')
+	if windower.ffxi.get_mob_by_target('me') == nil then
+		return
+	else
+		self_name = windower.ffxi.get_mob_by_target('me').name
+		self_race_num = windower.ffxi.get_mob_by_target('me').race
+	end
+	if windower.ffxi.get_mob_by_target('t') == nil then
+		target_name = windower.ffxi.get_mob_by_target('me').name
+		target_race = windower.ffxi.get_mob_by_target('me').race
+		target_type = windower.ffxi.get_mob_by_target('me').spawn_type
+	else
+		target_name = windower.ffxi.get_mob_by_target('t').name
+		target_race = windower.ffxi.get_mob_by_target('t').race
+		target_type = windower.ffxi.get_mob_by_target('t').spawn_type
+	end
 
 	--Check what your pronoun is currently set to
 	if settings.pronoun == 'nonbinary' then
@@ -73,161 +85,166 @@ windower.register_event('outgoing text',function(original,modified)
 	self = false
 	player = false
 	monster = false
-	npc_character = false
-	npc_object = false
-	if emote_target.spawn_type == 1 or emote_target.spawn_type == 9 or (emote_target.spawn_type == 13 and emote_target.name ~= self_name) then
+	npc = false
+	object = false
+	if target_type == 1 or target_type == 9 or (target_type == 13 and target_name ~= self_name) then
 		player = true
-	elseif emote_target.spawn_type == 13 then
+		--print('player')
+	elseif target_type == 13 then
 		self = true
-	elseif emote_target.spawn_type == 16 then
+		--print('self')
+	elseif target_type == 16 then
 		monster = true
-	elseif emote_target.spawn_type == 14 or (emote_target.spawn_type == 2 and emote_target.race ~= 0) then
-		npc_character = true
-	elseif emote_target.spawn_type == 2 or emote_target.spawn_type == 34 then
-		npc_object = true
+		--print('monster')
+	elseif target_type == 14 or (target_type == 2 and target_race ~= 0) then
+		npc = true
+		--print('npc')
+	elseif target_type == 2 or target_type == 34 then
+		object = true
+		--print('object')
 	end
 
 	--emotes
 	if original == '/blame' then
 		if self then
 			chat('/em blames '..himselfherselfthemself..'.')
-		elseif player or npc_character then
-			chat('/em blames '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em blames '..target_name..'.')
 			chat('/point motion')
-		elseif monster or npc_object then
-			chat('/em blames the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em blames the '..target_name..'.')
 			chat('/point motion')
 		end
 
 	elseif original == '/blowkiss' then
 		if self then
 			chat('/em blows a kiss.')
-		elseif player or npc_character then
-			chat('/em blows '..emote_target.name..' a kiss and winks.')
-		elseif monster or npc_object then
-			chat('/em blows the '..emote_target.name..' a kiss.')
+		elseif player or npc then
+			chat('/em blows '..target_name..' a kiss and winks.')
+		elseif monster or object then
+			chat('/em blows the '..target_name..' a kiss.')
 		end
 
 	elseif original == '/boop' then
 		if self then
 			chat('/em boops '..hishertheir..' own nose.')
-		elseif player or npc_character then
-			chat('/em boops '..emote_target.name..' on the nose.')
+		elseif player or npc then
+			chat('/em boops '..target_name..' on the nose.')
 			chat('/point motion')
-		elseif monster or npc_object then
-			chat('/em boops the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em boops the '..target_name..'.')
 			chat('/point motion')
 		end
 
 	elseif original == '/buttscratch' or original == 'butt' then
 		if self then
 			chat('/em scratches '..hishertheir..' butt.')
-		elseif player or npc_character then
-			chat('/em scratches '..hishertheir..' butt, looking at '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em scratches '..hishertheir..' butt, looking at '..target_name..'.')
 			chat('/point motion')
-		elseif monster or npc_object then
-			chat('/em scratches '..hishertheir..' butt, looking at the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em scratches '..hishertheir..' butt, looking at the '..target_name..'.')
 			chat('/point motion')
 		end
 
 	elseif original == '/coldone' or original == '/beer' or original == '/soda' then
 		if self then
 			chat('/em cracks open a cold one.')
-		elseif player or npc_character then
-			chat('/em tosses '..emote_target.name..' a cold one.')
+		elseif player or npc then
+			chat('/em tosses '..target_name..' a cold one.')
 			chat('/toss motion')
-		elseif monster or npc_object then
-			chat('/em chugs a cold one in front of the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em chugs a cold one in front of the '..target_name..'.')
 		end
 
 	elseif original == '/congratulations' or original == '/congrats' or original == '/grats' then
 		if self then
 			chat('/em offers '..hishertheir..' congratulations.')
 			cmd('input /clap motion;wait 2;input /hurray motion')
-		elseif player or npc_character then
-			chat('/em congratulates '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em congratulates '..target_name..'.')
 			cmd('input /clap motion;wait 2;input /hurray motion')
-		elseif monster or npc_object then
-			chat('/em congratulates the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em congratulates the '..target_name..'.')
 			cmd('input /clap motion;wait 2;input /hurray motion')
 		end
 
 	elseif original == '/cookie' then
 		if self then
 			chat('/em munches on a cookie.')
-		elseif player or npc_character then
-			chat('/em offers '..emote_target.name..' a cookie.')
-		elseif monster or npc_object then
-			chat('/em offers the '..emote_target.name..' a cookie.')
+		elseif player or npc then
+			chat('/em offers '..target_name..' a cookie.')
+		elseif monster or object then
+			chat('/em offers the '..target_name..' a cookie.')
 		end
 
 	elseif original == '/dab' then
 		if self then
 			chat('/em quietly dabs to '..himselfherselfthemself..'.')
-		elseif player or npc_character then
-			chat('/em dabs on '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em quickly dabs at the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em dabs on '..target_name..'.')
+		elseif monster or object then
+			chat('/em quickly dabs at the '..target_name..'.')
 		end
 
 	elseif original == '/encourage' then
 		if self then
 			chat('/em offers '..hishertheir..' encouragement.')
 			cmd('input /clap motion;wait 2;input /cheer motion')
-		elseif player or npc_character then
-			chat('/em offers '..emote_target.name..' '..hishertheir..' encouragement.')
+		elseif player or npc then
+			chat('/em offers '..target_name..' '..hishertheir..' encouragement.')
 			cmd('input /clap motion;wait 2;input /cheer motion')
-		elseif monster or npc_object then
-			chat('/em offers the '..emote_target.name..' '..hishertheir..' encouragement.')
+		elseif monster or object then
+			chat('/em offers the '..target_name..' '..hishertheir..' encouragement.')
 			cmd('input /clap motion;wait 2;input /cheer motion')
 		end
 
 	elseif original == '/facepalm' then
 		if self then
 			chat('/em quietly facepalms to '..himselfherselfthemself..'.')
-		elseif player or npc_character then
-			chat('/em looks at '..emote_target.name..' and facepalms.')
-		elseif monster or npc_object then
-			chat('/em looks at the '..emote_target.name..' and facepalms.')
+		elseif player or npc then
+			chat('/em looks at '..target_name..' and facepalms.')
+		elseif monster or object then
+			chat('/em looks at the '..target_name..' and facepalms.')
 		end
 
 	elseif original == '/fistbump' or original == '/fbump' or original == '/bump' then
 		if self then
 			chat('/em leaves '..hishertheir..' fist out for a bump.')
-		elseif player or npc_character then
-			chat('/em gives '..emote_target.name..' a fist bump.')
-		elseif monster or npc_object then
-			chat('/em fist bumps the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em gives '..target_name..' a fist bump.')
+		elseif monster or object then
+			chat('/em fist bumps the '..target_name..'.')
 		end
 
 	elseif original == '/fistpump' or original == '/fpump' or original == '/pump' then
 		if self then
 			chat('/em pumps '..hishertheir..' fist with excitement.')
 			chat('/think motion')
-		elseif player or npc_character then
-			chat('/em gives an excited fist pump for '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em fist pumps in front of the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em gives an excited fist pump for '..target_name..'.')
+		elseif monster or object then
+			chat('/em fist pumps in front of the '..target_name..'.')
 		end
 
 	elseif original == '/flex' then
 		if self then
 			chat('/em flexes.')
-		elseif player or npc_character then
-			chat('/em flexes on '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em flexes on the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em flexes on '..target_name..'.')
+		elseif monster or object then
+			chat('/em flexes on the '..target_name..'.')
 		end
 
 	elseif original == '/gasp' then
 		if self then
 			chat('/em gasps.')
 			chat('/shocked motion')
-		elseif player or npc_character then
-			chat('/em looks at '..emote_target.name..' and gasps.')
+		elseif player or npc then
+			chat('/em looks at '..target_name..' and gasps.')
 			chat('/shocked motion')
-		elseif monster or npc_object then
-			chat('/em looks at the '..emote_target.name..' and gasps.')
+		elseif monster or object then
+			chat('/em looks at the '..target_name..' and gasps.')
 			chat('/shocked motion')
 		end
 
@@ -235,143 +252,143 @@ windower.register_event('outgoing text',function(original,modified)
 		if self then
 			chat('/em grovels.')
 			chat('/kneel motion')
-		elseif player or npc_character then
-			chat('/em grovels in front of '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em grovels in front of '..target_name..'.')
 			chat('/kneel motion')
-		elseif monster or npc_object then
-			chat('/em grovels in front of the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em grovels in front of the '..target_name..'.')
 			chat('/kneel motion')
 		end
 
 	elseif original == '/handover' or original == '/hand' then
 		if self then
 			chat('/em looks at something in '..hishertheir..' hand.')
-		elseif player or npc_character then
-			chat('/em hands something to '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em hands something to the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em hands something to '..target_name..'.')
+		elseif monster or object then
+			chat('/em hands something to the '..target_name..'.')
 		end
 
 	elseif original == '/happy' or original == '/glad' then
 		if self then
 			chat('/em is happy.')
 			chat('/joy motion')
-		elseif player or npc_character then
-			chat('/em is happy to see '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em is happy to see '..target_name..'.')
 			chat('/joy motion')
-		elseif monster or npc_object then
-			chat('/em is happy to see the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em is happy to see the '..target_name..'.')
 			chat('/joy motion')
 		end
 
 	elseif original == '/highfive' or original == '/hifive' or original == '/hfive' then
 		if self then
 			chat('/em holds '..hishertheir..' hand up for a high-five.')
-		elseif player or npc_character then
-			chat('/em gives '..emote_target.name..' a high-five.')
-		elseif monster or npc_object then
-			chat('/em high-fives the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em gives '..target_name..' a high-five.')
+		elseif monster or object then
+			chat('/em high-fives the '..target_name..'.')
 		end
 
 	elseif original == '/hug' then
 		if self then
 			chat('/em spreads '..hishertheir..' arms open wide for a hug.')
-		elseif player or npc_character then
-			chat('/em hugs '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em hugs the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em hugs '..target_name..'.')
+		elseif monster or object then
+			chat('/em hugs the '..target_name..'.')
 		end
 
 	elseif original == '/playdead' then
 		if self then
 			chat('/em plays dead.')
-		elseif player or npc_character then
-			chat('/em plays dead in front of '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em plays dead in front of the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em plays dead in front of '..target_name..'.')
+		elseif monster or object then
+			chat('/em plays dead in front of the '..target_name..'.')
 		end
 
 	elseif original == '/popcorn' then
 		if self then
 			chat('/em munches on some popcorn and watches.')
-		elseif player or npc_character then
-			chat('/em offers '..emote_target.name..' some popcorn.')
-		elseif monster or npc_object then
-			chat('/em munches on some popcorn, watching the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em offers '..target_name..' some popcorn.')
+		elseif monster or object then
+			chat('/em munches on some popcorn, watching the '..target_name..'.')
 		end
 
 	elseif original == '/pose' then
 		if self then
 			chat('/em strikes a pose.')
-		elseif player or npc_character then
-			chat('/em strikes a pose for '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em strikes a pose for the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em strikes a pose for '..target_name..'.')
+		elseif monster or object then
+			chat('/em strikes a pose for the '..target_name..'.')
 		end
 
 	elseif original == '/shakesfist' or original == '/shakefist' or original == '/fist' then
 		if self then
 			chat('/em shakes '..hishertheir..' fist.')
-		elseif player or npc_character then
-			chat('/em shakes '..hishertheir..' fist at '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em shakes '..hishertheir..' fist at the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em shakes '..hishertheir..' fist at '..target_name..'.')
+		elseif monster or object then
+			chat('/em shakes '..hishertheir..' fist at the '..target_name..'.')
 		end
 
 	elseif original == '/shrug' then
 		if self then
 			chat('/em shrugs.')
-		elseif player or npc_character then
-			chat('/em looks at '..emote_target.name..' and shrugs.')
-		elseif monster or npc_object then
-			chat('/em looks at the '..emote_target.name..' and shrugs.')
+		elseif player or npc then
+			chat('/em looks at '..target_name..' and shrugs.')
+		elseif monster or object then
+			chat('/em looks at the '..target_name..' and shrugs.')
 		end
 
 	elseif original == '/sing' then
 		if self then
 			chat('/em sings the song of '..hishertheir..' people.')
-		elseif player or npc_character then
-			chat('/em sings the song of '..hishertheir..' people for '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em sings the song of '..hishertheir..' people for the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em sings the song of '..hishertheir..' people for '..target_name..'.')
+		elseif monster or object then
+			chat('/em sings the song of '..hishertheir..' people for the '..target_name..'.')
 		end
 
 	elseif original == '/squint' then
 		if self then
 			chat('/em squints.')
-		elseif player or npc_character then
-			chat('/em squints at '..emote_target.name..'.')
-		elseif monster or npc_object then
-			chat('/em squints at the '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em squints at '..target_name..'.')
+		elseif monster or object then
+			chat('/em squints at the '..target_name..'.')
 		end
 
 	elseif original == '/taco' then
 		if self then
 			chat('/em munches on a tasty taco.')
-		elseif player or npc_character then
-			chat('/em offers '..emote_target.name..' a taco.')
-		elseif monster or npc_object then
-			chat('/em offers the '..emote_target.name..' a taco.')
+		elseif player or npc then
+			chat('/em offers '..target_name..' a taco.')
+		elseif monster or object then
+			chat('/em offers the '..target_name..' a taco.')
 		end
 
 	elseif original == '/tag' then
 		if self then
 			chat('/em looks around for someone to tag.')
-		elseif player or npc_character then
-			chat('/em tags '..emote_target.name..'.')
+		elseif player or npc then
+			chat('/em tags '..target_name..'.')
 			chat('/point motion')
-		elseif monster or npc_object then
-			chat('/em tags the '..emote_target.name..'.')
+		elseif monster or object then
+			chat('/em tags the '..target_name..'.')
 			chat('/point motion')
 		end
 
 	elseif original == '/thumbsup' then
 		if self then
 			chat('/em gives a thumbs up.')
-		elseif player or npc_character then
-			chat('/em gives '..emote_target.name..' a thumbs up.')
-		elseif monster or npc_object then
-			chat('/em gives the '..emote_target.name..' a thumbs up.')
+		elseif player or npc then
+			chat('/em gives '..target_name..' a thumbs up.')
+		elseif monster or object then
+			chat('/em gives the '..target_name..' a thumbs up.')
 		end
 
 	end
@@ -475,6 +492,21 @@ windower.register_event('addon command',function(addcmd, arg1, arg2)
 			elseif settings.pronoun == 'nonbinary' then
 				windower.add_to_chat(200,'[Emotes] '..('Pronoun is currently set to Non-binary for '..self_name..''):color(8)..'')
 			end
+		end
+
+	elseif addcmd == 'test' then
+		if self then
+			chat('/echo [SELF]')
+		elseif player then
+			chat('/echo [PLAYER]')
+		elseif npc then
+			chat('/echo [NPC]')
+		elseif monster then
+			chat('/echo [MONSTER]')
+		elseif object then
+			chat('/echo [OBJECT]')
+		else
+			chat('/echo [NO TARGET]')
 		end
 
 	--unknown command
