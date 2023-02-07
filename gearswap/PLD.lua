@@ -91,8 +91,8 @@ DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed.
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
-HUDposX			=	967		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposYLine1	=	745		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+HUDposX			=	965		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposYLine1	=	794		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
 							--				Note that this is for the first line of the HUD, the other lines will self-adjust. If you cannot
 							--				see the HUD, set the x and y both to 100 to make sure it is showing up, then adjust from there.
 FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
@@ -174,7 +174,7 @@ function get_sets()
 		feet="Rev. Leggings +3",
 		neck="Unmoving Collar +1",
 		waist="Carrier's Sash",
-		left_ear="Thureous Earring",
+		left_ear="Odnowa Earring +1",
 		right_ear="Tuisto Earring",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
@@ -184,6 +184,7 @@ function get_sets()
 	-- MAX HP (HP-focused tank gear, inherits any leftover slots from the Tank set above)
 	-- NOTE: This set is only used when the "UseMaxHP" option is set to 'On'.
 	sets.maxhp = set_combine(sets.tank, {
+		ammo="Egoist's Tathlum",
 		head="Souv. Schaller +1",
 		body="Rev. Surcoat +3",
 		hands="Souv. Handsch. +1",
@@ -191,29 +192,29 @@ function get_sets()
 		feet="Souveran Schuhs +1",
 		neck="Unmoving Collar +1",
 		waist="Creed Baudrier",
-		left_ear="Etiolation Earring",
+		left_ear="Odnowa Earring +1",
 		right_ear="Tuisto Earring",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
-		back="Moonbeam Cape",
+		back="Moonlight Cape",
 	})
 
 	-- MAX HP with SIRD (102%+ SIRD, HP-focused tank gear, inherits any leftover slots from the Tank set above)
 	-- NOTE: This set is only used when the "UseMaxHP" option is set to 'On'.
 	sets.maxhpsird = set_combine(sets.tank, {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
-		body="Rev. Surcoat +3",
+		ammo="Staunch Tathlum",			--10 SIRD
+		head="Souv. Schaller +1",		--20 SIRD
+		body="Chev. Cuirass +3",		--20 SIRD
 		hands="Souv. Handsch. +1",
-		legs="Founder's Hose",		--30 SIRD
-		feet="Odyssean Greaves",	--20 SIRD
-		neck="Moonlight Necklace",	--15 SIRD
-		waist="Creed Baudrier",
-		left_ear="Etiolation Earring",
+		legs="Founder's Hose",			--30 SIRD
+		feet="Souveran Schuhs +1",
+		neck="Unmoving Collar +1",
+		waist="Audumbla Sash",			--10 SIRD
+		left_ear="Odnowa Earring +1",
 		right_ear="Tuisto Earring",
 		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
-		back="Moonbeam Cape",
+		right_ring="Evanescence Ring",	--5 SIRD
+		back="Moonlight Cape",
 	})
 
 	-- Oh Shit
@@ -261,11 +262,11 @@ function get_sets()
 		feet="Carmine Greaves +1", --8
 		neck="Unmoving Collar +1",
 		waist="Creed Baudrier",
-		left_ear="Etiolation Earring", --1 (Loq. better but Etiol has 50 HP for 1% less)
+		left_ear="Odnowa Earring +1",
 		right_ear="Tuisto Earring",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
-		back="Moonbeam Cape",
+		back="Moonlight Cape",
 	}
 
 	-- Enmity (full Enmity+ for spells/abilities)
@@ -298,13 +299,13 @@ function get_sets()
 	-- Flash, Holy, Banish, BLU spells use this.
 	sets.enmityspellssird = set_combine(sets.enmity, {
 		ammo="Staunch Tathlum",			--10 SIRD
-		head="Carmine Mask +1",
+		head="Souv. Schaller +1",		--20 SIRD
 		body="Chev. Cuirass +3",		--20 SIRD
 		legs="Founder's Hose",			--30 SIRD
 		feet="Carmine Greaves +1",
 		neck="Moonlight Necklace",		--15 SIRD
-		waist="Audumbla Sash",			--10 SIRD
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
+		waist="Creed Baudrier",
+		back="Moonlight Cape",
 	})
 
 	-- Healing (Cure Potency, HP+, Enmity)
@@ -317,8 +318,10 @@ function get_sets()
 		feet="Souveran Schuhs +1",	--			15 CPR (over cap, but still used for the HP)
 		neck="Phalaina Locket",		--4 CP		 4 CPR
 		waist="Creed Baudrier",
-		left_ear="Nourish. Earring",--5~6 CP
-		right_ear="Mendi. Earring",	--5 CP
+		left_ear="Odnowa Earring +1",
+		right_ear="Tuisto Earring",
+		--left_ear="Nourish. Earring",--5~6 CP
+		--right_ear="Mendi. Earring",	--5 CP
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},
@@ -327,7 +330,7 @@ function get_sets()
 	-- Healing with SIRD (102%+ SIRD, Cure Potency, HP+, Enmity)
 	-- NOTE: Cure Potency cap is 50%, Cure Potency Received cap is 30%
 	sets.healingsird = {
-		--ammo="Egoist's Tathlum",
+		ammo="Staunch Tathlum",		--10 SIRD
 		head="Souv. Schaller +1",	--20 SIRD				15 CPR
 		body="Souv. Cuirass +1",	--			11 CP		15 CPR
 		feet="Souveran Schuhs +1",	--						15 CPR (over cap, but still used for the HP)
@@ -335,11 +338,12 @@ function get_sets()
 		feet="Odyssean Greaves",	--20 SIRD
 		neck="Moonlight Necklace",	--15 SIRD
 		waist="Creed Baudrier",
-		left_ear="Nourish. Earring",--			5~6 CP
+		left_ear="Chev. Earring",--				10 CP
 		right_ear="Mendi. Earring",	--			5 CP
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
+		back="Moonlight Cape",
+		--back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
 	}
 
 	-- Enlight (Divine Magic Skill)
@@ -352,8 +356,9 @@ function get_sets()
 	sets.enlightsird = {
 		ammo="Staunch Tathlum",		--10 SIRD
 		head="Souv. Schaller +1",	--20 SIRD
+		body="Chev. Cuirass +3",	--20 SIRD
 		legs="Founder's Hose",		--30 SIRD
-		feet="Odyssean Greaves",	--20 SIRD
+		feet="Souveran Schuhs +1",
 		neck="Moonlight Necklace",	--15 SIRD
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -380,7 +385,7 @@ function get_sets()
 		neck="Moonlight Necklace",	--15 SIRD
 		waist="Audumbla Sash",		--10 SIRD
 		left_ring="Stikini Ring +1",
-		right_ring="Stikini Ring +1",
+		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
 	}
 
@@ -407,10 +412,11 @@ function get_sets()
 		legs="Founder's Hose",		--30 SIRD
 		feet="Odyssean Greaves",	--20 SIRD
 		neck="Moonlight Necklace",	--15 SIRD
-		left_ear="Mimir Earring",
-		right_ear="Andoaa Earring",
-		left_ring="Stikini Ring +1",
-		right_ring="Stikini Ring +1",
+		left_ear="Odnowa Earring +1",
+		right_ear="Tuisto Earring",
+		left_ring="Moonbeam Ring",
+		right_ring="Defending Ring",
+		back="Moonlight Cape",
 	}
 
 	-- Raise (102%+ SIRD, Conserve MP)
@@ -443,7 +449,7 @@ function get_sets()
 		right_ear="Thrud Earring",
 		left_ring="Karieyh Ring +1",
 		right_ring="Moonbeam Ring",
-		back="Moonbeam Cape",
+		back="Moonlight Cape",
 	}
 
 	-- Savage Blade (50% STR, 50% MND mod)
@@ -571,7 +577,7 @@ TopVersion = 'Cover' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Cover'
-FileVersion = '01.21.23'
+FileVersion = '02.07.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -581,6 +587,9 @@ FileVersion = '01.21.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+02.07.23 (Version Compatibility Codename: Cover)
+-Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
 
 01.24.23 (Version Compatibility Codename: Cover)
 -Adjusted WS Damage Notification to display Skillchain damage.
@@ -2391,9 +2400,9 @@ windower.register_event('action',function(act)
 		--Uses Weapon Skill but misses, gets blinked, or hits for 0
 		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-		elseif act.targets[1].actions[1].has_add_effect == true then
+		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-		else
+		elseif act.targets[1].actions[1].message == 185 then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		end
 		NotiCountdown = -1
