@@ -75,8 +75,8 @@ SirenPage		=	'10'	--[1-10]
 DiabolosPage	=	'9'		--[1-10]
 
 -- Heads Up Display --
-HUDposX			=	967		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposYLine1	=	745		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+HUDposX			=	965		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposYLine1	=	794		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
 							--				Note that this is for the first line of the HUD, the other lines will self-adjust. If you cannot
 							--				see the HUD, set the x and y both to 100 to make sure it is showing up, then adjust from there.
 FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
@@ -124,6 +124,10 @@ NotiDelay		=	6		--Delay in seconds before certain notifications will automatical
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug			=	'Off'	--[On/Off]
 
+--Color values in RGB for the HUD Aftermath status
+Aftermath1color		=	'0 127 255'		--Aftermath Level 1
+Aftermath2color		=	'75 255 75'		--Aftermath Level 2
+Aftermath3color		=	'255 255 50'	--Aftermath Level 3
 
 -------------------------------------------
 --               GEAR SETS               --
@@ -137,7 +141,7 @@ function get_sets()
 		main="Malignance Pole",
 		sub="Vox Grip",
 		ammo="Staunch Tathlum",
-		head="Beckoner's Horn +2",
+		head="Beckoner's Horn +3",
 		body="Amalric Doublet +1",
 		hands="Asteria Mitts +1",
 		legs="Assid. Pants +1",
@@ -158,11 +162,11 @@ function get_sets()
 		main="Gridarvor",
 		sub="Vox Grip",
 		ammo="Sancus Sachet +1",
-		head="Beckoner's Horn +2",
-		body="Beck. Doublet +2",
+		head="Beckoner's Horn +3",
+		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
 		legs="Assid. Pants +1",
-		feet="Herald's Gaiters",
+		feet="Beck. Pigaches +2",
 		neck="Caller's Pendant",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
@@ -175,9 +179,9 @@ function get_sets()
 	-- DT Override (Damage Taken-, Magic Evasion)
 	-- Will override all other gear sets but still inherit unused slots from them
 	sets.dtoverride = {
-		body="Beck. Doublet +2",
+		body="Beck. Doublet +3",
 		hands="Nyame Gauntlets",
-		legs="Beck. Spats +2",
+		legs="Beck. Spats +3",
 		feet="Nyame Sollerets",
 		neck="Smn. Collar +2",
 		right_ring="Defending Ring",
@@ -186,9 +190,9 @@ function get_sets()
 	-- Oh Shit
 	-- Full DT- and everything you've got with Absorbs or Annuls Damage
 	sets.ohshit = {
-		body="Beck. Doublet +2",
+		body="Beck. Doublet +3",
 		hands="Nyame Gauntlets",
-		legs="Beck. Spats +2",
+		legs="Beck. Spats +3",
 		feet="Nyame Sollerets",
 		neck="Warder's Charm +1",
 		left_ring="Shadow Ring",
@@ -198,7 +202,21 @@ function get_sets()
 
 	-- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack)
 	sets.dps = {
-
+		main="Gridarvor",
+		sub="Vox Grip",
+		ammo="Sancus Sachet +1",
+		head="Beckoner's Horn +3",
+		body="Beck. Doublet +3",
+		hands="Lamassu Mitts +1",
+		legs="Assid. Pants +1",
+		feet="Beck. Pigaches +2",
+		neck="Caller's Pendant",
+		waist="Incarnation Sash",
+		left_ear="Lugalbanda Earring",
+		right_ear="Evans Earring",
+		left_ring="Stikini Ring +1",
+		right_ring="Stikini Ring +1",
+		back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
 	}
 
 	-- Rest
@@ -241,10 +259,10 @@ function get_sets()
 		main="Espiritus",
 		sub="Vox Grip",
 		ammo="Sancus Sachet +1",
-		head="Beckoner's Horn +2",
+		head="Beckoner's Horn +3",
 		body="Con. Doublet +3",
 		hands="Lamassu Mitts +1",
-		legs="Beck. Spats +2",
+		legs="Beck. Spats +3",
 		neck="Melic Torque",
 		waist="Kobo Obi",
 		left_ear="Andoaa Earring",
@@ -316,10 +334,10 @@ function get_sets()
 		main="Espiritus",
 		sub="Vox Grip",
 		ammo="Sancus Sachet +1",
-		head="Beckoner's Horn +2",
-		body="Beck. Doublet +2",
+		head="Beckoner's Horn +3",
+		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
-		legs="Beck. Spats +2",
+		legs="Beck. Spats +3",
 		neck="Melic Torque",
 		waist="Kobo Obi",
 		left_ear="Andoaa Earring",
@@ -333,10 +351,10 @@ function get_sets()
 		main="Grioavolr",
 		sub="Vox Grip",
 		ammo="Sancus Sachet +1",
-		head="Beckoner's Horn +2",
-		body="Beck. Doublet +2",
+		head="Beckoner's Horn +3",
+		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
-		legs="Beck. Spats +2",
+		legs="Beck. Spats +3",
 		neck="Adad Amulet",
 		waist="Incarnation Sash",
 		left_ear="Andoaa Earring",
@@ -458,7 +476,7 @@ TopVersion = 'Judgment Bolt' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Judgment Bolt'
-FileVersion = '01.24.23'
+FileVersion = '02.07.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -468,6 +486,10 @@ FileVersion = '01.24.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+02.07.23 (Version Compatibility Codename: Judgment Bolt)
+-Added missing Aftermath colors.
+-Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
 
 01.24.23 (Version Compatibility Codename: Judgment Bolt)
 -Adjusted WS Damage Notification to display Skillchain damage.
@@ -2073,9 +2095,9 @@ windower.register_event('action',function(act)
 		--Uses Weapon Skill but misses, gets blinked, or hits for 0
 		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-		elseif act.targets[1].actions[1].has_add_effect == true then
+		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-		else
+		elseif act.targets[1].actions[1].message == 185 then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		end
 		NotiCountdown = -1
