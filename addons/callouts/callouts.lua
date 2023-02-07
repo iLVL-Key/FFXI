@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '01.28.23'
+_addon.version = '02.07.23'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
@@ -40,21 +40,28 @@ settings = config.load(defaults)
 
 local chat = windower.chat.input
 
-
---Unless you know what you're doing, leave everything under here alone.
-
-
-
 windower.register_event('action',function(act)
 
 	local actor = windower.ffxi.get_mob_by_id(act.actor_id)
-	if act.targets[1].id == nil then
+	if act.targets[1].id == nil or act.targets[1] == nil then
 		target_name = 'Unknown'
 	else
 		target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name
 	end
 
+	-- if act.category ~= 1 then
+		-- print('(Actor: '..actor.name..') (Cat: '..act.category..') (Message: '..act.targets[1].actions[1].param..') (Param: '..act.targets[1].actions[1].param..')  (Target: '..target_name..')')
+	-- end
+
 	if act.category == 7 then -- initiation of weapon skill or monster TP move
+
+		-- if actor.name == 'Locus Camelopard' then
+			-- if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				-- return
+			-- else
+				-- chat('/%s %s used %s on %s%s':format(settings.chatmode,actor.name,res.monster_abilities[act.targets[1].actions[1].param].en,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
+			-- end
+		-- end
 
 		if actor.name == 'Aita' or actor.name == 'Degei' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
@@ -91,6 +98,8 @@ windower.register_event('action',function(act)
 				chat('/%s Aero (Ensepulcher)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ceaseless Surge' then
 				chat('/%s Stone (Ceaseless Surge)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Impudence' then
+				chat('/%s HATE RESET (Impudence)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Blast of Reticence' then
 				chat('/%s Blizzard (Blast of Reticence)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
