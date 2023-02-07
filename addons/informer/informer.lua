@@ -25,37 +25,28 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '01.14.23'
+_addon.version = '02.07.23'
 _addon.author = 'Key'
 _addon.commands = {'info','informer'}
 
 require 'logger'
-
--- texts = require('texts')
--- config = require('config')
--- require('sets')
+config = require('config')
 res = require('resources')
--- packets = require('packets')
--- require('pack')
--- require('chat')
 
+defaults = {}
+defaults.x_pos = 0
+defaults.y_pos = -2
+defaults.font_size = 12
+defaults.text_transparency = 255
+defaults.bg_transparency = 175
 
+settings = config.load(defaults)
 
-
---Display settings
-x_pos = 0
-y_pos = -2
-font_size = 12
-text_transparency = 255
-bg_transparency = 175
-
-
---Unless you know what you're doing, leave everything under here alone.
-
-informer_main_show = true
+informer_main_show = false
 
 function create_informer_main()
-	windower.send_command('text informer_main create " Loading...";wait .3;text informer_main size '..font_size..';text informer_main pos '..x_pos..' '..y_pos..';text informer_main transparency '..text_transparency..';text informer_main bg_transparency '..bg_transparency..'')
+	windower.send_command('text informer_main create " Loading...";wait .3;text informer_main size '..settings.font_size..';text informer_main pos '..settings.x_pos..' '..settings.y_pos..';text informer_main transparency '..settings.text_transparency..';text informer_main bg_transparency '..settings.bg_transparency..'')
+	informer_main_show = true
 end
 
 function show_informer_main()
@@ -115,7 +106,9 @@ function update_informer_main()
 	elseif pos ~= "(?-?)" and not informer_main_show then
 		show_informer_main()
 	end
-	windower.send_command('text informer_main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
+	if informer_main_show then
+		windower.send_command('text informer_main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
+	end
 end
 
 windower.register_event('prerender', function()
@@ -127,8 +120,8 @@ windower.register_event('prerender', function()
 end)
 
 windower.register_event('load', create_informer_main)
-windower.register_event('login', create_informer_main)
-windower.register_event('logout', delete_informer_main)
+windower.register_event('login', show_informer_main)
+windower.register_event('logout', hide_informer_main)
 windower.register_event('unload', delete_informer_main)
 
 
