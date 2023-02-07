@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '01.21.23'
+_addon.version = '02.07.23'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -42,8 +42,8 @@ local mabils = require('resources').monster_abilities
 local whiff = {}
 local cure = {}
 local nuke = {}
-local kill = {}
-local death = {}
+--local kill = {}
+--local death = {}
 local cmd = windower.send_command
 local say = windower.chat.input
 
@@ -112,37 +112,27 @@ CureFirstAmount = 0
 CureSecondAmount = 0
 CureThirdAmount = 0
 
-KillFirstName = ""
-KillSecondName = ""
-KillThirdName = ""
-KillFirstAmount = 0
-KillSecondAmount = 0
-KillThirdAmount = 0
-kills_total = 0
+-- KillFirstName = ""
+-- KillSecondName = ""
+-- KillThirdName = ""
+-- KillFirstAmount = 0
+-- KillSecondAmount = 0
+-- KillThirdAmount = 0
+-- kills_total = 0
 
-DeathFirstName = ""
-DeathSecondName = ""
-DeathThirdName = ""
-DeathFirstAmount = 0
-DeathSecondAmount = 0
-DeathThirdAmount = 0
-deaths_total = 0
+-- DeathFirstName = ""
+-- DeathSecondName = ""
+-- DeathThirdName = ""
+-- DeathFirstAmount = 0
+-- DeathSecondAmount = 0
+-- DeathThirdAmount = 0
+-- deaths_total = 0
 
 CureThings = T{
 	'Cure','Cure II','Cure III','Cure IV','Cure V','Cure VI','Curaga','Curaga II','Curaga III','Curaga IV','Curaga V','Cura','Cura II','Cura III','Pollen','Wild Carrot','Healing Breeze','Magic Fruit','Exuviation','Plenilune Embrace','White Wind','Restoral','Full Cure','Benediction','Repair','Curing Waltz','Curing Waltz II','Curing Waltz III','Curing Waltz IV','Curing Waltz V','Divine Waltz','Divine Waltz II','Life Cycle','Mending Halation','Vivacious Pulse','Healing Ruby','Healing Ruby II','Spring Water','Whispering Wind','Healing Breath','Healing Breath II','Healing Breath II','Healing Breath IV','Potion','Hi-Potion','X-Potion','Hyper Potion','Max. Potion','Mix: Max. Potion','Chakra'
     }
 
-
--- function get_actor(id)
-    -- local actor = windower.ffxi.get_mob_by_id(id)
-    -- if not actor == nil or (not actor.in_alliance and not actor.in_party) then --------------------------------------------------------------------------------------- nil value???
-		-- return false
-    -- else
-        -- return actor
-    -- end
--- end
-
-function get_actor(id) --------------------------------------------------------------------------------------- trying to fix the nil value above
+function get_actor(id)
 	local actor = windower.ffxi.get_mob_by_id(id)
 	if actor == nil then
 		return false
@@ -225,7 +215,6 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills
 	elseif act.category == 3 and Run then
-		--print(''..weaponskills[act.param].english..' ('..act.param..')')
 		local actor = get_actor(act.actor_id)
 
 		if actor == false then
@@ -237,16 +226,16 @@ windower.register_event('action',function(act)
 		data.actor_name = actor.name or 'Unknown'
 		data.target = act.targets[1].id
 		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
-	    data.damage = act.targets[1].actions[1].param
+		data.damage = act.targets[1].actions[1].param
 		data.ws = weaponskills[act.param] and weaponskills[act.param].english or 'Unknown'
 		data.jabils = jabils[act.param] and jabils[act.param].english or 'Unknown'
 
-		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' or data.jabils == 'Eagle Eye Shot' or data.jabils == 'Mijin Gakure' or data.jabils == 'Shield Bash' or data.jabils == 'Jump' or data.jabils == 'High Jump' or data.jabils == 'Super Jump' or data.jabils == 'Weapon Bash' or data.jabils == 'Chi Blast' or data.jabils == 'Fire Shot' or data.jabils == 'Ice Shot' or data.jabils == 'Wind Shot' or data.jabils == 'Earth Shot' or data.jabils == 'Thunder Shot' or data.jabils == 'Water Shot' or data.jabils == 'Light Shot' or data.jabils == 'Dark Shot' or data.jabils == 'Blade Bash' or data.jabils == 'Spirit Jump' or data.jabils == 'Bounty Shot' or data.jabils == 'Soul Jump' or data.jabils == 'Intervene' or data.jabils == 'Swipe' or data.jabils == 'Concentric Pulse' or data.jabils == 'Lunge' then
+		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' and (act.targets[1].actions[1].message == 185 or act.targets[1].actions[1].message == 188) then
 			return
 		end
 
 		--Whiffs
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or data.damage == 0 then --Uses Weapon Skill, but misses or hit for 0
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and data.damage == 0) then --Uses Weapon Skill but misses, gets blinked, or hits for 0
 			local whiffs = whiff[data.actor_name] or 0
 			whiff[data.actor_name] = whiffs+1
 			if not Silent then
@@ -303,7 +292,7 @@ windower.register_event('action',function(act)
 				WhiffThirdAmount = whiff[data.actor_name]
 			end
 
-		else
+		elseif act.targets[1].actions[1].message == 185 then
 
 			--High Score
 			if data.damage > HSFirstDamage then
@@ -611,7 +600,7 @@ windower.register_event('action',function(act)
 	end
 
 	--Nukes
-	if act.category == 4 and Run then
+	if act.category == 4 and act.targets[1].actions[1].message == 2 and Run then
 
 		local actor = get_actor(act.actor_id)
 
@@ -748,7 +737,7 @@ windower.register_event('action',function(act)
 			NukeFifthName = data.actor_name
 			NukeFifthDamage = nuke[data.actor_name]
 		end
-		print(''..data.actor_name..' - '..nuke[data.actor_name]..'')
+		--print(''..data.actor_name..' - '..nuke[data.actor_name]..'')
 	end
 end)
 
@@ -764,17 +753,17 @@ windower.register_event('addon command',function(addcmd, arg)
 		windower.add_to_chat(200,'[Leaderboard] '..('starts - start tracking in Silent Mode'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('pause/p - pause/unpause tracking)'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('silent/s - toggle Silent Mode on or off'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('c, d, hs, k, ls, n, w - print current leaderboards to party chat'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('c, hs, ls, n, w - print current leaderboards to party chat'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('boards - list the different leaderboards that are tracked)'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('reload - reload the addon)'):color(8)..'')
 
 	elseif addcmd == 'start' then
 		Run = true
-		say('/p Leaderboard started! Type \'!lb\' followed by \'c\' \'d\' \'hs\' \'k\' \'ls\' \'n\' or \'w\' for current leaderboards')
+		say('/p Leaderboard started! Type \'!lb\' followed by c, hs, ls, n, or w for current leaderboards')
 		coroutine.sleep(1)
 		windower.add_to_chat(200,'[Leaderboard] '..('Beware - This addon uses party chat heavily.'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, silent, boards, reload'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, d, hs, k, ls, n, or w to print current leaderboards to party chat'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, n, or w to print current leaderboards to party chat'):color(8)..'')
 
 	elseif addcmd == 'starts' then
 		Run = true
@@ -782,7 +771,7 @@ windower.register_event('addon command',function(addcmd, arg)
 		windower.add_to_chat(200,'[Leaderboard] '..('Leaderboard started in Silent Mode'):color(8)..'')
 		coroutine.sleep(1)
 		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, silent, boards, reload'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, d, hs, k, ls, n, or w to print current leaderboards to party chat'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, n, or w to print current leaderboards to party chat'):color(8)..'')
 
 	elseif addcmd == 'pause' or addcmd == 'p' then
 		if Run == true then
@@ -805,9 +794,9 @@ windower.register_event('addon command',function(addcmd, arg)
 	elseif addcmd == 'board' or addcmd == 'boards' then
 		windower.add_to_chat(200,'[Leaderboard] '..('--Current Tracked Leaderboards--'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('c/cure - Running total of cures (up to 3 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('d/death - Running total of deaths (up to 3 places)'):color(8)..'')
+		--windower.add_to_chat(200,'[Leaderboard] '..('d/death - Running total of deaths (up to 3 places)'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('hs/highscore - Highest individual WS damage (up to 5 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('k/kill - Running total of kills (up to 3 places)'):color(8)..'')
+		--windower.add_to_chat(200,'[Leaderboard] '..('k/kill - Running total of kills (up to 3 places)'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('ls/lowscore - Lowest individual WS damage (up to 3 places)'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('n/nuke - Running total of nukes (up to 5 places)'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('w/whiffs - Running total of whiffs (up to 3 places)'):color(8)..'')
@@ -823,22 +812,22 @@ windower.register_event('addon command',function(addcmd, arg)
 			say('/p \r--Cure Leaderboard--\rNo data yet')
 		end
 
-	elseif addcmd == 'd' or addcmd =='death' or addcmd =='deaths' then
-		if DeathThirdAmount ~= 0 then
-			local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
-			local DeathSecondPercent = (math.floor((DeathSecondAmount/deaths_total)*10000))/100
-			local DeathThirdPercent = (math.floor((DeathThirdAmount/deaths_total)*10000))/100
-			say('/p \r--Death Leaderboard--\rNo.1: '..DeathFirstName..' ('..DeathFirstAmount..', '..DeathFirstPercent..'%)\rNo.2: '..DeathSecondName..' ('..DeathSecondAmount..', '..DeathSecondPercent..'%)\rNo.3: '..DeathThirdName..' ('..DeathThirdAmount..', '..DeathThirdPercent..'%)')
-		elseif DeathSecondAmount ~= 0 then
-			local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
-			local DeathSecondPercent = (math.floor((DeathSecondAmount/deaths_total)*10000))/100
-			say('/p \r--Death Leaderboard--\rNo.1: '..DeathFirstName..' ('..DeathFirstAmount..', '..DeathFirstPercent..'%)\rNo.2: '..DeathSecondName..' ('..DeathSecondAmount..', '..DeathSecondPercent..'%)')
-		elseif DeathFirstAmount ~= 0 then
-			local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
-			say('/p \r--Death Leaderboard--\rNo.1: '..DeathFirstName..' ('..DeathFirstAmount..', '..DeathFirstPercent..'%)')
-		else
-			say('/p \r--Death Leaderboard--\rNo data yet')
-		end
+	-- elseif addcmd == 'd' or addcmd =='death' or addcmd =='deaths' then
+		-- if DeathThirdAmount ~= 0 then
+			-- local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
+			-- local DeathSecondPercent = (math.floor((DeathSecondAmount/deaths_total)*10000))/100
+			-- local DeathThirdPercent = (math.floor((DeathThirdAmount/deaths_total)*10000))/100
+			-- say('/p \r--Death Leaderboard--\rNo.1: '..DeathFirstName..' ('..DeathFirstAmount..', '..DeathFirstPercent..'%)\rNo.2: '..DeathSecondName..' ('..DeathSecondAmount..', '..DeathSecondPercent..'%)\rNo.3: '..DeathThirdName..' ('..DeathThirdAmount..', '..DeathThirdPercent..'%)')
+		-- elseif DeathSecondAmount ~= 0 then
+			-- local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
+			-- local DeathSecondPercent = (math.floor((DeathSecondAmount/deaths_total)*10000))/100
+			-- say('/p \r--Death Leaderboard--\rNo.1: '..DeathFirstName..' ('..DeathFirstAmount..', '..DeathFirstPercent..'%)\rNo.2: '..DeathSecondName..' ('..DeathSecondAmount..', '..DeathSecondPercent..'%)')
+		-- elseif DeathFirstAmount ~= 0 then
+			-- local DeathFirstPercent = (math.floor((DeathFirstAmount/deaths_total)*10000))/100
+			-- say('/p \r--Death Leaderboard--\rNo.1: '..DeathFirstName..' ('..DeathFirstAmount..', '..DeathFirstPercent..'%)')
+		-- else
+			-- say('/p \r--Death Leaderboard--\rNo data yet')
+		-- end
 
 	elseif addcmd == 'ls' or addcmd =='lowscore' then
 		if LSThirdDamage ~= 999999 then
@@ -866,22 +855,22 @@ windower.register_event('addon command',function(addcmd, arg)
 			say('/p \r--High Score Leaderboard--\rNo data yet')
 		end
 
-	elseif addcmd == 'k' or addcmd =='kill' or addcmd =='kills' then
-		if KillThirdAmount ~= 0 then
-			local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
-			local KillSecondPercent = math.floor((KillSecondAmount/kills_total)*10000)/100
-			local KillThirdPercent = math.floor((KillThirdAmount/kills_total)*10000)/100
-			say('/p \r--Kill Leaderboard--\rNo.1: '..KillFirstName..' ('..KillFirstAmount..', '..KillFirstPercent..'%)\rNo.2: '..KillSecondName..' ('..KillSecondAmount..', '..KillSecondPercent..'%)\rNo.3: '..KillThirdName..' ('..KillThirdAmount..', '..KillThirdPercent..'%)')
-		elseif KillSecondAmount ~= 0 then
-			local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
-			local KillSecondPercent = math.floor((KillSecondAmount/kills_total)*10000)/100
-			say('/p \r--Kill Leaderboard--\rNo.1: '..KillFirstName..' ('..KillFirstAmount..', '..KillFirstPercent..'%)\rNo.2: '..KillSecondName..' ('..KillSecondAmount..', '..KillSecondPercent..'%)')
-		elseif KillFirstAmount ~= 0 then
-			local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
-			say('/p \r--Kill Leaderboard--\rNo.1: '..KillFirstName..' ('..KillFirstAmount..', '..KillFirstPercent..'%)')
-		else
-			say('/p \r--Kill Leaderboard--\rNo data yet')
-		end
+	-- elseif addcmd == 'k' or addcmd =='kill' or addcmd =='kills' then
+		-- if KillThirdAmount ~= 0 then
+			-- local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
+			-- local KillSecondPercent = math.floor((KillSecondAmount/kills_total)*10000)/100
+			-- local KillThirdPercent = math.floor((KillThirdAmount/kills_total)*10000)/100
+			-- say('/p \r--Kill Leaderboard--\rNo.1: '..KillFirstName..' ('..KillFirstAmount..', '..KillFirstPercent..'%)\rNo.2: '..KillSecondName..' ('..KillSecondAmount..', '..KillSecondPercent..'%)\rNo.3: '..KillThirdName..' ('..KillThirdAmount..', '..KillThirdPercent..'%)')
+		-- elseif KillSecondAmount ~= 0 then
+			-- local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
+			-- local KillSecondPercent = math.floor((KillSecondAmount/kills_total)*10000)/100
+			-- say('/p \r--Kill Leaderboard--\rNo.1: '..KillFirstName..' ('..KillFirstAmount..', '..KillFirstPercent..'%)\rNo.2: '..KillSecondName..' ('..KillSecondAmount..', '..KillSecondPercent..'%)')
+		-- elseif KillFirstAmount ~= 0 then
+			-- local KillFirstPercent = math.floor((KillFirstAmount/kills_total)*10000)/100
+			-- say('/p \r--Kill Leaderboard--\rNo.1: '..KillFirstName..' ('..KillFirstAmount..', '..KillFirstPercent..'%)')
+		-- else
+			-- say('/p \r--Kill Leaderboard--\rNo data yet')
+		-- end
 
 	elseif addcmd == 'n' or addcmd =='nuke' or addcmd =='nukes' then
 		if NukeFifthDamage ~= 0 then
@@ -925,13 +914,13 @@ windower.register_event('incoming text',function(org, modified, mode)
 		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb c')
-	elseif org:find('!lb d') and not org:find('Leaderboard started!')then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
-		coroutine.sleep(2)
-		cmd('lb d')
+	-- elseif org:find('!lb d') and not org:find('Leaderboard started!')then
+		-- if board_flood_timer ~= 0 then
+			-- return
+		-- end
+		-- board_flood_timer = board_flood_delay
+		-- coroutine.sleep(2)
+		-- cmd('lb d')
 	elseif org:find('!lb ls') and not org:find('Leaderboard started!')then
 		if board_flood_timer ~= 0 then
 			return
@@ -946,13 +935,13 @@ windower.register_event('incoming text',function(org, modified, mode)
 		board_flood_timer = board_flood_delay
 		coroutine.sleep(2)
 		cmd('lb hs')
-	elseif org:find('!lb k') and not org:find('Leaderboard started!')then
-		if board_flood_timer ~= 0 then
-			return
-		end
-		board_flood_timer = board_flood_delay
-		coroutine.sleep(2)
-		cmd('lb k')
+	-- elseif org:find('!lb k') and not org:find('Leaderboard started!')then
+		-- if board_flood_timer ~= 0 then
+			-- return
+		-- end
+		-- board_flood_timer = board_flood_delay
+		-- coroutine.sleep(2)
+		-- cmd('lb k')
 	elseif org:find('!lb n') and not org:find('Leaderboard started!')then
 		if board_flood_timer ~= 0 then
 			return
@@ -973,20 +962,16 @@ windower.register_event('incoming text',function(org, modified, mode)
 	org = org:strip_colors()
 
 	--Kills
-	if mode == 36 and Run then
+--[[	if mode == 36 and Run then
 
-		actor_name = org:match('(.*) defeats the')
+		local actor_name = org:match('(.*) defeats the')
 --print('Mode: '..mode..'   -   ['..actor_name..']   -   '..org..'')
 		kills_total = kills_total+1
-		local kills = kill[actor_name] or 0
---print('kills_total: '..kills_total..'')
---print('kills: ['..kills..']')
---print('kill[actor_name]: '..kill[actor_name]..'') --attempt to concatenate field '?' (a nil value)
-		-- if kill[actor_name] == nil then  ----------------------------------------------------------trying to fix the nil value below
-			-- return
-		-- else
-			-- kill[actor_name] = kills+1  ------------------------------------------------------------------------------------------------------- nil?
-		-- end
+		if not kill[actor_name]  == nil then
+			local kills = kill[actor_name]
+		else
+			return
+		end
 
 		kill[actor_name] = kills+1  ------------------------------------------------------------------------------------------------------- nil?
 		if kill[actor_name] > KillFirstAmount then
@@ -1079,7 +1064,7 @@ windower.register_event('incoming text',function(org, modified, mode)
 		--say('/echo '..actor_name..' died (Running Total: '..death[actor_name]..')')
 
 	end
-
+]]--
 end)
 
 windower.register_event('prerender', function()
