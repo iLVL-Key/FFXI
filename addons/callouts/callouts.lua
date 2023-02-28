@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '02.07.23'
+_addon.version = '02.27.23'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
@@ -43,14 +43,9 @@ local chat = windower.chat.input
 windower.register_event('action',function(act)
 
 	local actor = windower.ffxi.get_mob_by_id(act.actor_id)
-	if act.targets[1].id == nil or act.targets[1] == nil then
-		target_name = 'Unknown'
-	else
-		target_name = windower.ffxi.get_mob_by_id(act.targets[1].id).name
-	end
 
 	-- if act.category ~= 1 then
-		-- print('(Actor: '..actor.name..') (Cat: '..act.category..') (Message: '..act.targets[1].actions[1].param..') (Param: '..act.targets[1].actions[1].param..')  (Target: '..target_name..')')
+		-- print('(Actor: '..actor.name..') (Cat: '..act.category..') (Message: '..act.targets[1].actions[1].message..') (Param: '..act.targets[1].actions[1].param..')  (Target: '..target_name..')')
 	-- end
 
 	if act.category == 7 then -- initiation of weapon skill or monster TP move
@@ -115,22 +110,27 @@ windower.register_event('action',function(act)
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Target' then
-				chat('/%s Target used on %s%s':format(settings.chatmode,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat('/%s Target used on %s%s':format(settings.chatmode,windower.ffxi.get_mob_by_id(act.targets[1].id).name,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Prophylaxis' then
+				chat('/%s Prophylaxis - 30 second countdown to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				windower.send_command('wait 10;input /%s 20 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				windower.send_command('wait 20;input /%s 10 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				windower.send_command('wait 25;input /%s 5 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
 		elseif actor.name == 'Bumba' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Perfect Dodge' then
+			elseif res.job_abilities[act.targets[1].actions[1].param].en == 'Perfect Dodge' then
 				chat('/%s Perfect Dodge%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 				chat:schedule(30,'/%s Perfect Dodge is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Invincible' then
+			elseif res.job_abilities[act.targets[1].actions[1].param].en == 'Invincible' then
 				chat('/%s Invincible%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 				chat:schedule(30,'/%s Invincible is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Elemental Sforzo' then
+			elseif res.job_abilities[act.targets[1].actions[1].param].en == 'Elemental Sforzo' then
 				chat('/%s Elemental Sforzo%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 				chat:schedule(30,'/%s Elemental Sforzo is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
-			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Yaegasumi' then
+			elseif res.job_abilities[act.targets[1].actions[1].param].en == 'Yaegasumi' then
 				chat('/%s Yaegasumi%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 				chat:schedule(30,'/%s Yaegasumi is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
@@ -139,7 +139,14 @@ windower.register_event('action',function(act)
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Volcanic Stasis' then
-				chat('/%s Full Dispel on %s%s':format(settings.chatmode,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat('/%s Full Dispel%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		elseif actor.name == 'Halphas' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Full-On Tackle' then
+				chat('/%s HATE RESET%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
 		end
@@ -192,7 +199,8 @@ windower.register_event('addon command', function(addcmd)
 		windower.add_to_chat(200,'[Callouts] '..('Use \'//co chatmode\' to switch between Echo and Party chat modes.'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('Odyssey (Bumba 1-HRs)'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Omen (Scales, Pain Sync, Target)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Dyna-D (Halphas hate reset)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Omen (Scales, Pain Sync, Prophylaxis, Target)'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('Sortie (weaknesses, hate resets)'):color(8)..'')
 
