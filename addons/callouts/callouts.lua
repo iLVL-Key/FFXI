@@ -94,7 +94,7 @@ windower.register_event('action',function(act)
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Ceaseless Surge' then
 				chat('/%s Stone (Ceaseless Surge)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Impudence' then
-				chat('/%s HATE RESET (Impudence)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat('/%s Hate Reset (Impudence)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Blast of Reticence' then
 				chat('/%s Blizzard (Blast of Reticence)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
@@ -118,6 +118,13 @@ windower.register_event('action',function(act)
 				windower.send_command('wait 25;input /%s 5 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
+		elseif actor.name == 'Arebati' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Glassy Nova' then
+				chat('/%s Full Dispel%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
 		elseif actor.name == 'Bumba' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
@@ -135,6 +142,20 @@ windower.register_event('action',function(act)
 				chat:schedule(30,'/%s Yaegasumi is off%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
+		elseif actor.name == 'Gigelorum' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Debilitating Spout' then
+				chat('/%s Full Dispel%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		elseif actor.name == 'Henwen' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Barreling Smash' then
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
 		elseif actor.name == 'Kalunga' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
@@ -142,11 +163,32 @@ windower.register_event('action',function(act)
 				chat('/%s Full Dispel%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
+		elseif actor.name == 'Mboze' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Uproot' then
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		elseif actor.name == 'Ngai' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Protolithic Puncture' then
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		elseif actor.name == 'Xevioso' then
+			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
+				return
+			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Incisive Denouement' then
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
 		elseif actor.name == 'Halphas' then
 			if res.monster_abilities[act.targets[1].actions[1].param] == nil then
 				return
 			elseif res.monster_abilities[act.targets[1].actions[1].param].en == 'Full-On Tackle' then
-				chat('/%s HATE RESET%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
 		end
@@ -213,11 +255,11 @@ windower.register_event('addon command', function(addcmd)
 
 	elseif addcmd == 'list' then
 		windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('- Odyssey (Bumba 1-HRs)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Odyssey (Hate resets, full dispels, Bumba 1-HRs)'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('- Dyna-D (Halphas hate reset)'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('- Omen (Scales, Pain Sync, Prophylaxis, Target)'):color(8)..'')
 		windower.add_to_chat(200,'[Callouts] '..('- Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('- Sortie (elements/weaknesses, hate resets)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Sortie (Elements/weaknesses, hate resets)'):color(8)..'')
 
 	elseif addcmd == 'reload' then
         windower.send_command('lua r callouts')
