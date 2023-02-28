@@ -3,11 +3,11 @@
 Various callouts for endgame things.
 
 ## Current Callouts:
-- Odyssey: Bumba 1-HRs
+- Odyssey: Hate resets, full dispels, Bumba 1-HRs
 - Dyna-D: Halphas hate reset
 - Omen: Scales, Pain Sync, Prophylaxis, Target
-- Vagary:Perfidien/Plouton pop, weaknesses
-- Sortie: Weaknesses, hate resets
+- Vagary: Perfidien/Plouton pop, weaknesses
+- Sortie: Elements/weaknesses, hate resets
 
 ### Commands
 All commands must be prefixed with either `//callouts` or `//co` (ex: `//co chat`)
