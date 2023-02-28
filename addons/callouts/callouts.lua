@@ -196,13 +196,9 @@ end)
 windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
-		windower.add_to_chat(200,'[Callouts] '..('Use \'//co chatmode\' to switch between Echo and Party chat modes.'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Odyssey (Bumba 1-HRs)'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Dyna-D (Halphas hate reset)'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Omen (Scales, Pain Sync, Prophylaxis, Target)'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Sortie (weaknesses, hate resets)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Commands:'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..(' chatmode/chat/mode - Switch between Echo and Party chat modes.'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..(' list - List the current callouts.'):color(8)..'')
 
 	elseif addcmd == 'chatmode' or addcmd == 'chat' or addcmd == 'mode' then
 		if settings.chatmode == 'echo' then
@@ -215,13 +211,20 @@ windower.register_event('addon command', function(addcmd)
 			settings:save()
 		end
 
+	elseif addcmd == 'list' then
+		windower.add_to_chat(200,'[Callouts] '..('Current callouts:'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Odyssey (Bumba 1-HRs)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Dyna-D (Halphas hate reset)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Omen (Scales, Pain Sync, Prophylaxis, Target)'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Vagary (Perfidien/Plouton pop, weaknesses'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('- Sortie (elements/weaknesses, hate resets)'):color(8)..'')
+
 	elseif addcmd == 'reload' then
         windower.send_command('lua r callouts')
         return
 
 	else
-		windower.add_to_chat(200,'[Callouts] '..('Unknown command'):color(8)..'')
-		windower.add_to_chat(200,'[Callouts] '..('Type \'//co help\' for help.'):color(8)..'')
+		windower.add_to_chat(200,'[Callouts] '..('Unknown command. Type \'//co help\' for list of commands.'):color(8)..'')
 	end
 	
 end)
