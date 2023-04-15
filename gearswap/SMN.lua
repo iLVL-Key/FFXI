@@ -41,8 +41,8 @@ Required Windower Addons: Text
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleCombat =	'6'		--[1-20]		Your Lockstyle set when in a field zone.
-LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
+LockstyleCombat =	'6'		--[1-200]		Your Lockstyle set when in a field zone.
+LockstyleTown	=	'1'		--[1-200]		Your Lockstyle set when in a town zone.
 							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'4'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
@@ -124,7 +124,7 @@ NotiDelay		=	6		--Delay in seconds before certain notifications will automatical
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug			=	'Off'	--[On/Off]
 
---Color values in RGB for the HUD Aftermath status
+--Color Values
 Aftermath1color		=	'0 127 255'		--Aftermath Level 1
 Aftermath2color		=	'75 255 75'		--Aftermath Level 2
 Aftermath3color		=	'255 255 50'	--Aftermath Level 3
@@ -166,7 +166,7 @@ function get_sets()
 		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
 		legs="Assid. Pants +1",
-		feet="Beck. Pigaches +2",
+		feet="Beck. Pigaches +3",
 		neck="Caller's Pendant",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
@@ -209,7 +209,7 @@ function get_sets()
 		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
 		legs="Assid. Pants +1",
-		feet="Beck. Pigaches +2",
+		feet="Beck. Pigaches +3",
 		neck="Caller's Pendant",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
@@ -476,7 +476,7 @@ TopVersion = 'Judgment Bolt' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Judgment Bolt'
-FileVersion = '02.07.23'
+FileVersion = '04.15.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -486,6 +486,12 @@ FileVersion = '02.07.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+04.15.23 (Version Compatibility Codename: Judgment Bolt)
+-Fixed missing options listings in the File Info (//fileinfo)
+
+02.22.23 (Version Compatibility Codename: Judgment Bolt)
+-Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
 
 02.07.23 (Version Compatibility Codename: Judgment Bolt)
 -Added missing Aftermath colors.
@@ -895,6 +901,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -913,9 +920,16 @@ function self_command(command)
 		windower.add_to_chat(3,'--           Advanced Options              --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
+		windower.add_to_chat(200,' ')
+		windower.add_to_chat(3,'-- Color Values --')
+		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
+		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
+		windower.add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
@@ -2092,9 +2106,10 @@ windower.register_event('action',function(act)
 	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
 	local weaponskills = require('resources').weapon_skills
 	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
+		--Uses Weapon Skill but misses or gets blinked
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill lands and creates a Skillchain
 		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 		elseif act.targets[1].actions[1].message == 185 then
