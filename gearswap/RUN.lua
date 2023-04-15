@@ -72,8 +72,8 @@ Required Windower Addons: Text
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Battle and Town sets below.
-LockstyleCombat	=	'7'		--[1-20]		Your Lockstyle set when in a battle zone.
-LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
+LockstyleCombat	=	'7'		--[1-200]		Your Lockstyle set when in a battle zone.
+LockstyleTown	=	'1'		--[1-200]		Your Lockstyle set when in a town zone.
 							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'6'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
@@ -131,10 +131,9 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-StartMode		=	'Auto'		--[Auto/Combat/Neutral]
-								--	Determines the Mode you will start in. Current Mode can be changed at any time by using any of the 
-								--	three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-RemoveAuto		=	'No'		--[Yes/No]	Don't like the Auto Mode? Remove it entirely.
+StartMode		=	'Auto-Parry'--[Auto-Parry/Auto-DT/Combat/Neutral/DPS]
+								--	Determines the Mode you will start in. Current Mode can be changed at any time by using any
+								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 DefaultRune		=	'Tenebrae'	--Starting Rune element for the Rune Activator function.
 ModeCtrlPlus	=	'g'			--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
 LowHPThreshold	=	1000		--Below this number is considered Low HP.
@@ -144,12 +143,13 @@ NotiDelay		=	6			--Delay in seconds before certain notifications will automatica
 HUDBGTrans		=	'175'		--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug			=	'Off'		--[On/Off]
 
---Color values in RGB for the HUD gear modes
-Autocolor		=	'125 200 255'	--Auto Mode
-Combatcolor		=	'255 125 125'	--Combat Mode
+--Color Values
+AutoParrycolor	=	'125 200 255'	--Auto-Parry Mode
+AutoDTcolor		=	'25 150 255'	--Auto-DT Mode
+CombatParrycolor=	'255 125 125'	--Combat-Parry Mode
+CombatDTcolor	=	'255 125 50'	--Combat-DT Mode
 Neutralcolor	=	'150 255 150'	--Neutral Mode
-
---Color values in RGB for the HUD Aftermath status
+DPScolor		=	'255 255 125'	--DPS Mode
 Aftermath1color =	'0 127 255'		--Aftermath Level 1
 Aftermath2color =	'75 255 75'		--Aftermath Level 2
 Aftermath3color =	'255 255 50'	--Aftermath Level 3
@@ -160,9 +160,9 @@ Aftermath3color =	'255 255 50'	--Aftermath Level 3
 
 function get_sets()
 
-	-- Tank (Damage Taken-, Parry, Magic Evasion, Double/Triple/Quadruple Attack, Accuracy, DEX)
-	-- This is the main Tank set. Focus on DT first, then fill in DPS gear around that.
-	sets.tank = {
+	-- Tank Parry (Parry, Damage Taken-, Magic Evasion, Double/Triple/Quadruple Attack, Accuracy, DEX)
+	-- This is the main Tank set for most things. Focus on parry first (for the Turms Gloves you have, right?) then DT- and others.
+	sets.tankparry = {
 		ammo="Staunch Tathlum",
 		head="Nyame Helm",
 		body="Erilaz Surcoat +3",
@@ -179,21 +179,21 @@ function get_sets()
 		--back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
 	}
 
-	-- Kite (Damage Taken-, Evasion, Magic Evasion, Enmity+, VIT, Defense)
-	-- When you're tanking but not engaged. Focus is on pure survival.
-	sets.kite = {
+	-- Tank DT (Damage Taken-, Parry, Magic Evasion, Double/Triple/Quadruple Attack, Accuracy, DEX)
+	-- This is for certain mobs or times that you cannot parry. Focus on DT- first, then fill in DPS gear around that.
+	sets.tankdt = {
 		ammo="Staunch Tathlum",
 		head="Nyame Helm",
 		body="Erilaz Surcoat +3",
 		hands="Erilaz Gauntlets +3",
-		legs="Carmine Cuisses +1",
+		legs="Eri. Leg Guards +3",
 		feet="Erilaz Greaves +3",
 		neck="Futhark Torque +2",
 		waist="Carrier's Sash",
 		left_ear="Ethereal Earring",
 		right_ear="Cryptic Earring",
 		left_ring="Moonbeam Ring",
-		right_ring="Defending Ring",
+		right_ring="Moonbeam Ring",
 		back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}},
 	}
 
@@ -223,7 +223,7 @@ function get_sets()
 	})
 
 	-- Idle (Movement speed)
-	-- Combines with Tank/DPS set based on current mode
+	-- Combines with other sets based on current mode
 	sets.movementspeed = {
 		legs="Carmine Cuisses +1",
 	}
@@ -269,8 +269,7 @@ function get_sets()
 		hands="Rawhide Gloves",			--15
 		legs="Carmine Cuisses +1",		--20
 		neck="Moonlight Necklace",		--15
-		waist="Audumbla Sash",			--10
-		--left_ring="Evanescence Ring",	--5
+		left_ring="Evanescence Ring",	--5
 		back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}}, --10
 	}
 
@@ -458,7 +457,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Max HP Boost' --Leave this alone, used for debugging purposes
+TopVersion = 'Ignis' --Leave this alone, used for debugging purposes
 
 
 
@@ -470,8 +469,8 @@ TopVersion = 'Max HP Boost' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Max HP Boost'
-FileVersion = '02.07.23'
+BottomVersion = 'Ignis'
+FileVersion = '04.15.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -481,6 +480,14 @@ FileVersion = '02.07.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+04.15.23 (Version Compatibility Codename: Ignis)
+-Added new Gear Modes. Added DPS, split Tank into Tank-Parry and Tank-DT, and split Auto into Auto-Parry and Auto-DT. Splitting the Tank/Auto was done because sometimes you're fighting a mob that you cannot parry (ie Sortie boss melees are considered TP moves and therefore not able to be parried).
+-Removed the ability to remove the Auto Gear Mode from the Gear Mode rotation. Added unnecessary complexity.
+-Fixed missing options listings in the File Info (//fileinfo)
+
+02.22.23 (Version Compatibility Codename: Max HP Boost)
+-Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
 
 02.07.23 (Version Compatibility Codename: Max HP Boost)
 -Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
@@ -646,12 +653,18 @@ send_command('wait 1.8;text bg3 create "                                        
 send_command('wait 1.9;text bg4 create "                                                                                                                          ";wait .3;text bg4 size '..FontSize..';text bg4 pos '..HUDposXColumn1..' -100;text bg4 bg_transparency '..HUDBGTrans..'')--Background Line 4
 --Create the Weapons, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
 send_command('wait 2;text weapons create "« Weapon loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Weapons
-if Mode == 'Auto' then
-	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Autocolor..';text mode bg_transparency 1') --Auto Mode
-elseif Mode == 'Combat' then
-	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Combatcolor..';text mode bg_transparency 1') --Combat Mode
+if Mode == 'Auto-Parry' then
+	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..AutoParrycolor..';text mode bg_transparency 1')
+elseif Mode == 'Auto-DT' then
+	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..AutoDTcolor..';text mode bg_transparency 1')
+elseif Mode == 'Combat-Parry' then
+	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..CombatParrycolor..';text mode bg_transparency 1')
+elseif Mode == 'Combat-DT' then
+	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..CombatDTcolor..';text mode bg_transparency 1')
 elseif Mode == 'Neutral' then
-	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Neutralcolor..';text mode bg_transparency 1') --Neutral Mode
+	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Neutralcolor..';text mode bg_transparency 1')
+elseif Mode == 'DPS' then
+	send_command('wait 2.1;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..DPScolor..';text mode bg_transparency 1')
 end
 send_command('wait 2.2;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
 send_command('wait 2.3;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
@@ -707,20 +720,24 @@ end
 
 function self_command(command)
 	if command == 'Mode' then
-		if Mode == 'Auto' then
-			Mode = 'Combat'
-			send_command('text mode color '..Combatcolor..'')
-		elseif Mode == 'Combat' then
+		if Mode == 'Auto-Parry' then
+			Mode = 'Auto-DT'
+			send_command('text mode color '..AutoDTcolor..'')
+		elseif Mode == 'Auto-DT' then
+			Mode = 'Combat-Parry'
+			send_command('text mode color '..CombatParrycolor..'')
+		elseif Mode == 'Combat-Parry' then
+			Mode = 'Combat-DT'
+			send_command('text mode color '..CombatDTcolor..'')
+		elseif Mode == 'Combat-DT' then
 			Mode = 'Neutral'
 			send_command('text mode color '..Neutralcolor..'')
 		elseif Mode == 'Neutral' then
-			if RemoveAuto == 'No' then
-				Mode = 'Auto'
-				send_command('text mode color '..Autocolor..'')
-			else
-				Mode = 'Combat'
-				send_command('text mode color '..Combatcolor..'')
-			end
+			Mode = 'DPS'
+			send_command('text mode color '..DPScolor..'')
+		elseif Mode == 'DPS' then
+			Mode = 'Auto-Parry'
+			send_command('text mode color '..AutoParrycolor..'')
 		end
 		send_command('text mode text "Mode: '..Mode..'"')
 		if Debug == 'On' then
@@ -742,7 +759,7 @@ function self_command(command)
 			send_command('text notifications text "Status: Resting";text notifications color 255 255 255;text notifications bg_transparency 1')
 		elseif player.status == "Engaged" then
 			send_command('text notifications text "Status: Engaged";text notifications color 255 255 255;text notifications bg_transparency 1')
-		elseif player.status == "Idle" and (Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true)) then
+		elseif player.status == "Idle" and (Mode == 'Combat-Parry' or Mode == 'Combat-DT' or ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == true)) then
 				send_command('text notifications text "Status: Kiting";text notifications color 255 255 255;text notifications bg_transparency 1')
 		elseif player.status == "Idle" then
 			send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
@@ -878,6 +895,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -896,15 +914,22 @@ function self_command(command)
 		windower.add_to_chat(3,'--           Advanced Options              --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
-		windower.add_to_chat(200,'RemoveAuto: '..(''..RemoveAuto..''):color(8)..'')
+		windower.add_to_chat(200,'DefaultRune: '..(''..DefaultRune..''):color(8)..'')
 		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
 		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
-		windower.add_to_chat(200,'Autocolor: '..(''..Autocolor..''):color(8)..'')
-		windower.add_to_chat(200,'Combatcolor: '..(''..Combatcolor..''):color(8)..'')
+		windower.add_to_chat(200,' ')
+		windower.add_to_chat(3,'-- Color Values --')
+		windower.add_to_chat(200,'AutoParrycolor: '..(''..AutoParrycolor..''):color(8)..'')
+		windower.add_to_chat(200,'AutoDTcolor: '..(''..AutoDTcolor..''):color(8)..'')
+		windower.add_to_chat(200,'CombatParrycolor: '..(''..CombatParrycolor..''):color(8)..'')
+		windower.add_to_chat(200,'CombatDTcolor: '..(''..CombatDTcolor..''):color(8)..'')
 		windower.add_to_chat(200,'Neutralcolor: '..(''..Neutralcolor..''):color(8)..'')
+		windower.add_to_chat(200,'DPScolor: '..(''..DPScolor..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
@@ -1128,20 +1153,35 @@ function choose_set()
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Oh Shit]')
 			end
-		elseif Mode == 'Auto' then -- if we're engaged we automatically get put into combat so we equip the tank set
-			equip(sets.tank)
+		elseif Mode == 'Auto-Parry' then -- if we're engaged we automatically get put into combat so we equip the tank set
+			equip(sets.tankparry)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tank]')
+				windower.add_to_chat(8,'[Equipped Set: Tank Parry]')
+			end
+		elseif Mode == 'Auto-DT' then -- if we're engaged we automatically get put into combat so we equip the tank set
+			equip(sets.tankdt)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Tank DT]')
 			end
 		elseif Mode == 'Neutral' then
 			equip(sets.refresh)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh]')
 			end
-		elseif Mode == 'Combat' then
-			equip(sets.tank)
+		elseif Mode == 'Combat-Parry' then
+			equip(sets.tankparry)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tank]')
+				windower.add_to_chat(8,'[Equipped Set: Tank Parry]')
+			end
+		elseif Mode == 'Combat-DT' then
+			equip(sets.tankdt)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Tank DT]')
+			end
+		elseif Mode == 'DPS' then
+			equip(sets.dps)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: DPS]')
 			end
 		end
 	elseif  player.status == "Idle" then 
@@ -1156,7 +1196,7 @@ function choose_set()
 				send_command('text notifications text "Status: Weak";text notifications color 205 133 63;text notifications bg_transparency 1')
 			elseif player.mpp <= 20 then
 				send_command('text notifications text "«« Low MP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
-			elseif Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) then
+			elseif Mode == 'Combat-Parry' or Mode == 'Combat-DT' or ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == true) then
 				send_command('text notifications text "Status: Kiting";text notifications color 255 255 255;text notifications bg_transparency 1')
 			else
 				send_command('text notifications text "Status: Idle";text notifications color 255 255 255;text notifications bg_transparency 1')
@@ -1193,12 +1233,12 @@ function choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Oh Shit + Movement Speed]')
 				end
-			elseif (Mode == 'Auto' and player.in_combat == true) or Mode == 'Combat' then -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
-				equip(set_combine(sets.tank, sets.movementspeed))
+			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == true) or Mode == 'Combat-Parry' or Mode == 'Combat-DT' then -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
+				equip(set_combine(sets.tankdt, sets.movementspeed))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tank + Movement Speed]')
+					windower.add_to_chat(8,'[Equipped Set: Tank DT + Movement Speed]')
 				end
-			elseif (Mode == 'Auto' and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
+			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
 				equip(set_combine(sets.refresh, sets.movementspeed))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Refresh + Movement Speed]')
@@ -1469,7 +1509,7 @@ end
 
 function midcast(spell)
 	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
-		if Mode == 'Auto' then
+		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.healing)
 				if Debug == 'On' then
@@ -1481,7 +1521,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Enmity + Healing + SIRD]')
 				end
 			end
-		elseif Mode == 'Combat' and not buffactive['Aquaveil'] then
+		elseif (Mode == 'Combat-Parry' or Mode == 'Combat-DT') and not buffactive['Aquaveil'] then
 			equip(set_combine(sets.enmity, sets.healing, sets.sird))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enmity + Healing + SIRD]')
@@ -1493,7 +1533,7 @@ function midcast(spell)
 			end		
 		end
 	elseif spell.english == 'Foil' or spell.english == 'Flash' or spell.english == 'Holy' or string.find(spell.english,'Banish') or spell.type == "BlueMagic" or string.find(spell.english,'Poison') then
-		if Mode == 'Auto' then
+		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.enmityspells)
 				if Debug == 'On' then
@@ -1505,7 +1545,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
 				end
 			end
-		elseif Mode == 'Combat' and not buffactive['Aquaveil'] then
+		elseif (Mode == 'Combat-Parry' or Mode == 'Combat-DT') and not buffactive['Aquaveil'] then
 			equip(set_combine(sets.enmityspells, sets.sird))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enmity Spells + SIRD]')
@@ -1517,7 +1557,7 @@ function midcast(spell)
 			end
 		end
 	elseif string.find(spell.english,'Regen') then
-		if Mode == 'Auto' then
+		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.regen)
 				if Debug == 'On' then
@@ -1529,7 +1569,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Regen + SIRD]')
 				end
 			end
-		elseif Mode == 'Combat' and not buffactive['Aquaveil'] then
+		elseif (Mode == 'Combat-Parry' or Mode == 'Combat-DT') and not buffactive['Aquaveil'] then
 			equip(set_combine(sets.regen, sets.sird))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Regen + SIRD]')
@@ -1541,7 +1581,7 @@ function midcast(spell)
 			end
 		end
 	elseif spell.english == 'Refresh' then
-		if Mode == 'Auto' then
+		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.refreshspell)
 				if Debug == 'On' then
@@ -1553,7 +1593,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Refresh Spell + SIRD]')
 				end
 			end
-		elseif Mode == 'Combat' and not buffactive['Aquaveil'] then
+		elseif (Mode == 'Combat-Parry' or Mode == 'Combat-DT') and not buffactive['Aquaveil'] then
 			equip(set_combine(sets.refreshspell, sets.sird))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh Spell + SIRD]')
@@ -1565,7 +1605,7 @@ function midcast(spell)
 			end
 		end
 	elseif spell.english == 'Phalanx' then
-		if Mode == 'Auto' then
+		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.phalanx)
 				if Debug == 'On' then
@@ -1577,7 +1617,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
 				end
 			end
-		elseif Mode == 'Combat' and not buffactive['Aquaveil'] then
+		elseif (Mode == 'Combat-Parry' or Mode == 'Combat-DT') and not buffactive['Aquaveil'] then
 			equip(set_combine(sets.phalanx, sets.sird))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Phalanx + SIRD]')
@@ -1589,7 +1629,7 @@ function midcast(spell)
 			end
 		end
 	elseif spell.skill == "Enhancing Magic" then
-		if Mode == 'Auto' then
+		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.enhancing)
 				if Debug == 'On' then
@@ -1601,7 +1641,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
 				end
 			end
-		elseif Mode == 'Combat' and not buffactive['Aquaveil'] then
+		elseif (Mode == 'Combat-Parry' or Mode == 'Combat-DT') and not buffactive['Aquaveil'] then
 			equip(set_combine(sets.enhancing, sets.sird))
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enhancing + SIRD]')
@@ -1741,9 +1781,9 @@ windower.register_event('gain buff', function(buff)
 			end
 		end
 	elseif buff == 7 or Buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Kite set
-		equip(sets.kite)
+		equip(sets.tankdt)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Kite]')
+			windower.add_to_chat(8,'[Equipped Set: Tank DT]')
 		end
 	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
@@ -2013,27 +2053,27 @@ windower.register_event('prerender', function()
 	end
 
 	--Auto Mode Combat check
-	if Mode == 'Auto' then
+	if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 		if player.in_combat == true then
 			if Combat == false then
 				Combat = true
+				choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Combat set to True]')
 				end
-				choose_set()
 				if LoadHUD == true then
-					send_command('text mode text "Mode: Auto (Combat)";text mode color '..Autocolor..'')
+					send_command('text mode text "Mode: '..Mode..' (Combat)";text mode color '..AutoParrycolor..'')
 				end
 			end
 		elseif player.in_combat == false then
 			if Combat == true then
 				Combat = false
+				choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Combat set to False]')
 				end
-				choose_set()
 				if LoadHUD == true then
-					send_command('text mode text "Mode: Auto (Neutral)";text mode color '..Autocolor..'')
+					send_command('text mode text "Mode: '..Mode..' (Neutral)";text mode color '..AutoDTcolor..'')
 				end
 			end
 		end
@@ -2232,7 +2272,7 @@ windower.register_event('prerender', function()
 			if buffactive['Enmity Boost'] and buffactive['Phalanx'] and buffactive['Battuta'] and buffactive['Swordplay'] and (buffactive['Ignis'] or buffactive['Gelus'] or buffactive['Flabra'] or buffactive['Tellus'] or buffactive['Sulpor'] or buffactive['Unda'] or buffactive['Lux'] or buffactive['Tenebrae']) and player.in_combat == true then
 				send_command('text mode text "Mode: '..Mode..' (Beast)"')
 			else
-				if Mode == 'Auto' then
+				if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 					if player.in_combat == true then
 						send_command('text mode text "Mode: '..Mode..' (Combat)"')
 					else
@@ -2456,9 +2496,10 @@ windower.register_event('action',function(act)
 	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
 	local weaponskills = require('resources').weapon_skills
 	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
+		--Uses Weapon Skill but misses or gets blinked
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill lands and creates a Skillchain
 		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 		elseif act.targets[1].actions[1].message == 185 then
