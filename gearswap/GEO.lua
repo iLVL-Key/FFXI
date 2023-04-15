@@ -42,8 +42,8 @@ Required Windower Addons: Text
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleField 	=	'4'		--[1-20]		Your Lockstyle set when in a field zone.
-LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
+LockstyleField 	=	'4'		--[1-200]		Your Lockstyle set when in a field zone.
+LockstyleTown	=	'1'		--[1-200]		Your Lockstyle set when in a town zone.
 							--				If you do not want a separate town lockstyle, set this to the same as LockstyleField.
 Book			=	'5'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
@@ -70,7 +70,7 @@ HUDposYLine1	=	794		--				Y position for the HUD. 0 is top of the window, increa
 FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
 LineSpacer		=	20		--				Space in pixels between each Line of the HUD
 ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
-EntrustDuration	=	280		--				Duration in seconds of Entrusted Indi spells. Base duration is 180 seconds, this increases with
+EntrustDuration	=	320		--				Duration in seconds of Entrusted Indi spells. Base duration is 180 seconds, this increases with
 							--				Indicolure Duration gear. Adjust as needed to match up when the HUD shows the Entrusted Indicolure
 							--				spell wearing off. This is only used with the HUD.
 
@@ -453,7 +453,7 @@ TopVersion = 'Indi-CHR' --Leave this alone, used for debugging purposes
 
 
 BottomVersion = 'Indi-CHR'
-FileVersion = '02.07.23'
+FileVersion = '04.15.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -463,6 +463,12 @@ FileVersion = '02.07.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+04.15.23 (Version Compatibility Codename: Indi-CHR)
+-Fixed missing options listings in the File Info (//fileinfo)
+
+02.22.23 (Version Compatibility Codename: Indi-CHR)
+-Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
 
 02.07.23 (Version Compatibility Codename: Indi-CHR)
 -Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
@@ -889,6 +895,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -907,7 +914,9 @@ function self_command(command)
 		windower.add_to_chat(3,'--           Advanced Options              --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
@@ -2060,9 +2069,10 @@ windower.register_event('action',function(act)
 	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
 	local weaponskills = require('resources').weapon_skills
 	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
+		--Uses Weapon Skill but misses or gets blinked
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill lands and creates a Skillchain
 		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 		elseif act.targets[1].actions[1].message == 185 then
