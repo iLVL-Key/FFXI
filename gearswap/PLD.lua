@@ -23,7 +23,8 @@ To switch between gear modes, use any of these three options:
 	(Default is G, can be changed in the settings)
 
 To use /BLU AOE spells, use a macro for Sheep Song and it will cycle through Sheep Song, Geist Wall,
-Stinking Gas, and Soporific, in that order, as recast timers allow.
+Stinking Gas, and Soporific, in that order, as recast timers allow. Additionally, using this on a target
+outside of these spells aoe range will change the spell to instead use Banishga.
 
 To use /BLU Single target spells, use a macro for Flash and it will cycle through Flash, Jettatura,
 and Blank Gaze, in that order, as recast timers and distance allow (or if you are /WAR it will also Provoke).
@@ -47,7 +48,7 @@ Required Windower Addons: Text
 --               PRO TIPS                --
 -------------------------------------------
 
-There are 3 Modes available in this file:
+There are 4 Modes available in this file:
 Auto-		Will decide gear based on whether or not the game thinks you are in combat. Spells will
 			use their specific gear sets by themselves when you are not in combat (so you can get full
 			gear bonuses), and will override them with the SIRD set if you are in combat. Will use
@@ -55,11 +56,12 @@ Auto-		Will decide gear based on whether or not the game thinks you are in comba
 			and not in combat.
 Combat-		Gear set choices will always behave as if you are in combat.
 Neutral-	Gear set choices will always behave as if you are not in combat.
+DPS-		Uses the DPS gear set when in combat.
 
-Auto should work fine in most cases, but be aware that the game isn't always correct about when you are
-in combat. For example, if you run by a mob and aggro it, you'll notice the battle music does not start.
-If you are kiting a mob, and it goes yellow, the game will think you are out of combat. You can either
-keep up actions on the mob to keep it claimed (voke, flash, etc) or switch into Combat mode manually.
+NOTE: Auto should work fine in most cases, but be aware that the game isn't always correct about when you
+are in combat. For example, if you run by a mob and aggro it, you'll notice the battle music does not start.
+If you are kiting a mob, and it goes yellow, the game will think you are out of combat. You can either keep
+up actions on the mob to keep it claimed (voke, flash, etc) or switch into Combat mode manually.
 
 --]]
 
@@ -68,8 +70,8 @@ keep up actions on the mob to keep it claimed (voke, flash, etc) or switch into 
 -------------------------------------------
 
 AutoLockstyle	=	'On'	--[On/Off]		Automatically sets your lockstyle. Uses the Field and Town sets below.
-LockstyleCombat	=	'5'		--[1-20]		Your Lockstyle set when in a field zone.
-LockstyleTown	=	'1'		--[1-20]		Your Lockstyle set when in a town zone.
+LockstyleCombat	=	'5'		--[1-200]		Your Lockstyle set when in a field zone.
+LockstyleTown	=	'1'		--[1-200]		Your Lockstyle set when in a town zone.
 							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'3'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
@@ -132,13 +134,12 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-StartMode		=	'Auto'	--[Auto/Combat/Neutral]
-							--Determines the Mode you will start in. Current Mode can be changed at any time by using any of the 
-							--three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-RemoveAuto		=	'No'	--[Yes/No]	Don't like the Auto Mode? Remove it entirely.
+StartMode		=	'Auto'	--[Auto/Combat/Neutral/DPS]
+							--	Determines the Mode you will start in. Current Mode can be changed at any time by using any
+							--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 ModeCtrlPlus	=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
 AutoMajWindow	=	60		--Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
-MaxHPThreshold	=	70		--If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
+MaxHPThreshold	=	80		--If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
 							--Once it is activated, going below this will deactivate it.
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
@@ -148,12 +149,11 @@ NotiDelay		=	6		--Delay in seconds before certain notifications will automatical
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 Debug			=	'Off'	--[On/Off]
 
---Color values in RGB for the HUD gear modes
+--Color Values
 Autocolor		=	'125 200 255'	--Auto Mode
 Combatcolor		=	'255 125 125'	--Combat Mode
 Neutralcolor	=	'150 255 150'	--Neutral Mode
-
---Color values in RGB for the HUD Aftermath status
+DPScolor		=	'255 255 125'	--DPS Mode
 Aftermath1color =	'0 127 255'		--Aftermath Level 1
 Aftermath2color =	'75 255 75'		--Aftermath Level 2
 Aftermath3color =	'255 255 50'	--Aftermath Level 3
@@ -174,8 +174,8 @@ function get_sets()
 		feet="Rev. Leggings +3",
 		neck="Unmoving Collar +1",
 		waist="Carrier's Sash",
-		left_ear="Odnowa Earring +1",
-		right_ear="Tuisto Earring",
+		left_ear="Tuisto Earring",
+		right_ear="Odnowa Earring +1",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
@@ -191,9 +191,9 @@ function get_sets()
 		legs="Souv. Diechlings +1",
 		feet="Souveran Schuhs +1",
 		neck="Unmoving Collar +1",
-		waist="Creed Baudrier",
-		left_ear="Odnowa Earring +1",
-		right_ear="Tuisto Earring",
+		waist="Plat. Mog. Belt",
+		left_ear="Tuisto Earring",
+		right_ear="Odnowa Earring +1",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
 		back="Moonlight Cape",
@@ -209,11 +209,28 @@ function get_sets()
 		legs="Founder's Hose",			--30 SIRD
 		feet="Souveran Schuhs +1",
 		neck="Unmoving Collar +1",
-		waist="Audumbla Sash",			--10 SIRD
-		left_ear="Odnowa Earring +1",
-		right_ear="Tuisto Earring",
+		waist="Plat. Mog. Belt",
+		left_ear="Tuisto Earring",
+		right_ear="Knightly Earring",	--9 SIRD
 		left_ring="Moonbeam Ring",
 		right_ring="Evanescence Ring",	--5 SIRD
+		back="Moonlight Cape",
+	})
+
+	-- DPS (DPS-focused gear, inherits any leftover slots from the Tank set above)
+	sets.dps = set_combine(sets.tank, {
+		ammo="Coiste Bodhar",
+		head="Sakpata's Helm",
+		body="Sakpata's Plate",
+		hands="Sakpata's Gauntlets",
+		legs="Sakpata's Cuisses",
+		feet="Sakpata's Leggings",
+		neck="Ziel Charm",
+		waist="Sailfi Belt +1",
+		left_ear="Brutal Earring",
+		right_ear="Cessance Earring",
+		left_ring="Hetairoi Ring",
+		right_ring="Petrov Ring",
 		back="Moonlight Cape",
 	})
 
@@ -222,7 +239,7 @@ function get_sets()
 	sets.ohshit = {
 		head="Chev. Armet +3",
 		body="Chev. Cuirass +3",
-		hands="Chev. Gauntlets +2",
+		hands="Chev. Gauntlets +3",
 		legs="Chev. Cuisses +3",
 		feet="Chev. Sabatons +3",
 		neck="Warder's Charm +1",
@@ -261,11 +278,11 @@ function get_sets()
 		legs="Souv. Diechlings +1",
 		feet="Carmine Greaves +1", --8
 		neck="Unmoving Collar +1",
-		waist="Creed Baudrier",
-		left_ear="Odnowa Earring +1",
-		right_ear="Tuisto Earring",
+		waist="Plat. Mog. Belt",
+		left_ear="Tuisto Earring",
+		right_ear="Odnowa Earring +1",
 		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
+		right_ring="Defending Ring",
 		back="Moonlight Cape",
 	}
 
@@ -278,11 +295,11 @@ function get_sets()
 		legs="Souv. Diechlings +1",
 		feet="Chev. Sabatons +3",
 		neck="Moonlight Necklace",
-		waist="Creed Baudrier",
-		left_ear="Cryptic Earring",
-		right_ear="Tuisto Earring",
-		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
+		waist="Plat. Mog. Belt",
+		left_ear="Tuisto Earring",
+		right_ear="Odnowa Earring +1",
+		left_ring="Petrov Ring",
+		right_ring="Defending Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
@@ -311,39 +328,39 @@ function get_sets()
 	-- Healing (Cure Potency, HP+, Enmity)
 	-- NOTE: Cure Potency cap is 50%, Cure Potency Received cap is 30%
 	sets.healing = {
-		head="Souv. Schaller +1",	--			15 CPR (over cap, but still used for the HP)
+		ammo="Sapience Orb",
+		head="Loess Barbuta +1",
 		body="Souv. Cuirass +1",	--11 CP		15 CPR
 		hands="Souv. Handsch. +1",	--			15 CPR (over cap, but still used for the HP)
-		legs="Souv. Diechlings +1",	--8 CP		15 CPR
-		feet="Souveran Schuhs +1",	--			15 CPR (over cap, but still used for the HP)
+		legs="Souv. Diechlings +1",	--8 CP		23 CPR
+		feet="Chev. Sabatons +3",
 		neck="Phalaina Locket",		--4 CP		 4 CPR
-		waist="Creed Baudrier",
-		left_ear="Odnowa Earring +1",
-		right_ear="Tuisto Earring",
+		waist="Plat. Mog. Belt",
+		left_ear="Tuisto Earring",
+		right_ear="Chev. Earring",	--10 CP
 		--left_ear="Nourish. Earring",--5~6 CP
 		--right_ear="Mendi. Earring",	--5 CP
 		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
-		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},
+		right_ring="Defending Ring",
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 CP
 	}
 
 	-- Healing with SIRD (102%+ SIRD, Cure Potency, HP+, Enmity)
 	-- NOTE: Cure Potency cap is 50%, Cure Potency Received cap is 30%
 	sets.healingsird = {
-		ammo="Staunch Tathlum",		--10 SIRD
+		ammo="Staunch Tathlum",
 		head="Souv. Schaller +1",	--20 SIRD				15 CPR
 		body="Souv. Cuirass +1",	--			11 CP		15 CPR
-		feet="Souveran Schuhs +1",	--						15 CPR (over cap, but still used for the HP)
+		hands="Regal Gauntlets",	--10 SIRD
 		legs="Founder's Hose",		--30 SIRD
 		feet="Odyssean Greaves",	--20 SIRD
-		neck="Moonlight Necklace",	--15 SIRD
-		waist="Creed Baudrier",
-		left_ear="Chev. Earring",--				10 CP
-		right_ear="Mendi. Earring",	--			5 CP
+		neck="Unmoving Collar +1",
+		waist="Plat. Mog. Belt",
+		left_ear="Mendi. Earring",	--			5 CP
+		right_ear="Chev. Earring",	--			10 CP
 		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
-		back="Moonlight Cape",
-		--back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
+		right_ring="Defending Ring",
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
 	}
 
 	-- Enlight (Divine Magic Skill)
@@ -383,9 +400,9 @@ function get_sets()
 		legs="Founder's Hose",		--30 SIRD
 		feet="Souveran Schuhs +1",
 		neck="Moonlight Necklace",	--15 SIRD
-		waist="Audumbla Sash",		--10 SIRD
-		left_ring="Stikini Ring +1",
-		right_ring="Moonbeam Ring",
+		waist="Audumbla Sash",		--10 SIRD    We can get rid of this and use the Knightly Earring instead!!
+		left_ring="Moonbeam Ring",
+		right_ring="Stikini Ring +1",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
 	}
 
@@ -412,8 +429,8 @@ function get_sets()
 		legs="Founder's Hose",		--30 SIRD
 		feet="Odyssean Greaves",	--20 SIRD
 		neck="Moonlight Necklace",	--15 SIRD
-		left_ear="Odnowa Earring +1",
-		right_ear="Tuisto Earring",
+		left_ear="Tuisto Earring",
+		right_ear="Odnowa Earring +1",
 		left_ring="Moonbeam Ring",
 		right_ring="Defending Ring",
 		back="Moonlight Cape",
@@ -447,8 +464,8 @@ function get_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
-		left_ring="Karieyh Ring +1",
-		right_ring="Moonbeam Ring",
+		left_ring="Moonbeam Ring",
+		right_ring="Karieyh Ring +1",
 		back="Moonlight Cape",
 	}
 
@@ -500,7 +517,7 @@ function get_sets()
 
 	-- Shield Bash (Enhances Shield Bash gear)
 	sets.shieldbash = set_combine(sets.enmity, {
-		hands="Cab. Gauntlets +2",
+		hands="Cab. Gauntlets +3",
 	})
 
 	-- Sentinel (Enhances Sentinel gear)
@@ -525,7 +542,7 @@ function get_sets()
 
 	-- Chivalry (Enhances Chivalry gear)
 	sets.chivalry = {
-		hands="Cab. Gauntlets +2",
+		hands="Cab. Gauntlets +3",
 	}
 
 	-- Divine Emblem (Enhances Divine Emblem gear)
@@ -564,7 +581,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Cover' --Leave this alone, used for debugging purposes
+TopVersion = 'Rampart' --Leave this alone, used for debugging purposes
 
 
 
@@ -576,8 +593,8 @@ TopVersion = 'Cover' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Cover'
-FileVersion = '02.07.23'
+BottomVersion = 'Rampart'
+FileVersion = '04.15.23'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -587,6 +604,16 @@ FileVersion = '02.07.23'
 If the new updates Version Compatibility Codename matches your current files TopVersion,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the Version Compatibility Codename changes will you need to update the entire file.
+
+04.15.23 (Version Compatibility Codename: Rampart)
+-Added a DPS Gear Mode. There was a previous mode that was changed from DPS to Refresh (then later renamed to the current Neutral mode), this change keeps everything as is just adds a separate DPS mode in addition to the way the tanking modes are handled.
+-Adjusted /BLU AOE spells to use Banishga if the target is outside of the 6' range that the /BLU spells have.
+-Removed the ability to remove the Auto Gear Mode from the Gear Mode rotation. Added unnecessary complexity.
+-Fixed missing options listings in the File Info (//fileinfo)
+
+02.22.23 (Version Compatibility Codename: Cover)
+-Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
+-Fixed Invincible set not equipping when the Invincible Timer option is turned off.
 
 02.07.23 (Version Compatibility Codename: Cover)
 -Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
@@ -814,6 +841,8 @@ elseif Mode == 'Combat' then
 	send_command('wait 2;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Combatcolor..';text mode bg_transparency 1') --Combat Mode
 elseif Mode == 'Neutral' then
 	send_command('wait 2;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Neutralcolor..';text mode bg_transparency 1') --Neutral Mode
+elseif Mode == 'DPS' then
+	send_command('wait 2;text mode create "Mode: '..Mode..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..DPScolor..';text mode bg_transparency 1') --DPS Mode
 end
 send_command('wait 2.1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
 send_command('wait 2.2;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
@@ -859,13 +888,11 @@ function self_command(command)
 			Mode = 'Neutral'
 			send_command('text mode color '..Neutralcolor..'')
 		elseif Mode == 'Neutral' then
-			if RemoveAuto == 'No' then
-				Mode = 'Auto'
-				send_command('text mode color '..Autocolor..'')
-			else
-				Mode = 'Combat'
-				send_command('text mode color '..Combatcolor..'')
-			end
+			Mode = 'DPS'
+			send_command('text mode color '..DPScolor..'')
+		elseif Mode == 'DPS' then
+			Mode = 'Auto'
+			send_command('text mode color '..Autocolor..'')
 		end
 		if LoadHUD == true then
 			send_command('text mode text "Mode: '..Mode..'"')
@@ -965,7 +992,9 @@ function self_command(command)
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'To use /BLU AOE spells, use a macro for Sheep Song and it will')
 		windower.add_to_chat(8,'cycle through Sheep Song, Geist Wall, Stinking Gas, and Soporific,')
-		windower.add_to_chat(8,'in that order, as recasts timers allow.')
+		windower.add_to_chat(8,'in that order, as recasts timers allow. Additionally, using this on')
+		windower.add_to_chat(8,'a target outside of these spells aoe range will change the spell to')
+		windower.add_to_chat(8,'instead use Banishga.')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'To use /BLU Single target spells, use a macro for Flash and it will')
 		windower.add_to_chat(8,'cycle through Flash, Jettatura, and Blank Gaze, in that order, as recast')
@@ -992,7 +1021,7 @@ function self_command(command)
 		windower.add_to_chat(8,'--               PRO TIPS                --')
 		windower.add_to_chat(8,'-------------------------------------------')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'There are 3 Modes available in this file:')
+		windower.add_to_chat(8,'There are 4 Modes available in this file:')
 		windower.add_to_chat(200,'Auto-')
 		windower.add_to_chat(8,'Will decide gear based on whether or not the game thinks you are in')
 		windower.add_to_chat(8,'combat. Spells will use their specific gear sets by themselves when')
@@ -1004,9 +1033,11 @@ function self_command(command)
 		windower.add_to_chat(8,'Gear set choices will always behave as if you are in combat.')
 		windower.add_to_chat(200,'Neutral-')
 		windower.add_to_chat(8,'Gear set choices will always behave as if you are not in combat.')
+		windower.add_to_chat(200,'DPS-')
+		windower.add_to_chat(8,'Uses the DPS gear set when in combat.')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'Auto should work fine in most cases, but be aware that the game')
-		windower.add_to_chat(8,'isn\'t always correct about when you are in combat. For example,')
+		windower.add_to_chat(8,'NOTE: Auto should work fine in most cases, but be aware that the')
+		windower.add_to_chat(8,'game isn\'t always correct about when you are in combat. For example,')
 		windower.add_to_chat(8,'if you run by a mob and aggro it, you\'ll notice the battle music')
 		windower.add_to_chat(8,'does not start. If you are kiting a mob, and it goes yellow, the')
 		windower.add_to_chat(8,'game will think you are out of combat. You can either keep up')
@@ -1058,6 +1089,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Debuff Notifications --')
 		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
 		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
@@ -1076,18 +1108,22 @@ function self_command(command)
 		windower.add_to_chat(3,'--           Advanced Options              --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
-		windower.add_to_chat(200,'RemoveAuto: '..(''..RemoveAuto..''):color(8)..'')
 		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
 		windower.add_to_chat(200,'AutoMajWindow: '..(''..AutoMajWindow..''):color(8)..'')
 		windower.add_to_chat(200,'MaxHPThreshold: '..(''..MaxHPThreshold..''):color(8)..'')
 		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
 		windower.add_to_chat(200,'AutSntThreshold: '..(''..AutSntThreshold..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
+		windower.add_to_chat(200,' ')
+		windower.add_to_chat(3,'-- Color Values --')
 		windower.add_to_chat(200,'Autocolor: '..(''..Autocolor..''):color(8)..'')
 		windower.add_to_chat(200,'Combatcolor: '..(''..Combatcolor..''):color(8)..'')
 		windower.add_to_chat(200,'Neutralcolor: '..(''..Neutralcolor..''):color(8)..'')
+		windower.add_to_chat(200,'DPScolor: '..(''..DPScolor..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
@@ -1201,6 +1237,11 @@ function choose_set()
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Refresh]')
 			end
+		elseif Mode == 'DPS' then
+			equip(sets.dps)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: DPS]')
+			end
 		end
 	elseif player.status == "Idle" then
 		if LoadHUD == true then
@@ -1263,7 +1304,7 @@ function choose_set()
 						windower.add_to_chat(8,'[Equipped Set: Tank + Movement Speed]')
 					end
 				end
-			elseif (Mode == 'Auto' and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
+			elseif (Mode == 'Auto' and player.in_combat == false) or Mode == 'Neutral' or Mode == 'DPS' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
 				if MaxHP == true then
 					equip(set_combine(sets.maxhp, sets.movementspeed))
 					if Debug == 'On' then
@@ -1413,7 +1454,7 @@ function precast(spell)
 				windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
 			end
 		end
-	elseif spell.english == 'Invincible' and InvTimer == 'On' and windower.ffxi.get_ability_recasts()[0] <= 1 then
+	elseif spell.english == 'Invincible' and windower.ffxi.get_ability_recasts()[0] <= 1 then
 		equip(sets.invincible)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Invincible]')
@@ -1504,7 +1545,11 @@ function precast(spell)
 			end
 		end
 	elseif spell.english == "Sheep Song" then
-		if windower.ffxi.get_spell_recasts()[584] <= 1 then
+		if spell.target.distance > 6 then
+			send_command('input /ma "Banishga" '..spell.target.raw..'')
+			cancel_spell()
+			return
+		elseif windower.ffxi.get_spell_recasts()[584] <= 1 then
 			equip(sets.fastcast)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
@@ -1536,7 +1581,7 @@ end
 
 function midcast(spell)
 	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
-		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			if player.hpp >= MaxHPThreshold and spell.target.type == 'SELF' and UseMaxHP == 'On' then
 				equip(sets.maxhpsird)
 				if Debug == 'On' then
@@ -1548,7 +1593,7 @@ function midcast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Enmity + Healing with SIRD]')
 				end
 			end
-		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
+		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
 			if spell.target.type == 'SELF' then
 				equip(sets.maxhp)
 				if Debug == 'On' then
@@ -2003,10 +2048,10 @@ windower.register_event('prerender', function()
 		if player.in_combat == true then
 			if Combat == false then
 				Combat = true
+				choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Combat set to True]')
 				end
-				choose_set()
 				if LoadHUD == true then
 					send_command('text mode text "Mode: Auto (Combat)";text mode color '..Autocolor..'')
 				end
@@ -2014,10 +2059,10 @@ windower.register_event('prerender', function()
 		elseif player.in_combat == false then
 			if Combat == true then
 				Combat = false
+				choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Combat set to False]')
 				end
-				choose_set()
 				if LoadHUD == true then
 					send_command('text mode text "Mode: Auto (Neutral)";text mode color '..Autocolor..'')
 				end
@@ -2397,9 +2442,10 @@ windower.register_event('action',function(act)
 	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
 	local weaponskills = require('resources').weapon_skills
 	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].param == 0) then
+		--Uses Weapon Skill but misses or gets blinked
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill lands and creates a Skillchain
 		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 		elseif act.targets[1].actions[1].message == 185 then
