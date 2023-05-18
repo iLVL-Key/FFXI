@@ -476,7 +476,7 @@ windower.register_event('action',function(act)
 				data.actor_name = actor.name or 'Unknown'
 				data.target = act.targets[1].id
 				data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
-				data.damage = act.targets[1].actions[1].param
+				data.damage = act.targets[1].actions[1].add_effect_param
 				data.sc = sc[act.targets[1].actions[1].add_effect_animation] or 'Unknown'
 
 				if data.damage > settings.scores.SC.FirstDamage then
@@ -1453,7 +1453,7 @@ windower.register_event('action',function(act)
 			settings.scores.Nuke.FifthDamage = nuke[data.actor_name]
 				settings:save('all')
 		end
-		--print(''..data.actor_name..' - '..nuke[data.actor_name]..'')
+
 	end
 end)
 
@@ -1468,28 +1468,36 @@ windower.register_event('addon command',function(addcmd, arg)
 		Paused = false
 		Mode = "Lite"
 		windower.add_to_chat(200,'[Leaderboard] '..('Recovering in Lite Mode'):color(8)..'')
-		coroutine.sleep(1)
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, silent, boards, reset'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('Only High/Low scores are recovered. Cures, Nukes, and Whiffs are not'):color(8)..'')
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, silent, boards, reset'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		end
 
 	elseif addcmd == 'recovers' or (addcmd == 'recover' and (arg == 'silent' or arg == 's')) then
 		Run = true
 		Paused = false
 		Mode = "Silent"
 		windower.add_to_chat(200,'[Leaderboard] '..('Recovering in Silent Mode'):color(8)..'')
-		coroutine.sleep(1)
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, lite, boards, reset'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('Only High/Low scores are recovered. Cure, Nuke, and Whiff counts are not'):color(8)..'')
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, lite, boards, reset'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		end
 
 	elseif addcmd == 'recover' or addcmd == 'recovern' or (addcmd == 'recover' and (arg == 'normal' or arg == 'n')) then
 		Run = true
 		Paused = false
 		Mode = "Normal"
-		say('/p Leaderboard recovered! Type !lb c, hs, ls, mb, n, sc, or w into party chat for current leaderboards')
-		coroutine.sleep(1)
-		windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, lite, silent, boards, reset'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		say('/p Leaderboard recovered! Only High/Low scores are recovered. Cure, Nuke, and Whiff counts are not')
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, lite, silent, boards, reset'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		end
 
 	elseif addcmd == 'reset' then
 		reset_scores()
@@ -1523,15 +1531,15 @@ windower.register_event('addon command',function(addcmd, arg)
 
  	elseif addcmd == 'help' then
 		windower.add_to_chat(200,'[Leaderboard] '..('--Commands--'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('start - start tracking in Normal Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('start lite/l - start tracking in Lite Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('start silent/s - start tracking in Silent Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('pause/p - pause/unpause tracking)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('start [normal/n/lite/l/silent/s]- start tracking in Normal/Lite/Silent Mode'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('recover [normal/n/lite/l/silent/s]- recover from a crash/disconnect in Normal/Lite/Silent Mode'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('pause/p - pause/unpause tracking'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('mode/m [normal/n/lite/l/silent/s] - displays/changes current Mode'):color(8)..'')
 		windower.add_to_chat(200,'[Leaderboard] '..('c, hs, ls, mb, n, sc, w - print current leaderboards to party chat'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('boards - list the different leaderboards that are tracked)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('reminder/r [on/off] - displays/changes current reminder setting)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('reset - reset the data)'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('boards - list the different leaderboards that are tracked'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('reminder/r [on/off] - displays/changes current reminder setting'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('flood [#] - displays/changes the flood delay'):color(8)..'')
+		windower.add_to_chat(200,'[Leaderboard] '..('reset - reset the data'):color(8)..'')
 
 	elseif addcmd == 'startl' or (addcmd == 'start' and (arg == 'lite' or arg == 'l')) then
 		reset_scores()
@@ -1539,9 +1547,11 @@ windower.register_event('addon command',function(addcmd, arg)
 		Paused = false
 		Mode = "Lite"
 		windower.add_to_chat(200,'[Leaderboard] '..('Started in Lite Mode'):color(8)..'')
-		coroutine.sleep(1)
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, silent, boards, reset'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, silent, boards, reset'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		end
 
 	elseif addcmd == 'starts' or (addcmd == 'start' and (arg == 'silent' or arg == 's')) then
 		reset_scores()
@@ -1549,9 +1559,11 @@ windower.register_event('addon command',function(addcmd, arg)
 		Paused = false
 		Mode = "Silent"
 		windower.add_to_chat(200,'[Leaderboard] '..('Started in Silent Mode'):color(8)..'')
-		coroutine.sleep(1)
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, lite, boards, reset'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, lite, boards, reset'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		end
 
 	elseif addcmd == 'start' or addcmd == 'startn' or (addcmd == 'start' and (arg == 'normal' or arg == 'n')) then
 		reset_scores()
@@ -1559,10 +1571,12 @@ windower.register_event('addon command',function(addcmd, arg)
 		Paused = false
 		Mode = "Normal"
 		say('/p Leaderboard started! Type !lb c, hs, ls, mb, n, sc, or w into party chat for current leaderboards')
-		coroutine.sleep(1)
-		windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, lite, silent, boards, reset'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, lite, silent, boards, reset'):color(8)..'')
+			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
+		end
 
 	elseif addcmd == 'pause' or addcmd == 'p' then
 		if not Run then
@@ -1593,7 +1607,9 @@ windower.register_event('addon command',function(addcmd, arg)
 			else
 				windower.add_to_chat(200,'[Leaderboard] '..('Normal Mode on (running)'):color(8)..'')
 			end
-			windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
+			if settings.reminder then
+				windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
+			end
 		end
 
 	elseif addcmd == 'model' or (addcmd == 'mode' and (arg == 'lite' or arg == 'l')) then
@@ -1758,7 +1774,7 @@ windower.register_event('addon command',function(addcmd, arg)
 
 	else
 		windower.add_to_chat(200,'[Leaderboard] '..('Unknown command. Type \'//em help\' for list of commands.'):color(8)..'')
-		if Run then
+		if Run and settings.reminder then
 			if Mode == "Normal" then
 				if Paused then
 					windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
@@ -1778,7 +1794,7 @@ windower.register_event('addon command',function(addcmd, arg)
 					windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
 				end
 			end
-		else
+		elseif settings.reminder then
 			windower.add_to_chat(200,'[Leaderboard] '..('Not currently running'):color(8)..'')
 		end
 	end
