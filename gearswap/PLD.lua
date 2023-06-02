@@ -2,9 +2,6 @@
 --  Keys Gearswap lua file for Paladin   --
 -------------------------------------------
 --[[
--------------------------------------------
---                 NOTES                 --
--------------------------------------------
 
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
@@ -112,7 +109,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -139,7 +136,7 @@ StartMode		=	'Auto'	--[Auto/Combat/Neutral/DPS]
 							--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 ModeCtrlPlus	=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
 AutoMajWindow	=	60		--Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
-MaxHPThreshold	=	80		--If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
+MaxHPThreshold	=	75		--If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
 							--Once it is activated, going below this will deactivate it.
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
@@ -173,9 +170,9 @@ function get_sets()
 		legs="Chev. Cuisses +3",
 		feet="Rev. Leggings +3",
 		neck="Unmoving Collar +1",
-		waist="Carrier's Sash",
-		left_ear="Tuisto Earring",
-		right_ear="Odnowa Earring +1",
+		waist="Plat. Mog. Belt",
+		left_ear="Thureous Earring",
+		right_ear="Chev. Earring",
 		left_ring="Moonbeam Ring",
 		right_ring="Moonbeam Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
@@ -298,7 +295,7 @@ function get_sets()
 		waist="Plat. Mog. Belt",
 		left_ear="Tuisto Earring",
 		right_ear="Odnowa Earring +1",
-		left_ring="Petrov Ring",
+		left_ring="Apeile Ring +1",
 		right_ring="Defending Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
@@ -319,7 +316,6 @@ function get_sets()
 		head="Souv. Schaller +1",		--20 SIRD
 		body="Chev. Cuirass +3",		--20 SIRD
 		legs="Founder's Hose",			--30 SIRD
-		feet="Carmine Greaves +1",
 		neck="Moonlight Necklace",		--15 SIRD
 		waist="Creed Baudrier",
 		back="Moonlight Cape",
@@ -338,8 +334,6 @@ function get_sets()
 		waist="Plat. Mog. Belt",
 		left_ear="Tuisto Earring",
 		right_ear="Chev. Earring",	--10 CP
-		--left_ear="Nourish. Earring",--5~6 CP
-		--right_ear="Mendi. Earring",	--5 CP
 		left_ring="Moonbeam Ring",
 		right_ring="Defending Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 CP
@@ -393,15 +387,16 @@ function get_sets()
 
 	-- Phalanx with SIRD (102%+ SIRD, Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 	sets.phalanxsird = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
+		ammo="Staunch Tathlum",			--10 SIRD
+		head="Souv. Schaller +1",		--20 SIRD
 		body="Shab. Cuirass +1",
-		hands="Souv. Handsch. +1",
-		legs="Founder's Hose",		--30 SIRD
+		hands="Regal Gauntlets",		--10 SIRD
+		legs="Founder's Hose",			--30 SIRD
 		feet="Souveran Schuhs +1",
-		neck="Moonlight Necklace",	--15 SIRD
-		waist="Audumbla Sash",		--10 SIRD    We can get rid of this and use the Knightly Earring instead!!
-		left_ring="Moonbeam Ring",
+		neck="Moonlight Necklace",		--15 SIRD
+		waist="Plat. Mog. Belt",
+		right_ear="Knightly Earring",	--9 SIRD
+		left_ring="Defending Ring",
 		right_ring="Stikini Ring +1",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
 	}
@@ -422,15 +417,15 @@ function get_sets()
 	-- Enhancing Magic with SIRD (102%+ SIRD, Enhancing Magic Duration, Enhancing Magic Skill)
 	-- Crusade, Reprisal, Protect, and Shell use this.
 	sets.enhancingsird = {
-		ammo="Staunch Tathlum",		--10 SIRD
-		head="Souv. Schaller +1",	--20 SIRD
+		ammo="Staunch Tathlum",			--10 SIRD
+		head="Loess Barbuta +1",
 		body="Shab. Cuirass +1",
-		hands="Regal Gauntlets",
-		legs="Founder's Hose",		--30 SIRD
-		feet="Odyssean Greaves",	--20 SIRD
-		neck="Moonlight Necklace",	--15 SIRD
+		hands="Regal Gauntlets",		--10 SIRD
+		legs="Founder's Hose",			--30 SIRD
+		feet="Odyssean Greaves",		--20 SIRD
+		neck="Moonlight Necklace",		--15 SIRD
 		left_ear="Tuisto Earring",
-		right_ear="Odnowa Earring +1",
+		right_ear="Knightly Earring",	--9 SIRD
 		left_ring="Moonbeam Ring",
 		right_ring="Defending Ring",
 		back="Moonlight Cape",
@@ -461,7 +456,7 @@ function get_sets()
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets",
 		neck="Unmoving Collar +1",
-		waist="Sailfi Belt +1",
+		waist="Plat. Mog. Belt",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
 		left_ring="Moonbeam Ring",
@@ -502,7 +497,7 @@ function get_sets()
 	-- Atonement (Fotia Neck/Belt)
 	-- Combines with Enmity set, only necessary to set the slots with specific desired stats
 	sets.ato = set_combine(sets.enmity, {
-		waist="Fotia Belt",
+
 	})
 
 	-- Invincible
@@ -581,7 +576,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Rampart' --Leave this alone, used for debugging purposes
+
 
 
 
@@ -593,23 +588,33 @@ TopVersion = 'Rampart' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Rampart'
-FileVersion = '04.15.23'
+
+FileVersion = '11.0.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates Version Compatibility Codename matches your current files TopVersion,
+If the new updates major version matches your current file,
 simply replace everything under the "Do Not Edit Below This Line".
-Only when the Version Compatibility Codename changes will you need to update the entire file.
+Only when the major version changes will you need to update the entire file.
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+
+Version 11.0.0
+-Renamed WS Damage Notification to Damage Notification.
+-Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
+-Fixed Damage Notification option displaying regardless of being on or off.
+-Fixed some issues with SIRD sets not equipping correctly while in combat in DPS mode.
+-Fixed AutoDefender checking for the old "Tank" mode as opposed to its current name "Combat".
+-Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
 
 04.15.23 (Version Compatibility Codename: Rampart)
 -Added a DPS Gear Mode. There was a previous mode that was changed from DPS to Refresh (then later renamed to the current Neutral mode), this change keeps everything as is just adds a separate DPS mode in addition to the way the tanking modes are handled.
 -Adjusted /BLU AOE spells to use Banishga if the target is outside of the 6' range that the /BLU spells have.
 -Removed the ability to remove the Auto Gear Mode from the Gear Mode rotation. Added unnecessary complexity.
 -Fixed missing options listings in the File Info (//fileinfo)
+-Updated Version Compatibility Codename to Rampart.
 
 02.22.23 (Version Compatibility Codename: Cover)
 -Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
@@ -964,17 +969,6 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(200,'File Version Number: '..(''..FileVersion..''):color(8)..'')
-		windower.add_to_chat(200,'Top Version: '..(''..TopVersion..''):color(8)..'')
-		windower.add_to_chat(200,'Bottom Version: '..(''..BottomVersion..''):color(8)..'')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'If you are having issues with the file, and the Top and Bottom')
-		windower.add_to_chat(8,'versions do not match, redownload the latest version of this')
-		windower.add_to_chat(8,'file and re-input your gear sets.')
-		windower.add_to_chat(8,'(Copy and paste each set from this file to the new one)')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--                   NOTES                   --')
-		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Place both this file and the sounds folder')
 		windower.add_to_chat(8,'inside the GearSwap data folder')
@@ -1086,7 +1080,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowMP: '..(''..NotiLowMP..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDamage: '..(''..NotiDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
 		windower.add_to_chat(200,' ')
@@ -1546,26 +1540,28 @@ function precast(spell)
 		end
 	elseif spell.english == "Sheep Song" then
 		if spell.target.distance > 6 then
-			send_command('input /ma "Banishga" '..spell.target.raw..'')
-			cancel_spell()
-			return
-		elseif windower.ffxi.get_spell_recasts()[584] <= 1 then
 			equip(sets.fastcast)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Fast Cast]')
 			end
-		elseif windower.ffxi.get_spell_recasts()[605] <= 1 then
-			send_command('input /ma "Geist Wall" '..spell.target.raw..'')
+		elseif player.sub_job == 'RUN' then
+			send_command('input /ma "Foil" <me>')
 			cancel_spell()
 			return
-		elseif windower.ffxi.get_spell_recasts()[537] <= 1 then
-			send_command('input /ma "Stinking Gas" '..spell.target.raw..'')
-			cancel_spell()
-			return
-		elseif windower.ffxi.get_spell_recasts()[598] <= 1 then
-			send_command('input /ma "Soporific" '..spell.target.raw..'')
-			cancel_spell()
-			return
+		elseif player.sub_job == 'BLU' then
+			if windower.ffxi.get_spell_recasts()[605] <= 1 then
+				send_command('input /ma "Geist Wall" '..spell.target.raw..'')
+				cancel_spell()
+				return
+			elseif windower.ffxi.get_spell_recasts()[537] <= 1 then
+				send_command('input /ma "Stinking Gas" '..spell.target.raw..'')
+				cancel_spell()
+				return
+			elseif windower.ffxi.get_spell_recasts()[598] <= 1 then
+				send_command('input /ma "Soporific" '..spell.target.raw..'')
+				cancel_spell()
+				return
+			end
 		end
 	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
@@ -1612,48 +1608,48 @@ function midcast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Raise]')
 		end		
 	elseif spell.english == 'Flash' or string.find(spell.english,'Holy') or string.find(spell.english,'Banish') or spell.type == "BlueMagic" then
-		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enmityspellssird)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enmity Spells with SIRD]')
 			end
-		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
+		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.enmityspells)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enmity Spells]')
 			end
 		end
 	elseif string.find(spell.english,'Enlight') then
-		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enlightsird)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enlight Spells with SIRD]')
 			end
-		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
+		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.enlight)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enlight]')
 			end
 		end
 	elseif spell.english == 'Phalanx' then
-		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.phalanxsird)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Phalanx with SIRD]')
 			end
-		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
+		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.phalanx)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Phalanx]')
 			end
 		end
 	elseif spell.skill == "Enhancing Magic" then
-		if Mode == 'Combat' or (Mode == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enhancingsird)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enhancing with SIRD]')
 			end
-		elseif Mode == 'Neutral' or (Mode == 'Auto' and player.in_combat == false) then --not in combat, no need for SIRD
+		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
 			equip(sets.enhancing)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Enhancing Magic]')
@@ -1684,9 +1680,9 @@ function aftercast(spell)
 		end
 	end
 	--Put Defender up afterwards if we're doing active tank things:
-	if AutoDefender == 'On' and (spell.english == 'Provoke' or spell.english == 'Holy Circle' or spell.english == 'Shield Bash' or spell.english == 'Sentinel' or spell.english == 'Rampart') and not buffactive['Defender'] and not buffactive['Amnesia'] and (Mode == 'Tank' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level ~= 0 and DefenderRecast == 0 then
+	if AutoDefender == 'On' and (spell.english == 'Provoke' or spell.english == 'Holy Circle' or spell.english == 'Shield Bash' or spell.english == 'Sentinel' or spell.english == 'Rampart') and not buffactive['Defender'] and not buffactive['Amnesia'] and (Mode == 'Combat' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level ~= 0 and DefenderRecast == 0 then
 		send_command('wait .5;input /ja Defender <me>')
-	elseif (spell.english == 'Flash' or spell.english == 'Phalanx' or spell.english == 'Reprisal' or spell.english == 'Crusade') and not buffactive['Defender'] and AutoDefender == 'On' and not buffactive['Amnesia'] and (Mode == 'Tank' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level ~= 0 and DefenderRecast == 0 then
+	elseif (spell.english == 'Flash' or spell.english == 'Phalanx' or spell.english == 'Reprisal' or spell.english == 'Crusade') and not buffactive['Defender'] and AutoDefender == 'On' and not buffactive['Amnesia'] and (Mode == 'Combat' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level ~= 0 and DefenderRecast == 0 then
 		send_command('wait 3;input /ja Defender <me>')
 	end
 	if AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect') or spell.english == 'Crusade' or spell.english == 'Phalanx' or spell.english == 'Cocoon' or spell.english == 'Defender' or spell.english == 'Reprisal' or spell.english == 'Palisade' or spell.english == 'Enlight') and MajestyTimer <= AutoMajWindow and not buffactive['Amnesia'] then
@@ -2435,25 +2431,56 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---         WS DAMAGE NOTIFICATION        --
+--     WS/MB/BP DAMAGE NOTIFICATION      --
 -------------------------------------------
 
 windower.register_event('action',function(act)
-	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
+
+	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
-	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses or gets blinked
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
-			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-		--Weapon Skill lands and creates a Skillchain
-		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-		elseif act.targets[1].actions[1].message == 185 then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-		end
-		NotiCountdown = -1
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[NotiCountdown set to -1]')
+	local spells = require('resources').spells
+	local jobabilities = require('resources').job_abilities
+
+	if NotiDamage == 'On' then
+		--Weapon Skills and Skillchains:
+		if act.category == 3 and act.actor_id == player.id then
+			--Uses Weapon Skill but misses or gets blinked:
+			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill lands and creates a Skillchain:
+			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill lands but no Skillchain:
+			elseif act.targets[1].actions[1].message == 185 then
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
+		--Magic Bursts:
+		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
+			--Magic:
+			if act.category == 4 then
+				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Lunges:
+			elseif act.category == 15 then
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood Pacts?:
+			elseif act.category == 13 then
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
+		--Blood Pacts:
+		elseif act.category == 13 and act.actor_id == pet.id then
+			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
 		end
 	end
 end)
