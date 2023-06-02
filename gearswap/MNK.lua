@@ -2,9 +2,6 @@
 --    Keys Gearswap lua file for Monk    --
 -------------------------------------------
 --[[
--------------------------------------------
---                 NOTES                 --
--------------------------------------------
 
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
@@ -93,7 +90,7 @@ NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to
 NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -189,14 +186,14 @@ function get_sets()
 	})
 
 	-- Mode 4 (Tank) (Example: A focus on DT-, Counter, Killer effects, HP+, then filling in the rest with Multi-Attack, Store TP, and Attack)
-	-- NOTE: Counter caps at 80%. Job Trait: 22, Merit: 5, Spharai: 14 (41 total base)
+	-- NOTE: Counter caps at 80%. Job Trait: 22, Merit: 5 (27 total base + Spharai: 14 = 41)
 	sets.modefour = {
-		--ammo="Amar Cluster",			--Counter +2  (Met)
+		ammo="Amar Cluster",			--Counter +2
 		ammo="Coiste Bodhar",
 		head="Bhikku Crown +3",
 		body="Mpaca's Doublet",			--Counter +10
 		hands="Bhikku Gloves +2",
-		legs="Mpaca's Hose",
+		legs="Anch. Hose +3",			--Counter +6
 		feet="Mpaca's Boots",
 		neck="Mnk. Nodowa +2",
 		waist="Moonbow Belt +1",
@@ -204,7 +201,7 @@ function get_sets()
 		right_ear="Bhikku Earring +1",	--Counter +8
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
-		back="Moonlight Cape",
+		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','System: 1 ID: 640 Val: 4',}}, --Counter +10
 
 	}
 
@@ -253,6 +250,7 @@ function get_sets()
 		neck="Fotia Gorget",
 		waist="Fotia Belt",
 		left_ring="Karieyh Ring +1",
+		right_ring="Cornelia's Ring",
 	})
 
 	-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
@@ -273,18 +271,43 @@ function get_sets()
 	-- Kick WS (Kick Attacks, TP Bonus, STR, VIT )
 	sets.kickws = set_combine(sets.ws, {
 		head="Mpaca's Cap",
+		legs="Bhikku Hose +3",
 		feet="Anch. Gaiters +3",
+		neck="Mnk. Nodowa +2",
 		back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 	})
 
-	-- Final Heaven (WSD)
+	-- Final Heaven (VIT, STR, WSD)
 	sets.finalheaven = set_combine(sets.ws, {
+		ammo"Knobkierrie",
 		head="Nyame Helm",
 		body="Nyame Mail",
 		hands="Nyame Gauntlets",
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets",
-		back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+		neck="Rep. Plat. Medal",
+		left_ear="Moonshade Earring",
+		right_ear="Ishvara Earring",
+		left_ring="Karieyh Ring +1",
+		right_ring="Cornelia's Ring",
+		back={ name="Segomo's Mantle", augments={'VIT+20','Accuracy+20 Attack+20','VIT+10','Weapon skill damage +10%','Mag. Evasion+15',}},
+	})
+
+	-- Cataclysm (Dark Elem. MAB, INT, Magic Damage, WSD)
+	sets.cataclysm = set_combine(sets.ws, {
+		ammo="Ghastly Tathlum +1",
+		head="Pixie Hairpin +1",
+		body="Nyame Mail",
+		hands="Nyame Gauntlets",
+		legs="Nyame Flanchard",
+		feet="Nyame Sollerets",
+		neck="Sibyl Scarf",
+		waist="Orpheus's Sash",
+		left_ear="Friomisi Earring",
+		right_ear="Moonshade Earring",
+		left_ring="Archon Ring",
+		right_ring="Metamor. Ring +1",
+		
 	})
 
 	-- Ygnas's Resolve +1
@@ -391,7 +414,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Combo' --Leave this alone, used for debugging purposes
+
 
 
 
@@ -403,17 +426,27 @@ TopVersion = 'Combo' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Combo'
-FileVersion = '04.15.23'
+
+FileVersion = '05.18.23'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates Version Compatibility Codename matches your current files TopVersion,
+If the new updates major version matches your current file,
 simply replace everything under the "Do Not Edit Below This Line".
-Only when the Version Compatibility Codename changes will you need to update the entire file.
+Only when the major version changes will you need to update the entire file.
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+
+Version 3.0.0
+-Renamed WS Damage Notification to Damage Notification.
+-Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
+-Fixed Damage Notification option displaying regardless of being on or off.
+-Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
+
+04.28.22 (Version Compatibility Codename: Shoulder Tackle)
+-Added Cataclysm set.
 
 04.15.22 (Version Compatibility Codename: Combo)
 -First version
@@ -627,17 +660,7 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(200,'File Version Number: '..(''..FileVersion..''):color(8)..'')
-		windower.add_to_chat(200,'Top Version: '..(''..TopVersion..''):color(8)..'')
-		windower.add_to_chat(200,'Bottom Version: '..(''..BottomVersion..''):color(8)..'')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'If you are having issues with the file, and the Top and Bottom')
-		windower.add_to_chat(8,'versions do not match, redownload the latest version of this')
-		windower.add_to_chat(8,'file and re-input your gear sets.')
-		windower.add_to_chat(8,'(Copy and paste each set from this file to the new one)')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--                   Notes                   --')
-		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,'Place both this file and the sounds folder')
 		windower.add_to_chat(8,'inside the GearSwap data folder')
 		windower.add_to_chat(200,'ex:     /addons/GearSwap/data/sounds/')
@@ -720,7 +743,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiReraise: '..(''..NotiReraise..''):color(8)..'')
 		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDamage: '..(''..NotiDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
 		windower.add_to_chat(200,' ')
@@ -1175,12 +1198,17 @@ function precast(spell)
 		if spell.english == 'Tornado Kick' or spell.english == 'Dragon Kick' then
 			equip(sets.kickws)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Kick WS]')
+				windower.add_to_chat(8,'[Equipped Set: Kick WS + Weapon Skill]')
 			end
 		elseif spell.english == 'Final Heaven' then
 			equip(sets.finalheaven)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Final Heaven]')
+				windower.add_to_chat(8,'[Equipped Set: Final Heaven + Weapon Skill]')
+			end
+		elseif spell.english == 'Cataclysm' then
+			equip(sets.cataclysm)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Cataclysm + Weapon Skill]')
 			end
 		elseif Mode == 'Mode2' then
 			if buffactive['Reive Mark'] then
@@ -2011,25 +2039,56 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---         WS DAMAGE NOTIFICATION        --
+--     WS/MB/BP DAMAGE NOTIFICATION      --
 -------------------------------------------
 
 windower.register_event('action',function(act)
-	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
+
+	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
-	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses or gets blinked
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
-			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-		--Weapon Skill lands and creates a Skillchain
-		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-		elseif act.targets[1].actions[1].message == 185 then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-		end
-		NotiCountdown = -1
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[NotiCountdown set to -1]')
+	local spells = require('resources').spells
+	local jobabilities = require('resources').job_abilities
+
+	if NotiDamage == 'On' then
+		--Weapon Skills and Skillchains:
+		if act.category == 3 and act.actor_id == player.id then
+			--Uses Weapon Skill but misses or gets blinked:
+			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill lands and creates a Skillchain:
+			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill lands but no Skillchain:
+			elseif act.targets[1].actions[1].message == 185 then
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
+		--Magic Bursts:
+		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
+			--Magic:
+			if act.category == 4 then
+				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Lunges:
+			elseif act.category == 15 then
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood Pacts?:
+			elseif act.category == 13 then
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
+		--Blood Pacts:
+		elseif act.category == 13 and act.actor_id == pet.id then
+			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
 		end
 	end
 end)
@@ -2047,10 +2106,5 @@ end
 -------------------------------------------
 --            KEYS NOTEPAD               --
 -------------------------------------------
-
-Default text size is 12
-Large 15 (+24)
-Medium 12 (+20)
-Small 9 (+15)
 
  --]]
