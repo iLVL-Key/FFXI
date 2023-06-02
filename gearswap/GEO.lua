@@ -2,9 +2,6 @@
 -- Keys Gearswap lua file for Geomancer  --
 -------------------------------------------
 --[[
--------------------------------------------
---                 NOTES                 --
--------------------------------------------
 
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
@@ -57,7 +54,8 @@ AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
 AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
-AutoEntrust		=	'On'	--[On/Off]		Automatically uses Entrust when you cast an Indi- spell on a party member.
+AutoEntrust		=	'On'	--[On/Off]		Automatically uses Entrust when you cast an Indi- spell on a party member. The first cast onto
+							--				a party member will engage the AutoEntrust system, the second cast will execute as intended.
 DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
 DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
@@ -84,7 +82,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiWSDamage		=	'On'	--[On/Off]	Displays your Weapon Skill damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -255,6 +253,7 @@ function get_sets()
 	}
 
 	-- Geomancy (Geomancy+, Geomancy Skill, Handbell Skill, Indicolure duration+, Lupoan duration+)
+	-- NOTE: You only need a combined skill of 900 between Geomancy skill and Handbell skill to cap your potency, anything over 900 is wasted)
 	sets.geomancy = {
 		main="Idris",
 		sub="Ammurapi Shield",
@@ -440,7 +439,7 @@ function get_sets()
 	}
 
 end
-TopVersion = 'Indi-CHR' --Leave this alone, used for debugging purposes
+
 
 
 
@@ -452,17 +451,26 @@ TopVersion = 'Indi-CHR' --Leave this alone, used for debugging purposes
 
 
 
-BottomVersion = 'Indi-CHR'
-FileVersion = '04.15.23'
+
+FileVersion = '11.0.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates Version Compatibility Codename matches your current files TopVersion,
+If the new updates major version matches your current file,
 simply replace everything under the "Do Not Edit Below This Line".
-Only when the Version Compatibility Codename changes will you need to update the entire file.
+Only when the major version changes will you need to update the entire file.
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+
+Version 11.0.0
+-Renamed WS Damage Notification to Damage Notification.
+-Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
+-Adjusted AutoEntrust behavior. Using a macro to cast an Indi- spell will now instead of directly using Entrust then casting that spell, it will instead activate the AutoEntrust system for use. Simply repeat the cast to use AutoEntrust. AutoEntrust will deactivate after 10 seconds, or after casting on yourself instead. This change was made to prevent misfires in situations where you intend to cast an Indi- spell on yourself, but someone casts on you right before, therefore making you target them, and thus the target of the Indi- spell.
+-Fixed Luopan gear set not equipping immediately after casting a Geo- spell.
+-Fixed WS Damage Notification option displaying regardless of being on or off.
+-Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
 
 04.15.23 (Version Compatibility Codename: Indi-CHR)
 -Fixed missing options listings in the File Info (//fileinfo)
@@ -504,7 +512,7 @@ Only when the Version Compatibility Codename changes will you need to update the
 -Added Mending Halation to the HUD.
 -Added Danger sound file. Used by Doom and Low HP.
 -Added Advanced Option for the Danger sound to play constantly while in danger or only once (with a 30 second delay to be able to play again).
--Added WSDamage option. Displays your damage (or miss) after a Weapon Skill.
+-Added WS Damage option. Displays your damage (or miss) after a Weapon Skill.
 -Added the //hidehud and //showhud alias commands.
 -Added debug lines for redefining variables.
 -Adjusted Low HP Notification to not trigger while weakened.
@@ -647,6 +655,7 @@ TownZones = S{
 IndiColure = 'None'
 GeoColure = 'None'
 Entrust = 'None'
+UseEntrust = false
 NotiLowMPToggle = 'Off' --start with the toggle off for the Low MP Notification so that it can trigger
 DTOverride = "Off" --Start with the Damage Taken Override off
 RRRCountdown = RRReminderTimer
@@ -809,17 +818,7 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(200,'File Version Number '..FileVersion..'')
-		windower.add_to_chat(200,'Top Version: '..TopVersion..' ')
-		windower.add_to_chat(200,'Bottom Version: '..BottomVersion..' ')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'If you are having issues with the file, and the Top and Bottom')
-		windower.add_to_chat(8,'versions do not match, redownload the latest version of this')
-		windower.add_to_chat(8,'file and re-input your gear sets.')
-		windower.add_to_chat(8,'(Copy and paste each set from this file to the new one)')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--                   Notes                   --')
-		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,'Place both this file and the sounds folder')
 		windower.add_to_chat(8,'inside the GearSwap data folder')
 		windower.add_to_chat(200,'ex:     /addons/GearSwap/data/sounds/')
@@ -892,7 +891,7 @@ function self_command(command)
 		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowMP: '..(''..NotiLowMP..''):color(8)..'')
 		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiWSDamage: '..(''..NotiWSDamage..''):color(8)..'')
+		windower.add_to_chat(200,'NotiDamage: '..(''..NotiDamage..''):color(8)..'')
 		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
 		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
 		windower.add_to_chat(200,' ')
@@ -975,6 +974,14 @@ function self_command(command)
 			windower.add_to_chat(8,'[ShowHUD set to True]')
 		end
 		send_command('text bg1 show;text bg2 show;text bg3 show;text bg4 show;text indicolure show;text indicolurelabel show;text geocolure show;text geocolurelabel show;text entrust show;text entrustlabel show;text blaze show;text lasting show;text dematerialize show;text life show;text radial show;text mending show;text notifications show;text debuffs show')
+	elseif command == 'CancelUseEntrust' then
+		if UseEntrust == true then
+			UseEntrust = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[UseEntrust set to False]')
+			end
+			send_command('text entrustlabel text "Entrust";text entrustlabel color 255 255 255;text entrustlabel bg_transparency 1') --reset the label when we deactivate AutoEntrust
+		end
 	end
 end
 
@@ -1284,11 +1291,45 @@ function precast(spell)
 		send_command('input /ja "Full Circle" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
 		cancel_spell()
 		return
-	elseif string.find(spell.english,'Indi-') and AutoEntrust == 'On' and windower.ffxi.get_ability_recasts()[93] == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
-		--if we're casting an Indi- spell on a party member we use Entrust first
-		send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
-		cancel_spell()
-		return
+
+	elseif string.find(spell.english,'Indi-') then
+		if AutoEntrust == 'On' and windower.ffxi.get_ability_recasts()[93] == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
+			if UseEntrust == false then
+				--if we're casting an Indi- spell on a party member without Entrust active we first make sure thats what we want to do instead of just using it immediately, this helps prevent misfires when someone casts on us right before
+				windower.add_to_chat(8,'AutoEntrust is now active. Repeat cast to use Entrust.')
+				UseEntrust = true
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[UseEntrust set to True]')
+				end
+				send_command('text entrustlabel text "AutoEntrust Active";text entrustlabel color 255 255 50;text entrustlabel bg_transparency 1') --indicate that AutoEntrust is active
+				send_command('wait 10;gs c CancelUseEntrust') --wait 10 seconds then we cancel UseEntrust if its still active
+				cancel_spell()
+				return
+			elseif UseEntrust == true then
+				--now that AutoEntrust was activated above, we can Do The Thing
+				send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+				UseEntrust = false
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[UseEntrust set to False]')
+				end
+				send_command('text entrustlabel text "Entrust";text entrustlabel color 255 255 255;text entrustlabel bg_transparency 1') --reset the label when we use AutoEntrust
+				cancel_spell()
+				return
+			end
+		elseif spell.target.type == 'SELF' then
+			--if we cast an Indi- spell on ourselves we reset UseEntrust back to false, this allows us to cancel the use of AutoEntrust and go through the double-check above again for next time
+			UseEntrust = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[UseEntrust set to False]')
+			end
+			send_command('text entrustlabel text "Entrust";text entrustlabel color 255 255 255;text entrustlabel bg_transparency 1') --reset the label when we deactivate AutoEntrust
+		end
+
+	-- elseif string.find(spell.english,'Indi-') and AutoEntrust == 'On' and windower.ffxi.get_ability_recasts()[93] == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
+		-- --if we're casting an Indi- spell on a party member we use Entrust first
+		-- send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+		-- cancel_spell()
+		-- return
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
@@ -1447,6 +1488,8 @@ function aftercast(spell)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[GeoColure set to SpellSH]')
 			end
+			send_command('wait 1;gs c Choose Set')
+			--we add in a 1 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
 		end
 	elseif spell.english == 'Entrust' and not spell.interrupted and LoadHUD == true then
 		EntrustCountdown = EntrustDuration
@@ -1827,10 +1870,18 @@ windower.register_event('prerender', function()
 				EntrustCountdown = EntrustCountdown -1
 			elseif EntrustRecast > 0 then
 				send_command('text entrust text "None";text entrust color 255 165 0')
-				send_command('text entrustlabel text "Entrust"')
+				if UseEntrust == true then
+					send_command('text entrustlabel text "AutoEntrust Activated"')
+				else
+					send_command('text entrustlabel text "Entrust"')
+				end
 			else
 				send_command('text entrust text "None";text entrust color 255 50 50')
-				send_command('text entrustlabel text "Entrust"')
+				if UseEntrust == true then
+					send_command('text entrustlabel text "AutoEntrust Active"')
+				else
+					send_command('text entrustlabel text "Entrust"')
+				end
 			end
 			if ReraiseReminder == 'On' then
 				if RRRCountdown > 0 then
@@ -2062,25 +2113,56 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---         WS DAMAGE NOTIFICATION        --
+--     WS/MB/BP DAMAGE NOTIFICATION      --
 -------------------------------------------
 
 windower.register_event('action',function(act)
-	local sc = {} sc[1] = 'Lgt' sc[2] = 'Drk' sc[3] = 'Grv' sc[4] = 'Frg' sc[5] = 'Dst' sc[6] = 'Fsn' sc[7] = 'Cmp' sc[8] = 'Lqf' sc[9] = 'Ind' sc[10] = 'Rvr' sc[11] = 'Trn' sc[12] = 'Scs' sc[13] = 'Dtn' sc[14] = 'Imp' sc[15] = 'Rdn' sc[16] = 'Umb'
+
+	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
-	if act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses or gets blinked
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
-			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-		--Weapon Skill lands and creates a Skillchain
-		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-		elseif act.targets[1].actions[1].message == 185 then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-		end
-		NotiCountdown = -1
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[NotiCountdown set to -1]')
+	local spells = require('resources').spells
+	local jobabilities = require('resources').job_abilities
+
+	if NotiDamage == 'On' then
+		--Weapon Skills and Skillchains:
+		if act.category == 3 and act.actor_id == player.id then
+			--Uses Weapon Skill but misses or gets blinked:
+			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill lands and creates a Skillchain:
+			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill lands but no Skillchain:
+			elseif act.targets[1].actions[1].message == 185 then
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
+		--Magic Bursts:
+		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
+			--Magic:
+			if act.category == 4 then
+				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Lunges:
+			elseif act.category == 15 then
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood Pacts?:
+			elseif act.category == 13 then
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
+		--Blood Pacts:
+		elseif act.category == 13 and act.actor_id == pet.id then
+			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			NotiCountdown = -1
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			end
 		end
 	end
 end)
@@ -2098,13 +2180,5 @@ end
 -------------------------------------------
 --            KEYS NOTEPAD               --
 -------------------------------------------
-
-Enfeeble set
-if casting Indi- without Entrust up, redirect cast to <me>
-
-Default text size is 12
-Large 15 (+24)
-Medium 12 (+20)
-Small 9 (+15)
 
  --]]
