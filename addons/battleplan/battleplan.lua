@@ -301,10 +301,12 @@ function toggleBox()
         settings.visible = false
         settings:save('all')
         hideBox()
+        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Hide'):color(8)..'')
     else
         settings.visible = true
         settings:save('all')
         showBox()
+        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Show'):color(8)..'')
     end
 end
 
@@ -387,12 +389,14 @@ windower.register_event('addon command',function(addcmd, ...)
         settings.visible = true
         settings:save('all')
         showBox()
+        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Show'):color(8)..'')
     
     -- Hide the BP box
     elseif addcmd == 'hide' then
         settings.visible = false
         settings:save('all')
         hideBox()
+        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Hide'):color(8)..'')
 
     -- Toggle the visibility of the BP box
     elseif addcmd == 'visible' then
