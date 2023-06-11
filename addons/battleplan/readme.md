@@ -37,6 +37,9 @@ This is line 2
 This is line 3
 ```
 ### Version History
+**2.1.2**
+- Display Visibility status on update
+
 **2.1.1**
 - Help command now also shows the current Visibility setting (show or hide)
 - Minor formatting update to the help command
