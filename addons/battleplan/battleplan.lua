@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.1.0'
+_addon.version = '2.1.1'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -331,13 +331,13 @@ function displayHelp()
     windower.add_to_chat(200,'[Battle Plan] '..('Commands:'):color(8)..'')
 	windower.add_to_chat(200,'[Battle Plan] '..(' show - Show the BP box.'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..(' hide - Hide the BP box.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' visible - Toggle the BP box visibility (alternative to show/hide).'):color(8)..'')
+    windower.add_to_chat(200,'[Battle Plan] '..(' visible - Toggle the BP box visibility (alternative to show/hide). [Current: %s':format(settings.visible and 'Show]' or 'Hide]')):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..(' clear - Clear EVERYONE\'S BP box.'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..(' clearmine - Clear YOUR BP box. Other people\'s BP boxes remain the same.'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..(' line#/l#/# - Create party text to update the BP box for all members running BP.'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..('               # must be a number 1-5. (Ex. //bp 3 Hello from iLVL of Valefor!)'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' pos/move x y - Update the position of the BP box. (Current: '..settings.position.x..' '..settings.position.y..', Default: '..defaults.position.x..' '..defaults.position.y..')'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' size # - Update the font size of the BP box. (Current: '..settings.font.size..', Default: '..defaults.font.size..')'):color(8)..'')
+    windower.add_to_chat(200,'[Battle Plan] '..(' pos/move x y - Update the position of the BP box. [Current: '..settings.position.x..' '..settings.position.y..', Default: '..defaults.position.x..' '..defaults.position.y..']'):color(8)..'')
+    windower.add_to_chat(200,'[Battle Plan] '..(' size # - Update the font size of the BP box. [Current: '..settings.font.size..', Default: '..defaults.font.size..']'):color(8)..'')
 end
 
 -- "Party Commands" issued through party chat, denoted by starting with !bp
