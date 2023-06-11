@@ -37,15 +37,15 @@ This is line 2
 This is line 3
 ```
 ### Version History
-2.1.1
--Help command now also shows the current Visibility setting (show or hide)
--Minor formatting update to the help command
+**2.1.1**
+- Help command now also shows the current Visibility setting (show or hide)
+- Minor formatting update to the help command
 
-2.1
+**2.1**
 - Now saves Visibility setting to file
 - Added "move" alias to position command
 
-2.0
+**2.0**
 - Total number of available lines increased from 3 to 5.
 - BP Box now auto-hides when all lines are empty.
 - Empty trailing lines are now hidden (ie if only lines 1 and 3 are used then 4 and 5 will be hidden).
@@ -68,6 +68,6 @@ This is line 3
 - Added commands to reload/unload the BP addon: reload, unload.
   - These are mainly just aliases for the windower reload and unload commands.
 
-1.0
+**1.0**
 - Initial build.
 - Basic funtionality.
