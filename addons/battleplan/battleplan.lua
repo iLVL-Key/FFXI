@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.0.0'
+_addon.version = '2.1.0'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -36,9 +36,10 @@ texts = require('texts')
 config = require('config')
 
 tb_name = 'addon:battleplan'
-visible = true
 
 defaults = T{}
+
+defaults.visible = true
 
 defaults.position = T{}
 defaults.position.x = 0
@@ -99,7 +100,7 @@ windower.register_event('load', initialize)
 
 function updateBox()
 
-    if visible then
+    if settings.visible then
         windower.text.set_visibility(tb_name, true)
     end
 
@@ -296,11 +297,13 @@ end
 
 -- Toggle the visibility of the BP box
 function toggleBox()
-    if visible then
-        visible = false
+    if settings.visible then
+        settings.visible = false
+        settings:save('all')
         hideBox()
     else
-        visible = true
+        settings.visible = true
+        settings:save('all')
         showBox()
     end
 end
@@ -333,7 +336,7 @@ function displayHelp()
     windower.add_to_chat(200,'[Battle Plan] '..(' clearmine - Clear YOUR BP box. Other people\'s BP boxes remain the same.'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..(' line#/l#/# - Create party text to update the BP box for all members running BP.'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..('               # must be a number 1-5. (Ex. //bp 3 Hello from iLVL of Valefor!)'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' pos x y - Update the position of the BP box. (Current: '..settings.position.x..' '..settings.position.y..', Default: '..defaults.position.x..' '..defaults.position.y..')'):color(8)..'')
+    windower.add_to_chat(200,'[Battle Plan] '..(' pos/move x y - Update the position of the BP box. (Current: '..settings.position.x..' '..settings.position.y..', Default: '..defaults.position.x..' '..defaults.position.y..')'):color(8)..'')
     windower.add_to_chat(200,'[Battle Plan] '..(' size # - Update the font size of the BP box. (Current: '..settings.font.size..', Default: '..defaults.font.size..')'):color(8)..'')
 end
 
@@ -381,12 +384,14 @@ windower.register_event('addon command',function(addcmd, ...)
 
     -- Show the BP box
     if addcmd == 'show' then
-        visible = true
+        settings.visible = true
+        settings:save('all')
         showBox()
     
     -- Hide the BP box
     elseif addcmd == 'hide' then
-        visible = false
+        settings.visible = false
+        settings:save('all')
         hideBox()
 
     -- Toggle the visibility of the BP box
@@ -430,7 +435,7 @@ windower.register_event('addon command',function(addcmd, ...)
         local line = table.concat({...}, " ")
         chat('!bp5 ' ..line)
 
-    elseif addcmd == 'pos' or addcmd == 'position' then
+    elseif addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' then
         local pos = {...}
         if #pos < 2 then
             windower.add_to_chat(200,'[Battle Plan] '..('Error: Need both X and Y coordinates (ex. //bp pos 100 200). Current position: '..settings.position.x..' '..settings.position.y):color(8)..'')
