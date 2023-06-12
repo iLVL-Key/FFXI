@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.1.1'
+_addon.version = '2.1.2'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
