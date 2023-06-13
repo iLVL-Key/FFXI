@@ -37,6 +37,12 @@ This is line 2
 This is line 3
 ```
 ### Version History
+**2.3**
+- Added send command. When paired with the line command. this allows you to fill out the BP box on your side, then send it to other users once you are finished.
+- Added auto-hide upon zoning or logging out of your character.
+- Added error handling on the font size command.
+- Additional formatting fixes.
+
 **2.2**
 - Added a tutorial.
 - Added message on first load reminding about `//bp help` and `//bp tutorial`. This message only runs the first time the BP is loaded.
