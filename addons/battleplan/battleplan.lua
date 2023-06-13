@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.1.2'
+_addon.version = '2.2'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -39,38 +39,38 @@ tb_name = 'addon:battleplan'
 
 defaults = T{}
 
+defaults.firstLoad = true
 defaults.visible = true
 
 defaults.position = T{}
-defaults.position.x = 0
+defaults.position.x = 15
 defaults.position.y = (windower.get_windower_settings().ui_y_res) / 2 --Makes the default Y position in the middle of your screen
 
 defaults.font = T{}
 defaults.font.family = 'Arial'
 defaults.font.size   = 10
 defaults.font.a      = 255
-defaults.font.bold   = false
-defaults.font.italic = false
 
 defaults.colors = T{}
 defaults.colors.background = T{}
 defaults.colors.background.r = 0
-defaults.colors.background.g = 43
-defaults.colors.background.b = 54
+defaults.colors.background.g = 0
+defaults.colors.background.b = 0
 defaults.colors.background.a = 200
 defaults.colors.header = T{}
-defaults.colors.header.r = 220
-defaults.colors.header.g = 50
-defaults.colors.header.b = 47
+defaults.colors.header.r = 54
+defaults.colors.header.g = 104
+defaults.colors.header.b = 255
 defaults.colors.text = T{}
-defaults.colors.text.r = 147
-defaults.colors.text.g = 161
-defaults.colors.text.b = 161
+defaults.colors.text.r = 240
+defaults.colors.text.g = 240
+defaults.colors.text.b = 240
 
 settings = config.load(defaults)
 
 local chat = windower.chat.input
 local cmd = windower.send_command
+local tutorialRun = false
 
 line = {}
 line[1] = ""
@@ -79,10 +79,12 @@ line[3] = ""
 line[4] = ""
 line[5] = ""
 
-
+-- Initial setup
 function initialize()
+
     local background = settings.colors.background
 
+    -- Create and setup the BP box
     windower.text.create(tb_name)
     windower.text.set_location(tb_name, settings.position.x, settings.position.y)
     windower.text.set_bg_color(tb_name, background.a, background.r, background.g, background.b)
@@ -94,10 +96,24 @@ function initialize()
     windower.text.set_text(tb_name, '')
     windower.text.set_bg_visibility(tb_name, true)
     updateBox()
+
+    -- A quick message on the first time BP is loaded
+    if settings.firstLoad then
+
+        windower.add_to_chat(220,'[Battle Plan] '..('First load detected.'):color(8)..'')
+        coroutine.sleep(1)
+        windower.add_to_chat(220,'[Battle Plan] '..('Type'):color(8)..(' //bp help'):color(1)..(' for help or'):color(8)..(' //bp tutorial'):color(1)..(' to run the tutorial.'):color(8)..'')
+        settings.firstLoad = false
+        settings:save('all')
+
+    end
+
 end
 
+-- Run the initialize function when first loaded
 windower.register_event('load', initialize)
 
+-- Update the BP box
 function updateBox()
 
     if settings.visible then
@@ -109,7 +125,7 @@ function updateBox()
 
     -- Create a temporary "text" array that we use to build what's displayed in the box
     local text = T{}
-    text[1] = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')--== Battle Plan ==--\\cr \n'
+    text[1] = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')[ -- Battle Plan -- ]\\cr \n'
 
     -- If Line 5 is not empty, we display it and every line above it plus the BP header
     if line[5] ~= "" then
@@ -146,12 +162,12 @@ function updateBox()
         hideBox()
     end
 
-    -- Now we take our temporary "text" array and turn it into a string and update the text inside the box
-    windower.text.set_text(tb_name, text:concat(''))    
+    -- Turn the "text" array into a string and update the text inside the box
+    windower.text.set_text(tb_name, text:concat(''))
 
 end
 
--- Update Line 1
+-- Extract text for Line 1
 function getLine1(input)
 
     -- Take the entire line and put it into a string
@@ -177,7 +193,7 @@ function getLine1(input)
 
 end
 
--- Update Line 2
+-- Extract text for Line 2
 function getLine2(input)
 
     -- Take the entire line and put it into a string
@@ -203,7 +219,7 @@ function getLine2(input)
 
 end
 
--- Update Line 3
+-- Extract text for Line 3
 function getLine3(input)
 
     -- Take the entire line and put it into a string
@@ -229,7 +245,7 @@ function getLine3(input)
 
 end
 
--- Update Line 4
+-- Extract text for Line 4
 function getLine4(input)
 
     -- Take the entire line and put it into a string
@@ -258,7 +274,7 @@ function getLine4(input)
 
 end
 
--- Update Line 5
+-- Extract text for Line 5
 function getLine5(input)
 
     -- Take the entire line and put it into a string
@@ -286,60 +302,159 @@ end
 
 -- Show the BP box
 function showBox()
+
     windower.text.set_visibility(tb_name, true)
     updateBox()
+
 end
+
 
 -- Hide the BP box
 function hideBox()
+
     windower.text.set_visibility(tb_name, false)
+
 end
+
 
 -- Toggle the visibility of the BP box
 function toggleBox()
+
     if settings.visible then
         settings.visible = false
         settings:save('all')
         hideBox()
-        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Hide'):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated: Hide'):color(8)..'')
+
     else
         settings.visible = true
         settings:save('all')
         showBox()
-        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Show'):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated: Show'):color(8)..'')
     end
+
 end
 
 
--- Clear the appropriate BP box
-function clear(who)
-    if who == "mine" then
-        line[1] = ""
-        line[2] = ""
-        line[3] = ""
-        line[4] = ""
-        line[5] = ""
-        updateBox()
-        windower.add_to_chat(200,'[Battle Plan] '..('Clearing YOUR BP box. Other people\'s BP boxes remain the same.'):color(8)..'')
-    elseif who == "everyone" then
-        chat('/p !bpclear')
-        windower.add_to_chat(200,'[Battle Plan] '..('Clearing EVERYONE\'S BP box.'):color(8)..'')
-    end
+-- Clear the BP box
+function clearBox()
+
+    line[1] = ""
+    line[2] = ""
+    line[3] = ""
+    line[4] = ""
+    line[5] = ""
+    updateBox()
+
 end
 
+-- Display help text
 function displayHelp()
-    windower.add_to_chat(200,'[Battle Plan] '..('A collaborative "whiteboard" to keep you and your party members on the same page.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..('Up to 5 lines are available to use. BP box is not visible when all lines are empty.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..('Commands:'):color(8)..'')
-	windower.add_to_chat(200,'[Battle Plan] '..(' show - Show the BP box.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' hide - Hide the BP box.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' visible - Toggle the BP box visibility (alternative to show/hide). [Current: %s':format(settings.visible and 'Show]' or 'Hide]')):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' clear - Clear EVERYONE\'S BP box.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' clearmine - Clear YOUR BP box. Other people\'s BP boxes remain the same.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' line#/l#/# - Create party text to update the BP box for all members running BP.'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..('               # must be a number 1-5. (Ex. //bp 3 Hello from iLVL of Valefor!)'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' pos/move x y - Update the position of the BP box. [Current: '..settings.position.x..' '..settings.position.y..', Default: '..defaults.position.x..' '..defaults.position.y..']'):color(8)..'')
-    windower.add_to_chat(200,'[Battle Plan] '..(' size # - Update the font size of the BP box. [Current: '..settings.font.size..', Default: '..defaults.font.size..']'):color(8)..'')
+
+    local defPos = defaults.position
+    local curPos = settings.position
+    local defSize = defaults.font.size
+    local curSize = settings.font.size
+
+    windower.add_to_chat(220,'[Battle Plan] '..('  Battle Plan'):color(220)..(' version '):color(8)..(_addon.version):color(220))
+    windower.add_to_chat(220,'[Battle Plan] ')
+    windower.add_to_chat(220,'[Battle Plan] '..('Addon Commands'):color(200)..(' (prefixed with'):color(8)..(' //battleplan'):color(1)..(' or'):color(8)..(' //bp'):color(1)..('):'):color(8))
+	windower.add_to_chat(220,'[Battle Plan] '..('  show'):color(36)..(' - Shows the BP box if there is content to diplay.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  hide'):color(36)..(' - Hides the BP box regardless of content to display.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  visible'):color(36)..(' - Toggle the BP box visibility (alternative to show/hide). [Current:'):color(8)..(' %s':format(settings.visible and 'Show' or 'Hide')):color(200)..(']'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  line#/l#/#'):color(36)..(' - Update YOUR BP box. Other people\'s BP boxes will remain the same.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('                # must be a number 1-5. (Ex.'):color(8)..(' //bp 3 Hello from iLVL of Valefor!'):color(1)..(')'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  clear'):color(36)..(' - Clear YOUR BP box. Other people\'s BP boxes will remain the same.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  pos/move x y'):color(36)..(' - Update the position of the BP box. [Current: '):color(8)..(curPos.x..' '..curPos.y):color(200)..(', Default: '):color(8)..(defPos.x..' '..defPos.y):color(200)..(']'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  size #'):color(36)..(' - Update the font size of the BP box. [Current:'):color(8)..(' '..curSize):color(200)..(', Default: '):color(8)..(''..defSize):color(200)..(']'):color(200))
+    windower.add_to_chat(220,'[Battle Plan] '..('  tutorial'):color(36)..(' - Run a short tutorial to give you the basics.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] ')
+    windower.add_to_chat(220,'[Battle Plan] '..('Party Commands'):color(200)..(' (input directly into chat):'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  !bp#'):color(36)..(' - Update EVERYONE\'S BP box with the text that follows it.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('          # must be a number 1-5. (Ex. '):color(8)..('!bp3 Pickle Surprise!'):color(1)..(')'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  !bpclear'):color(36)..(' - Clear EVERYONE\'S BP box.'):color(8))
+
+end
+
+-- Run the tutorial
+function runTutorial()
+
+    tutorialRunning = true
+
+    windower.add_to_chat(220,'[Battle Plan] '..('Cancel this short tutorial at any time by typing'):color(8)..(' //bp stop'):color(1)..(' [...]'):color(8))
+    coroutine.sleep(4)
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Battle Plan'):color(220)..(' is a collaborative "whiteboard" for you and your party. [...]'):color(8))
+        coroutine.sleep(4)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('The \'BP box\' is the window you should now see on your screen. [...]'):color(8))
+        line[1] = 'Hello!'
+        updateBox()
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Up to 5 lines are available to use. The BP box is not visible when all lines are empty. [...]'):color(8))
+        coroutine.sleep(4)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('It is controlled by special commands detected through the chat log. [...]'):color(8))
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Anyone running Battle Plan that sees these commands will be updated. [...]'):color(8))
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('This means that you can keep a group of players all on the same page! [...]'):color(8))
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('We\'ll test it here by using /echo so only you see it: [...]'):color(8))
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        chat('/echo !bp1 Tonights Omen runs: !bp2 1: Card farm, bring any job you want !bp3 2: Kin !bp4 3: Ou')
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('As you can see, you can even update multiple lines at the same time. [...]'):color(8))
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Type'):color(8)..(' //bp hide'):color(1)..(' at any time to hide the BP box. [...]'):color(8))
+        hideBox()
+        coroutine.sleep(4)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Type'):color(8)..(' //bp show'):color(1)..(' at any time to bring the BP box back. [...]'):color(8))
+        showBox()
+        coroutine.sleep(4)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Lastly, you can update the size and position of the BP box at any time. [...]'):color(8))
+        coroutine.sleep(5)
+    end
+
+    if tutorialRunning then
+        windower.add_to_chat(220,'[Battle Plan] '..('Try typing'):color(8)..(' //bp size 15'):color(1)..(' and'):color(8)..(' //bp pos 100 300'):color(1)..(' to see what happens. [...]'):color(8))
+        coroutine.sleep(2)
+        windower.add_to_chat(220,'[Battle Plan] '..('Tutorial finished.'):color(8))
+        clearBox('')
+    end
+
 end
 
 -- "Party Commands" issued through party chat, denoted by starting with !bp
@@ -375,8 +490,9 @@ windower.register_event('incoming text',function(partycmd, ...)
         updateBox()
     end
 
+    -- Clear the BP box
     if partycmd:find('!bpclear') then
-        clear('mine')
+        clearBox()
     end
 
 end)
@@ -389,74 +505,84 @@ windower.register_event('addon command',function(addcmd, ...)
         settings.visible = true
         settings:save('all')
         showBox()
-        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Show'):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated: Show'):color(8))
     
     -- Hide the BP box
     elseif addcmd == 'hide' then
         settings.visible = false
         settings:save('all')
         hideBox()
-        windower.add_to_chat(200,'[Battle Plan] '..('Visibility updated: Hide'):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated: Hide'):color(8))
 
     -- Toggle the visibility of the BP box
     elseif addcmd == 'visible' then
         toggleBox()
 
-    -- Clear EVERYONE'S BP box (or only yours if you add 'mine' after)
-    elseif addcmd == 'clear' then
-        if ... == "mine" then
-            clear('mine')
-        else
-            clear('everyone')
-        end
-
     -- Clear YOUR BP box
-    elseif addcmd == 'clearmine' then
-        clear('mine')
+    elseif addcmd == 'clear' then
+        clearBox()
+        windower.add_to_chat(220,'[Battle Plan] '..('Clearing YOUR BP box. Other people\'s BP boxes remain the same.'):color(8))
 
-    -- Update Line 1
+    -- Update YOUR Line 1
     elseif addcmd == 'line1' or addcmd == 'l1' or addcmd == '1' then
-        local line = table.concat({...}, " ")
-        chat('!bp1 ' ..line)
+        local text = table.concat({...}, " ")
+        line[1] = text
+        updateBox()
 
-    -- Update Line 2
+    -- Update YOUR Line 2
     elseif addcmd == 'line2' or addcmd == 'l2' or addcmd == '2' then
-        local line = table.concat({...}, " ")
-        chat('!bp2 ' ..line)
+        local text = table.concat({...}, " ")
+        line[2] = text
+        updateBox()
 
-    -- Update Line 3
+    -- Update YOUR Line 3
     elseif addcmd == 'line3' or addcmd == 'l3' or addcmd == '3' then
-        local line = table.concat({...}, " ")
-        chat('!bp3 ' ..line)
+        local text = table.concat({...}, " ")
+        line[3] = text
+        updateBox()
 
-    -- Update Line 4
+    -- Update YOUR Line 4
     elseif addcmd == 'line4' or addcmd == 'l4' or addcmd == '4' then
-        local line = table.concat({...}, " ")
-        chat('!bp4 ' ..line)
+        local text = table.concat({...}, " ")
+        line[4] = text
+        updateBox()
 
-    -- Update Line 5
+    -- Update YOUR Line 5
     elseif addcmd == 'line5' or addcmd == 'l5' or addcmd == '5' then
-        local line = table.concat({...}, " ")
-        chat('!bp5 ' ..line)
+        local text = table.concat({...}, " ")
+        line[5] = text
+        updateBox()
 
+    -- Update the position
     elseif addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' then
         local pos = {...}
         if #pos < 2 then
-            windower.add_to_chat(200,'[Battle Plan] '..('Error: Need both X and Y coordinates (ex. //bp pos 100 200). Current position: '..settings.position.x..' '..settings.position.y):color(8)..'')
+            windower.add_to_chat(220,'[Battle Plan] '..('Error: Need both X and Y coordinates (ex. //bp pos 100 200). Current position: '..settings.position.x..' '..settings.position.y):color(8))
             return
         end
         settings.position.x = tonumber(pos[1])
         settings.position.y = tonumber(pos[2])
         settings:save('all')
         windower.text.set_location(tb_name, settings.position.x, settings.position.y)
-        windower.add_to_chat(200,'[Battle Plan] '..('Position updated: '..settings.position.x..' '..settings.position.y):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Position updated: '..settings.position.x..' '..settings.position.y):color(8))
 
+    -- Update the font size
     elseif addcmd == 'size' or addcmd == 'fontsize' then
         local size = {...}
         settings.font.size = tonumber(size[1])
         settings:save('all')
         windower.text.set_font_size(tb_name, settings.font.size)
-        windower.add_to_chat(200,'[Battle Plan] '..('Font Size updated: '..settings.font.size):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Font Size updated: '..settings.font.size):color(8))
+
+    -- Run the tutorial
+    elseif addcmd == 'tutorial' then
+        runTutorial()
+
+    -- Stop the tutorial
+    elseif addcmd == 'stop' then
+        tutorialRunning = false
+        windower.add_to_chat(220,'[Battle Plan] '..('Tutorial stopped.'):color(8))
+        clearBox()
 
     -- Reload Battle Plan
     elseif addcmd == 'reload' then
@@ -464,14 +590,16 @@ windower.register_event('addon command',function(addcmd, ...)
 
     -- Unload Battle Plan
     elseif addcmd == 'unload' then
-        windower.add_to_chat(200,'[Battle Plan] '..('Unloaded. Type \'//lua l battleplan\' if you wish to load again.'):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Unloaded. Type \'//lua l battleplan\' if you wish to load again.'):color(8))
         cmd('lua u battleplan')
     
+    --Display help
     elseif addcmd == 'help' then
         displayHelp()
 
+    -- Unrecognized command
     else
-        windower.add_to_chat(200,'[Battle Plan] '..('Unrecognized command. Type \'//bp help\' if you need help.'):color(8)..'')
+        windower.add_to_chat(220,'[Battle Plan] '..('Unrecognized command. Type \'//bp help\' if you need help.'):color(8))
 
     end
 end)
