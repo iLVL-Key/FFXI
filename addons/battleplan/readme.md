@@ -37,6 +37,9 @@ This is line 2
 This is line 3
 ```
 ### Version History
+**2.4**
+- Added a temporary display for the BP box when using the position and font size commands when the BP box is not on screen.
+
 **2.3**
 - Added send command. When paired with the line command. this allows you to fill out the BP box on your side, then send it to other users once you are finished.
 - Added auto-hide upon zoning or logging out of your character.
