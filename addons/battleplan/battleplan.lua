@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.3'
+_addon.version = '2.4'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -114,6 +114,7 @@ end
 
 -- On login, show the BO box if Visible is true
 function login()
+
     if settings.visible then
         showBox()
 
@@ -123,11 +124,13 @@ end
 
 -- On logout, hide the BO box regardless of Visible setting since we don't want it displayed on the title/character select
 function logout()
+
     hideBox()
 
 end
 
 
+-- Listen for when zoning
 windower.register_event('prerender', function()
 
     local pos = windower.ffxi.get_position()
@@ -149,8 +152,31 @@ end)
 
 -- Run the initialize function when first loaded
 windower.register_event('load', initialize)
+
 windower.register_event('login', login)
 windower.register_event('logout', logout)
+
+
+--Temporarily display the BP box
+function tempDisplay()
+
+    -- If all lines are empty, show the BP box then start a 10 second countdown
+    if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
+        showBox()
+        for i = 10,0,-1
+        do
+            if i > 0 then
+                line[5] = 'Make your adjustments... ['..i..']'
+                updateBox()
+                coroutine.sleep(1)
+            else
+                -- Once the countdown hits 0, clear the BP box
+                clearBox()
+            end
+        end
+    end
+
+end
 
 
 -- Show the BP box
@@ -623,13 +649,15 @@ windower.register_event('addon command',function(addcmd, ...)
 
     -- Update the position
     elseif addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' then
-        
+
         local pos = {...}
         
         -- If there are not enough parameters then output the current position and remind how to update
         if #pos < 2 then
             windower.add_to_chat(220,'[Battle Plan] '..('Current position:'):color(8)..(' '..settings.position.x..' '..settings.position.y):color(200))
             windower.add_to_chat(220,'[Battle Plan] '..('Update using both X and Y coordinates (ex.'):color(8)..(' //bp pos 100 200'):color(1)..(')'):color(8))
+            -- Run tempDisplay to determine if the BP box is currently visible or not
+            tempDisplay()
             return
         end
         
@@ -642,9 +670,17 @@ windower.register_event('addon command',function(addcmd, ...)
         windower.text.set_location(tb_name, settings.position.x, settings.position.y)
         windower.add_to_chat(220,'[Battle Plan] '..('Position updated:'):color(8)..(' '..settings.position.x..' '..settings.position.y):color(200))
 
+        -- Run tempDisplay to determine if the BP box is currently visible or not
+        tempDisplay()
+
     -- Update the font size
     elseif addcmd == 'size' or addcmd == 'fontsize' then
         
+        -- If the BP box is empty, run tempDisplay so we have something to see while we adjust it
+        if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
+            tempDisplay()
+        end
+
         local size = {...}
         
         -- If there are no parameters then output the current size and remind how to update
