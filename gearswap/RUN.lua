@@ -185,12 +185,29 @@ function get_sets()
 		legs="Eri. Leg Guards +3",
 		feet="Erilaz Greaves +3",
 		neck="Warder's Charm +1",
-		waist="Plat. Mog. Belt",
-		left_ear="Ethereal Earring",
-		right_ear="Cryptic Earring",
+		waist="Carrier's Sash",
+		left_ear="Tuisto Earring",
+		right_ear="Odnowa Earring +1",
 		left_ring="Moonbeam Ring",
 		right_ring="Gelatinous Ring +1",
 		back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}},
+	}
+	
+	--DPS 
+	sets.dps = {
+	    ammo="Coiste Bodhar",
+		head="Adhemar Bonnet +1",
+		body="Adhemar Jacket +1",
+		hands="Adhemar Wrist. +1",
+		legs="Meg. Chausses +2",
+		feet="Herculean Boots",
+		neck="Ziel Charm",
+		waist="Ioskeha Belt +1",
+		left_ear="Sherida Earring",
+		right_ear="Mache Earring +1",
+		left_ring="Epona's Ring",
+		right_ring="Niqmaddu Ring",
+		back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
 	}
 
 	-- Oh Shit
@@ -207,8 +224,8 @@ function get_sets()
 		back="Shadow Mantle"
 	}
 
-	-- Refresh (only need Refresh gear in here, will inherit the rest from the Kite set above)
-	sets.refresh = set_combine(sets.kite, {
+	-- Refresh (only need Refresh gear in here, combines with other sets based on situation)
+	sets.refresh = {
 		ammo="Homiliary",
 		head="Rawhide Mask",
 		body="Agwu's Robe",
@@ -216,7 +233,7 @@ function get_sets()
 		waist="Flume Belt",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
-	})
+	}
 
 	-- Idle (Movement speed)
 	-- Combines with other sets based on current mode
@@ -234,6 +251,7 @@ function get_sets()
 		right_ear="Friomisi Earring",
 		left_ring="Petrov Ring",
 		right_ring="Vengeful Ring",
+		back="Moonlight Cape",
 	}
 
 	-- Rest
@@ -250,11 +268,12 @@ function get_sets()
 		legs="Nyame Flanchard",
 		feet="Carmine Greaves +1", --8
 		neck="Baetyl Pendant", --4
-		waist="Flume Belt",
+		waist="Plat. Mog. Belt",
 		left_ear="Loquac. Earring", --2
 		right_ear="Etiolation Earring", --1
 		left_ring="Prolix Ring", --2
 		right_ring="Kishar Ring", --4
+		back="Moonlight Cape",
 	}
 
 	-- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
@@ -382,18 +401,19 @@ function get_sets()
 
 	-- Swipe and Lunge (Magic Attack Bonus)
 	sets.swipe = set_combine(sets.enmity, {
-		sub="Balarama Grip",
 		ammo="Ghastly Tathlum +1",
-		body="Cohort Cloak +1",
+		head="Agwu's Cap",
+		body="Agwu's Robe",
 		hands="Nyame Gauntlets",
 		legs="Nyame Flanchard",
 		feet="Agwu's Pigaches",
 		neck="Baetyl Pendant",
-		waist="Eschan Stone",
+		waist="Orpheus's Sash",
 		left_ear="Friomisi Earring",
 		right_ear="Halasz Earring",
 		left_ring="Shiva Ring +1",
-		right_ring="Metamor. Ring +1",
+		right_ring="Moonbeam Ring",
+		back="Moonlight Cape",
 	})
 
 	-- Embolden (Enhances Embolden gear)
@@ -475,7 +495,7 @@ end
 
 
 
-FileVersion = '6.0.0'
+FileVersion = '6.0.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -486,6 +506,12 @@ If the new updates major version matches your current file,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the major version changes will you need to update the entire file.
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+
+Version 6.0.2
+-Fixed Refresh set combining with nonexistent Kite set.
+
+Version 6.0.1
+-Fixed missing DPS set.
 
 Version 6.0.0
 -Renamed WS Damage Notification to Damage Notification.
@@ -1240,7 +1266,7 @@ function choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Tank DT + Movement Speed]')
 				end
-			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh/idle sets
+			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh and movement speed sets
 				equip(set_combine(sets.refresh, sets.movementspeed))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Refresh + Movement Speed]')
@@ -2556,11 +2582,3 @@ end)
 function file_unload()
 	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text bg4 delete;text rune1 delete;text rune2 delete;text rune3 delete;text crusade delete;text phalanx delete;text vpulse delete;text cocoon delete;text defender delete;text battuta delete;text swordplay delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text weapons delete') --delete the different text objects
 end
-
---[[
-
--------------------------------------------
---            KEYS NOTEPAD               --
--------------------------------------------
-
- --]]
