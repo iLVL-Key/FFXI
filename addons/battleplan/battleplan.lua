@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.4.1'
+_addon.version = '2.4.2'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -535,45 +535,40 @@ end
 -- "Party Commands" issued through party chat, denoted by starting with !bp
 windower.register_event('incoming text',function(partycmd, ...)
 
-    -- First check that the text didn't come from the help command
-    if not partycmd:find('[Battle Plan]') then
+    -- Update Line 1
+    if partycmd:find('!bp1') then
+        line[1] = getLine1(...)
+        updateBox()
+    end
 
-        -- Update Line 1
-        if partycmd:find('!bp1') then
-            line[1] = getLine1(...)
-            updateBox()
-        end
+    -- Update Line 2
+    if partycmd:find('!bp2') then
+        line[2] = getLine2(...)
+        updateBox()
+    end
 
-        -- Update Line 2
-        if partycmd:find('!bp2') then
-            line[2] = getLine2(...)
-            updateBox()
-        end
+    -- Update Line 3 (but not if it was found from the help command)
+    if partycmd:find('!bp3') and not partycmd:find('[Battle Plan]') then
+        line[3] = getLine3(...)
+        updateBox()
+    end
 
-        -- Update Line 3
-        if partycmd:find('!bp3') then
-            line[3] = getLine3(...)
-            updateBox()
-        end
+    -- Update Line 4
+    if partycmd:find('!bp4') then
+        line[4] = getLine4(...)
+        updateBox()
+    end
 
-        -- Update Line 4
-        if partycmd:find('!bp4') then
-            line[4] = getLine4(...)
-            updateBox()
-        end
+    -- Update Line 5
+    if partycmd:find('!bp5') then
+        line[5] = getLine5(...)
+        updateBox()
+    end
 
-        -- Update Line 5
-        if partycmd:find('!bp5') then
-            line[5] = getLine5(...)
-            updateBox()
-        end
-
-        -- Clear the BP box
-        if partycmd:find('!bpclear') then
-            clearBox()
-        end
-
-end
+    -- Clear the BP box (but not if it was found from the help command)
+    if partycmd:find('!bpclear') and not partycmd:find('[Battle Plan]') then
+        clearBox()
+    end
 
 end)
 
