@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.5'
+_addon.version = '2.5.1'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -118,7 +118,6 @@ function login()
 
     if settings.visible then
         showBox()
-
     end
 end
 
@@ -137,15 +136,19 @@ windower.register_event('prerender', function()
     local pos = windower.ffxi.get_position()
 
     if pos == "(?-?)" and not zoning then
+
         if settings.visible then
             hideBox()
         end
         zoning = true
+
     elseif pos ~= "(?-?)" and zoning then
+
         if settings.visible then
             showBox()
         end
         zoning = false
+
     end
 
 end)
@@ -164,18 +167,25 @@ function tempDisplay()
 
     -- If all lines are empty, show the BP box then start a 10 second countdown
     if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
+
         showBox()
+
         for i = 10,0,-1
         do
+
             if i > 0 then
                 line[5] = 'Make your adjustments... ['..i..']'
                 updateBox()
                 coroutine.sleep(1)
+
             else
+
                 -- Once the countdown hits 0, clear the BP box
                 clearBox()
             end
+
         end
+
     end
 
 end
@@ -202,17 +212,15 @@ end
 function toggleBox()
 
     if settings.visible then
-        settings.visible = false
-        settings:save('all')
         hideBox()
-        windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated: Hide'):color(8)..'')
-
     else
-        settings.visible = true
-        settings:save('all')
         showBox()
-        windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated: Show'):color(8)..'')
     end
+
+    -- Flip the visibilty setting and save
+    settings.visible = not settings.visible
+    windower.add_to_chat(220,'[Battle Plan] '..('Visibility updated:'):color(8)..(' %s':format(settings.visible and 'True' or 'False')):color(200))
+    settings:save('all')
 
 end
 
@@ -237,12 +245,14 @@ function updateBox()
 
     -- Create a temporary "text" array that we use to build what's displayed in the box
     local text = T{}
+
     -- The header always goes first, at the top
     text[1] = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')[ -- Battle Plan -- ]\\cr \n'
 
     -- Starting at the bottom, check each line for content
     for i = #line, 1, -1
     do
+
         -- If a line has content (is not empty), then add it and every line above it to the BP box.
         -- This way any trailing empty lines are not displayed, making the BP box more compact if possible
         if line[i] ~= "" then
@@ -250,8 +260,10 @@ function updateBox()
             do
                 text[j+1] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[j]..'\\cr \n'
             end
-        end
+
         -- If a line does not have content (is empty), then do nothing and check the next line upward
+        end
+
     end
 
     -- Turn the "text" array into a string and update the text inside the box
@@ -578,6 +590,7 @@ windower.register_event('addon command',function(addcmd, ...)
         -- If all lines are empty, let them know
         if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
             windower.add_to_chat(220,'[Battle Plan] '..('No messages to send, all lines are empty.'):color(8))
+
         -- Otherwise, do a little loop to print out each line that isn't empty
         else
             for i = 1,5,1
@@ -596,11 +609,14 @@ windower.register_event('addon command',function(addcmd, ...)
         
         -- If there are not enough parameters then output the current position and remind how to update
         if #pos < 2 then
+
             windower.add_to_chat(220,'[Battle Plan] '..('Current position:'):color(8)..(' '..settings.position.x..' '..settings.position.y):color(200))
             windower.add_to_chat(220,'[Battle Plan] '..('Update using both X and Y coordinates (ex.'):color(8)..(' //bp pos 100 200'):color(1)..(')'):color(8))
+
             -- Run tempDisplay to determine if the BP box is currently visible or not
             tempDisplay()
             return
+
         end
         
         -- Take the provided string parameters and turn them into numbers
@@ -622,12 +638,14 @@ windower.register_event('addon command',function(addcmd, ...)
         
         -- If there are no parameters then output the current size and remind how to update
         if #size < 1 then
+
             windower.add_to_chat(220,'[Battle Plan] '..('Current font size:'):color(8)..(' '..settings.font.size):color(200))
             windower.add_to_chat(220,'[Battle Plan] '..('Update by adding a number (ex.'):color(8)..(' //bp size 12'):color(1)..(')'):color(8))
 
             -- Run tempDisplay to determine if the BP box is currently visible or not
             tempDisplay()
             return
+
         end
         
         -- Take the provided string parameter and turn it into a number
@@ -648,24 +666,32 @@ windower.register_event('addon command',function(addcmd, ...)
         
         -- If there are no parameters then output the current bold setting and remind how to update
         if #setting < 1 then
+
             windower.add_to_chat(220,'[Battle Plan] '..('Current bold setting:'):color(8)..(' %s':format(settings.font.bold and 'True' or 'False')):color(200))
             windower.add_to_chat(220,'[Battle Plan] '..('Update by adding true/on or false/off (ex.'):color(8)..(' //bp bold on'):color(1)..(')'):color(8))
+
             -- Run tempDisplay to determine if the BP box is currently visible or not
             tempDisplay()
             return
+
         end
         
         if setting[1] == 'on' or setting[1] == 'true' then
             settings.font.bold = true
+
         elseif setting[1] == 'off' or setting[1] == 'false' then
             settings.font.bold = false
+
         -- If there are incorrect parameters then output the current bold setting and remind how to update
         else
+
             windower.add_to_chat(220,'[Battle Plan] '..('Current bold setting:'):color(8)..(' %s':format(settings.font.bold and 'True' or 'False')):color(200))
             windower.add_to_chat(220,'[Battle Plan] '..('Update by adding true/on or false/off (ex.'):color(8)..(' //bp bold on'):color(1)..(')'):color(8))
+
             -- Run tempDisplay to determine if the BP box is currently visible or not
             tempDisplay()
             return
+
         end
         
         -- Save the new setting, update the BP box, then alert the user
