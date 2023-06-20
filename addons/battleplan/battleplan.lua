@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.4.3'
+_addon.version = '2.5'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -367,6 +367,8 @@ function displayHelp()
     local curPos = settings.position
     local defSize = defaults.font.size
     local curSize = settings.font.size
+    local defBold = defaults.font.bold
+    local curBold = settings.font.bold
 
     windower.add_to_chat(220,'[Battle Plan] '..('  Battle Plan'):color(220)..(' version '):color(8)..(_addon.version):color(220))
     windower.add_to_chat(220,'[Battle Plan] ')
@@ -378,7 +380,8 @@ function displayHelp()
     windower.add_to_chat(220,'[Battle Plan] '..('                # must be a number 1-5. (Ex.'):color(8)..(' //bp 3 Hello from iLVL of Valefor!'):color(1)..(')'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  clear'):color(36)..(' - Clear YOUR BP box. Other people\'s BP boxes will remain the same.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  pos/move x y'):color(36)..(' - Update the position of the BP box. [Current: '):color(8)..(curPos.x..' '..curPos.y):color(200)..(', Default: '):color(8)..(defPos.x..' '..defPos.y):color(200)..(']'):color(8))
-    windower.add_to_chat(220,'[Battle Plan] '..('  size #'):color(36)..(' - Update the font size of the BP box. [Current:'):color(8)..(' '..curSize):color(200)..(', Default: '):color(8)..(''..defSize):color(200)..(']'):color(200))
+    windower.add_to_chat(220,'[Battle Plan] '..('  size #'):color(36)..(' - Update the font size of the BP box. [Current:'):color(8)..(' '..curSize):color(200)..(', Default: '):color(8)..(''..defSize):color(200)..(']'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  bold'):color(36)..(' - Update the bold setting. [Current:'):color(8)..(' %s':format(curBold and 'True' or 'False')):color(200)..(', Default: '):color(8)..(' %s':format(defBold and 'True' or 'False')):color(200)..(']'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  tutorial'):color(36)..(' - Run a short tutorial to give you the basics.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] ')
     windower.add_to_chat(220,'[Battle Plan] '..('Party Commands'):color(200)..(' (input directly into chat):'):color(8))
@@ -615,17 +618,15 @@ windower.register_event('addon command',function(addcmd, ...)
     -- Update the font size
     elseif addcmd == 'size' or addcmd == 'fontsize' then
         
-        -- If the BP box is empty, run tempDisplay so we have something to see while we adjust it
-        if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
-            tempDisplay()
-        end
-
         local size = {...}
         
         -- If there are no parameters then output the current size and remind how to update
         if #size < 1 then
             windower.add_to_chat(220,'[Battle Plan] '..('Current font size:'):color(8)..(' '..settings.font.size):color(200))
             windower.add_to_chat(220,'[Battle Plan] '..('Update by adding a number (ex.'):color(8)..(' //bp size 12'):color(1)..(')'):color(8))
+
+            -- Run tempDisplay to determine if the BP box is currently visible or not
+            tempDisplay()
             return
         end
         
@@ -637,7 +638,45 @@ windower.register_event('addon command',function(addcmd, ...)
         windower.text.set_font_size(tb_name, settings.font.size)
         windower.add_to_chat(220,'[Battle Plan] '..('Font Size updated:'):color(8)..(' '..settings.font.size):color(200))
 
-    -- Run the tutorial
+        -- Run tempDisplay to determine if the BP box is currently visible or not
+        tempDisplay()
+
+    -- Update the bold setting
+    elseif addcmd == 'bold' then
+
+        local setting = {...}
+        
+        -- If there are no parameters then output the current bold setting and remind how to update
+        if #setting < 1 then
+            windower.add_to_chat(220,'[Battle Plan] '..('Current bold setting:'):color(8)..(' %s':format(settings.font.bold and 'True' or 'False')):color(200))
+            windower.add_to_chat(220,'[Battle Plan] '..('Update by adding true/on or false/off (ex.'):color(8)..(' //bp bold on'):color(1)..(')'):color(8))
+            -- Run tempDisplay to determine if the BP box is currently visible or not
+            tempDisplay()
+            return
+        end
+        
+        if setting[1] == 'on' or setting[1] == 'true' then
+            settings.font.bold = true
+        elseif setting[1] == 'off' or setting[1] == 'false' then
+            settings.font.bold = false
+        -- If there are incorrect parameters then output the current bold setting and remind how to update
+        else
+            windower.add_to_chat(220,'[Battle Plan] '..('Current bold setting:'):color(8)..(' %s':format(settings.font.bold and 'True' or 'False')):color(200))
+            windower.add_to_chat(220,'[Battle Plan] '..('Update by adding true/on or false/off (ex.'):color(8)..(' //bp bold on'):color(1)..(')'):color(8))
+            -- Run tempDisplay to determine if the BP box is currently visible or not
+            tempDisplay()
+            return
+        end
+        
+        -- Save the new setting, update the BP box, then alert the user
+        settings:save('all')
+        windower.text.set_bold(tb_name, settings.font.bold)
+        windower.add_to_chat(220,'[Battle Plan] '..('Bold setting updated:'):color(8)..(' %s':format(settings.font.bold and 'True' or 'False')):color(200))
+
+        -- Run tempDisplay to determine if the BP box is currently visible or not
+        tempDisplay()
+
+        -- Run the tutorial
     elseif addcmd == 'tutorial' then
         runTutorial()
 
