@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '2.4.2'
+_addon.version = '2.4.3'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -44,12 +44,13 @@ defaults.visible = true
 
 defaults.position = T{}
 defaults.position.x = 15
-defaults.position.y = (windower.get_windower_settings().ui_y_res) / 2 --Makes the default Y position in the middle of your screen
+defaults.position.y = (windower.get_windower_settings().ui_y_res) / 2 --Sets the default Y position in the middle of your screen
 
 defaults.font = T{}
 defaults.font.family = 'Arial'
 defaults.font.size   = 10
 defaults.font.a      = 255
+defaults.font.bold   = true
 
 defaults.colors = T{}
 defaults.colors.background = T{}
@@ -84,16 +85,16 @@ line[5] = ""
 function initialize()
 
     local background = settings.colors.background
+    local textColor = settings.colors.text
 
     -- Create and setup the BP box
     windower.text.create(tb_name)
     windower.text.set_location(tb_name, settings.position.x, settings.position.y)
     windower.text.set_bg_color(tb_name, background.a, background.r, background.g, background.b)
-    windower.text.set_color(tb_name, settings.font.a, 147, 161, 161)
+    windower.text.set_color(tb_name, settings.font.a, textColor.r, textColor.g, textColor.b)
     windower.text.set_font(tb_name, settings.font.family)
     windower.text.set_font_size(tb_name, settings.font.size)
     windower.text.set_bold(tb_name, settings.font.bold)
-    windower.text.set_italic(tb_name, settings.font.italic)
     windower.text.set_text(tb_name, '')
     windower.text.set_bg_visibility(tb_name, true)
     updateBox()
@@ -112,7 +113,7 @@ function initialize()
 end
 
 
--- On login, show the BO box if Visible is true
+-- On login, show the BP box if Visible is true
 function login()
 
     if settings.visible then
@@ -122,7 +123,7 @@ function login()
 end
 
 
--- On logout, hide the BO box regardless of Visible setting since we don't want it displayed on the title/character select
+-- On logout, hide the BP box since we don't want it displayed on the title/character screen
 function logout()
 
     hideBox()
@@ -153,6 +154,7 @@ end)
 -- Run the initialize function when first loaded
 windower.register_event('load', initialize)
 
+-- Run the login/logout functions
 windower.register_event('login', login)
 windower.register_event('logout', logout)
 
@@ -218,11 +220,10 @@ end
 -- Clear the BP box
 function clearBox()
 
-    line[1] = ""
-    line[2] = ""
-    line[3] = ""
-    line[4] = ""
-    line[5] = ""
+    for i = 1, #line, +1
+    do
+        line[i] = ""
+    end
     updateBox()
 
 end
@@ -231,54 +232,40 @@ end
 -- Update the BP box
 function updateBox()
 
-    if settings.visible then
-        windower.text.set_visibility(tb_name, true)
-    end
-
     local textColor = settings.colors.text
     local headerColor = settings.colors.header
 
     -- Create a temporary "text" array that we use to build what's displayed in the box
     local text = T{}
+    -- The header always goes first, at the top
     text[1] = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')[ -- Battle Plan -- ]\\cr \n'
 
-    -- If Line 5 is not empty, we display it and every line above it plus the BP header
-    if line[5] ~= "" then
-        text[2] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[1]..'\\cr \n'
-        text[3] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[2]..'\\cr \n'
-        text[4] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[3]..'\\cr \n'
-        text[5] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[4]..'\\cr \n'
-        text[6] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[5]..'\\cr \n'
-    
-    -- If Line 5 is empty, but Line 4 is not empty, we display it and every line above it plus the BP header
-    elseif line[4] ~= "" then
-        text[2] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[1]..'\\cr \n'
-        text[3] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[2]..'\\cr \n'
-        text[4] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[3]..'\\cr \n'
-        text[5] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[4]..'\\cr \n'
-    
-    -- If Lines 4-5 are empty, but Line 3 is not empty, we display it and every line above it plus the BP header
-    elseif line[3] ~= "" then
-        text[2] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[1]..'\\cr \n'
-        text[3] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[2]..'\\cr \n'
-        text[4] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[3]..'\\cr \n'
-    
-    -- If Lines 3-5 are empty, but Line 2 is not empty, we display it and every line above it plus the BP header
-    elseif line[2] ~= "" then
-        text[2] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[1]..'\\cr \n'
-        text[3] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[2]..'\\cr \n'
-    
-    -- If Lines 2-5 are empty, but Line 1 is not empty, we display it plus the BP header
-    elseif line[1] ~= "" then
-        text[2] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[1]..'\\cr \n'
-    
-    -- If all lines are empty, we hide the whole box
-    else
-        hideBox()
+    -- Starting at the bottom, check each line for content
+    for i = #line, 1, -1
+    do
+        -- If a line has content (is not empty), then add it and every line above it to the BP box.
+        -- This way any trailing empty lines are not displayed, making the BP box more compact if possible
+        if line[i] ~= "" then
+            for j = i, 1, -1
+            do
+                text[j+1] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[j]..'\\cr \n'
+            end
+        end
+        -- If a line does not have content (is empty), then do nothing and check the next line upward
     end
 
     -- Turn the "text" array into a string and update the text inside the box
     windower.text.set_text(tb_name, text:concat(''))
+
+    -- If all lines are empty, hide the BP box
+    if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
+        hideBox()
+
+        -- Otherwise, if the Visibility setting is on, display the box
+    elseif settings.visible then
+            windower.text.set_visibility(tb_name, true)
+
+    end
 
 end
 
@@ -289,22 +276,13 @@ function getLine1(input)
     -- Take the entire line and put it into a string
     local inputString = input
 
-    -- Remove the text before and including "!bp1"
+    -- Extract the text between "!bp1" and any other party commands
     local extractedText = string.match(inputString, "!bp1%s*(.-)$")
-    
-    -- Remove any text after and including "!bp2", if found
     local extractedText = string.match(extractedText, "^(.-)!bp2") or extractedText
-
-    -- Remove any text after and including "!bp3", if found
     local extractedText = string.match(extractedText, "^(.-)!bp3") or extractedText
-
-    -- Remove any text after and including "!bp4", if found
     local extractedText = string.match(extractedText, "^(.-)!bp4") or extractedText
-
-    -- Remove any text after and including "!bp5", if found
     local extractedText = string.match(extractedText, "^(.-)!bp5") or extractedText
 
-    -- Return the text we extracted to what called for it
     return extractedText
 
 end
@@ -316,22 +294,13 @@ function getLine2(input)
     -- Take the entire line and put it into a string
     local inputString = input
 
-    -- Remove the text before and including "!bp2"
+    -- Extract the text between "!bp2" and any other party commands
     local extractedText = string.match(inputString, "!bp2%s*(.-)$")
-    
-    -- Remove any text after and including "!bp1", if found
     local extractedText = string.match(extractedText, "^(.-)!bp1") or extractedText
-
-    -- Remove any text after and including "!bp3", if found
     local extractedText = string.match(extractedText, "^(.-)!bp3") or extractedText
-
-    -- Remove any text after and including "!bp4", if found
     local extractedText = string.match(extractedText, "^(.-)!bp4") or extractedText
-
-    -- Remove any text after and including "!bp5", if found
     local extractedText = string.match(extractedText, "^(.-)!bp5") or extractedText
 
-    -- Return the text we extracted to what called for it
     return extractedText
 
 end
@@ -343,22 +312,13 @@ function getLine3(input)
     -- Take the entire line and put it into a string
     local inputString = input
 
-    -- Remove the text before and including "!bp3"
+    -- Extract the text between "!bp3" and any other party commands
     local extractedText = string.match(inputString, "!bp3%s*(.-)$")
-    
-    -- Remove any text after and including "!bp1", if found
     local extractedText = string.match(extractedText, "^(.-)!bp1") or extractedText
-
-    -- Remove any text after and including "!bp2", if found
     local extractedText = string.match(extractedText, "^(.-)!bp2") or extractedText
-
-    -- Remove any text after and including "!bp4", if found
     local extractedText = string.match(extractedText, "^(.-)!bp4") or extractedText
-
-    -- Remove any text after and including "!bp5", if found
     local extractedText = string.match(extractedText, "^(.-)!bp5") or extractedText
 
-    -- Return the text we extracted to what called for it
     return extractedText
 
 end
@@ -370,25 +330,13 @@ function getLine4(input)
     -- Take the entire line and put it into a string
     local inputString = input
 
-    -- Remove the text before and including "!bp4"
+    -- Extract the text between "!bp4" and any other party commands
     local extractedText = string.match(inputString, "!bp4%s*(.-)$")
-    
-    -- Remove any text after and including "!bp1", if found
     local extractedText = string.match(extractedText, "^(.-)!bp1") or extractedText
-
-    -- Remove any text after and including "!bp2", if found
     local extractedText = string.match(extractedText, "^(.-)!bp2") or extractedText
-
-    -- Remove any text after and including "!bp3", if found
     local extractedText = string.match(extractedText, "^(.-)!bp3") or extractedText
-
-    -- Remove any text after and including "!bp5", if found
     local extractedText = string.match(extractedText, "^(.-)!bp5") or extractedText
 
-    -- Save the refined text to a variable so we can use it later
-    line[4] = extractedText
-
-    -- Return the text we extracted to what called for it
     return extractedText
 
 end
@@ -400,22 +348,13 @@ function getLine5(input)
     -- Take the entire line and put it into a string
     local inputString = input
 
-    -- Remove the text before and including "!bp5"
+    -- Extract the text between "!bp5" and any other party commands
     local extractedText = string.match(inputString, "!bp5%s*(.-)$")
-    
-    -- Remove any text after and including "!bp1", if found
     local extractedText = string.match(extractedText, "^(.-)!bp1") or extractedText
-
-    -- Remove any text after and including "!bp2", if found
     local extractedText = string.match(extractedText, "^(.-)!bp2") or extractedText
-
-    -- Remove any text after and including "!bp3", if found
     local extractedText = string.match(extractedText, "^(.-)!bp3") or extractedText
-
-    -- Remove any text after and including "!bp4", if found
     local extractedText = string.match(extractedText, "^(.-)!bp4") or extractedText
 
-    -- Return the text we extracted to what called for it
     return extractedText
 
 end
@@ -453,6 +392,7 @@ end
 -- Run the tutorial
 function runTutorial()
 
+    -- Typing '//bp stop' will set this to false, ending the tutorial
     tutorialRunning = true
 
     windower.add_to_chat(220,'[Battle Plan] '..('Cancel this short tutorial at any time by typing'):color(8)..(' //bp stop'):color(1)..(' [...]'):color(8))
@@ -526,7 +466,7 @@ function runTutorial()
         windower.add_to_chat(220,'[Battle Plan] '..('Try typing'):color(8)..(' //bp size 15'):color(1)..(' and'):color(8)..(' //bp pos 100 300'):color(1)..(' to see what happens. [...]'):color(8))
         coroutine.sleep(2)
         windower.add_to_chat(220,'[Battle Plan] '..('Tutorial finished.'):color(8))
-        clearBox('')
+        clearBox()
     end
 
 end
@@ -548,7 +488,7 @@ windower.register_event('incoming text',function(partycmd, ...)
     end
 
     -- Update Line 3 (but not if it was found from the help command)
-    if partycmd:find('!bp3') and not partycmd:find('[Battle Plan]') then
+    if partycmd:find('!bp3') and not partycmd:find('%[Battle Plan%]') then
         line[3] = getLine3(...)
         updateBox()
     end
@@ -566,7 +506,7 @@ windower.register_event('incoming text',function(partycmd, ...)
     end
 
     -- Clear the BP box (but not if it was found from the help command)
-    if partycmd:find('!bpclear') and not partycmd:find('[Battle Plan]') then
+    if partycmd:find('!bpclear') and not partycmd:find('%[Battle Plan%]') then
         clearBox()
     end
 
@@ -645,7 +585,6 @@ windower.register_event('addon command',function(addcmd, ...)
                 end
             end
         end
-
 
     -- Update the position
     elseif addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' then
@@ -726,4 +665,5 @@ windower.register_event('addon command',function(addcmd, ...)
         windower.add_to_chat(220,'[Battle Plan] '..('Unrecognized command. Type'):color(8)..(' //bp help'):color(1)..(' if you need help.'):color(8))
 
     end
+
 end)
