@@ -20,6 +20,7 @@ These commands are used to update *YOUR* BP box. Other people's BP boxes will re
   - `#` must be a number 1-5. Ex. `//bp 3 Hello from iLVL of Valefor!`
 - **pos/move x y** - Update the position of the BP box. (saved to settings file)
 - **size #** - Update the font size of the BP box Default. (saved to settings file)
+- **bold** - Update the bold setting. (saved to settings file)
 - **tutorial** - Run a short tutorial to give you the basics.
 
 #### PARTY
@@ -37,6 +38,9 @@ This is line 2
 This is line 3
 ```
 ### Version History
+**2.5**
+-Set the text to bold by default and added a command to change this setting.
+
 **2.4**
 - Added a temporary display for the BP box when using the position and font size commands when the BP box is not on screen.
 
