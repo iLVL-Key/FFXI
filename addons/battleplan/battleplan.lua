@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '3.0'
+_addon.version = '3.0.1'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -150,6 +150,7 @@ function determineTempDisplay()
 
     -- If all lines are empty, show the temp display
     if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
+
         tempDisplayOn = true
         tempDisplay()
     end
@@ -178,31 +179,23 @@ end
 
 -- Show the BP box
 function showBox()
-
     bpBox:show()
-
 end
 
 
 -- Hide the BP box
 function hideBox()
-
     bpBox:hide()
-
 end
 
 
 -- Toggle the visibility of the BP box
 function toggleBox()
 
-    if settings.visible then
-        hideBox()
-    else
-        showBox()
-    end
-
     if tempDisplayOn then
         tempDisplay()
+    elseif settings.visible then
+        showBox()
     else
         hideBox()
     end
@@ -485,57 +478,42 @@ function runTutorial()
 end
 
 
+function updateBoxFromPartyCmd(num, ...)
+    if tempDisplayOn then
+        clearBox()
+        tempDisplayOn = false
+    end
+    line[num] = getLine1(...)
+    updateBox()
+end
+
+
 -- "Party Commands" issued through party chat, denoted by starting with !bp
 windower.register_event('incoming text',function(partycmd, ...)
 
     -- Update Line 1
     if partycmd:find('!bp1') then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        line[1] = getLine1(...)
-        updateBox()
+        updateBoxFromPartyCmd(1, ...)
     end
 
     -- Update Line 2
     if partycmd:find('!bp2') then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        line[2] = getLine2(...)
-        updateBox()
+        updateBoxFromPartyCmd(2, ...)
     end
 
     -- Update Line 3 (but not if it was found from the help command)
     if partycmd:find('!bp3') and not partycmd:find('%[Battle Plan%]') then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        line[3] = getLine3(...)
-        updateBox()
+        updateBoxFromPartyCmd(3, ...)
     end
 
     -- Update Line 4
     if partycmd:find('!bp4') then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        line[4] = getLine4(...)
-        updateBox()
+        updateBoxFromPartyCmd(4, ...)
     end
 
     -- Update Line 5
     if partycmd:find('!bp5') then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        line[5] = getLine5(...)
-        updateBox()
+        updateBoxFromPartyCmd(5, ...)
     end
 
     -- Clear the BP box (but not if it was found from the help command)
@@ -545,6 +523,21 @@ windower.register_event('incoming text',function(partycmd, ...)
     end
 
 end)
+
+
+function updateBoxFromAddonCmd(num, ...)
+    if tempDisplayOn then
+        clearBox()
+        tempDisplayOn = false
+    end
+    local text = table.concat({...}, " ")
+    line[num] = text
+    updateBox()
+    if not settings.visible then
+        windower.add_to_chat(220,'[Battle Plan] '..('Line '):color(8)..num..(line[num]):color(200))
+        windower.add_to_chat(220,'[Battle Plan] '..('Visible: '):color(8)..('OFF'):color(200))
+    end
+end
 
 
 -- "Addon Commands" issued through the chat log, denoted by starting with //battleplan or //bp
@@ -587,53 +580,23 @@ windower.register_event('addon command',function(addcmd, ...)
 
     -- Update YOUR Line 1
     elseif addcmd == 'line1' or addcmd == 'l1' or addcmd == '1' then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        local text = table.concat({...}, " ")
-        line[1] = text
-        updateBox()
+        updateBoxFromAddonCmd(1, ...)
 
     -- Update YOUR Line 2
     elseif addcmd == 'line2' or addcmd == 'l2' or addcmd == '2' then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        local text = table.concat({...}, " ")
-        line[2] = text
-        updateBox()
+        updateBoxFromAddonCmd(2, ...)
 
     -- Update YOUR Line 3
     elseif addcmd == 'line3' or addcmd == 'l3' or addcmd == '3' then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        local text = table.concat({...}, " ")
-        line[3] = text
-        updateBox()
+        updateBoxFromAddonCmd(3, ...)
 
     -- Update YOUR Line 4
     elseif addcmd == 'line4' or addcmd == 'l4' or addcmd == '4' then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        local text = table.concat({...}, " ")
-        line[4] = text
-        updateBox()
+        updateBoxFromAddonCmd(4, ...)
 
     -- Update YOUR Line 5
     elseif addcmd == 'line5' or addcmd == 'l5' or addcmd == '5' then
-        if tempDisplayOn then
-            clearBox()
-            tempDisplayOn = false
-        end
-        local text = table.concat({...}, " ")
-        line[5] = text
-        updateBox()
+        updateBoxFromAddonCmd(5, ...)
 
     -- Send the contents of your BP box to others
     elseif addcmd == 'send' then
