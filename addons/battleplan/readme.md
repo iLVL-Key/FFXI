@@ -7,6 +7,8 @@ Up to 5 lines are available to use. The BP box is not visible when all lines are
 
 For example, you can use it in Odyssey to list out the 3 NMs you're planning on doing and keep track of who is what job on each so that there's no overlap. Or in Sortie to have the path your group is taking laid out ahead of time.
 
+This can also be used as a simple notepad for just yourself, without putting anything into party chat.
+
 ### Commands
 There are two types of commands: `Addon` and `Party`  
 
