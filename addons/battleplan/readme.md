@@ -42,6 +42,10 @@ This is line 3
 
 
 ### Version History
+**3.0.1**
+- Fixed a few things with the Visible settings not working 100% correctly.
+- Optimized a bunch of repetitive code.
+
 **3.0**
 - Added the ability to drag the BP box. This required redoing how the box text is created, hence the major version update.
 - Added the pos lock/unlock command. This allows you to drag the BP box, or lock it so you don't drag it by mistake.
