@@ -12,21 +12,23 @@ There are two types of commands: `Addon` and `Party`
 
 #### Addon
 These commands are used to update *YOUR* BP box. Other people's BP boxes will remain the same. All Addon commands must be prefixed with either `//battleplan` or `//bp` (ex: `//bp clear`)
+- **[#]** - Update *YOUR* BP box. Other people's BP boxes will remain the same.
+  - [#] must be a number 1-5. Ex. `//bp 3 Hello from iLVL of Valefor!`
+- **send** - Send your current BP box to the chat log to update other players.
 - **show** - Shows the BP box if there is content to diplay. (saved to settings file)
 - **hide** - Hides the BP box regardless of content to display. (saved to settings file)
 - **visible** - Toggle the BP box visibility (alternative to show/hide). (saved to settings file)
 - **clear** - Clear *YOUR* BP box. Other people's BP boxes will remain the same.
-- **line#/l#/#** - Update *YOUR* BP box. Other people's BP boxes will remain the same.
-  - `#` must be a number 1-5. Ex. `//bp 3 Hello from iLVL of Valefor!`
-- **pos/move x y** - Update the position of the BP box. (saved to settings file)
-- **size #** - Update the font size of the BP box Default. (saved to settings file)
+- **pos [x] [y]** - Update the position of the BP box. (saved to settings file)
+- **pos lock/unlock** - Drag the BP box. Lock to prevent mishaps. (saved to settings file)
+- **size [#]** - Update the font size of the BP box Default. (saved to settings file)
 - **bold** - Update the bold setting. (saved to settings file)
 - **tutorial** - Run a short tutorial to give you the basics.
 
 #### PARTY
 These commands are used directly in your party chat so that they are seen by the other members in your party/alliance. This is so that Battle Plan running on their own screens will be updated.
-- **!bp#** - Update *EVERYONE'S* BP box with the text that follows it.
-  - `#` must be a number 1-5. Ex. `!bp3 Pickle Surprise!`
+- **!bp[#]** - Update *EVERYONE'S* BP box with the text that follows it.
+  - [#] must be a number 1-5. Ex. `!bp3 Pickle Surprise!`
 - **!bpclear** - Clear *EVERYONE'S* BP box
 
 Everything after the !bp# will be captured and displayed on that line. It is also smart enough to recognize different !bp# on the same line and act accordingly. This means that typing  
@@ -37,9 +39,16 @@ This is line 1
 This is line 2
 This is line 3
 ```
+
+
 ### Version History
+**3.0**
+- Added the ability to drag the BP box. This required redoing how the box text is created, hence the major version update.
+- Added the pos lock/unlock command. This allows you to drag the BP box, or lock it so you don't drag it by mistake.
+- Updated a lot of command formatting
+
 **2.5**
--Set the text to bold by default and added a command to change this setting.
+- Set the text to bold by default and added a command to change this setting.
 
 **2.4**
 - Added a temporary display for the BP box when using the position and font size commands when the BP box is not on screen.
