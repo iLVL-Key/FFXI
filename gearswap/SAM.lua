@@ -119,7 +119,8 @@ StartMode			=	'Mode1'--[Mode1/Mode2/Mode3/Mode4]
 ModeCtrlPlus		=	'g'		--Sets the keyboard shortcut you would like to cycle between Hasso Modes. CTRL+G is default.
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
-CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
+CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will layer in the Capped TP WS set.
+AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
@@ -150,8 +151,8 @@ function get_sets()
 		feet="Ryuo Sune-Ate +1",
 		neck="Sam. Nodowa +2",
 		waist="Sailfi Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Schere Earring",
+		left_ear="Schere Earring",
+		right_ear="Kasuga Earring +1",
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
@@ -168,8 +169,8 @@ function get_sets()
 		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
 		waist="Sailfi Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Schere Earring",
+		left_ear="Schere Earring",
+		right_ear="Kasuga Earring +1",
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
@@ -185,8 +186,8 @@ function get_sets()
 		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
 		waist="Sailfi Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Schere Earring",
+		left_ear="Schere Earring",
+		right_ear="Kasuga Earring +1",
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
@@ -202,8 +203,8 @@ function get_sets()
 		feet="Tatena. Sune. +1",
 		neck="Sam. Nodowa +2",
 		waist="Sailfi Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Schere Earring",
+		left_ear="Schere Earring",
+		right_ear="Kasuga Earring +1",
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
@@ -222,8 +223,8 @@ function get_sets()
 		feet="Mpaca's Boots",
 		neck="Sam. Nodowa +2",
 		waist="Sailfi Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Cessance Earring",
+		left_ear="Schere Earring",
+		right_ear="Kasuga Earring +1",
 		left_ring="Defending Ring",
 		right_ring="Niqmaddu Ring",
 		back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
@@ -274,7 +275,7 @@ function get_sets()
 		right_ear="Thrud Earring",
 		left_ring="Karieyh Ring +1",
 		right_ring="Cornelia's Ring",
-		back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}},
+		back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
 	}
 
 	-- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
@@ -287,10 +288,15 @@ function get_sets()
 
 	-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
-	sets.cappedtpws = set_combine(sets.ws, {
+	sets.cappedtpws = {
 		head="Nyame Helm",
 		left_ear="Lugra Earring +1",
-	})
+	}
+
+	-- Weapon Skill - Attack Cap (Physical Damage Limit+)
+	sets.attackcapws = {
+		
+	}
 
 	-- Weapon Skill - Hybrid (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
 	sets.hybridws = set_combine(sets.ws, {
@@ -437,7 +443,7 @@ end
 
 
 
-FileVersion = '9.0.0'
+FileVersion = '10.0.0'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -449,7 +455,10 @@ simply replace everything under the "Do Not Edit Below This Line".
 Only when the major version changes will you need to update the entire file.
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
 
-Version 9.0.0
+Version 10.0
+-Added Attack Capped WS set. Attack threshold required to activate is adjustable in the Advanced Options.
+
+Version 9.0
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -1544,6 +1553,73 @@ function precast(spell)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha]')
 			end
+		elseif player.tp >= CappedTPThreshhold then
+			if player.attack >= AttackCapThreshhold then
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpws, sets.ygnas))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Capped TP + Ygnas\'s Resolve]')
+					end
+				elseif spell.english == 'Tachi: Shoha' then
+					equip(set_combine(sets.shoha, sets.attackcapws, sets.cappedtpws))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Attack Cap + Capped TP]')
+					end
+				elseif spell.english == 'Stardiver' then
+					equip(set_combine(sets.stardiver, sets.attackcapws, sets.cappedtpws))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Stardiver + Attack Cap + Capped TP]')
+					end
+				else
+					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpws))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Capped TP]')
+					end
+				end
+			else
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets.ws, sets.cappedtpws, sets.ygnas))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP + Ygnas\'s Resolve]')
+					end
+				elseif spell.english == 'Tachi: Shoha' then
+					equip(set_combine(sets.shoha, sets.cappedtpws))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Capped TP]')
+					end
+				elseif spell.english == 'Stardiver' then
+					equip(set_combine(sets.stardiver, sets.cappedtpws))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Stardiver + Capped TP]')
+					end
+				else
+					equip(set_combine(sets.ws, sets.cappedtpws))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP]')
+					end
+				end
+		elseif player.attack > AttackCapThreshhold then
+			if buffactive['Reive Mark'] then
+				equip(set_combine(sets.ws, sets.attackcapws, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Ygnas\'s Resolve]')
+				end
+			elseif spell.english == 'Tachi: Shoha' then
+				equip(set_combine(sets.shoha, sets.attackcapws))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Attack Cap]')
+				end
+			elseif spell.english == 'Stardiver' then
+				equip(set_combine(sets.stardiver, sets.attackcapws))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Stardiver + Attack Cap]')
+				end
+			else
+				equip(set_combine(sets.ws, sets.attackcapws))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap]')
+				end
+			end
 		elseif spell.english == 'Tachi: Shoha' then
 			equip(sets.shoha)
 			if Debug == 'On' then
@@ -1564,18 +1640,6 @@ function precast(spell)
 				equip(sets.accws)
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill]')
-				end
-			end
-		elseif player.tp >= CappedTPThreshhold then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.cappedtpws, sets.ygnas))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill + Ygnas\'s Resolve]')
-				end
-			else
-				equip(sets.cappedtpws)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill]')
 				end
 			end
 		else
@@ -2518,11 +2582,3 @@ end)
 function file_unload()
 	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text meditate delete;text sekkanoki delete;text sengikori delete;text hagakure delete;text aggressor delete;text berserk delete;text highjump delete;text superjump delete;text hasso delete;text seigan delete;text loading delete;text stance delete;text notifications delete;text debuffs delete;text weapons delete') --delete the different text objects
 end
-
---[[
-
--------------------------------------------
---            KEYS NOTEPAD               --
--------------------------------------------
-
- --]]
