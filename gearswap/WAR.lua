@@ -75,10 +75,9 @@ LineSpacer		=	20		--				Space in pixels between each Line of the HUD
 ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
 
 --HUD Mode Names
-Mode1Name = 'Multi-Attack'					--Names displayed in the HUD for Mode 1, 2, 3, 4, and 5. Change these as you see fit.
-Mode2Name = 'Multi-Attack (Att. Capped)'	--NOTE: Mode 3 is the High Accuracy set which is linked to the Accuracy Weapon Skill set.
-Mode3Name = 'High Accuracy'					--(Using a weapon skill while in mode 3 will default to the Accuracy WS set instead of the standard WS set)
-Mode4Name = 'Tank'
+Mode1Name = 'Multi-Attack'		--Names displayed in the HUD for Mode 1, 2, 3, 4, and 5. Change these as you see fit.
+Mode2Name = 'High Accuracy'		--NOTE: Mode 2 is the High Accuracy set which is linked to the Accuracy Weapon Skill set.
+Mode3Name = 'Tank'				--(Using a weapon skill while in mode 3 will default to the Accuracy WS set instead of the standard WS set)
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
@@ -112,12 +111,13 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-StartMode			=	'Mode1'--[Mode1/Mode2/Mode3/Mode4]
+StartMode			=	'Mode1'--[Mode1/Mode2/Mode3]
 								--	Determines the Mode you will start in. Current Mode can be changed at any time by using any
 								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 ModeCtrlPlus		=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
+AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
@@ -126,9 +126,8 @@ Debug				=	'Off'	--[On/Off]
 
 --Color Values
 Mode1color		=	'255 125 125'	--Mode 1
-Mode2color		=	'255 125 50'	--Mode 2
-Mode3color		=	'125 125 255'	--Mode 3
-Mode4color		=	'255 255 125'	--Mode 4
+Mode2color		=	'125 125 255'	--Mode 2
+Mode3color		=	'255 255 125'	--Mode 3
 Aftermath1color	=	'0 127 255'		--Aftermath Level 1
 Aftermath2color	=	'75 255 75'		--Aftermath Level 2
 Aftermath3color	=	'255 255 50'	--Aftermath Level 3
@@ -210,8 +209,23 @@ function get_sets()
 		back="Moonlight Cape",
 	}
 
-	-- Weapon Skill - Attack Capped (Physical Damage Limit+, STR, TP Bonus, Multi-hit, Crit, Attack)
-	sets.cappedattws = {
+	-- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
+	-- NOTE: This is a special set for weapon skill accuracy. When in either Accuracy mode (mode 3 or 4), weapon skills will use this set.
+	sets.accws = set_combine(sets.ws, {
+		neck="Fotia Gorget",
+		waist="Fotia Belt",
+		left_ring="Karieyh Ring +1",
+		right_ring="Cornelia's Ring",
+	})
+
+	-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
+	-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
+	sets.cappedtpws = {
+		left_ear="Lugra Earring +1",
+	}
+
+	-- Weapon Skill - Attack Cap (Physical Damage Limit+)
+	sets.attackcapws = {
 		ammo="Knobkierrie",
 		head="Sakpata's Helm",
 		body="Sakpata's Plate",
@@ -226,21 +240,6 @@ function get_sets()
 		right_ring="Niqmaddu Ring",
 		back="Moonlight Cape",
 	}
-
-	-- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
-	-- NOTE: This is a special set for weapon skill accuracy. When in either Accuracy mode (mode 3 or 4), weapon skills will use this set.
-	sets.accws = set_combine(sets.ws, {
-		neck="Fotia Gorget",
-		waist="Fotia Belt",
-		left_ring="Karieyh Ring +1",
-		right_ring="Cornelia's Ring",
-	})
-
-	-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
-	-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
-	sets.cappedtpws = set_combine(sets.ws, {
-		left_ear="Lugra Earring +1",
-	})
 
 	-- Weapon Skill - Magic (Magic Attack Bonus)
 	sets.magicws = set_combine(sets.ws, {
@@ -360,7 +359,7 @@ end
 
 
 
-FileVersion = '2.0.0'
+FileVersion = '3.0.0'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -372,7 +371,11 @@ simply replace everything under the "Do Not Edit Below This Line".
 Only when the major version changes will you need to update the entire file.
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
 
-Version 2.0.0
+Version 3.0
+-Updated Attack Capped WS set. Attack threshold required to activate is adjustable in the Advanced Options.
+-Removed the Attack Cap Mode. This is now handled automatically.
+
+Version 2.0
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -467,8 +470,6 @@ elseif Mode == 'Mode2' then
 	send_command('wait 2.1;text mode create "Mode: '..Mode2Name..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Mode2color..';text mode bg_transparency 1')
 elseif Mode == 'Mode3' then
 	send_command('wait 2.1;text mode create "Mode: '..Mode3Name..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Mode3color..';text mode bg_transparency 1')
-elseif Mode == 'Mode4' then
-	send_command('wait 2.1;text mode create "Mode: '..Mode4Name..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Mode4color..';text mode bg_transparency 1')
 end
 send_command('wait 2.1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
 send_command('wait 2.2;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
@@ -519,11 +520,6 @@ function self_command(command)
 				send_command('text mode text "Mode: '..Mode3Name..'";text mode color '..Mode3color..'')
 			end
 		elseif Mode == 'Mode3' then
-			Mode = 'Mode4'
-			if LoadHUD == true then
-				send_command('text mode text "Mode: '..Mode4Name..'";text mode color '..Mode4color..'')
-			end
-		elseif Mode == 'Mode4' then
 			Mode = 'Mode1'
 			if LoadHUD == true then
 				send_command('text mode text "Mode: '..Mode1Name..'";text mode color '..Mode1color..'')
@@ -663,7 +659,6 @@ function self_command(command)
 		windower.add_to_chat(200,'Mode1Name: '..(''..Mode1Name..''):color(8)..'')
 		windower.add_to_chat(200,'Mode2Name: '..(''..Mode2Name..''):color(8)..'')
 		windower.add_to_chat(200,'Mode3Name: '..(''..Mode3Name..''):color(8)..'')
-		windower.add_to_chat(200,'Mode4Name: '..(''..Mode4Name..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- General Notifications --')
 		windower.add_to_chat(200,'Noti3000TP: '..(''..Noti3000TP..''):color(8)..'')
@@ -700,6 +695,7 @@ function self_command(command)
 		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
 		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
 		windower.add_to_chat(200,'CappedTPThreshhold: '..(''..CappedTPThreshhold..''):color(8)..'')
+		windower.add_to_chat(200,'AttackCapThreshhold: '..(''..AttackCapThreshhold..''):color(8)..'')
 		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
@@ -710,7 +706,6 @@ function self_command(command)
 		windower.add_to_chat(200,'Mode1color: '..(''..Mode1color..''):color(8)..'')
 		windower.add_to_chat(200,'Mode2color: '..(''..Mode2color..''):color(8)..'')
 		windower.add_to_chat(200,'Mode3color: '..(''..Mode3color..''):color(8)..'')
-		windower.add_to_chat(200,'Mode4color: '..(''..Mode4color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
 		windower.add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
@@ -819,11 +814,6 @@ function choose_set()
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + DT Override]')
 					end
-				elseif Mode == 'Mode4' then
-					equip(set_combine(sets.modefour, sets.dtoverride))
-					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode4Name..' + DT Override]')
-					end
 				end
 			else
 				if Mode == 'Mode1' then
@@ -840,11 +830,6 @@ function choose_set()
 					equip(sets.modethree)
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..']')
-					end
-				elseif Mode == 'Mode4' then
-					equip(sets.modefour)
-					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode4Name..']')
 					end
 				end
 			end
@@ -883,11 +868,6 @@ function choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Adoulin + Idle]')
 				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.adoulin, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + Adoulin + Idle]')
-				end
 			end
 		elseif BastokZones:contains(world.area) then
 			if Mode == 'Mode1' then
@@ -904,11 +884,6 @@ function choose_set()
 				equip(set_combine(sets.modethree, sets.bastok, sets.idle))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Bastok + Idle]')
-				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.bastok, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + Bastok + Idle]')
 				end
 			end
 		elseif SandyZones:contains(world.area) then
@@ -927,11 +902,6 @@ function choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + San d\'Oria + Idle]')
 				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.sandoria, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + San d\'Oria + Idle]')
-				end
 			end
 		elseif WindyZones:contains(world.area) then
 			if Mode == 'Mode1' then
@@ -949,11 +919,6 @@ function choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Windurst + Idle]')
 				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.windurst, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + Windurst + Idle]')
-				end
 			end
 		elseif TownZones:contains(world.area) then
 			if Mode == 'Mode1' then
@@ -970,11 +935,6 @@ function choose_set()
 				equip(set_combine(sets.modethree, sets.town, sets.idle))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Town + Idle]')
-				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.town, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + Town + Idle]')
 				end
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
@@ -998,11 +958,6 @@ function choose_set()
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Idle + DT Override]')
 				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle, sets.dtoverride))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + Idle + DT Override]')
-				end
 			end
 		else
 			if Mode == 'Mode1' then
@@ -1019,11 +974,6 @@ function choose_set()
 				equip(set_combine(sets.modethree, sets.idle))
 				if Debug == 'On' then
 					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Idle]')
-				end
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + Idle]')
 				end
 			end
 		end
@@ -1151,34 +1101,12 @@ function precast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Weapon Skill - Magic]')
 				end
 			end
-		elseif spell.english == 'Upheaval' then
-			equip(sets.upheaval)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Upheaval]')
-			end
-		elseif spell.english == 'Savage Blade' then
-			equip(sets.savage)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Savage Blade]')
-			end
 		elseif spell.english == 'Sanguine Blade' then
 			equip(sets.sanguine)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Sanguine Blade]')
 			end
 		elseif Mode == 'Mode2' then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.cappedattws, sets.ygnas))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill - Attack Capped + Ygnas\'s Resolve]')
-				end
-			else
-				equip(sets.cappedattws)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill - Attack Capped]')
-				end
-			end
-		elseif Mode == 'Mode3' then
 			if buffactive['Reive Mark'] then
 				equip(set_combine(sets.accws, sets.ygnas))
 				if Debug == 'On' then
@@ -1191,16 +1119,82 @@ function precast(spell)
 				end
 			end
 		elseif player.tp >= CappedTPThreshhold then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.cappedtpws, sets.ygnas))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill + Ygnas\'s Resolve]')
+			if player.attack >= AttackCapThreshhold then
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpws, sets.ygnas))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Capped TP + Ygnas\'s Resolve]')
+					end
+				elseif spell.english == 'Upheaval' then
+					equip(sets.upheaval, sets.attackcapws, sets.cappedtpws)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Upheaval + Attack Cap + Capped TP]')
+					end
+				elseif spell.english == 'Savage Blade' then
+					equip(sets.savage, sets.attackcapws, sets.cappedtpws)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Savage Blade + Attack Cap + Capped TP]')
+					end
+				else
+					equip(sets.ws, sets.attackcapws, sets.cappedtpws)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Capped TP]')
+					end
 				end
 			else
-				equip(sets.cappedtpws)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Capped TP Weapon Skill]')
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets.ws, sets.cappedtpws, sets.ygnas))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP + Ygnas\'s Resolve]')
+					end
+				elseif spell.english == 'Upheaval' then
+					equip(sets.upheaval, sets.cappedtpws)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Upheaval + Capped TP]')
+					end
+				elseif spell.english == 'Savage Blade' then
+					equip(sets.savage, sets.cappedtpws)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Savage Blade + Capped TP]')
+					end
+				else
+					equip(sets.ws, sets.cappedtpws)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP]')
+					end
 				end
+			end
+		elseif player.attack >= AttackCapThreshhold then
+			if buffactive['Reive Mark'] then
+				equip(set_combine(sets.ws, sets.attackcapws, sets.ygnas))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Ygnas\'s Resolve]')
+				end
+			elseif spell.english == 'Upheaval' then
+				equip(sets.upheaval, sets.attackcapws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Upheaval + Attack Cap]')
+				end
+			elseif spell.english == 'Savage Blade' then
+				equip(sets.savage, sets.attackcapws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Savage Blade + Attack Cap]')
+				end
+			else
+				equip(sets.ws, sets.attackcapws)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap]')
+				end
+			end
+		elseif spell.english == 'Upheaval' then
+			equip(sets.upheaval)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Upheaval]')
+			end
+		elseif spell.english == 'Savage Blade' then
+			equip(sets.savage)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: Savage Blade]')
 			end
 		else
 			if buffactive['Reive Mark'] then
@@ -2009,11 +2003,3 @@ end)
 function file_unload()
 	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text aggressor delete;text berserk delete;text warcry delete;text restraint delete;text retaliation delete;text bloodrage delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text weapons delete') --delete the different text objects
 end
-
---[[
-
--------------------------------------------
---            KEYS NOTEPAD               --
--------------------------------------------
-
- --]]
