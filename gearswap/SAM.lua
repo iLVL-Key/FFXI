@@ -1599,6 +1599,7 @@ function precast(spell)
 						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP]')
 					end
 				end
+			end
 		elseif player.attack > AttackCapThreshhold then
 			if buffactive['Reive Mark'] then
 				equip(set_combine(sets.ws, sets.attackcapws, sets.ygnas))
