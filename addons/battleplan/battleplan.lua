@@ -103,7 +103,7 @@ end
 -- On login, show the BP box if Visible is true
 function login()
 
-    if settings.visible then
+    if settings.visible and not (line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '') then
         showBox()
     end
 end
