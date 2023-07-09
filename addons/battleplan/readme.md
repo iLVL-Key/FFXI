@@ -44,6 +44,10 @@ This is line 3
 
 
 ### Version History
+
+**3.0.2**
+- Fix BP header showing after logging out then back in.
+
 **3.0.1**
 - Fixed a few things with the Visible settings not working 100% correctly.
 - Optimized a bunch of repetitive code.
