@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.4.2'
+_addon.version = '1.4.3'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
@@ -42,30 +42,10 @@ local chat = windower.chat.input
 
 windower.register_event('action',function(act)
 
-	local actor = windower.ffxi.get_mob_by_id(act.actor_id).name
+	local actor = (windower.ffxi.get_mob_by_id(act.actor_id) or {}).name or 'unknown'
 	local monster_ability = res.monster_abilities[act.targets[1].actions[1].param]
 
-	-- if act.category ~= 1 then
-		-- print('(Actor: '..actor..') (Cat: '..act.category..') (Message: '..act.targets[1].actions[1].message..') (Param: '..act.targets[1].actions[1].param..')  (Target: '..target_name..')')
-	-- end
-
 	if act.category == 7 then -- initiation of weapon skill or monster TP move
-
-		-- if actor == 'Locus Camelopard' then
-			-- if monster_ability == nil then
-				-- return
-			-- else
-				-- chat('/%s %s used %s on %s%s':format(settings.chatmode,actor,monster_ability.en,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
-			-- end
-		-- end
-
-		-- if actor == 'Locus Dire Bat' then
-		-- 	if monster_ability == nil then
-		-- 		return
-		-- 	else
-		-- 		chat('/%s %s used %s%s':format(settings.chatmode,actor,monster_ability.en,settings.chatmode == 'party' and ' <call14>' or ''))
-		-- 	end
-		-- end
 
 		if actor == 'Aita' or actor == 'Degei' then
 			if monster_ability == nil then
