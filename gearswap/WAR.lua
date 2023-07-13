@@ -61,6 +61,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
+AutoSuperJump	=	'On'	--[On/Off]		Attempts to use Super Jump when your HP gets critically low.
 DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
 DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
@@ -119,6 +120,7 @@ LowHPThreshold		=	1000	--Below this number is considered Low HP.
 CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
+AutSJmpThreshold	=	500		--If your HP goes below this number, Super Jump will be used.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
@@ -359,7 +361,7 @@ end
 
 
 
-FileVersion = '3.0.0'
+FileVersion = '4.0'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -370,6 +372,9 @@ If the new updates major version matches your current file,
 simply replace everything under the "Do Not Edit Below This Line".
 Only when the major version changes will you need to update the entire file.
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+
+Version 4.0
+-Added AutoSuperJump option. Automatically attempts to use Super Jump when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
 
 Version 3.0
 -Updated Attack Capped WS set. Attack threshold required to activate is adjustable in the Advanced Options.
@@ -644,6 +649,7 @@ function self_command(command)
 		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
+		windower.add_to_chat(200,'AutoSuperJump: '..(''..AutoSuperJump..''):color(8)..'')
 		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
 		windower.add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
 		windower.add_to_chat(200,'DoomOffText: '..(''..DoomOffText..''):color(8)..'')
@@ -1725,6 +1731,9 @@ windower.register_event('prerender', function()
 		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
+		if AutoSuperJump == 'On' and player.sub_job == 'DRG' and player.sub_job_level >= 50 and player.hp <= AutSJmpThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and windower.ffxi.get_ability_recasts()[160] == 0 and not TownZones:contains(world.area) then
+			send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
+		end
 		if player.equipment.main == nil or player.equipment.sub == nil then
 			EquipMain = 'Weapon loading...'
 		else
@@ -1942,56 +1951,29 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---     WS/MB/BP DAMAGE NOTIFICATION      --
+--        WS DAMAGE NOTIFICATION         --
 -------------------------------------------
 
 windower.register_event('action',function(act)
 
 	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
-	local spells = require('resources').spells
-	local jobabilities = require('resources').job_abilities
 
-	if NotiDamage == 'On' then
-		--Weapon Skills and Skillchains:
-		if act.category == 3 and act.actor_id == player.id then
-			--Uses Weapon Skill but misses or gets blinked:
-			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
-				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Weapon Skill lands and creates a Skillchain:
-			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Weapon Skill lands but no Skillchain:
-			elseif act.targets[1].actions[1].message == 185 then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			end
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
-		--Magic Bursts:
-		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
-			--Magic:
-			if act.category == 4 then
-				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Lunges:
-			elseif act.category == 15 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Blood Pacts?:
-			elseif act.category == 13 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			end
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
-		--Blood Pacts:
-		elseif act.category == 13 and act.actor_id == pet.id then
-			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
+	--Weapon Skills and Skillchains:
+	if NotiDamage == 'On' and act.category == 3 and act.actor_id == player.id then
+		--Uses Weapon Skill but misses or gets blinked:
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill lands and creates a Skillchain:
+		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
+			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill lands but no Skillchain:
+		elseif act.targets[1].actions[1].message == 185 then
+			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+		end
+		NotiCountdown = -1
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[NotiCountdown set to -1]')
 		end
 	end
 end)
