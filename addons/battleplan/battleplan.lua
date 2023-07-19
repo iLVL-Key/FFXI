@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '3.0.1'
+_addon.version = '3.0.2'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -43,7 +43,7 @@ defaults.visible = true
 
 defaults.pos = T{}
 defaults.pos.x = 15
-defaults.pos.y = (windower.get_windower_settings().ui_y_res) / 2 --Sets the default Y position in the middle of yoontreen
+defaults.pos.y = (windower.get_windower_settings().ui_y_res) / 2 --Sets the default Y position in the middle of your screen
 
 defaults.text = T{}
 defaults.text.font = 'Arial'
@@ -61,8 +61,8 @@ defaults.colors.background.g = 0
 defaults.colors.background.b = 0
 defaults.colors.background.a = 200
 defaults.colors.header = T{}
-defaults.colors.header.r = 54
-defaults.colors.header.g = 104
+defaults.colors.header.r = 37
+defaults.colors.header.g = 120
 defaults.colors.header.b = 255
 defaults.colors.text = T{}
 defaults.colors.text.r = 240
@@ -123,14 +123,12 @@ windower.register_event('prerender', function()
 
     if pos == "(?-?)" and not zoning then
 
-        if settings.visible then
-            hideBox()
-        end
+        hideBox()
         zoning = true
 
     elseif pos ~= "(?-?)" and zoning then
 
-        if settings.visible then
+        if settings.visible and not (line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '') then
             showBox()
         end
         zoning = false
@@ -150,7 +148,6 @@ function determineTempDisplay()
 
     -- If all lines are empty, show the temp display
     if line[1] == '' and line[2] == '' and line[3] == '' and line[4] == '' and line[5] == '' then
-
         tempDisplayOn = true
         tempDisplay()
     end
@@ -179,13 +176,17 @@ end
 
 -- Show the BP box
 function showBox()
+
     bpBox:show()
+
 end
 
 
 -- Hide the BP box
 function hideBox()
+
     bpBox:hide()
+
 end
 
 
@@ -362,23 +363,21 @@ function displayHelp()
 
     windower.add_to_chat(220,'[Battle Plan] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key'):color(220))
     windower.add_to_chat(220,'[Battle Plan] ')
-    windower.add_to_chat(220,'[Battle Plan] '..('Addon Commands'):color(200)..(' (prefixed with'):color(8)..(' //battleplan'):color(1)..(' or'):color(8)..(' //bp'):color(1)..('):'):color(8))
-    windower.add_to_chat(220,'[Battle Plan] '..('  [#]'):color(36)..(' - Update YOUR BP box. Other people\'s BP boxes will remain the same.'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('Addon Commands'):color(200)..(' ( [optional] <required> )'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  <#1-5>'):color(36)..(' - Update YOUR BP box. Other people\'s BP boxes will remain the same.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  send'):color(36)..(' - Send your current BP box to the chat log to update other players.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  show'):color(36)..(' - Shows the BP box if there is content to diplay.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  hide'):color(36)..(' - Hides the BP box regardless of content to display.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  visible'):color(36)..(' - Toggle the BP box visibility (alternative to show/hide). [Current:'):color(8)..(' %s':format(settings.visible and 'ON' or 'OFF')):color(200)..(']'):color(8))
-    windower.add_to_chat(220,'[Battle Plan] '..('                [#] must be a number 1-5. (Ex.'):color(8)..(' //bp 3 Hello from iLVL of Valefor!'):color(1)..(')'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  clear'):color(36)..(' - Clear YOUR BP box. Other people\'s BP boxes will remain the same.'):color(8))
-    windower.add_to_chat(220,'[Battle Plan] '..('  pos [x] [y]'):color(36)..(' - Update the position of the BP box. [Current: '):color(8)..(curPos.x..' '..curPos.y):color(200)..(', Default: '):color(8)..(defPos.x..' '..defPos.y):color(200)..(']'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  pos [x y]'):color(36)..(' - Update the position of the BP box. [Current: '):color(8)..(curPos.x..' '..curPos.y):color(200)..(', Default: '):color(8)..(defPos.x..' '..defPos.y):color(200)..(']'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  pos lock/unlock'):color(36)..(' - Drag the BP box. Lock to prevents mishaps. [Current:'):color(8)..(settings.flags.draggable and (' Unlocked'):color(200)..(' (draggable)'):color(8) or (' Locked'):color(200))..(']'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  size [#]'):color(36)..(' - Update the font size of the BP box. [Current:'):color(8)..(' '..curSize):color(200)..(', Default: '):color(8)..(''..defSize):color(200)..(']'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  bold'):color(36)..(' - Update the bold setting. [Current:'):color(8)..(' %s':format(curBold and 'ON' or 'OFF')):color(200)..(', Default: '):color(8)..('OFF'):color(200)..(']'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  tutorial'):color(36)..(' - Run a short tutorial to give you the basics.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] ')
     windower.add_to_chat(220,'[Battle Plan] '..('Party Commands'):color(200)..(' (input directly into chat):'):color(8))
-    windower.add_to_chat(220,'[Battle Plan] '..('  !bp[#]'):color(36)..(' - Update EVERYONE\'S BP box with the text that follows it.'):color(8))
-    windower.add_to_chat(220,'[Battle Plan] '..('          [#] must be a number 1-5. (Ex. '):color(8)..('!bp3 Pickle Surprise!'):color(1)..(')'):color(8))
+    windower.add_to_chat(220,'[Battle Plan] '..('  !bp<#1-5>'):color(36)..(' - Update EVERYONE\'S BP box with the text that follows it.'):color(8))
     windower.add_to_chat(220,'[Battle Plan] '..('  !bpclear'):color(36)..(' - Clear EVERYONE\'S BP box.'):color(8))
 
 end
