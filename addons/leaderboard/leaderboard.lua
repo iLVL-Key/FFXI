@@ -27,124 +27,135 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '05.17.23'
+_addon.version = '3.0'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
+--DONE
+------
+--Removed Start/Recover commands. Addon will now automatically start tracking data in the background when it is loaded.
+--Added Rival System. Your Rival will be highlighted in the On-Screen Disply and scores will be called out when one beats the other (visible only to you).
+--Added on screen display box.Displays the top 10 places. Your and your Rivals names are highlighted. 
+--Silent Mode is now the default mode.
+--Normal Mode has been renamed to Party Mode.
+--Added resetting of specific boards ie `//lb reset mb` (`//lb mb reset` also works).
+--All data is now recovered on disconnect/crash.
+--Tie scores (ie multiple 99999's or multiple whiffs at 1) now order by the first person to hit that number.
+--Added a 9's counter for players who hit multiple 9's. Place order now takes this into account.
+--Added commas to numbers (can be turned off in settings).
+--SCH Skillchains are now captured.
+--Added Death board back (now tracked via packets).
+--Added Kill board back (now tracked via packets).
+--Added Murder board (player kills another player).
+--Cures are now called out every 50,000 HP cured.
+--Nukes are now called out every 500,000 damage nuked.
+--Added Optout list. Players on the list will not be tracked, and all current related data will be deleted when added.
+--Added report party/addon command. Will return a specific persons scores via tell.
+--Magic Bursts are now included in Nuke damage.
+
+
+
+--TODO
+------
+--Added tracking Lunge/Swipe
+--	Test which message Lunge without bursting gives, is it different that Lunge MB?
+--	Add Lunge damage to Nukes
+--Base when the LOW WS score gets called out on the number of party members?
+--Turn on/off specific callouts
+--Add pet BPs (action category 13, check SMN GS file)
+--Hide the box when zoning or logged out
+
+
+
+
 require 'logger'
+require 'chat'
+texts = require('texts')
 config = require('config')
+packets = require('packets')
 
-defaults = {}
-defaults.flood_delay = 5
-defaults.reminder = true
-defaults.scores = {}
-defaults.scores.Whiff = {}
-defaults.scores.Whiff.FirstName = ""
-defaults.scores.Whiff.SecondName = ""
-defaults.scores.Whiff.ThirdName = ""
-defaults.scores.Whiff.FirstAmount = 0
-defaults.scores.Whiff.SecondAmount = 0
-defaults.scores.Whiff.ThirdAmount = 0
+defaults = {}					-- All of these are configurable via commands in-game (//lb help), recommend that over editing the settings file
+defaults.flood_delay = 5		-- Sets the delay between incoming commands, preventing party members from spamming commands
+defaults.reminder = true		-- Display occasional reminders
+defaults.commas = true			-- Add commas to the scores
+defaults.visible = true			-- Display the scores with an On-Screen Display
+defaults.party_commands = false	-- Allow party/alliance members to trigger certain commands via chat
+defaults.optout = {}			-- A list of names to be excluded from data collection
+defaults.rival = ''				-- The name of an optional Rival to track
 
-defaults.scores.HS = {}
-defaults.scores.HS.FirstName = ""
-defaults.scores.HS.SecondName = ""
-defaults.scores.HS.ThirdName = ""
-defaults.scores.HS.FourthName = ""
-defaults.scores.HS.FifthName = ""
-defaults.scores.HS.FirstDamage = 0
-defaults.scores.HS.SecondDamage = 0
-defaults.scores.HS.ThirdDamage = 0
-defaults.scores.HS.FourthDamage = 0
-defaults.scores.HS.FifthDamage = 0
-defaults.scores.HS.FirstWS = ""
-defaults.scores.HS.SecondWS = ""
-defaults.scores.HS.ThirdWS = ""
-defaults.scores.HS.FourthWS = ""
-defaults.scores.HS.FifthWS = ""
-defaults.scores.HS.FirstTarget = ""
-defaults.scores.HS.SecondTarget = ""
-defaults.scores.HS.ThirdTarget = ""
-defaults.scores.HS.FourthTarget = ""
-defaults.scores.HS.FifthTarget = ""
+defaults.flags = T{}
+defaults.flags.bold = true
+defaults.flags.draggable = true
 
-defaults.scores.LS = {}
-defaults.scores.LS.FirstName = ""
-defaults.scores.LS.SecondName = ""
-defaults.scores.LS.ThirdName = ""
-defaults.scores.LS.FirstDamage = 999999
-defaults.scores.LS.SecondDamage = 999999
-defaults.scores.LS.ThirdDamage = 999999
-defaults.scores.LS.FirstWS = ""
-defaults.scores.LS.SecondWS = ""
-defaults.scores.LS.ThirdWS = ""
-defaults.scores.LS.FirstTarget = ""
-defaults.scores.LS.SecondTarget = ""
-defaults.scores.LS.ThirdTarget = ""
+defaults.pos = T{}
+defaults.pos.x = (windower.get_windower_settings().ui_x_res) - 350 --Sets the default X position near the right side of your screen
+defaults.pos.y = (windower.get_windower_settings().ui_y_res) / 2 --Sets the default Y position in the middle of your screen
 
-defaults.scores.SC = {}
-defaults.scores.SC.FirstName = ""
-defaults.scores.SC.SecondName = ""
-defaults.scores.SC.ThirdName = ""
-defaults.scores.SC.FourthName = ""
-defaults.scores.SC.FifthName = ""
-defaults.scores.SC.FirstDamage = 0
-defaults.scores.SC.SecondDamage = 0
-defaults.scores.SC.ThirdDamage = 0
-defaults.scores.SC.FourthDamage = 0
-defaults.scores.SC.FifthDamage = 0
-defaults.scores.SC.FirstSC = ""
-defaults.scores.SC.SecondSC = ""
-defaults.scores.SC.ThirdSC = ""
-defaults.scores.SC.FourthSC = ""
-defaults.scores.SC.FifthSC = ""
-defaults.scores.SC.FirstTarget = ""
-defaults.scores.SC.SecondTarget = ""
-defaults.scores.SC.ThirdTarget = ""
-defaults.scores.SC.FourthTarget = ""
-defaults.scores.SC.FifthTarget = ""
+defaults.bg = T{}
+defaults.bg.red = 0
+defaults.bg.green = 0
+defaults.bg.blue = 0
+defaults.bg.alpha = 175
 
-defaults.scores.Nuke = {}
-defaults.scores.Nuke.FirstName = ""
-defaults.scores.Nuke.SecondName = ""
-defaults.scores.Nuke.ThirdName = ""
-defaults.scores.Nuke.FourthName = ""
-defaults.scores.Nuke.FifthName = ""
-defaults.scores.Nuke.FirstDamage = 0
-defaults.scores.Nuke.SecondDamage = 0
-defaults.scores.Nuke.ThirdDamage = 0
-defaults.scores.Nuke.FourthDamage = 0
-defaults.scores.Nuke.FifthDamage = 0
+defaults.text = T{}
+defaults.text.font = 'Courier New'
+defaults.text.size = 10
+defaults.text.alpha = 255
 
-defaults.scores.MB = {}
-defaults.scores.MB.FirstName = ""
-defaults.scores.MB.SecondName = ""
-defaults.scores.MB.ThirdName = ""
-defaults.scores.MB.FourthName = ""
-defaults.scores.MB.FifthName = ""
-defaults.scores.MB.FirstDamage = 0
-defaults.scores.MB.SecondDamage = 0
-defaults.scores.MB.ThirdDamage = 0
-defaults.scores.MB.FourthDamage = 0
-defaults.scores.MB.FifthDamage = 0
-defaults.scores.MB.FirstSpell = ""
-defaults.scores.MB.SecondSpell = ""
-defaults.scores.MB.ThirdSpell = ""
-defaults.scores.MB.FourthSpell = ""
-defaults.scores.MB.FifthSpell = ""
-defaults.scores.MB.FirstTarget = ""
-defaults.scores.MB.SecondTarget = ""
-defaults.scores.MB.ThirdTarget = ""
-defaults.scores.MB.FourthTarget = ""
-defaults.scores.MB.FifthTarget = ""
+defaults.colors = T{}
+defaults.colors.header = T{}
+defaults.colors.header.r = 37
+defaults.colors.header.g = 110
+defaults.colors.header.b = 255
+defaults.colors.text = T{}
+defaults.colors.text.r = 240
+defaults.colors.text.g = 240
+defaults.colors.text.b = 240
+defaults.colors.self = T{}
+defaults.colors.self.r = 142
+defaults.colors.self.g = 225
+defaults.colors.self.b = 169
+defaults.colors.rival = T{}
+defaults.colors.rival.r = 236
+defaults.colors.rival.g = 137
+defaults.colors.rival.b = 142
 
-defaults.scores.Cure = {}
-defaults.scores.Cure.FirstName = ""
-defaults.scores.Cure.SecondName = ""
-defaults.scores.Cure.ThirdName = ""
-defaults.scores.Cure.FirstAmount = 0
-defaults.scores.Cure.SecondAmount = 0
-defaults.scores.Cure.ThirdAmount = 0
+defaults.places = {}
+defaults.places.cure = {}
+defaults.places.death = {}
+defaults.places.hs = {}
+defaults.places.kill = {}
+defaults.places.ls = {}
+defaults.places.mb = {}
+defaults.places.murder = {}
+defaults.places.nuke = {}
+defaults.places.sc = {}
+defaults.places.whiff = {}
+
+defaults.individuals = {}
+defaults.individuals.cure = {}
+defaults.individuals.death = {}
+defaults.individuals.hs = {}
+defaults.individuals.kill = {}
+defaults.individuals.ls = {}
+defaults.individuals.mb = {}
+defaults.individuals.murder = {}
+defaults.individuals.nuke = {}
+defaults.individuals.sc = {}
+defaults.individuals.whiff = {}
+
+defaults.indexes = {}		-- Used to order the scores as they are saved to indicate which came first,
+defaults.indexes.death = 0	-- this will then properly place duplicate score values
+defaults.indexes.hs = 0		-- ie multiple people hit 99999, order it by who hit 99999 first
+defaults.indexes.kill = 0	-- Cure and Nuke are used to call out every x amount
+defaults.indexes.ls = 0		
+defaults.indexes.mb = 0		
+defaults.indexes.murder = 0
+defaults.indexes.sc = 0
+defaults.indexes.whiff = 0
+
+defaults.first_load = true
+defaults.paused = false
 
 settings = config.load(defaults)
 
@@ -152,1707 +163,1985 @@ local weaponskills = require('resources').weapon_skills
 local spells = require('resources').spells
 local jabils = require('resources').job_abilities
 local mabils = require('resources').monster_abilities
-local whiff = {}
-local cure = {}
-local nuke = {}
 
 local cmd = windower.send_command
 local say = windower.chat.input
+if windower.ffxi.get_info().logged_in then
+	local myName = windower.ffxi.get_mob_by_target('me').name
+end
+
+-- When logging in
+function login()
+
+	-- Reset the players name
+	myName = windower.ffxi.get_mob_by_target('me').name
+
+	-- Show the box
+	if settings.visible then
+        showBox()
+    end
+end
+
+-- When logging out, hide the box
+function logout()
+    hideBox()
+end
+
+windower.register_event('login', login)
 
 local Heartbeat = 0
 local flood_timer = 0
-local Run = false
-local Paused = false
+local box_display = 'hs'
+local Mode = 'Silent'
+local zoning = false
 
-function reset_scores()
-	settings.scores.Whiff.FirstName = ""
-	settings.scores.Whiff.SecondName = ""
-	settings.scores.Whiff.ThirdName = ""
-	settings.scores.Whiff.FirstAmount = 0
-	settings.scores.Whiff.SecondAmount = 0
-	settings.scores.Whiff.ThirdAmount = 0
 
-	settings.scores.HS.FirstName = ""
-	settings.scores.HS.SecondName = ""
-	settings.scores.HS.ThirdName = ""
-	settings.scores.HS.FourthName = ""
-	settings.scores.HS.FifthName = ""
-	settings.scores.HS.FirstDamage = 0
-	settings.scores.HS.SecondDamage = 0
-	settings.scores.HS.ThirdDamage = 0
-	settings.scores.HS.FourthDamage = 0
-	settings.scores.HS.FifthDamage = 0
-	settings.scores.HS.FirstWS = ""
-	settings.scores.HS.SecondWS = ""
-	settings.scores.HS.ThirdWS = ""
-	settings.scores.HS.FourthWS = ""
-	settings.scores.HS.FifthWS = ""
-	settings.scores.HS.FirstTarget = ""
-	settings.scores.HS.SecondTarget = ""
-	settings.scores.HS.ThirdTarget = ""
-	settings.scores.HS.FourthTarget = ""
-	settings.scores.HS.FifthTarget = ""
+-- Put places info into tables to call them in order
+function getPlacesInfo(places)
+	local name = {
+		places.first and places.first.name,
+		places.second and places.second.name,
+		places.third and places.third.name,
+		places.fourth and places.fourth.name,
+		places.fifth and places.fifth.name
+	}
+	local score = {
+		places.first and places.first.score,
+		places.second and places.second.score,
+		places.third and places.third.score,
+		places.fourth and places.fourth.score,
+		places.fifth and places.fifth.score
+	}
+	local nines = {
+		places.first and places.first.nines,
+		places.second and places.second.nines,
+		places.third and places.third.nines,
+		places.fourth and places.fourth.nines,
+		places.fifth and places.fifth.nines
+	}
 
-	settings.scores.LS.FirstName = ""
-	settings.scores.LS.SecondName = ""
-	settings.scores.LS.ThirdName = ""
-	settings.scores.LS.FirstDamage = 999999
-	settings.scores.LS.SecondDamage = 999999
-	settings.scores.LS.ThirdDamage = 999999
-	settings.scores.LS.FirstWS = ""
-	settings.scores.LS.SecondWS = ""
-	settings.scores.LS.ThirdWS = ""
-	settings.scores.LS.FirstTarget = ""
-	settings.scores.LS.SecondTarget = ""
-	settings.scores.LS.ThirdTarget = ""
-
-	settings.scores.SC.FirstName = ""
-	settings.scores.SC.SecondName = ""
-	settings.scores.SC.ThirdName = ""
-	settings.scores.SC.FourthName = ""
-	settings.scores.SC.FifthName = ""
-	settings.scores.SC.FirstDamage = 0
-	settings.scores.SC.SecondDamage = 0
-	settings.scores.SC.ThirdDamage = 0
-	settings.scores.SC.FourthDamage = 0
-	settings.scores.SC.FifthDamage = 0
-	settings.scores.SC.FirstSC = ""
-	settings.scores.SC.SecondSC = ""
-	settings.scores.SC.ThirdSC = ""
-	settings.scores.SC.FourthSC = ""
-	settings.scores.SC.FifthSC = ""
-	settings.scores.SC.FirstTarget = ""
-	settings.scores.SC.SecondTarget = ""
-	settings.scores.SC.ThirdTarget = ""
-	settings.scores.SC.FourthTarget = ""
-	settings.scores.SC.FifthTarget = ""
-
-	settings.scores.Nuke.FirstName = ""
-	settings.scores.Nuke.SecondName = ""
-	settings.scores.Nuke.ThirdName = ""
-	settings.scores.Nuke.FourthName = ""
-	settings.scores.Nuke.FifthName = ""
-	settings.scores.Nuke.FirstDamage = 0
-	settings.scores.Nuke.SecondDamage = 0
-	settings.scores.Nuke.ThirdDamage = 0
-	settings.scores.Nuke.FourthDamage = 0
-	settings.scores.Nuke.FifthDamage = 0
-
-	settings.scores.MB.FirstName = ""
-	settings.scores.MB.SecondName = ""
-	settings.scores.MB.ThirdName = ""
-	settings.scores.MB.FourthName = ""
-	settings.scores.MB.FifthName = ""
-	settings.scores.MB.FirstDamage = 0
-	settings.scores.MB.SecondDamage = 0
-	settings.scores.MB.ThirdDamage = 0
-	settings.scores.MB.FourthDamage = 0
-	settings.scores.MB.FifthDamage = 0
-	settings.scores.MB.FirstSpell = ""
-	settings.scores.MB.SecondSpell = ""
-	settings.scores.MB.ThirdSpell = ""
-	settings.scores.MB.FourthSpell = ""
-	settings.scores.MB.FifthSpell = ""
-	settings.scores.MB.FirstTarget = ""
-	settings.scores.MB.SecondTarget = ""
-	settings.scores.MB.ThirdTarget = ""
-	settings.scores.MB.FourthTarget = ""
-	settings.scores.MB.FifthTarget = ""
-
-	settings.scores.Cure.FirstName = ""
-	settings.scores.Cure.SecondName = ""
-	settings.scores.Cure.ThirdName = ""
-	settings.scores.Cure.FirstAmount = 0
-	settings.scores.Cure.SecondAmount = 0
-	settings.scores.Cure.ThirdAmount = 0
-	settings:save('all')
+	return {
+		name = name,
+		score = score,
+		nines = nines
+	}
 end
 
-CureThings = T{
+
+-- Return the names back to their proper capitalization
+-- Names are saved in all lowercase to get around them being lowercased automatically in the
+-- settings file any way when the addon is reloaded (ie to work properly with crash recovery).
+-- This prevents a sort of "duplication" issue where the older data is now lowercased and the
+-- new data started after recovery is capitalized as expected.
+function capitalize(str)
+	local capitalized = string.gsub(str, "(%w[%w']*)", function(word)
+	  	if word ~= "of" then
+			word = word:gsub("^%l", string.upper)
+	  	end
+	  	return word
+	end)
+
+	return capitalized
+end
+
+
+-- Turn the entire name into all uppercase
+function uppercase(str)
+	local uppercased = string.gsub(str, "%a", function(letter)
+		return letter:upper()
+	end)
+
+	return uppercased
+end
+
+
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if settings.commas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
+
+-- Show the BP box
+function showBox()
+	lbBox:show()
+end
+
+
+-- Hide the BP box
+function hideBox()
+	lbBox:hide()
+end
+
+
+-- Toggle the visibility of the LB box
+function toggleBox()
+	if settings.visible then
+		showBox()
+	else
+		hideBox()
+	end
+end
+
+
+-- Update the BP box
+function updateBox(box_display)
+
+    local textColor = settings.colors.text
+    local headerColor = settings.colors.header
+	local selfColor = settings.colors.self
+	local rivalColor = settings.colors.rival
+	local color = textColor
+
+	local places = settings.places[box_display]
+	local info = getPlacesInfo(places)
+
+    -- Create a temporary "text" array that we use to build what's displayed in the box
+    local text = ''
+	local board_name = Leaderboard
+	if box_display == 'cure' then
+		board_name = 'Cure Board'
+	elseif box_display == 'death' then
+		board_name = 'Death Board'
+	elseif box_display == 'hs' then
+		board_name = 'High WS Board'
+	elseif box_display == 'kill' then
+		board_name = 'Kill Board'
+	elseif box_display == 'ls' then
+		board_name = 'Low WS Board'
+	elseif box_display == 'mb' then
+		board_name = 'Magic Burst Board'
+	elseif box_display == 'murder' then
+		board_name = 'Murder Board'
+	elseif box_display == 'nuke' then
+		board_name = 'Nuke Board'
+	elseif box_display == 'sc' then
+		board_name = 'Skillchain Board'
+	elseif box_display == 'whiff' then
+		board_name = 'whiff Board'
+	end
+
+    -- The header always goes first, at the top
+    text = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')'
+
+	local header_text = ('%s '):format(settings.paused and 'Paused' or 'Running')
+	while string.len(header_text) < 19 do
+		header_text = ' '..header_text
+	end
+	header_text = 'Leaderboard'..header_text
+
+	text = text..header_text..'\n'
+
+	local board_text = ' '..board_name
+	while string.len(board_text) < 21 do
+		board_text = board_text..' '
+	end
+	board_text = board_text..'//lb help\\cr \n'
+
+	text = text..board_text
+
+	if info.name[1] == nil then
+		text = text..' Waiting For Data...'
+	else
+		for i = 1, 10, 1
+		do
+			if info.name[i] ~= nil then
+				if capitalize(info.name[i]) == windower.ffxi.get_mob_by_target('me').name then
+					color = selfColor
+				elseif info.name[i] == settings.rival then
+					color = rivalColor
+				else
+					color = textColor
+				end
+				-- Add in ternary for nines
+				text = text..'\\cs('..color.r..', '..color.g..', '..color.b..') '..i..': '..capitalize(info.name[i])..' ('..addCommas(info.score[i])..('%s'):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')..'\\cr \n'
+			end
+		end
+	end
+
+    -- Turn the "text" array into a string and update the text inside the box
+    lbBox.current_string = text
+
+end
+
+
+-- Create the LB box
+lbBox = texts.new('${current_string}', settings)
+if settings.visible and windower.ffxi.get_info().logged_in then
+	showBox()
+	updateBox(box_display)
+end
+
+
+cureThings = T{
 	'Cure','Cure II','Cure III','Cure IV','Cure V','Cure VI','Curaga','Curaga II','Curaga III','Curaga IV','Curaga V','Cura','Cura II','Cura III','Pollen','Wild Carrot','Healing Breeze','Magic Fruit','Exuviation','Plenilune Embrace','White Wind','Restoral','Full Cure','Benediction','Repair','Curing Waltz','Curing Waltz II','Curing Waltz III','Curing Waltz IV','Curing Waltz V','Divine Waltz','Divine Waltz II','Life Cycle','Mending Halation','Vivacious Pulse','Healing Ruby','Healing Ruby II','Spring Water','Whispering Wind','Healing Breath','Healing Breath II','Healing Breath III','Healing Breath IV','Potion','Hi-Potion','X-Potion','Hyper Potion','Max. Potion','Mix: Max. Potion','Chakra'
     }
 
+
+	if settings.first_load then
+
+		windower.add_to_chat(220,'[Leaderboard] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key'):color(220))
+		coroutine.sleep(1)
+		windower.add_to_chat(220,'[Leaderboard] '..('First load detected. Type'):color(8)..(' //lb help'):color(1)..(' for a list of commands.'):color(8))
+		settings.first_load = false
+		settings:save('all')
+	
+	end
+
+
+-- Hide the box when zoning
+windower.register_event('prerender', function()
+
+    local pos = windower.ffxi.get_position()
+
+    if pos == "(?-?)" and not zoning then
+
+        hideBox()
+        zoning = true
+
+    elseif pos ~= "(?-?)" and zoning then
+
+        if settings.visible then
+            showBox()
+        end
+        zoning = false
+
+    end
+
+end)
+
+
+-- Checks that the actor is in our party/alliance and return the name
 function get_actor(id)
 	local actor = windower.ffxi.get_mob_by_id(id)
-	if actor == nil then
-		return false
-	elseif not actor.in_alliance and not actor.in_party then
+	if actor == nil or (not actor.in_alliance and not actor.in_party) then
 		return false
 	else
 		return actor
 	end
 end
 
+
+-- Sort the list by highest scores and return a list of the top 10
+function sortNamesHigh(data)
+	-- Convert the input table into a list of objects with names
+	local dataList = {}
+	for name, obj in pairs(data) do
+		obj.name = name
+		table.insert(dataList, obj)
+	end
+
+	-- Sort the dataList table
+	table.sort(dataList, function(a, b)
+		if a.score ~= b.score then
+			return a.score > b.score -- Sort by score in descending order
+		elseif a.nines ~= b.nines then
+			return a.nines > b.nines -- Sort by nines in descending order
+		else
+			return a.index < b.index -- Sort by index in ascending order (lower numbers were first)
+		end
+	end)
+
+	-- Create the board table with the top 10 results
+	local board = {}
+	for i = 1, math.min(10, #dataList) do
+		table.insert(board, dataList[i])
+	end
+
+	return board
+end
+
+
+-- Sort the list by lowest scores and return a list of the top 10
+function sortNamesLow(data)
+    -- Convert the input table into a list of objects with names
+    local dataList = {}
+    for name, obj in pairs(data) do
+        obj.name = name
+        table.insert(dataList, obj)
+    end
+
+    -- Sort the dataList table based on the specified criteria
+    table.sort(dataList, function(a, b)
+        if a.score ~= b.score then
+            return a.score < b.score -- Sort by score in ascending order
+        else
+            return a.index < b.index -- Sort by index in ascending order
+        end
+    end)
+
+    -- Create the board table with the top 10 results
+    local board = {}
+    for i = 1, math.min(10, #dataList) do
+        table.insert(board, dataList[i])
+    end
+
+    return board
+end
+
+
+-- Add a name to the Optout list
+function addToOptout(name)
+	local l_name = string.lower(name)
+	local ind = settings.individuals
+	-- Check if the name already exists in the table
+	if not settings.optout[l_name] then
+
+		-- Add the name to the table
+		settings.optout[l_name] = true
+
+		-- Delete all related data for the player
+		local tables = {ind.cure, ind.death, ind.hs, ind.kill, ind.ls, ind.mb, ind.murder, ind.nuke, ind.sc, ind.whiff}
+		for _, table in ipairs(tables) do
+			table[l_name] = nil
+		end
+
+		settings:save('all')
+		windower.add_to_chat(220,'[Leaderboard] '..('Added '..name..' to the Optout list. All related data has been deleted. '):color(8)..'')
+
+	else
+
+		windower.add_to_chat(220,'[Leaderboard] '..(name..' is already in the Optout list.'):color(8)..'')
+
+	end
+end
+
+
+-- Remove a name from the Optout list
+function removeFromOptout(name)
+	local l_name = string.lower(name)
+	-- Check if the name exists in the table
+	if settings.optout[l_name] then
+		-- Remove the name from the table
+		settings.optout[l_name] = nil
+		settings:save('all')
+		windower.add_to_chat(220,'[Leaderboard] '..('Removed '..name..' from the Optout list.'):color(8)..'')
+	else
+		windower.add_to_chat(220,'[Leaderboard] '..(name..' is not in the Optout list.'):color(8)..'')
+	end
+end
+
+
+-- Return the Optout list
+function optoutList()
+    local names = {}
+    for name, _ in pairs(settings.optout) do
+        table.insert(names, name)
+    end
+    if next(names) == nil then
+        return "[empty]"
+    else
+        return table.concat(names, ', ')
+    end
+end
+
+
+-- Send the specified player their score report via tell
+function reportPlayerScores(name)
+	local ind = settings.individuals
+	local text1 = ''
+	local text2 = ''
+	local text_hs = (ind.hs[name] and ind.hs[name].score) and ind.hs[name].score..(ind.hs[name].nines > 0 and ':'..ind.hs[name].score or '') or 0
+	local text_ls = (ind.ls[name] and ind.ls[name].score) and ind.ls[name].score or 0
+	local text_sc = (ind.sc[name] and ind.sc[name].score) and ind.sc[name].score..(ind.sc[name].nines > 0 and ':'..ind.sc[name].score or '') or 0
+	local text_whiff = (ind.whiff[name] and ind.whiff[name].score) and ind.whiff[name].score or 0
+	local text_mb = (ind.mb[name] and ind.mb[name].score) and ind.mb[name].score..(ind.mb[name].nines > 0 and ':'..ind.mb[name].score or '') or 0
+	local text_nuke = (ind.nuke[name] and ind.nuke[name].score) and ind.nuke[name].score or 0
+	local text_cure = (ind.cure[name] and ind.cure[name].score) and ind.cure[name].score or 0
+	local text_death = (ind.death[name] and ind.death[name].score) and ind.death[name].score or 0
+	local text_kill = (ind.kill[name] and ind.kill[name].score) and ind.kill[name].score or 0
+	local text_murder = (ind.murder[name] and ind.murder[name].score) and ind.murder[name].score or 0
+	if text_hs == 0 and text_ls == 0 and text_sc == 0 and text_whiff == 0 and text_mb == 0 and text_nuke == 0 and text_cure == 0 and text_death == 0 and text_kill == 0 and text_murder == 0 then
+		text1 = 'No data for you yet.'
+		text2 = ''
+	else
+		text1 = 'High WS: '..text_hs..', Low WS: '..text_ls..', Skillchain: '..text_sc..', Whiffs: '..text_whiff..', Deaths: '..text_death
+		text2 = 'Nukes: '..text_nuke..', Magic Burst: '..text_mb..', Cures: '..text_cure..', Kills: '..text_kill..', Murders: '..text_murder
+	end
+	say('/t '..name..' '..text1)
+	if text2 ~= '' then
+		coroutine.sleep(1.5)
+		say('/t '..name..' '..text2)
+	end
+end
+
+
+--Reset boards
+function resetC()
+	settings.individuals.cure = {}
+	settings.places.cure = {}
+end
+function resetD()
+	settings.individuals.death = {}
+	settings.places.death = {}
+	settings.indexes.death = 0
+end
+function resetHS()
+	settings.individuals.hs = {}
+	settings.places.hs = {}
+	settings.indexes.hs = 0
+end
+function resetK()
+	settings.individuals.kill = {}
+	settings.places.kill = {}
+	settings.indexes.kill = 0
+end
+function resetLS()
+	settings.individuals.ls = {}
+	settings.places.ls = {}
+	settings.indexes.ls = 0
+end
+function resetMB()
+	settings.individuals.mb = {}
+	settings.places.mb = {}
+	settings.indexes.mb = 0
+end
+function resetM()
+	settings.individuals.murder = {}
+	settings.places.murder = {}
+	settings.indexes.murder = 0
+end
+function resetN()
+	settings.individuals.nuke = {}
+	settings.places.nuke = {}
+end
+function resetSC()
+	settings.individuals.sc = {}
+	settings.places.sc = {}
+	settings.indexes.sc = 0
+end
+function resetW()
+	settings.individuals.whiff = {}
+	settings.places.whiff = {}
+	settings.indexes.whiff = 0
+end
+function resetALL()
+	resetC()
+	resetD()
+	resetHS()
+	resetK()
+	resetLS()
+	resetMB()
+	resetM()
+	resetN()
+	resetSC()
+	resetW()
+end
+
+
+-- Incoming chat message - NOTE: these are checking incoming packets, messages originating from yourself will not trigger them
+-- (tells work though because they go out to the server first then back to you as the receiver)
+windower.register_event('chat message', function(message, sender, mode)
+
+	-- Limit to tells(3) and party chat(4), check if Party commands are enabled, check flood timer
+	if not (mode == 3 or mode == 4) or not settings.party_commands or flood_timer ~= 0 then
+		return
+	end
+
+	local l_name = string.lower(sender)
+
+	-- CURE BOARD
+	if (message:find('!lb c') or message:find('!lbc') or message:find('!LB C') or message:find('!LBC')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb c')
+
+	-- DEATH BOARD
+	elseif (message:find('!lb d') or message:find('!lbd') or message:find('!LB D') or message:find('!LBD')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb d')
+
+	-- HIGH WS BOARD
+	elseif (message:find('!lb hs') or message:find('!lbhs') or message:find('!LB HS') or message:find('!LBHS')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb hs')
+
+	-- KILL BOARD
+	elseif (message:find('!lb k') or message:find('!lbk') or message:find('!LB K') or message:find('!LBK')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb k')
+
+	-- LOW WS BOARD
+	elseif (message:find('!lb ls') or message:find('!lbls') or message:find('!LB LS') or message:find('!LBLS')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb ls')
+
+	-- MAGIC BURST BOARD
+	elseif (message:find('!lb mb') or message:find('!lbmb') or message:find('!LB MB') or message:find('!LBMB')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb mb')
+
+	-- MURDER BOARD
+	elseif (message:find('!lb m') or message:find('!lbm') or message:find('!LB M') or message:find('!LBM')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb m')
+
+	-- NUKE BOARD
+	elseif (message:find('!lb n') or message:find('!lbn') or message:find('!LB N') or message:find('!LBN')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb n')
+
+	-- SKILLCHAIN BOARD
+	elseif (message:find('!lb sc') or message:find('!lbsc') or message:find('!LB SC') or message:find('!LBSC')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb sc')
+
+	-- WHIFF BOARD
+	elseif (message:find('!lb w') or message:find('!lbw') or message:find('!LB W') or message:find('!LBW')) and not (message:find('[Leaderboard] Started!')) then
+		cmd('lb w')
+
+	-- Send a score update to the message sender
+	elseif message:find('!lb report') then
+		reportPlayerScores(l_name)
+
+	-- Add/remove the message sender to the Optout list
+	elseif message:find('!lb optout') then
+		say('/t '..sender..(' You have been %s the Leaderboard Optout list.'):format(settings.optout[l_name] and 'removed from' or 'added to'))
+		if settings.optout[l_name] then
+			removeFromOptout(sender)
+		else
+			addToOptout(sender)
+		end
+
+	-- Unknown command
+	elseif message:find('!lb') then
+		say('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c|d|hs|k|ls|m|mb|n|sc|w|report|optout\'')
+
+	end
+	
+	-- Reset the flood timer after a command comes in
+	flood_timer = settings.flood_delay
+end)
+
+
+windower.register_event('incoming chunk', function(id, original, modified, injected, blocked)
+    if id == 0x029 and not settings.paused then
+		local packet = packets.parse('incoming', original)
+		local target = get_actor(packet['Target'])
+		local actor = get_actor(packet['Actor'])
+
+
+		-- A monster is killed
+		if packet['Message'] == 6 then
+
+			----------
+			-- KILL -- Actor: does the killing, Target: is what was killed
+			----------
+
+			-- Make sure the actor is part of the party/alliance
+			if actor == false then
+				return
+			end
+
+			local data = {}
+			data.actor = actor.id
+			data.actor_name = actor.name or 'unknown'
+			data.actor_lower_name = string.lower(actor.name) or 'unknown'
+
+			-- Make sure the actor is not on the Optout list
+			if settings.optout[data.actor_lower_name] then
+				return
+			end
+
+			local killPlaces = settings.places.kill
+			local killIndividuals = settings.individuals.kill
+
+			-- Retrieve the actors relevant data
+			local kills = (killIndividuals[data.actor_lower_name] and killIndividuals[data.actor_lower_name].score) or 0
+			local index = settings.indexes.kill
+
+			-- Update the actors score information
+			kills = kills +1
+			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+			settings.indexes.kill = index
+			killIndividuals[data.actor_lower_name] = {score = kills, nines = 0, index = index}
+
+			-- Update the leaderboard places
+			local board = sortNamesHigh(settings.individuals.kill)
+			killPlaces.first	= board[1]
+			killPlaces.second	= (board and board[2]) or nil
+			killPlaces.third	= (board and board[3]) or nil
+			killPlaces.fourth	= (board and board[4]) or nil
+			killPlaces.fifth	= (board and board[5]) or nil
+			settings:save('all')
+			updateBox(box_display)
+
+			-- Call out Kills, depending on the mode and how many Kills they are at
+			if Mode ~= "Silent" then
+				local everyNumKills = kills % 10 -- returns the remainder after euclidean division (division by subtraction)
+				if everyNumKills == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
+					say('/p [KILL] '..data.actor_name..' has racked up '..kills..' kills!')
+				end
+			end
+
+		-- A player is killed
+        elseif packet['Message'] == 97 then
+
+			-- The killer was a monster
+			if actor == false then
+
+				-----------
+				-- DEATH -- Actor: does the killing, Target: is what was killed
+				-----------
+
+				-- Make sure the target is part of the party/alliance
+				if target == false then
+					return
+				end
+
+				local data = {}
+				data.target = target.id
+				data.target_name = target.name or 'unknown'
+				data.target_lower_name = string.lower(target.name) or 'unknown'
+
+				-- Make sure the target is not on the Optout list
+				if settings.optout[data.target_lower_name] then
+					return
+				end
+
+				local deathPlaces = settings.places.death
+				local deathIndividuals = settings.individuals.death
+
+				-- Retrieve the targets relevant data
+				local deaths = (deathIndividuals[data.target_lower_name] and deathIndividuals[data.target_lower_name].score) or 0
+				local index = settings.indexes.death
+
+				-- Update the targets score information
+				deaths = deaths +1
+				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+				settings.indexes.death = index
+				deathIndividuals[data.target_lower_name] = {score = deaths, nines = 0, index = index}
+
+				-- Update the leaderboard places
+				local board = sortNamesHigh(settings.individuals.death)
+				deathPlaces.first	= board[1]
+				deathPlaces.second	= (board and board[2]) or nil
+				deathPlaces.third	= (board and board[3]) or nil
+				deathPlaces.fourth	= (board and board[4]) or nil
+				deathPlaces.fifth	= (board and board[5]) or nil
+				settings:save('all')
+				updateBox(box_display)
+
+				-- Call out Deaths, depending on the mode and how many Deaths they are at
+				if Mode ~= "Silent" then
+					if deaths == 1 and data.target_lower_name == deathPlaces.first.name then
+						say('/p [DEATH] '..data.target_name..' is the first to die!')
+					elseif deaths == 1 then
+						say('/p [DEATH] '..data.target_name..' has their first death!')
+					elseif deaths < 10 then
+						say('/p [DEATH] '..data.target_name..(' has died %s'):format(deaths < 5 and '' or 'yet ')..'again...')
+					else
+						local everyNumDeaths = deaths % 5 -- returns the remainder after euclidean division (division by subtraction)
+						if everyNumDeaths == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
+							say('/p [DEATH] '..data.target_name..' is up to '..deaths..' deaths!')
+						end
+					end
+				end
+
+			-- The killer was a player
+			else
+
+				------------
+				-- MURDER -- Actor: does the killing, Target: is what was killed
+				------------
+
+				-- Check if the actor and target what we want to track data for 
+				if actor == false or target == false then
+					return
+				end
+
+				local data = {}
+				data.actor = actor.id
+				data.actor_name = actor.name or 'unknown'
+				data.actor_lower_name = string.lower(actor.name) or 'unknown'
+				data.target = target.id
+				data.target_name = target.name or 'unknown'
+				data.target_lower_name = string.lower(target.name) or 'unknown'
+
+				-- Check if the actor and target what we want to track data for 
+				if settings.optout[data.actor_lower_name] or settings.optout[data.target_lower_name] then
+					return
+				end
+
+				local murderPlaces = settings.places.murder
+				local murderIndividuals = settings.individuals.murder
+
+				-- Retrieve the actors relevant data
+				local murders = (murderIndividuals[data.actor_lower_name] and murderIndividuals[data.actor_lower_name].score) or 0
+				local index = settings.indexes.murder
+
+				-- Update the actors score information
+				murders = murders +1
+				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+				settings.indexes.murder = index
+				murderIndividuals[data.actor_lower_name] = {score = murders, nines = 0, index = index}
+
+				-- Update the leaderboard places
+				local board = sortNamesHigh(settings.individuals.murder)
+				murderPlaces.first	= board[1]
+				murderPlaces.second	= (board and board[2]) or nil
+				murderPlaces.third	= (board and board[3]) or nil
+				murderPlaces.fourth	= (board and board[4]) or nil
+				murderPlaces.fifth	= (board and board[5]) or nil
+				settings:save('all')
+				updateBox(box_display)
+
+				-- Call out Murders
+				if Mode ~= "Silent" then
+					if murders == 1 then
+						say('/p [MURDER] '..data.actor_name..(' has %s'):format(data.actor_lower_name == murderPlaces.first.name and 'drawn First Blood and' or '')..' murdered '..data.target_name..'!')
+					end
+				end
+
+			end
+		end
+	end
+end)
+
+
 windower.register_event('action',function(act)
 
-	--Cures
-	if act.category == 4 or act.category == 5 or act.category == 6 or act.category == 11 or act.category == 14 and Run and not Paused then
+	-- A certain type of Spell, Ability, or Item is used that cures
+	if (act.category == 4 or act.category == 5 or act.category == 6 or act.category == 11 or act.category == 14) and not settings.paused then
+
+		----------
+		-- CURE --
+		----------
+
 		local actor = get_actor(act.actor_id)
 
+		-- Make sure the actor is part of the party/alliance
 		if actor == false then
 			return
 		end
 
+		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'Unknown'
+		data.actor_name = actor.name or 'unknown'
+		data.actor_lower_name = string.lower(actor.name) or 'unknown'
 		if act.category == 4 then 
-			data.curething = (spells[act.param] and spells[act.param].english) or 'Unknown'
+			data.cureThing = (spells[act.param] and spells[act.param].english) or 'unknown'
 		elseif act.category == 5 then
-			data.curething = (mabils[act.param] and mabils[act.param].english) or 'Unknown'
+			data.cureThing = (mabils[act.param] and mabils[act.param].english) or 'unknown'
 		elseif act.category == 6 or act.category == 14 then
-			data.curething = (jabils[act.param] and jabils[act.param].english) or 'Unknown'
+			data.cureThing = (jabils[act.param] and jabils[act.param].english) or 'unknown'
 		elseif act.category == 11 then
-			data.curething = (mabils[act.param] and mabils[act.param].english) or 'Unknown'
+			data.cureThing = (mabils[act.param] and mabils[act.param].english) or 'unknown'
 		end
 
-		if CureThings:contains(data.curething) then
-			local cures = cure[data.actor_name] or 0
-			if act.target_count == 6 then
-				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param + act.targets[6].actions[1].param
-			elseif act.target_count == 5 then
-				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param
-			elseif act.target_count == 4 then
-				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param
-			elseif act.target_count == 3 then
-				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param
-			elseif act.target_count == 2 then
-				cure[data.actor_name] = cures + act.targets[1].actions[1].param + act.targets[2].actions[1].param
-			else
-				cure[data.actor_name] = cures + act.targets[1].actions[1].param
-			end
-
-			if cure[data.actor_name] > settings.scores.Cure.FirstAmount then
-				if data.actor_name == settings.scores.Cure.FirstName or settings.scores.Cure.FirstAmount == 0 then
-					--First Place extends their lead (or the first cure)
-					settings.scores.Cure.FirstName = data.actor_name
-					settings.scores.Cure.FirstAmount = cure[data.actor_name]
-					settings:save('all')
-				elseif data.actor_name == settings.scores.Cure.SecondName then
-					--Second Place moves into First Place
-					settings.scores.Cure.SecondName = settings.scores.Cure.FirstName
-					settings.scores.Cure.FirstName = data.actor_name
-					settings.scores.Cure.SecondAmount = settings.scores.Cure.FirstAmount
-					settings.scores.Cure.FirstAmount = cure[data.actor_name]
-					settings:save('all')
-				else
-					--Third Place or lower moves into First Place
-					settings.scores.Cure.ThirdName = settings.scores.Cure.SecondName
-					settings.scores.Cure.SecondName = settings.scores.Cure.FirstName
-					settings.scores.Cure.FirstName = data.actor_name
-					settings.scores.Cure.ThirdAmount = settings.scores.Cure.SecondAmount
-					settings.scores.Cure.SecondAmount = settings.scores.Cure.FirstAmount
-					settings.scores.Cure.FirstAmount = cure[data.actor_name]
-					settings:save('all')
-				end
-			elseif cure[data.actor_name] > settings.scores.Cure.SecondAmount then
-				if data.actor_name == settings.scores.Cure.SecondName or (data.actor_name ~= settings.scores.Cure.FirstName and settings.scores.Cure.SecondAmount == 0) then
-					--Second Place updates their best but stays in Second Place (or the second cure)
-					settings.scores.Cure.SecondName = data.actor_name
-					settings.scores.Cure.SecondAmount = cure[data.actor_name]
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.Cure.FirstName then
-					--Third Place or lower moves into Second Place
-					settings.scores.Cure.ThirdName = settings.scores.Cure.SecondName
-					settings.scores.Cure.SecondName = data.actor_name
-					settings.scores.Cure.ThirdAmount = settings.scores.Cure.SecondAmount
-					settings.scores.Cure.SecondAmount = cure[data.actor_name]
-					settings:save('all')
-				end
-			elseif cure[data.actor_name] > settings.scores.Cure.ThirdAmount and data.actor_name ~= settings.scores.Cure.FirstName and data.actor_name ~= settings.scores.Cure.SecondName then
-				--Third Place updates their best or somebody not already on the board moves into Third Place
-				settings.scores.Cure.ThirdName = data.actor_name
-				settings.scores.Cure.ThirdAmount = cure[data.actor_name]
-				settings:save('all')
-			end
+		-- Make sure the actor is not on the Optout list
+		if settings.optout[data.actor_lower_name] then
+			return
 		end
 
-	elseif act.category == 3 and Run and not Paused then
+		-- Check if the thing used is one we want to track data for
+		if cureThings:contains(data.cureThing) then
+
+			local curePlaces = settings.places.cure
+			local cureIndividuals = settings.individuals.cure
+
+			-- Retrieve the actors relevant data
+			local cures = (cureIndividuals[data.actor_lower_name] and cureIndividuals[data.actor_lower_name].score) or 0
+			local index = (cureIndividuals[data.actor_lower_name] and cureIndividuals[data.actor_lower_name].index) or 0
+			
+			-- Update the actors score information
+			local cureSum = 0
+			for i = 1, act.target_count do
+				cureSum = cureSum + act.targets[i].actions[1].param
+			end
+			cures = cures + cureSum
+			local everyNumCures = math.floor(cures / 50000) -- returns how many times 50,000 goes into cures
+			local points = everyNumCures * 50000 -- returns the multiple of 50,000 that cures is over
+			cureIndividuals[data.actor_lower_name] = {score = cures, nines = 0, index = everyNumCures}
+
+			-- Update the leaderboard places
+			local board = sortNamesHigh(settings.individuals.cure)
+			curePlaces.first	= board[1]
+			curePlaces.second	= (board and board[2]) or nil
+			curePlaces.third	= (board and board[3]) or nil
+			curePlaces.fourth	= (board and board[4]) or nil
+			curePlaces.fifth	= (board and board[5]) or nil
+			settings:save('all')
+			updateBox(box_display)
+
+			-- Call out Cures, only if they've reached the next 50,000 threshhold
+			if Mode ~= "Silent" then
+				if everyNumCures > index then
+					say('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+				end
+			end
+
+		end
+
+	-- Weapon Skill is used
+	elseif act.category == 3 and not settings.paused then
+		
 		local actor = get_actor(act.actor_id)
 
+		-- Make sure the actor is part of the party/alliance
 		if actor == false then
 			return
 		end
 
+		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'Unknown'
+		data.actor_name = actor.name or 'unknown'
+		data.actor_lower_name = string.lower(actor.name) or 'unknown'
 		data.target = act.targets[1].id
-		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
+		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'unknown'
 		data.damage = act.targets[1].actions[1].param
-		data.ws = weaponskills[act.param] and weaponskills[act.param].english or 'Unknown'
-		data.spell = spells[act.param] and spells[act.param].english or 'Unknown'
-		data.jabils = jabils[act.param] and jabils[act.param].english or 'Unknown'
+		data.ws = weaponskills[act.param] and weaponskills[act.param].english or 'unknown'
+		data.spell = spells[act.param] and spells[act.param].english or 'unknown'
+		data.jabils = jabils[act.param] and jabils[act.param].english or 'unknown'
 
+		-- Make sure the actor is not on the Optout list
+		if settings.optout[data.actor_lower_name] then
+			return
+		end
+
+		-- Exclude utility Weapon Skills
 		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' and (act.targets[1].actions[1].message == 185 or act.targets[1].actions[1].message == 188) then
 			return
 		end
 
-		--Whiffs
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and data.damage == 0) then --Uses Weapon Skill but misses, gets blinked, or hits for 0
-			local whiffs = whiff[data.actor_name] or 0
-			whiff[data.actor_name] = whiffs+1
+		-- Weapon Skill misses, gets blinked, or hits for 0
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and data.damage == 0) then 
+
+			-----------
+			-- WHIFF --
+			-----------
+
+			local whiffPlaces = settings.places.whiff
+			local whiffIndividuals = settings.individuals.whiff
+
+			-- Retrieve the actors relevant data
+			local whiffs = (whiffIndividuals[data.actor_lower_name] and whiffIndividuals[data.actor_lower_name].score) or 0
+			local index = settings.indexes.whiff
+
+			-- Update the actors score information
+			whiffs = whiffs +1
+			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+			settings.indexes.whiff = index
+			whiffIndividuals[data.actor_lower_name] = {score = whiffs, nines = 0, index = index}
+
+			-- Update the leaderboard places
+			local board = sortNamesHigh(settings.individuals.whiff)
+			whiffPlaces.first	= board[1]
+			whiffPlaces.second	= (board and board[2]) or nil
+			whiffPlaces.third	= (board and board[3]) or nil
+			whiffPlaces.fourth	= (board and board[4]) or nil
+			whiffPlaces.fifth	= (board and board[5]) or nil
+			settings:save('all')
+			updateBox(box_display)
+
+			-- Call out Whiffs, depending on the mode and how many Whiffs they are at
 			if Mode ~= "Silent" then
-				if whiff[data.actor_name] == 10 and data.actor_name == settings.scores.Whiff.FirstName then
-					say:schedule(1,'/p '..data.actor_name..' whiffs '..data.ws..' and is the first to hit the whiff spam wall.')
-				elseif whiff[data.actor_name] == 10 then
-					say:schedule(1,'/p '..data.actor_name..' whiffs '..data.ws..' and has hit the whiff spam wall.')
-				elseif whiff[data.actor_name] > 5 and whiffs < 10 then
-					if Mode == "Normal" then
-						say:schedule(1,'/p '..data.actor_name..' whiffs '..data.ws..' yet again...')
+				if whiffs == 1 then
+					if Mode == "Party" then
+						say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
 					end
-				elseif whiff[data.actor_name] == 5 then
-					say:schedule(1,'/p '..data.actor_name..' whiffs '..data.ws..' and is halfway to the whiff spam wall.')
-				elseif whiff[data.actor_name] > 1 and whiff[data.actor_name] < 5 then
-					if Mode == "Normal" then
-						say:schedule(1,'/p '..data.actor_name..' whiffs '..data.ws..' again... ')
+				elseif whiffs == 5 or whiffs == 10 then
+					say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
+				elseif whiffs < 10 then
+					if Mode == "Party" then
+						say:schedule(1,'/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
 					end
-				elseif whiff[data.actor_name] == 1 then
-					if Mode == "Normal" then
-						say:schedule(1,'/p '..data.actor_name..' whiffs '..data.ws..'...')
+				elseif whiffs > 10 then
+					local everyFiveWhiffs = whiffs % 5 -- returns the remainder after euclidean division (division by subtraction)
+					if everyFiveWhiffs == 0 then -- if that leftover number equals 0, then the number is a multiple of 5
+						say:schedule(1,'/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
 					end
 				end
 			end
 
-			if whiff[data.actor_name] > settings.scores.Whiff.FirstAmount then
-				if data.actor_name == settings.scores.Whiff.FirstName or settings.scores.Whiff.FirstAmount == 0 then
-					--First Place extends their lead (or the first whiff)
-					settings.scores.Whiff.FirstName = data.actor_name
-					settings.scores.Whiff.FirstAmount = whiff[data.actor_name]
-					settings:save('all')
-				elseif data.actor_name == settings.scores.Whiff.SecondName then
-					--Second Place moves into First Place
-					settings.scores.Whiff.SecondName = settings.scores.Whiff.FirstName
-					settings.scores.Whiff.FirstName = data.actor_name
-					settings.scores.Whiff.SecondAmount = settings.scores.Whiff.FirstAmount
-					settings.scores.Whiff.FirstAmount = whiff[data.actor_name]
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.Whiff.FirstName and data.actor_name ~= settings.scores.Whiff.SecondName then
-					--Third Place or lower moves into First Place
-					settings.scores.Whiff.ThirdName = settings.scores.Whiff.SecondName
-					settings.scores.Whiff.SecondName = settings.scores.Whiff.FirstName
-					settings.scores.Whiff.FirstName = data.actor_name
-					settings.scores.Whiff.ThirdAmount = settings.scores.Whiff.SecondAmount
-					settings.scores.Whiff.SecondAmount = settings.scores.Whiff.FirstAmount
-					settings.scores.Whiff.FirstAmount = whiff[data.actor_name]
-					settings:save('all')
-				end
-			elseif whiff[data.actor_name] > settings.scores.Whiff.SecondAmount then
-				if data.actor_name == settings.scores.Whiff.SecondName or (data.actor_name ~= settings.scores.Whiff.FirstName and settings.scores.Whiff.SecondAmount == 0) then
-					--Second Place updates their best but stays in Second Place (or the second whiff)
-					settings.scores.Whiff.SecondName = data.actor_name
-					settings.scores.Whiff.SecondAmount = whiff[data.actor_name]
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.Whiff.FirstName then
-					--Third Place or lower moves into Second Place
-					settings.scores.Whiff.ThirdName = settings.scores.Whiff.SecondName
-					settings.scores.Whiff.SecondName = data.actor_name
-					settings.scores.Whiff.ThirdAmount = settings.scores.Whiff.SecondAmount
-					settings.scores.Whiff.SecondAmount = whiff[data.actor_name]
-					settings:save('all')
-				end
-			elseif whiff[data.actor_name] > settings.scores.Whiff.ThirdAmount and data.actor_name ~= settings.scores.Whiff.FirstName and data.actor_name ~= settings.scores.Whiff.SecondName then
-				--Third Place (or Lower) updates their best (or moves into Third Place)
-				settings.scores.Whiff.ThirdName = data.actor_name
-				settings.scores.Whiff.ThirdAmount = whiff[data.actor_name]
-				settings:save('all')
-			end
-
+		-- Weapon Skill lands
 		elseif act.targets[1].actions[1].message == 185 then
 
-			--Skillchains
-			if act.targets[1].actions[1].has_add_effect == true then
+			-------------
+			-- HIGH WS --
+			-------------
 
-				local actor = get_actor(act.actor_id)
+			local hsPlaces = settings.places.hs
+			local hsIndividuals = settings.individuals.hs
 
-				if actor == false then
-					return
-				end
-
-				local sc = {} sc[1] = 'Light' sc[2] = 'Darkness' sc[3] = 'Gravitation' sc[4] = 'Fragmentation' sc[5] = 'Distortion' sc[6] = 'Fusion' sc[7] = 'Compression' sc[8] = 'Liquefaction' sc[9] = 'Induration' sc[10] = 'Reverberation' sc[11] = 'Transfixion' sc[12] = 'Scission' sc[13] = 'Detonation' sc[14] = 'Impaction' sc[15] = 'Radiance' sc[16] = 'Umbra'
-
-				local data = {}
-				data.actor = actor.id
-				data.actor_name = actor.name or 'Unknown'
-				data.target = act.targets[1].id
-				data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
-				data.damage = act.targets[1].actions[1].add_effect_param
-				data.sc = sc[act.targets[1].actions[1].add_effect_animation] or 'Unknown'
-
-				if data.damage > settings.scores.SC.FirstDamage then
-					if data.actor_name == settings.scores.SC.FirstName or settings.scores.SC.FirstDamage == 0 then 
-						--First Place extends their lead (or the first sc)
-						settings.scores.SC.FirstName = data.actor_name
-						settings.scores.SC.FirstDamage = data.damage
-						settings.scores.SC.FirstSC = data.sc
-						settings.scores.SC.FirstTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name == settings.scores.SC.SecondName then
-						--Second Place moves into First Place
-						settings.scores.SC.SecondName = settings.scores.SC.FirstName
-						settings.scores.SC.FirstName = data.actor_name
-						settings.scores.SC.SecondDamage = settings.scores.SC.FirstDamage
-						settings.scores.SC.FirstDamage = data.damage
-						settings.scores.SC.SecondSC = settings.scores.SC.FirstSC
-						settings.scores.SC.FirstSC = data.sc
-						settings.scores.SC.SecondTarget = settings.scores.SC.FirstTarget
-						settings.scores.SC.FirstTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name == settings.scores.SC.ThirdName then
-						--Third Place moves into First Place
-						settings.scores.SC.ThirdName = settings.scores.SC.SecondName
-						settings.scores.SC.SecondName = settings.scores.SC.FirstName
-						settings.scores.SC.FirstName = data.actor_name
-						settings.scores.SC.ThirdDamage = settings.scores.SC.SecondDamage
-						settings.scores.SC.SecondDamage = settings.scores.SC.FirstDamage
-						settings.scores.SC.FirstDamage = data.damage
-						settings.scores.SC.ThirdSC = settings.scores.SC.SecondSC
-						settings.scores.SC.SecondSC = settings.scores.SC.FirstSC
-						settings.scores.SC.FirstSC = data.sc
-						settings.scores.SC.ThirdTarget = settings.scores.SC.SecondTarget
-						settings.scores.SC.SecondTarget = settings.scores.SC.FirstTarget
-						settings.scores.SC.FirstTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name == settings.scores.SC.FourthName then
-						--Fourth Place moves into First Place
-						settings.scores.SC.FourthName = settings.scores.SC.ThirdName
-						settings.scores.SC.ThirdName = settings.scores.SC.SecondName
-						settings.scores.SC.SecondName = settings.scores.SC.FirstName
-						settings.scores.SC.FirstName = data.actor_name
-						settings.scores.SC.FourthDamage = settings.scores.SC.ThirdDamage
-						settings.scores.SC.ThirdDamage = settings.scores.SC.SecondDamage
-						settings.scores.SC.SecondDamage = settings.scores.SC.FirstDamage
-						settings.scores.SC.FirstDamage = data.damage
-						settings.scores.SC.FourthSC = settings.scores.SC.ThirdSC
-						settings.scores.SC.ThirdSC = settings.scores.SC.SecondSC
-						settings.scores.SC.SecondSC = settings.scores.SC.FirstSC
-						settings.scores.SC.FirstSC = data.sc
-						settings.scores.SC.FourthTarget = settings.scores.SC.ThirdTarget
-						settings.scores.SC.ThirdTarget = settings.scores.SC.SecondTarget
-						settings.scores.SC.SecondTarget = settings.scores.SC.FirstTarget
-						settings.scores.SC.FirstTarget = data.target_name
-						settings:save('all')
-					else
-						--Fifth Place or somebody not already on the board moves into First Place
-						settings.scores.SC.FifthName = settings.scores.SC.FourthName
-						settings.scores.SC.FourthName = settings.scores.SC.ThirdName
-						settings.scores.SC.ThirdName = settings.scores.SC.SecondName
-						settings.scores.SC.SecondName = settings.scores.SC.FirstName
-						settings.scores.SC.FirstName = data.actor_name
-						settings.scores.SC.FifthDamage = settings.scores.SC.FourthDamage
-						settings.scores.SC.FourthDamage = settings.scores.SC.ThirdDamage
-						settings.scores.SC.ThirdDamage = settings.scores.SC.SecondDamage
-						settings.scores.SC.SecondDamage = settings.scores.SC.FirstDamage
-						settings.scores.SC.FirstDamage = data.damage
-						settings.scores.SC.FifthSC = settings.scores.SC.FourthSC
-						settings.scores.SC.FourthSC = settings.scores.SC.ThirdSC
-						settings.scores.SC.ThirdSC = settings.scores.SC.SecondSC
-						settings.scores.SC.SecondSC = settings.scores.SC.FirstSC
-						settings.scores.SC.FirstSC = data.sc
-						settings.scores.SC.FifthTarget = settings.scores.SC.FourthTarget
-						settings.scores.SC.FourthTarget = settings.scores.SC.ThirdTarget
-						settings.scores.SC.ThirdTarget = settings.scores.SC.SecondTarget
-						settings.scores.SC.SecondTarget = settings.scores.SC.FirstTarget
-						settings.scores.SC.FirstTarget = data.target_name
-						settings:save('all')
-					end
-					if Mode ~= "Silent" then
-						coroutine.sleep(1)
-						say('/p New SKILLCHAIN HIGH Score! '..settings.scores.SC.FirstName..' with a '..settings.scores.SC.FirstDamage..' '..settings.scores.SC.FirstSC..' on '..settings.scores.SC.FirstTarget..'')
-					end
-				elseif data.damage > settings.scores.SC.SecondDamage then
-					if data.actor_name == settings.scores.SC.SecondName or (data.actor_name ~= settings.scores.SC.FirstName and settings.scores.SC.SecondDamage == 0) then
-						--Second Place updates their best but stays in Second Place (or the second mb)
-						settings.scores.SC.SecondName = data.actor_name
-						settings.scores.SC.SecondDamage = data.damage
-						settings.scores.SC.SecondSC = data.sc
-						settings.scores.SC.SecondTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name == settings.scores.SC.ThirdName then
-						--Third Place moves into Second Place
-						settings.scores.SC.ThirdName = settings.scores.SC.SecondName
-						settings.scores.SC.SecondName = data.actor_name
-						settings.scores.SC.ThirdDamage = settings.scores.SC.SecondDamage
-						settings.scores.SC.SecondDamage = data.damage
-						settings.scores.SC.ThirdSC = settings.scores.SC.SecondSC
-						settings.scores.SC.SecondSC = data.sc
-						settings.scores.SC.ThirdTarget = settings.scores.SC.SecondTarget
-						settings.scores.SC.SecondTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.SecondName..' moves into the No.2 slot with a '..settings.scores.SC.SecondDamage..' '..settings.scores.SC.SecondSC..' on '..settings.scores.SC.SecondTarget..'')
-						end
-					elseif data.actor_name == settings.scores.SC.FourthName then
-						--Fourth Place moves into Second Place
-						settings.scores.SC.FourthName = settings.scores.SC.ThirdName
-						settings.scores.SC.ThirdName = settings.scores.SC.SecondName
-						settings.scores.SC.SecondName = data.actor_name
-						settings.scores.SC.FourthDamage = settings.scores.SC.ThirdDamage
-						settings.scores.SC.ThirdDamage = settings.scores.SC.SecondDamage
-						settings.scores.SC.SecondDamage = data.damage
-						settings.scores.SC.FourthSC = settings.scores.SC.ThirdSC
-						settings.scores.SC.ThirdSC = settings.scores.SC.SecondSC
-						settings.scores.SC.SecondSC = data.sc
-						settings.scores.SC.FourthTarget = settings.scores.SC.ThirdTarget
-						settings.scores.SC.ThirdTarget = settings.scores.SC.SecondTarget
-						settings.scores.SC.SecondTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.SecondName..' moves into the No.2 slot with a '..settings.scores.SC.SecondDamage..' '..settings.scores.SC.SecondSC..' on '..settings.scores.SC.SecondTarget..'')
-						end
-					elseif data.actor_name ~= settings.scores.SC.FirstName then
-						--Fifth Place or somebody not already on the board moves into Second Place
-						settings.scores.SC.FifthName = settings.scores.SC.FourthName
-						settings.scores.SC.FourthName = settings.scores.SC.ThirdName
-						settings.scores.SC.ThirdName = settings.scores.SC.SecondName
-						settings.scores.SC.SecondName = data.actor_name
-						settings.scores.SC.FifthDamage = settings.scores.SC.FourthDamage
-						settings.scores.SC.FourthDamage = settings.scores.SC.ThirdDamage
-						settings.scores.SC.ThirdDamage = settings.scores.SC.SecondDamage
-						settings.scores.SC.SecondDamage = data.damage
-						settings.scores.SC.FifthSC = settings.scores.SC.FourthSC
-						settings.scores.SC.FourthSC = settings.scores.SC.ThirdSC
-						settings.scores.SC.ThirdSC = settings.scores.SC.SecondSC
-						settings.scores.SC.SecondSC = data.sc
-						settings.scores.SC.FifthTarget  = settings.scores.SC.FourthTarget
-						settings.scores.SC.FourthTarget = settings.scores.SC.ThirdTarget
-						settings.scores.SC.ThirdTarget = settings.scores.SC.SecondTarget
-						settings.scores.SC.SecondTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.SecondName..' moves into the No.2 slot with a '..settings.scores.SC.SecondDamage..' '..settings.scores.SC.SecondSC..' on '..settings.scores.SC.SecondTarget..'')
-						end
-					end
-				elseif data.damage > settings.scores.SC.ThirdDamage then
-					if data.actor_name == settings.scores.SC.ThirdName or (data.actor_name ~= settings.scores.SC.FirstName and data.actor_name ~= settings.scores.SC.SecondName and settings.scores.SC.ThirdDamage == 0) then
-						--Third Place updates their best but stays in Third Place (or the third sc)
-						settings.scores.SC.ThirdName = data.actor_name
-						settings.scores.SC.ThirdDamage = data.damage
-						settings.scores.SC.ThirdSC = data.sc
-						settings.scores.SC.ThirdTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name == settings.scores.SC.FourthName then
-						--Fourth Place moves into Third Place
-						settings.scores.SC.FourthName = settings.scores.SC.ThirdName
-						settings.scores.SC.ThirdName = data.actor_name
-						settings.scores.SC.FourthDamage = settings.scores.SC.ThirdDamage
-						settings.scores.SC.ThirdDamage = data.damage
-						settings.scores.SC.FourthSC = settings.scores.SC.ThirdSC
-						settings.scores.SC.ThirdSC = data.sc
-						settings.scores.SC.FourthTarget = settings.scores.SC.ThirdTarget
-						settings.scores.SC.ThirdTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.ThirdName..' moves into the No.3 slot with a '..settings.scores.SC.ThirdDamage..' '..settings.scores.SC.ThirdSC..' on '..settings.scores.SC.ThirdTarget..'')
-						end
-					elseif data.actor_name ~= settings.scores.SC.FirstName and data.actor_name ~= settings.scores.SC.SecondName then
-						--Fifth Place or somebody not already on the board moves into Third Place
-						settings.scores.SC.FifthName = settings.scores.SC.FourthName
-						settings.scores.SC.FourthName = settings.scores.SC.ThirdName
-						settings.scores.SC.ThirdName = data.actor_name
-						settings.scores.SC.FifthDamage = settings.scores.SC.FourthDamage
-						settings.scores.SC.FourthDamage = settings.scores.SC.ThirdDamage
-						settings.scores.SC.ThirdDamage = data.damage
-						settings.scores.SC.FifthSC = settings.scores.SC.FourthSC
-						settings.scores.SC.FourthSC = settings.scores.SC.ThirdSC
-						settings.scores.SC.ThirdSC = data.sc
-						settings.scores.SC.FifthTarget = settings.scores.SC.FourthTarget
-						settings.scores.SC.FourthTarget = settings.scores.SC.ThirdTarget
-						settings.scores.SC.ThirdTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.ThirdName..' moves into the No.3 slot with a '..settings.scores.SC.ThirdDamage..' '..settings.scores.SC.ThirdSC..' on '..settings.scores.SC.ThirdTarget..'')
-						end
-					end
-				elseif data.damage > settings.scores.SC.FourthDamage then
-					if data.actor_name == settings.scores.SC.FourthName or (data.actor_name ~= settings.scores.SC.FirstName and data.actor_name ~= settings.scores.SC.SecondName and data.actor_name ~= settings.scores.SC.ThirdName and settings.scores.SC.FourthDamage == 0) then
-						--Fourth Place updates their best but stays in Fourth Place (or the fourth sc)
-						settings.scores.SC.FourthName = data.actor_name
-						settings.scores.SC.FourthDamage = data.damage
-						settings.scores.SC.FourthSC = data.sc
-						settings.scores.SC.FourthTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name ~= settings.scores.SC.FirstName and data.actor_name ~= settings.scores.SC.SecondName and data.actor_name ~= settings.scores.SC.ThirdName then
-						--Fifth Place or somebody not already on the board moves into Fourth Place
-						settings.scores.SC.FifthName = settings.scores.SC.FourthName
-						settings.scores.SC.FourthName = data.actor_name
-						settings.scores.SC.FifthDamage = settings.scores.SC.FourthDamage
-						settings.scores.SC.FourthDamage = data.damage
-						settings.scores.SC.FifthSC = settings.scores.SC.FourthSC
-						settings.scores.SC.FourthSC = data.sc
-						settings.scores.SC.FifthTarget = settings.scores.SC.FourthTarget
-						settings.scores.SC.FourthTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.FourthName..' moves into the No.4 slot with a '..settings.scores.SC.FourthDamage..' '..settings.scores.SC.FourthSC..' on '..settings.scores.SC.FourthTarget..'')
-						end
-					end
-				elseif data.damage > settings.scores.SC.FifthDamage then
-					--Fifth Place or somebody not already on the board moves into Fifth Place
-					if data.actor_name == settings.scores.SC.FifthName or (data.actor_name ~= settings.scores.SC.FirstName and data.actor_name ~= settings.scores.SC.SecondName and data.actor_name ~= settings.scores.SC.ThirdName and data.actor_name ~= settings.scores.SC.FourthName and settings.scores.SC.FifthDamage == 0) then
-						--Fifth Place updates their best but stays in Fifth Place (or the fifth sc)
-						settings.scores.SC.FifthName = data.actor_name
-						settings.scores.SC.FifthDamage = data.damage
-						settings.scores.SC.FifthSC = data.sc
-						settings.scores.SC.FifthTarget = data.target_name
-						settings:save('all')
-					elseif data.actor_name ~= settings.scores.SC.FirstName and data.actor_name ~= settings.scores.SC.SecondName and data.actor_name ~= settings.scores.SC.ThirdName and data.actor_name ~= settings.scores.SC.FourthName then
-						--Somebody not already on the board moves into Fifth Place
-						settings.scores.SC.FifthName = data.actor_name
-						settings.scores.SC.FifthDamage = data.damage
-						settings.scores.SC.FifthSC = data.sc
-						settings.scores.SC.FifthTarget = data.target_name
-						settings:save('all')
-						if Mode == "Normal" then
-							coroutine.sleep(1)
-							say('/p SKILLCHAIN: '..settings.scores.SC.FifthName..' moves into the No.5 slot with a '..settings.scores.SC.FifthDamage..' '..settings.scores.SC.FifthSC..' on '..settings.scores.SC.FifthTarget..'')
-						end
-					end
-				end
-
+			-- What place was the actor in originally
+			local originalHSPlace = 6 -- not on the board
+			if hsPlaces.first and data.actor_lower_name == hsPlaces.first.name then
+				originalHSPlace = 1
+			elseif hsPlaces.second and data.actor_lower_name == hsPlaces.second.name then
+				originalHSPlace = 2
+			elseif hsPlaces.third and data.actor_lower_name == hsPlaces.third.name then
+				originalHSPlace = 3
+			elseif hsPlaces.fourth and data.actor_lower_name == hsPlaces.fourth.name then
+				originalHSPlace = 4
+			elseif hsPlaces.fifth and data.actor_lower_name == hsPlaces.fifth.name then
+				originalHSPlace = 5
 			end
 
-			--WS High Score
-			if data.damage > settings.scores.HS.FirstDamage then
-				if data.actor_name == settings.scores.HS.FirstName or settings.scores.HS.FirstDamage == 0 then 
-					--First Place extends their lead (or the first ws)
-					settings.scores.HS.FirstName = data.actor_name
-					settings.scores.HS.FirstDamage = data.damage
-					settings.scores.HS.FirstWS = data.ws
-					settings.scores.HS.FirstTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name == settings.scores.HS.SecondName then
-					--Second Place moves into First Place
-					settings.scores.HS.SecondName = settings.scores.HS.FirstName
-					settings.scores.HS.FirstName = data.actor_name
-					settings.scores.HS.SecondDamage = settings.scores.HS.FirstDamage
-					settings.scores.HS.FirstDamage = data.damage
-					settings.scores.HS.SecondWS = settings.scores.HS.FirstWS
-					settings.scores.HS.FirstWS = data.ws
-					settings.scores.HS.SecondTarget = settings.scores.HS.FirstTarget
-					settings.scores.HS.FirstTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name == settings.scores.HS.ThirdName then
-					--Third Place moves into First Place
-					settings.scores.HS.ThirdName = settings.scores.HS.SecondName
-					settings.scores.HS.SecondName = settings.scores.HS.FirstName
-					settings.scores.HS.FirstName = data.actor_name
-					settings.scores.HS.ThirdDamage = settings.scores.HS.SecondDamage
-					settings.scores.HS.SecondDamage = settings.scores.HS.FirstDamage
-					settings.scores.HS.FirstDamage = data.damage
-					settings.scores.HS.ThirdWS = settings.scores.HS.SecondWS
-					settings.scores.HS.SecondWS = settings.scores.HS.FirstWS
-					settings.scores.HS.FirstWS = data.ws
-					settings.scores.HS.ThirdTarget = settings.scores.HS.SecondTarget
-					settings.scores.HS.SecondTarget = settings.scores.HS.FirstTarget
-					settings.scores.HS.FirstTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name == settings.scores.HS.FourthName then
-					--Fourth Place moves into First Place
-					settings.scores.HS.FourthName = settings.scores.HS.ThirdName
-					settings.scores.HS.ThirdName = settings.scores.HS.SecondName
-					settings.scores.HS.SecondName = settings.scores.HS.FirstName
-					settings.scores.HS.FirstName = data.actor_name
-					settings.scores.HS.FourthDamage = settings.scores.HS.ThirdDamage
-					settings.scores.HS.ThirdDamage = settings.scores.HS.SecondDamage
-					settings.scores.HS.SecondDamage = settings.scores.HS.FirstDamage
-					settings.scores.HS.FirstDamage = data.damage
-					settings.scores.HS.FourthWS = settings.scores.HS.ThirdWS
-					settings.scores.HS.ThirdWS = settings.scores.HS.SecondWS
-					settings.scores.HS.SecondWS = settings.scores.HS.FirstWS
-					settings.scores.HS.FirstWS = data.ws
-					settings.scores.HS.FourthTarget = settings.scores.HS.ThirdTarget
-					settings.scores.HS.ThirdTarget = settings.scores.HS.SecondTarget
-					settings.scores.HS.SecondTarget = settings.scores.HS.FirstTarget
-					settings.scores.HS.FirstTarget = data.target_name
-					settings:save('all')
-				else
-					--Fifth Place or somebody not already on the board moves into First Place
-					settings.scores.HS.FifthName = settings.scores.HS.FourthName
-					settings.scores.HS.FourthName = settings.scores.HS.ThirdName
-					settings.scores.HS.ThirdName = settings.scores.HS.SecondName
-					settings.scores.HS.SecondName = settings.scores.HS.FirstName
-					settings.scores.HS.FirstName = data.actor_name
-					settings.scores.HS.FifthDamage = settings.scores.HS.FourthDamage
-					settings.scores.HS.FourthDamage = settings.scores.HS.ThirdDamage
-					settings.scores.HS.ThirdDamage = settings.scores.HS.SecondDamage
-					settings.scores.HS.SecondDamage = settings.scores.HS.FirstDamage
-					settings.scores.HS.FirstDamage = data.damage
-					settings.scores.HS.FifthWS = settings.scores.HS.FourthWS
-					settings.scores.HS.FourthWS = settings.scores.HS.ThirdWS
-					settings.scores.HS.ThirdWS = settings.scores.HS.SecondWS
-					settings.scores.HS.SecondWS = settings.scores.HS.FirstWS
-					settings.scores.HS.FirstWS = data.ws
-					settings.scores.HS.FifthTarget = settings.scores.HS.FourthTarget
-					settings.scores.HS.FourthTarget = settings.scores.HS.ThirdTarget
-					settings.scores.HS.ThirdTarget = settings.scores.HS.SecondTarget
-					settings.scores.HS.SecondTarget = settings.scores.HS.FirstTarget
-					settings.scores.HS.FirstTarget = data.target_name
-					settings:save('all')
-				end
-				settings:save('all')
-				if Mode ~= "Silent" then
-					coroutine.sleep(1)
-					say('/p New WS HIGH Score! '..settings.scores.HS.FirstName..' with a '..settings.scores.HS.FirstDamage..' '..settings.scores.HS.FirstWS..' on '..settings.scores.HS.FirstTarget..'')
-				end
-			elseif data.damage > settings.scores.HS.SecondDamage then
-				if data.actor_name == settings.scores.HS.SecondName or (data.actor_name ~= settings.scores.HS.FirstName and settings.scores.HS.SecondDamage == 0) then
-					--Second Place updates their best but stays in Second Place (or the second ws)
-					settings.scores.HS.SecondName = data.actor_name
-					settings.scores.HS.SecondDamage = data.damage
-					settings.scores.HS.SecondWS = data.ws
-					settings.scores.HS.SecondTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name == settings.scores.HS.ThirdName then
-					--Third Place moves into Second Place
-					settings.scores.HS.ThirdName = settings.scores.HS.SecondName
-					settings.scores.HS.SecondName = data.actor_name
-					settings.scores.HS.ThirdDamage = settings.scores.HS.SecondDamage
-					settings.scores.HS.SecondDamage = data.damage
-					settings.scores.HS.ThirdWS = settings.scores.HS.SecondWS
-					settings.scores.HS.SecondWS = data.ws
-					settings.scores.HS.ThirdTarget = settings.scores.HS.SecondTarget
-					settings.scores.HS.SecondTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.SecondName..' moves into the No.2 slot with a '..settings.scores.HS.SecondDamage..' '..settings.scores.HS.SecondWS..' on '..settings.scores.HS.SecondTarget..'')
-					end
-				elseif data.actor_name == settings.scores.HS.FourthName then
-					--Fourth Place moves into Second Place
-					settings.scores.HS.FourthName = settings.scores.HS.ThirdName
-					settings.scores.HS.ThirdName = settings.scores.HS.SecondName
-					settings.scores.HS.SecondName = data.actor_name
-					settings.scores.HS.FourthDamage = settings.scores.HS.ThirdDamage
-					settings.scores.HS.ThirdDamage = settings.scores.HS.SecondDamage
-					settings.scores.HS.SecondDamage = data.damage
-					settings.scores.HS.FourthWS = settings.scores.HS.ThirdWS
-					settings.scores.HS.ThirdWS = settings.scores.HS.SecondWS
-					settings.scores.HS.SecondWS = data.ws
-					settings.scores.HS.FourthTarget = settings.scores.HS.ThirdTarget
-					settings.scores.HS.ThirdTarget = settings.scores.HS.SecondTarget
-					settings.scores.HS.SecondTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.SecondName..' moves into the No.2 slot with a '..settings.scores.HS.SecondDamage..' '..settings.scores.HS.SecondWS..' on '..settings.scores.HS.SecondTarget..'')
-					end
-				elseif data.actor_name ~= settings.scores.HS.FirstName then
-					--Fifth Place or somebody not already on the board moves into Second Place
-					settings.scores.HS.FifthName = settings.scores.HS.FourthName
-					settings.scores.HS.FourthName = settings.scores.HS.ThirdName
-					settings.scores.HS.ThirdName = settings.scores.HS.SecondName
-					settings.scores.HS.SecondName = data.actor_name
-					settings.scores.HS.FifthDamage = settings.scores.HS.FourthDamage
-					settings.scores.HS.FourthDamage = settings.scores.HS.ThirdDamage
-					settings.scores.HS.ThirdDamage = settings.scores.HS.SecondDamage
-					settings.scores.HS.SecondDamage = data.damage
-					settings.scores.HS.FifthWS = settings.scores.HS.FourthWS
-					settings.scores.HS.FourthWS = settings.scores.HS.ThirdWS
-					settings.scores.HS.ThirdWS = settings.scores.HS.SecondWS
-					settings.scores.HS.SecondWS = data.ws
-					settings.scores.HS.FifthTarget  = settings.scores.HS.FourthTarget
-					settings.scores.HS.FourthTarget = settings.scores.HS.ThirdTarget
-					settings.scores.HS.ThirdTarget = settings.scores.HS.SecondTarget
-					settings.scores.HS.SecondTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.SecondName..' moves into the No.2 slot with a '..settings.scores.HS.SecondDamage..' '..settings.scores.HS.SecondWS..' on '..settings.scores.HS.SecondTarget..'')
-					end
-				end
-			elseif data.damage > settings.scores.HS.ThirdDamage then
-				if data.actor_name == settings.scores.HS.ThirdName or (data.actor_name ~= settings.scores.HS.FirstName and data.actor_name ~= settings.scores.HS.SecondName and settings.scores.HS.ThirdDamage == 0) then
-					--Third Place updates their best but stays in Third Place (or the third ws)
-					settings.scores.HS.ThirdName = data.actor_name
-					settings.scores.HS.ThirdDamage = data.damage
-					settings.scores.HS.ThirdWS = data.ws
-					settings.scores.HS.ThirdTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name == settings.scores.HS.FourthName then
-					--Fourth Place moves into Third Place
-					settings.scores.HS.FourthName = settings.scores.HS.ThirdName
-					settings.scores.HS.ThirdName = data.actor_name
-					settings.scores.HS.FourthDamage = settings.scores.HS.ThirdDamage
-					settings.scores.HS.ThirdDamage = data.damage
-					settings.scores.HS.FourthWS = settings.scores.HS.ThirdWS
-					settings.scores.HS.ThirdWS = data.ws
-					settings.scores.HS.FourthTarget = settings.scores.HS.ThirdTarget
-					settings.scores.HS.ThirdTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.ThirdName..' moves into the No.3 slot with a '..settings.scores.HS.ThirdDamage..' '..settings.scores.HS.ThirdWS..' on '..settings.scores.HS.ThirdTarget..'')
-					end
-				elseif data.actor_name ~= settings.scores.HS.FirstName and data.actor_name ~= settings.scores.HS.SecondName then
-					--Fifth Place or somebody not already on the board moves into Third Place
-					settings.scores.HS.FifthName = settings.scores.HS.FourthName
-					settings.scores.HS.FourthName = settings.scores.HS.ThirdName
-					settings.scores.HS.ThirdName = data.actor_name
-					settings.scores.HS.FifthDamage = settings.scores.HS.FourthDamage
-					settings.scores.HS.FourthDamage = settings.scores.HS.ThirdDamage
-					settings.scores.HS.ThirdDamage = data.damage
-					settings.scores.HS.FifthWS = settings.scores.HS.FourthWS
-					settings.scores.HS.FourthWS = settings.scores.HS.ThirdWS
-					settings.scores.HS.ThirdWS = data.ws
-					settings.scores.HS.FifthTarget = settings.scores.HS.FourthTarget
-					settings.scores.HS.FourthTarget = settings.scores.HS.ThirdTarget
-					settings.scores.HS.ThirdTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.ThirdName..' moves into the No.3 slot with a '..settings.scores.HS.ThirdDamage..' '..settings.scores.HS.ThirdWS..' on '..settings.scores.HS.ThirdTarget..'')
-					end
-				end
-			elseif data.damage > settings.scores.HS.FourthDamage then
-				if data.actor_name == settings.scores.HS.FourthName or (data.actor_name ~= settings.scores.HS.FirstName and data.actor_name ~= settings.scores.HS.SecondName and data.actor_name ~= settings.scores.HS.ThirdName and settings.scores.HS.FourthDamage == 0) then
-					--Fourth Place updates their best but stays in Fourth Place (or the fourth ws)
-					settings.scores.HS.FourthName = data.actor_name
-					settings.scores.HS.FourthDamage = data.damage
-					settings.scores.HS.FourthWS = data.ws
-					settings.scores.HS.FourthTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.HS.FirstName and data.actor_name ~= settings.scores.HS.SecondName and data.actor_name ~= settings.scores.HS.ThirdName then
-					--Fifth Place or somebody not already on the board moves into Fourth Place
-					settings.scores.HS.FifthName = settings.scores.HS.FourthName
-					settings.scores.HS.FourthName = data.actor_name
-					settings.scores.HS.FifthDamage = settings.scores.HS.FourthDamage
-					settings.scores.HS.FourthDamage = data.damage
-					settings.scores.HS.FifthWS = settings.scores.HS.FourthWS
-					settings.scores.HS.FourthWS = data.ws
-					settings.scores.HS.FifthTarget = settings.scores.HS.FourthTarget
-					settings.scores.HS.FourthTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.FourthName..' moves into the No.4 slot with a '..settings.scores.HS.FourthDamage..' '..settings.scores.HS.FourthWS..' on '..settings.scores.HS.FourthTarget..'')
-					end
-				end
-			elseif data.damage > settings.scores.HS.FifthDamage then
-				--Fifth Place or somebody not already on the board moves into Fifth Place
-				if data.actor_name == settings.scores.HS.FifthName or (data.actor_name ~= settings.scores.HS.FirstName and data.actor_name ~= settings.scores.HS.SecondName and data.actor_name ~= settings.scores.HS.ThirdName and data.actor_name ~= settings.scores.HS.FourthName and settings.scores.HS.FifthDamage == 0) then
-					--Fifth Place updates their best but stays in Fifth Place (or the fifth ws)
-					settings.scores.HS.FifthName = data.actor_name
-					settings.scores.HS.FifthDamage = data.damage
-					settings.scores.HS.FifthWS = data.ws
-					settings.scores.HS.FifthTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.HS.FirstName and data.actor_name ~= settings.scores.HS.SecondName and data.actor_name ~= settings.scores.HS.ThirdName and data.actor_name ~= settings.scores.HS.FourthName then
-					--Somebody not already on the board moves into Fifth Place
-					settings.scores.HS.FifthName = data.actor_name
-					settings.scores.HS.FifthDamage = data.damage
-					settings.scores.HS.FifthWS = data.ws
-					settings.scores.HS.FifthTarget = data.target_name
-					settings:save('all')
-					if Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS HIGH Score: '..settings.scores.HS.FifthName..' moves into the No.5 slot with a '..settings.scores.HS.FifthDamage..' '..settings.scores.HS.FifthWS..' on '..settings.scores.HS.FifthTarget..'')
-					end
-				end
+			-- What was the original first place score
+			local originalHSfirstscore = (hsPlaces and hsPlaces.first and hsPlaces.first.score) or 0
+
+			-- What are you and your Rivals original scores
+			local yourOriginalHSScore = (hsIndividuals and hsIndividuals[string.lower(myName)] and hsIndividuals[string.lower(myName)].score) or 0
+			local rivalOriginalHSScore = (hsIndividuals and hsIndividuals[settings.rival] and hsIndividuals[settings.rival].score) or 0
+			
+			-- Retrieve the actors relevant data
+			local nines = (hsIndividuals[data.actor_lower_name] and hsIndividuals[data.actor_lower_name].nines) or 0
+			local index = settings.indexes.hs
+
+			-- Count the number of 99999 WSs
+			if data.damage == 99999 then
+				nines = nines + 1
 			end
 
-			--WS Low Score
-			if data.damage < settings.scores.LS.FirstDamage then
-				if data.actor_name == settings.scores.LS.FirstName or settings.scores.LS.FirstDamage == 999999 then
-					--First Place extends their "lead" (or the first low ws)
-					settings.scores.LS.FirstName = data.actor_name
-					settings.scores.LS.FirstDamage = data.damage
-					settings.scores.LS.FirstWS = data.ws
-					settings.scores.LS.FirstTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name == settings.scores.LS.SecondName then
-					--Second Place moves into First Place
-					settings.scores.LS.SecondName = settings.scores.LS.FirstName
-					settings.scores.LS.FirstName = data.actor_name
-					settings.scores.LS.SecondDamage = settings.scores.LS.FirstDamage
-					settings.scores.LS.FirstDamage = data.damage
-					settings.scores.LS.SecondWS = settings.scores.LS.FirstWS
-					settings.scores.LS.FirstWS = data.ws
-					settings.scores.LS.SecondTarget = settings.scores.LS.FirstTarget
-					settings.scores.LS.FirstTarget = data.target_name
-					settings:save('all')
-				else
-					--Third Place or somebody not already on the board moves into First Place
-					settings.scores.LS.ThirdName = settings.scores.LS.SecondName
-					settings.scores.LS.SecondName = settings.scores.LS.FirstName
-					settings.scores.LS.FirstName = data.actor_name
-					settings.scores.LS.ThirdDamage = settings.scores.LS.SecondDamage
-					settings.scores.LS.SecondDamage = settings.scores.LS.FirstDamage
-					settings.scores.LS.FirstDamage = data.damage
-					settings.scores.LS.ThirdWS = settings.scores.LS.SecondWS
-					settings.scores.LS.SecondWS = settings.scores.LS.FirstWS
-					settings.scores.LS.FirstWS = data.ws
-					settings.scores.LS.ThirdTarget = settings.scores.LS.SecondTarget
-					settings.scores.LS.SecondTarget = settings.scores.LS.FirstTarget
-					settings.scores.LS.FirstTarget = data.target_name
-					settings:save('all')
-				end
-				if settings.scores.LS.ThirdDamage ~= 999999 and Mode ~= "Silent" then
-					coroutine.sleep(1)
-					say('/p New WS LOW Score! '..data.actor_name..' with a '..data.damage..' '..data.ws..' on '..data.target_name..'')
-				end
-			elseif data.damage < settings.scores.LS.SecondDamage then
-				if data.actor_name == settings.scores.LS.SecondName or (data.actor_name ~= settings.scores.LS.FirstName and settings.scores.LS.SecondDamage == 999999) then
-					--Second Place updates their best but stays in Second Place (or the second low ws)
-					settings.scores.LS.SecondName = data.actor_name
-					settings.scores.LS.SecondDamage = data.damage
-					settings.scores.LS.SecondWS = data.ws
-					settings.scores.LS.SecondTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.LS.FirstName then
-					--Third Place or somebody not already on the board moves into Second Place
-					settings.scores.LS.ThirdName = settings.scores.LS.SecondName
-					settings.scores.LS.SecondName = data.actor_name
-					settings.scores.LS.ThirdDamage = settings.scores.LS.SecondDamage
-					settings.scores.LS.SecondDamage = data.damage
-					settings.scores.LS.ThirdWS = settings.scores.LS.SecondWS
-					settings.scores.LS.SecondWS = data.ws
-					settings.scores.LS.ThirdTarget = settings.scores.LS.SecondTarget
-					settings.scores.LS.SecondTarget = data.target_name
-					settings:save('all')
-					if settings.scores.LS.ThirdDamage ~= 999999 and Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS LOW Score: '..settings.scores.LS.SecondName..' moves into the No.2 slot with a '..settings.scores.LS.SecondDamage..' '..settings.scores.LS.SecondWS..' on '..settings.scores.LS.SecondTarget..'')
-					end
-				end
-			elseif data.damage < settings.scores.LS.ThirdDamage then
-				--Third Place or somebody not already on the board moves into Third Place
-				if data.actor_name == settings.scores.LS.ThirdName or (data.actor_name ~= settings.scores.LS.FirstName and data.actor_name ~= settings.scores.LS.SecondName and settings.scores.LS.ThirdDamage == 999999) then
-					--Third Place updates their best but stays in Third Place (or the third low ws)
-					settings.scores.LS.ThirdName = data.actor_name
-					settings.scores.LS.ThirdDamage = data.damage
-					settings.scores.LS.ThirdWS = data.ws
-					settings.scores.LS.ThirdTarget = data.target_name
-					settings:save('all')
-				elseif data.actor_name ~= settings.scores.LS.FirstName and data.actor_name ~= settings.scores.LS.SecondName then
-					--Somebody not already on the board moves into Third Place
-					settings.scores.LS.ThirdName = data.actor_name
-					settings.scores.LS.ThirdDamage = data.damage
-					settings.scores.LS.ThirdWS = data.ws
-					settings.scores.LS.ThirdTarget = data.target_name
-					settings:save('all')
-					if settings.scores.LS.ThirdDamage ~= 999999 and Mode == "Normal" then
-						coroutine.sleep(1)
-						say('/p WS LOW Score: '..settings.scores.LS.ThirdName..' moves into the No.3 slot with a '..settings.scores.LS.ThirdDamage..' '..settings.scores.LS.ThirdWS..' on '..settings.scores.LS.ThirdTarget..'')
-					end
-				end
+			-- Update the actors score information
+			if (hsIndividuals[data.actor_lower_name] == nil) or (data.damage >= hsIndividuals[data.actor_lower_name].score) then
+				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+				settings.indexes.hs = index
+				hsIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 			end
 
-		end
-	end
+			-- Update the leaderboard places
+			local board = sortNamesHigh(settings.individuals.hs)
+			hsPlaces.first	= board[1]
+			hsPlaces.second	= (board and board[2]) or nil
+			hsPlaces.third	= (board and board[3]) or nil
+			hsPlaces.fourth	= (board and board[4]) or nil
+			hsPlaces.fifth	= (board and board[5]) or nil
+			settings:save('all')
+			updateBox(box_display)
 
-	--Magic Burst
-	if act.category == 4 and act.targets[1].actions[1].message == 252 and Run and not Paused then
-		local actor = get_actor(act.actor_id)
-
-		if actor == false then
-			return
-		end
-
-		local data = {}
-		data.actor = actor.id
-		data.actor_name = actor.name or 'Unknown'
-		data.target = act.targets[1].id
-		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'Unknown'
-		data.damage = act.targets[1].actions[1].param
-		data.spell = spells[act.param] and spells[act.param].english or 'Unknown'
-
-		if data.damage > settings.scores.MB.FirstDamage then
-			if data.actor_name == settings.scores.MB.FirstName or settings.scores.MB.FirstDamage == 0 then 
-				--First Place extends their lead (or the first mb)
-				settings.scores.MB.FirstName = data.actor_name
-				settings.scores.MB.FirstDamage = data.damage
-				settings.scores.MB.FirstSpell = data.spell
-				settings.scores.MB.FirstTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name == settings.scores.MB.SecondName then
-				--Second Place moves into First Place
-				settings.scores.MB.SecondName = settings.scores.MB.FirstName
-				settings.scores.MB.FirstName = data.actor_name
-				settings.scores.MB.SecondDamage = settings.scores.MB.FirstDamage
-				settings.scores.MB.FirstDamage = data.damage
-				settings.scores.MB.SecondSpell = settings.scores.MB.FirstSpell
-				settings.scores.MB.FirstSpell = data.spell
-				settings.scores.MB.SecondTarget = settings.scores.MB.FirstTarget
-				settings.scores.MB.FirstTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name == settings.scores.MB.ThirdName then
-				--Third Place moves into First Place
-				settings.scores.MB.ThirdName = settings.scores.MB.SecondName
-				settings.scores.MB.SecondName = settings.scores.MB.FirstName
-				settings.scores.MB.FirstName = data.actor_name
-				settings.scores.MB.ThirdDamage = settings.scores.MB.SecondDamage
-				settings.scores.MB.SecondDamage = settings.scores.MB.FirstDamage
-				settings.scores.MB.FirstDamage = data.damage
-				settings.scores.MB.ThirdSpell = settings.scores.MB.SecondSpell
-				settings.scores.MB.SecondSpell = settings.scores.MB.FirstSpell
-				settings.scores.MB.FirstSpell = data.spell
-				settings.scores.MB.ThirdTarget = settings.scores.MB.SecondTarget
-				settings.scores.MB.SecondTarget = settings.scores.MB.FirstTarget
-				settings.scores.MB.FirstTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name == settings.scores.MB.FourthName then
-				--Fourth Place moves into First Place
-				settings.scores.MB.FourthName = settings.scores.MB.ThirdName
-				settings.scores.MB.ThirdName = settings.scores.MB.SecondName
-				settings.scores.MB.SecondName = settings.scores.MB.FirstName
-				settings.scores.MB.FirstName = data.actor_name
-				settings.scores.MB.FourthDamage = settings.scores.MB.ThirdDamage
-				settings.scores.MB.ThirdDamage = settings.scores.MB.SecondDamage
-				settings.scores.MB.SecondDamage = settings.scores.MB.FirstDamage
-				settings.scores.MB.FirstDamage = data.damage
-				settings.scores.MB.FourthSpell = settings.scores.MB.ThirdSpell
-				settings.scores.MB.ThirdSpell = settings.scores.MB.SecondSpell
-				settings.scores.MB.SecondSpell = settings.scores.MB.FirstSpell
-				settings.scores.MB.FirstSpell = data.spell
-				settings.scores.MB.FourthTarget = settings.scores.MB.ThirdTarget
-				settings.scores.MB.ThirdTarget = settings.scores.MB.SecondTarget
-				settings.scores.MB.SecondTarget = settings.scores.MB.FirstTarget
-				settings.scores.MB.FirstTarget = data.target_name
-				settings:save('all')
-			else
-				--Fifth Place or somebody not already on the board moves into First Place
-				settings.scores.MB.FifthName = settings.scores.MB.FourthName
-				settings.scores.MB.FourthName = settings.scores.MB.ThirdName
-				settings.scores.MB.ThirdName = settings.scores.MB.SecondName
-				settings.scores.MB.SecondName = settings.scores.MB.FirstName
-				settings.scores.MB.FirstName = data.actor_name
-				settings.scores.MB.FifthDamage = settings.scores.MB.FourthDamage
-				settings.scores.MB.FourthDamage = settings.scores.MB.ThirdDamage
-				settings.scores.MB.ThirdDamage = settings.scores.MB.SecondDamage
-				settings.scores.MB.SecondDamage = settings.scores.MB.FirstDamage
-				settings.scores.MB.FirstDamage = data.damage
-				settings.scores.MB.FifthSpell = settings.scores.MB.FourthSpell
-				settings.scores.MB.FourthSpell = settings.scores.MB.ThirdSpell
-				settings.scores.MB.ThirdSpell = settings.scores.MB.SecondSpell
-				settings.scores.MB.SecondSpell = settings.scores.MB.FirstSpell
-				settings.scores.MB.FirstSpell = data.spell
-				settings.scores.MB.FifthTarget = settings.scores.MB.FourthTarget
-				settings.scores.MB.FourthTarget = settings.scores.MB.ThirdTarget
-				settings.scores.MB.ThirdTarget = settings.scores.MB.SecondTarget
-				settings.scores.MB.SecondTarget = settings.scores.MB.FirstTarget
-				settings.scores.MB.FirstTarget = data.target_name
-				settings:save('all')
+			-- What place is the actor in now
+			local newHSPlace = 6 -- Not on the board
+			if data.actor_lower_name == hsPlaces.first.name then
+				newHSPlace = 1
+			elseif data.actor_lower_name == hsPlaces.second.name then
+				newHSPlace = 2
+			elseif data.actor_lower_name == hsPlaces.third.name then
+				newHSPlace = 3
+			elseif data.actor_lower_name == hsPlaces.fourth.name then
+				newHSPlace = 4
+			elseif data.actor_lower_name == hsPlaces.fifth.name then
+				newHSPlace = 5
 			end
+
+			-- Did the actor move up the leaderboard
 			if Mode ~= "Silent" then
-				coroutine.sleep(1)
-				say('/p New MAGIC BURST HIGH Score! '..settings.scores.MB.FirstName..' with a '..settings.scores.MB.FirstDamage..' '..settings.scores.MB.FirstSpell..' on '..settings.scores.MB.FirstTarget..'')
-			end
-		elseif data.damage > settings.scores.MB.SecondDamage then
-			if data.actor_name == settings.scores.MB.SecondName or (data.actor_name ~= settings.scores.MB.FirstName and settings.scores.MB.SecondDamage == 0) then
-				--Second Place updates their best but stays in Second Place (or the second mb)
-				settings.scores.MB.SecondName = data.actor_name
-				settings.scores.MB.SecondDamage = data.damage
-				settings.scores.MB.SecondSpell = data.spell
-				settings.scores.MB.SecondTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name == settings.scores.MB.ThirdName then
-				--Third Place moves into Second Place
-				settings.scores.MB.ThirdName = settings.scores.MB.SecondName
-				settings.scores.MB.SecondName = data.actor_name
-				settings.scores.MB.ThirdDamage = settings.scores.MB.SecondDamage
-				settings.scores.MB.SecondDamage = data.damage
-				settings.scores.MB.ThirdSpell = settings.scores.MB.SecondSpell
-				settings.scores.MB.SecondSpell = data.spell
-				settings.scores.MB.ThirdTarget = settings.scores.MB.SecondTarget
-				settings.scores.MB.SecondTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.SecondName..' moves into the No.2 slot with a '..settings.scores.MB.SecondDamage..' '..settings.scores.MB.SecondSpell..' on '..settings.scores.MB.SecondTarget..'')
-				end
-			elseif data.actor_name == settings.scores.MB.FourthName then
-				--Fourth Place moves into Second Place
-				settings.scores.MB.FourthName = settings.scores.MB.ThirdName
-				settings.scores.MB.ThirdName = settings.scores.MB.SecondName
-				settings.scores.MB.SecondName = data.actor_name
-				settings.scores.MB.FourthDamage = settings.scores.MB.ThirdDamage
-				settings.scores.MB.ThirdDamage = settings.scores.MB.SecondDamage
-				settings.scores.MB.SecondDamage = data.damage
-				settings.scores.MB.FourthSpell = settings.scores.MB.ThirdSpell
-				settings.scores.MB.ThirdSpell = settings.scores.MB.SecondSpell
-				settings.scores.MB.SecondSpell = data.spell
-				settings.scores.MB.FourthTarget = settings.scores.MB.ThirdTarget
-				settings.scores.MB.ThirdTarget = settings.scores.MB.SecondTarget
-				settings.scores.MB.SecondTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.SecondName..' moves into the No.2 slot with a '..settings.scores.MB.SecondDamage..' '..settings.scores.MB.SecondSpell..' on '..settings.scores.MB.SecondTarget..'')
-				end
-			elseif data.actor_name ~= settings.scores.MB.FirstName then
-				--Fifth Place or somebody not already on the board moves into Second Place
-				settings.scores.MB.FifthName = settings.scores.MB.FourthName
-				settings.scores.MB.FourthName = settings.scores.MB.ThirdName
-				settings.scores.MB.ThirdName = settings.scores.MB.SecondName
-				settings.scores.MB.SecondName = data.actor_name
-				settings.scores.MB.FifthDamage = settings.scores.MB.FourthDamage
-				settings.scores.MB.FourthDamage = settings.scores.MB.ThirdDamage
-				settings.scores.MB.ThirdDamage = settings.scores.MB.SecondDamage
-				settings.scores.MB.SecondDamage = data.damage
-				settings.scores.MB.FifthSpell = settings.scores.MB.FourthSpell
-				settings.scores.MB.FourthSpell = settings.scores.MB.ThirdSpell
-				settings.scores.MB.ThirdSpell = settings.scores.MB.SecondSpell
-				settings.scores.MB.SecondSpell = data.spell
-				settings.scores.MB.FifthTarget  = settings.scores.MB.FourthTarget
-				settings.scores.MB.FourthTarget = settings.scores.MB.ThirdTarget
-				settings.scores.MB.ThirdTarget = settings.scores.MB.SecondTarget
-				settings.scores.MB.SecondTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.SecondName..' moves into the No.2 slot with a '..settings.scores.MB.SecondDamage..' '..settings.scores.MB.SecondSpell..' on '..settings.scores.MB.SecondTarget..'')
+				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) then
+					--coroutine.sleep(1)
+					say('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				elseif newHSPlace < originalHSPlace then
+					if newHSPlace == 1 then
+						if data.damage > originalHSfirstscore then
+							--coroutine.sleep(1)
+							say('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						end
+					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and Mode == "Party" then
+						--coroutine.sleep(1)
+						say('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					end
 				end
 			end
-		elseif data.damage > settings.scores.MB.ThirdDamage then
-			if data.actor_name == settings.scores.MB.ThirdName or (data.actor_name ~= settings.scores.MB.FirstName and data.actor_name ~= settings.scores.MB.SecondName and settings.scores.MB.ThirdDamage == 0) then
-				--Third Place updates their best but stays in Third Place (or the third mb)
-				settings.scores.MB.ThirdName = data.actor_name
-				settings.scores.MB.ThirdDamage = data.damage
-				settings.scores.MB.ThirdSpell = data.spell
-				settings.scores.MB.ThirdTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name == settings.scores.MB.FourthName then
-				--Fourth Place moves into Third Place
-				settings.scores.MB.FourthName = settings.scores.MB.ThirdName
-				settings.scores.MB.ThirdName = data.actor_name
-				settings.scores.MB.FourthDamage = settings.scores.MB.ThirdDamage
-				settings.scores.MB.ThirdDamage = data.damage
-				settings.scores.MB.FourthSpell = settings.scores.MB.ThirdSpell
-				settings.scores.MB.ThirdSpell = data.spell
-				settings.scores.MB.FourthTarget = settings.scores.MB.ThirdTarget
-				settings.scores.MB.ThirdTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.ThirdName..' moves into the No.3 slot with a '..settings.scores.MB.ThirdDamage..' '..settings.scores.MB.ThirdSpell..' on '..settings.scores.MB.ThirdTarget..'')
-				end
-			elseif data.actor_name ~= settings.scores.MB.FirstName and data.actor_name ~= settings.scores.MB.SecondName then
-				--Fifth Place or somebody not already on the board moves into Third Place
-				settings.scores.MB.FifthName = settings.scores.MB.FourthName
-				settings.scores.MB.FourthName = settings.scores.MB.ThirdName
-				settings.scores.MB.ThirdName = data.actor_name
-				settings.scores.MB.FifthDamage = settings.scores.MB.FourthDamage
-				settings.scores.MB.FourthDamage = settings.scores.MB.ThirdDamage
-				settings.scores.MB.ThirdDamage = data.damage
-				settings.scores.MB.FifthSpell = settings.scores.MB.FourthSpell
-				settings.scores.MB.FourthSpell = settings.scores.MB.ThirdSpell
-				settings.scores.MB.ThirdSpell = data.spell
-				settings.scores.MB.FifthTarget = settings.scores.MB.FourthTarget
-				settings.scores.MB.FourthTarget = settings.scores.MB.ThirdTarget
-				settings.scores.MB.ThirdTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.ThirdName..' moves into the No.3 slot with a '..settings.scores.MB.ThirdDamage..' '..settings.scores.MB.ThirdSpell..' on '..settings.scores.MB.ThirdTarget..'')
+
+			-- Did you or your rival beat one or the other
+			if settings.rival ~= "" then
+				if data.actor_name == myName then
+					if (rivalOriginalHSScore > yourOriginalHSScore) and	(data.damage > rivalOriginalHSScore) then
+						windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(hsIndividuals[settings.rival].score)..' HIGH WS score with a '):color(6)..(addCommas(data.damage)..' '..data.ws..'.'):color(158))
+					end
+				elseif data.actor_name == capitalize(settings.rival) then
+					if (yourOriginalHSScore > rivalOriginalHSScore) and data.damage > yourOriginalHSScore then
+						windower.add_to_chat(220,'[Leaderboard] '..(capitalize(settings.rival)..' is now beating your '..addCommas(hsIndividuals[string.lower(myName)].score)..' HIGH WS score with a '):color(28)..(addCommas(data.damage)..' '..data.ws..'.'):color(167))
+					end
 				end
 			end
-		elseif data.damage > settings.scores.MB.FourthDamage then
-			if data.actor_name == settings.scores.MB.FourthName or (data.actor_name ~= settings.scores.MB.FirstName and data.actor_name ~= settings.scores.MB.SecondName and data.actor_name ~= settings.scores.MB.ThirdName and settings.scores.MB.FourthDamage == 0) then
-				--Fourth Place updates their best but stays in Fourth Place (or the fourth mb)
-				settings.scores.MB.FourthName = data.actor_name
-				settings.scores.MB.FourthDamage = data.damage
-				settings.scores.MB.FourthSpell = data.spell
-				settings.scores.MB.FourthTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name ~= settings.scores.MB.FirstName and data.actor_name ~= settings.scores.MB.SecondName and data.actor_name ~= settings.scores.MB.ThirdName then
-				--Fifth Place or somebody not already on the board moves into Fourth Place
-				settings.scores.MB.FifthName = settings.scores.MB.FourthName
-				settings.scores.MB.FourthName = data.actor_name
-				settings.scores.MB.FifthDamage = settings.scores.MB.FourthDamage
-				settings.scores.MB.FourthDamage = data.damage
-				settings.scores.MB.FifthSpell = settings.scores.MB.FourthSpell
-				settings.scores.MB.FourthSpell = data.spell
-				settings.scores.MB.FifthTarget = settings.scores.MB.FourthTarget
-				settings.scores.MB.FourthTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.FourthName..' moves into the No.4 slot with a '..settings.scores.MB.FourthDamage..' '..settings.scores.MB.FourthSpell..' on '..settings.scores.MB.FourthTarget..'')
+
+			------------
+			-- LOW WS --
+			------------
+
+			local lsPlaces = settings.places.ls
+			local lsIndividuals = settings.individuals.ls
+
+			-- What place was the actor in originally
+			local originalLSPlace = 6 -- not on the board
+			if lsPlaces.first and data.actor_lower_name == lsPlaces.first.name then
+				originalLSPlace = 1
+			elseif lsPlaces.second and data.actor_lower_name == lsPlaces.second.name then
+				originalLSPlace = 2
+			elseif lsPlaces.third and data.actor_lower_name == lsPlaces.third.name then
+				originalLSPlace = 3
+			elseif lsPlaces.fourth and data.actor_lower_name == lsPlaces.fourth.name then
+				originalLSPlace = 4
+			elseif lsPlaces.fifth and data.actor_lower_name == lsPlaces.fifth.name then
+				originalLSPlace = 5
+			end
+
+			-- What was the original first place score
+			local originalLSfirstscore = (lsPlaces and lsPlaces.first and lsPlaces.first.score) or 0
+
+			-- What are you and your Rivals original scores
+			local yourOriginalLSScore = (lsIndividuals and lsIndividuals[string.lower(myName)] and lsIndividuals[string.lower(myName)].score) or 0
+			local rivalOriginalLSScore = (lsIndividuals and lsIndividuals[settings.rival] and lsIndividuals[settings.rival].score) or 0
+
+			-- Retrieve the actors relevant data
+			local index = settings.indexes.ls
+
+			-- Update the actors score
+			if (settings.individuals.ls[data.actor_lower_name] == nil) or (data.damage < settings.individuals.ls[data.actor_lower_name].score) then
+				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+				settings.indexes.ls = index
+				lsIndividuals[data.actor_lower_name] = {score = data.damage, nines = 0, index = index}
+			end
+
+			-- Update the leaderboard places
+			local board = sortNamesLow(settings.individuals.ls)
+			lsPlaces.first	= board[1]
+			lsPlaces.second	= (board and board[2]) or nil
+			lsPlaces.third	= (board and board[3]) or nil
+			lsPlaces.fourth	= (board and board[4]) or nil
+			lsPlaces.fifth	= (board and board[5]) or nil
+			settings:save('all')
+			updateBox(box_display)
+
+			-- What place is the actor in now
+			local newLSPlace = 6 -- not on the board
+			if data.actor_lower_name == lsPlaces.first.name then
+				newLSPlace = 1
+			elseif data.actor_lower_name == lsPlaces.second.name then
+				newLSPlace = 2
+			elseif data.actor_lower_name == lsPlaces.third.name then
+				newLSPlace = 3
+			elseif data.actor_lower_name == lsPlaces.fourth.name then
+				newLSPlace = 4
+			elseif data.actor_lower_name == lsPlaces.fifth.name then
+				newLSPlace = 5
+			end
+
+			-- Did the actor move up the leaderboard
+			-- Wait until at least 2 low scores are filled before calling out new 1st place score
+			if Mode ~= "Silent" then
+				if newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore and (lsPlaces.second and lsPlaces.second.score ~= nil) then
+					coroutine.sleep(1.6)
+					say('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+				elseif newLSPlace < originalLSPlace and (lsPlaces.second and lsPlaces.second.score ~= nil) then
+					if newLSPlace == 1 then
+						if data.damage < originalLSfirstscore then
+							coroutine.sleep(1.6)
+							say('/p [LOW WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+						end
+					elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and Mode == "Party" then
+						coroutine.sleep(1.6)
+						say('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'.')
+					end
 				end
 			end
-		elseif data.damage > settings.scores.MB.FifthDamage then
-			--Fifth Place or somebody not already on the board moves into Fifth Place
-			if data.actor_name == settings.scores.MB.FifthName or (data.actor_name ~= settings.scores.MB.FirstName and data.actor_name ~= settings.scores.MB.SecondName and data.actor_name ~= settings.scores.MB.ThirdName and data.actor_name ~= settings.scores.MB.FourthName and settings.scores.MB.FifthDamage == 0) then
-				--Fifth Place updates their best but stays in Fifth Place (or the fifth mb)
-				settings.scores.MB.FifthName = data.actor_name
-				settings.scores.MB.FifthDamage = data.damage
-				settings.scores.MB.FifthSpell = data.spell
-				settings.scores.MB.FifthTarget = data.target_name
-				settings:save('all')
-			elseif data.actor_name ~= settings.scores.MB.FirstName and data.actor_name ~= settings.scores.MB.SecondName and data.actor_name ~= settings.scores.MB.ThirdName and data.actor_name ~= settings.scores.MB.FourthName then
-				--Somebody not already on the board moves into Fifth Place
-				settings.scores.MB.FifthName = data.actor_name
-				settings.scores.MB.FifthDamage = data.damage
-				settings.scores.MB.FifthSpell = data.spell
-				settings.scores.MB.FifthTarget = data.target_name
-				settings:save('all')
-				if Mode == "Normal" then
-					coroutine.sleep(1)
-					say('/p MAGIC BURST: '..settings.scores.MB.FifthName..' moves into the No.5 slot with a '..settings.scores.MB.FifthDamage..' '..settings.scores.MB.FifthSpell..' on '..settings.scores.MB.FifthTarget..'')
+
+			-- Did you or your rival beat one or the other
+			if settings.rival ~= "" then
+				if data.actor_name == myName then
+					if (rivalOriginalLSScore < yourOriginalLSScore) and	(data.damage < rivalOriginalLSScore) then
+						windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(lsIndividuals[settings.rival].score)..' LOW WS score with a '):color(6)..(addCommas(data.damage)..' '..data.ws..'.'):color(158))
+					end
+				elseif data.actor_name == capitalize(settings.rival) then
+					if (yourOriginalLSScore < rivalOriginalLSScore) and data.damage < yourOriginalLSScore then
+						windower.add_to_chat(220,'[Leaderboard] '..(capitalize(settings.rival)..' is now beating your '..addCommas(lsIndividuals[string.lower(myName)].score)..' LOW WS score with a '):color(28)..(addCommas(data.damage)..' '..data.ws..'.'):color(167))
+					end
 				end
 			end
+
 		end
 	end
 
-	--Nukes
-	if act.category == 4 and act.targets[1].actions[1].message == 2 and Run and not Paused then
+	-- Skillchain is created
+	if ((act.category == 4 and act.targets[1].actions[1].message == 2) or (act.category == 3 and act.targets[1].actions[1].message == 185)) and act.targets[1].actions[1].has_add_effect and not settings.paused then
+
+		----------------
+		-- SKILLCHAIN --
+		----------------
 
 		local actor = get_actor(act.actor_id)
 
+		-- Make sure the actor is part of the party/alliance
 		if actor == false then
 			return
 		end
 
+		local sc = {} sc[1] = 'Light' sc[2] = 'Darkness' sc[3] = 'Gravitation' sc[4] = 'Fragmentation' sc[5] = 'Distortion' sc[6] = 'Fusion' sc[7] = 'Compression' sc[8] = 'Liquefaction' sc[9] = 'Induration' sc[10] = 'Reverberation' sc[11] = 'Transfixion' sc[12] = 'Scission' sc[13] = 'Detonation' sc[14] = 'Impaction' sc[15] = 'Radiance' sc[16] = 'Umbra'
+
+		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'Unknown'
+		data.actor_name = actor.name or 'unknown'
+		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.target = act.targets[1].id
+		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'unknown'
+		data.damage = act.targets[1].actions[1].add_effect_param
+		data.sc = sc[act.targets[1].actions[1].add_effect_animation] or 'unknown'
 
-		local nukes = nuke[data.actor_name] or 0
-		if act.target_count == 6 then
-			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param + act.targets[6].actions[1].param
-		elseif act.target_count == 5 then
-			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param + act.targets[5].actions[1].param
-		elseif act.target_count == 4 then
-			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param + act.targets[4].actions[1].param
-		elseif act.target_count == 3 then
-			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param + act.targets[3].actions[1].param
-		elseif act.target_count == 2 then
-			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param + act.targets[2].actions[1].param
-		else
-			nuke[data.actor_name] = nukes + act.targets[1].actions[1].param
+		-- Make sure the actor is not on the Optout list
+		if settings.optout[data.actor_lower_name] then
+			return
 		end
 
-		if nuke[data.actor_name] > settings.scores.Nuke.FirstDamage then
-			if data.actor_name == settings.scores.Nuke.FirstName or settings.scores.Nuke.FirstDamage == 0 then 
-				--First Place extends their lead (or the first nuke)
-				settings.scores.Nuke.FirstName = data.actor_name
-				settings.scores.Nuke.FirstDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name == settings.scores.Nuke.SecondName then
-				--Second Place moves into First Place
-				settings.scores.Nuke.SecondName = settings.scores.Nuke.FirstName
-				settings.scores.Nuke.FirstName = data.actor_name
-				settings.scores.Nuke.SecondDamage = settings.scores.Nuke.FirstDamage
-				settings.scores.Nuke.FirstDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name == settings.scores.Nuke.ThirdName then
-				--Third Place moves into First Place
-				settings.scores.Nuke.ThirdName = settings.scores.Nuke.SecondName
-				settings.scores.Nuke.SecondName = settings.scores.Nuke.FirstName
-				settings.scores.Nuke.FirstName = data.actor_name
-				settings.scores.Nuke.ThirdDamage = settings.scores.Nuke.SecondDamage
-				settings.scores.Nuke.SecondDamage = settings.scores.Nuke.FirstDamage
-				settings.scores.Nuke.FirstDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name == settings.scores.Nuke.FourthName then
-				--Fourth Place moves into First Place
-				settings.scores.Nuke.FourthName = settings.scores.Nuke.ThirdName
-				settings.scores.Nuke.ThirdName = settings.scores.Nuke.SecondName
-				settings.scores.Nuke.SecondName = settings.scores.Nuke.FirstName
-				settings.scores.Nuke.FirstName = data.actor_name
-				settings.scores.Nuke.FourthDamage = settings.scores.Nuke.ThirdDamage
-				settings.scores.Nuke.ThirdDamage = settings.scores.Nuke.SecondDamage
-				settings.scores.Nuke.SecondDamage = settings.scores.Nuke.FirstDamage
-				settings.scores.Nuke.FirstDamage = nuke[data.actor_name]
-				settings:save('all')
-			else
-				--Fifth Place or somebody not already on the board moves into First Place
-				settings.scores.Nuke.FifthName = settings.scores.Nuke.FourthName
-				settings.scores.Nuke.FourthName = settings.scores.Nuke.ThirdName
-				settings.scores.Nuke.ThirdName = settings.scores.Nuke.SecondName
-				settings.scores.Nuke.SecondName = settings.scores.Nuke.FirstName
-				settings.scores.Nuke.FirstName = data.actor_name
-				settings.scores.Nuke.FifthDamage = settings.scores.Nuke.FourthDamage
-				settings.scores.Nuke.FourthDamage = settings.scores.Nuke.ThirdDamage
-				settings.scores.Nuke.ThirdDamage = settings.scores.Nuke.SecondDamage
-				settings.scores.Nuke.SecondDamage = settings.scores.Nuke.FirstDamage
-				settings.scores.Nuke.FirstDamage = nuke[data.actor_name]
-				settings:save('all')
+		local scPlaces = settings.places.sc
+		local scIndividuals = settings.individuals.sc
+
+		-- What place was the actor in originally
+		local originalSCPlace = 6 -- not on the board
+		if scPlaces.first and data.actor_lower_name == scPlaces.first.name then
+			originalSCPlace = 1
+		elseif scPlaces.second and data.actor_lower_name == scPlaces.second.name then
+			originalSCPlace = 2
+		elseif scPlaces.third and data.actor_lower_name == scPlaces.third.name then
+			originalSCPlace = 3
+		elseif scPlaces.fourth and data.actor_lower_name == scPlaces.fourth.name then
+			originalSCPlace = 4
+		elseif scPlaces.fifth and data.actor_lower_name == scPlaces.fifth.name then
+			originalSCPlace = 5
+		end
+
+		-- What was the original first place score
+		local originalSCfirstscore = (scPlaces and scPlaces.first and scPlaces.first.score) or 0
+
+		-- What are you and your Rivals original cores
+		local yourOriginalSCScore = (scIndividuals and scIndividuals[string.lower(myName)] and scIndividuals[string.lower(myName)].score) or 0
+		local rivalOriginalSCScore = (scIndividuals and scIndividuals[settings.rival] and scIndividuals[settings.rival].score) or 0
+
+		-- Retrieve the actors relevant data
+		local nines = (scIndividuals[data.actor_lower_name] and scIndividuals[data.actor_lower_name].nines) or 0
+		local index = settings.indexes.sc
+
+		-- Count the number of 99999 WSs
+		if data.damage == 99999 then
+			nines = nines + 1
+		end
+
+		-- Update the actors score information
+		if (scIndividuals[data.actor_lower_name] == nil) or (data.damage >= scIndividuals[data.actor_lower_name].score) then
+			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+			settings.indexes.sc = index
+			scIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
+		end
+
+		-- Update the leaderboard places
+		local board = sortNamesHigh(settings.individuals.sc)
+		scPlaces.first	= board[1]
+		scPlaces.second	= (board and board[2]) or nil
+		scPlaces.third	= (board and board[3]) or nil
+		scPlaces.fourth	= (board and board[4]) or nil
+		scPlaces.fifth	= (board and board[5]) or nil
+		settings:save('all')
+		updateBox(box_display)
+
+		-- What place is the actor in now
+		local newSCPlace = 6 -- Not on the board
+		if data.actor_lower_name == scPlaces.first.name then
+			newSCPlace = 1
+		elseif data.actor_lower_name == scPlaces.second.name then
+			newSCPlace = 2
+		elseif data.actor_lower_name == scPlaces.third.name then
+			newSCPlace = 3
+		elseif data.actor_lower_name == scPlaces.fourth.name then
+			newSCPlace = 4
+		elseif data.actor_lower_name == scPlaces.fifth.name then
+			newSCPlace = 5
+		end
+
+		-- Did the actor move up the leaderboard
+		if Mode ~= "Silent" then
+			if newSCPlace == originalSCPlace and newSCPlace == 1 and (data.damage > originalSCfirstscore or data.damage == 99999) then
+				coroutine.sleep(1.5)
+				say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+			elseif newSCPlace < originalSCPlace then
+				if newSCPlace == 1 then
+					if data.damage > originalSCfirstscore then
+						coroutine.sleep(1.5)
+						say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' takes the board! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					end
+				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and Mode == "Party" then
+					coroutine.sleep(1.5)
+					say('/p [SKILLCHAIN] '..data.actor_name..' moves up to No.'..newSCPlace..'! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				end
 			end
-		elseif nuke[data.actor_name] > settings.scores.Nuke.SecondDamage then
-			if data.actor_name == settings.scores.Nuke.SecondName or (data.actor_name ~= settings.scores.Nuke.FirstName and settings.scores.Nuke.SecondDamage == 0) then
-				--Second Place updates their best but stays in Second Place (or the second nuke)
-				settings.scores.Nuke.SecondName = data.actor_name
-				settings.scores.Nuke.SecondDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name == settings.scores.Nuke.ThirdName then
-				--Third Place moves into Second Place
-				settings.scores.Nuke.ThirdName = settings.scores.Nuke.SecondName
-				settings.scores.Nuke.SecondName = data.actor_name
-				settings.scores.Nuke.ThirdDamage = settings.scores.Nuke.SecondDamage
-				settings.scores.Nuke.SecondDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name == settings.scores.Nuke.FourthName then
-				--Fourth Place moves into Second Place
-				settings.scores.Nuke.FourthName = settings.scores.Nuke.ThirdName
-				settings.scores.Nuke.ThirdName = settings.scores.Nuke.SecondName
-				settings.scores.Nuke.SecondName = data.actor_name
-				settings.scores.Nuke.FourthDamage = settings.scores.Nuke.ThirdDamage
-				settings.scores.Nuke.ThirdDamage = settings.scores.Nuke.SecondDamage
-				settings.scores.Nuke.SecondDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name ~= settings.scores.Nuke.FirstName then
-				--Fifth Place or somebody not already on the board moves into Second Place
-				settings.scores.Nuke.FifthName = settings.scores.Nuke.FourthName
-				settings.scores.Nuke.FourthName = settings.scores.Nuke.ThirdName
-				settings.scores.Nuke.ThirdName = settings.scores.Nuke.SecondName
-				settings.scores.Nuke.SecondName = data.actor_name
-				settings.scores.Nuke.FifthDamage = settings.scores.Nuke.FourthDamage
-				settings.scores.Nuke.FourthDamage = settings.scores.Nuke.ThirdDamage
-				settings.scores.Nuke.ThirdDamage = settings.scores.Nuke.SecondDamage
-				settings.scores.Nuke.SecondDamage = nuke[data.actor_name]
-				settings:save('all')
+		end
+
+		-- Did you or your rival beat one or the other
+		if settings.rival ~= "" then
+			if data.actor_name == myName then
+				if (rivalOriginalSCScore > yourOriginalSCScore) and	(data.damage > rivalOriginalSCScore) then
+					windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(scIndividuals[settings.rival].score)..' SKILLCHAIN score with a '):color(6)..(addCommas(data.damage)..' '..data.sc..'.'):color(158))
+				end
+			elseif data.actor_name == capitalize(settings.rival) then
+				if (yourOriginalSCScore > rivalOriginalSCScore) and data.damage > yourOriginalSCScore then
+					windower.add_to_chat(220,'[Leaderboard] '..(capitalize(settings.rival)..' is now beating your '..addCommas(scIndividuals[string.lower(myName)].score)..' SKILLCHAIN score with a '):color(28)..(addCommas(data.damage)..' '..data.sc..'.'):color(167))
+				end
 			end
-		elseif nuke[data.actor_name] > settings.scores.Nuke.ThirdDamage then
-			if data.actor_name == settings.scores.Nuke.ThirdName or (data.actor_name ~= settings.scores.Nuke.FirstName and data.actor_name ~= settings.scores.Nuke.SecondName and settings.scores.Nuke.ThirdDamage == 0) then
-				--Third Place updates their best but stays in Third Place (or the third nuke)
-				settings.scores.Nuke.ThirdName = data.actor_name
-				settings.scores.Nuke.ThirdDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name == settings.scores.Nuke.FourthName then
-				--Fourth Place moves into Third Place
-				settings.scores.Nuke.FourthName = settings.scores.Nuke.ThirdName
-				settings.scores.Nuke.ThirdName = data.actor_name
-				settings.scores.Nuke.FourthDamage = settings.scores.Nuke.ThirdDamage
-				settings.scores.Nuke.ThirdDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name ~= settings.scores.Nuke.FirstName and data.actor_name ~= settings.scores.Nuke.SecondName then
-				--Fifth Place or somebody not already on the board moves into Third Place
-				settings.scores.Nuke.FifthName = settings.scores.Nuke.FourthName
-				settings.scores.Nuke.FourthName = settings.scores.Nuke.ThirdName
-				settings.scores.Nuke.ThirdName = data.actor_name
-				settings.scores.Nuke.FifthDamage = settings.scores.Nuke.FourthDamage
-				settings.scores.Nuke.FourthDamage = settings.scores.Nuke.ThirdDamage
-				settings.scores.Nuke.ThirdDamage = nuke[data.actor_name]
-				settings:save('all')
+		end
+
+	end
+
+	-- Magic Burst lands
+	if ((act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110)) and not settings.paused then
+
+		-----------------
+		-- MAGIC BURST --
+		-----------------
+
+		local actor = get_actor(act.actor_id)
+
+		-- Make sure the actor is part of the party/alliance
+		if actor == false then
+			return
+		end
+
+		-- Determine the actors relevant data
+		local data = {}
+		data.actor = actor.id
+		data.actor_name = actor.name or 'unknown'
+		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.target = act.targets[1].id
+		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'unknown'
+		data.damage = act.targets[1].actions[1].param
+		if act.category == 4 then
+			data.spell = spells[act.param] and spells[act.param].english or 'unknown'
+		else
+			data.spell = jabils[act.param] and jabils[act.param].english or 'unknown'
+		end
+
+		-- Make sure the actor is not on the Optout list
+		if settings.optout[data.actor_lower_name] then
+			return
+		end
+
+		local mbPlaces = settings.places.mb
+		local mbIndividuals = settings.individuals.mb
+
+		-- What place was the actor in originally
+		local originalMBPlace = 6 -- not on the board
+		if mbPlaces.first and data.actor_lower_name == mbPlaces.first.name then
+			originalMBPlace = 1
+		elseif mbPlaces.second and data.actor_lower_name == mbPlaces.second.name then
+			originalMBPlace = 2
+		elseif mbPlaces.third and data.actor_lower_name == mbPlaces.third.name then
+			originalMBPlace = 3
+		elseif mbPlaces.fourth and data.actor_lower_name == mbPlaces.fourth.name then
+			originalMBPlace = 4
+		elseif mbPlaces.fifth and data.actor_lower_name == mbPlaces.fifth.name then
+			originalMBPlace = 5
+		end
+
+		-- What was the original first place score
+		local originalMBfirstscore = (mbPlaces and mbPlaces.first and mbPlaces.first.score) or 0
+
+		-- What are you and your Rivals original scores
+		local yourOriginalMBScore = (mbIndividuals and mbIndividuals[string.lower(myName)] and mbIndividuals[string.lower(myName)].score) or 0
+		local rivalOriginalMBScore = (mbIndividuals and mbIndividuals[settings.rival] and mbIndividuals[settings.rival].score) or 0
+
+		-- Retrieve the actors relevant data
+		local nines = (mbIndividuals[data.actor_lower_name] and mbIndividuals[data.actor_lower_name].nines) or 0
+		local index = settings.indexes.mb
+
+		-- Count the number of 99999 WSs
+		if data.damage == 99999 then
+			nines = nines + 1
+		end
+
+		-- Update the actors score information
+		if (mbIndividuals[data.actor_lower_name] == nil) or (data.damage >= mbIndividuals[data.actor_lower_name].score) then
+			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
+			settings.indexes.mb = index
+			mbIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
+		end
+
+		-- Update the leaderboard places
+		local board = sortNamesHigh(settings.individuals.mb)
+		mbPlaces.first	= board[1]
+		mbPlaces.second	= (board and board[2]) or nil
+		mbPlaces.third	= (board and board[3]) or nil
+		mbPlaces.fourth	= (board and board[4]) or nil
+		mbPlaces.fifth	= (board and board[5]) or nil
+		settings:save('all')
+		updateBox(box_display)
+
+		-- What place is the actor in now
+		local newMBPlace = 6 -- Not on the board
+		if data.actor_lower_name == mbPlaces.first.name then
+			newMBPlace = 1
+		elseif data.actor_lower_name == mbPlaces.second.name then
+			newMBPlace = 2
+		elseif data.actor_lower_name == mbPlaces.third.name then
+			newMBPlace = 3
+		elseif data.actor_lower_name == mbPlaces.fourth.name then
+			newMBPlace = 4
+		elseif data.actor_lower_name == mbPlaces.fifth.name then
+			newMBPlace = 5
+		end
+
+		-- Did the actor move up the leaderboard
+		if Mode ~= "Silent" then
+			if newMBPlace == originalMBPlace and newMBPlace == 1 and (data.damage > originalMBfirstscore or data.damage == 99999) then
+				coroutine.sleep(1)
+				say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+			elseif newMBPlace < originalMBPlace then
+				if newMBPlace == 1 then
+					if data.damage > originalMBfirstscore then
+						coroutine.sleep(1)
+						say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' takes the board! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					end
+				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and Mode == "Party" then
+					coroutine.sleep(1)
+					say('/p [MAGIC BURST] '..data.actor_name..' moves up to No.'..newMBPlace..'! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				end
 			end
-		elseif nuke[data.actor_name] > settings.scores.Nuke.FourthDamage then
-			if data.actor_name == settings.scores.Nuke.FourthName or (data.actor_name ~= settings.scores.Nuke.FirstName and data.actor_name ~= settings.scores.Nuke.SecondName and data.actor_name ~= settings.scores.Nuke.ThirdName and settings.scores.Nuke.FourthDamage == 0) then
-				--Fourth Place updates their best but stays in Fourth Place (or the fourth nuke)
-				settings.scores.Nuke.FourthName = data.actor_name
-				settings.scores.Nuke.FourthDamage = nuke[data.actor_name]
-				settings:save('all')
-			elseif data.actor_name ~= settings.scores.Nuke.FirstName and data.actor_name ~= settings.scores.Nuke.SecondName and data.actor_name ~= settings.scores.Nuke.ThirdName then
-				--Fifth Place or somebody not already on the board moves into Fourth Place
-				settings.scores.Nuke.FifthName = settings.scores.Nuke.FourthName
-				settings.scores.Nuke.FourthName = data.actor_name
-				settings.scores.Nuke.FifthDamage = settings.scores.Nuke.FourthDamage
-				settings.scores.Nuke.FourthDamage = nuke[data.actor_name]
-				settings:save('all')
+		end
+
+		-- Did you or your rival beat one or the other
+		if settings.rival ~= "" then
+			if data.actor_name == myName then
+				if (rivalOriginalMBScore > yourOriginalMBScore) and	(data.damage > rivalOriginalMBScore) then
+					windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(mbIndividuals[settings.rival].score)..' MAGIC BURST score with a '):color(6)..(addCommas(data.damage)..' '..data.spell..'.'):color(158))
+				end
+			elseif data.actor_name == capitalize(settings.rival) then
+				if (yourOriginalMBScore > rivalOriginalMBScore) and data.damage > yourOriginalMBScore then
+					windower.add_to_chat(220,'[Leaderboard] '..(capitalize(settings.rival)..' is now beating your '..addCommas(mbIndividuals[string.lower(myName)].score)..' MAGIC BURST score with a '):color(28)..(addCommas(data.damage)..' '..data.spell..'.'):color(167))
+				end
 			end
-		elseif nuke[data.actor_name] > settings.scores.Nuke.FifthDamage and data.actor_name ~= settings.scores.Nuke.FirstName and data.actor_name ~= settings.scores.Nuke.SecondName and data.actor_name ~= settings.scores.Nuke.ThirdName and data.actor_name ~= settings.scores.Nuke.FourthName then
-			--Fifth Place updates their best or somebody not already on the board moves into Fifth Place
-			settings.scores.Nuke.FifthName = data.actor_name
-			settings.scores.Nuke.FifthDamage = nuke[data.actor_name]
-				settings:save('all')
+		end
+
+	end
+
+	--Nuke lands (includes Magic Bursts)
+	if ((act.category == 4 and act.targets[1].actions[1].message == 2) or (act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110)) and not settings.paused then
+
+		----------
+		-- Nuke --
+		----------
+
+		local actor = get_actor(act.actor_id)
+
+		-- Make sure the actor is part of the party/alliance
+		if actor == false then
+			return
+		end
+
+		-- Determine the actors relevant data
+		local data = {}
+		data.actor = actor.id
+		data.actor_name = actor.name or 'unknown'
+		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+
+		-- Make sure the actor is not on the Optout list
+		if settings.optout[data.actor_lower_name] then
+			return
+		end
+
+		local nukePlaces = settings.places.nuke
+		local nukeIndividuals = settings.individuals.nuke
+
+		-- Retrieve the actors relevant data
+		local nukes = (nukeIndividuals[data.actor_lower_name] and nukeIndividuals[data.actor_lower_name].score) or 0
+		local index = (nukeIndividuals[data.actor_lower_name] and nukeIndividuals[data.actor_lower_name].index) or 0
+
+		-- Update the actors score information
+		local nukeSum = 0
+		for i = 1, act.target_count do
+			nukeSum = nukeSum + act.targets[i].actions[1].param
+		end
+		nukes = nukes + nukeSum
+		local everyNumNukes = math.floor(nukes / 500000) -- returns how many times 500,000 goes into nukes
+		local points = everyNumNukes * 500000 -- returns the multiple of 500,000 that nukes is over
+		nukeIndividuals[data.actor_lower_name] = {score = nukes, nines = 0, index = everyNumNukes}
+
+		-- Update the leaderboard places
+		local board = sortNamesHigh(settings.individuals.nuke)
+		nukePlaces.first	= board[1]
+		nukePlaces.second	= (board and board[2]) or nil
+		nukePlaces.third	= (board and board[3]) or nil
+		nukePlaces.fourth	= (board and board[4]) or nil
+		nukePlaces.fifth	= (board and board[5]) or nil
+		settings:save('all')
+		updateBox(box_display)
+
+		-- Call out Nukes, only if they've reached the next 500,000 point threshhold
+		if Mode ~= "Silent" then
+			if everyNumNukes > index then 
+				say('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+			end
 		end
 
 	end
 end)
 
-windower.register_event('addon command',function(addcmd, arg)
+windower.register_event('addon command',function(addcmd, arg, arg2)
 
+	-- Reload LB
 	if addcmd == 'reload' then
         cmd('lua r leaderboard')
         return
 
-	elseif addcmd == 'recoverl' or (addcmd == 'recover' and (arg == 'lite' or arg == 'l')) then
-		Run = true
-		Paused = false
-		Mode = "Lite"
-		windower.add_to_chat(200,'[Leaderboard] '..('Recovering in Lite Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('Only High/Low scores are recovered. Cures, Nukes, and Whiffs are not'):color(8)..'')
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, silent, boards, reset'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
-		end
 
-	elseif addcmd == 'recovers' or (addcmd == 'recover' and (arg == 'silent' or arg == 's')) then
-		Run = true
-		Paused = false
-		Mode = "Silent"
-		windower.add_to_chat(200,'[Leaderboard] '..('Recovering in Silent Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('Only High/Low scores are recovered. Cure, Nuke, and Whiff counts are not'):color(8)..'')
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, lite, boards, reset'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
-		end
-
-	elseif addcmd == 'recover' or addcmd == 'recovern' or (addcmd == 'recover' and (arg == 'normal' or arg == 'n')) then
-		Run = true
-		Paused = false
-		Mode = "Normal"
-		say('/p Leaderboard recovered! Only High/Low scores are recovered. Cure, Nuke, and Whiff counts are not')
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, lite, silent, boards, reset'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
-		end
-
+	-- Reset the data, does not stop LB from running
 	elseif addcmd == 'reset' then
-		reset_scores()
-		windower.add_to_chat(200,'[Leaderboard] '..('Data reset'):color(8)..'')
+		local data = ''
+		if arg == 'c' or arg == 'cure' or arg == 'cures' then
+			resetC()
+			data = 'CURE'
+		elseif arg == 'd' or arg == 'death' or arg == 'deaths' then
+			resetD()
+			data = 'DEATH'
+		elseif arg == 'hs' or arg == 'highscore' or arg == 'hiscore' then
+			resetHS()
+			data = 'HIGH WS'
+		elseif arg == 'k' or arg == 'kill' or arg == 'kills' then
+			resetK()
+			data = 'KILL'
+		elseif arg == 'ls' or arg == 'lowscore' or arg == 'loscore' then
+			resetLS()
+			data = 'LOW WS'
+		elseif arg == 'n' or arg == 'nuke' or arg == 'nukes' then
+			resetN()
+			data = 'NUKE'
+		elseif arg == 'mb' or arg == 'magicburst' or arg == 'burst' then
+			resetMB()
+			data = 'MAGIC BURST'
+		elseif arg == 'm' or arg == 'murder' then
+			resetM()
+			data = 'MURDER'
+		elseif arg == 'sc' or arg == 'skillchain' then
+			resetSC()
+			data = 'SKILLCHAIN'
+		elseif arg == 'w' or arg == 'whiff' or arg == 'whiffs' then
+			resetW()
+			data = 'WHIFF'
+		elseif arg == 'all' then
+			resetALL()
+			data = 'ALL'
+		else
+			windower.add_to_chat(220,'[Leaderboard] '..('Please add which board you would like reset (all/c/d/hs/k/ls/m/mb/n/sc/w).'):color(8))
+			return
+		end
+		if Mode ~= "Silent" then
+			say('/p [Leaderboard] '..data..' data reset.')
+		else
+			windower.add_to_chat(220,'[Leaderboard] '..(data..' data reset.'):color(8))
+		end
+		settings:save('all')
+		updateBox(box_display)
 
-	elseif addcmd == 'reminder' or addcmd == 'r' then
+
+	-- Reminder setting
+	elseif addcmd == 'reminder' or addcmd == 'reminders' then
 		if arg == 'on' or arg == 'true' then
 			settings.reminder = true
-			settings:save('all')
 		elseif arg == 'off' or arg == 'false' then
 			settings.reminder = false
-			settings:save('all')
-		else
-			if settings.reminder then
-				windower.add_to_chat(200,'[Leaderboard] '..('Reminder is currently on'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Reminder is currently off'):color(8)..'')
-			end
 		end
+		windower.add_to_chat(220,'[Leaderboard] '..(('Reminders are set to %s'):format(settings.reminder and 'on.' or 'off.')):color(8))
+		settings:save('all')
 
-	elseif addcmd == 'flood' then
+
+	-- Comma setting
+	elseif addcmd == 'comma' or addcmd == 'commas' then
+		if arg == 'on' or arg == 'true' then
+			settings.commas = true
+		elseif arg == 'off' or arg == 'false' then
+			settings.commas = false
+		end
+		windower.add_to_chat(220,'[Leaderboard] '..(('Commas are set to %s'):format(settings.commas and 'on.' or 'off.')):color(8))
+		settings:save('all')
+
+
+	-- Party Commands setting
+	elseif addcmd == 'party' or addcmd == 'partycommand' or addcmd == 'partycommands' then
+		if arg == 'on' or arg == 'true' then
+			settings.party_commands = true
+		elseif arg == 'off' or arg == 'false' then
+			settings.party_commands = false
+		end
+		windower.add_to_chat(220,'[Leaderboard] '..(('Party Commands are set to %s'):format(settings.party_commands and 'on.' or 'off.')):color(8))
+		settings:save('all')
+
+
+	-- Flood Delay setting
+	elseif addcmd == 'flood' or addcmd == 'flooddelay' then
 		if arg == nil then
-			windower.add_to_chat(200,'[Leaderboard] '..('Flood Delay is currently set to '..settings.flood_delay..' seconds'):color(8)..'')
+			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay is currently set to '..settings.flood_delay..' seconds.'):color(8))
 		elseif tonumber(arg) ~= nil then
 			settings.flood_delay = arg
 			settings:save('all')
-			windower.add_to_chat(200,'[Leaderboard] '..('Flood Delay is now set to '..settings.flood_delay..' seconds'):color(8)..'')
+			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay is now set to '..settings.flood_delay..' seconds.'):color(8))
 		else
-			windower.add_to_chat(200,'[Leaderboard] '..('Flood Delay must be a number'):color(8)..'')
+			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay must be a number.'):color(8))
 		end
 
+
+	-- Display help
  	elseif addcmd == 'help' then
-		windower.add_to_chat(200,'[Leaderboard] '..('--Commands--'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('start [normal/n/lite/l/silent/s]- start tracking in Normal/Lite/Silent Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('recover [normal/n/lite/l/silent/s]- recover from a crash/disconnect in Normal/Lite/Silent Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('pause/p - pause/unpause tracking'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('mode/m [normal/n/lite/l/silent/s] - displays/changes current Mode'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('c, hs, ls, mb, n, sc, w - print current leaderboards to party chat'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('boards - list the different leaderboards that are tracked'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('reminder/r [on/off] - displays/changes current reminder setting'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('flood [#] - displays/changes the flood delay'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('reset - reset the data'):color(8)..'')
+		windower.add_to_chat(220,'[Leaderboard] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key'):color(220))
+		windower.add_to_chat(220,' ')
+		windower.add_to_chat(220,' Basic Commands '..('[optional]'):color(53)..(' <required>'):color(2))
+		windower.add_to_chat(36,'   pause/p'..(' - Pause/unpause tracking.'):color(8))
+		windower.add_to_chat(36,'   boards'..(' - List the different boards that are tracked.'):color(8))
+		windower.add_to_chat(36,'   visible/show/hide'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display boards on screen.'):color(8))
+		windower.add_to_chat(36,'   rival'..(' <name>'):color(2)..(' - Set the specified player as your Rival. Repeat to remove.'):color(8))
+		windower.add_to_chat(220,' ')
+		windower.add_to_chat(220,' Advanced Commands '..('[optional]'):color(53)..(' <required>'):color(2))
+		windower.add_to_chat(36,'   mode/m'..(' [lite/l/party/p/silent/s]'):color(53)..(' - Display/change the current Mode.'):color(8))
+		windower.add_to_chat(36,'   c/d/hs/k/ls/m/mb/n/sc/w'..(' - Print board to party chat.'):color(8))
+		windower.add_to_chat(36,'   lock/unlock'..(' - Drag the On-Screen Display.'):color(8))
+		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
+		windower.add_to_chat(36,'   comma'..(' [on/off]'):color(53)..(' - Display/change the Comma setting.'):color(8))
+		windower.add_to_chat(36,'   party'..(' [on/off]'):color(53)..(' - Display/change the Party Command setting.'):color(8))
+		windower.add_to_chat(36,'   reminder'..(' [on/off]'):color(53)..(' - Display/change the Reminder setting.'):color(8))
+		windower.add_to_chat(36,'   flood'..(' [#]'):color(53)..(' - Display/change the current Flood Delay setting.'):color(8))
 
-	elseif addcmd == 'startl' or (addcmd == 'start' and (arg == 'lite' or arg == 'l')) then
-		reset_scores()
-		Run = true
-		Paused = false
-		Mode = "Lite"
-		windower.add_to_chat(200,'[Leaderboard] '..('Started in Lite Mode'):color(8)..'')
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, silent, boards, reset'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
-		end
 
-	elseif addcmd == 'starts' or (addcmd == 'start' and (arg == 'silent' or arg == 's')) then
-		reset_scores()
-		Run = true
-		Paused = false
-		Mode = "Silent"
-		windower.add_to_chat(200,'[Leaderboard] '..('Started in Silent Mode'):color(8)..'')
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, normal, lite, boards, reset'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
-		end
-
-	elseif addcmd == 'start' or addcmd == 'startn' or (addcmd == 'start' and (arg == 'normal' or arg == 'n')) then
-		reset_scores()
-		Run = true
-		Paused = false
-		Mode = "Normal"
-		say('/p Leaderboard started! Type !lb c, hs, ls, mb, n, sc, or w into party chat for current leaderboards')
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb pause, mode, lite, silent, boards, reset'):color(8)..'')
-			windower.add_to_chat(200,'[Leaderboard] '..('//lb c, hs, ls, mb, n, sc, or w to print current leaderboards to party chat'):color(8)..'')
-		end
-
+	-- Pause
 	elseif addcmd == 'pause' or addcmd == 'p' then
-		if not Run then
-			windower.add_to_chat(200,'[Leaderboard] '..('Not currently running'):color(8)..'')
+
+		if not settings.paused then
+			settings.paused = true
 		else
-			if not Paused then
-				Paused = true
-				say('/p Leaderboard paused.')
-			else
-				Paused = false
-				say('/p Leaderboard unpaused.')
-			end
+			settings.paused = false
+		end
+		settings:save('all')
+		if Mode ~= "Silent" then
+			say(('/p [Leaderboard] %s'):format(settings.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).')
+		else
+			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(settings.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).'):color(8))
+		end
+		updateBox(box_display)
+
+
+	-- Switch to Party Mode
+	elseif addcmd == 'modep' or (addcmd == 'mode' and (arg == 'party' or arg == 'p')) then
+		Mode = "Party"
+		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(settings.paused and 'paused' or 'running'))
+		if settings.reminder then
+			coroutine.sleep(1)
+			windower.add_to_chat(220,'[Leaderboard] '..('Beware - Party Mode uses party chat heavily.'):color(8))
 		end
 
-	elseif addcmd == 'moden' or (addcmd == 'mode' and (arg == 'normal' or arg == 'n')) then
-		if not Run then
-			windower.add_to_chat(200,'[Leaderboard] '..('Not currently running'):color(8)..'')
-		elseif Mode == "Normal" then
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
-			end
-		else
-			Mode = "Normal"
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Normal Mode on (paused)'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Normal Mode on (running)'):color(8)..'')
-			end
-			if settings.reminder then
-				windower.add_to_chat(200,'[Leaderboard] '..('Beware - Normal Mode uses party chat heavily'):color(8)..'')
-			end
-		end
 
+	-- Switch to Lite Mode
 	elseif addcmd == 'model' or (addcmd == 'mode' and (arg == 'lite' or arg == 'l')) then
-		if not Run then
-			windower.add_to_chat(200,'[Leaderboard] '..('Not currently running'):color(8)..'')
-		elseif Mode == "Lite" then
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Lite Mode (Use normal or silent to switch to those modes)'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Lite Mode (Use normal or silent to switch to those modes)'):color(8)..'')
-			end
-		else
-			Mode = "Lite"
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Lite Mode on (paused)'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Lite Mode on (running)'):color(8)..'')
-			end
-		end
+		Mode = "Lite"
+		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(settings.paused and 'paused' or 'running'))
 
+
+	-- Switch to Silent Mode
 	elseif addcmd == 'modes' or (addcmd == 'mode' and (arg == 'silent' or arg == 's')) then
-		if not Run then
-			windower.add_to_chat(200,'[Leaderboard] '..('Not currently running'):color(8)..'')
-		elseif Mode == "Silent" then
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
-			end
-		else
-			Mode = "Silent"
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Silent Mode on (paused)'):color(8)..'')
-			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Silent Mode on (running)'):color(8)..'')
-			end
-		end
+		Mode = "Silent"
+		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(settings.paused and 'paused' or 'running'))
 
+
+	-- Display which mode Leaderboard is currently running in
 	elseif addcmd == 'mode' then
-		if Mode == "Normal" then
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
+		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
+
+
+	-- Display the commands for the different boards
+	elseif addcmd == 'board' or addcmd == 'boards' or addcmd == 'leaderboard' or addcmd == 'leaderboards' then
+		windower.add_to_chat(220,'[Leaderboard] '..('Current Tracked Boards'):color(220))
+		windower.add_to_chat(36,'   c/cure'..(' - Running total of cures'):color(8))
+		windower.add_to_chat(36,'   d/death'..(' - Running total of deaths'):color(8))
+		windower.add_to_chat(36,'   hs/highscore'..(' - Highest individual WS damage'):color(8))
+		windower.add_to_chat(36,'   k/kill'..(' - Running total of kills'):color(8))
+		windower.add_to_chat(36,'   ls/lowscore'..(' - Lowest individual WS damage'):color(8))
+		windower.add_to_chat(36,'   m/murder'..(' - Running total of murders'):color(8))
+		windower.add_to_chat(36,'   mb/magicburst'..(' - Highest individual MB damage'):color(8))
+		windower.add_to_chat(36,'   n/nuke'..(' - Running total of nukes'):color(8))
+		windower.add_to_chat(36,'   sc/skillchain'..(' - Highest individual SC damage'):color(8))
+		windower.add_to_chat(36,'   w/whiffs'..(' - Running total of whiffs'):color(8))
+
+
+	-- CURE BOARD
+	elseif addcmd == 'c' or addcmd == 'cure' or addcmd == 'cures' then
+
+		if arg == 'reset' then
+			resetC()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('CURE data reset.'):color(8))
+		else
+			local places = settings.places.cure
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--CURE BOARD--\rNo Cures Yet"
 			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
+				text = "/p \r--"..uppercase(places.first.name).."\'S CURE BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..")"
+					end
+				end
 			end
-		elseif Mode == "Lite" then
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Lite Mode (Use normal or silent to switch to those modes)'):color(8)..'')
+			say(text)
+		end
+
+
+	-- DEATH BOARD
+	elseif addcmd == 'd' or addcmd == 'death' or addcmd == 'deaths' then
+
+		if arg == 'reset' then
+			resetD()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('DEATH data reset.'):color(8))
+		else
+			local places = settings.places.death
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--DEATH BOARD--\rNo Deaths Yet"
 			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Lite Mode (Use normal or silent to switch to those modes)'):color(8)..'')
+				text = "/p \r--"..uppercase(places.first.name).."\'S DEATH BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..("%s"):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')
+					end
+				end
 			end
-		elseif Mode == "Silent" then
-			if Paused then
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
+			say(text)
+		end
+
+
+	-- HIGH WS BOARD
+	elseif addcmd == 'hs' or addcmd == 'highscore' or addcmd == 'hiscore' then
+
+		if arg == 'reset' then
+			resetHS()
+			windower.add_to_chat(220,'[Leaderboard] '..('HIGH WS data reset.'):color(8))
+		else
+			local places = settings.places.hs
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--HIGH WS BOARD--\rNo Weapon Skills Yet"
 			else
-				windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
+				text = "/p \r--"..uppercase(places.first.name).."\'S HIGH WS BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..("%s"):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- KILL BOARD
+	elseif addcmd == 'k' or addcmd == 'kill' or addcmd == 'kills' then
+
+		if arg == 'reset' then
+			resetK()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('KILL data reset.'):color(8))
+		else
+			local places = settings.places.kill
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--KILL BOARD--\rNo Kills Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S KILL BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..("%s"):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- LOW WS BOARD
+	elseif addcmd == 'ls' or addcmd == 'lowscore'  or addcmd == 'loscore' then
+
+		if arg == 'reset' then
+			resetLS()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('LOW WS data reset.'):color(8))
+		else
+			local places = settings.places.ls
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--LOW WS BOARD--\rNo Weapon Skills Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S LOW WS BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..")"
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- MAGIC BURST BOARD
+	elseif addcmd == 'mb' or addcmd == 'magicburst' or addcmd == 'burst' then
+
+		if arg == 'reset' then
+			resetMB()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('MAGIC BURST data reset.'):color(8))
+		else
+			local places = settings.places.mb
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--MAGIC BURST BOARD--\rNo Magic Bursts Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S MAGIC BURST BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..("%s"):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- MURDER BOARD
+	elseif addcmd == 'm' or addcmd == 'murder' or addcmd == 'murders' then
+
+		if arg == 'reset' then
+			resetM()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('MURDER data reset.'):color(8))
+		else
+			local places = settings.places.murder
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--MURDER BOARD--\rNo Murders Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S MURDER BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..")"
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- NUKE BOARD
+	elseif addcmd == 'n' or addcmd == 'nuke' or addcmd == 'nukes' then
+
+		if arg == 'reset' then
+			resetN()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('NUKE data reset.'):color(8))
+		else
+			local places = settings.places.nuke
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--NUKE BOARD--\rNo Nukes Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S NUKE BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..")"
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- SKILLCHAIN BOARD
+	elseif addcmd == 'sc' or addcmd == 'skillchain' then
+
+		if arg == 'reset' then
+			resetSC()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('SKILLCHAIN data reset.'):color(8))
+		else
+			local places = settings.places.sc
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--SKILLCHAIN BOARD--\rNo Skillchains Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S SKILLCHAIN BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..("%s"):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- WHIFF BOARD
+	elseif addcmd == 'w' or addcmd == 'whiff' or addcmd == 'whiffs' then
+
+		if arg == 'reset' then
+			resetW()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('WHIFF data reset.'):color(8))
+		else
+			local places = settings.places.whiff
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/p \r--WHIFF BOARD--\rNo Whiffs Yet"
+			else
+				text = "/p \r--"..uppercase(places.first.name).."\'S WHIFF BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..info.score[i]..")"
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	--Add name to optout list
+	elseif addcmd == 'optout' or addcmd == 'o' then
+
+		if arg == 'add' or arg == 'a' then
+			addToOptout(arg2)
+		elseif arg == 'remove' or arg == 'r' or arg == 'delete' or arg == 'd' then
+			removeFromOptout(arg2)
+		else
+			local list = optoutList()
+			windower.add_to_chat(220,'[Leaderboard] '..('Optout list: '):color(8)..(capitalize(list)):color(1))
+		end
+
+
+	-- Send a specific player their score report via tell
+	elseif addcmd == 'report' or addcmd == 'r' then
+
+		if arg == nil then
+			windower.add_to_chat(220,'[Leaderboard] '..('Please add a name.'):color(8))
+		else
+			local c_name = capitalize(arg)
+			local actor = windower.ffxi.get_mob_by_name(c_name)
+			if actor == nil or (not actor.in_alliance and not actor.in_party) then
+				windower.add_to_chat(220,'[Leaderboard] '..(c_name..' is not in the party.'):color(8))
+			else
+				reportPlayerScores(string.lower(actor.name))
 			end
 		end
 
-	elseif addcmd == 'board' or addcmd == 'boards' then
-		windower.add_to_chat(200,'[Leaderboard] '..('--Current Tracked Leaderboards--'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('c/cure - Running total of cures (up to 3 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('hs/highscore - Highest individual WS damage (up to 5 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('ls/lowscore - Lowest individual WS damage (up to 3 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('mb/magicburst - Highest individual MB damage (up to 5 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('n/nuke - Running total of nukes (up to 5 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('sc/skillchain - Highest individual SC damage (up to 5 places)'):color(8)..'')
-		windower.add_to_chat(200,'[Leaderboard] '..('w/whiffs - Running total of whiffs (up to 3 places)'):color(8)..'')
 
-	elseif addcmd == 'c' or addcmd =='cure' or addcmd =='cures' then
-		if settings.scores.Cure.ThirdAmount ~= 0 then
-			say('/p \r--Cure Leaderboard--\rNo.1: '..settings.scores.Cure.FirstName..' ('..settings.scores.Cure.FirstAmount..')\rNo.2: '..settings.scores.Cure.SecondName..' ('..settings.scores.Cure.SecondAmount..')\rNo.3: '..settings.scores.Cure.ThirdName..' ('..settings.scores.Cure.ThirdAmount..')')
-		elseif settings.scores.Cure.SecondAmount ~= 0 then
-			say('/p \r--Cure Leaderboard--\rNo.1: '..settings.scores.Cure.FirstName..' ('..settings.scores.Cure.FirstAmount..')\rNo.2: '..settings.scores.Cure.SecondName..' ('..settings.scores.Cure.SecondAmount..')')
-		elseif settings.scores.Cure.FirstAmount ~= 0 then
-			say('/p \r--Cure Leaderboard--\rNo.1: '..settings.scores.Cure.FirstName..' ('..settings.scores.Cure.FirstAmount..')')
+    -- Show the LB box
+    elseif addcmd == 'show' or addcmd == 'visible' then
+		-- Toggle the visibility of the LB box
+		if addcmd == 'visible' then
+			-- Flip the visibilty setting and save
+			settings.visible = not settings.visible
+			toggleBox()
 		else
-			say('/p \r--Cure Leaderboard--\rNo data yet')
+			settings.visible = true
+			showBox()
 		end
+		settings:save('all')
+		if arg == 'c' or arg == 'cure' or arg == 'cures' then
+			box_display = 'cure'
+		elseif arg == 'd' or arg == 'death' or arg == 'deaths' then
+			box_display = 'death'
+		elseif arg == 'hs' or arg == 'highscore' or arg == 'hiscore' then
+			box_display = 'hs'
+		elseif arg == 'k' or arg == 'kill' or arg == 'kills' then
+			box_display = 'kill'
+		elseif arg == 'ls' or arg == 'lowscore'  or arg == 'loscore' then
+			box_display = 'ls'
+		elseif arg == 'mb' or arg == 'magicburst' or arg == 'burst' then
+			box_display = 'mb'
+		elseif arg == 'm' or arg == 'murder' or arg == 'murders' then
+			box_display = 'murder'
+		elseif arg == 'n' or arg == 'nuke' or arg == 'nukes' then
+			box_display = 'nuke'
+		elseif arg == 'sc' or arg == 'skillchain' then
+			box_display = 'sc'
+		elseif arg == 'w' or arg == 'whiff' or arg == 'whiffs' then
+			box_display = 'whiff'
+		end
+		updateBox(box_display)
 
-	elseif addcmd == 'ls' or addcmd =='lowscore' then
-		if settings.scores.LS.ThirdDamage ~= 999999 then
-			say('/p \r--Low Score Leaderboard--\rNo.1: '..settings.scores.LS.FirstName..' ('..settings.scores.LS.FirstDamage..')\rNo.2: '..settings.scores.LS.SecondName..' ('..settings.scores.LS.SecondDamage..')\rNo.3: '..settings.scores.LS.ThirdName..' ('..settings.scores.LS.ThirdDamage..')')
-		elseif settings.scores.LS.SecondDamage ~= 999999 then
-			say('/p \r--Low Score Leaderboard--\rNo.1: '..settings.scores.LS.FirstName..' ('..settings.scores.LS.FirstDamage..')\rNo.2: '..settings.scores.LS.SecondName..' ('..settings.scores.LS.SecondDamage..')')
-		elseif settings.scores.LS.FirstDamage ~= 999999 then
-			say('/p \r--Low Score Leaderboard--\rNo.1: '..settings.scores.LS.FirstName..' ('..settings.scores.LS.FirstDamage..')')
+
+	-- Hide the On-Screen Display
+    elseif addcmd == 'hide' then
+        settings.visible = false
+        settings:save('all')
+		hideBox()
+
+
+	-- Lock the On-Screen Display by turning drag off
+	elseif addcmd == 'lock' then
+		settings.flags.draggable = false
+		settings:save('all')
+		windower.add_to_chat(220,'[Leaderboard] '..('On-Screen Display is locked. Dragging is disabled.'):color(8))
+
+
+	--Unlock the On-Screen Display by turning drag on
+	elseif addcmd == 'unlock' then
+		settings.flags.draggable = true
+		settings:save('all')
+		windower.add_to_chat(220,'[Leaderboard] '..('On-Screen Display is unlocked. Dragging is enabled.'):color(8))
+
+
+	-- Set a specific player as your Rival
+	elseif addcmd == 'rival' then
+		if arg == nil then
+			windower.add_to_chat(220,'[Leaderboard] '..('%s'):format(settings.rival ~= '' and capitalize(settings.rival)..' is your Rival.' or 'No Rival set.'):color(8))
+		elseif string.lower(arg) == settings.rival then
+			settings.rival = ""
+			windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg)..' has been removed as your Rival. No Rival set.'):color(8))
 		else
-			say('/p \r--Low Score Leaderboard--\rNo data yet')
+			settings.rival = string.lower(arg)
+			windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg)..' is now your Rival!'):color(8))
 		end
+		settings:save('all')
+		updateBox(box_display)
 
-	elseif addcmd == 'hs' or addcmd =='highscore' or addcmd =='hiscore' then
-		if settings.scores.HS.FifthDamage ~= 0 then
-			say('/p \r--High Score Leaderboard--\rNo.1: '..settings.scores.HS.FirstName..' ('..settings.scores.HS.FirstDamage..')\rNo.2: '..settings.scores.HS.SecondName..' ('..settings.scores.HS.SecondDamage..')\rNo.3: '..settings.scores.HS.ThirdName..' ('..settings.scores.HS.ThirdDamage..')\rNo.4: '..settings.scores.HS.FourthName..' ('..settings.scores.HS.FourthDamage..')\rNo.5: '..settings.scores.HS.FifthName..' ('..settings.scores.HS.FifthDamage..')')
-		elseif settings.scores.HS.FourthDamage ~= 0 then
-			say('/p \r--High Score Leaderboard--\rNo.1: '..settings.scores.HS.FirstName..' ('..settings.scores.HS.FirstDamage..')\rNo.2: '..settings.scores.HS.SecondName..' ('..settings.scores.HS.SecondDamage..')\rNo.3: '..settings.scores.HS.ThirdName..' ('..settings.scores.HS.ThirdDamage..')\rNo.4: '..settings.scores.HS.FourthName..' ('..settings.scores.HS.FourthDamage..')')
-		elseif settings.scores.HS.ThirdDamage ~= 0 then
-			say('/p \r--High Score Leaderboard--\rNo.1: '..settings.scores.HS.FirstName..' ('..settings.scores.HS.FirstDamage..')\rNo.2: '..settings.scores.HS.SecondName..' ('..settings.scores.HS.SecondDamage..')\rNo.3: '..settings.scores.HS.ThirdName..' ('..settings.scores.HS.ThirdDamage..')')
-		elseif settings.scores.HS.SecondDamage ~= 0 then
-			say('/p \r--High Score Leaderboard--\rNo.1: '..settings.scores.HS.FirstName..' ('..settings.scores.HS.FirstDamage..')\rNo.2: '..settings.scores.HS.SecondName..' ('..settings.scores.HS.SecondDamage..')')
-		elseif settings.scores.HS.FirstDamage ~= 0 then
-			say('/p \r--High Score Leaderboard--\rNo.1: '..settings.scores.HS.FirstName..' ('..settings.scores.HS.FirstDamage..')')
-		else
-			say('/p \r--High Score Leaderboard--\rNo data yet')
-		end
 
-	elseif addcmd == 'mb' or addcmd =='magicburst' or addcmd =='burst' then
-		if settings.scores.MB.FifthDamage ~= 0 then
-			say('/p \r--Magic Burst Leaderboard--\rNo.1: '..settings.scores.MB.FirstName..' ('..settings.scores.MB.FirstDamage..')\rNo.2: '..settings.scores.MB.SecondName..' ('..settings.scores.MB.SecondDamage..')\rNo.3: '..settings.scores.MB.ThirdName..' ('..settings.scores.MB.ThirdDamage..')\rNo.4: '..settings.scores.MB.FourthName..' ('..settings.scores.MB.FourthDamage..')\rNo.5: '..settings.scores.MB.FifthName..' ('..settings.scores.MB.FifthDamage..')')
-		elseif settings.scores.MB.FourthDamage ~= 0 then
-			say('/p \r--Magic Burst Leaderboard--\rNo.1: '..settings.scores.MB.FirstName..' ('..settings.scores.MB.FirstDamage..')\rNo.2: '..settings.scores.MB.SecondName..' ('..settings.scores.MB.SecondDamage..')\rNo.3: '..settings.scores.MB.ThirdName..' ('..settings.scores.MB.ThirdDamage..')\rNo.4: '..settings.scores.MB.FourthName..' ('..settings.scores.MB.FourthDamage..')')
-		elseif settings.scores.MB.ThirdDamage ~= 0 then
-			say('/p \r--Magic Burst Leaderboard--\rNo.1: '..settings.scores.MB.FirstName..' ('..settings.scores.MB.FirstDamage..')\rNo.2: '..settings.scores.MB.SecondName..' ('..settings.scores.MB.SecondDamage..')\rNo.3: '..settings.scores.MB.ThirdName..' ('..settings.scores.MB.ThirdDamage..')')
-		elseif settings.scores.MB.SecondDamage ~= 0 then
-			say('/p \r--Magic Burst Leaderboard--\rNo.1: '..settings.scores.MB.FirstName..' ('..settings.scores.MB.FirstDamage..')\rNo.2: '..settings.scores.MB.SecondName..' ('..settings.scores.MB.SecondDamage..')')
-		elseif settings.scores.MB.FirstDamage ~= 0 then
-			say('/p \r--Magic Burst Leaderboard--\rNo.1: '..settings.scores.MB.FirstName..' ('..settings.scores.MB.FirstDamage..')')
-		else
-			say('/p \r--Magic Burst Leaderboard--\rNo data yet')
-		end
-
-	elseif addcmd == 'n' or addcmd =='nuke' or addcmd =='nukes' then
-		if settings.scores.Nuke.FifthDamage ~= 0 then
-			say('/p \r--Nuke Leaderboard--\rNo.1: '..settings.scores.Nuke.FirstName..' ('..settings.scores.Nuke.FirstDamage..')\rNo.2: '..settings.scores.Nuke.SecondName..' ('..settings.scores.Nuke.SecondDamage..')\rNo.3: '..settings.scores.Nuke.ThirdName..' ('..settings.scores.Nuke.ThirdDamage..')\rNo.4: '..settings.scores.Nuke.FourthName..' ('..settings.scores.Nuke.FourthDamage..')\rNo.5: '..settings.scores.Nuke.FifthName..' ('..settings.scores.Nuke.FifthDamage..')')
-		elseif settings.scores.Nuke.FourthDamage ~= 0 then
-			say('/p \r--Nuke Leaderboard--\rNo.1: '..settings.scores.Nuke.FirstName..' ('..settings.scores.Nuke.FirstDamage..')\rNo.2: '..settings.scores.Nuke.SecondName..' ('..settings.scores.Nuke.SecondDamage..')\rNo.3: '..settings.scores.Nuke.ThirdName..' ('..settings.scores.Nuke.ThirdDamage..')\rNo.4: '..settings.scores.Nuke.FourthName..' ('..settings.scores.Nuke.FourthDamage..')')
-		elseif settings.scores.Nuke.ThirdDamage ~= 0 then
-			say('/p \r--Nuke Leaderboard--\rNo.1: '..settings.scores.Nuke.FirstName..' ('..settings.scores.Nuke.FirstDamage..')\rNo.2: '..settings.scores.Nuke.SecondName..' ('..settings.scores.Nuke.SecondDamage..')\rNo.3: '..settings.scores.Nuke.ThirdName..' ('..settings.scores.Nuke.ThirdDamage..')')
-		elseif settings.scores.Nuke.SecondDamage ~= 0 then
-			say('/p \r--Nuke Leaderboard--\rNo.1: '..settings.scores.Nuke.FirstName..' ('..settings.scores.Nuke.FirstDamage..')\rNo.2: '..settings.scores.Nuke.SecondName..' ('..settings.scores.Nuke.SecondDamage..')')
-		elseif settings.scores.Nuke.FirstDamage ~= 0 then
-			say('/p \r--Nuke Leaderboard--\rNo.1: '..settings.scores.Nuke.FirstName..' ('..settings.scores.Nuke.FirstDamage..')')
-		else
-			say('/p \r--Nuke Leaderboard--\rNo data yet')
-		end
-
-	elseif addcmd == 'sc' or addcmd =='skillchain' then
-		if settings.scores.SC.FifthDamage ~= 0 then
-			say('/p \r--Skillchain Leaderboard--\rNo.1: '..settings.scores.SC.FirstName..' ('..settings.scores.SC.FirstDamage..')\rNo.2: '..settings.scores.SC.SecondName..' ('..settings.scores.SC.SecondDamage..')\rNo.3: '..settings.scores.SC.ThirdName..' ('..settings.scores.SC.ThirdDamage..')\rNo.4: '..settings.scores.SC.FourthName..' ('..settings.scores.SC.FourthDamage..')\rNo.5: '..settings.scores.SC.FifthName..' ('..settings.scores.SC.FifthDamage..')')
-		elseif settings.scores.SC.FourthDamage ~= 0 then
-			say('/p \r--Skillchain Leaderboard--\rNo.1: '..settings.scores.SC.FirstName..' ('..settings.scores.SC.FirstDamage..')\rNo.2: '..settings.scores.SC.SecondName..' ('..settings.scores.SC.SecondDamage..')\rNo.3: '..settings.scores.SC.ThirdName..' ('..settings.scores.SC.ThirdDamage..')\rNo.4: '..settings.scores.SC.FourthName..' ('..settings.scores.SC.FourthDamage..')')
-		elseif settings.scores.SC.ThirdDamage ~= 0 then
-			say('/p \r--Skillchain Leaderboard--\rNo.1: '..settings.scores.SC.FirstName..' ('..settings.scores.SC.FirstDamage..')\rNo.2: '..settings.scores.SC.SecondName..' ('..settings.scores.SC.SecondDamage..')\rNo.3: '..settings.scores.SC.ThirdName..' ('..settings.scores.SC.ThirdDamage..')')
-		elseif settings.scores.SC.SecondDamage ~= 0 then
-			say('/p \r--Skillchain Leaderboard--\rNo.1: '..settings.scores.SC.FirstName..' ('..settings.scores.SC.FirstDamage..')\rNo.2: '..settings.scores.SC.SecondName..' ('..settings.scores.SC.SecondDamage..')')
-		elseif settings.scores.SC.FirstDamage ~= 0 then
-			say('/p \r--Skillchain Leaderboard--\rNo.1: '..settings.scores.SC.FirstName..' ('..settings.scores.SC.FirstDamage..')')
-		else
-			say('/p \r--Skillchain Leaderboard--\rNo data yet')
-		end
-
-	elseif addcmd == 'w' or addcmd =='whiff' or addcmd =='whiffs' then
-		if settings.scores.Whiff.ThirdAmount ~= 0 then
-			say('/p \r--Whiff Leaderboard--\rNo.1: '..settings.scores.Whiff.FirstName..' ('..settings.scores.Whiff.FirstAmount..')\rNo.2: '..settings.scores.Whiff.SecondName..' ('..settings.scores.Whiff.SecondAmount..')\rNo.3: '..settings.scores.Whiff.ThirdName..' ('..settings.scores.Whiff.ThirdAmount..')')
-		elseif settings.scores.Whiff.SecondAmount ~= 0 then
-			say('/p \r--Whiff Leaderboard--\rNo.1: '..settings.scores.Whiff.FirstName..' ('..settings.scores.Whiff.FirstAmount..')\rNo.2: '..settings.scores.Whiff.SecondName..' ('..settings.scores.Whiff.SecondAmount..')')
-		elseif settings.scores.Whiff.FirstAmount ~= 0 then
-			say('/p \r--Whiff Leaderboard--\rNo.1: '..settings.scores.Whiff.FirstName..' ('..settings.scores.Whiff.FirstAmount..')')
-		else
-			say('/p \r--Whiff Leaderboard--\rNo data yet')
-		end
-
+	-- Unknown command
 	else
-		windower.add_to_chat(200,'[Leaderboard] '..('Unknown command. Type \'//em help\' for list of commands.'):color(8)..'')
-		if Run and settings.reminder then
-			if Mode == "Normal" then
-				if Paused then
-					windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
-				else
-					windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Normal Mode (Use lite or silent to switch to those modes)'):color(8)..'')
-				end
-			elseif Mode == "Lite" then
-				if Paused then
-					windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Lite Mode (Use normal or silent to switch to those modes)'):color(8)..'')
-				else
-					windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Lite Mode (Use normal or silent to switch to those modes)'):color(8)..'')
-				end
-			elseif Mode == "Silent" then
-				if Paused then
-					windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
-				else
-					windower.add_to_chat(200,'[Leaderboard] '..('Currently running in Silent Mode (Use normal or lite to switch to those modes)'):color(8)..'')
-				end
-			end
-		elseif settings.reminder then
-			windower.add_to_chat(200,'[Leaderboard] '..('Not currently running'):color(8)..'')
+		windower.add_to_chat(220,'[Leaderboard] '..('unknown command. Type \'//em help\' for list of commands.'):color(8))
+
+		-- Throw a reminder in there if they are turned on
+		if settings.reminder then
+			windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode.'):color(8))
 		end
+
 	end
 end)
 
-windower.register_event('incoming text',function(org, modified, mode)
-	if (org:find('!lb c') or org:find('!lbc') or org:find('!LB C') or org:find('!LBC')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb c')
-	elseif (org:find('!lb ls') or org:find('!lbls') or org:find('!LB LS') or org:find('!LBLS')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb ls')
-	elseif (org:find('!lb hs') or org:find('!lbhs') or org:find('!LB HS') or org:find('!LBHS')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb hs')
-	elseif (org:find('!lb mb') or org:find('!lbmb') or org:find('!LB MB') or org:find('!LBMB')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb mb')
-	elseif (org:find('!lb n') or org:find('!lbn') or org:find('!LB N') or org:find('!LBN')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb n')
-	elseif (org:find('!lb sc') or org:find('!lbsc') or org:find('!LB SC') or org:find('!LBSC')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb sc')
-	elseif (org:find('!lb w') or org:find('!lbw') or org:find('!LB W') or org:find('!LBW')) and not (org:find('Leaderboard started!') or org:find('Leaderboard recovered!')) then
-		if flood_timer ~= 0 then
-			return
-		end
-		flood_timer = settings.flood_delay
-		coroutine.sleep(2)
-		cmd('lb w')
-	end
-end)
 
+-- Creates the countdown for the flood delay timer
 windower.register_event('prerender', function()
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
@@ -1862,13 +2151,11 @@ windower.register_event('prerender', function()
 	end
 end)
 
+
+-- On zone change, remind that LB is running
 windower.register_event('zone change',function()
 	coroutine.sleep(5)
-	if Run and settings.reminder then
-		if Paused then
-			windower.add_to_chat(200,'[Leaderboard] '..('Currently paused in '..Mode..' Mode'):color(8)..'')
-		else
-			windower.add_to_chat(200,'[Leaderboard] '..('Currently running in '..Mode..' Mode'):color(8)..'')
-		end
+	if settings.reminder then
+		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
 	end
 end)
