@@ -1,64 +1,70 @@
 # Leaderboard
-Tracks battle information and groups it together in different "Boards" for the party.
+Tracks battle information and groups it together in different "boards".
 
 ### Features
-- 3 different tracking modes
-  - Silent: Tracks in the background, no party chat call outs.
+- 3 different tracking modes:
+  - Silent: Tracks in the background, no party chat call outs. Default.
   - Lite: Limited party chat call outs.
-  - Party: Full party chat call outs.
-- On-Scren Display for the various Boards.
+  - Party: Full party chat call outs. Great for linkshell events.
+- On-Screen Display for the various boards.
 - Rival system - Set another player as your Rival and get notifications when either of you beat the others scores.
+- Optout list. Characters on this list will not be tracked.
+- Party commands. Party members can use party chat (or a tell) to issue certain commands. This ability is disabled by default and is intended to be enabled by a player using Party Mode.
+- Automatic data recovery. If you crash or disconnect, your data is saved and picks up right back where it left off.
 
 ### Currently Tracked Leaderboards
-- c/cure - Running total of cures
-- d/death - Running total of deaths
-- hs/highscore - Highest individual WS damage
-- k/kill - Running total of kills
-- ls/lowscore - Lowest individual WS damage
-- m/murder - Running total of murders
-- mb/magicburst - Highest individual MB damage
-- n/nuke - Running total of nukes
-- sc/skillchain - Highest individual SC damage
-- w/whiffs - Running total of whiffs
+- c/cure - Running total of cures.
+- d/death - Running total of deaths.
+- hs/highscore - Highest individual WS damage.
+- k/kill - Running total of kills.
+- ls/lowscore - Lowest individual WS damage.
+- m/murder - Running total of murders.
+- mb/magicburst - Highest individual MB damage.
+- n/nuke - Running total of nukes.
+- sc/skillchain - Highest individual SC damage.
+- w/whiffs - Running total of whiffs.
 
 (Cure and Nuke Leaderboards account for aoe's)
 
-### Commands
-All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb start s`)
+### Addon Commands
+All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb show mb`)
 
 Basic Commands [optional] <required>
 - pause/p - Pause/unpause tracking.
 - boards - List the different boards that are tracked.
 - visible/show/hide [c/d/hs/k/ls/m/mb/n/sc/w] - Display boards on screen.
+- reset <all/c/d/hs/k/ls/m/mb/n/sc/w> - Reset specified data.
 - rival - Set the specified player as your Rival. Repeat to remove.
 
 Advanced Commands [optional] <required>
 - mode/m [lite/l/party/p/silent/s] - Display/change the current Mode.
 - c/d/hs/k/ls/m/mb/n/sc/w - Print board to party chat.
 - lock/unlock - Drag the On-Screen Display.
+- optout [add/remove <name>] - Display/update the Optout list.
 - report <name> - Send the specified player their score report via tell.
 - comma [on/off] - Display/change the Comma setting.
 - party [on/off] - Display/change the Party Command setting.
 - reminder [on/off] - Display/change the Reminder setting.
 - flood [#] - Display/change the current Flood Delay setting.
 
-
-- help- displays the list of commands in-game.
-- pause/p - pause/unpause tracking
-- mode/m [normal/n/lite/l/silent/s] - displays/changes current Mode
-- c, hs, ls, mb, n, sc, w - print current leaderboards to party chat
-- boards - list the different leaderboards that are tracked
-- reminder/r [on/off] - displays/changes current reminder setting
-- flood [#] - displays/changes the flood delay
-- reset - reset the data
+### Party Commands
+All commands must be prefixed with `!lb` (ex: `!lb report`). Only work if another player has them enabled.
+- c/d/hs/k/ls/m/mb/n/sc/w - Print board to party chat.
+- optout - Add your name to the Optout list.
+- report - Receive a score report via tell.
 
 ### Version History
+
+**3.1**
+- On-Screen Display now shows up to 10 places.
+- Fixed error when using `optout add/remove` command with no name attached.
+- Added missing optout and reset commands from the help command list.
 
 **3.0**
 - Major update. A lot of streamlining.
 - Removed Start/Recover commands. Addon will now automatically start tracking data in the background when it is loaded.
 - Added Rival System. Your Rival will be highlighted in the On-Screen Disply and scores will be called out when one beats the other (visible only to you).
-- Added on screen display box.Displays the top 10 places. Your and your Rivals names are highlighted. 
+- Added on screen display box. Displays the top 5 places. You and your Rivals names are highlighted. 
 - Silent Mode is now the default mode.
 - Normal Mode has been renamed to Party Mode.
 - Added resetting of specific boards ie `//lb reset mb` (`//lb mb reset` also works).
