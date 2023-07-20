@@ -6,6 +6,7 @@ Tracks battle information and groups it together in different "boards".
   - Silent: Tracks in the background, no party chat call outs. Default.
   - Lite: Limited party chat call outs.
   - Party: Full party chat call outs. Great for linkshell events.
+- Tracks 10 different boards.
 - On-Screen Display for the various boards.
 - Rival system - Set another player as your Rival and get notifications when either of you beat the others scores.
 - Optout list. Characters on this list will not be tracked.
