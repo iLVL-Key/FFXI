@@ -14,45 +14,45 @@ Tracks battle information and groups it together in different "boards".
 - Automatic data recovery. If you crash or disconnect, your data is saved and picks up right back where it left off.
 
 ### Currently Tracked Boards
-- c/cure - Running total of cures.
-- d/death - Running total of deaths.
-- hs/highscore - Highest individual WS damage.
-- k/kill - Running total of kills.
-- ls/lowscore - Lowest individual WS damage.
-- m/murder - Running total of murders.
-- mb/magicburst - Highest individual MB damage.
-- n/nuke - Running total of nukes.
-- sc/skillchain - Highest individual SC damage.
-- w/whiffs - Running total of whiffs.
+- `c/cure` - Running total of cures.
+- `d/death` - Running total of deaths.
+- `hs/highscore` - Highest individual WS damage.
+- `k/kill` - Running total of kills.
+- `ls/lowscore` - Lowest individual WS damage.
+- `m/murde`r - Running total of murders.
+- `mb/magicburst` - Highest individual MB damage.
+- `n/nuke` - Running total of nukes.
+- `sc/skillchain` - Highest individual SC damage.
+- `w/whiffs` - Running total of whiffs.
 
 (Cure and Nuke Leaderboards account for aoe's)
 
 ### Addon Commands
 All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb show mb`)
 
-Basic Commands [optional] <required>
-- pause/p - Pause/unpause tracking.
-- boards - List the different boards that are tracked.
-- visible/show/hide [c/d/hs/k/ls/m/mb/n/sc/w] - Display boards on screen.
-- reset <all/c/d/hs/k/ls/m/mb/n/sc/w> - Reset specified data.
-- rival - Set the specified player as your Rival. Repeat to remove.
+Basic Commands `[optional] <required>`
+- `pause/p` - Pause/unpause tracking.
+- `boards` - List the different boards that are tracked.
+- `visible/show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
+- `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
+- `rival` - Set the specified player as your Rival. Repeat to remove.
 
-Advanced Commands [optional] <required>
-- mode/m [lite/l/party/p/silent/s] - Display/change the current Mode.
-- c/d/hs/k/ls/m/mb/n/sc/w - Print board to party chat.
-- lock/unlock - Drag the On-Screen Display.
-- optout [add/remove <name>] - Display/update the Optout list.
-- report <name> - Send the specified player their score report via tell.
-- comma [on/off] - Display/change the Comma setting.
-- party [on/off] - Display/change the Party Command setting.
-- reminder [on/off] - Display/change the Reminder setting.
-- flood [#] - Display/change the current Flood Delay setting.
+Advanced Commands `[optional] <required>`
+- `mode/m [lite/l/party/p/silent/s` - Display/change the current Mode.
+- `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
+- `lock/unlock` - Drag the On-Screen Display.
+- `optout [add/remove <name>]` - Display/update the Optout list.
+- `report <name>` - Send the specified player their score report via tell.
+- `comma [on/off]` - Display/change the Comma setting.
+- `party [on/off]` - Display/change the Party Command setting.
+- `reminder [on/off]` - Display/change the Reminder setting.
+- `flood [#]` - Display/change the current Flood Delay setting.
 
 ### Party Commands
 All commands must be prefixed with `!lb` (ex: `!lb report`). Only work if another player has them enabled.
-- c/d/hs/k/ls/m/mb/n/sc/w - Print board to party chat.
-- optout - Add your name to the Optout list.
-- report - Receive a score report via tell.
+- `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
+- `optout` - Add your name to the Optout list.
+- `report` - Receive a score report via tell.
 
 ### To-do
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message give by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
