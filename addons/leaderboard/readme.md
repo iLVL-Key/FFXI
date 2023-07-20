@@ -39,7 +39,7 @@ Basic Commands `[optional] <required>`
 - `boards` - List the different boards that are tracked.
 - `visible/show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
 - `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
-- `rival` - Set the specified player as your Rival. Repeat to remove.
+- `rival [name]` - Display/Set the specified player as your Rival. Repeat to remove.
 
 Advanced Commands `[optional] <required>`
 - `mode/m [lite/l/party/p/silent/s` - Display/change the current Mode.
@@ -59,9 +59,9 @@ All commands must be prefixed with `!lb` (ex: `!lb report`). Only work if anothe
 - `report` - Receive a score report via tell.
 
 ### To-do
-- Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message give by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
-- Base when the LOW WS score gets called out on the number of party members?
-- Add pet BPs. Need to look into how to determine who owns the Avatar and add it to their scores. Physical/Hybrid Rages should be counted as Weapon skills since they can create Skillchains, and Magical Rages counted as Nukes/MBs.
+- Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
+- Base when the LOW WS score starts getting called out on the number of party members?
+- Add pet BPs. Need to look into how to determine who owns the Avatar to add it to their scores. Physical/Hybrid Rages should be counted as Weapon skills since they can create Skillchains, and Magical Rages counted as Nukes/MBs.
 
 ### Version History
 
