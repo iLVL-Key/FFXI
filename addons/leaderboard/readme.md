@@ -13,7 +13,7 @@ Tracks battle information and groups it together in different "boards".
 - Party commands. Party members can use party chat (or a tell) to issue certain commands. This ability is disabled by default and is intended to be enabled by a player using Party Mode.
 - Automatic data recovery. If you crash or disconnect, your data is saved and picks up right back where it left off.
 
-### Currently Tracked Leaderboards
+### Currently Tracked Boards
 - c/cure - Running total of cures.
 - d/death - Running total of deaths.
 - hs/highscore - Highest individual WS damage.
