@@ -27,9 +27,46 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.0'
+_addon.version = '3.0.1'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
+
+--DONE
+------
+--Removed Start/Recover commands. Addon will now automatically start tracking data in the background when it is loaded.
+--Added Rival System. Your Rival will be highlighted in the On-Screen Disply and scores will be called out when one beats the other (visible only to you).
+--Added on screen display box.Displays the top 10 places. Your and your Rivals names are highlighted. 
+--Silent Mode is now the default mode.
+--Normal Mode has been renamed to Party Mode.
+--Added resetting of specific boards ie `//lb reset mb` (`//lb mb reset` also works).
+--All data is now recovered on disconnect/crash.
+--Tie scores (ie multiple 99999's or multiple whiffs at 1) now order by the first person to hit that number.
+--Added a 9's counter for players who hit multiple 9's. Place order now takes this into account.
+--Added commas to numbers (can be turned off in settings).
+--SCH Skillchains are now captured.
+--Added Death board back (now tracked via packets).
+--Added Kill board back (now tracked via packets).
+--Added Murder board (player kills another player).
+--Cures are now called out every 50,000 HP cured.
+--Nukes are now called out every 500,000 damage nuked.
+--Added Optout list. Players on the list will not be tracked, and all current related data will be deleted when added.
+--Added report party/addon command. Will return a specific persons scores via tell.
+--Magic Bursts are now included in Nuke damage.
+
+
+
+--TODO
+------
+--Added tracking Lunge/Swipe
+--	Test which message Lunge without bursting gives, is it different that Lunge MB?
+--	Add Lunge damage to Nukes
+--Base when the LOW WS score gets called out on the number of party members?
+--Turn on/off specific callouts
+--Add pet BPs (action category 13, check SMN GS file)
+--Hide the box when zoning or logged out
+
+
+
 
 require 'logger'
 require 'chat'
@@ -129,17 +166,9 @@ local mabils = require('resources').monster_abilities
 
 local cmd = windower.send_command
 local say = windower.chat.input
-if windower.ffxi.get_info().logged_in then
-	local myName = windower.ffxi.get_mob_by_target('me').name
-end
 
--- When logging in
+-- When logging in, show the box
 function login()
-
-	-- Reset the players name
-	myName = windower.ffxi.get_mob_by_target('me').name
-
-	-- Show the box
 	if settings.visible then
         showBox()
     end
@@ -951,6 +980,7 @@ windower.register_event('action',function(act)
 	elseif act.category == 3 and not settings.paused then
 		
 		local actor = get_actor(act.actor_id)
+		local myName = windower.ffxi.get_mob_by_target('me').name
 
 		-- Make sure the actor is part of the party/alliance
 		if actor == false then
@@ -1236,6 +1266,7 @@ windower.register_event('action',function(act)
 		----------------
 
 		local actor = get_actor(act.actor_id)
+		local myName = windower.ffxi.get_mob_by_target('me').name
 
 		-- Make sure the actor is part of the party/alliance
 		if actor == false then
@@ -1364,6 +1395,7 @@ windower.register_event('action',function(act)
 		-----------------
 
 		local actor = get_actor(act.actor_id)
+		local myName = windower.ffxi.get_mob_by_target('me').name
 
 		-- Make sure the actor is part of the party/alliance
 		if actor == false then
