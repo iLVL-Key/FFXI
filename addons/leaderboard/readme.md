@@ -1,5 +1,7 @@
 # Leaderboard
-Tracks battle information and groups it together in different "boards".
+Tracks battle information and groups it together in different "boards".  
+
+![lb_high_ws](https://github.com/iLVL-Key/FFXI/assets/101156258/9153f70c-4bd4-4884-bea6-1d90faa60b75)
 
 ### Features
 - 3 different tracking modes:
@@ -10,8 +12,10 @@ Tracks battle information and groups it together in different "boards".
 - On-Screen Display for the various boards.
 - Rival system - Set another player as your Rival and get notifications when either of you beat the others scores.
 - Optout list. Characters on this list will not be tracked.
-- Party commands. Party members can use party chat (or a tell) to issue certain commands. This ability is disabled by default and is intended to be enabled by a player using Party Mode.
-- Automatic data recovery. If you crash or disconnect, your data is saved and picks up right back where it left off.
+- Party commands. Party members can use party chat (or a tell) to issue certain commands. Disabled by default and is intended to be enabled by a player using Party Mode.
+- Automatic data recovery. If you crash or disconnect, your data is saved and it picks up right back where it left off.
+- Tracks the number of "9's" a player has hit.
+- Orders duplicates by who hit the number first.
 
 ### Currently Tracked Boards
 - `c/cure` - Running total of cures.
@@ -19,7 +23,7 @@ Tracks battle information and groups it together in different "boards".
 - `hs/highscore` - Highest individual WS damage.
 - `k/kill` - Running total of kills.
 - `ls/lowscore` - Lowest individual WS damage.
-- `m/murde`r - Running total of murders.
+- `m/murder` - Running total of murders.
 - `mb/magicburst` - Highest individual MB damage.
 - `n/nuke` - Running total of nukes.
 - `sc/skillchain` - Highest individual SC damage.
