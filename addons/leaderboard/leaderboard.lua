@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.0.1'
+_addon.version = '3.1'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -158,21 +158,36 @@ function getPlacesInfo(places)
 		places.second and places.second.name,
 		places.third and places.third.name,
 		places.fourth and places.fourth.name,
-		places.fifth and places.fifth.name
+		places.fifth and places.fifth.name,
+		places.sixth and places.sixth.name,
+		places.seventh and places.seventh.name,
+		places.eighth and places.eighth.name,
+		places.ninth and places.ninth.name,
+		places.tenth and places.tenth.name
 	}
 	local score = {
 		places.first and places.first.score,
 		places.second and places.second.score,
 		places.third and places.third.score,
 		places.fourth and places.fourth.score,
-		places.fifth and places.fifth.score
+		places.fifth and places.fifth.score,
+		places.sixth and places.sixth.score,
+		places.seventh and places.seventh.score,
+		places.eighth and places.eighth.score,
+		places.ninth and places.ninth.score,
+		places.tenth and places.tenth.score
 	}
 	local nines = {
 		places.first and places.first.nines,
 		places.second and places.second.nines,
 		places.third and places.third.nines,
 		places.fourth and places.fourth.nines,
-		places.fifth and places.fifth.nines
+		places.fifth and places.fifth.nines,
+		places.sixth and places.sixth.nines,
+		places.seventh and places.seventh.nines,
+		places.eighth and places.eighth.nines,
+		places.ninth and places.ninth.nines,
+		places.tenth and places.tenth.nines
 	}
 
 	return {
@@ -728,6 +743,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			killPlaces.third	= (board and board[3]) or nil
 			killPlaces.fourth	= (board and board[4]) or nil
 			killPlaces.fifth	= (board and board[5]) or nil
+			killPlaces.sixth	= (board and board[6]) or nil
+			killPlaces.seventh	= (board and board[7]) or nil
+			killPlaces.eighth	= (board and board[8]) or nil
+			killPlaces.ninth	= (board and board[9]) or nil
+			killPlaces.tenth	= (board and board[10]) or nil
 			settings:save('all')
 			updateBox(box_display)
 
@@ -784,6 +804,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				deathPlaces.third	= (board and board[3]) or nil
 				deathPlaces.fourth	= (board and board[4]) or nil
 				deathPlaces.fifth	= (board and board[5]) or nil
+				deathPlaces.sixth	= (board and board[6]) or nil
+				deathPlaces.seventh	= (board and board[7]) or nil
+				deathPlaces.eighth	= (board and board[8]) or nil
+				deathPlaces.ninth	= (board and board[9]) or nil
+				deathPlaces.tenth	= (board and board[10]) or nil
 				settings:save('all')
 				updateBox(box_display)
 
@@ -848,6 +873,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				murderPlaces.third	= (board and board[3]) or nil
 				murderPlaces.fourth	= (board and board[4]) or nil
 				murderPlaces.fifth	= (board and board[5]) or nil
+				murderPlaces.sixth	= (board and board[6]) or nil
+				murderPlaces.seventh= (board and board[7]) or nil
+				murderPlaces.eighth	= (board and board[8]) or nil
+				murderPlaces.ninth	= (board and board[9]) or nil
+				murderPlaces.tenth	= (board and board[10]) or nil
 				settings:save('all')
 				updateBox(box_display)
 
@@ -927,6 +957,11 @@ windower.register_event('action',function(act)
 			curePlaces.third	= (board and board[3]) or nil
 			curePlaces.fourth	= (board and board[4]) or nil
 			curePlaces.fifth	= (board and board[5]) or nil
+			curePlaces.sixth	= (board and board[6]) or nil
+			curePlaces.seventh	= (board and board[7]) or nil
+			curePlaces.eighth	= (board and board[8]) or nil
+			curePlaces.ninth	= (board and board[9]) or nil
+			curePlaces.tenth	= (board and board[10]) or nil
 			settings:save('all')
 			updateBox(box_display)
 
@@ -999,6 +1034,11 @@ windower.register_event('action',function(act)
 			whiffPlaces.third	= (board and board[3]) or nil
 			whiffPlaces.fourth	= (board and board[4]) or nil
 			whiffPlaces.fifth	= (board and board[5]) or nil
+			whiffPlaces.sixth	= (board and board[6]) or nil
+			whiffPlaces.seventh	= (board and board[7]) or nil
+			whiffPlaces.eighth	= (board and board[8]) or nil
+			whiffPlaces.ninth	= (board and board[9]) or nil
+			whiffPlaces.tenth	= (board and board[10]) or nil
 			settings:save('all')
 			updateBox(box_display)
 
@@ -1076,6 +1116,11 @@ windower.register_event('action',function(act)
 			hsPlaces.third	= (board and board[3]) or nil
 			hsPlaces.fourth	= (board and board[4]) or nil
 			hsPlaces.fifth	= (board and board[5]) or nil
+			hsPlaces.sixth	= (board and board[6]) or nil
+			hsPlaces.seventh= (board and board[7]) or nil
+			hsPlaces.eighth	= (board and board[8]) or nil
+			hsPlaces.ninth	= (board and board[9]) or nil
+			hsPlaces.tenth	= (board and board[10]) or nil
 			settings:save('all')
 			updateBox(box_display)
 
@@ -1169,6 +1214,11 @@ windower.register_event('action',function(act)
 			lsPlaces.third	= (board and board[3]) or nil
 			lsPlaces.fourth	= (board and board[4]) or nil
 			lsPlaces.fifth	= (board and board[5]) or nil
+			lsPlaces.sixth	= (board and board[6]) or nil
+			lsPlaces.seventh= (board and board[7]) or nil
+			lsPlaces.eighth	= (board and board[8]) or nil
+			lsPlaces.ninth	= (board and board[9]) or nil
+			lsPlaces.tenth	= (board and board[10]) or nil
 			settings:save('all')
 			updateBox(box_display)
 
@@ -1300,6 +1350,11 @@ windower.register_event('action',function(act)
 		scPlaces.third	= (board and board[3]) or nil
 		scPlaces.fourth	= (board and board[4]) or nil
 		scPlaces.fifth	= (board and board[5]) or nil
+		scPlaces.sixth	= (board and board[6]) or nil
+		scPlaces.seventh= (board and board[7]) or nil
+		scPlaces.eighth	= (board and board[8]) or nil
+		scPlaces.ninth	= (board and board[9]) or nil
+		scPlaces.tenth	= (board and board[10]) or nil
 		settings:save('all')
 		updateBox(box_display)
 
@@ -1431,6 +1486,11 @@ windower.register_event('action',function(act)
 		mbPlaces.third	= (board and board[3]) or nil
 		mbPlaces.fourth	= (board and board[4]) or nil
 		mbPlaces.fifth	= (board and board[5]) or nil
+		mbPlaces.sixth	= (board and board[6]) or nil
+		mbPlaces.seventh= (board and board[7]) or nil
+		mbPlaces.eighth	= (board and board[8]) or nil
+		mbPlaces.ninth	= (board and board[9]) or nil
+		mbPlaces.tenth	= (board and board[10]) or nil
 		settings:save('all')
 		updateBox(box_display)
 
@@ -1530,6 +1590,11 @@ windower.register_event('action',function(act)
 		nukePlaces.third	= (board and board[3]) or nil
 		nukePlaces.fourth	= (board and board[4]) or nil
 		nukePlaces.fifth	= (board and board[5]) or nil
+		nukePlaces.sixth	= (board and board[6]) or nil
+		nukePlaces.seventh	= (board and board[7]) or nil
+		nukePlaces.eighth	= (board and board[8]) or nil
+		nukePlaces.ninth	= (board and board[9]) or nil
+		nukePlaces.tenth	= (board and board[10]) or nil
 		settings:save('all')
 		updateBox(box_display)
 
@@ -1654,12 +1719,14 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		windower.add_to_chat(36,'   pause/p'..(' - Pause/unpause tracking.'):color(8))
 		windower.add_to_chat(36,'   boards'..(' - List the different boards that are tracked.'):color(8))
 		windower.add_to_chat(36,'   visible/show/hide'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display boards on screen.'):color(8))
+		windower.add_to_chat(36,'   reset'..(' <all/c/d/hs/k/ls/m/mb/n/sc/w>'):color(2)..(' - Reset specified data.'):color(8))
 		windower.add_to_chat(36,'   rival'..(' <name>'):color(2)..(' - Set the specified player as your Rival. Repeat to remove.'):color(8))
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Advanced Commands '..('[optional]'):color(53)..(' <required>'):color(2))
 		windower.add_to_chat(36,'   mode/m'..(' [lite/l/party/p/silent/s]'):color(53)..(' - Display/change the current Mode.'):color(8))
 		windower.add_to_chat(36,'   c/d/hs/k/ls/m/mb/n/sc/w'..(' - Print board to party chat.'):color(8))
 		windower.add_to_chat(36,'   lock/unlock'..(' - Drag the On-Screen Display.'):color(8))
+		windower.add_to_chat(36,'   optout'..(' [add/remove'):color(53)..(' <name>'):color(2)..(']'):color(53)..(' - Display/update the Optout list.'):color(8))
 		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
 		windower.add_to_chat(36,'   comma'..(' [on/off]'):color(53)..(' - Display/change the Comma setting.'):color(8))
 		windower.add_to_chat(36,'   party'..(' [on/off]'):color(53)..(' - Display/change the Party Command setting.'):color(8))
@@ -1989,9 +2056,17 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 	elseif addcmd == 'optout' or addcmd == 'o' then
 
 		if arg == 'add' or arg == 'a' then
-			addToOptout(arg2)
+			if arg2 == nil then
+				windower.add_to_chat(220,'[Leaderboard] '..('Please add a name to be added to the Optout list.'):color(8))
+			else
+				addToOptout(arg2)
+			end
 		elseif arg == 'remove' or arg == 'r' or arg == 'delete' or arg == 'd' then
-			removeFromOptout(arg2)
+			if arg2 == nil then
+				windower.add_to_chat(220,'[Leaderboard] '..('Please add a name to be removed from the Optout list.'):color(8))
+			else
+				removeFromOptout(arg2)
+			end
 		else
 			local list = optoutList()
 			windower.add_to_chat(220,'[Leaderboard] '..('Optout list: '):color(8)..(capitalize(list)):color(1))
