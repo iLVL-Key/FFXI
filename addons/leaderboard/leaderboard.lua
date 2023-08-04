@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.1'
+_addon.version = '3.2'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -37,14 +37,15 @@ texts = require('texts')
 config = require('config')
 packets = require('packets')
 
-defaults = {}					-- All of these are configurable via commands in-game (//lb help), recommend that over editing the settings file
-defaults.flood_delay = 5		-- Sets the delay between incoming commands, preventing party members from spamming commands
-defaults.reminder = true		-- Display occasional reminders
+defaults = {}					-- In addition to the settings file, all of these are also configurable via commands in-game (//lb help).
+defaults.party_commands = false	-- Allow party/alliance members to trigger certain commands via chat
+defaults.flood_delay = 5		-- Sets the delay between incoming party commands, preventing party members from spamming commands
 defaults.commas = true			-- Add commas to the scores
 defaults.visible = true			-- Display the scores with an On-Screen Display
-defaults.party_commands = false	-- Allow party/alliance members to trigger certain commands via chat
 defaults.optout = {}			-- A list of names to be excluded from data collection
 defaults.rival = ''				-- The name of an optional Rival to track
+
+defaults.first_load = true
 
 defaults.flags = T{}
 defaults.flags.bold = true
@@ -83,44 +84,46 @@ defaults.colors.rival.r = 236
 defaults.colors.rival.g = 137
 defaults.colors.rival.b = 142
 
-defaults.places = {}
-defaults.places.cure = {}
-defaults.places.death = {}
-defaults.places.hs = {}
-defaults.places.kill = {}
-defaults.places.ls = {}
-defaults.places.mb = {}
-defaults.places.murder = {}
-defaults.places.nuke = {}
-defaults.places.sc = {}
-defaults.places.whiff = {}
+live = {}
 
-defaults.individuals = {}
-defaults.individuals.cure = {}
-defaults.individuals.death = {}
-defaults.individuals.hs = {}
-defaults.individuals.kill = {}
-defaults.individuals.ls = {}
-defaults.individuals.mb = {}
-defaults.individuals.murder = {}
-defaults.individuals.nuke = {}
-defaults.individuals.sc = {}
-defaults.individuals.whiff = {}
+live.places = {}
+live.places.cure = {}
+live.places.death = {}
+live.places.hs = {}
+live.places.kill = {}
+live.places.ls = {}
+live.places.mb = {}
+live.places.murder = {}
+live.places.nuke = {}
+live.places.sc = {}
+live.places.whiff = {}
 
-defaults.indexes = {}		-- Used to order the scores as they are saved to indicate which came first,
-defaults.indexes.death = 0	-- this will then properly place duplicate score values
-defaults.indexes.hs = 0		-- ie multiple people hit 99999, order it by who hit 99999 first
-defaults.indexes.kill = 0	-- Cure and Nuke are used to call out every x amount
-defaults.indexes.ls = 0		
-defaults.indexes.mb = 0		
-defaults.indexes.murder = 0
-defaults.indexes.sc = 0
-defaults.indexes.whiff = 0
+live.individuals = {}
+live.individuals.cure = {}
+live.individuals.death = {}
+live.individuals.hs = {}
+live.individuals.kill = {}
+live.individuals.ls = {}
+live.individuals.mb = {}
+live.individuals.murder = {}
+live.individuals.nuke = {}
+live.individuals.sc = {}
+live.individuals.whiff = {}
 
-defaults.first_load = true
-defaults.paused = false
+live.indexes = {}		-- Used to order the scores as they are saved to indicate which came first,
+live.indexes.death = 0	-- this will then properly place duplicate score values
+live.indexes.hs = 0		-- ie multiple people hit 99999, order it by who hit 99999 first
+live.indexes.kill = 0	-- Cure and Nuke are used to call out every x amount
+live.indexes.ls = 0		
+live.indexes.mb = 0		
+live.indexes.murder = 0
+live.indexes.sc = 0
+live.indexes.whiff = 0
+
+live.paused = false
 
 settings = config.load(defaults)
+live = config.load('data/live.xml', live)
 
 local weaponskills = require('resources').weapon_skills
 local spells = require('resources').spells
@@ -130,20 +133,6 @@ local mabils = require('resources').monster_abilities
 local cmd = windower.send_command
 local say = windower.chat.input
 
--- When logging in, show the box
-function login()
-	if settings.visible then
-        showBox()
-    end
-end
-
--- When logging out, hide the box
-function logout()
-    hideBox()
-end
-
-windower.register_event('login', login)
-
 local Heartbeat = 0
 local flood_timer = 0
 local box_display = 'hs'
@@ -151,8 +140,25 @@ local Mode = 'Silent'
 local zoning = false
 
 
+-- When logging in, show the box
+function login()
+	if settings.visible then
+		showBox()
+	end
+end
+
+
+-- When logging out, hide the box
+function logout()
+	hideBox()
+end
+
+windower.register_event('login', login)
+
+
 -- Put places info into tables to call them in order
 function getPlacesInfo(places)
+
 	local name = {
 		places.first and places.first.name,
 		places.second and places.second.name,
@@ -165,6 +171,7 @@ function getPlacesInfo(places)
 		places.ninth and places.ninth.name,
 		places.tenth and places.tenth.name
 	}
+
 	local score = {
 		places.first and places.first.score,
 		places.second and places.second.score,
@@ -177,6 +184,7 @@ function getPlacesInfo(places)
 		places.ninth and places.ninth.score,
 		places.tenth and places.tenth.score
 	}
+
 	local nines = {
 		places.first and places.first.nines,
 		places.second and places.second.nines,
@@ -195,6 +203,7 @@ function getPlacesInfo(places)
 		score = score,
 		nines = nines
 	}
+
 end
 
 
@@ -204,29 +213,46 @@ end
 -- This prevents a sort of "duplication" issue where the older data is now lowercased and the
 -- new data started after recovery is capitalized as expected.
 function capitalize(str)
+
 	local capitalized = string.gsub(str, "(%w[%w']*)", function(word)
-	  	if word ~= "of" then
+		if word ~= "of" then
 			word = word:gsub("^%l", string.upper)
-	  	end
-	  	return word
+		end
+		return word
 	end)
 
 	return capitalized
+
 end
 
 
 -- Turn the entire name into all uppercase
 function uppercase(str)
+
 	local uppercased = string.gsub(str, "%a", function(letter)
 		return letter:upper()
 	end)
 
 	return uppercased
+
+end
+
+
+-- Turn the entire name into all uppercase
+function uppercase(str)
+
+	local uppercased = string.gsub(str, "%a", function(letter)
+		return letter:upper()
+	end)
+
+	return uppercased
+
 end
 
 
 -- Add commas to numbers to make them easier to read
 function addCommas(number)
+
 	-- Convert the number to a string
 	local formattedNumber = tostring(number)
 
@@ -248,7 +274,8 @@ function addCommas(number)
 	end
 
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
-    return formattedNumber
+	return formattedNumber
+
 end
 
 
@@ -277,17 +304,17 @@ end
 -- Update the BP box
 function updateBox(box_display)
 
-    local textColor = settings.colors.text
-    local headerColor = settings.colors.header
+	local textColor = settings.colors.text
+	local headerColor = settings.colors.header
 	local selfColor = settings.colors.self
 	local rivalColor = settings.colors.rival
 	local color = textColor
 
-	local places = settings.places[box_display]
+	local places = live.places[box_display]
 	local info = getPlacesInfo(places)
 
-    -- Create a temporary "text" array that we use to build what's displayed in the box
-    local text = ''
+	-- Create a temporary "text" array that we use to build what's displayed in the box
+	local text = ''
 	local board_name = Leaderboard
 	if box_display == 'cure' then
 		board_name = 'Cure Board'
@@ -311,10 +338,10 @@ function updateBox(box_display)
 		board_name = 'whiff Board'
 	end
 
-    -- The header always goes first, at the top
-    text = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')'
+	-- The header always goes first, at the top
+	text = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')'
 
-	local header_text = ('%s '):format(settings.paused and 'Paused' or 'Running')
+	local header_text = ('%s '):format(live.paused and 'Paused' or 'Running')
 	while string.len(header_text) < 19 do
 		header_text = ' '..header_text
 	end
@@ -349,8 +376,8 @@ function updateBox(box_display)
 		end
 	end
 
-    -- Turn the "text" array into a string and update the text inside the box
-    lbBox.current_string = text
+	-- Turn the "text" array into a string and update the text inside the box
+	lbBox.current_string = text
 
 end
 
@@ -368,6 +395,15 @@ cureThings = T{
     }
 
 
+BPWS = S{
+	'Punch','Rock Throw','Barracuda Dive','Claw','Welt','Axe Kick','Shock Strike','Camisado','Regal Scratch','Poison Nails','Moonlit Charge','Crescent Fang','Rock Buster','Roundhouse','Tail Whip','Double Punch','Megalith Throw','Double Slap','Eclipse Bite','Mountain Buster','Spinning Dive','Predator Claws','Rush','Chaotic Strike','Volt Strike','Hysteric Assault','Crag Throw','Blindside','Regal Gash','Burning Strike','Flaming Crush'
+	}
+
+BPNuke = S{
+	'Inferno','Earthen Fury','Tidal Wave','Aerial Blast','Clarsach Call','Diamond Dust','Judgment Bolt','Searing Light','Howling Moon','Ruinous Omen','Fire II','Stone II','Water II','Aero II','Blizzard II','Thunder II','Thunderspark','Meteorite','Fire IV','Stone IV','Water IV','Aero IV','Blizzard IV','Thunder IV','Sonic Buffet','Nether Blast','Zantetsuken','Meteor Strike','Geocrush','Grand Fall','Wind Blade','Tornado II','Heavenly Strike','Thunderstorm','Level ? Holy','Holy Mist','Lunar Bay','Night Terror','Conflag Strike','Impact'
+	}
+
+
 	if settings.first_load then
 
 		windower.add_to_chat(220,'[Leaderboard] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key'):color(220))
@@ -382,38 +418,72 @@ cureThings = T{
 -- Hide the box when zoning
 windower.register_event('prerender', function()
 
-    local pos = windower.ffxi.get_position()
+	local pos = windower.ffxi.get_position()
 
-    if pos == "(?-?)" and not zoning then
+	if pos == "(?-?)" and not zoning then
 
-        hideBox()
-        zoning = true
+		hideBox()
+		zoning = true
 
-    elseif pos ~= "(?-?)" and zoning then
+	elseif pos ~= "(?-?)" and zoning then
 
-        if settings.visible then
-            showBox()
-        end
-        zoning = false
+		if settings.visible then
+			showBox()
+		end
+		zoning = false
 
-    end
+	end
 
 end)
 
 
 -- Checks that the actor is in our party/alliance and return the name
 function get_actor(id)
-	local actor = windower.ffxi.get_mob_by_id(id)
-	if actor == nil or (not actor.in_alliance and not actor.in_party) then
+
+	local actor = nil
+	local ally_pos = {
+		'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
+	}
+
+	-- Loop through the alliance members to see if the index of the actor matches anyones pet
+	for i = 1, 18, 1 do
+		local ally_member = windower.ffxi.get_mob_by_target(ally_pos[i]) or nil
+		if ally_member and windower.ffxi.get_mob_by_id(id) and windower.ffxi.get_mob_by_id(id).index == ally_member.pet_index then
+			-- If there is a match, return the name of the pets owner
+			actor = ally_member
+			return actor
+		end
+	end
+
+	-- If there is no match, check if the actor is in our alliance
+	if actor == nil then
+		local actor = windower.ffxi.get_mob_by_id(id)
+		if actor == nil or (not actor.in_alliance and not actor.in_party) then
+			-- Not in our alliance, return false
+			return false
+		else
+			-- In our alliance, return the name of the actor
+			return actor
+		end
+	end
+
+end
+
+
+-- Checks that the target is in our party/alliance and return the name
+function get_target(id)
+	local target = windower.ffxi.get_mob_by_id(id)
+	if target == nil or (not target.in_alliance and not target.in_party) then
 		return false
 	else
-		return actor
+		return target
 	end
 end
 
 
 -- Sort the list by highest scores and return a list of the top 10
 function sortNamesHigh(data)
+
 	-- Convert the input table into a list of objects with names
 	local dataList = {}
 	for name, obj in pairs(data) do
@@ -439,114 +509,104 @@ function sortNamesHigh(data)
 	end
 
 	return board
+
 end
 
 
 -- Sort the list by lowest scores and return a list of the top 10
 function sortNamesLow(data)
-    -- Convert the input table into a list of objects with names
-    local dataList = {}
-    for name, obj in pairs(data) do
-        obj.name = name
-        table.insert(dataList, obj)
-    end
 
-    -- Sort the dataList table based on the specified criteria
-    table.sort(dataList, function(a, b)
-        if a.score ~= b.score then
-            return a.score < b.score -- Sort by score in ascending order
-        else
-            return a.index < b.index -- Sort by index in ascending order
-        end
-    end)
+	-- Convert the input table into a list of objects with names
+	local dataList = {}
+	for name, obj in pairs(data) do
+		obj.name = name
+		table.insert(dataList, obj)
+	end
 
-    -- Create the board table with the top 10 results
-    local board = {}
-    for i = 1, math.min(10, #dataList) do
-        table.insert(board, dataList[i])
-    end
+	-- Sort the dataList table based on the specified criteria
+	table.sort(dataList, function(a, b)
+		if a.score ~= b.score then
+			return a.score < b.score -- Sort by score in ascending order
+		else
+			return a.index < b.index -- Sort by index in ascending order
+		end
+	end)
 
-    return board
+	-- Create the board table with the top 10 results
+	local board = {}
+	for i = 1, math.min(10, #dataList) do
+		table.insert(board, dataList[i])
+	end
+
+	return board
+
 end
 
 
 -- Add a name to the Optout list
 function addToOptout(name)
-	local l_name = string.lower(name)
-	local ind = settings.individuals
-	-- Check if the name already exists in the table
-	if not settings.optout[l_name] then
 
-		-- Add the name to the table
-		settings.optout[l_name] = true
+	-- Add the name to the table
+	settings.optout[name] = true
 
-		-- Delete all related data for the player
-		local tables = {ind.cure, ind.death, ind.hs, ind.kill, ind.ls, ind.mb, ind.murder, ind.nuke, ind.sc, ind.whiff}
-		for _, table in ipairs(tables) do
-			table[l_name] = nil
-		end
-
-		settings:save('all')
-		windower.add_to_chat(220,'[Leaderboard] '..('Added '..name..' to the Optout list. All related data has been deleted. '):color(8)..'')
-
-	else
-
-		windower.add_to_chat(220,'[Leaderboard] '..(name..' is already in the Optout list.'):color(8)..'')
-
+	-- Delete all related data for the player
+	local ind = live.individuals
+	local tables = {ind.cure, ind.death, ind.hs, ind.kill, ind.ls, ind.mb, ind.murder, ind.nuke, ind.sc, ind.whiff}
+	for _, table in ipairs(tables) do
+		table[name] = nil
 	end
+
+	settings:save('all')
+
 end
 
 
 -- Remove a name from the Optout list
 function removeFromOptout(name)
-	local l_name = string.lower(name)
-	-- Check if the name exists in the table
-	if settings.optout[l_name] then
-		-- Remove the name from the table
-		settings.optout[l_name] = nil
-		settings:save('all')
-		windower.add_to_chat(220,'[Leaderboard] '..('Removed '..name..' from the Optout list.'):color(8)..'')
-	else
-		windower.add_to_chat(220,'[Leaderboard] '..(name..' is not in the Optout list.'):color(8)..'')
-	end
+	settings.optout[name] = nil
+	settings:save('all')
 end
 
 
 -- Return the Optout list
 function optoutList()
-    local names = {}
-    for name, _ in pairs(settings.optout) do
-        table.insert(names, name)
-    end
-    if next(names) == nil then
-        return "[empty]"
-    else
-        return table.concat(names, ', ')
-    end
+
+	local names = {}
+
+	for name, _ in pairs(settings.optout) do
+		table.insert(names, name)
+	end
+
+	if next(names) == nil then
+		return "[empty]"
+	else
+		return table.concat(names, ', ')
+	end
+
 end
 
 
 -- Send the specified player their score report via tell
 function reportPlayerScores(name)
-	local ind = settings.individuals
+	local ind = live.individuals
 	local text1 = ''
 	local text2 = ''
-	local text_hs = (ind.hs[name] and ind.hs[name].score) and ind.hs[name].score..(ind.hs[name].nines > 0 and ':'..ind.hs[name].score or '') or 0
-	local text_ls = (ind.ls[name] and ind.ls[name].score) and ind.ls[name].score or 0
-	local text_sc = (ind.sc[name] and ind.sc[name].score) and ind.sc[name].score..(ind.sc[name].nines > 0 and ':'..ind.sc[name].score or '') or 0
-	local text_whiff = (ind.whiff[name] and ind.whiff[name].score) and ind.whiff[name].score or 0
-	local text_mb = (ind.mb[name] and ind.mb[name].score) and ind.mb[name].score..(ind.mb[name].nines > 0 and ':'..ind.mb[name].score or '') or 0
-	local text_nuke = (ind.nuke[name] and ind.nuke[name].score) and ind.nuke[name].score or 0
-	local text_cure = (ind.cure[name] and ind.cure[name].score) and ind.cure[name].score or 0
-	local text_death = (ind.death[name] and ind.death[name].score) and ind.death[name].score or 0
-	local text_kill = (ind.kill[name] and ind.kill[name].score) and ind.kill[name].score or 0
-	local text_murder = (ind.murder[name] and ind.murder[name].score) and ind.murder[name].score or 0
+	local text_hs = (ind.hs[name] and ind.hs[name].score) and addCommas(ind.hs[name].score)..(ind.hs[name].nines > 0 and ':'..ind.hs[name].nines or '') or 0
+	local text_ls = (ind.ls[name] and ind.ls[name].score) and addCommas(ind.ls[name].score) or 0
+	local text_sc = (ind.sc[name] and ind.sc[name].score) and addCommas(ind.sc[name].score)..(ind.sc[name].nines > 0 and ':'..ind.sc[name].nines or '') or 0
+	local text_whiff = (ind.whiff[name] and ind.whiff[name].score) and addCommas(ind.whiff[name].score) or 0
+	local text_mb = (ind.mb[name] and ind.mb[name].score) and addCommas(ind.mb[name].score)..(ind.mb[name].nines > 0 and ':'..ind.mb[name].nines or '') or 0
+	local text_nuke = (ind.nuke[name] and ind.nuke[name].score) and addCommas(ind.nuke[name].score) or 0
+	local text_cure = (ind.cure[name] and ind.cure[name].score) and addCommas(ind.cure[name].score) or 0
+	local text_death = (ind.death[name] and ind.death[name].score) and addCommas(ind.death[name].score) or 0
+	local text_kill = (ind.kill[name] and ind.kill[name].score) and addCommas(ind.kill[name].score) or 0
+	local text_murder = (ind.murder[name] and ind.murder[name].score) and addCommas(ind.murder[name].score) or 0
 	if text_hs == 0 and text_ls == 0 and text_sc == 0 and text_whiff == 0 and text_mb == 0 and text_nuke == 0 and text_cure == 0 and text_death == 0 and text_kill == 0 and text_murder == 0 then
 		text1 = 'No data for you yet.'
 		text2 = ''
 	else
-		text1 = 'High WS: '..text_hs..', Low WS: '..text_ls..', Skillchain: '..text_sc..', Whiffs: '..text_whiff..', Deaths: '..text_death
-		text2 = 'Nukes: '..text_nuke..', Magic Burst: '..text_mb..', Cures: '..text_cure..', Kills: '..text_kill..', Murders: '..text_murder
+		text1 = '(High WS: '..text_hs..') (Low WS: '..text_ls..') (Skillchain: '..text_sc..') (Whiffs: '..text_whiff..') (Deaths: '..text_death..')'
+		text2 = '(Nukes: '..text_nuke..') (Magic Burst: '..text_mb..') (Cures: '..text_cure..') (Kills: '..text_kill..') (Murders: '..text_murder..')'
 	end
 	say('/t '..name..' '..text1)
 	if text2 ~= '' then
@@ -558,52 +618,52 @@ end
 
 --Reset boards
 function resetC()
-	settings.individuals.cure = {}
-	settings.places.cure = {}
+	live.individuals.cure = {}
+	live.places.cure = {}
 end
 function resetD()
-	settings.individuals.death = {}
-	settings.places.death = {}
-	settings.indexes.death = 0
+	live.individuals.death = {}
+	live.places.death = {}
+	live.indexes.death = 0
 end
 function resetHS()
-	settings.individuals.hs = {}
-	settings.places.hs = {}
-	settings.indexes.hs = 0
+	live.individuals.hs = {}
+	live.places.hs = {}
+	live.indexes.hs = 0
 end
 function resetK()
-	settings.individuals.kill = {}
-	settings.places.kill = {}
-	settings.indexes.kill = 0
+	live.individuals.kill = {}
+	live.places.kill = {}
+	live.indexes.kill = 0
 end
 function resetLS()
-	settings.individuals.ls = {}
-	settings.places.ls = {}
-	settings.indexes.ls = 0
+	live.individuals.ls = {}
+	live.places.ls = {}
+	live.indexes.ls = 0
 end
 function resetMB()
-	settings.individuals.mb = {}
-	settings.places.mb = {}
-	settings.indexes.mb = 0
+	live.individuals.mb = {}
+	live.places.mb = {}
+	live.indexes.mb = 0
 end
 function resetM()
-	settings.individuals.murder = {}
-	settings.places.murder = {}
-	settings.indexes.murder = 0
+	live.individuals.murder = {}
+	live.places.murder = {}
+	live.indexes.murder = 0
 end
 function resetN()
-	settings.individuals.nuke = {}
-	settings.places.nuke = {}
+	live.individuals.nuke = {}
+	live.places.nuke = {}
 end
 function resetSC()
-	settings.individuals.sc = {}
-	settings.places.sc = {}
-	settings.indexes.sc = 0
+	live.individuals.sc = {}
+	live.places.sc = {}
+	live.indexes.sc = 0
 end
 function resetW()
-	settings.individuals.whiff = {}
-	settings.places.whiff = {}
-	settings.indexes.whiff = 0
+	live.individuals.whiff = {}
+	live.places.whiff = {}
+	live.indexes.whiff = 0
 end
 function resetALL()
 	resetC()
@@ -631,43 +691,43 @@ windower.register_event('chat message', function(message, sender, mode)
 	local l_name = string.lower(sender)
 
 	-- CURE BOARD
-	if (message:find('!lb c') or message:find('!lbc') or message:find('!LB C') or message:find('!LBC')) and not (message:find('[Leaderboard] Started!')) then
+	if (message:find('!lb c') or message:find('!lbc') or message:find('!LB C') or message:find('!LBC')) then
 		cmd('lb c')
 
 	-- DEATH BOARD
-	elseif (message:find('!lb d') or message:find('!lbd') or message:find('!LB D') or message:find('!LBD')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb d') or message:find('!lbd') or message:find('!LB D') or message:find('!LBD')) then
 		cmd('lb d')
 
 	-- HIGH WS BOARD
-	elseif (message:find('!lb hs') or message:find('!lbhs') or message:find('!LB HS') or message:find('!LBHS')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb hs') or message:find('!lbhs') or message:find('!LB HS') or message:find('!LBHS')) then
 		cmd('lb hs')
 
 	-- KILL BOARD
-	elseif (message:find('!lb k') or message:find('!lbk') or message:find('!LB K') or message:find('!LBK')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb k') or message:find('!lbk') or message:find('!LB K') or message:find('!LBK')) then
 		cmd('lb k')
 
 	-- LOW WS BOARD
-	elseif (message:find('!lb ls') or message:find('!lbls') or message:find('!LB LS') or message:find('!LBLS')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb ls') or message:find('!lbls') or message:find('!LB LS') or message:find('!LBLS')) then
 		cmd('lb ls')
 
 	-- MAGIC BURST BOARD
-	elseif (message:find('!lb mb') or message:find('!lbmb') or message:find('!LB MB') or message:find('!LBMB')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb mb') or message:find('!lbmb') or message:find('!LB MB') or message:find('!LBMB')) then
 		cmd('lb mb')
 
 	-- MURDER BOARD
-	elseif (message:find('!lb m') or message:find('!lbm') or message:find('!LB M') or message:find('!LBM')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb m') or message:find('!lbm') or message:find('!LB M') or message:find('!LBM')) then
 		cmd('lb m')
 
 	-- NUKE BOARD
-	elseif (message:find('!lb n') or message:find('!lbn') or message:find('!LB N') or message:find('!LBN')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb n') or message:find('!lbn') or message:find('!LB N') or message:find('!LBN')) then
 		cmd('lb n')
 
 	-- SKILLCHAIN BOARD
-	elseif (message:find('!lb sc') or message:find('!lbsc') or message:find('!LB SC') or message:find('!LBSC')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb sc') or message:find('!lbsc') or message:find('!LB SC') or message:find('!LBSC')) then
 		cmd('lb sc')
 
 	-- WHIFF BOARD
-	elseif (message:find('!lb w') or message:find('!lbw') or message:find('!LB W') or message:find('!LBW')) and not (message:find('[Leaderboard] Started!')) then
+	elseif (message:find('!lb w') or message:find('!lbw') or message:find('!LB W') or message:find('!LBW')) then
 		cmd('lb w')
 
 	-- Send a score update to the message sender
@@ -676,11 +736,12 @@ windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add/remove the message sender to the Optout list
 	elseif message:find('!lb optout') then
-		say('/t '..sender..(' You have been %s the Leaderboard Optout list.'):format(settings.optout[l_name] and 'removed from' or 'added to'))
 		if settings.optout[l_name] then
 			removeFromOptout(sender)
+			say('/t '..sender..' [Leaderboard] You have been removed from the Optout list.')
 		else
 			addToOptout(sender)
+			say('/t '..sender..' [Leaderboard] You have been added to the Optout list. Any related data has been deleted.')
 		end
 
 	-- Unknown command
@@ -695,11 +756,11 @@ end)
 
 
 windower.register_event('incoming chunk', function(id, original, modified, injected, blocked)
-    if id == 0x029 and not settings.paused then
-		local packet = packets.parse('incoming', original)
-		local target = get_actor(packet['Target'])
-		local actor = get_actor(packet['Actor'])
+	if id == 0x029 and not live.paused then
 
+		local packet = packets.parse('incoming', original)
+		local target = get_target(packet['Target'])
+		local actor = get_actor(packet['Actor'])
 
 		-- A monster is killed
 		if packet['Message'] == 6 then
@@ -723,21 +784,21 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				return
 			end
 
-			local killPlaces = settings.places.kill
-			local killIndividuals = settings.individuals.kill
+			local killPlaces = live.places.kill
+			local killIndividuals = live.individuals.kill
 
 			-- Retrieve the actors relevant data
 			local kills = (killIndividuals[data.actor_lower_name] and killIndividuals[data.actor_lower_name].score) or 0
-			local index = settings.indexes.kill
+			local index = live.indexes.kill
 
 			-- Update the actors score information
 			kills = kills +1
 			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-			settings.indexes.kill = index
+			live.indexes.kill = index
 			killIndividuals[data.actor_lower_name] = {score = kills, nines = 0, index = index}
 
 			-- Update the leaderboard places
-			local board = sortNamesHigh(settings.individuals.kill)
+			local board = sortNamesHigh(live.individuals.kill)
 			killPlaces.first	= board[1]
 			killPlaces.second	= (board and board[2]) or nil
 			killPlaces.third	= (board and board[3]) or nil
@@ -748,19 +809,19 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			killPlaces.eighth	= (board and board[8]) or nil
 			killPlaces.ninth	= (board and board[9]) or nil
 			killPlaces.tenth	= (board and board[10]) or nil
-			settings:save('all')
+			live:save('all')
 			updateBox(box_display)
 
 			-- Call out Kills, depending on the mode and how many Kills they are at
 			if Mode ~= "Silent" then
 				local everyNumKills = kills % 10 -- returns the remainder after euclidean division (division by subtraction)
 				if everyNumKills == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
-					say('/p [KILL] '..data.actor_name..' has racked up '..kills..' kills!')
+					say('/p [KILL] '..data.actor_name..' has racked up '..addCommas(kills)..' kills!')
 				end
 			end
 
 		-- A player is killed
-        elseif packet['Message'] == 97 then
+		elseif packet['Message'] == 97 then
 
 			-- The killer was a monster
 			if actor == false then
@@ -784,21 +845,21 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 					return
 				end
 
-				local deathPlaces = settings.places.death
-				local deathIndividuals = settings.individuals.death
+				local deathPlaces = live.places.death
+				local deathIndividuals = live.individuals.death
 
 				-- Retrieve the targets relevant data
 				local deaths = (deathIndividuals[data.target_lower_name] and deathIndividuals[data.target_lower_name].score) or 0
-				local index = settings.indexes.death
+				local index = live.indexes.death
 
 				-- Update the targets score information
 				deaths = deaths +1
 				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-				settings.indexes.death = index
+				live.indexes.death = index
 				deathIndividuals[data.target_lower_name] = {score = deaths, nines = 0, index = index}
 
 				-- Update the leaderboard places
-				local board = sortNamesHigh(settings.individuals.death)
+				local board = sortNamesHigh(live.individuals.death)
 				deathPlaces.first	= board[1]
 				deathPlaces.second	= (board and board[2]) or nil
 				deathPlaces.third	= (board and board[3]) or nil
@@ -809,7 +870,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				deathPlaces.eighth	= (board and board[8]) or nil
 				deathPlaces.ninth	= (board and board[9]) or nil
 				deathPlaces.tenth	= (board and board[10]) or nil
-				settings:save('all')
+				live:save('all')
 				updateBox(box_display)
 
 				-- Call out Deaths, depending on the mode and how many Deaths they are at
@@ -823,7 +884,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 					else
 						local everyNumDeaths = deaths % 5 -- returns the remainder after euclidean division (division by subtraction)
 						if everyNumDeaths == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
-							say('/p [DEATH] '..data.target_name..' is up to '..deaths..' deaths!')
+							say('/p [DEATH] '..data.target_name..' is up to '..addCommas(deaths)..' deaths!')
 						end
 					end
 				end
@@ -853,21 +914,21 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 					return
 				end
 
-				local murderPlaces = settings.places.murder
-				local murderIndividuals = settings.individuals.murder
+				local murderPlaces = live.places.murder
+				local murderIndividuals = live.individuals.murder
 
 				-- Retrieve the actors relevant data
 				local murders = (murderIndividuals[data.actor_lower_name] and murderIndividuals[data.actor_lower_name].score) or 0
-				local index = settings.indexes.murder
+				local index = live.indexes.murder
 
 				-- Update the actors score information
 				murders = murders +1
 				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-				settings.indexes.murder = index
+				live.indexes.murder = index
 				murderIndividuals[data.actor_lower_name] = {score = murders, nines = 0, index = index}
 
 				-- Update the leaderboard places
-				local board = sortNamesHigh(settings.individuals.murder)
+				local board = sortNamesHigh(live.individuals.murder)
 				murderPlaces.first	= board[1]
 				murderPlaces.second	= (board and board[2]) or nil
 				murderPlaces.third	= (board and board[3]) or nil
@@ -878,13 +939,13 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				murderPlaces.eighth	= (board and board[8]) or nil
 				murderPlaces.ninth	= (board and board[9]) or nil
 				murderPlaces.tenth	= (board and board[10]) or nil
-				settings:save('all')
+				live:save('all')
 				updateBox(box_display)
 
 				-- Call out Murders
 				if Mode ~= "Silent" then
 					if murders == 1 then
-						say('/p [MURDER] '..data.actor_name..(' has %s'):format(data.actor_lower_name == murderPlaces.first.name and 'drawn First Blood and' or '')..' murdered '..data.target_name..'!')
+						say('/p [MURDER] '..data.actor_name..(' has %s'):format(data.actor_lower_name == murderPlaces.first.name and 'drawn First Blood and' or '')..'murdered '..data.target_name..'!')
 					end
 				end
 
@@ -896,8 +957,18 @@ end)
 
 windower.register_event('action',function(act)
 
+	-----------
+	-- CHARM --
+	-----------
+
+	-- A player is charmed
+	if Mode ~= "Silent" and act.param == 4126 and act.targets[1].actions[1].message == 242 then
+		say('/p \n[CHARM] '..capitalize(windower.ffxi.get_mob_by_id(act.targets[1].id).name)..' is charmed by the '..windower.ffxi.get_mob_by_id(act.actor_id).name..'! <call14>\n')
+	end
+
+
 	-- A certain type of Spell, Ability, or Item is used that cures
-	if (act.category == 4 or act.category == 5 or act.category == 6 or act.category == 11 or act.category == 14) and not settings.paused then
+	if (act.category == 4 or act.category == 5 or act.category == 6 or act.category == 11 or act.category == 14) or (act.category == 13 and act.targets[1].actions[1].message == 318) and not live.paused then
 
 		----------
 		-- CURE --
@@ -919,7 +990,7 @@ windower.register_event('action',function(act)
 			data.cureThing = (spells[act.param] and spells[act.param].english) or 'unknown'
 		elseif act.category == 5 then
 			data.cureThing = (mabils[act.param] and mabils[act.param].english) or 'unknown'
-		elseif act.category == 6 or act.category == 14 then
+		elseif act.category == 6 or act.category == 13 or act.category == 14 then
 			data.cureThing = (jabils[act.param] and jabils[act.param].english) or 'unknown'
 		elseif act.category == 11 then
 			data.cureThing = (mabils[act.param] and mabils[act.param].english) or 'unknown'
@@ -933,8 +1004,8 @@ windower.register_event('action',function(act)
 		-- Check if the thing used is one we want to track data for
 		if cureThings:contains(data.cureThing) then
 
-			local curePlaces = settings.places.cure
-			local cureIndividuals = settings.individuals.cure
+			local curePlaces = live.places.cure
+			local cureIndividuals = live.individuals.cure
 
 			-- Retrieve the actors relevant data
 			local cures = (cureIndividuals[data.actor_lower_name] and cureIndividuals[data.actor_lower_name].score) or 0
@@ -951,7 +1022,7 @@ windower.register_event('action',function(act)
 			cureIndividuals[data.actor_lower_name] = {score = cures, nines = 0, index = everyNumCures}
 
 			-- Update the leaderboard places
-			local board = sortNamesHigh(settings.individuals.cure)
+			local board = sortNamesHigh(live.individuals.cure)
 			curePlaces.first	= board[1]
 			curePlaces.second	= (board and board[2]) or nil
 			curePlaces.third	= (board and board[3]) or nil
@@ -962,7 +1033,7 @@ windower.register_event('action',function(act)
 			curePlaces.eighth	= (board and board[8]) or nil
 			curePlaces.ninth	= (board and board[9]) or nil
 			curePlaces.tenth	= (board and board[10]) or nil
-			settings:save('all')
+			live:save('all')
 			updateBox(box_display)
 
 			-- Call out Cures, only if they've reached the next 50,000 threshhold
@@ -975,8 +1046,8 @@ windower.register_event('action',function(act)
 		end
 
 	-- Weapon Skill is used
-	elseif act.category == 3 and not settings.paused then
-		
+	elseif act.category == 3 or (act.category == 13 and BPWS:contains(jabils[act.param].english)) and not live.paused then
+
 		local actor = get_actor(act.actor_id)
 		local myName = windower.ffxi.get_mob_by_target('me').name
 
@@ -1008,27 +1079,27 @@ windower.register_event('action',function(act)
 		end
 
 		-- Weapon Skill misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.targets[1].actions[1].message == 185 and data.damage == 0) then 
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.category == 13 and act.targets[1].actions[1].message == 324) or (act.targets[1].actions[1].message == 185 and data.damage == 0) then 
 
 			-----------
 			-- WHIFF --
 			-----------
 
-			local whiffPlaces = settings.places.whiff
-			local whiffIndividuals = settings.individuals.whiff
+			local whiffPlaces = live.places.whiff
+			local whiffIndividuals = live.individuals.whiff
 
 			-- Retrieve the actors relevant data
 			local whiffs = (whiffIndividuals[data.actor_lower_name] and whiffIndividuals[data.actor_lower_name].score) or 0
-			local index = settings.indexes.whiff
+			local index = live.indexes.whiff
 
 			-- Update the actors score information
 			whiffs = whiffs +1
 			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-			settings.indexes.whiff = index
+			live.indexes.whiff = index
 			whiffIndividuals[data.actor_lower_name] = {score = whiffs, nines = 0, index = index}
 
 			-- Update the leaderboard places
-			local board = sortNamesHigh(settings.individuals.whiff)
+			local board = sortNamesHigh(live.individuals.whiff)
 			whiffPlaces.first	= board[1]
 			whiffPlaces.second	= (board and board[2]) or nil
 			whiffPlaces.third	= (board and board[3]) or nil
@@ -1039,7 +1110,7 @@ windower.register_event('action',function(act)
 			whiffPlaces.eighth	= (board and board[8]) or nil
 			whiffPlaces.ninth	= (board and board[9]) or nil
 			whiffPlaces.tenth	= (board and board[10]) or nil
-			settings:save('all')
+			live:save('all')
 			updateBox(box_display)
 
 			-- Call out Whiffs, depending on the mode and how many Whiffs they are at
@@ -1063,14 +1134,14 @@ windower.register_event('action',function(act)
 			end
 
 		-- Weapon Skill lands
-		elseif act.targets[1].actions[1].message == 185 then
+		elseif act.targets[1].actions[1].message == 185 or (act.category == 13 and act.targets[1].actions[1].message == 317 or act.targets[1].actions[1].message == 802) then
 
 			-------------
 			-- HIGH WS --
 			-------------
 
-			local hsPlaces = settings.places.hs
-			local hsIndividuals = settings.individuals.hs
+			local hsPlaces = live.places.hs
+			local hsIndividuals = live.individuals.hs
 
 			-- What place was the actor in originally
 			local originalHSPlace = 6 -- not on the board
@@ -1095,7 +1166,7 @@ windower.register_event('action',function(act)
 			
 			-- Retrieve the actors relevant data
 			local nines = (hsIndividuals[data.actor_lower_name] and hsIndividuals[data.actor_lower_name].nines) or 0
-			local index = settings.indexes.hs
+			local index = live.indexes.hs
 
 			-- Count the number of 99999 WSs
 			if data.damage == 99999 then
@@ -1105,12 +1176,12 @@ windower.register_event('action',function(act)
 			-- Update the actors score information
 			if (hsIndividuals[data.actor_lower_name] == nil) or (data.damage >= hsIndividuals[data.actor_lower_name].score) then
 				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-				settings.indexes.hs = index
+				live.indexes.hs = index
 				hsIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 			end
 
 			-- Update the leaderboard places
-			local board = sortNamesHigh(settings.individuals.hs)
+			local board = sortNamesHigh(live.individuals.hs)
 			hsPlaces.first	= board[1]
 			hsPlaces.second	= (board and board[2]) or nil
 			hsPlaces.third	= (board and board[3]) or nil
@@ -1121,7 +1192,7 @@ windower.register_event('action',function(act)
 			hsPlaces.eighth	= (board and board[8]) or nil
 			hsPlaces.ninth	= (board and board[9]) or nil
 			hsPlaces.tenth	= (board and board[10]) or nil
-			settings:save('all')
+			live:save('all')
 			updateBox(box_display)
 
 			-- What place is the actor in now
@@ -1138,23 +1209,7 @@ windower.register_event('action',function(act)
 				newHSPlace = 5
 			end
 
-			-- Did the actor move up the leaderboard
-			if Mode ~= "Silent" then
-				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) then
-					--coroutine.sleep(1)
-					say('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
-				elseif newHSPlace < originalHSPlace then
-					if newHSPlace == 1 then
-						if data.damage > originalHSfirstscore then
-							--coroutine.sleep(1)
-							say('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
-						end
-					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and Mode == "Party" then
-						--coroutine.sleep(1)
-						say('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
-					end
-				end
-			end
+			-- Code for HIGH WS callouts is down inside LOW WS so that we can Do Logic to prevent it from calling both LOW WS and HIGH WS for the same WS
 
 			-- Did you or your rival beat one or the other
 			if settings.rival ~= "" then
@@ -1173,8 +1228,8 @@ windower.register_event('action',function(act)
 			-- LOW WS --
 			------------
 
-			local lsPlaces = settings.places.ls
-			local lsIndividuals = settings.individuals.ls
+			local lsPlaces = live.places.ls
+			local lsIndividuals = live.individuals.ls
 
 			-- What place was the actor in originally
 			local originalLSPlace = 6 -- not on the board
@@ -1198,17 +1253,17 @@ windower.register_event('action',function(act)
 			local rivalOriginalLSScore = (lsIndividuals and lsIndividuals[settings.rival] and lsIndividuals[settings.rival].score) or 0
 
 			-- Retrieve the actors relevant data
-			local index = settings.indexes.ls
+			local index = live.indexes.ls
 
 			-- Update the actors score
-			if (settings.individuals.ls[data.actor_lower_name] == nil) or (data.damage < settings.individuals.ls[data.actor_lower_name].score) then
+			if (live.individuals.ls[data.actor_lower_name] == nil) or (data.damage < live.individuals.ls[data.actor_lower_name].score) then
 				index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-				settings.indexes.ls = index
+				live.indexes.ls = index
 				lsIndividuals[data.actor_lower_name] = {score = data.damage, nines = 0, index = index}
 			end
 
 			-- Update the leaderboard places
-			local board = sortNamesLow(settings.individuals.ls)
+			local board = sortNamesLow(live.individuals.ls)
 			lsPlaces.first	= board[1]
 			lsPlaces.second	= (board and board[2]) or nil
 			lsPlaces.third	= (board and board[3]) or nil
@@ -1219,7 +1274,7 @@ windower.register_event('action',function(act)
 			lsPlaces.eighth	= (board and board[8]) or nil
 			lsPlaces.ninth	= (board and board[9]) or nil
 			lsPlaces.tenth	= (board and board[10]) or nil
-			settings:save('all')
+			live:save('all')
 			updateBox(box_display)
 
 			-- What place is the actor in now
@@ -1236,10 +1291,25 @@ windower.register_event('action',function(act)
 				newLSPlace = 5
 			end
 
-			-- Did the actor move up the leaderboard
-			-- Wait until at least 2 low scores are filled before calling out new 1st place score
 			if Mode ~= "Silent" then
-				if newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore and (lsPlaces.second and lsPlaces.second.score ~= nil) then
+
+				-- Did the actor move up the HIGH WS leaderboard
+				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) then
+					--coroutine.sleep(1)
+					say('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				elseif newHSPlace < originalHSPlace then
+					if newHSPlace == 1 then
+						if data.damage > originalHSfirstscore then
+							--coroutine.sleep(1)
+							say('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						end
+					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and Mode == "Party" then
+						--coroutine.sleep(1)
+						say('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					end
+
+				-- Did the actor move up the LOW WS leaderboard
+				elseif newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore then
 					coroutine.sleep(1.6)
 					say('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 				elseif newLSPlace < originalLSPlace and (lsPlaces.second and lsPlaces.second.score ~= nil) then
@@ -1250,9 +1320,10 @@ windower.register_event('action',function(act)
 						end
 					elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and Mode == "Party" then
 						coroutine.sleep(1.6)
-						say('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'.')
+						say('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 					end
 				end
+
 			end
 
 			-- Did you or your rival beat one or the other
@@ -1272,7 +1343,7 @@ windower.register_event('action',function(act)
 	end
 
 	-- Skillchain is created
-	if ((act.category == 4 and act.targets[1].actions[1].message == 2) or (act.category == 3 and act.targets[1].actions[1].message == 185)) and act.targets[1].actions[1].has_add_effect and not settings.paused then
+	if ((act.category == 4 and act.targets[1].actions[1].message == 2) or (act.category == 3 and act.targets[1].actions[1].message == 185) or (act.category == 13 and BPWS:contains(jabils[act.param].english))) and act.targets[1].actions[1].has_add_effect and not live.paused then
 
 		----------------
 		-- SKILLCHAIN --
@@ -1303,8 +1374,8 @@ windower.register_event('action',function(act)
 			return
 		end
 
-		local scPlaces = settings.places.sc
-		local scIndividuals = settings.individuals.sc
+		local scPlaces = live.places.sc
+		local scIndividuals = live.individuals.sc
 
 		-- What place was the actor in originally
 		local originalSCPlace = 6 -- not on the board
@@ -1329,7 +1400,7 @@ windower.register_event('action',function(act)
 
 		-- Retrieve the actors relevant data
 		local nines = (scIndividuals[data.actor_lower_name] and scIndividuals[data.actor_lower_name].nines) or 0
-		local index = settings.indexes.sc
+		local index = live.indexes.sc
 
 		-- Count the number of 99999 WSs
 		if data.damage == 99999 then
@@ -1339,12 +1410,12 @@ windower.register_event('action',function(act)
 		-- Update the actors score information
 		if (scIndividuals[data.actor_lower_name] == nil) or (data.damage >= scIndividuals[data.actor_lower_name].score) then
 			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-			settings.indexes.sc = index
+			live.indexes.sc = index
 			scIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 		end
 
 		-- Update the leaderboard places
-		local board = sortNamesHigh(settings.individuals.sc)
+		local board = sortNamesHigh(live.individuals.sc)
 		scPlaces.first	= board[1]
 		scPlaces.second	= (board and board[2]) or nil
 		scPlaces.third	= (board and board[3]) or nil
@@ -1355,7 +1426,7 @@ windower.register_event('action',function(act)
 		scPlaces.eighth	= (board and board[8]) or nil
 		scPlaces.ninth	= (board and board[9]) or nil
 		scPlaces.tenth	= (board and board[10]) or nil
-		settings:save('all')
+		live:save('all')
 		updateBox(box_display)
 
 		-- What place is the actor in now
@@ -1406,7 +1477,7 @@ windower.register_event('action',function(act)
 	end
 
 	-- Magic Burst lands
-	if ((act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110)) and not settings.paused then
+	if ((act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110) or (act.category == 13 and act.targets[1].actions[1].message == 379)) and not live.paused then
 
 		-----------------
 		-- MAGIC BURST --
@@ -1439,8 +1510,8 @@ windower.register_event('action',function(act)
 			return
 		end
 
-		local mbPlaces = settings.places.mb
-		local mbIndividuals = settings.individuals.mb
+		local mbPlaces = live.places.mb
+		local mbIndividuals = live.individuals.mb
 
 		-- What place was the actor in originally
 		local originalMBPlace = 6 -- not on the board
@@ -1465,7 +1536,7 @@ windower.register_event('action',function(act)
 
 		-- Retrieve the actors relevant data
 		local nines = (mbIndividuals[data.actor_lower_name] and mbIndividuals[data.actor_lower_name].nines) or 0
-		local index = settings.indexes.mb
+		local index = live.indexes.mb
 
 		-- Count the number of 99999 WSs
 		if data.damage == 99999 then
@@ -1475,12 +1546,12 @@ windower.register_event('action',function(act)
 		-- Update the actors score information
 		if (mbIndividuals[data.actor_lower_name] == nil) or (data.damage >= mbIndividuals[data.actor_lower_name].score) then
 			index = index +1 -- Increment the index number for every updated score, enduring no duplicates
-			settings.indexes.mb = index
+			live.indexes.mb = index
 			mbIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 		end
 
 		-- Update the leaderboard places
-		local board = sortNamesHigh(settings.individuals.mb)
+		local board = sortNamesHigh(live.individuals.mb)
 		mbPlaces.first	= board[1]
 		mbPlaces.second	= (board and board[2]) or nil
 		mbPlaces.third	= (board and board[3]) or nil
@@ -1491,7 +1562,7 @@ windower.register_event('action',function(act)
 		mbPlaces.eighth	= (board and board[8]) or nil
 		mbPlaces.ninth	= (board and board[9]) or nil
 		mbPlaces.tenth	= (board and board[10]) or nil
-		settings:save('all')
+		live:save('all')
 		updateBox(box_display)
 
 		-- What place is the actor in now
@@ -1542,7 +1613,7 @@ windower.register_event('action',function(act)
 	end
 
 	--Nuke lands (includes Magic Bursts)
-	if ((act.category == 4 and act.targets[1].actions[1].message == 2) or (act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110)) and not settings.paused then
+	if ((act.category == 4 and act.targets[1].actions[1].message == 2) or (act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110) or (act.category == 13 and BPNuke:contains(jabils[act.param].english)) or (act.category == 13 and act.targets[1].actions[1].message == 379)) and not live.paused then
 
 		----------
 		-- Nuke --
@@ -1566,8 +1637,8 @@ windower.register_event('action',function(act)
 			return
 		end
 
-		local nukePlaces = settings.places.nuke
-		local nukeIndividuals = settings.individuals.nuke
+		local nukePlaces = live.places.nuke
+		local nukeIndividuals = live.individuals.nuke
 
 		-- Retrieve the actors relevant data
 		local nukes = (nukeIndividuals[data.actor_lower_name] and nukeIndividuals[data.actor_lower_name].score) or 0
@@ -1584,7 +1655,7 @@ windower.register_event('action',function(act)
 		nukeIndividuals[data.actor_lower_name] = {score = nukes, nines = 0, index = everyNumNukes}
 
 		-- Update the leaderboard places
-		local board = sortNamesHigh(settings.individuals.nuke)
+		local board = sortNamesHigh(live.individuals.nuke)
 		nukePlaces.first	= board[1]
 		nukePlaces.second	= (board and board[2]) or nil
 		nukePlaces.third	= (board and board[3]) or nil
@@ -1595,7 +1666,7 @@ windower.register_event('action',function(act)
 		nukePlaces.eighth	= (board and board[8]) or nil
 		nukePlaces.ninth	= (board and board[9]) or nil
 		nukePlaces.tenth	= (board and board[10]) or nil
-		settings:save('all')
+		live:save('all')
 		updateBox(box_display)
 
 		-- Call out Nukes, only if they've reached the next 500,000 point threshhold
@@ -1612,8 +1683,8 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 
 	-- Reload LB
 	if addcmd == 'reload' then
-        cmd('lua r leaderboard')
-        return
+		cmd('lua r leaderboard')
+		return
 
 
 	-- Reset the data, does not stop LB from running
@@ -1661,19 +1732,8 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..(data..' data reset.'):color(8))
 		end
-		settings:save('all')
+		live:save('all')
 		updateBox(box_display)
-
-
-	-- Reminder setting
-	elseif addcmd == 'reminder' or addcmd == 'reminders' then
-		if arg == 'on' or arg == 'true' then
-			settings.reminder = true
-		elseif arg == 'off' or arg == 'false' then
-			settings.reminder = false
-		end
-		windower.add_to_chat(220,'[Leaderboard] '..(('Reminders are set to %s'):format(settings.reminder and 'on.' or 'off.')):color(8))
-		settings:save('all')
 
 
 	-- Comma setting
@@ -1712,7 +1772,7 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 
 
 	-- Display help
- 	elseif addcmd == 'help' then
+	elseif addcmd == 'help' then
 		windower.add_to_chat(220,'[Leaderboard] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key'):color(220))
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Basic Commands '..('[optional]'):color(53)..(' <required>'):color(2))
@@ -1730,23 +1790,22 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
 		windower.add_to_chat(36,'   comma'..(' [on/off]'):color(53)..(' - Display/change the Comma setting.'):color(8))
 		windower.add_to_chat(36,'   party'..(' [on/off]'):color(53)..(' - Display/change the Party Command setting.'):color(8))
-		windower.add_to_chat(36,'   reminder'..(' [on/off]'):color(53)..(' - Display/change the Reminder setting.'):color(8))
 		windower.add_to_chat(36,'   flood'..(' [#]'):color(53)..(' - Display/change the current Flood Delay setting.'):color(8))
 
 
 	-- Pause
 	elseif addcmd == 'pause' or addcmd == 'p' then
 
-		if not settings.paused then
-			settings.paused = true
+		if not live.paused then
+			live.paused = true
 		else
-			settings.paused = false
+			live.paused = false
 		end
-		settings:save('all')
+		live:save('all')
 		if Mode ~= "Silent" then
-			say(('/p [Leaderboard] %s'):format(settings.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).')
+			say(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).')
 		else
-			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(settings.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).'):color(8))
 		end
 		updateBox(box_display)
 
@@ -1754,28 +1813,26 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 	-- Switch to Party Mode
 	elseif addcmd == 'modep' or (addcmd == 'mode' and (arg == 'party' or arg == 'p')) then
 		Mode = "Party"
-		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(settings.paused and 'paused' or 'running'))
-		if settings.reminder then
-			coroutine.sleep(1)
-			windower.add_to_chat(220,'[Leaderboard] '..('Beware - Party Mode uses party chat heavily.'):color(8))
-		end
+		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		coroutine.sleep(1)
+		windower.add_to_chat(220,'[Leaderboard] '..('Beware - Party Mode uses party chat heavily.'):color(8))
 
 
 	-- Switch to Lite Mode
 	elseif addcmd == 'model' or (addcmd == 'mode' and (arg == 'lite' or arg == 'l')) then
 		Mode = "Lite"
-		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(settings.paused and 'paused' or 'running'))
+		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 
 
 	-- Switch to Silent Mode
 	elseif addcmd == 'modes' or (addcmd == 'mode' and (arg == 'silent' or arg == 's')) then
 		Mode = "Silent"
-		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(settings.paused and 'paused' or 'running'))
+		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 
 
 	-- Display which mode Leaderboard is currently running in
 	elseif addcmd == 'mode' then
-		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
+		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
 
 
 	-- Display the commands for the different boards
@@ -1800,8 +1857,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetC()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('CURE data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'cure'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.cure
+			local places = live.places.cure
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1826,8 +1888,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetD()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('DEATH data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'death'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.death
+			local places = live.places.death
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1851,8 +1918,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		if arg == 'reset' then
 			resetHS()
 			windower.add_to_chat(220,'[Leaderboard] '..('HIGH WS data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'hs'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.hs
+			local places = live.places.hs
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1877,8 +1949,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetK()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('KILL data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'kill'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.kill
+			local places = live.places.kill
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1903,8 +1980,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetLS()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('LOW WS data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'ls'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.ls
+			local places = live.places.ls
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1929,8 +2011,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetMB()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('MAGIC BURST data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'mb'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.mb
+			local places = live.places.mb
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1955,8 +2042,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetM()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('MURDER data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'murder'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.murder
+			local places = live.places.murder
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -1981,8 +2073,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetN()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('NUKE data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'nuke'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.nuke
+			local places = live.places.nuke
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -2007,8 +2104,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetSC()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('SKILLCHAIN data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'sc'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.sc
+			local places = live.places.sc
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -2033,8 +2135,13 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 			resetW()
 			updateBox(box_display)
 			windower.add_to_chat(220,'[Leaderboard] '..('WHIFF data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'whiff'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
 		else
-			local places = settings.places.whiff
+			local places = live.places.whiff
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
@@ -2054,18 +2161,29 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 
 	--Add name to optout list
 	elseif addcmd == 'optout' or addcmd == 'o' then
-
 		if arg == 'add' or arg == 'a' then
 			if arg2 == nil then
 				windower.add_to_chat(220,'[Leaderboard] '..('Please add a name to be added to the Optout list.'):color(8))
 			else
-				addToOptout(arg2)
+				local l_name = string.lower(arg2)
+				if settings.optout[l_name] then
+					windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg2)..' is already in the Optout list.'):color(8)..'')
+				else
+					addToOptout(l_name)
+					windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg2)..' has been added to the Optout list. Any related data has been deleted.'):color(8)..'')
+				end
 			end
 		elseif arg == 'remove' or arg == 'r' or arg == 'delete' or arg == 'd' then
 			if arg2 == nil then
 				windower.add_to_chat(220,'[Leaderboard] '..('Please add a name to be removed from the Optout list.'):color(8))
 			else
-				removeFromOptout(arg2)
+				local l_name = string.lower(arg2)
+				if settings.optout[l_name] then
+					removeFromOptout(l_name)
+					windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg2)..' has been removed from the Optout list.'):color(8)..'')
+				else
+					windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg2)..' is not in the Optout list.'):color(8)..'')
+				end
 			end
 		else
 			local list = optoutList()
@@ -2079,18 +2197,12 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		if arg == nil then
 			windower.add_to_chat(220,'[Leaderboard] '..('Please add a name.'):color(8))
 		else
-			local c_name = capitalize(arg)
-			local actor = windower.ffxi.get_mob_by_name(c_name)
-			if actor == nil or (not actor.in_alliance and not actor.in_party) then
-				windower.add_to_chat(220,'[Leaderboard] '..(c_name..' is not in the party.'):color(8))
-			else
-				reportPlayerScores(string.lower(actor.name))
-			end
+			reportPlayerScores(string.lower(arg))
 		end
 
 
-    -- Show the LB box
-    elseif addcmd == 'show' or addcmd == 'visible' then
+	-- Show the LB box
+	elseif addcmd == 'show' or addcmd == 'visible' then
 		-- Toggle the visibility of the LB box
 		if addcmd == 'visible' then
 			-- Flip the visibilty setting and save
@@ -2126,9 +2238,9 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 
 
 	-- Hide the On-Screen Display
-    elseif addcmd == 'hide' then
-        settings.visible = false
-        settings:save('all')
+	elseif addcmd == 'hide' then
+		settings.visible = false
+		settings:save('all')
 		hideBox()
 
 
@@ -2165,11 +2277,6 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 	else
 		windower.add_to_chat(220,'[Leaderboard] '..('unknown command. Type \'//em help\' for list of commands.'):color(8))
 
-		-- Throw a reminder in there if they are turned on
-		if settings.reminder then
-			windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode.'):color(8))
-		end
-
 	end
 end)
 
@@ -2181,14 +2288,5 @@ windower.register_event('prerender', function()
 		if flood_timer >= 1 then
 			flood_timer = flood_timer - 1
 		end
-	end
-end)
-
-
--- On zone change, remind that LB is running
-windower.register_event('zone change',function()
-	coroutine.sleep(5)
-	if settings.reminder then
-		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
 	end
 end)
