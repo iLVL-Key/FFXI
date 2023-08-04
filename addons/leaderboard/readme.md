@@ -9,13 +9,15 @@ Tracks battle information and groups it together in different "boards".
   - Lite: Limited party chat call outs.
   - Party: Full party chat call outs. Great for linkshell events.
 - Tracks 10 different boards.
-- On-Screen Display for the various boards.
+- On-Screen Display for tracking boards in realtime.
 - Rival system - Set another player as your Rival and get notifications when either of you beat the others scores.
-- Optout list. Characters on this list will not be tracked.
+- Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
 - Party commands. Party members can use party chat (or a tell) to issue certain commands. Disabled by default and is intended to be enabled by a player using Party Mode.
 - Automatic data recovery. If you crash or disconnect, your data is saved and it picks up right back where it left off.
+- Tracks every players scores individually, allowing any player in the group to get their own report with only their own scores for each board.
 - Tracks the number of "9's" a player has hit.
-- Orders duplicates by who hit the number first.
+- Duplicate scores are ordered by who hit the number first.
+- All settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
 
 ### Currently Tracked Boards
 - `c/cure` - Running total of cures.
@@ -34,14 +36,16 @@ Tracks battle information and groups it together in different "boards".
 ### Addon Commands
 All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb show mb`)
 
-Basic Commands `[optional] <required>`
+#### Basic Commands `[optional] <required>`
 - `pause/p` - Pause/unpause tracking.
 - `boards` - List the different boards that are tracked.
 - `visible/show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
 - `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
 - `rival [name]` - Display/Set the specified player as your Rival. Repeat to remove.
 
-Advanced Commands `[optional] <required>`
+(show and reset can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
+
+#### Advanced Commands `[optional] <required>`
 - `mode/m [lite/l/party/p/silent/s` - Display/change the current Mode.
 - `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
 - `lock/unlock` - Drag the On-Screen Display.
@@ -49,7 +53,6 @@ Advanced Commands `[optional] <required>`
 - `report <name>` - Send the specified player their score report via tell.
 - `comma [on/off]` - Display/change the Comma setting.
 - `party [on/off]` - Display/change the Party Command setting.
-- `reminder [on/off]` - Display/change the Reminder setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
 
 ### Party Commands
@@ -59,11 +62,26 @@ All commands must be prefixed with `!lb` (ex: `!lb report`). Only work if anothe
 - `report` - Receive a score report via tell.
 
 ### To-do
+- Add ablity to turn specific board party calls off.
+- Add Drains and Dread Spikes/Drain Samba to cures?
+- Add a taunt command? //lb taunt sends a tell to your rival with something like "I'm beating you in WS High, Skillchains, and Kills!"
+- Adjust Party Commands to be tied directly to Party Mode. Currently, Party Commands are turned on and off independantly, regardless of which mode is active, meaning they could be used while in Silent or Lite mode, or forgotten to be turned on when in Party Mode. Instead, Party Command option set to on by default, but only usable when specifically in Party Mode, unless the Party Commands get turned off by the host.
+- Remove Visible addon command. With `show` already being needed to change the boards being displayed, removing `visible` simplifies commands leaving just `show` and `hide` which do the same thing.
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
-- Base when the LOW WS score starts getting called out on the number of party members?
-- Add pet BPs. Need to look into how to determine who owns the Avatar to add it to their scores. Physical/Hybrid Rages should be counted as Weapon skills since they can create Skillchains, and Magical Rages counted as Nukes/MBs.
 
 ### Version History
+
+**3.2**
+- Added Charm callout.
+- Added SMN Blood Pacts. Physical and Hybrid Rages count as a WS in regards to HIGH WS, LOW WS, Whiff, and SC. Magical Rages count as a nuke in regards to Nuke and MB. Healing Wards count towards Cure.
+- Added commas to the death and kill numbers.
+- Adjusted HIGH WS and LOW WS callouts so that it will not call out for LOW WS if it has already called the same WS for HIGH WS.
+- Adjusted the board commands so you can now use `show` afterwards to activate the On-Screen Display for that board. For example, previously only `//lb show mb` would work, now you can also use `//lb mb show`, similar to the reset command.
+- Adjusted the report command and how it handles being called via addon or party command.
+- Adjusted the live score updates to be in their own "live.xml" file.
+- Removed Reminder option. This made more sense when Leaderboard wasn't running automatically and you had to manually turn it on and off.
+- Removed check in the party command if the name provided is currently in the party.
+- Fixed the nines reporting in the report command.
 
 **3.1**
 - On-Screen Display now shows up to 10 places.
