@@ -138,6 +138,7 @@ DangerRepeat	=	10			--Maximum number of times the Danger Sound will repeat, once
 RRReminderTimer	=	1800		--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay		=	6			--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'		--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+AddCommas		=	'On'		--[On/Off]  Adds commas to damage numbers.
 Debug			=	'Off'		--[On/Off]
 
 --Color Values
@@ -188,7 +189,7 @@ function get_sets()
 		waist="Carrier's Sash",
 		left_ear="Tuisto Earring",
 		right_ear="Odnowa Earring +1",
-		left_ring="Moonbeam Ring",
+		left_ring="Moonlight Ring",
 		right_ring="Gelatinous Ring +1",
 		back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}},
 	}
@@ -327,6 +328,7 @@ function get_sets()
 	-- Phalanx (Phalanx, Enhancing Magic Duration)
 	sets.phalanx = set_combine(sets.enhancing, {
 		head="Fu. Bandeau +3",
+		body="Herculean Vest"
 	})
 
 	-- Refresh Spell (Refresh potency, Enhancing Magic Duration)
@@ -404,7 +406,7 @@ function get_sets()
 		ammo="Ghastly Tathlum +1",
 		head="Agwu's Cap",
 		body="Agwu's Robe",
-		hands="Nyame Gauntlets",
+		hands="Agwu's Gages",
 		legs="Nyame Flanchard",
 		feet="Agwu's Pigaches",
 		neck="Baetyl Pendant",
@@ -412,7 +414,7 @@ function get_sets()
 		left_ear="Friomisi Earring",
 		right_ear="Halasz Earring",
 		left_ring="Shiva Ring +1",
-		right_ring="Moonbeam Ring",
+		right_ring="Moonlight Ring",
 		back="Moonlight Cape",
 	})
 
@@ -495,17 +497,23 @@ end
 
 
 
-FileVersion = '6.0.2'
+FileVersion = '7.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates major version matches your current file,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the major version changes will you need to update the entire file.
-Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 7.0
+-No gear set changes.
+-Added Advanced Option to add commas to the damage numbers.
+-Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+-Fixed Swipe not equipping Swipe gear set correctly under certain circumstances.
+-Removed notifications for Blood Pacts because I don't know why I added it in there.
 
 Version 6.0.2
 -Fixed Refresh set combining with nonexistent Kite set.
@@ -514,6 +522,7 @@ Version 6.0.1
 -Fixed missing DPS set.
 
 Version 6.0.0
+-No gear set changes.
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -752,6 +761,32 @@ if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
 end
 
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if AddCommas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -949,6 +984,7 @@ function self_command(command)
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Color Values --')
@@ -1423,12 +1459,12 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Swordplay + Enmity]')
 		end
-	elseif spell.english == 'Swipe' and windower.ffxi.get_ability_recasts()[25] <= 1 then
+	elseif spell.english == 'Swipe' and windower.ffxi.get_ability_recasts()[241] <= 1 then
 		equip(sets.swipe)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Swipe + Enmity]')
 		end
-	elseif spell.english == 'Lunge' and windower.ffxi.get_ability_recasts()[24] <= 1 then
+	elseif spell.english == 'Lunge' and windower.ffxi.get_ability_recasts()[25] <= 1 then
 		equip(sets.swipe)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Swipe + Enmity]')
@@ -2517,56 +2553,38 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---     WS/MB/BP DAMAGE NOTIFICATION      --
+--         DAMAGE NOTIFICATIONS          --
 -------------------------------------------
 
 windower.register_event('action',function(act)
 
 	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
-	local spells = require('resources').spells
 	local jobabilities = require('resources').job_abilities
-
--- if act.actor_id == player.id and act.category == 15 then
-	-- print('[Action: '..jobabilities[act.param].english..'][Effect: '..act.targets[1].actions[1].effect..'][Message: '..act.targets[1].actions[1].message..'][Reaction: '..act.targets[1].actions[1].reaction..'][Add Effect Anim: '..act.targets[1].actions[1].add_effect_animation..']')
--- end
 
 	if NotiDamage == 'On' then
 		--Weapon Skills and Skillchains:
 		if act.category == 3 and act.actor_id == player.id then
-			--Uses Weapon Skill but misses or gets blinked:
-			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+			--Weapon Skill misses:
+			if act.targets[1].actions[1].message == 188 then
 				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill gets blinked:
+			elseif act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands and creates a Skillchain:
 			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands but no Skillchain:
 			elseif act.targets[1].actions[1].message == 185 then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
 			end
-		--Magic Bursts:
-		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
-			--Magic:
-			if act.category == 4 then
-				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Lunges:
-			elseif act.category == 15 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Blood Pacts?:
-			elseif act.category == 13 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			end
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
-		--Blood Pacts:
-		elseif act.category == 13 and act.actor_id == pet.id then
-			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Lunge Magic Bursts:
+		elseif (act.category == 15 and act.targets[1].actions[1].message == 110) and act.actor_id == player.id then
+			send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
