@@ -124,6 +124,7 @@ AutSJmpThreshold	=	500		--If your HP goes below this number, Super Jump will be 
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+AddCommas			=	'On'	--[On/Off]  Adds commas to damage numbers.
 Debug				=	'Off'	--[On/Off]
 
 --Color Values
@@ -250,6 +251,7 @@ function get_sets()
 
 	-- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
 	sets.upheaval = set_combine(sets.ws, {
+		body="Tatena. Harama. +1",
 
 	})
 
@@ -361,19 +363,25 @@ end
 
 
 
-FileVersion = '4.0'
+FileVersion = '5.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates major version matches your current file,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the major version changes will you need to update the entire file.
-Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 5.0
+-No gear set changes.
+-Added Advanced Option to add commas to the damage numbers.
+-Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+-Removed notifications for Magic Bursts and Blood Pacts because I don't know why I added it in there.
 
 Version 4.0
+-No gear set changes.
 -Added AutoSuperJump option. Automatically attempts to use Super Jump when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
 
 Version 3.0
@@ -381,6 +389,7 @@ Version 3.0
 -Removed the Attack Cap Mode. This is now handled automatically.
 
 Version 2.0
+-No gear set changes.
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -506,6 +515,32 @@ send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboar
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
+end
+
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if AddCommas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
 end
 
 -------------------------------------------
@@ -706,6 +741,7 @@ function self_command(command)
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Color Values --')
@@ -1951,7 +1987,7 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---        WS DAMAGE NOTIFICATION         --
+--         DAMAGE NOTIFICATIONS          --
 -------------------------------------------
 
 windower.register_event('action',function(act)
@@ -1961,15 +1997,18 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if NotiDamage == 'On' and act.category == 3 and act.actor_id == player.id then
-		--Uses Weapon Skill but misses or gets blinked:
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+		--Weapon Skill misses:
+		if act.targets[1].actions[1].message == 188 then
 			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Weapon Skill gets blinked:
+		elseif act.targets[1].actions[1].message == 31 then
+			send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 		--Weapon Skill lands and creates a Skillchain:
 		elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 		--Weapon Skill lands but no Skillchain:
 		elseif act.targets[1].actions[1].message == 185 then
-			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 		end
 		NotiCountdown = -1
 		if Debug == 'On' then
