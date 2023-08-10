@@ -110,6 +110,7 @@ DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once 
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 Debug			=	'Off'	--[On/Off]
 
 
@@ -223,10 +224,10 @@ function get_sets()
 	-- Cataclysm (combines with Weapon Skill set above)
 	sets.cata = set_combine(sets.ws, {
 		head="Pixie Hairpin +1",
-		body="Amalric Doublet +1",
-		hands="Amalric Gages +1",
-		legs="Amalric Slops +1",
-		feet="Amalric Nails +1",
+		body="Azimuth Coat +3",
+		hands="Azimuth Gloves +3",
+		legs="Azimuth Tights +3",
+		feet="Azimuth Gaiters +3",
 		neck="Baetyl Pendant",
 		waist="Acuity Belt +1",
 		left_ear="Malignance Earring",
@@ -273,13 +274,13 @@ function get_sets()
 	sets.elemental = {
 		main="Bunzi's Rod",
 		sub="Ammurapi Shield",
-		head="Azimuth Hood +3",
-		body="Amalric Doublet +1",
-		hands="Amalric Gages +1",
-		legs="Amalric Slops +1",
-		feet="Amalric Nails +1",
-		neck="Baetyl Pendant",
-		waist="Eschan Stone",
+		head="Agwu's Cap",
+		body="Azimuth Coat +3",
+		hands="Agwu's Gages",
+		legs="Azimuth Tights +3",
+		feet="Agwu's Pigaches",
+		neck="Sibyl Scarf",
+		waist="Orpheus's Sash",
 		left_ear="Malignance Earring",
 		right_ear="Regal Earring",
 		left_ring="Shiva Ring +1",
@@ -289,12 +290,14 @@ function get_sets()
 
 	-- Magic Accuracy (Magic Accuracy)
 	sets.magicaccuracy = {
+		main="Bunzi's Rod",
+		sub="Ammurapi Shield",
 		head="Azimuth Hood +3",
 		body="Azimuth Coat +3",
 		hands="Azimuth Gloves +3",
 		legs="Azimuth Tights +3",
 		feet="Azimuth Gaiters +3",
-		neck="Incanter's Torque",
+		neck="Bagua Charm +1",
 		waist="Acuity Belt +1",
 		left_ear="Malignance Earring",
 		right_ear="Azimuth Earring +1",
@@ -340,15 +343,13 @@ function get_sets()
 		feet="Agwu's Pigaches",
 		neck="Erra Pendant",
 		waist="Fucho-no-obi",
-		left_ring="Evanescence Ring",
+		right_ring="Evanescence Ring",
 	})
 
 	-- Enfeeble (Enfeebling Magic Skill)
 	-- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
 	sets.enfeeble = set_combine(sets.magicaccuracy, {
-		main="Gada",
-		left_ring="Kishar Ring",
-		back="Lifestream Cape",
+		right_ring="Kishar Ring",
 	})
 
 	-- Refresh (Refresh augmenting gear, not Refresh+)
@@ -452,19 +453,25 @@ end
 
 
 
-FileVersion = '11.0.0'
+FileVersion = '12.0.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates major version matches your current file,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the major version changes will you need to update the entire file.
-Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 12.0
+-No gear set changes.
+-Added Advanced Option to add commas to the damage numbers.
+-Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+-Removed notifications for Blood Pacts because I don't know why I added it in there.
 
 Version 11.0.0
+-No gear set changes.
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Adjusted AutoEntrust behavior. Using a macro to cast an Indi- spell will now instead of directly using Entrust then casting that spell, it will instead activate the AutoEntrust system for use. Simply repeat the cast to use AutoEntrust. AutoEntrust will deactivate after 10 seconds, or after casting on yourself instead. This change was made to prevent misfires in situations where you intend to cast an Indi- spell on yourself, but someone casts on you right before, therefore making you target them, and thus the target of the Indi- spell.
@@ -743,6 +750,32 @@ if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
 end
 
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if AddCommas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -917,6 +950,7 @@ function self_command(command)
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'Options can be changed in the file itself.')
@@ -2113,7 +2147,7 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---     WS/MB/BP DAMAGE NOTIFICATION      --
+--         DAMAGE NOTIFICATIONS          --
 -------------------------------------------
 
 windower.register_event('action',function(act)
@@ -2121,44 +2155,30 @@ windower.register_event('action',function(act)
 	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
 	local spells = require('resources').spells
-	local jobabilities = require('resources').job_abilities
 
 	if NotiDamage == 'On' then
 		--Weapon Skills and Skillchains:
 		if act.category == 3 and act.actor_id == player.id then
-			--Uses Weapon Skill but misses or gets blinked:
-			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+			--Weapon Skill misses:
+			if act.targets[1].actions[1].message == 188 then
 				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill gets blinked:
+			elseif act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands and creates a Skillchain:
 			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands but no Skillchain:
 			elseif act.targets[1].actions[1].message == 185 then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
 			end
 		--Magic Bursts:
-		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
-			--Magic:
-			if act.category == 4 then
-				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Lunges:
-			elseif act.category == 15 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Blood Pacts?:
-			elseif act.category == 13 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			end
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
-		--Blood Pacts:
-		elseif act.category == 13 and act.actor_id == pet.id then
-			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+		elseif (act.category == 4 and act.targets[1].actions[1].message == 252) and act.actor_id == player.id then
+			send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
@@ -2174,11 +2194,3 @@ end)
 function file_unload()
 	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text bg4 delete;text indicolure delete;text indicolurelabel delete;text geocolure delete;text geocolurelabel delete;text entrust delete;text entrustlabel delete;text blaze delete;text lasting delete;text dematerialize delete;text life delete;text radial delete;text mending delete;text loading delete;text notifications delete;text debuffs delete') --delete the different text objects
 end
-
---[[
-
--------------------------------------------
---            KEYS NOTEPAD               --
--------------------------------------------
-
- --]]
