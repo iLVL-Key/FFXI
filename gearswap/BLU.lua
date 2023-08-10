@@ -183,6 +183,7 @@ DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once 
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (1 = fully clear, 256 = fully opaque)
+AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 Debug			=	'Off'	--[On/Off]
 
 --Color Values
@@ -267,7 +268,7 @@ function get_sets()
 
 	-- Weapon Skill (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
-		ammo="Oshasha's Treatise",
+		ammo="Coiste Bodhar",
 		head="Hashishin Kavuk +3",
 		body="Nyame Mail",
 		hands="Nyame Gauntlets",
@@ -276,7 +277,7 @@ function get_sets()
 		neck="Mirage Stole +2",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
-		right_ear="Ishvara Earring",
+		right_ear="Hashi. Earring +1",
 		left_ring="Karieyh Ring +1",
 		right_ring="Cornelia's Ring",
 		back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
@@ -285,7 +286,7 @@ function get_sets()
 	-- Savage Blade (50% STR, 50% MND mod)
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 	sets.sav = set_combine(sets.ws, {
-
+		right_ear="Ishvara Earrings",
 	})
 
 	-- Sanguine Blade (Dark Magical, 50% STR, 50% MND mod)
@@ -305,6 +306,7 @@ function get_sets()
 	sets.req = set_combine(sets.ws, {
 		neck="Fotia Gorget",
 		waist="Fotia Belt",
+		right_ear="Regal Earring",
 		left_ring="Stikini Ring +1",
 		right_ring="Metamor. Ring +1",
 		--right_ring="Rufescent Ring",
@@ -573,19 +575,25 @@ end
 
 
 
-FileVersion = '15.0.0'
+FileVersion = '16.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates major version matches your current file,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the major version changes will you need to update the entire file.
-Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
 
-Version 15.0.0
+Version 16.0
+-No gear set changes.
+-Added Advanced Option to add commas to the damage numbers.
+-Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+-Removed notifications for Blood Pacts because I don't know why I added it in there.
+
+Version 15.0
+-No gear set changes.
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -1023,6 +1031,32 @@ if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
 end
 
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if AddCommas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -1341,6 +1375,7 @@ function self_command(command)
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Color Values --')
@@ -3445,11 +3480,7 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---       WS/MB DAMAGE NOTIFICATION       --
--------------------------------------------
-
--------------------------------------------
---     WS/MB/BP DAMAGE NOTIFICATION      --
+--         DAMAGE NOTIFICATIONS          --
 -------------------------------------------
 
 windower.register_event('action',function(act)
@@ -3457,44 +3488,30 @@ windower.register_event('action',function(act)
 	local sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 	local weaponskills = require('resources').weapon_skills
 	local spells = require('resources').spells
-	local jobabilities = require('resources').job_abilities
 
 	if NotiDamage == 'On' then
 		--Weapon Skills and Skillchains:
 		if act.category == 3 and act.actor_id == player.id then
-			--Uses Weapon Skill but misses or gets blinked:
-			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+			--Weapon Skill misses:
+			if act.targets[1].actions[1].message == 188 then
 				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill gets blinked:
+			elseif act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands and creates a Skillchain:
 			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands but no Skillchain:
 			elseif act.targets[1].actions[1].message == 185 then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
 			end
 		--Magic Bursts:
-		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
-			--Magic:
-			if act.category == 4 then
-				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Lunges:
-			elseif act.category == 15 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Blood Pacts?:
-			elseif act.category == 13 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			end
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
-		--Blood Pacts:
-		elseif act.category == 13 and act.actor_id == pet.id then
-			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+		elseif (act.category == 4 and act.targets[1].actions[1].message == 252) and act.actor_id == player.id then
+			send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
@@ -3517,18 +3534,98 @@ end
 
 --[[
 
-
 -------------------------------------------
 --            KEYS NOTEPAD               --
 -------------------------------------------
 
-React - can put react type code into file?
-Ou - do the % callouts when in Omen zone and target is Ou and target hpp
-"Trade complete" is there a "Trade cancelled"?
 
-1-hour Notification with Notification Override
-Blue color for 1-hours bg_color
-51 102 255
-maybe white for the bg_color that blue for color?
+<general>
+	<slot01>magic fruit</slot01>
+	<slot02>tenebral crush</slot02>
+	<slot03>barbed crescent</slot03>
+	<slot04>sheep song</slot04>
+	<slot05>occultation</slot05>
+	<slot06>subduction</slot06>
+	<slot07>battery charge</slot07>
+	<slot08>blank gaze</slot08>
+	<slot09>magic hammer</slot09>
+	<slot10>erratic flutter</slot10>
+	<slot11>delta thrust</slot11>
+	<slot12>winds of promy.</slot12>
+	<slot13>actinic burst</slot13>
+	<slot14>dream flower</slot14>
+	<slot15>reactor cool</slot15>
+	<slot16>barrier tusk</slot16>
+	<slot17>diamondhide</slot17>
+	<slot18>white wind</slot18>
+	<slot19>sudden lunge</slot19>
+	<slot20>retinal glare</slot20>
+</general>
+<melee>
+	<slot01>delta thrust</slot01>
+	<slot02>barbed crescent</slot02>
+	<slot03>occultation</slot03>
+	<slot04>heavy strike</slot04>
+	<slot05>cocoon</slot05>
+	<slot06>searing tempest</slot06>
+	<slot07>erratic flutter</slot07>
+	<slot08>uppercut</slot08>
+	<slot09>nat. meditation</slot09>
+	<slot10>battle dance</slot10>
+	<slot11>vanity dive</slot11>
+	<slot12>sinker drill</slot12>
+	<slot13>empty thrash</slot13>
+	<slot14>anvil lightning</slot14>
+	<slot15>frenetic rip</slot15>
+	<slot16>embalming earth</slot16>
+	<slot17>magic fruit</slot17>
+	<slot18>sudden lunge</slot18>
+	<slot19>fantod</slot19>
+	<slot20>thrashing assault</slot20>
+</melee>
+<nuke>
+	<slot01>delta thrust</slot01>
+	<slot02>barbed crescent</slot02>
+	<slot03>occultation</slot03>
+	<slot04>tenebral crush</slot04>
+	<slot05>cocoon</slot05>
+	<slot06>sheep song</slot06>
+	<slot07>diamondhide</slot07>
+	<slot08>magic hammer</slot08>
+	<slot09>battery charge</slot09>
+	<slot10>magic fruit</slot10>
+	<slot11>cursed sphere</slot11>
+	<slot12>memento mori</slot12>
+	<slot13>barrier tusk</slot13>
+	<slot14>glutinous dart</slot14>
+	<slot15>entomb</slot15>
+	<slot16>retinal glare</slot16>
+	<slot17>erratic flutter</slot17>
+	<slot18>subduction</slot18>
+	<slot19>dream flower</slot19>
+	<slot20>spectral floe</slot20>
+</nuke>
+<support>
+	<slot01>delta thrust</slot01>
+	<slot02>barbed crescent</slot02>
+	<slot03>occultation</slot03>
+	<slot04>feather tickle</slot04>
+	<slot05>lowing</slot05>
+	<slot06>winds of promy.</slot06>
+	<slot07>diamondhide</slot07>
+	<slot08>blank gaze</slot08>
+	<slot09>battery charge</slot09>
+	<slot10>magic fruit</slot10>
+	<slot11>sudden lunge</slot11>
+	<slot12>tenebral crush</slot12>
+	<slot13>reaving wind</slot13>
+	<slot14>white wind</slot14>
+	<slot15>osmosis</slot15>
+	<slot16>retinal glare</slot16>
+	<slot17>erratic flutter</slot17>
+	<slot18>subduction</slot18>
+	<slot19>silent storm</slot19>
+	<slot20>pollen</slot20>
+</support>
 
- --]]
+--]]
