@@ -277,6 +277,12 @@ function get_sets()
 		--neck="Ygnas's Resolve +1",
 	}
 
+	-- Tomahawk
+	sets.tomahawk = {
+		ammo="Thr. Tomahawk",
+		--feet="Agoge Calligae +3"
+	}
+
 	-- Aggressor
 	sets.aggressor = {
 
@@ -375,7 +381,7 @@ MINOR and PATCH version updates typically only require changes under the "Do Not
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
 
 Version 5.0
--No gear set changes.
+-Added Tomahawk gear set.
 -Added Advanced Option to add commas to the damage numbers.
 -Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
 -Removed notifications for Magic Bursts and Blood Pacts because I don't know why I added it in there.
@@ -1255,6 +1261,11 @@ function precast(spell)
 		equip(sets.mightystrikes)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Mighty Strikes]')
+		end
+	elseif spell.english == 'Tomahawk' and windower.ffxi.get_ability_recasts()[7] <= 1 then
+		equip(sets.tomahawk)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Tomahawk]')
 		end
 	elseif spell.english == 'Aggressor' and windower.ffxi.get_ability_recasts()[4] <= 1 then
 		equip(sets.aggressor)
