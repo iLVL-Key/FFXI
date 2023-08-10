@@ -52,6 +52,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts. 
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
+AutoFavor		=	'On'	--[On/Off]		Automatically uses Favor when you summon an avatar.
 AutoRelease		=	'On'	--[On/Off]		Automatically uses Release when you summon an avatar with one already out.
 DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
 DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
@@ -119,6 +120,7 @@ DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once 
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 Debug			=	'Off'	--[On/Off]
 
 --Color Values
@@ -156,9 +158,9 @@ function get_sets()
 	-- Used when you DO have an avatar out.
 	-- Combines with Idle set, only necessary to set the slots with specific desired stats
 	sets.avatar = set_combine(sets.idle, {
-		main="Gridarvor",
+		main="Nirvana",
 		sub="Vox Grip",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head="Beckoner's Horn +3",
 		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
@@ -199,9 +201,9 @@ function get_sets()
 
 	-- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack)
 	sets.dps = {
-		main="Gridarvor",
+		main="Nirvana",
 		sub="Vox Grip",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head="Beckoner's Horn +3",
 		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
@@ -257,7 +259,7 @@ function get_sets()
 	sets.bpdelay = {
 		main="Espiritus",
 		sub="Vox Grip",
-		ammo="Sancus Sachet +1",		--BPD-II -7s
+		ammo="Epitaph",		--BPD-II -5s
 		head="Beckoner's Horn +3",
 		body="Con. Doublet +3",			--BPD-I -15 (capping BPD-I)
 		hands="Lamassu Mitts +1",
@@ -272,18 +274,18 @@ function get_sets()
 
 	-- Blood Pact: Rage Physical (BP Damage+, Pet: Att+) (BP midcast)
 	sets.bpragephysical = {
-		main="Gridarvor",
+		main="Nirvana",
 		sub="Elan Strap",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head={ name="Merlinic Hood", augments={'Blood Pact Dmg.+10','Pet: DEX+3',}},
-		body="Con. Doublet +3",
+		body="Beck. Doublet +3",
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
-		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
+		feet="Beck. Pigaches +3",
 		neck="Smn. Collar +2",
 		waist="Incarnation Sash",
 		left_ear="Lugalbanda Earring",
-		right_ear="Gelos Earring",
+		right_ear="Beck. Earring +1",
 		left_ring="Varar Ring +1",
 		right_ring="Varar Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
@@ -293,16 +295,16 @@ function get_sets()
 	sets.bpragemagical = {
 		main="Grioavolr",
 		sub="Elan Strap",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head={ name="Merlinic Hood", augments={'Blood Pact Dmg.+10','Pet: DEX+3',}},
-		body="Con. Doublet +3",
+		body="Beck. Doublet +3",
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
-		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
+		feet="Beck. Pigaches +3",
 		neck="Smn. Collar +2",
 		waist="Regal Belt",
 		left_ear="Lugalbanda Earring",
-		right_ear="Gelos Earring",
+		right_ear="Beck. Earring +1",
 		left_ring="Varar Ring +1",
 		right_ring="Varar Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
@@ -310,18 +312,18 @@ function get_sets()
 
 	-- Blood Pact: Rage Hybrid (BP Damage+, Pet: MAB+, Pet: Att+) (BP midcast)
 	sets.bpragehybrid = {
-		main="Grioavolr",
+		main="Nirvana",
 		sub="Elan Strap",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head={ name="Merlinic Hood", augments={'Blood Pact Dmg.+10','Pet: DEX+3',}},
-		body="Con. Doublet +3",
+		body="Beck. Doublet +3",
 		hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 		legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
-		feet={ name="Merlinic Crackows", augments={'Pet: "Mag.Atk.Bns."+5','Blood Pact Dmg.+10','Pet: AGI+1',}},
+		feet="Beck. Pigaches +3",
 		neck="Smn. Collar +2",
-		waist="Incarnation Sash",
+		waist="Regal Belt",
 		left_ear="Lugalbanda Earring",
-		right_ear="Gelos Earring",
+		right_ear="Beck. Earring +1",
 		left_ring="Varar Ring +1",
 		right_ring="Varar Ring +1",
 		back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
@@ -332,7 +334,7 @@ function get_sets()
 		main="Grioavolr",
 		main="Espiritus",
 		sub="Vox Grip",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head="Beckoner's Horn +3",
 		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
@@ -349,7 +351,7 @@ function get_sets()
 	sets.bpwarddebuff = {
 		main="Grioavolr",
 		sub="Vox Grip",
-		ammo="Sancus Sachet +1",
+		ammo="Epitaph",
 		head="Beckoner's Horn +3",
 		body="Beck. Doublet +3",
 		hands="Lamassu Mitts +1",
@@ -433,7 +435,7 @@ function get_sets()
 
 	-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
 	sets.town = set_combine(sets.idle, {
-		main="Gridarvor",
+		main="Nirvana",
 	})
 
 	-- Adoulin Town Gear
@@ -475,19 +477,27 @@ end
 
 
 
-FileVersion = '8.0.0'
+FileVersion = '9.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates major version matches your current file,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the major version changes will you need to update the entire file.
-Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
 
-Version 8.0.0
+Version 9.0
+-No gear set changes.
+-Added AutoFavor option.
+-Added Advanced Option to add commas to the damage numbers.
+-Adjusted Blood Pact Notification to exclude Blood Pact: Ward abilities.
+-Adjusted Blood Pact notification to include Skillchains created by the Blood Pact.
+-Adjusted Weaponskill/Blood Pact Missed notification to also display when a Weaponskill/Blood Pact gets blinked.
+
+Version 8.0
+-No gear set changes.
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -738,6 +748,32 @@ if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
 end
 
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if AddCommas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -857,6 +893,7 @@ function self_command(command)
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'UseEcho: '..(''..UseEcho..''):color(8)..'')
 		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
+		windower.add_to_chat(200,'AutoFavor: '..(''..AutoFavor..''):color(8)..'')
 		windower.add_to_chat(200,'AutoRelease: '..(''..AutoRelease..''):color(8)..'')
 		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
 		windower.add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
@@ -920,6 +957,7 @@ function self_command(command)
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Color Values --')
@@ -1226,9 +1264,16 @@ function precast(spell)
 			windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
 		end
 	elseif (spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard') and not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
-		equip(sets.bpdelay)
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: BP Delay]')
+		--if we're using a BP without Avatar's Favor up, we'll put it up before casting:
+		if AutoFavor == 'On' and not buffactive['Avatar\'s Favor'] and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[176] == 0 then
+			send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet '..spell.english..' '..spell.target.raw..'')
+			cancel_spell()
+			return
+		else
+			equip(sets.bpdelay)
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[Equipped Set: BP Delay]')
+			end
 		end
 	elseif spell.english == 'Astral Flow' then
 		equip(sets.astralflow)
@@ -1250,10 +1295,12 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
-	--if we're casting an avatar with one already out, we'll use Release before casting:
-	elseif (Avatars:contains(spell.english) or Spirits:contains(spell.english)) and pet.isvalid == true and AutoRelease == 'On' and windower.ffxi.get_ability_recasts()[172] == 0 then
-		cancel_spell()
-		send_command('input /pet "Release" <me>;wait 1;input /ma '..spell.english..' <me>')
+	elseif (Avatars:contains(spell.english) or Spirits:contains(spell.english)) then
+		--if we're casting an avatar with one already out, we'll use Release before casting:
+		 if pet.isvalid == true and AutoRelease == 'On' and windower.ffxi.get_ability_recasts()[172] == 0 then
+			cancel_spell()
+			send_command('input /pet "Release" <me>;wait 1;input /ma '..spell.english..' <me>')
+		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
@@ -1363,6 +1410,9 @@ function aftercast(spell)
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[Equipped Set: Avatar]')
 			end
+		end
+		if AutoFavor == 'On' and not buffactive['Avatar\'s Favor'] and not buffactive['Amnesia'] and windower.ffxi.get_ability_recasts()[176] == 0 then
+			send_command('wait 3.5; input /ja "Avatar\'s Favor" <me>')
 		end
 	elseif spell.english == "Release" then
 		if DTOverride == "On" then
@@ -2095,7 +2145,7 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---     WS/MB/BP DAMAGE NOTIFICATION      --
+--         DAMAGE NOTIFICATIONS          --
 -------------------------------------------
 
 windower.register_event('action',function(act)
@@ -2108,39 +2158,51 @@ windower.register_event('action',function(act)
 	if NotiDamage == 'On' then
 		--Weapon Skills and Skillchains:
 		if act.category == 3 and act.actor_id == player.id then
-			--Uses Weapon Skill but misses or gets blinked:
-			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+			--Weapon Skill misses:
+			if act.targets[1].actions[1].message == 188 then
 				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill gets blinked:
+			elseif act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands and creates a Skillchain:
 			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands but no Skillchain:
 			elseif act.targets[1].actions[1].message == 185 then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
 			end
 		--Magic Bursts:
-		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
+		elseif ((act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 13 and act.targets[1].actions[1].message == 379)) and act.actor_id == player.id then
 			--Magic:
 			if act.category == 4 then
-				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Lunges:
-			elseif act.category == 15 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Blood Pacts?:
+				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood Pacts:
 			elseif act.category == 13 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
 			end
-		--Blood Pacts:
-		elseif act.category == 13 and act.actor_id == pet.id then
-			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+		--Blood Pact: Rages:
+		elseif act.category == 13 and act.actor_id == pet.id and not (BPWardBuff:contains(jobabilities[act.param].english) or (BPWardDebuff:contains(jobabilities[act.param].english))) then
+			--Blood Pact misses:
+			if act.targets[1].actions[1].message == 324 then
+				send_command('wait .2;text notifications text "«« '..jobabilities[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood pact gets blinked:
+			elseif act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..jobabilities[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood Pact lands and creates a Skillchain:
+			elseif act.targets[1].actions[1].has_add_effect then
+				send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Blood Pact lands but no Skillchain:
+			else
+				send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+			end
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
@@ -2156,13 +2218,3 @@ end)
 function file_unload()
 	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text favor delete;text siphon delete;text apogee delete;text cede delete;text convert delete;text weapons delete;text notifications delete;text debuffs delete;text loading delete;text avatar delete') --delete the different text objects
 end
-
---[[
-
--------------------------------------------
---            KEYS NOTEPAD               --
--------------------------------------------
-
--Auto-Favor
-
- --]]
