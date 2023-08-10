@@ -144,6 +144,7 @@ AutSntThreshold	=	500		--If your HP goes below this number, Sentinel will activa
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
+AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 Debug			=	'Off'	--[On/Off]
 
 --Color Values
@@ -163,18 +164,18 @@ function get_sets()
 
 	-- Tank (Damage Taken-, Evasion, Magic Evasion, Enmity+, VIT, Defense)
 	sets.tank = {
-		ammo="Staunch Tathlum",
-		head="Chev. Armet +3",
-		body="Sakpata's Plate",
-		hands="Sakpata's Gauntlets",
-		legs="Chev. Cuisses +3",
+		ammo="Staunch Tathlum",			--2 DT
+		head="Chev. Armet +3",			--11 DT
+		body="Sakpata's Plate",			--10 DT
+		hands="Sakpata's Gauntlets",	--8 DT
+		legs="Chev. Cuisses +3",		--13 DT
 		feet="Rev. Leggings +3",
 		neck="Unmoving Collar +1",
-		waist="Plat. Mog. Belt",
-		left_ear="Thureous Earring",
-		right_ear="Chev. Earring",
-		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
+		waist="Plat. Mog. Belt",		--3 DT
+		left_ear="Tuisto Earring",
+		right_ear="Chev. Earring +1",	--5 DT
+		left_ring="Moonlight Ring",		--5 DT
+		right_ring="Gelatinous Ring +1",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 	}
 
@@ -191,8 +192,8 @@ function get_sets()
 		waist="Plat. Mog. Belt",
 		left_ear="Tuisto Earring",
 		right_ear="Odnowa Earring +1",
-		left_ring="Moonbeam Ring",
-		right_ring="Moonbeam Ring",
+		left_ring="Moonlight Ring",
+		right_ring="Gelatinous Ring +1",
 		back="Moonlight Cape",
 	})
 
@@ -209,7 +210,7 @@ function get_sets()
 		waist="Plat. Mog. Belt",
 		left_ear="Tuisto Earring",
 		right_ear="Knightly Earring",	--9 SIRD
-		left_ring="Moonbeam Ring",
+		left_ring="Moonlight Ring",
 		right_ring="Evanescence Ring",	--5 SIRD
 		back="Moonlight Cape",
 	})
@@ -278,7 +279,7 @@ function get_sets()
 		waist="Plat. Mog. Belt",
 		left_ear="Tuisto Earring",
 		right_ear="Odnowa Earring +1",
-		left_ring="Moonbeam Ring",
+		left_ring="Moonlight Ring",
 		right_ring="Defending Ring",
 		back="Moonlight Cape",
 	}
@@ -333,8 +334,8 @@ function get_sets()
 		neck="Phalaina Locket",		--4 CP		 4 CPR
 		waist="Plat. Mog. Belt",
 		left_ear="Tuisto Earring",
-		right_ear="Chev. Earring",	--10 CP
-		left_ring="Moonbeam Ring",
+		right_ear="Chev. Earring +1",	--10 CP
+		left_ring="Moonlight Ring",
 		right_ring="Defending Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 CP
 	}
@@ -351,8 +352,8 @@ function get_sets()
 		neck="Unmoving Collar +1",
 		waist="Plat. Mog. Belt",
 		left_ear="Mendi. Earring",	--			5 CP
-		right_ear="Chev. Earring",	--			10 CP
-		left_ring="Moonbeam Ring",
+		right_ear="Chev. Earring +1",	--			10 CP
+		left_ring="Moonlight Ring",
 		right_ring="Defending Ring",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
 	}
@@ -377,19 +378,21 @@ function get_sets()
 
 	-- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 	sets.phalanx = {
-		body="Shab. Cuirass +1",
+		head="Odyssean Helm",
+		body="Odyssean Chestplate",
 		hands="Souv. Handsch. +1",
 		legs="Sakpata's Cuisses",
 		feet="Souveran Schuhs +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
+		back="Weard Mantle",
 	}
 
 	-- Phalanx with SIRD (102%+ SIRD, Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 	sets.phalanxsird = {
 		ammo="Staunch Tathlum",			--10 SIRD
 		head="Souv. Schaller +1",		--20 SIRD
-		body="Shab. Cuirass +1",
+		body="Odyssean Chestplate",
 		hands="Regal Gauntlets",		--10 SIRD
 		legs="Founder's Hose",			--30 SIRD
 		feet="Souveran Schuhs +1",
@@ -426,7 +429,7 @@ function get_sets()
 		neck="Moonlight Necklace",		--15 SIRD
 		left_ear="Tuisto Earring",
 		right_ear="Knightly Earring",	--9 SIRD
-		left_ring="Moonbeam Ring",
+		left_ring="Moonlight Ring",
 		right_ring="Defending Ring",
 		back="Moonlight Cape",
 	}
@@ -459,7 +462,7 @@ function get_sets()
 		waist="Plat. Mog. Belt",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
-		left_ring="Moonbeam Ring",
+		left_ring="Moonlight Ring",
 		right_ring="Karieyh Ring +1",
 		back="Moonlight Cape",
 	}
@@ -507,7 +510,7 @@ function get_sets()
 
 	-- Holy Circle (Enhances Holy Circle gear)
 	sets.holycircle = set_combine(sets.enmity, {
-		feet="Gallant Leggings",
+		feet="Rev. Leggings +3",
 	})
 
 	-- Shield Bash (Enhances Shield Bash gear)
@@ -589,19 +592,25 @@ end
 
 
 
-FileVersion = '11.0.0'
+FileVersion = '12.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-If the new updates major version matches your current file,
-simply replace everything under the "Do Not Edit Below This Line".
-Only when the major version changes will you need to update the entire file.
-Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version
+MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
 
-Version 11.0.0
+Version 12.0
+-No gear set changes.
+-Added Advanced Option to add commas to the damage numbers.
+-Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+-Removed notifications for Blood Pacts because I don't know why I added it in there.
+
+Version 11.0
+-No gear set changes.
 -Renamed WS Damage Notification to Damage Notification.
 -Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
 -Fixed Damage Notification option displaying regardless of being on or off.
@@ -880,6 +889,32 @@ if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
 end
 
+-- Add commas to numbers to make them easier to read
+function addCommas(number)
+	-- Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	if AddCommas then
+		local length = #formattedNumber
+
+		if length > 3 then
+			local insertIndex = length % 3
+			if insertIndex == 0 then
+				insertIndex = 3
+			end
+
+			while insertIndex < length do
+				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				insertIndex = insertIndex + 4
+				length = length + 1
+			end
+		end
+	end
+
+	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -1111,6 +1146,7 @@ function self_command(command)
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
 		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		windower.add_to_chat(200,' ')
 		windower.add_to_chat(3,'-- Color Values --')
@@ -2431,7 +2467,7 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---     WS/MB/BP DAMAGE NOTIFICATION      --
+--         DAMAGE NOTIFICATIONS          --
 -------------------------------------------
 
 windower.register_event('action',function(act)
@@ -2444,15 +2480,18 @@ windower.register_event('action',function(act)
 	if NotiDamage == 'On' then
 		--Weapon Skills and Skillchains:
 		if act.category == 3 and act.actor_id == player.id then
-			--Uses Weapon Skill but misses or gets blinked:
-			if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 then
+			--Weapon Skill misses:
+			if act.targets[1].actions[1].message == 188 then
 				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Missed »»";text notifications color 0 255 255;text notifications bg_transparency 1')
+			--Weapon Skill gets blinked:
+			elseif act.targets[1].actions[1].message == 31 then
+				send_command('wait .2;text notifications text "«« '..weaponskills[act.param].english..' Blinked »»";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands and creates a Skillchain:
 			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..act.targets[1].actions[1].add_effect_param..')";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Weapon Skill lands but no Skillchain:
 			elseif act.targets[1].actions[1].message == 185 then
-				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "'..weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
@@ -2462,21 +2501,11 @@ windower.register_event('action',function(act)
 		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
 			--Magic:
 			if act.category == 4 then
-				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			--Lunges:
 			elseif act.category == 15 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
-			--Blood Pacts?:
-			elseif act.category == 13 then
-				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
+				send_command('wait .2;text notifications text "Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			end
-			NotiCountdown = -1
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
-			end
-		--Blood Pacts:
-		elseif act.category == 13 and act.actor_id == pet.id then
-			send_command('wait .2;text notifications text "'..jobabilities[act.param].english..': '..act.targets[1].actions[1].param..'";text notifications color 0 255 255;text notifications bg_transparency 1')
 			NotiCountdown = -1
 			if Debug == 'On' then
 				windower.add_to_chat(8,'[NotiCountdown set to -1]')
@@ -2500,6 +2529,7 @@ end
 -------------------------------------------
 
 /BLU spells:
+
 30 points: (sub job 50 or under)
 Cocoon			-Cast for defense
 Blank Gaze		-Cast for single target hate
@@ -2514,6 +2544,7 @@ Foot Kick		-Lizard Killer trait
 Claw Cyclone	-Lizard Killer trait
 Power Attack	-Plantoid Killer trait
 Mandibular Bite	-Plantoid Killer trait
+
 35 points: (sub job 51 or higher)
 Feather Storm	-HP+5 trait
 Helldive		-HP+5 trait
