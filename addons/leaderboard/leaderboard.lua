@@ -1835,8 +1835,8 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		windower.add_to_chat(36,'   lock/unlock'..(' - Drag the On-Screen Display.'):color(8))
 		windower.add_to_chat(36,'   optout'..(' [add/remove'):color(53)..(' <name>'):color(2)..(']'):color(53)..(' - Display/update the Optout list.'):color(8))
 		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
-		windower.add_to_chat(36,'   comma'..(' [on/off]'):color(53)..(' - Display/change the Comma setting.'):color(8))
-		windower.add_to_chat(36,'   party'..(' [on/off]'):color(53)..(' - Display/change the Party Command setting.'):color(8))
+		windower.add_to_chat(36,'   comma'..(' - Display/change the Comma setting.'):color(8))
+		windower.add_to_chat(36,'   party'..(' - Display/change the Party Command setting.'):color(8))
 		windower.add_to_chat(36,'   flood'..(' [#]'):color(53)..(' - Display/change the current Flood Delay for Party/Lite Mode Party Commands.'):color(8))
 
 
