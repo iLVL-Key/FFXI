@@ -10,11 +10,11 @@ Tracks battle information and groups it together in different "boards".
   - Party: Full party chat call outs. Great for linkshell events.
 - Tracks 10 different boards.
 - On-Screen Display for tracking boards in realtime.
-- Rival system - Set another player as your Rival and get notifications when either of you beat the others scores.
+- Rival system - Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
 - Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
-- Party commands. Party members can use party chat (or a tell) to issue certain commands. Disabled by default and is intended to be enabled by a player using Party Mode.
-- Automatic data recovery. If you crash or disconnect, your data is saved and it picks up right back where it left off.
-- Tracks every players scores individually, allowing any player in the group to get their own report with only their own scores for each board.
+- Party commands. Party members can use party chat (or a tell) to issue certain commands.
+- Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
+- Tracks every players scores individually, allowing any player in the group to get a report with only their own scores for each board.
 - Tracks the number of "9's" a player has hit.
 - Duplicate scores are ordered by who hit the number first.
 - All settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
@@ -39,9 +39,10 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 #### Basic Commands `[optional] <required>`
 - `pause/p` - Pause/unpause tracking.
 - `boards` - List the different boards that are tracked.
-- `visible/show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
+- `show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
 - `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
 - `rival [name]` - Display/Set the specified player as your Rival. Repeat to remove.
+- `taunt` - Send your rival a tell letting them know which boards you have them beat on.
 
 (show and reset can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
 
@@ -51,25 +52,31 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
 - `report <name>` - Send the specified player their score report via tell.
-- `comma [on/off]` - Display/change the Comma setting.
-- `party [on/off]` - Display/change the Party Command setting.
+- `comma` - Change the Comma setting.
+- `party` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
 
 ### Party Commands
-All commands must be prefixed with `!lb` (ex: `!lb report`). Only work if another player has them enabled.
+Intended to be used by the party. The host must have Party or Lite Mode running and not have Party Commands disabled.  
+All commands must be prefixed with `!lb` (ex: `!lb report`).
 - `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
 - `optout` - Add your name to the Optout list.
 - `report` - Receive a score report via tell.
 
 ### To-do
-- Add ablity to turn specific board party calls off.
+- Allow the taunt text to be changed via command.
 - Add Drains and Dread Spikes/Drain Samba to cures?
-- Add a taunt command? //lb taunt sends a tell to your rival with something like "I'm beating you in WS High, Skillchains, and Kills!"
-- Adjust Party Commands to be tied directly to Party Mode. Currently, Party Commands are turned on and off independantly, regardless of which mode is active, meaning they could be used while in Silent or Lite mode, or forgotten to be turned on when in Party Mode. Instead, Party Command option set to on by default, but only usable when specifically in Party Mode, unless the Party Commands get turned off by the host.
-- Remove Visible addon command. With `show` already being needed to change the boards being displayed, removing `visible` simplifies commands leaving just `show` and `hide` which do the same thing.
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
 
 ### Version History
+
+**3.3**
+- Added option to turn specific board party calls on or off.
+- Added Taunt command. Will send your rival a tell letting them know which boards you're beating them on (currently limited to High WS, Low WS, Skillchain, and Magic Burst). The message is available to edit in the settings file.
+- Adjusted Party Commands to be tied directly to Party/Lite Mode. Previously, Party Commands were turned on and off independantly, regardless of which mode was active, meaning they could be used while in Silent or Lite mode, or forgotten to be turned on when in Party Mode. Instead, Party Command option is now set to on by default, but only usable when specifically in Party or Lite Mode, unless the Party Commands get turned off.
+- Adjusted Commas and Party Commands settings to be a toggle, removing the need to supply on or off to the command.
+- Adjusted Rival notifications to account for 99999's in the scores.
+- Removed Visible addon command. With show already being needed to change the boards being displayed, removing visible simplifies commands leaving just show and hide which do the same thing.
 
 **3.2**
 - Added Charm callout.
