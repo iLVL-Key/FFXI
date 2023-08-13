@@ -2319,7 +2319,7 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		windower.add_to_chat(220,'[Leaderboard] '..('On-Screen Display is locked. Dragging is disabled.'):color(8))
 
 
-	--Unlock the On-Screen Display by turning drag on
+	-- Unlock the On-Screen Display by turning drag on
 	elseif addcmd == 'unlock' then
 		settings.flags.draggable = true
 		settings:save('all')
@@ -2341,6 +2341,7 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 		updateBox(box_display)
 
 
+	-- Taunt your Rival with a tell
 	elseif addcmd == 'taunt' then
 		if settings.rival == '' then
 			windower.add_to_chat(220,'[Leaderboard] '..('No Rival set.'):color(8))
@@ -2394,7 +2395,7 @@ windower.register_event('addon command',function(addcmd, arg, arg2)
 				end
 			end
 		end
-		say("/echo /t "..settings.rival.." "..(text):format(imBeatingText))
+		say("/t "..settings.rival.." "..(text):format(imBeatingText))
 
 
 	-- Unknown command
