@@ -47,7 +47,7 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 (show and reset can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
 
 #### Advanced Commands `[optional] <required>`
-- `mode/m [lite/l/party/p/silent/s` - Display/change the current Mode.
+- `mode [lite/l/party/p/silent/s` - Display/change the current Mode.
 - `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
