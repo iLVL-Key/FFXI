@@ -1,7 +1,11 @@
 # Leaderboard
 Tracks battle information and groups it together in different "boards".  
 
-![lb_high_ws](https://github.com/iLVL-Key/FFXI/assets/101156258/9153f70c-4bd4-4884-bea6-1d90faa60b75)
+![Leaderboard addon picture of the onscreen display](https://github.com/iLVL-Key/FFXI/assets/101156258/41375815-1222-49d7-8a89-e02e792093dd)
+
+
+![Leaderboard addon picture of party chat callout](https://github.com/iLVL-Key/FFXI/assets/101156258/4890ef71-08cd-49dd-9819-feccde31e760)
+
 
 ### Features
 - 3 different tracking modes:
