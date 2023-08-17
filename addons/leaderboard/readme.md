@@ -1,24 +1,28 @@
 # Leaderboard
 Tracks battle information and groups it together in different "boards".  
 
-![Leaderboard addon picture of the onscreen display](https://github.com/iLVL-Key/FFXI/assets/101156258/41375815-1222-49d7-8a89-e02e792093dd)
 
+![Leaderboard addon picture of the onscreen display](https://github.com/iLVL-Key/FFXI/assets/101156258/41375815-1222-49d7-8a89-e02e792093dd)  
+↑ The on-screen display showing the Cure Board.
 
-![Leaderboard addon picture of party chat callout](https://github.com/iLVL-Key/FFXI/assets/101156258/4890ef71-08cd-49dd-9819-feccde31e760)
+![Leaderboard addon picture of high ws party chat callout](https://github.com/iLVL-Key/FFXI/assets/101156258/4890ef71-08cd-49dd-9819-feccde31e760)  
+↑ Party chat callout for the High WS.
 
+![Leaderboard addon picture of cure board printed to party chat](https://github.com/iLVL-Key/FFXI/assets/101156258/41ff276e-57b0-4899-a302-71abd85ae64f)  
+↑ The Cure Board being printed to party chat.
 
 ### Features
 - 3 different tracking modes:
-  - Silent: Tracks in the background, no party chat call outs. Default.
-  - Lite: Limited party chat call outs.
-  - Party: Full party chat call outs. Great for linkshell events.
+  - **Silent:** Tracks in the background, no party chat call outs. Default.
+  - **Lite:** Limited party chat call outs.
+  - **Party:** Full party chat call outs. Great for linkshell events.
 - Tracks 10 different boards.
 - On-Screen Display for tracking boards in realtime.
-- Rival system - Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
+- Rival system. Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
 - Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
 - Party commands. Party members can use party chat (or a tell) to issue certain commands.
 - Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
-- Tracks every players scores individually, allowing any player in the group to get a report with only their own scores for each board.
+- Tracks every players scores individually. Allows any player in the group to get a report with only their own scores for each board.
 - Tracks the number of "9's" a player has hit.
 - Duplicate scores are ordered by who hit the number first.
 - All settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
@@ -45,7 +49,7 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `boards` - List the different boards that are tracked.
 - `show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
 - `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
-- `rival [name]` - Display/Set the specified player as your Rival. Repeat to remove.
+- `rival [name]` - Display/Set the specified player as your Rival. Repeat with name to remove.
 - `taunt` - Send your rival a tell letting them know which boards you have them beat on.
 
 (show and reset can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
@@ -68,6 +72,8 @@ All commands must be prefixed with `!lb` (ex: `!lb report`).
 - `report` - Receive a score report via tell.
 
 ### To-do
+- Remove the requirement to use `mode` to change the mode.
+- Update the charm code to include other types of charm. Currently charm is only detected inside Dynamis-D.
 - Allow the taunt text to be changed via command.
 - Add Drains and Dread Spikes/Drain Samba to cures?
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
