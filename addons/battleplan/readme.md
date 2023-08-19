@@ -3,34 +3,36 @@
 
 A collaborative "whiteboard" for you and your party.
 
-Up to 5 lines are available to use. The BP box is not visible when all lines are empty. It is controlled by special commands detected through the chat log. Anyone running Battle Plan that sees these commands will be updated. This means that you can keep a group of players all on the same page!  
+![bp_box](https://github.com/iLVL-Key/FFXI/assets/101156258/7d7a5a02-d4c6-4a7f-94c8-5d429641961b)
+
+Up to 5 lines are available to use. It is controlled by special commands detected through the chat log, and is not visible when all lines are empty. Anyone running Battle Plan that sees these commands in their chat log will be updated. This means that you can keep a group of players all on the same page!  
 
 For example, you can use it in Odyssey to list out the 3 NMs you're planning on doing and keep track of who is what job on each so that there's no overlap. Or in Sortie to have the path your group is taking laid out ahead of time.
 
 This can also be used as a simple notepad for just yourself, without putting anything into party chat.
 
+Additionally, you can prep what you send out to everyone ahead of time by using the `//bp <#>` addon commands to first build the box on your own screen, then use `//bp send` to send each line out through the chat log for other players once you are satisfied with it.
+
 ### Commands
 There are two types of commands: `Addon` and `Party`  
 
-#### Addon
+#### Addon `[optional] <required>`
 These commands are used to update *YOUR* BP box. Other people's BP boxes will remain the same. All Addon commands must be prefixed with either `//battleplan` or `//bp` (ex: `//bp clear`)
-- **[#]** - Update *YOUR* BP box. Other people's BP boxes will remain the same.
-  - [#] must be a number 1-5. Ex. `//bp 3 Hello from iLVL of Valefor!`
+- **<#> [text here]** - Update line # of *YOUR* BP box (blank to clear).
+  - <#> must be a number 1-5. Ex. `//bp 3 Hello from iLVL of Valefor!`
 - **send** - Send your current BP box to the chat log to update other players.
-- **show** - Shows the BP box if there is content to diplay. (saved to settings file)
-- **hide** - Hides the BP box regardless of content to display. (saved to settings file)
-- **visible** - Toggle the BP box visibility (alternative to show/hide). (saved to settings file)
-- **clear** - Clear *YOUR* BP box. Other people's BP boxes will remain the same.
-- **pos [x] [y]** - Update the position of the BP box. (saved to settings file)
-- **pos lock/unlock** - Drag the BP box. Lock to prevent mishaps. (saved to settings file)
+- **show/hide** - Displays the BP box if there is content to diplay. (saved to settings file)
+- **clear** - Clear *YOUR* BP box.
+- **pos [<x> <y>]** - Update the position of the BP box. (saved to settings file)
+- **lock/unlock** - Drag the BP box. (saved to settings file)
 - **size [#]** - Update the font size of the BP box Default. (saved to settings file)
 - **bold** - Update the bold setting. (saved to settings file)
 - **tutorial** - Run a short tutorial to give you the basics.
 
-#### PARTY
-These commands are used directly in your party chat so that they are seen by the other members in your party/alliance. This is so that Battle Plan running on their own screens will be updated.
-- **!bp[#]** - Update *EVERYONE'S* BP box with the text that follows it.
-  - [#] must be a number 1-5. Ex. `!bp3 Pickle Surprise!`
+#### PARTY `[optional] <required>`
+These commands are used to update *EVERYONE'S* BP box. They are used directly in your party chat so that they are seen by the other members in your party/alliance. This is so that Battle Plan running on their own screens will be updated.
+- **!bp<#>** - Update line # of *EVERYONE'S* BP box (blank to clear).
+  - <#> must be a number 1-5. Ex. `!bp3 Pickle Surprise!`
 - **!bpclear** - Clear *EVERYONE'S* BP box
 
 Everything after the !bp# will be captured and displayed on that line. It is also smart enough to recognize different !bp# on the same line and act accordingly. This means that typing  
@@ -44,6 +46,13 @@ This is line 3
 
 
 ### Version History
+
+**3.1**
+- Fixed error introduced in patch 3.0.1 with party commands not working correctly.
+- Adjusted the Tutorial to now save your previous BP box content and restore it after running.
+- Adjusted the Help command text.
+- Removed Visible command. Simplifies commands as show/hide already do this.
+- Removed the requirement to use `pos` to lock or unlock the BP Box. It will still work as before, but now you can also use just `lock` or `unlock` as their own commands to do the same thing.
 
 **3.0.2**
 - Fix BP header showing after logging out then back in.
@@ -64,7 +73,7 @@ This is line 3
 - Added a temporary display for the BP box when using the position and font size commands when the BP box is not on screen.
 
 **2.3**
-- Added send command. When paired with the line command. this allows you to fill out the BP box on your side, then send it to other users once you are finished.
+- Added send command. When paired with the line command this allows you to fill out the BP box on your side then send it to other users once you are finished.
 - Added auto-hide upon zoning or logging out of your character.
 - Added error handling on the font size command.
 - Additional formatting fixes.
