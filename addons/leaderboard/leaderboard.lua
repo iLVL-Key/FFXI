@@ -1827,12 +1827,13 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(36,'   show/hide'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display boards on screen.'):color(8))
 		windower.add_to_chat(36,'   reset'..(' <all/c/d/hs/k/ls/m/mb/n/sc/w>'):color(2)..(' - Reset specified data.'):color(8))
 		windower.add_to_chat(36,'   rival'..(' <name>'):color(2)..(' - Set the specified player as your Rival. Repeat to remove.'):color(8))
-		windower.add_to_chat(36,'   taunt'..(' - Send your rival a tell letting them know which boards you have them beat on.'):color(8))
+		windower.add_to_chat(36,'   taunt'..(' [text]'):color(53)..(' - Send your rival a tell with which boards you have them beat on.'):color(8))
+		windower.add_to_chat(8,'   Including [text] updates the taunt text. Must include a \'%s\' where the boards will go.')
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Advanced Commands '..('[optional]'):color(53)..(' <required>'):color(2))
 		windower.add_to_chat(36,'   mode/silent/lite/party'..(' - Display/change the current Mode.'):color(8))
 		windower.add_to_chat(36,'   c/d/hs/k/ls/m/mb/n/sc/w'..(' - Print board to party chat.'):color(8))
-		windower.add_to_chat(36,'   call'..(' [ch/c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display/change the Party/Lite mode party call settings.'):color(8))
+		windower.add_to_chat(36,'   call'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display/change the Party/Lite mode party call settings.'):color(8))
 		windower.add_to_chat(36,'   lock/unlock'..(' - Drag the On-Screen Display.'):color(8))
 		windower.add_to_chat(36,'   optout'..(' [add/remove'):color(53)..(' <name>'):color(2)..(']'):color(53)..(' - Display/update the Optout list.'):color(8))
 		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
@@ -2350,7 +2351,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			local tauntText = table.concat(args, ' ')
 			-- Make sure %s is included in the taunt
 			if not string.match(tauntText, "%%s") then
-				windower.add_to_chat(220,'[Leaderboard] '..('Please use a \"%s\" where the board names will go. Your current taunt text is:'):color(8))
+				windower.add_to_chat(220,'[Leaderboard] '..('Please include a \'%s\' where the board names will go. Your current taunt text is:'):color(8))
 				windower.add_to_chat(220,'[Leaderboard] '..(settings.taunt):color(1))
 			else
 				settings.taunt = tauntText
@@ -2362,7 +2363,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		end
 		-- Check if the settings file was manually updated without a "%s" in it.
 		if not string.match(settings.taunt, "%%s") then
-			windower.add_to_chat(220,'[Leaderboard] '..('Please update your taunt text to use a \"%s\" where the board names will go.'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..('Please update your taunt text to include a \'%s\' where the board names will go.'):color(8))
 			windower.add_to_chat(220,'[Leaderboard] '..('Ex. '):color(8)..('//lb taunt I\'m beating you in %s. Just thought you should know.'):color(1))
 			return
 		end
