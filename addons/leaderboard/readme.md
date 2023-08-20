@@ -50,16 +50,19 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
 - `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
 - `rival [name]` - Display/Set the specified player as your Rival. Repeat with name to remove.
-- `taunt` - Send your rival a tell letting them know which boards you have them beat on.
+- `taunt [text]` - Send your rival a tell with which boards you have them beat on.  
+  - Including `[text]` updates the taunt text. Must include a `%s` where the boards will go.
 
 (show and reset can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
 
 #### Advanced Commands `[optional] <required>`
-- `mode [lite/l/party/p/silent/s` - Display/change the current Mode.
+- `mode/silent/lite/party` - Display/change the current Mode.
 - `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
+- `call [c/d/hs/k/ls/m/mb/n/sc/w]` - Display/change the Party/Lite mode party call settings.
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
 - `report <name>` - Send the specified player their score report via tell.
+- `reminder` - Change the Reminder setting.
 - `comma` - Change the Comma setting.
 - `party` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
@@ -72,13 +75,19 @@ All commands must be prefixed with `!lb` (ex: `!lb report`).
 - `report` - Receive a score report via tell.
 
 ### To-do
-- Remove the requirement to use `mode` to change the mode.
-- Update the charm code to include other types of charm. Currently charm is only detected inside Dynamis-D.
-- Allow the taunt text to be changed via command.
 - Add Drains and Dread Spikes/Drain Samba to cures?
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
 
 ### Version History
+
+**3.4**
+- Added the ability to change the taunt commands text via addon command.
+- Added the Reminder command back in. The new behavior will only remind you that Leaderboard is running when in Party or Lite mode.
+- Adjusted the Report command to show 'none' when no data for select boards.
+- Adjusted the Report command to group the highest/lowest individual scores and running total scores together.
+- Adjusted the Mode command to no longer require `mode`. You can can now simply use `party`, `lite` or `silent` on their own. (ex. `//lb party` now does the same thing as `//lb mode party`)
+- Fixed the Report command issue where Low WS was not showing up correctly when one player had not used a weaponskill yet.
+- Removed the Charm callout. This has been moved to the Callouts addon where it makes more sense.
 
 **3.3**
 - Added option to turn specific board party calls on or off.
