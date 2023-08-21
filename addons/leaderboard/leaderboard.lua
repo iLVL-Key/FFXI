@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.4'
+_addon.version = '3.4.1'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -1798,7 +1798,7 @@ windower.register_event('addon command',function(addcmd, ...)
 
 
 	-- Party Commands setting
-	elseif addcmd == 'party' or addcmd == 'partycommand' or addcmd == 'partycommands' then
+	elseif addcmd == 'partycommand' or addcmd == 'partycmd' or addcmd == 'partycommands' then
 		settings.party_commands = not settings.party_commands
 		windower.add_to_chat(220,'[Leaderboard] '..(('Party Commands for Party/Lite Mode are set to %s'):format(settings.party_commands and 'on.' or 'off.')):color(8))
 		settings:save('all')
@@ -1839,7 +1839,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
 		windower.add_to_chat(36,'   reminder'..(' - Change the Reminder setting.'):color(8))
 		windower.add_to_chat(36,'   comma'..(' - Change the Comma setting.'):color(8))
-		windower.add_to_chat(36,'   party'..(' - Change the Party Command setting.'):color(8))
+		windower.add_to_chat(36,'   partycommand'..(' - Change the Party Command setting.'):color(8))
 		windower.add_to_chat(36,'   flood'..(' [#]'):color(53)..(' - Display/change the current Flood Delay for Party/Lite Mode Party Commands.'):color(8))
 
 
