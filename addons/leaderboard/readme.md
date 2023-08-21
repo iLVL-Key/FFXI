@@ -64,7 +64,7 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `report <name>` - Send the specified player their score report via tell.
 - `reminder` - Change the Reminder setting.
 - `comma` - Change the Comma setting.
-- `party` - Change the Party Command setting.
+- `partycommand/partycmd` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
 
 ### Party Commands
@@ -79,6 +79,9 @@ All commands must be prefixed with `!lb` (ex: `!lb report`).
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
 
 ### Version History
+
+**3.4.1**
+- Adjusted the Party command syntax to instead be Partycommand/Partycmd. This fixes a conflict with the Mode command update in version 3.4.
 
 **3.4**
 - Added the ability to change the taunt commands text via addon command.
