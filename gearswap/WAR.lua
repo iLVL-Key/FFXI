@@ -136,224 +136,257 @@ Aftermath2color	=	'75 255 75'		--Aftermath Level 2
 Aftermath3color	=	'255 255 50'	--Aftermath Level 3
 
 -------------------------------------------
+--          TWO-HANDED WEAPONS           --
+-------------------------------------------
+
+TwoHandedWeapons = S{
+	'Shining One','Chango','Ukonvasara','Lycurgos','Ragnarok','Bravura','Conqueror','Helheim','Laphria','War. Chopper','Agoge Chopper','Labraunda'
+	}
+
+-------------------------------------------
 --               GEAR SETS               --
 -------------------------------------------
 
 function get_sets()
 
-	-- Mode 1 (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
-	-- NOTE: This is your standard melee set.
-	sets.modeone = {
-		ammo="Coiste Bodhar",
-		head="Sakpata's Helm",
-		body="Sakpata's Plate",
-		hands="Sakpata's Gauntlets",
-		legs="Sakpata's Cuisses",
-		feet="Sakpata's Leggings",
-		neck="Ziel Charm",
-		waist="Ioskeha Belt +1",
-		left_ear="Schere Earring",
-		right_ear="Boii Earring +2",
-		left_ring="Hetairoi Ring",
-		right_ring="Niqmaddu Ring",
-		back="Moonlight Cape",
-	}
+-- Mode 1 (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
+-- NOTE: This is your standard melee set.
+sets.modeone = {
+	ammo="Yetshila +1",
+	head="Sakpata's Helm",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	neck="Ziel Charm",
+	waist="Ioskeha Belt +1",
+	left_ear="Schere Earring",
+	right_ear="Boii Earring +2",
+	left_ring="Hetairoi Ring",
+	right_ring="Niqmaddu Ring",
+	back={ name="Cichol's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+}
 
-	-- NOTE: Mode 2 (Multi-Attack - Attack Capped) uses the same TP set as Mode 1, so there is no Mode 2 TP set.
-	-- Instead, Mode 2 uses the Weapon Skill - Attack Capped set below. 
+-- Mode 1 Two-Handed Weapons (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
+-- NOTE: This set is used when you have one of the two-handed weapons listed in the above section
+sets.modeonetwohand = {
+	ammo="Yetshila +1",
+	head="Sakpata's Helm",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	neck="Ziel Charm",
+	waist="Ioskeha Belt +1",
+	left_ear="Schere Earring",
+	right_ear="Boii Earring +2",
+	left_ring="Hetairoi Ring",
+	right_ring="Niqmaddu Ring",
+	back={ name="Cichol's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+}
 
-	-- Mode 3 (Accuracy) (Example: A focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Store TP, and Attack)
-	-- NOTE: This is a special mode for accuracy. When in this mode, weapon skills will default to the Accuracy Weapon Skill set.
-	sets.modethree = set_combine(sets.modeone, {
+-- NOTE: Mode 2 (Multi-Attack - Attack Capped) uses the same TP set as Mode 1, so there is no Mode 2 TP set.
+-- Instead, Mode 2 uses the Weapon Skill - Attack Capped set below. 
 
-	})
+-- Mode 3 (Accuracy) (Example: A focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Store TP, and Attack)
+-- NOTE: This is a special mode for accuracy. When in this mode, weapon skills will default to the Accuracy Weapon Skill set.
+sets.modethree = set_combine(sets.modeone, {
 
-	-- Mode 4 (Tank) (Example: A focus on HP, Killer effects, then filling in the rest with Multi-Attack, Store TP, and Attack)
-	sets.modefour = {
+})
 
-	}
+-- Mode 4 (Tank) (Example: A focus on HP, Killer effects, then filling in the rest with Multi-Attack, Store TP, and Attack)
+sets.modefour = {
 
-	-- Idle (Movement Speed, Regain, Regen)
-	sets.idle = {
-		feet="Hermes' Sandals",
-		neck="Rep. Plat. Medal",
-		left_ring="Karieyh Ring +1",
-	}
+}
 
-	-- DT Override (Damage Taken-, Magic Evasion)
-	-- NOTE: Will override all other gear sets and inherit unused slots from them
-	sets.dtoverride = {
-		right_ring="Defending Ring",
-	}
+-- Idle (Movement Speed, Regain, Regen)
+sets.idle = {
+	feet="Hermes' Sandals",
+	neck="Rep. Plat. Medal",
+	left_ring="Karieyh Ring +1",
+}
 
-	-- Oh Shit
-	-- Full DT- and everything you've got with Absorbs or Annuls Damage
-	sets.ohshit = {
-		neck="Warder's Charm +1",
-		left_ring="Defending Ring",
-		right_ring="Shadow Ring",
-		back="Shadow Mantle",
-	}
+-- DT Override (Damage Taken-, Magic Evasion)
+-- NOTE: Will override all other gear sets and inherit unused slots from them
+sets.dtoverride = {
+	right_ring="Defending Ring",
+}
 
-	-- Weapon Skill (STR, TP Bonus, Multi-hit, Crit, Attack)
-	sets.ws = {
-		ammo="Knobkierrie",
-		head="Nyame Helm",
-		body="Nyame Mail",
-		hands="Nyame Gauntlets",
-		legs="Nyame Flanchard",
-		feet="Nyame Sollerets",
-		neck="Fotia Gorget",
-		waist="Sailfi Belt +1",
-		left_ear="Thrud Earring",
-		right_ear="Moonshade Earring",
-		left_ring="Karieyh Ring +1",
-		right_ring="Cornelia's Ring",
-		back="Moonlight Cape",
-	}
+-- Oh Shit
+-- Full DT- and everything you've got with Absorbs or Annuls Damage
+sets.ohshit = {
+	neck="Warder's Charm +1",
+	left_ring="Defending Ring",
+	right_ring="Shadow Ring",
+	back="Shadow Mantle",
+}
 
-	-- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
-	-- NOTE: This is a special set for weapon skill accuracy. When in either Accuracy mode (mode 3 or 4), weapon skills will use this set.
-	sets.accws = set_combine(sets.ws, {
-		neck="Fotia Gorget",
-		waist="Fotia Belt",
-		left_ring="Karieyh Ring +1",
-		right_ring="Cornelia's Ring",
-	})
+-- Weapon Skill (STR, TP Bonus, Multi-hit, Crit, Attack)
+sets.ws = {
+	ammo="Knobkierrie",
+	head="Nyame Helm",
+	body="Nyame Mail",
+	hands="Boii Mufflers +3",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Fotia Gorget",
+	waist="Sailfi Belt +1",
+	left_ear="Thrud Earring",
+	right_ear="Moonshade Earring",
+	left_ring="Karieyh Ring +1",
+	right_ring="Cornelia's Ring",
+	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
+}
 
-	-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
-	-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
-	sets.cappedtpws = {
-		left_ear="Lugra Earring +1",
-	}
+-- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
+-- NOTE: This is a special set for weapon skill accuracy. When in Accuracy mode (mode 3), weapon skills will use this set.
+sets.accws = set_combine(sets.ws, {
+	neck="Fotia Gorget",
+	waist="Fotia Belt",
+	left_ring="Karieyh Ring +1",
+	right_ring="Cornelia's Ring",
+})
 
-	-- Weapon Skill - Attack Cap (Physical Damage Limit+)
-	sets.attackcapws = {
-		ammo="Knobkierrie",
-		head="Sakpata's Helm",
-		body="Sakpata's Plate",
-		hands="Sakpata's Gauntlets",
-		legs="Sakpata's Cuisses",
-		feet="Sakpata's Leggings",
-		neck="Fotia Gorget",
-		waist="Sailfi Belt +1",
-		left_ear="Thrud Earring",
-		right_ear="Moonshade Earring",
-		left_ring="Regal Ring",
-		right_ring="Niqmaddu Ring",
-		back="Moonlight Cape",
-	}
+-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
+-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
+sets.cappedtpws = {
+	left_ear="Lugra Earring +1",
+}
 
-	-- Weapon Skill - Magic (Magic Attack Bonus)
-	sets.magicws = set_combine(sets.ws, {
+-- Weapon Skill - Attack Cap (Physical Damage Limit+)
+sets.attackcapws = {
+	ammo="Knobkierrie",
+	head="Sakpata's Helm",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Sakpata's Cuisses",
+	feet="Sakpata's Leggings",
+	neck="Fotia Gorget",
+	waist="Sailfi Belt +1",
+	left_ear="Thrud Earring",
+	right_ear="Moonshade Earring",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+	back="Moonlight Cape",
+}
 
-	})
+-- Weapon Skill - Magic (Magic Attack Bonus)
+sets.magicws = set_combine(sets.ws, {
 
-	-- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
-	sets.upheaval = set_combine(sets.ws, {
-		body="Tatena. Harama. +1",
+})
 
-	})
+-- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
+sets.upheaval = set_combine(sets.ws, {
+	body="Tatena. Harama. +1",
 
-	-- Savage Blade (STR, MND, Fencer, TP Bonus)
-	sets.savage = set_combine(sets.ws, {
-		legs="Boii Cuisses +3",
-	})
+})
 
-	-- Sanguine Blade (Dark Elemental Magic Attack Bonus)
-	sets.sanguine = set_combine(sets.magicws, {
-		head="Pixie Hairpin +1",
-		left_ring="Archon Ring",
-	})
+-- Savage Blade (STR, MND, Fencer, TP Bonus)
+sets.savage = set_combine(sets.ws, {
+	legs="Boii Cuisses +3",
+})
 
-	-- Hachirin-no-obi
-	sets.hachirin = set_combine(sets.magicws,sets.ws, {
-		--waist="Hachirin-no-obi",
-	})
+-- Sanguine Blade (Dark Elemental Magic Attack Bonus)
+sets.sanguine = set_combine(sets.magicws, {
+	head="Pixie Hairpin +1",
+	left_ring="Archon Ring",
+})
 
-	-- Ygnas's Resolve +1
-	-- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
-	sets.ygnas = {
-		--neck="Ygnas's Resolve +1",
-	}
+-- Hachirin-no-obi
+sets.hachirin = set_combine(sets.magicws,sets.ws, {
+	waist="Hachirin-no-obi",
+})
 
-	-- Tomahawk
-	sets.tomahawk = {
-		ammo="Thr. Tomahawk",
-		--feet="Agoge Calligae +3"
-	}
+-- Ygnas's Resolve +1
+-- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
+sets.ygnas = {
+	--neck="Ygnas's Resolve +1",
+}
 
-	-- Aggressor
-	sets.aggressor = {
+-- Tomahawk
+sets.tomahawk = {
+	ammo="Thr. Tomahawk",
+	feet="Agoge Calligae +1",
+}
 
-	}
+-- Aggressor
+sets.aggressor = {
+	head="Pumm. Mask +2",
+	body="Agoge Lorica +1",
+}
 
-	-- Berserk
-	sets.berserk = {
+-- Berserk
+sets.berserk = {
+	body="Pumm. Lorica +2",
+	feet="Agoge Calligae +1",
+}
 
-	}
+-- Warcry
+sets.warcry = {
+	head="Agoge Mask +1",
+}
 
-	-- Warcry
-	sets.warcry = {
+-- Restraint
+sets.restraint = {
+	hands="Boii Mufflers +3",
+}
 
-	}
+-- Retaliation
+sets.retaliation = {
+	hands="Pumm. Mufflers +2",
+}
 
-	-- Restraint
-	sets.restraint = {
-		hands="Boii Mufflers +3",
-	}
+-- Blood Rage
+sets.bloodrage = {
+	body="Boii Lorica +3",
+}
 
-	-- Retaliation
-	sets.retaliation = {
+-- Warrior's Charge
+sets.charge = {
+	legs="Agoge Cuisses +1",
+}
 
-	}
- 
-	-- Blood Rage
-	sets.bloodrage = {
-		body="Boii Lorica +3",
-	}
+-- Mighty Strikes
+sets.mightystrikes = {
 
-	-- Mighty Strikes
-	sets.mightystrikes = {
+}
 
-	}
+-- Holy Water (Holy Water+)
+sets.hwater = {
+	neck="Nicander's Necklace",
+	ring1="Blenmot's Ring +1",
+	ring2="Blenmot's Ring +1",
+}
 
-	-- Holy Water (Holy Water+)
-	sets.hwater = {
-		neck="Nicander's Necklace",
-		ring1="Blenmot's Ring +1",
-		ring2="Blenmot's Ring +1",
-	}
+-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
+sets.town = set_combine(sets.idle, {
 
-	-- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
-	sets.town = set_combine(sets.idle, {
+})
 
-	})
+-- Adoulin Town Gear
+sets.adoulin = set_combine(sets.town, {
+	body="Councilor's Garb",
+})
 
-	-- Adoulin Town Gear
-	sets.adoulin = set_combine(sets.town, {
-		body="Councilor's Garb",
-	})
+-- Bastok Town Gear
+sets.bastok = set_combine(sets.town, {
+	--body="Republic Aketon", --Note: only increases your speed if you are a citizen of Bastok
+})
 
-	-- Bastok Town Gear
-	sets.bastok = set_combine(sets.town, {
-		--body="Republic Aketon", --Note: only increases your speed if you are a citizen of Bastok
-	})
+-- San d'Oria Town Gear
+sets.sandoria = set_combine(sets.town, {
+	--body="Kingdom Aketon", --Note: only increases your speed if you are a citizen of San d'Oria
+})
 
-	-- San d'Oria Town Gear
-	sets.sandoria = set_combine(sets.town, {
-		--body="Kingdom Aketon", --Note: only increases your speed if you are a citizen of San d'Oria
-	})
+-- Windurst Town Gear
+sets.windurst = set_combine(sets.town, {
+	--body="Federation Aketon", --Note: only increases your speed if you are a citizen of Windurst
+})
 
-	-- Windurst Town Gear
-	sets.windurst = set_combine(sets.town, {
-		--body="Federation Aketon", --Note: only increases your speed if you are a citizen of Windurst
-	})
-
-	-- Unity Trust Gear
-	sets.unity = {
-		body="Sylvie Unity Shirt",
-	}
+-- Unity Trust Gear
+sets.unity = {
+	body="Sylvie Unity Shirt",
+}
 
 end
 
@@ -369,7 +402,7 @@ end
 
 
 
-FileVersion = '5.0'
+FileVersion = '6.0'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -379,6 +412,11 @@ FileVersion = '5.0'
 MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
 MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 6.0
+-Added Warrior's Charge gear set.
+-Added Mode 1 Two-Handed gear set. This set will be used if you have one of the two-handed weapons equipped that are listed in the Two-Handed Weapons sections directly above the gear sets.
+-Adjusted the Weapons Notification to display what weapon/shield is equipped in your sub slot. Will not display if you have one of the weapons listed in the Two-Handed Weapons list equipped.
 
 Version 5.0
 -Added Tomahawk gear set.
@@ -483,7 +521,7 @@ send_command('wait 1.6;text bg2 create "                                        
 send_command('wait 1.7;text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
 send_command('wait 1.8;text loading create "Loading Keys WARRIOR file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 --Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-send_command('wait 1.9;text weapons create "« Weapon loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
+send_command('wait 1.9;text weapons create "« Weapons loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
 if Mode == 'Mode1' then
 	send_command('wait 2.1;text mode create "Mode: '..Mode1Name..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Mode1color..';text mode bg_transparency 1')
 elseif Mode == 'Mode2' then
@@ -847,13 +885,23 @@ function choose_set()
 			end
 		else
 			if DTOverride == 'On' then
-				if Mode == 'Mode1' then
+				if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+					equip(set_combine(sets.modeonetwohand, sets.dtoverride))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + DT Override]')
+					end
+				elseif Mode == 'Mode1' then
 					equip(set_combine(sets.modeone, sets.dtoverride))
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + DT Override]')
 					end
+				elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+					equip(set_combine(sets.modeonetwohand, sets.dtoverride)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + DT Override]')
+					end
 				elseif Mode == 'Mode2' then
-					equip(set_combine(sets.modeone, sets.dtoverride)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+					equip(set_combine(sets.modeone, sets.dtoverride))
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + DT Override]')
 					end
@@ -864,13 +912,23 @@ function choose_set()
 					end
 				end
 			else
-				if Mode == 'Mode1' then
+				if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+					equip(sets.modeonetwohand)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..']')
+					end
+				elseif Mode == 'Mode1' then
 					equip(sets.modeone)
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..']')
 					end
+				elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+					equip(sets.modeonetwohand) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..']')
+					end
 				elseif Mode == 'Mode2' then
-					equip(sets.modeone) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+					equip(sets.modeone)
 					if Debug == 'On' then
 						windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..']')
 					end
@@ -901,88 +959,138 @@ function choose_set()
 			end
 		end
 		if AdoulinZones:contains(world.area) then
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.adoulin, sets.idle))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + Adoulin + Idle]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.adoulin, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Adoulin + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + Adoulin + Idle]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.adoulin, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + Adoulin + Idle]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.adoulin, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.adoulin, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + Adoulin + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + Adoulin + Idle]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.adoulin, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Adoulin + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + Adoulin + Idle]')
 				end
 			end
 		elseif BastokZones:contains(world.area) then
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.bastok, sets.idle))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + Bastok + Idle]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.bastok, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Bastok + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + Bastok + Idle]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.bastok, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + Bastok + Idle]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.bastok, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.bastok, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + Bastok + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + Bastok + Idle]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.bastok, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Bastok + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + Bastok + Idle]')
 				end
 			end
 		elseif SandyZones:contains(world.area) then
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.sandoria, sets.idle))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + San d\'Oria + Idle]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.sandoria, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + San d\'Oria + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + San d\'Oria + Idle]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.sandoria, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + San d\'Oria + Idle]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.sandoria, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.sandoria, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + San d\'Oria + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + San d\'Oria + Idle]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.sandoria, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + San d\'Oria + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + San d\'Oria + Idle]')
 				end
 			end
 		elseif WindyZones:contains(world.area) then
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.windurst, sets.idle))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + Windurst + Idle]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.windurst, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Windurst + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + Windurst + Idle]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.windurst, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + Windurst + Idle]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.windurst, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.windurst, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + Windurst + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + Windurst + Idle]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.windurst, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Windurst + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + Windurst + Idle]')
 				end
 			end
 		elseif TownZones:contains(world.area) then
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.town, sets.idle))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + Town + Idle]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.town, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Town + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + Town + Idle]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.town, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + Town + Idle]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.town, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.town, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + Town + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + Town + Idle]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.town, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Town + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + Town + Idle]')
 				end
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
@@ -991,37 +1099,57 @@ function choose_set()
 				windower.add_to_chat(8,'[Equipped Set: Idle + Oh Shit]')
 			end
 		elseif DTOverride == 'On' then
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.idle, sets.dtoverride))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + Idle + DT Override]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.idle, sets.dtoverride))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Idle + DT Override]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + Idle + DT Override]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.idle, sets.dtoverride)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + Idle + DT Override]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.idle, sets.dtoverride)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.idle, sets.dtoverride))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + Idle + DT Override]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + Idle + DT Override]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.idle, sets.dtoverride))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Idle + DT Override]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + Idle + DT Override]')
 				end
 			end
 		else
-			if Mode == 'Mode1' then
+			if Mode == 'Mode1' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.idle))
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' Two-Handed + Idle]')
+				end
+			elseif Mode == 'Mode1' then
 				equip(set_combine(sets.modeone, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + Idle]')
+				end
+			elseif Mode == 'Mode2' and TwoHandedWeapons:contains(player.equipment.main) then
+				equip(set_combine(sets.modeonetwohand, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				if Debug == 'On' then
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' Two-Handed + Idle]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modeone, sets.idle)) --Mode 2 uses the same TP set as Mode 1 (the difference is the WS set used)
+				equip(set_combine(sets.modeone, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + Idle]')
 				end
 			elseif Mode == 'Mode3' then
 				equip(set_combine(sets.modethree, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + Idle]')
+					windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + Idle]')
 				end
 			end
 		end
@@ -1297,6 +1425,11 @@ function precast(spell)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Blood Rage]')
 		end
+	elseif spell.english == 'Warrior\'s Charge' and windower.ffxi.get_ability_recasts()[6] <= 1 then
+		equip(sets.charge)
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[Equipped Set: Warrior\'s Charge]')
+		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
@@ -1571,17 +1704,17 @@ windower.register_event('prerender', function()
 			if buffactive['Aftermath'] then
 				send_command('text weapons text "Aftermath (Accuracy/Crit Rate)";text weapons color '..Aftermath3color..'')
 			elseif player.tp > 1000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath3color..'')
 			else
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color 255 50 50')
 			end
 		elseif player.equipment.main == 'Bravura' then
 			if buffactive['Aftermath'] then
 				send_command('text weapons text "Aftermath (DT/Regen)";text weapons color '..Aftermath3color..'')
 			elseif player.tp > 1000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath3color..'')
 			else
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color 255 50 50')
 			end
 		elseif player.equipment.main == 'Farsha' or player.equipment.main == 'Ukonvasara' then
 			if buffactive['Aftermath: Lv.1'] then
@@ -1601,13 +1734,13 @@ windower.register_event('prerender', function()
 			elseif buffactive['Aftermath: Lv.3'] then
 				send_command('text weapons text "Aftermath: Lv.3 (50% Triple Dmg)";text weapons color '..Aftermath3color..'')
 			elseif player.tp == 3000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath3color..'')
 			elseif player.tp < 3000 and player.tp >= 2000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath2color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath2color..'')
 			elseif player.tp < 2000 and player.tp >= 1000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath1color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath1color..'')
 			else
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color 255 50 50')
 			end
 		elseif player.equipment.main == 'Conqueror' then
 			if buffactive['Aftermath: Lv.1'] then
@@ -1627,13 +1760,13 @@ windower.register_event('prerender', function()
 			elseif buffactive['Aftermath: Lv.3'] then
 				send_command('text weapons text "Aftermath: Lv.3 (Occ. Att. 2-3x)";text weapons color '..Aftermath3color..'')
 			elseif player.tp == 3000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath3color..'')
 			elseif player.tp < 3000 and player.tp >= 2000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath2color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath2color..'')
 			elseif player.tp < 2000 and player.tp >= 1000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath1color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath1color..'')
 			else
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color 255 50 50')
 			end
 		elseif player.equipment.main == 'Chango' then
 			if buffactive['Aftermath: Lv.1'] then
@@ -1653,16 +1786,16 @@ windower.register_event('prerender', function()
 			elseif buffactive['Aftermath: Lv.3'] then
 				send_command('text weapons text "Aftermath: Lv.3 (2-Step Ultimate)";text weapons color '..Aftermath3color..'')
 			elseif player.tp == 3000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath3color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath3color..'')
 			elseif player.tp < 3000 and player.tp >= 2000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath2color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath2color..'')
 			elseif player.tp < 2000 and player.tp >= 1000 then
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color '..Aftermath1color..'')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color '..Aftermath1color..'')
 			else
-				send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+				send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color 255 50 50')
 			end
 		else
-			send_command('text weapons text "« '..EquipMain..' »";text weapons color 255 50 50')
+			send_command('text weapons text "« '..EquipMain..''..EquipSub..' »";text weapons color 255 50 50')
 		end
 	end
 
@@ -1782,9 +1915,14 @@ windower.register_event('prerender', function()
 			send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
 		end
 		if player.equipment.main == nil or player.equipment.sub == nil then
-			EquipMain = 'Weapon loading...'
+			EquipMain = 'Weapons loading...'
 		else
 			EquipMain = player.equipment.main
+			if player.equipment.sub == 'empty' or TwoHandedWeapons:contains(player.equipment.main) then
+				EquipSub = ''
+			else
+				EquipSub = ' & '..player.equipment.sub..''
+			end
 		end
 		if LoadHUD == true then
 
