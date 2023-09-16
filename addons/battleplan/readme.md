@@ -23,7 +23,7 @@ These commands are used to update *YOUR* BP box. Other people's BP boxes will re
 - **send** - Send your current BP box to the chat log to update other players.
 - **show/hide** - Displays the BP box if there is content to diplay. (saved to settings file)
 - **clear** - Clear *YOUR* BP box.
-- **pos [<x> <y>]** - Update the position of the BP box. (saved to settings file)
+- **pos [\<x> \<y>]** - Update the position of the BP box. (saved to settings file)
 - **lock/unlock** - Drag the BP box. (saved to settings file)
 - **size [#]** - Update the font size of the BP box Default. (saved to settings file)
 - **bold** - Update the bold setting. (saved to settings file)
