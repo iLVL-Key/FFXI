@@ -1916,6 +1916,7 @@ windower.register_event('prerender', function()
 		end
 		if player.equipment.main == nil or player.equipment.sub == nil then
 			EquipMain = 'Weapons loading...'
+			EquipSub = ''
 		else
 			EquipMain = player.equipment.main
 			if player.equipment.sub == 'empty' or TwoHandedWeapons:contains(player.equipment.main) then
