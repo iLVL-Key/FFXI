@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.4.1'
+_addon.version = '3.5'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -38,27 +38,76 @@ config = require('config')
 packets = require('packets')
 
 defaults = {}					-- In addition to the settings file, all of these are also configurable via commands in-game (//lb help).
+
 defaults.party_commands = true	-- Allow party/alliance members to trigger certain commands via chat while in Party/Lite Mode.
 defaults.flood_delay = 5		-- Sets the delay between incoming party commands, preventing party members from spamming commands.
 defaults.reminder = true		-- Display a reminder upon zoning that Leaderboard is running while in Party/Lite Mode.
 defaults.commas = true			-- Add commas to the scores.
-defaults.visible = true			-- Display the scores with an On-Screen Display.
 defaults.optout = {}			-- List of names to be excluded from data collection.
+defaults.mode = 'Silent'		-- Default mode Leaderboards starts in.
 defaults.rival = ''				-- Name of an optional Rival to track.
 defaults.taunt = 'I&apos;m beating you on %s. Just thought you should know.'	-- Text the taunt command sends your Rival
-defaults.partymode_calls = T{}			-- Party Mode party chat calls for:
-defaults.partymode_calls.cure = true	--  Cure, every 50k
-defaults.partymode_calls.death = true	--  Death, each
-defaults.partymode_calls.hs = true		--  High WS, top 5
-defaults.partymode_calls.kill = true	--  Kill, every 10
-defaults.partymode_calls.ls = true		--  Low WS, top 5
-defaults.partymode_calls.mb = true		--  Magic Burst, top 5
-defaults.partymode_calls.murder = true	--  Murder, each
-defaults.partymode_calls.nuke = true	--  Nuke, every 500k
-defaults.partymode_calls.sc = true		--  Skillchains, top 5
-defaults.partymode_calls.whiff = true	--  Whiff, each up to 10 then every 5
+
+defaults.party_calls = T{}			-- Party/Lite Mode party chat calls for:
+defaults.party_calls.cure	= true	--  Cure, every 25k up to 100k then every 50k. Lite Mode: every 50k
+defaults.party_calls.death	= true	--  Death, each.
+defaults.party_calls.hs		= true	--  High WS, top 5. Lite Mode: first place only
+defaults.party_calls.kill	= true	--  Kill, every 10.
+defaults.party_calls.ls		= true	--  Low WS, top 5. Lite Mode: first place only
+defaults.party_calls.mb		= true	--  Magic Burst, top 5. Lite Mode: first place only
+defaults.party_calls.murder	= true	--  Murder, each.
+defaults.party_calls.nuke	= true	--  Nuke, every 250k up to 1m then every 500k. Lite Mode: every 500k
+defaults.party_calls.sc		= true	--  Skillchains, top 5. Lite Mode: first place only
+defaults.party_calls.whiff	= true	--  Whiff, each up to 10 then every 5. Lite Mode: every 5
+
+-- Gain points per board, this affects whether a player gains any points at all (including bonus) for being on this board.
+defaults.gainpt = {}
+defaults.gainpt.cure	= true
+defaults.gainpt.death	= false
+defaults.gainpt.hs		= true
+defaults.gainpt.kill	= false
+defaults.gainpt.ls		= true
+defaults.gainpt.mb		= true
+defaults.gainpt.murder	= true
+defaults.gainpt.nuke	= true
+defaults.gainpt.victim	= true
+defaults.gainpt.sc		= true
+defaults.gainpt.whiff	= false
+
+-- Base points per board, this affects the point weight of each board.
+defaults.basept = {}
+defaults.basept.cure	= 3
+defaults.basept.death	= 0
+defaults.basept.hs		= 1
+defaults.basept.kill	= 1
+defaults.basept.ls		= 1
+defaults.basept.mb		= 2
+defaults.basept.murder	= 1
+defaults.basept.nuke	= 1
+defaults.basept.victim	= 1
+defaults.basept.sc		= 1
+defaults.basept.whiff	= 0
+
+-- Bonus points per place
+defaults.bonuspt = {}
+defaults.bonuspt.first	= 3
+defaults.bonuspt.second	= 2
+defaults.bonuspt.third	= 1
+defaults.bonuspt.fourth	= 1
+defaults.bonuspt.fifth	= 1
+defaults.bonuspt.sixth	= 0
+defaults.bonuspt.seventh= 0
+defaults.bonuspt.eighth	= 0
+defaults.bonuspt.ninth	= 0
+defaults.bonuspt.tenth	= 0
+
+-- Percent of points lost per
+defaults.pctloss = {}
+defaults.pctloss.death	= 5 -- A Murder will transfer this amount from the Murderer to the Victim
+defaults.pctloss.whiff	= 1
 
 defaults.first_load = true
+defaults.visible = true
 
 defaults.flags = T{}
 defaults.flags.bold = true
@@ -104,11 +153,13 @@ live.places.cure = {}
 live.places.death = {}
 live.places.hs = {}
 live.places.kill = {}
+live.places.point = {}
 live.places.ls = {}
 live.places.mb = {}
 live.places.murder = {}
 live.places.nuke = {}
 live.places.sc = {}
+live.places.victim = {}
 live.places.whiff = {}
 
 live.individuals = {}
@@ -116,23 +167,18 @@ live.individuals.cure = {}
 live.individuals.death = {}
 live.individuals.hs = {}
 live.individuals.kill = {}
+live.individuals.point = {}
 live.individuals.ls = {}
 live.individuals.mb = {}
 live.individuals.murder = {}
 live.individuals.nuke = {}
 live.individuals.sc = {}
+live.individuals.victim = {}
 live.individuals.whiff = {}
 
-live.indexes = {}		-- Used to order the scores as they are saved to indicate which came first,
-live.indexes.death = 0	-- this will then properly place duplicate score values
-live.indexes.hs = 0		-- ie multiple people hit 99999, order it by who hit 99999 first
-live.indexes.kill = 0	-- Cure and Nuke are used to call out every x amount
-live.indexes.ls = 0		
-live.indexes.mb = 0		
-live.indexes.murder = 0
-live.indexes.sc = 0
-live.indexes.whiff = 0
-
+-- The index is used to order the scores as they are saved to indicate
+-- which came first, this will then properly order duplicate score values
+live.index = 0
 live.paused = false
 
 settings = config.load(defaults)
@@ -149,7 +195,6 @@ local say = windower.chat.input
 local Heartbeat = 0
 local flood_timer = 0
 local box_display = 'hs'
-local Mode = 'Silent'
 local zoning = false
 
 
@@ -314,8 +359,10 @@ function updateBox(box_display)
 	local places = live.places[box_display]
 	local info = getPlacesInfo(places)
 
-	-- Create a temporary "text" array that we use to build what's displayed in the box
-	local text = ''
+	-- Create a temporary "text" string that we use to build what's displayed in the box
+	local text = '\\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')'
+
+	-- Which board is being displayed
 	local board_name = Leaderboard
 	if box_display == 'cure' then
 		board_name = 'Cure Board'
@@ -325,6 +372,8 @@ function updateBox(box_display)
 		board_name = 'High WS Board'
 	elseif box_display == 'kill' then
 		board_name = 'Kill Board'
+	elseif box_display == 'point' then
+		board_name = 'Point Board'
 	elseif box_display == 'ls' then
 		board_name = 'Low WS Board'
 	elseif box_display == 'mb' then
@@ -335,28 +384,32 @@ function updateBox(box_display)
 		board_name = 'Nuke Board'
 	elseif box_display == 'sc' then
 		board_name = 'Skillchain Board'
+	elseif box_display == 'victim' then
+		board_name = 'Victim Board'
 	elseif box_display == 'whiff' then
 		board_name = 'whiff Board'
 	end
 
-	-- The header always goes first, at the top
-	text = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')'
-
-	local header_text = ('%s '):format(live.paused and 'Paused' or 'Running')
-	while string.len(header_text) < 19 do
-		header_text = ' '..header_text
+	-- First row, always 30 characters long
+	local first_row = ' '..board_name
+	while string.len(first_row) < 20 do
+		first_row = first_row..' '
 	end
-	header_text = 'Leaderboard'..header_text
+	first_row = first_row..'//lb help '
 
-	text = text..header_text..'\n'
+	--Add the first row into the text string
+	text = text..first_row..'\n'
 
-	local board_text = ' '..board_name
-	while string.len(board_text) < 21 do
-		board_text = board_text..' '
+	-- Second row, always 30 characters long
+	local mode_text = ' '..settings.mode..' Mode'
+	local space_text = ''
+	local pause_text = ('%s\\cr \n'):format(live.paused and 'Paused' or 'Running')
+	while string.len(mode_text) + string.len(space_text) + string.len(pause_text) < 34 do -- the extra 4 in the count are from the \\cr which are not seen on the screen
+		space_text = ' '..space_text
 	end
-	board_text = board_text..'//lb help\\cr \n'
 
-	text = text..board_text
+	-- Add the texts from the second row into the text string
+	text = text..mode_text..space_text..pause_text
 
 	if info.name[1] == nil then
 		text = text..' Waiting For Data...'
@@ -543,6 +596,72 @@ function sortNamesLow(data)
 end
 
 
+-- Update the point board
+function updatePointsBoards(board)
+
+	local indivPoints = live.individuals.point
+	local base = settings.basept
+	local bonus = settings.bonuspt
+
+	if live.places[board] and live.places[board].first then
+		local points = (indivPoints[live.places[board].first.name] and indivPoints[live.places[board].first.name].score) or 0
+		indivPoints[live.places[board].first.name] = {score = points + base[board] + bonus.first, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].second then
+		local points = (indivPoints[live.places[board].second.name] and indivPoints[live.places[board].second.name].score) or 0
+		indivPoints[live.places[board].second.name] = {score = points + base[board] + bonus.second, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].third then
+		local points = (indivPoints[live.places[board].third.name] and indivPoints[live.places[board].third.name].score) or 0
+		indivPoints[live.places[board].third.name] = {score = points + base[board] + bonus.third, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].fourth then
+		local points = (indivPoints[live.places[board].fourth.name] and indivPoints[live.places[board].fourth.name].score) or 0
+		indivPoints[live.places[board].fourth.name] = {score = points + base[board] + bonus.fourth, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].fifth then
+		local points = (indivPoints[live.places[board].fifth.name] and indivPoints[live.places[board].fifth.name].score) or 0
+		indivPoints[live.places[board].fifth.name] = {score = points + base[board] + bonus.fifth, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].sixth then
+		local points = (indivPoints[live.places[board].sixth.name] and indivPoints[live.places[board].sixth.name].score) or 0
+		indivPoints[live.places[board].sixth.name] = {score = points + base[board] + bonus.sixth, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].seventh then
+		local points = (indivPoints[live.places[board].seventh.name] and indivPoints[live.places[board].seventh.name].score) or 0
+		indivPoints[live.places[board].seventh.name] = {score = points + base[board] + bonus.seventh, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].eighth then
+		local points = (indivPoints[live.places[board].eighth.name] and indivPoints[live.places[board].eighth.name].score) or 0
+		indivPoints[live.places[board].eighth.name] = {score = points + base[board] + bonus.eighth, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].ninth then
+		local points = (indivPoints[live.places[board].ninth.name] and indivPoints[live.places[board].ninth.name].score) or 0
+		indivPoints[live.places[board].ninth.name] = {score = points + base[board] + bonus.ninth, nines = 0, index = 0}
+	end
+	if live.places[board] and live.places[board].tenth then
+		local points = (indivPoints[live.places[board].tenth.name] and indivPoints[live.places[board].tenth.name].score) or 0
+		indivPoints[live.places[board].tenth.name] = {score = points + base[board] + bonus.tenth, nines = 0, index = 0}
+	end
+
+end
+
+
+function updatePoints()
+	updatePointsBoards('cure')
+	--updatePointsBoards('death')
+	updatePointsBoards('hs')
+	updatePointsBoards('kill')
+	updatePointsBoards('ls')
+	updatePointsBoards('murder')
+	updatePointsBoards('mb')
+	updatePointsBoards('nuke')
+	updatePointsBoards('sc')
+	updatePointsBoards('victim')
+	--updatePointsBoards('whiff')
+end
+
+
 -- Add a name to the Optout list
 function addToOptout(name)
 
@@ -551,7 +670,7 @@ function addToOptout(name)
 
 	-- Delete all related data for the player
 	local ind = live.individuals
-	local tables = {ind.cure, ind.death, ind.hs, ind.kill, ind.ls, ind.mb, ind.murder, ind.nuke, ind.sc, ind.whiff}
+	local tables = {ind.cure, ind.death, ind.hs, ind.kill, ind.ls, ind.mb, ind.murder, ind.nuke, ind.point, ind.sc, ind.victim, ind.whiff}
 	for _, table in ipairs(tables) do
 		table[name] = nil
 	end
@@ -591,22 +710,24 @@ function reportPlayerScores(name)
 	local ind = live.individuals
 	local text1 = ''
 	local text2 = ''
+	local text_point = (ind.point[name] and ind.point[name].score) and addCommas(ind.point[name].score) or 0
 	local text_hs = (ind.hs[name] and ind.hs[name].score) and addCommas(ind.hs[name].score)..(ind.hs[name].nines > 0 and ':'..ind.hs[name].nines or '') or 'none'
 	local text_ls = (ind.ls[name] and ind.ls[name].score) and addCommas(ind.ls[name].score) or 'none'
 	local text_sc = (ind.sc[name] and ind.sc[name].score) and addCommas(ind.sc[name].score)..(ind.sc[name].nines > 0 and ':'..ind.sc[name].nines or '') or 'none'
-	local text_whiff = (ind.whiff[name] and ind.whiff[name].score) and addCommas(ind.whiff[name].score) or 0
 	local text_mb = (ind.mb[name] and ind.mb[name].score) and addCommas(ind.mb[name].score)..(ind.mb[name].nines > 0 and ':'..ind.mb[name].nines or '') or 'none'
+	local text_whiff = (ind.whiff[name] and ind.whiff[name].score) and addCommas(ind.whiff[name].score) or 0
 	local text_nuke = (ind.nuke[name] and ind.nuke[name].score) and addCommas(ind.nuke[name].score) or 0
 	local text_cure = (ind.cure[name] and ind.cure[name].score) and addCommas(ind.cure[name].score) or 0
+	local text_victim = (ind.victim[name] and ind.victim[name].score) and addCommas(ind.victim[name].score) or 0
+	local text_murder = (ind.murder[name] and ind.murder[name].score) and addCommas(ind.murder[name].score) or 0
 	local text_death = (ind.death[name] and ind.death[name].score) and addCommas(ind.death[name].score) or 0
 	local text_kill = (ind.kill[name] and ind.kill[name].score) and addCommas(ind.kill[name].score) or 0
-	local text_murder = (ind.murder[name] and ind.murder[name].score) and addCommas(ind.murder[name].score) or 0
-	if text_hs == "none" and text_ls == "none" and text_sc == "none" and text_whiff == 0 and text_mb == "none" and text_nuke == 0 and text_cure == 0 and text_death == 0 and text_kill == 0 and text_murder == 0 then
+	if text_point == 0 and text_hs == "none" and text_ls == "none" and text_sc == "none" and text_mb == "none" and text_whiff == 0 and text_nuke == 0 and text_cure == 0 and text_victim == 0 and text_murder == 0 and text_death == 0 and text_kill == 0 then
 		text1 = 'No data for you yet.'
 		text2 = ''
 	else
-		text1 = '(High WS: '..text_hs..') (Low WS: '..text_ls..') (Skillchain: '..text_sc..') (Magic Burst: '..text_mb..')'
-		text2 = '(Whiffs: '..text_whiff..') (Nukes: '..text_nuke..') (Cures: '..text_cure..') (Murders: '..text_murder..') (Deaths: '..text_death..') (Kills: '..text_kill..')'
+		text1 = '(Points: '..text_point..') (High WS: '..text_hs..') (Low WS: '..text_ls..') (Skillchain: '..text_sc..') (Magic Burst: '..text_mb..')'
+		text2 = '(Whiffs: '..text_whiff..') (Nukes: '..text_nuke..') (Cures: '..text_cure..') (Victims: '..text_victim..') (Murders: '..text_murder..') (Deaths: '..text_death..') (Kills: '..text_kill..')'
 	end
 	say('/t '..name..' '..text1)
 	if text2 ~= '' then
@@ -624,46 +745,46 @@ end
 function resetD()
 	live.individuals.death = {}
 	live.places.death = {}
-	live.indexes.death = 0
 end
 function resetHS()
 	live.individuals.hs = {}
 	live.places.hs = {}
-	live.indexes.hs = 0
 end
 function resetK()
 	live.individuals.kill = {}
 	live.places.kill = {}
-	live.indexes.kill = 0
 end
 function resetLS()
 	live.individuals.ls = {}
 	live.places.ls = {}
-	live.indexes.ls = 0
 end
 function resetMB()
 	live.individuals.mb = {}
 	live.places.mb = {}
-	live.indexes.mb = 0
 end
 function resetM()
 	live.individuals.murder = {}
 	live.places.murder = {}
-	live.indexes.murder = 0
 end
 function resetN()
 	live.individuals.nuke = {}
 	live.places.nuke = {}
 end
+function resetP()
+	live.individuals.point = {}
+	live.places.point = {}
+end
 function resetSC()
 	live.individuals.sc = {}
 	live.places.sc = {}
-	live.indexes.sc = 0
+end
+function resetV()
+	live.individuals.victim = {}
+	live.places.victim = {}
 end
 function resetW()
 	live.individuals.whiff = {}
 	live.places.whiff = {}
-	live.indexes.whiff = 0
 end
 function resetALL()
 	resetC()
@@ -674,8 +795,11 @@ function resetALL()
 	resetMB()
 	resetM()
 	resetN()
+	resetP()
 	resetSC()
+	resetV()
 	resetW()
+	live.index = 0
 end
 
 
@@ -684,7 +808,7 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Limit to tells(3) and party chat(4), and make sure we're in Party or Lite Mode, Party Commands are enabled, and the flood timer is not running
-	if not (mode == 3 or mode == 4) or Mode == "Silent" or not settings.party_commands or flood_timer ~= 0 then
+	if not (mode == 3 or mode == 4) or settings.mode == 'Silent' or not settings.party_commands or flood_timer ~= 0 then
 		return
 	end
 
@@ -722,9 +846,17 @@ windower.register_event('chat message', function(message, sender, mode)
 	elseif (message:find('!lb n') or message:find('!lbn') or message:find('!LB N') or message:find('!LBN')) then
 		cmd('lb n')
 
+	-- POINT BOARD
+	elseif (message:find('!lb p') or message:find('!lbp') or message:find('!LB P') or message:find('!LBP')) then
+		cmd('lb p')
+
 	-- SKILLCHAIN BOARD
 	elseif (message:find('!lb sc') or message:find('!lbsc') or message:find('!LB SC') or message:find('!LBSC')) then
 		cmd('lb sc')
+
+	-- VICTIM BOARD
+	elseif (message:find('!lb v') or message:find('!lbv') or message:find('!LB V') or message:find('!LBV')) then
+		cmd('lb v')
 
 	-- WHIFF BOARD
 	elseif (message:find('!lb w') or message:find('!lbw') or message:find('!LB W') or message:find('!LBW')) then
@@ -746,10 +878,10 @@ windower.register_event('chat message', function(message, sender, mode)
 
 	-- Unknown command
 	elseif message:find('!lb') then
-		say('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c|d|hs|k|ls|m|mb|n|sc|w|report|optout\'')
+		say('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c/d/hs/k/ls/m/mb/n/p/sc/v/w/report/optout\'')
 
 	end
-	
+
 	-- Reset the flood timer after a command comes in
 	flood_timer = settings.flood_delay
 end)
@@ -766,7 +898,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 		if packet['Message'] == 6 then
 
 			----------
-			-- KILL -- Actor: does the killing, Target: is what was killed
+			-- KILL -- Actor: does the killing, Target: was killed
 			----------
 
 			-- Make sure the actor is part of the party/alliance
@@ -786,17 +918,17 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 
 			local killPlaces = live.places.kill
 			local killIndividuals = live.individuals.kill
-
+			
 			-- Retrieve the actors relevant data
 			local kills = (killIndividuals[data.actor_lower_name] and killIndividuals[data.actor_lower_name].score) or 0
-			local index = live.indexes.kill
-
+			local index = live.index
+			
 			-- Update the actors score information
 			kills = kills +1
 			index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-			live.indexes.kill = index
+			live.index = index
 			killIndividuals[data.actor_lower_name] = {score = kills, nines = 0, index = index}
-
+			
 			-- Update the leaderboard places
 			local board = sortNamesHigh(live.individuals.kill)
 			killPlaces.first	= board[1]
@@ -813,7 +945,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			updateBox(box_display)
 
 			-- Call out Kills, depending on the mode and how many Kills they are at
-			if Mode ~= "Silent" and settings.partymode_calls.kill then
+			if settings.mode ~= "Silent" and settings.party_calls.kill then
 				local everyNumKills = kills % 10 -- returns the remainder after euclidean division (division by subtraction)
 				if everyNumKills == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
 					say('/p [KILL] '..data.actor_name..' has racked up '..addCommas(kills)..' kills!')
@@ -827,7 +959,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			if actor == false then
 
 				-----------
-				-- DEATH -- Actor: does the killing, Target: is what was killed
+				-- DEATH -- Actor: does the killing, Target: was killed
 				-----------
 
 				-- Make sure the target is part of the party/alliance
@@ -850,13 +982,21 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 
 				-- Retrieve the targets relevant data
 				local deaths = (deathIndividuals[data.target_lower_name] and deathIndividuals[data.target_lower_name].score) or 0
-				local index = live.indexes.death
+				local index = live.index
 
 				-- Update the targets score information
 				deaths = deaths +1
 				index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-				live.indexes.death = index
+				live.index = index
 				deathIndividuals[data.target_lower_name] = {score = deaths, nines = 0, index = index}
+
+				-- Update the targets points
+				local points = live.individuals.point
+				local name = data.target_lower_name
+				local pct_loss = 100 - settings.pctloss.death
+				if points[name] and points[name].score then
+					points[name].score = math.floor(points[name].score * (pct_loss / 100))
+				end
 
 				-- Update the leaderboard places
 				local board = sortNamesHigh(live.individuals.death)
@@ -874,7 +1014,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				updateBox(box_display)
 
 				-- Call out Deaths, depending on the mode and how many Deaths they are at
-				if Mode ~= "Silent" and settings.partymode_calls.death then
+				if settings.mode ~= "Silent" and settings.party_calls.death then
 					if deaths == 1 and data.target_lower_name == deathPlaces.first.name then
 						say('/p [DEATH] '..data.target_name..' is the first to die!')
 					elseif deaths == 1 then
@@ -892,11 +1032,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			-- The killer was a player
 			else
 
-				------------
-				-- MURDER -- Actor: does the killing, Target: is what was killed
-				------------
+				-------------------
+				-- MURDER/VICTIM -- Actor: does the killing, Target: was killed
+				-------------------
 
-				-- Check if the actor and target what we want to track data for 
+				-- Make sure the actor and target are part of the party/alliance
 				if actor == false or target == false then
 					return
 				end
@@ -908,44 +1048,101 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				data.target = target.id
 				data.target_name = target.name or 'unknown'
 				data.target_lower_name = string.lower(target.name) or 'unknown'
+				local points_transfered = 0
 
-				-- Check if the actor and target what we want to track data for 
-				if settings.optout[data.actor_lower_name] or settings.optout[data.target_lower_name] then
-					return
+				-- Make sure the actor (Murderer) is not on the Optout list
+				if not settings.optout[data.actor_lower_name] then
+
+					local murderPlaces = live.places.murder
+					local murderIndividuals = live.individuals.murder
+
+					-- Retrieve the actors relevant data
+					local murders = (murderIndividuals[data.actor_lower_name] and murderIndividuals[data.actor_lower_name].score) or 0
+					local index = live.index
+
+					-- Update the actors score information
+					murders = murders +1
+					index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
+					live.index = index
+					murderIndividuals[data.actor_lower_name] = {score = murders, nines = 0, index = index}
+
+					-- Update the actors points
+					local points = live.individuals.point
+					local murderer = data.actor_lower_name
+					local pct_loss = 100 - settings.pctloss.death
+					if points[murderer] and points[murderer].score then
+						points_transfered = math.floor(points[murderer].score * (settings.pctloss.death / 100)) -- Points taken from the Murderer to give to the Victim
+						points[murderer].score = math.floor(points[murderer].score * (pct_loss / 100))
+					end
+
+					-- Update the leaderboard places
+					local board = sortNamesHigh(live.individuals.murder)
+					murderPlaces.first	= board[1]
+					murderPlaces.second	= (board and board[2]) or nil
+					murderPlaces.third	= (board and board[3]) or nil
+					murderPlaces.fourth	= (board and board[4]) or nil
+					murderPlaces.fifth	= (board and board[5]) or nil
+					murderPlaces.sixth	= (board and board[6]) or nil
+					murderPlaces.seventh= (board and board[7]) or nil
+					murderPlaces.eighth	= (board and board[8]) or nil
+					murderPlaces.ninth	= (board and board[9]) or nil
+					murderPlaces.tenth	= (board and board[10]) or nil
+					live:save('all')
+					updateBox(box_display)
+
 				end
 
-				local murderPlaces = live.places.murder
-				local murderIndividuals = live.individuals.murder
+				-- Make sure the target (Victim) is not on the Optout list
+				if not settings.optout[data.target_lower_name] then
 
-				-- Retrieve the actors relevant data
-				local murders = (murderIndividuals[data.actor_lower_name] and murderIndividuals[data.actor_lower_name].score) or 0
-				local index = live.indexes.murder
+					local victimPlaces = live.places.victim
+					local victimIndividuals = live.individuals.victim
 
-				-- Update the actors score information
-				murders = murders +1
-				index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-				live.indexes.murder = index
-				murderIndividuals[data.actor_lower_name] = {score = murders, nines = 0, index = index}
+					-- Retrieve the targets relevant data
+					local victims = (victimIndividuals[data.target_lower_name] and victimIndividuals[data.target_lower_name].score) or 0
+					local index = live.index
 
-				-- Update the leaderboard places
-				local board = sortNamesHigh(live.individuals.murder)
-				murderPlaces.first	= board[1]
-				murderPlaces.second	= (board and board[2]) or nil
-				murderPlaces.third	= (board and board[3]) or nil
-				murderPlaces.fourth	= (board and board[4]) or nil
-				murderPlaces.fifth	= (board and board[5]) or nil
-				murderPlaces.sixth	= (board and board[6]) or nil
-				murderPlaces.seventh= (board and board[7]) or nil
-				murderPlaces.eighth	= (board and board[8]) or nil
-				murderPlaces.ninth	= (board and board[9]) or nil
-				murderPlaces.tenth	= (board and board[10]) or nil
-				live:save('all')
-				updateBox(box_display)
+					-- Update the targets score information
+					victims = victims +1
+					index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
+					live.index = index
+					victimIndividuals[data.target_lower_name] = {score = victims, nines = 0, index = index}
 
-				-- Call out Murders
-				if Mode ~= "Silent" and settings.partymode_calls.murder then
-					if murders == 1 then
-						say('/p [MURDER] '..data.actor_name..(' has %s'):format(data.actor_lower_name == murderPlaces.first.name and 'drawn First Blood and' or '')..' murdered '..data.target_name..'!')
+					-- Update the targets points
+					local points = live.individuals.point
+					local victim = data.target_lower_name
+					local pct_loss = 100 - settings.pctloss.death
+					if points[victim] and points[victim].score then
+						points[victim].score = points[victim].score + points_transfered -- Points taken from the Murderer and given to the Victim
+					else
+						points[victim].score = points_transfered
+					end
+
+					-- Update the leaderboard places
+					local board = sortNamesHigh(live.individuals.victim)
+					victimPlaces.first	= board[1]
+					victimPlaces.second	= (board and board[2]) or nil
+					victimPlaces.third	= (board and board[3]) or nil
+					victimPlaces.fourth	= (board and board[4]) or nil
+					victimPlaces.fifth	= (board and board[5]) or nil
+					victimPlaces.sixth	= (board and board[6]) or nil
+					victimPlaces.seventh= (board and board[7]) or nil
+					victimPlaces.eighth	= (board and board[8]) or nil
+					victimPlaces.ninth	= (board and board[9]) or nil
+					victimPlaces.tenth	= (board and board[10]) or nil
+					live:save('all')
+					updateBox(box_display)
+
+				end
+
+				-- Call out Murders/Victims
+				if settings.mode ~= "Silent" and settings.party_calls.murder then
+					if not settings.optout[data.actor_lower_name] and not settings.optout[data.target_lower_name] then
+						say('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..data.target_name..' to Altana!')
+					elseif not settings.optout[data.actor_lower_name] then
+						say('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed a victim to Altana!')
+					elseif not settings.optout[data.target_lower_name] then
+						say('/p [MURDER/VICTIM] '..data.target_name..(' %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
 					end
 				end
 
@@ -957,12 +1154,8 @@ end)
 
 windower.register_event('action',function(act)
 
-	-- if windower.ffxi.get_mob_by_id(act.actor_id).name == "Bozzetto Trainer" then
-	-- 	say('/echo Actor: '..windower.ffxi.get_mob_by_id(act.actor_id).name..' Target: '..windower.ffxi.get_mob_by_id(act.targets[1].id).name..' param: '..act.param..' targets.actions.param: '..act.targets[1].actions[1].param..' Category: '..act.category..' Message #: '..act.targets[1].actions[1].message)
-	-- end
-
 	-- A certain type of Spell, Ability, or Item is used that cures
-	if (act.category == 4 or act.category == 5 or act.category == 6 or act.category == 11 or act.category == 14) or (act.category == 13 and act.targets[1].actions[1].message == 318) and not live.paused then
+	if ((act.category == 4 or act.category == 5 or act.category == 6 or act.category == 11 or act.category == 14) or (act.category == 13 and act.targets[1].actions[1].message == 318)) and not live.paused then
 
 		----------
 		-- CURE --
@@ -1011,8 +1204,8 @@ windower.register_event('action',function(act)
 				cureSum = cureSum + act.targets[i].actions[1].param
 			end
 			cures = cures + cureSum
-			local everyNumCures = math.floor(cures / 50000) -- returns how many times 50,000 goes into cures
-			local points = everyNumCures * 50000 -- returns the multiple of 50,000 that cures is over
+			local everyNumCures = math.floor(cures / 25000) -- returns how many times 25,000 goes into cures
+			local points = everyNumCures * 25000 -- returns the multiple of 25,000 that cures is over
 			cureIndividuals[data.actor_lower_name] = {score = cures, nines = 0, index = everyNumCures}
 
 			-- Update the leaderboard places
@@ -1028,19 +1221,30 @@ windower.register_event('action',function(act)
 			curePlaces.ninth	= (board and board[9]) or nil
 			curePlaces.tenth	= (board and board[10]) or nil
 			live:save('all')
-			updateBox(box_display)
 
-			-- Call out Cures, only if they've reached the next 50,000 threshhold
-			if Mode ~= "Silent" and settings.partymode_calls.cure then
+			-- Call out Cures
+			if settings.mode ~= "Silent" and settings.party_calls.cure then
 				if everyNumCures > index then
-					say('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+
+					-- Party Mode under 100k cures: call it out every 25k
+					if everyNumCures < 5 and settings.mode == 'Party' then
+						say('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+
+					-- Party Mode over 100k cures, or Lite Mode: call it out every 50k
+					else
+						local everyOtherNum = everyNumCures % 2 -- returns the remainder after euclidean division (division by subtraction)
+						if everyOtherNum == 0 then -- if that leftover number equals 0, then the number is a multiple of 2
+							say('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+						end
+
+					end
 				end
 			end
 
 		end
 
 	-- Weapon Skill is used
-	elseif act.category == 3 or (act.category == 13 and BPWS:contains(jabils[act.param].english)) and not live.paused then
+	elseif (act.category == 3 or (act.category == 13 and BPWS:contains(jabils[act.param].english))) and not live.paused then
 
 		local actor = get_actor(act.actor_id)
 		local myName = windower.ffxi.get_mob_by_target('me').name
@@ -1084,13 +1288,30 @@ windower.register_event('action',function(act)
 
 			-- Retrieve the actors relevant data
 			local whiffs = (whiffIndividuals[data.actor_lower_name] and whiffIndividuals[data.actor_lower_name].score) or 0
-			local index = live.indexes.whiff
+			local index = live.index
 
 			-- Update the actors score information
 			whiffs = whiffs +1
 			index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-			live.indexes.whiff = index
+			live.index = index
 			whiffIndividuals[data.actor_lower_name] = {score = whiffs, nines = 0, index = index}
+
+			-- Update the targets points
+			local points = live.individuals.point
+			local name = data.actor_lower_name
+			local pct_loss = 100 - settings.pctloss.whiff
+			
+			local old_amount = points[name].score
+			local amount_lost = math.floor(points[name].score * (settings.pctloss.whiff / 100))
+			local new_amount = math.floor(points[name].score * (pct_loss / 100))
+			
+			if points[name] and points[name].score then
+				points[name].score = math.floor(points[name].score * (pct_loss / 100))
+			end
+
+			
+			--print('Name: '..name..' Old Amount: '..old_amount..' Amount Lost: '..amount_lost..' New Amount: '..new_amount)
+
 
 			-- Update the leaderboard places
 			local board = sortNamesHigh(live.individuals.whiff)
@@ -1105,18 +1326,17 @@ windower.register_event('action',function(act)
 			whiffPlaces.ninth	= (board and board[9]) or nil
 			whiffPlaces.tenth	= (board and board[10]) or nil
 			live:save('all')
-			updateBox(box_display)
 
 			-- Call out Whiffs, depending on the mode and how many Whiffs they are at
-			if Mode ~= "Silent" and settings.partymode_calls.whiff then
+			if settings.mode ~= "Silent" and settings.party_calls.whiff then
 				if whiffs == 1 then
-					if Mode == "Party" then
+					if settings.mode == 'Party' then
 						say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
 					end
 				elseif whiffs == 5 or whiffs == 10 then
 					say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
 				elseif whiffs < 10 then
-					if Mode == "Party" then
+					if settings.mode == 'Party' then
 						say:schedule(1,'/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
 					end
 				elseif whiffs > 10 then
@@ -1162,7 +1382,7 @@ windower.register_event('action',function(act)
 
 			-- Retrieve the actors relevant data
 			local nines = (hsIndividuals[data.actor_lower_name] and hsIndividuals[data.actor_lower_name].nines) or 0
-			local index = live.indexes.hs
+			local index = live.index
 
 			-- Count the number of 99999 WSs
 			if data.damage == 99999 then
@@ -1172,7 +1392,7 @@ windower.register_event('action',function(act)
 			-- Update the actors score information
 			if (hsIndividuals[data.actor_lower_name] == nil) or (data.damage >= hsIndividuals[data.actor_lower_name].score) then
 				index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-				live.indexes.hs = index
+				live.index = index
 				hsIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 			end
 
@@ -1189,7 +1409,6 @@ windower.register_event('action',function(act)
 			hsPlaces.ninth	= (board and board[9]) or nil
 			hsPlaces.tenth	= (board and board[10]) or nil
 			live:save('all')
-			updateBox(box_display)
 
 			-- What place is the actor in now
 			local newHSPlace = 6 -- Not on the board
@@ -1210,7 +1429,7 @@ windower.register_event('action',function(act)
 			-- Did you or your rival beat the other
 			if settings.rival ~= "" then
 				if data.actor_name == myName then
-					if ((rivalOriginalHSNines == myOriginalHSNines) and (nines > rivalOriginalHSNines)) or ((rivalOriginalHSScore > myOriginalHSScore) and (data.damage > rivalOriginalHSScore)) then
+					if ((rivalOriginalHSNines == myOriginalHSNines) and (nines > rivalOriginalHSNines) and (rivalOriginalHSScore > 0)) or ((rivalOriginalHSScore > myOriginalHSScore) and (data.damage > rivalOriginalHSScore)) then
 						windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalHSScore)..(rivalOriginalHSNines > 0 and ':'..rivalOriginalHSNines or '')..' HIGH WS score with '):color(6)..(addCommas(data.damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
 					end
 				elseif data.actor_name == capitalize(settings.rival) then
@@ -1249,12 +1468,12 @@ windower.register_event('action',function(act)
 			local rivalOriginalLSScore = (lsIndividuals and lsIndividuals[settings.rival] and lsIndividuals[settings.rival].score) or 0
 
 			-- Retrieve the actors relevant data
-			local index = live.indexes.ls
+			local index = live.index
 
 			-- Update the actors score
 			if (live.individuals.ls[data.actor_lower_name] == nil) or (data.damage < live.individuals.ls[data.actor_lower_name].score) then
 				index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-				live.indexes.ls = index
+				live.index = index
 				lsIndividuals[data.actor_lower_name] = {score = data.damage, nines = 0, index = index}
 			end
 
@@ -1271,7 +1490,6 @@ windower.register_event('action',function(act)
 			lsPlaces.ninth	= (board and board[9]) or nil
 			lsPlaces.tenth	= (board and board[10]) or nil
 			live:save('all')
-			updateBox(box_display)
 
 			-- What place is the actor in now
 			local newLSPlace = 6 -- not on the board
@@ -1287,29 +1505,32 @@ windower.register_event('action',function(act)
 				newLSPlace = 5
 			end
 
-			if Mode ~= "Silent" then
+			if settings.mode ~= "Silent" then
 
 				-- Did the actor move up the HIGH WS leaderboard
-				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) and settings.partymode_calls.hs then
-					say('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
-				elseif newHSPlace < originalHSPlace and settings.partymode_calls.hs then
+				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) and settings.party_calls.hs then
+					local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
+					if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
+						say('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					end
+				elseif newHSPlace < originalHSPlace and settings.party_calls.hs then
 					if newHSPlace == 1 then
 						if data.damage > originalHSfirstscore then
 							say('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 						end
-					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and Mode == "Party" then
+					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and settings.mode == 'Party' then
 						say('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 
 				-- Did the actor move up the LOW WS leaderboard
-				elseif newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore and settings.partymode_calls.ls then
+				elseif newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore and settings.party_calls.ls then
 					say('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
-				elseif newLSPlace < originalLSPlace and settings.partymode_calls.ls then
+				elseif newLSPlace < originalLSPlace and settings.party_calls.ls then
 					if newLSPlace == 1 then
 						if data.damage < originalLSfirstscore then
 							say('/p [LOW WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 						end
-					elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and Mode == "Party" then
+					elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and settings.mode == 'Party' then
 						say('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 					end
 				end
@@ -1385,14 +1606,14 @@ windower.register_event('action',function(act)
 		local originalSCfirstscore = (scPlaces and scPlaces.first and scPlaces.first.score) or 0
 
 		-- What are you and your Rivals original scores
+		local myOriginalSCNines = (scIndividuals and scIndividuals[string.lower(myName)] and scIndividuals[string.lower(myName)].nines) or 0
 		local myOriginalSCScore = (scIndividuals and scIndividuals[string.lower(myName)] and scIndividuals[string.lower(myName)].score) or 0
-		local rivalOriginalSCScore = (scIndividuals and scIndividuals[settings.rival] and scIndividuals[settings.rival].score) or 0
 		local rivalOriginalSCNines = (scIndividuals and scIndividuals[settings.rival] and scIndividuals[settings.rival].nines) or 0
 		local rivalOriginalSCScore = (scIndividuals and scIndividuals[settings.rival] and scIndividuals[settings.rival].score) or 0
 
 		-- Retrieve the actors relevant data
 		local nines = (scIndividuals[data.actor_lower_name] and scIndividuals[data.actor_lower_name].nines) or 0
-		local index = live.indexes.sc
+		local index = live.index
 
 		-- Count the number of 99999 WSs
 		if data.damage == 99999 then
@@ -1402,7 +1623,7 @@ windower.register_event('action',function(act)
 		-- Update the actors score information
 		if (scIndividuals[data.actor_lower_name] == nil) or (data.damage >= scIndividuals[data.actor_lower_name].score) then
 			index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-			live.indexes.sc = index
+			live.index = index
 			scIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 		end
 
@@ -1419,7 +1640,6 @@ windower.register_event('action',function(act)
 		scPlaces.ninth	= (board and board[9]) or nil
 		scPlaces.tenth	= (board and board[10]) or nil
 		live:save('all')
-		updateBox(box_display)
 
 		-- What place is the actor in now
 		local newSCPlace = 6 -- Not on the board
@@ -1436,17 +1656,19 @@ windower.register_event('action',function(act)
 		end
 
 		-- Did the actor move up the leaderboard
-		if Mode ~= "Silent" and settings.partymode_calls.sc then
+		if settings.mode ~= "Silent" and settings.party_calls.sc then
 			if newSCPlace == originalSCPlace and newSCPlace == 1 and (data.damage > originalSCfirstscore or data.damage == 99999) then
-				coroutine.sleep(1.5)
-				say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
+				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
+					say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				end
 			elseif newSCPlace < originalSCPlace then
 				if newSCPlace == 1 then
 					if data.damage > originalSCfirstscore then
 						coroutine.sleep(1.5)
 						say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' takes the board! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
-				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and Mode == "Party" then
+				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and settings.mode == 'Party' then
 					coroutine.sleep(1.5)
 					say('/p [SKILLCHAIN] '..data.actor_name..' moves up to No.'..newSCPlace..'! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
@@ -1456,7 +1678,7 @@ windower.register_event('action',function(act)
 		-- Did you or your rival beat the other
 		if settings.rival ~= "" then
 			if data.actor_name == myName then
-				if ((rivalOriginalSCNines == myOriginalSCNines) and (nines > rivalOriginalSCNines)) or ((rivalOriginalSCScore > myOriginalSCScore) and (data.damage > rivalOriginalSCScore)) then
+				if ((rivalOriginalSCNines == myOriginalSCNines) and (nines > rivalOriginalSCNines) and (rivalOriginalSCScore > 0)) or ((rivalOriginalSCScore > myOriginalSCScore) and (data.damage > rivalOriginalSCScore)) then
 					windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalSCScore)..(rivalOriginalSCNines > 0 and ':'..rivalOriginalSCNines or '')..' SKILLCHAIN score with '):color(6)..(addCommas(data.damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
 				end
 			elseif data.actor_name == capitalize(settings.rival) then
@@ -1523,14 +1745,14 @@ windower.register_event('action',function(act)
 		local originalMBfirstscore = (mbPlaces and mbPlaces.first and mbPlaces.first.score) or 0
 
 		-- What are you and your Rivals original scores
+		local myOriginalMBNines = (mbIndividuals and mbIndividuals[string.lower(myName)] and mbIndividuals[string.lower(myName)].nines) or 0
 		local myOriginalMBScore = (mbIndividuals and mbIndividuals[string.lower(myName)] and mbIndividuals[string.lower(myName)].score) or 0
-		local rivalOriginalMBScore = (mbIndividuals and mbIndividuals[settings.rival] and mbIndividuals[settings.rival].score) or 0
 		local rivalOriginalMBNines = (mbIndividuals and mbIndividuals[settings.rival] and mbIndividuals[settings.rival].nines) or 0
 		local rivalOriginalMBScore = (mbIndividuals and mbIndividuals[settings.rival] and mbIndividuals[settings.rival].score) or 0
 
 		-- Retrieve the actors relevant data
 		local nines = (mbIndividuals[data.actor_lower_name] and mbIndividuals[data.actor_lower_name].nines) or 0
-		local index = live.indexes.mb
+		local index = live.index
 
 		-- Count the number of 99999 WSs
 		if data.damage == 99999 then
@@ -1540,7 +1762,7 @@ windower.register_event('action',function(act)
 		-- Update the actors score information
 		if (mbIndividuals[data.actor_lower_name] == nil) or (data.damage >= mbIndividuals[data.actor_lower_name].score) then
 			index = index +1 -- Increment the index number for every updated score, ensuring no duplicates
-			live.indexes.mb = index
+			live.index = index
 			mbIndividuals[data.actor_lower_name] = {score = data.damage, nines = nines, index = index}
 		end
 
@@ -1557,8 +1779,7 @@ windower.register_event('action',function(act)
 		mbPlaces.ninth	= (board and board[9]) or nil
 		mbPlaces.tenth	= (board and board[10]) or nil
 		live:save('all')
-		updateBox(box_display)
-
+		
 		-- What place is the actor in now
 		local newMBPlace = 6 -- Not on the board
 		if data.actor_lower_name == mbPlaces.first.name then
@@ -1574,17 +1795,19 @@ windower.register_event('action',function(act)
 		end
 
 		-- Did the actor move up the leaderboard
-		if Mode ~= "Silent" and settings.partymode_calls.mb then
+		if settings.mode ~= "Silent" and settings.party_calls.mb then
 			if newMBPlace == originalMBPlace and newMBPlace == 1 and (data.damage > originalMBfirstscore or data.damage == 99999) then
-				coroutine.sleep(1)
-				say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
+				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
+					say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+				end
 			elseif newMBPlace < originalMBPlace then
 				if newMBPlace == 1 then
 					if data.damage > originalMBfirstscore then
 						coroutine.sleep(1)
 						say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' takes the board! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
-				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and Mode == "Party" then
+				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and settings.mode == 'Party' then
 					coroutine.sleep(1)
 					say('/p [MAGIC BURST] '..data.actor_name..' moves up to No.'..newMBPlace..'! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
@@ -1594,7 +1817,7 @@ windower.register_event('action',function(act)
 		-- Did you or your rival beat the other
 		if settings.rival ~= "" then
 			if data.actor_name == myName then
-				if ((rivalOriginalMBNines == myOriginalMBNines) and (nines > rivalOriginalMBNines)) or ((rivalOriginalMBScore > myOriginalMBScore) and (data.damage > rivalOriginalMBScore)) then
+				if ((rivalOriginalMBNines == myOriginalMBNines) and (nines > rivalOriginalMBNines) and (rivalOriginalMBScore > 0)) or ((rivalOriginalMBScore > myOriginalMBScore) and (data.damage > rivalOriginalMBScore)) then
 					windower.add_to_chat(220,'[Leaderboard] '..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalMBScore)..(rivalOriginalMBNines > 0 and ':'..rivalOriginalMBNines or '')..' MAGIC BURST score with '):color(6)..(addCommas(data.damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
 				end
 			elseif data.actor_name == capitalize(settings.rival) then
@@ -1644,8 +1867,8 @@ windower.register_event('action',function(act)
 			nukeSum = nukeSum + act.targets[i].actions[1].param
 		end
 		nukes = nukes + nukeSum
-		local everyNumNukes = math.floor(nukes / 500000) -- returns how many times 500,000 goes into nukes
-		local points = everyNumNukes * 500000 -- returns the multiple of 500,000 that nukes is over
+		local everyNumNukes = math.floor(nukes / 250000) -- returns how many times 250,000 goes into nukes
+		local points = everyNumNukes * 250000 -- returns the multiple of 250,000 that nukes is over
 		nukeIndividuals[data.actor_lower_name] = {score = nukes, nines = 0, index = everyNumNukes}
 
 		-- Update the leaderboard places
@@ -1661,16 +1884,50 @@ windower.register_event('action',function(act)
 		nukePlaces.ninth	= (board and board[9]) or nil
 		nukePlaces.tenth	= (board and board[10]) or nil
 		live:save('all')
-		updateBox(box_display)
 
-		-- Call out Nukes, only if they've reached the next 500,000 point threshhold
-		if Mode ~= "Silent" and settings.partymode_calls.nuke then
-			if everyNumNukes > index then 
-				say('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+		-- Call out Nukes
+		if settings.mode ~= "Silent" and settings.party_calls.nuke then
+			if everyNumNukes > index then
+
+				-- Party Mode under 1m nukes: call it out every 250k
+				if everyNumNukes < 5 and settings.mode == 'Party' then
+					say('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+
+				-- Party Mode over 1m nukes, or Lite Mode: call it out every 500k
+				else
+					local everyOtherNum = everyNumNukes % 2 -- returns the remainder after euclidean division (division by subtraction)
+					if everyOtherNum == 0 then -- if that leftover number equals 0, then the number is a multiple of 2
+						say('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+					end
+
+				end
 			end
 		end
-
 	end
+
+
+	------------
+	-- Point --
+	------------
+
+	updatePoints()
+	updateBox(box_display)
+
+	local pointPlaces = live.places.point
+
+	-- Update the leaderboard places
+	local board = sortNamesHigh(live.individuals.point)
+	pointPlaces.first	= board[1]
+	pointPlaces.second	= (board and board[2]) or nil
+	pointPlaces.third	= (board and board[3]) or nil
+	pointPlaces.fourth	= (board and board[4]) or nil
+	pointPlaces.fifth	= (board and board[5]) or nil
+	pointPlaces.sixth	= (board and board[6]) or nil
+	pointPlaces.seventh	= (board and board[7]) or nil
+	pointPlaces.eighth	= (board and board[8]) or nil
+	pointPlaces.ninth	= (board and board[9]) or nil
+	pointPlaces.tenth	= (board and board[10]) or nil
+
 end)
 
 windower.register_event('addon command',function(addcmd, ...)
@@ -1712,9 +1969,15 @@ windower.register_event('addon command',function(addcmd, ...)
 		elseif arg == 'm' or arg == 'murder' then
 			resetM()
 			board = 'MURDER'
+		elseif arg == 'p' or arg == 'point' or arg == 'points' then
+			resetP()
+			board = 'POINT'
 		elseif arg == 'sc' or arg == 'skillchain' or arg == 'skillchains' then
 			resetSC()
 			board = 'SKILLCHAIN'
+		elseif arg == 'v' or arg == 'victim' or arg == 'victims' then
+			resetV()
+			board = 'VICTIM'
 		elseif arg == 'w' or arg == 'whiff' or arg == 'whiffs' then
 			resetW()
 			board = 'WHIFF'
@@ -1722,10 +1985,10 @@ windower.register_event('addon command',function(addcmd, ...)
 			resetALL()
 			board = 'ALL'
 		else
-			windower.add_to_chat(220,'[Leaderboard] '..('Please add which board you would like reset (all/c/d/hs/k/ls/m/mb/n/sc/w).'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..('Please add which board you would like reset (all/c/d/hs/k/ls/m/mb/n/p/sc/v/w).'):color(8))
 			return
 		end
-		if Mode ~= "Silent" then
+		if settings.mode ~= "Silent" then
 			say('/p [Leaderboard] '..board..' data reset.')
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..(board..' data reset.'):color(8))
@@ -1737,47 +2000,47 @@ windower.register_event('addon command',function(addcmd, ...)
 	-- Callouts for Party Mode setting
 	elseif addcmd == 'call' or addcmd == 'calls' or addcmd == 'callout' or addcmd == 'callouts' then
 		if arg == 'c' or arg == 'cure' or arg == 'cures' then
-			settings.partymode_calls.cure = not settings.partymode_calls.cure
-			windower.add_to_chat(220,'[Leaderboard] '..(('CURE call is now set to %s'):format(settings.partymode_calls.cure and 'on.' or 'off.')):color(8))
+			settings.party_calls.cure = not settings.party_calls.cure
+			windower.add_to_chat(220,'[Leaderboard] '..('CURE call:'):color(8)..(' %s':format(settings.party_calls.cure and 'ON' or 'OFF')):color(200))
 		elseif arg == 'd' or arg == 'death' or arg == 'deaths' then
-			settings.partymode_calls.death = not settings.partymode_calls.death
-			windower.add_to_chat(220,'[Leaderboard] '..(('DEATH call is now set to %s'):format(settings.partymode_calls.death and 'on.' or 'off.')):color(8))
+			settings.party_calls.death = not settings.party_calls.death
+			windower.add_to_chat(220,'[Leaderboard] '..('DEATH call:'):color(8)..(' %s':format(settings.party_calls.death and 'ON' or 'OFF')):color(200))
 		elseif arg == 'hs' or arg == 'highscore' or arg == 'hiscore' then
-			settings.partymode_calls.hs = not settings.partymode_calls.hs
-			windower.add_to_chat(220,'[Leaderboard] '..(('HIGH WS call is now set to %s'):format(settings.partymode_calls.hs and 'on.' or 'off.')):color(8))
+			settings.party_calls.hs = not settings.party_calls.hs
+			windower.add_to_chat(220,'[Leaderboard] '..('HIGH WS call:'):color(8)..(' %s':format(settings.party_calls.hs and 'ON' or 'OFF')):color(200))
 		elseif arg == 'k' or arg == 'kill' or arg == 'kills' then
-			settings.partymode_calls.kill = not settings.partymode_calls.kill
-			windower.add_to_chat(220,'[Leaderboard] '..(('KILL call is now set to %s'):format(settings.partymode_calls.kill and 'on.' or 'off.')):color(8))
-		elseif arg == 'ls' or arg == 'lowscore'  or arg == 'loscore' then
-			settings.partymode_calls.ls = not settings.partymode_calls.ls
-			windower.add_to_chat(220,'[Leaderboard] '..(('LOW WS call is now set to %s'):format(settings.partymode_calls.ls and 'on.' or 'off.')):color(8))
+			settings.party_calls.kill = not settings.party_calls.kill
+			windower.add_to_chat(220,'[Leaderboard] '..('KILL call:'):color(8)..(' %s':format(settings.party_calls.kill and 'ON' or 'OFF')):color(200))
+		elseif arg == 'ls' or arg == 'lowscore' or arg == 'loscore' then
+			settings.party_calls.ls = not settings.party_calls.ls
+			windower.add_to_chat(220,'[Leaderboard] '..('LOW WS call:'):color(8)..(' %s':format(settings.party_calls.ls and 'ON' or 'OFF')):color(200))
 		elseif arg == 'mb' or arg == 'magicburst' or arg == 'burst' then
-			settings.partymode_calls.mb = not settings.partymode_calls.mb
-			windower.add_to_chat(220,'[Leaderboard] '..(('MAGIC BURST call is now set to %s'):format(settings.partymode_calls.mb and 'on.' or 'off.')):color(8))
-		elseif arg == 'm' or arg == 'murder' or arg == 'murders' then
-			settings.partymode_calls.murder = not settings.partymode_calls.murder
-			windower.add_to_chat(220,'[Leaderboard] '..(('MURDER call is now set to %s'):format(settings.partymode_calls.murder and 'on.' or 'off.')):color(8))
+			settings.party_calls.mb = not settings.party_calls.mb
+			windower.add_to_chat(220,'[Leaderboard] '..('MAGIC BURST call:'):color(8)..(' %s':format(settings.party_calls.mb and 'ON' or 'OFF')):color(200))
+		elseif arg == 'm' or arg == 'murder' or arg == 'murders' or arg == 'v' or arg == 'victim' or arg == 'victims' then
+			settings.party_calls.murder = not settings.party_calls.murder
+			windower.add_to_chat(220,'[Leaderboard] '..('MURDER/VICTIM call:'):color(8)..(' %s':format(settings.party_calls.murder and 'ON' or 'OFF')):color(200))
 		elseif arg == 'n' or arg == 'nuke' or arg == 'nukes' then
-			settings.partymode_calls.nuke = not settings.partymode_calls.nuke
-			windower.add_to_chat(220,'[Leaderboard] '..(('NUKE call is now set to %s'):format(settings.partymode_calls.nuke and 'on.' or 'off.')):color(8))
+			settings.party_calls.nuke = not settings.party_calls.nuke
+			windower.add_to_chat(220,'[Leaderboard] '..('NUKE call:'):color(8)..(' %s':format(settings.party_calls.nuke and 'ON' or 'OFF')):color(200))
 		elseif arg == 'sc' or arg == 'skillchain' or arg == 'skillchains' then
-			settings.partymode_calls.sc = not settings.partymode_calls.sc
-			windower.add_to_chat(220,'[Leaderboard] '..(('SKILLCHAIN call is now set to %s'):format(settings.partymode_calls.sc and 'on.' or 'off.')):color(8))
+			settings.party_calls.sc = not settings.party_calls.sc
+			windower.add_to_chat(220,'[Leaderboard] '..('SKILLCHAIN call:'):color(8)..(' %s':format(settings.party_calls.sc and 'ON' or 'OFF')):color(200))
 		elseif arg == 'w' or arg == 'whiff' or arg == 'whiffs' then
-			settings.partymode_calls.whiff = not settings.partymode_calls.whiff
-			windower.add_to_chat(220,'[Leaderboard] '..(('WHIFF call is now set to %s'):format(settings.partymode_calls.whiff and 'on.' or 'off.')):color(8))
+			settings.party_calls.whiff = not settings.party_calls.whiff
+			windower.add_to_chat(220,'[Leaderboard] '..('WHIFF call:'):color(8)..(' %s':format(settings.party_calls.whiff and 'ON' or 'OFF')):color(200))
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..('Party/Lite Mode party call settings'):color(220))
-			windower.add_to_chat(36,'CURE (c) '..(('- %s'):format(settings.partymode_calls.cure and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'DEATH (d) '..(('- %s'):format(settings.partymode_calls.death and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'HIGH WS (hs) '..(('- %s'):format(settings.partymode_calls.hs and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'KILL (k) '..(('- %s'):format(settings.partymode_calls.kill and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'LOW WS (ls) '..(('- %s'):format(settings.partymode_calls.ls and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'MAGIC BURST (mb) '..(('- %s'):format(settings.partymode_calls.mb and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'MURDER (m) '..(('- %s'):format(settings.partymode_calls.murder and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'NUKE (n) '..(('- %s'):format(settings.partymode_calls.nuke and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'SKILLCHAIN (sc) '..(('- %s'):format(settings.partymode_calls.sc and 'On' or 'Off')):color(8))
-			windower.add_to_chat(36,'WHIFF (w) '..(('- %s'):format(settings.partymode_calls.whiff and 'On' or 'Off')):color(8))
+			windower.add_to_chat(36,'CURE (c):'..((' %s'):format(settings.party_calls.cure and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'DEATH (d):'..((' %s'):format(settings.party_calls.death and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'HIGH WS (hs):'..((' %s'):format(settings.party_calls.hs and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'KILL (k):'..((' %s'):format(settings.party_calls.kill and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'LOW WS (ls):'..((' %s'):format(settings.party_calls.ls and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'MAGIC BURST (mb):'..((' %s'):format(settings.party_calls.mb and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'MURDER/VICTIM (m):'..((' %s'):format(settings.party_calls.murder and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'NUKE (n):'..((' %s'):format(settings.party_calls.nuke and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'SKILLCHAIN (sc):'..((' %s'):format(settings.party_calls.sc and 'ON' or 'OFF')):color(200))
+			windower.add_to_chat(36,'WHIFF (w):'..((' %s'):format(settings.party_calls.whiff and 'ON' or 'OFF')):color(200))
 		end
 		settings:save('all')
 
@@ -1785,14 +2048,52 @@ windower.register_event('addon command',function(addcmd, ...)
 	-- Reminder setting
 	elseif addcmd == 'reminder' or addcmd == 'reminders' or addcmd == 'remind' then
 		settings.reminder = not settings.reminder
-		windower.add_to_chat(220,'[Leaderboard] '..(('Reminders are set to %s'):format(settings.reminder and 'on.' or 'off.')):color(8))
+		windower.add_to_chat(220,'[Leaderboard] '..('Reminders:'):color(36)..(' %s':format(settings.reminder and 'ON' or 'OFF')):color(200))
 		settings:save('all')
+
+
+    -- Bold setting
+	elseif addcmd == 'bold' then
+		settings.flags.bold = not settings.flags.bold
+		texts.bold(lbBox, settings.flags.bold)
+		windower.add_to_chat(220,'[Leaderboard] '..('Bold:'):color(36)..(' %s':format(settings.flags.bold and 'ON' or 'OFF')):color(200))
+		settings:save('all')
+
+
+    -- Font Size setting
+	elseif addcmd == 'size' or addcmd == 'fontsize' then
+		local size = {...}
+		if #size < 1 then
+			windower.add_to_chat(220,'[Leaderboard] '..('Font Size:'):color(36)..(' '..settings.text.size):color(200))
+		elseif tonumber(size[1]) ~= nil then
+			settings.text.size = size[1]
+			settings:save('all')
+			texts.size(lbBox, settings.text.size)
+			windower.add_to_chat(220,'[Leaderboard] '..('Font Size:'):color(36)..(' '..settings.text.size):color(200))
+		else
+			windower.add_to_chat(220,'[Leaderboard] '..('Font Size must be a number.'):color(8))
+		end
+
+
+    -- BG Alpha setting
+	elseif addcmd == 'alpha' or addcmd == 'bgalpha' then
+		local alpha = {...}
+		if #alpha < 1 then
+			windower.add_to_chat(220,'[Leaderboard] '..('Alpha:'):color(36)..(' '..settings.bg.alpha):color(200))
+		elseif tonumber(alpha[1]) ~= nil and tonumber(alpha[1]) >= 0 and tonumber(alpha[1]) <= 255 then
+			settings.bg.alpha = alpha[1]
+			settings:save('all')
+			texts.bg_alpha(lbBox, settings.bg.alpha)
+			windower.add_to_chat(220,'[Leaderboard] '..('Alpha:'):color(36)..(' '..settings.bg.alpha):color(200))
+		else
+			windower.add_to_chat(220,'[Leaderboard] '..('Alpha must be a number 0-255.'):color(8))
+		end
 
 
 	-- Comma setting
 	elseif addcmd == 'comma' or addcmd == 'commas' then
 		settings.commas = not settings.commas
-		windower.add_to_chat(220,'[Leaderboard] '..(('Commas are set to %s'):format(settings.commas and 'on.' or 'off.')):color(8))
+		windower.add_to_chat(220,'[Leaderboard] '..('Commas:'):color(36)..(' %s':format(settings.commas and 'ON' or 'OFF')):color(200))
 		settings:save('all')
 		updateBox(box_display)
 
@@ -1800,18 +2101,18 @@ windower.register_event('addon command',function(addcmd, ...)
 	-- Party Commands setting
 	elseif addcmd == 'partycommand' or addcmd == 'partycmd' or addcmd == 'partycommands' then
 		settings.party_commands = not settings.party_commands
-		windower.add_to_chat(220,'[Leaderboard] '..(('Party Commands for Party/Lite Mode are set to %s'):format(settings.party_commands and 'on.' or 'off.')):color(8))
+		windower.add_to_chat(220,'[Leaderboard] '..('Party Commands (Party/Lite mode only):'):color(36)..(' %s':format(settings.party_commands and 'ON' or 'OFF')):color(200))
 		settings:save('all')
 
 
 	-- Flood Delay setting
 	elseif addcmd == 'flood' or addcmd == 'flooddelay' then
 		if arg == nil then
-			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay for Party/Lite Mode Party Commands is currently set to '..settings.flood_delay..' seconds.'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay for Party Commands: '):color(36)..(settings.flood_delay..' seconds.'):color(200))
 		elseif tonumber(arg) ~= nil then
 			settings.flood_delay = arg
 			settings:save('all')
-			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay for Party/Lite Mode Party Commands is now set to '..settings.flood_delay..' seconds.'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay for Party Commands: '):color(36)..(settings.flood_delay..' seconds.'):color(200))
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..('Flood Delay must be a number.'):color(8))
 		end
@@ -1822,66 +2123,75 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(220,'[Leaderboard] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key'):color(220))
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Basic Commands '..('[optional]'):color(53)..(' <required>'):color(2))
-		windower.add_to_chat(36,'   pause/p'..(' - Pause/unpause tracking.'):color(8))
+		windower.add_to_chat(36,'   pause'..(' - Pause/unpause tracking.'):color(8))
+		windower.add_to_chat(36,'   c/d/hs/k/ls/m/mb/n/p/sc/v/w'..(' - Print board to party chat.'):color(8))
+		windower.add_to_chat(36,'   mode/silent/lite/party'..(' - Display/change the current Mode.'):color(8))
+		windower.add_to_chat(36,'   reset'..(' <all/c/d/hs/k/ls/m/mb/n/p/sc/v/w>'):color(2)..(' - Reset specified board data.'):color(8))
+		windower.add_to_chat(36,'   show/hide'..(' [c/d/hs/k/ls/m/mb/n/p/sc/v/w]'):color(53)..(' - Display board on screen.'):color(8))
 		windower.add_to_chat(36,'   boards'..(' - List the different boards that are tracked.'):color(8))
-		windower.add_to_chat(36,'   show/hide'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display boards on screen.'):color(8))
-		windower.add_to_chat(36,'   reset'..(' <all/c/d/hs/k/ls/m/mb/n/sc/w>'):color(2)..(' - Reset specified data.'):color(8))
 		windower.add_to_chat(36,'   rival'..(' <name>'):color(2)..(' - Set the specified player as your Rival. Repeat to remove.'):color(8))
 		windower.add_to_chat(36,'   taunt'..(' [text]'):color(53)..(' - Send your rival a tell with which boards you have them beat on.'):color(8))
 		windower.add_to_chat(8,'   Including [text] updates the taunt text. Must include a \'%s\' where the boards will go.')
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Advanced Commands '..('[optional]'):color(53)..(' <required>'):color(2))
-		windower.add_to_chat(36,'   mode/silent/lite/party'..(' - Display/change the current Mode.'):color(8))
-		windower.add_to_chat(36,'   c/d/hs/k/ls/m/mb/n/sc/w'..(' - Print board to party chat.'):color(8))
-		windower.add_to_chat(36,'   call'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display/change the Party/Lite mode party call settings.'):color(8))
+		windower.add_to_chat(36,'   call'..(' [c/d/hs/k/ls/m/mb/n/sc/w]'):color(53)..(' - Display/change the Party/Lite Mode party chat call settings.'):color(8))
 		windower.add_to_chat(36,'   lock/unlock'..(' - Drag the On-Screen Display.'):color(8))
 		windower.add_to_chat(36,'   optout'..(' [add/remove'):color(53)..(' <name>'):color(2)..(']'):color(53)..(' - Display/update the Optout list.'):color(8))
 		windower.add_to_chat(36,'   report'..(' <name>'):color(2)..(' - Send the specified player their score report via tell.'):color(8))
-		windower.add_to_chat(36,'   reminder'..(' - Change the Reminder setting.'):color(8))
-		windower.add_to_chat(36,'   comma'..(' - Change the Comma setting.'):color(8))
-		windower.add_to_chat(36,'   partycommand'..(' - Change the Party Command setting.'):color(8))
+		windower.add_to_chat(36,'   reminder'..(' - Enable/disable the Reminder for Party/Lite Mode.'):color(8))
+		windower.add_to_chat(36,'   alpha'..(' [#]'):color(53)..(' - Update the bg alpha for the on-screen display.'):color(8))
+		windower.add_to_chat(36,'   bold'..(' - Enable/disable the bold setting for the on-screen display.'):color(8))
+		windower.add_to_chat(36,'   comma'..(' - Enable/disable Commas in the scores.'):color(8))
+		windower.add_to_chat(36,'   size'..(' [#]'):color(53)..(' - Update the font size for the on-screen display.'):color(8))
+		windower.add_to_chat(36,'   partycommand'..(' - Enable/disable Party Commands.'):color(8))
 		windower.add_to_chat(36,'   flood'..(' [#]'):color(53)..(' - Display/change the current Flood Delay for Party/Lite Mode Party Commands.'):color(8))
 
 
 	-- Pause
-	elseif addcmd == 'pause' or addcmd == 'p' then
+	elseif addcmd == 'pause' then
 		if not live.paused then
 			live.paused = true
 		else
 			live.paused = false
 		end
 		live:save('all')
-		if Mode ~= "Silent" then
-			say(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).')
+		if settings.mode ~= "Silent" then
+			say(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).')
 		else
-			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..Mode..' Mode).'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).'):color(36))
 		end
 		updateBox(box_display)
 
 
 	-- Switch to Party Mode
 	elseif addcmd == 'party' or (addcmd == 'mode' and (arg == 'party' or arg == 'p')) then
-		Mode = "Party"
-		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		settings.mode = "Party"
+		settings:save('all')
+		say(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 		coroutine.sleep(1)
 		windower.add_to_chat(220,'[Leaderboard] '..('Beware - Party Mode uses party chat heavily.'):color(8))
+		updateBox(box_display)
 
 
 	-- Switch to Lite Mode
 	elseif addcmd == 'lite' or (addcmd == 'mode' and (arg == 'lite' or arg == 'l')) then
-		Mode = "Lite"
-		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		settings.mode = "Lite"
+		settings:save('all')
+		windower.add_to_chat(220,'[Leaderboard] '..(('Mode set to Lite (%s)'):format(live.paused and 'paused' or 'running')):color(8))
+		updateBox(box_display)
 
 
 	-- Switch to Silent Mode
 	elseif addcmd == 'silent' or (addcmd == 'mode' and (arg == 'silent' or arg == 's')) then
-		Mode = "Silent"
-		say(('/p [Leaderboard] Mode set to '..Mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		settings.mode = "Silent"
+		settings:save('all')
+		windower.add_to_chat(220,'[Leaderboard] '..(('Mode set to Silent (%s)'):format(live.paused and 'paused' or 'running')):color(8))
+		updateBox(box_display)
 
 
 	-- Display which mode Leaderboard is currently running in
 	elseif addcmd == 'mode' then
-		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
+		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..settings.mode..' Mode'):color(8))
 
 
 	-- Display the commands for the different boards
@@ -1895,8 +2205,10 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(36,'   mb/magicburst'..(' - Highest individual MB damage'):color(8))
 		windower.add_to_chat(36,'   m/murder'..(' - Running total of murders'):color(8))
 		windower.add_to_chat(36,'   n/nuke'..(' - Running total of nukes'):color(8))
+		windower.add_to_chat(36,'   p/point'..(' - Running total of points'):color(8))
 		windower.add_to_chat(36,'   sc/skillchain'..(' - Highest individual SC damage'):color(8))
-		windower.add_to_chat(36,'   w/whiffs'..(' - Running total of whiffs'):color(8))
+		windower.add_to_chat(36,'   v/victim'..(' - Running total of victims'):color(8))
+		windower.add_to_chat(36,'   w/whiff'..(' - Running total of whiffs'):color(8))
 
 
 	-- CURE BOARD
@@ -1910,18 +2222,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.cure = not settings.partymode_calls.cure
-			windower.add_to_chat(220,'[Leaderboard] '..(('CURE call is now set to %s'):format(settings.partymode_calls.cure and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.cure = not settings.party_calls.cure
+			windower.add_to_chat(220,'[Leaderboard] '..('CURE call:'):color(8)..(' %s':format(settings.party_calls.cure and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.cure
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--CURE BOARD--\rNo Cures Yet"
+				text = "/"..chatmode.." \r--CURE BOARD--\rNo Cures Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S CURE BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S CURE BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -1944,18 +2262,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.death = not settings.partymode_calls.death
-			windower.add_to_chat(220,'[Leaderboard] '..(('DEATH call is now set to %s'):format(settings.partymode_calls.death and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.death = not settings.party_calls.death
+			windower.add_to_chat(220,'[Leaderboard] '..('DEATH call:'):color(8)..(' %s':format(settings.party_calls.death and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.death
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--DEATH BOARD--\rNo Deaths Yet"
+				text = "/"..chatmode.." \r--DEATH BOARD--\rNo Deaths Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S DEATH BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S DEATH BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -1977,18 +2301,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.hs = not settings.partymode_calls.hs
-			windower.add_to_chat(220,'[Leaderboard] '..(('HIGH WS call is now set to %s'):format(settings.partymode_calls.hs and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.hs = not settings.party_calls.hs
+			windower.add_to_chat(220,'[Leaderboard] '..('HIGH WS call:'):color(8)..(' %s':format(settings.party_calls.hs and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.hs
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--HIGH WS BOARD--\rNo Weapon Skills Yet"
+				text = "/"..chatmode.." \r--HIGH WS BOARD--\rNo Weapon Skills Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S HIGH WS BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S HIGH WS BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2011,18 +2341,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.kill = not settings.partymode_calls.kill
-			windower.add_to_chat(220,'[Leaderboard] '..(('KILL call is now set to %s'):format(settings.partymode_calls.kill and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.kill = not settings.party_calls.kill
+			windower.add_to_chat(220,'[Leaderboard] '..('KILL call:'):color(8)..(' %s':format(settings.party_calls.KILL and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.kill
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--KILL BOARD--\rNo Kills Yet"
+				text = "/"..chatmode.." \r--KILL BOARD--\rNo Kills Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S KILL BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S KILL BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2035,7 +2371,7 @@ windower.register_event('addon command',function(addcmd, ...)
 
 
 	-- LOW WS BOARD
-	elseif addcmd == 'ls' or addcmd == 'lowscore'  or addcmd == 'loscore' then
+	elseif addcmd == 'ls' or addcmd == 'lowscore' or addcmd == 'loscore' then
 		if arg == 'reset' then
 			resetLS()
 			updateBox(box_display)
@@ -2045,18 +2381,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.ls = not settings.partymode_calls.ls
-			windower.add_to_chat(220,'[Leaderboard] '..(('LOW WS call is now set to %s'):format(settings.partymode_calls.ls and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.ls = not settings.party_calls.ls
+			windower.add_to_chat(220,'[Leaderboard] '..('LOW WS call:'):color(8)..(' %s':format(settings.party_calls.ls and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.ls
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--LOW WS BOARD--\rNo Weapon Skills Yet"
+				text = "/"..chatmode.." \r--LOW WS BOARD--\rNo Weapon Skills Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S LOW WS BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S LOW WS BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2079,18 +2421,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.mb = not settings.partymode_calls.mb
-			windower.add_to_chat(220,'[Leaderboard] '..(('MAGIC BURST call is now set to %s'):format(settings.partymode_calls.mb and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.mb = not settings.party_calls.mb
+			windower.add_to_chat(220,'[Leaderboard] '..('MAGIC BURST call:'):color(8)..(' %s':format(settings.party_calls.mb and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.mb
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--MAGIC BURST BOARD--\rNo Magic Bursts Yet"
+				text = "/"..chatmode.." \r--MAGIC BURST BOARD--\rNo Magic Bursts Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S MAGIC BURST BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S MAGIC BURST BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2113,18 +2461,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.murder = not settings.partymode_calls.murder
-			windower.add_to_chat(220,'[Leaderboard] '..(('MURDER call is now set to %s'):format(settings.partymode_calls.murder and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.murder = not settings.party_calls.murder
+			windower.add_to_chat(220,'[Leaderboard] '..('MURDER call:'):color(8)..(' %s':format(settings.party_calls.murder and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.murder
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--MURDER BOARD--\rNo Murders Yet"
+				text = "/"..chatmode.." \r--MURDER BOARD--\rNo Murders Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S MURDER BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S MURDER BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2147,18 +2501,60 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.nuke = not settings.partymode_calls.nuke
-			windower.add_to_chat(220,'[Leaderboard] '..(('NUKE call is now set to %s'):format(settings.partymode_calls.nuke and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.nuke = not settings.party_calls.nuke
+			windower.add_to_chat(220,'[Leaderboard] '..('NUKE call:'):color(8)..(' %s':format(settings.party_calls.nuke and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.nuke
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--NUKE BOARD--\rNo Nukes Yet"
+				text = "/"..chatmode.." \r--NUKE BOARD--\rNo Nukes Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S NUKE BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S NUKE BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..")"
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- POINT BOARD
+	elseif addcmd == 'p' or addcmd == 'point' or addcmd == 'points' then
+		if arg == 'reset' then
+			resetP()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('POINT data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'point'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
+		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
+			local places = live.places.point
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/"..chatmode.." \r--POINT BOARD--\rNo Points Yet"
+			else
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S POINT BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2181,22 +2577,68 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.sc = not settings.partymode_calls.sc
-			windower.add_to_chat(220,'[Leaderboard] '..(('SKILLCHAIN call is now set to %s'):format(settings.partymode_calls.sc and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.sc = not settings.party_calls.sc
+			windower.add_to_chat(220,'[Leaderboard] '..('SKILLCHAIN call:'):color(8)..(' %s':format(settings.party_calls.sc and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.sc
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--SKILLCHAIN BOARD--\rNo Skillchains Yet"
+				text = "/"..chatmode.." \r--SKILLCHAIN BOARD--\rNo Skillchains Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S SKILLCHAIN BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S SKILLCHAIN BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
 						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..addCommas(info.score[i])..("%s"):format(info.nines[i] > 0 and ':'..info.nines[i]..')' or ')')
+					end
+				end
+			end
+			say(text)
+		end
+
+
+	-- VICTIM BOARD
+	elseif addcmd == 'v' or addcmd == 'victim' or addcmd == 'victims' then
+		if arg == 'reset' then
+			resetV()
+			updateBox(box_display)
+			windower.add_to_chat(220,'[Leaderboard] '..('VICTIM data reset.'):color(8))
+		elseif arg == 'show' then
+			box_display = 'victim'
+			updateBox(box_display)
+			settings.visible = true
+			showBox()
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.murder = not settings.party_calls.murder
+			windower.add_to_chat(220,'[Leaderboard] '..('MURDER/VICTIM call:'):color(8)..(' %s':format(settings.party_calls.murder and 'ON' or 'OFF')):color(200))
+			settings:save('all')
+		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
+			local places = live.places.victim
+			local info = getPlacesInfo(places)
+			local text = ""
+			if places.first == nil then
+				text = "/"..chatmode.." \r--VICTIM BOARD--\rNo Victims Yet"
+			else
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S VICTIM BOARD--"
+				for i = 1, 5, 1
+				do
+					if info.name[i] ~= nil then
+						text = text.."\r"..i..": "..capitalize(info.name[i]).." ("..info.score[i]..")"
 					end
 				end
 			end
@@ -2215,18 +2657,24 @@ windower.register_event('addon command',function(addcmd, ...)
 			updateBox(box_display)
 			settings.visible = true
 			showBox()
-		elseif arg == 'call' or arg == 'callout' or arg == 'callouts' then
-			settings.partymode_calls.whiff = not settings.partymode_calls.whiff
-			windower.add_to_chat(220,'[Leaderboard] '..(('WHIFF call is now set to %s'):format(settings.partymode_calls.whiff and 'on.' or 'off.')):color(8))
+		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
+			settings.party_calls.whiff = not settings.party_calls.whiff
+			windower.add_to_chat(220,'[Leaderboard] '..('WHIFF call:'):color(8)..(' %s':format(settings.party_calls.whiff and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
+			local chatmode = 'p'
+			if arg == 'l2' or arg == 'ls2' then
+				chatmode = 'l2'
+			elseif arg == 'l' or arg == 'l1' or arg == 'ls' or arg == 'ls1' then
+				chatmode = 'l'
+			end
 			local places = live.places.whiff
 			local info = getPlacesInfo(places)
 			local text = ""
 			if places.first == nil then
-				text = "/p \r--WHIFF BOARD--\rNo Whiffs Yet"
+				text = "/"..chatmode.." \r--WHIFF BOARD--\rNo Whiffs Yet"
 			else
-				text = "/p \r--"..uppercase(places.first.name).."\'S WHIFF BOARD--"
+				text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S WHIFF BOARD--"
 				for i = 1, 5, 1
 				do
 					if info.name[i] ~= nil then
@@ -2292,7 +2740,9 @@ windower.register_event('addon command',function(addcmd, ...)
 			box_display = 'hs'
 		elseif arg == 'k' or arg == 'kill' or arg == 'kills' then
 			box_display = 'kill'
-		elseif arg == 'ls' or arg == 'lowscore'  or arg == 'loscore' then
+		elseif arg == 'p' or arg == 'point' or arg == 'points' then
+			box_display = 'point'
+		elseif arg == 'ls' or arg == 'lowscore' or arg == 'loscore' then
 			box_display = 'ls'
 		elseif arg == 'mb' or arg == 'magicburst' or arg == 'burst' then
 			box_display = 'mb'
@@ -2302,6 +2752,8 @@ windower.register_event('addon command',function(addcmd, ...)
 			box_display = 'nuke'
 		elseif arg == 'sc' or arg == 'skillchain' or arg == 'skillchains' then
 			box_display = 'sc'
+		elseif arg == 'v' or arg == 'victim' or arg == 'victims' then
+			box_display = 'victim'
 		elseif arg == 'w' or arg == 'whiff' or arg == 'whiffs' then
 			box_display = 'whiff'
 		end
@@ -2332,7 +2784,7 @@ windower.register_event('addon command',function(addcmd, ...)
 	-- Set a specific player as your Rival
 	elseif addcmd == 'rival' then
 		if arg == nil then
-			windower.add_to_chat(220,'[Leaderboard] '..('%s'):format(settings.rival ~= '' and capitalize(settings.rival)..' is your Rival.' or 'No Rival set.'):color(8))
+			windower.add_to_chat(220,'[Leaderboard] '..('%s'):format(settings.rival ~= '' and capitalize(settings.rival)..' is your Rival. Type '..('//lb rival '..settings.rival):color(1)..(' to remove them.'):color(8) or 'No Rival set.'):color(8))
 		elseif string.lower(arg) == settings.rival then
 			settings.rival = ""
 			windower.add_to_chat(220,'[Leaderboard] '..(capitalize(arg)..' has been removed as your Rival. No Rival set.'):color(8))
@@ -2444,8 +2896,8 @@ end)
 
 -- On zone change, remind that LB is running
 windower.register_event('zone change',function()
-	if settings.reminder and Mode == 'Lite' or Mode == 'Party' then
+	if settings.reminder and settings.mode == 'Lite' or settings.mode == 'Party' then
 		coroutine.sleep(5)
-		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..Mode..' Mode'):color(8))
+		windower.add_to_chat(220,'[Leaderboard] '..(('Currently %s'):format(settings.paused and 'paused' or 'running')..' in '..settings.mode..' Mode'):color(8))
 	end
 end)
