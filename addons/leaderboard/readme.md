@@ -16,16 +16,16 @@ Tracks battle information and groups it together in different "boards".
   - **Silent:** Tracks in the background, no party chat call outs. Default.
   - **Lite:** Limited party chat call outs.
   - **Party:** Full party chat call outs. Great for linkshell events.
-- Tracks 10 different boards.
+- Tracks 11 different boards.
 - On-Screen Display for tracking boards in realtime.
 - Rival system. Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
 - Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
-- Party commands. Party members can use party chat (or a tell) to issue certain commands.
+- Party commands. Party members can use party chat (or a tell) to issue certain commands while in Party or Lite Modes.
 - Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
 - Tracks every players scores individually. Allows any player in the group to get a report with only their own scores for each board.
 - Tracks the number of "9's" a player has hit.
 - Duplicate scores are ordered by who hit the number first.
-- All settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
+- All major settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
 
 ### Currently Tracked Boards
 - `c/cure` - Running total of cures.
@@ -37,6 +37,7 @@ Tracks battle information and groups it together in different "boards".
 - `mb/magicburst` - Highest individual MB damage.
 - `n/nuke` - Running total of nukes.
 - `sc/skillchain` - Highest individual SC damage.
+- `v/victim` - Running total of victims.
 - `w/whiffs` - Running total of whiffs.
 
 (Cure and Nuke Leaderboards account for aoe's)
@@ -46,31 +47,34 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 
 #### Basic Commands `[optional] <required>`
 - `pause/p` - Pause/unpause tracking.
-- `boards` - List the different boards that are tracked.
-- `show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
+- `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
+- `mode/silent/lite/party` - Display/change the current Mode.
 - `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
+- `show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
+- `boards` - List the different boards that are tracked.
 - `rival [name]` - Display/Set the specified player as your Rival. Repeat with name to remove.
 - `taunt [text]` - Send your rival a tell with which boards you have them beat on.  
   - Including `[text]` updates the taunt text. Must include a `%s` where the boards will go.
 
-(show and reset can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
-
 #### Advanced Commands `[optional] <required>`
-- `mode/silent/lite/party` - Display/change the current Mode.
-- `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
 - `call [c/d/hs/k/ls/m/mb/n/sc/w]` - Display/change the Party/Lite mode party call settings.
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
 - `report <name>` - Send the specified player their score report via tell.
 - `reminder` - Change the Reminder setting.
+- `alpha [#]` - Update the bg alpha for the on-screen display.
+- `bold` - Enable/disable the bold setting for the on-screen display.
 - `comma` - Change the Comma setting.
+- `size [#]` - Update the font size for the on-screen display.
 - `partycommand/partycmd` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
+
+(call, reset, and show can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
 
 ### Party Commands
 Intended to be used by the party. The host must have Party or Lite Mode running and not have Party Commands disabled.  
 All commands must be prefixed with `!lb` (ex: `!lb report`).
-- `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
+- `c/d/hs/k/ls/m/mb/n/sc/v/w` - Print board to party chat.
 - `optout` - Add your name to the Optout list.
 - `report` - Receive a score report via tell.
 
@@ -79,6 +83,22 @@ All commands must be prefixed with `!lb` (ex: `!lb report`).
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
 
 ### Version History
+
+**3.5**
+- Added Point Board. Points are accrued continually over time. The rate that points are accrued changes based on which boards and in which place a player is in at each interval. The interval is dependant on party/alliance actions, no points are gained while nothing is happening. The more boards a player is on, and the higher place they are in, the faster their points will accrue. Death and Whiff Boards do not accrue points. Instead, a percentage of your current point total is lost each time. When a murder happens, the murderer loses a percentage of their current point total, and the victim is awarded that number of points. Point weights per board and per place, as well as percentages lost, are adjustable in the settings file.
+- Added Victim Board. A Murder (player killing another player) now produces both a Murder Board and a Victim Board. Callout settings for the Victim Board are linked to the Murder Board (since they are called out in the same line).
+- Added Bold command to adjust the bold setting of the on-screen display.
+- Added Size command to adjust the font size of the on-screen display.
+- Added Alpha command to adjust the alpha setting of the on-screen display.
+- Added the ability to print the boards to linkshell/linkshell2 (ie `//lb c l2` will print the Cure Board to linkshell2)
+- Adjusted on-screen display to show which mode Leaderboard is currently running in.
+- Adjusted Mode (Silent, Lite, or Party) to save to the settings file. This will now persist the mode through a crash/disconnect.
+- Adjusted Cure and Nuke callout intervals for Party Mode. Cures are now called out every 25k up to 100k, then every 50k thereafter. Nukes are called out every 250k up to 1m, then every 500k thereafter. Lite Mode will still call out every 50k/500k.
+- Adjusted the help text.
+- Adjusted Rival command text to include how to remove the currently set rival.
+- Adjusted callouts for High WS, Skillchain, and Magic Burst. For each 9's in these boards, Party Mode callouts will now be each up to 10, then every 5 thereafter. Lite Mode callouts will be the first 9's hit then every 5th.
+- Fixed an issue with Pause not working correctly for some boards.
+- Fixed an issue with a Rival notification triggering when you hit 9's on HS, SC, or MB but your rival has not performed these yet (score of 0).
 
 **3.4.1**
 - Adjusted the Party command syntax to instead be Partycommand/Partycmd. This fixes a conflict with the Mode command update in version 3.4.
