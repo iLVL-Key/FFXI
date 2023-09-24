@@ -5,3 +5,6 @@ The file structure should look like this:
 `/addons/Gearswap/data/sounds/varioussoundfiles.wav`
 
 `/addons/Gearswap/data/JOB.lua`
+
+** IMPORTANT **  
+You must have the Text addon loaded in order to use these Gearswap lua files. It can be found in the Windower launcher under the addons tab.
