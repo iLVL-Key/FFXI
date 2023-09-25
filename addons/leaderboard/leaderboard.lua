@@ -1301,17 +1301,9 @@ windower.register_event('action',function(act)
 			local name = data.actor_lower_name
 			local pct_loss = 100 - settings.pctloss.whiff
 			
-			local old_amount = points[name].score
-			local amount_lost = math.floor(points[name].score * (settings.pctloss.whiff / 100))
-			local new_amount = math.floor(points[name].score * (pct_loss / 100))
-			
 			if points[name] and points[name].score then
 				points[name].score = math.floor(points[name].score * (pct_loss / 100))
 			end
-
-			
-			--print('Name: '..name..' Old Amount: '..old_amount..' Amount Lost: '..amount_lost..' New Amount: '..new_amount)
-
 
 			-- Update the leaderboard places
 			local board = sortNamesHigh(live.individuals.whiff)
