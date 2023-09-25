@@ -1,7 +1,7 @@
 # Leaderboard
 Tracks battle information and groups it together in different "boards".  
 
-![Leaderboard addon picture of the onscreen display](https://github.com/iLVL-Key/FFXI/assets/101156258/61235985-0fb7-4a4d-b188-b2004f762124)  
+![lb_high_ws_onscreen2](https://github.com/iLVL-Key/FFXI/assets/101156258/878a3198-0089-4318-8317-c5134fee8002)  
 ↑ The on-screen display showing the High WS Board.
 
 ![Leaderboard addon picture of high ws party chat callout](https://github.com/iLVL-Key/FFXI/assets/101156258/4890ef71-08cd-49dd-9819-feccde31e760)  
