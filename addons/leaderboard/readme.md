@@ -10,6 +10,9 @@ Tracks battle information and groups it together in different "boards".
 ![Leaderboard addon picture of cure board printed to party chat](https://github.com/iLVL-Key/FFXI/assets/101156258/41ff276e-57b0-4899-a302-71abd85ae64f)  
 ↑ The Cure Board being printed to party chat.
 
+![lb_rival](https://github.com/iLVL-Key/FFXI/assets/101156258/c1e496cb-6d55-4f34-8402-d0d69cc700c3)  
+↑ A Rival Skillchain notification.
+
 ### Features
 - 3 different tracking modes:
   - **Silent:** Tracks in the background, no party chat call outs. Default.
