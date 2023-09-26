@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.4.3'
+_addon.version = '1.5'
 _addon.author = 'Key'
 _addon.commands = {'callouts','co'}
 
@@ -44,6 +44,32 @@ windower.register_event('action',function(act)
 
 	local actor = (windower.ffxi.get_mob_by_id(act.actor_id) or {}).name or 'unknown'
 	local monster_ability = res.monster_abilities[act.targets[1].actions[1].param]
+	local spell_start = res.spells[act.targets[1].actions[1].param]
+
+	-- A player is charmed
+	if act.category == 11 and (act.targets[1].actions[1].param == 14 or act.targets[1].actions[1].param == 17) and act.targets[1].actions[1].message == 242 then
+		chat(('/%s \r \r'..windower.ffxi.get_mob_by_id(act.targets[1].id).name..' is charmed!%s\r \r'):format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+	end
+
+	if act.category == 8 then
+		if actor == 'Bozzetto Autarch' then
+			if spell_start == nil then
+				return
+			elseif spell_start.en == 'Katon: San' then
+				chat('/%s Mijin Gakure: 6%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif spell_start.en == 'Suiton: San' then
+				chat('/%s Mijin Gakure: 5%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif spell_start.en == 'Raiton: San' then
+				chat('/%s Mijin Gakure: 4%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif spell_start.en == 'Doton: San' then
+				chat('/%s Mijin Gakure: 3%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif spell_start.en == 'Huton: San' then
+				chat('/%s Mijin Gakure: 2%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif spell_start.en == 'Hyoton: San' then
+				chat('/%s Mijin Gakure: 1%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+		end
+	end
 
 	if act.category == 7 then -- initiation of weapon skill or monster TP move
 
@@ -60,6 +86,13 @@ windower.register_event('action',function(act)
 				chat('/%s Aero (Eroding Flesh)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			elseif monster_ability.en == 'Fulminous Smash' then
 				chat('/%s Stone (Fulminous Smash)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
+
+		elseif actor == 'Glassy Craver' then
+			if monster_ability == nil then
+				return
+			elseif monster_ability.en == 'Impalement' then
+				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
 		elseif actor == 'Triboulex' or actor == 'Skomora' then
@@ -157,6 +190,8 @@ windower.register_event('action',function(act)
 				return
 			elseif monster_ability.en == 'Volcanic Stasis' then
 				chat('/%s Full Dispel%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif monster_ability.en == 'Blistering Roar' then
+				chat('/%s Fetters incoming!%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
 		elseif actor == 'Mboze' then
@@ -217,7 +252,7 @@ windower.register_event('incoming text',function(org)
 	elseif org:find('You pitiful lot will never learn') then
 		chat('/%s Perfidien pop!%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 
-	elseif org:find('the void calls') then
+	elseif org:find('the void calls') and windower.ffxi.get_info().zone ~= 277 then
 		chat('/%s Plouton pop!%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 
 	elseif org:find('Hoho! Poked at a sore spot, didn\'t you?') or org:find('Switching things up, hmm?') then
@@ -242,10 +277,10 @@ windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
 		windower.add_to_chat(220,'[Callouts] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key'):color(220))
-    	windower.add_to_chat(220,'[Callouts] ')
-		windower.add_to_chat(220,'[Callouts] '..('Addon Commands'):color(200)..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
-		windower.add_to_chat(220,'[Callouts] '..('  chatmode/chat/mode'):color(36)..(' - Switch between Echo and Party chat modes.'):color(8)..'')
-		windower.add_to_chat(220,'[Callouts] '..('  list'):color(36)..(' - List the current callouts.'):color(8)..'')
+    	windower.add_to_chat(220,' ')
+		windower.add_to_chat(200,' Addon Commands'..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
+		windower.add_to_chat(36,'   chatmode/chat/mode'..(' - Switch between Echo and Party chat modes.'):color(8)..'')
+		windower.add_to_chat(36,'   list'..(' - List the current callouts.'):color(8)..'')
 
 	elseif addcmd == 'chatmode' or addcmd == 'chat' or addcmd == 'mode' then
 		if settings.chatmode == 'echo' then
@@ -260,11 +295,13 @@ windower.register_event('addon command', function(addcmd)
 
 	elseif addcmd == 'list' or addcmd == 'lists' then
 		windower.add_to_chat(220,'[Callouts] '..('Current callouts:'):color(200)..'')
-		windower.add_to_chat(220,'[Callouts] '..('  Odyssey'):color(36)..(' - Hate resets, full dispels, Bumba 1-HRs'):color(8)..'')
-		windower.add_to_chat(220,'[Callouts] '..('  Dyna-D'):color(36)..(' - Halphas hate reset)'):color(8)..'')
-		windower.add_to_chat(220,'[Callouts] '..('  Omen'):color(36)..(' - Scales, Pain Sync, Prophylaxis, Target)'):color(8)..'')
-		windower.add_to_chat(220,'[Callouts] '..('  Vagary'):color(36)..(' - Perfidien/Plouton pop, weaknesses'):color(8)..'')
-		windower.add_to_chat(220,'[Callouts] '..('  Sortie'):color(36)..(' - Elements/weaknesses, hate resets)'):color(8)..'')
+		windower.add_to_chat(36,'   General'..(' - Charm'):color(8)..'')
+		windower.add_to_chat(36,'   Odyssey'..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga Blistering Roar (fetters)'):color(8)..'')
+		windower.add_to_chat(36,'   Dyna-D'..(' - Halphas hate reset'):color(8)..'')
+		windower.add_to_chat(36,'   Omen'..(' - Scales, Pain Sync, Prophylaxis, Target'):color(8)..'')
+		windower.add_to_chat(36,'   Vagary'..(' - Perfidien/Plouton pop, weaknesses'):color(8)..'')
+		windower.add_to_chat(36,'   Sortie'..(' - Elements/weaknesses, hate resets'):color(8)..'')
+		windower.add_to_chat(36,'   Ambuscade'..(' - Bozzetto Autarch Mijin Gakure'):color(8)..'')
 
 	elseif addcmd == 'reload' then
         windower.send_command('lua r callouts')
