@@ -3,6 +3,8 @@
 -------------------------------------------
 --[[
 
+REQUIRED Windower Addons: Text
+
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
 
@@ -15,34 +17,43 @@ To switch between gear modes, use any of these three options:
 	/console mode
 2. An alias command
 	//mode
-3. A keyboard shortcut
+3. A keybind shortcut
 	CTRL+G
-	(Default is G, can be changed in the settings)
+	(Can be changed in the Advanced Options section)
 
 To activate Damage Taken Override, use any of these three options:
 1. A macro with the following
 	/console DT
 2. An alias command
 	//dt
-3. A keyboard shortcut
+3. A keybind shortcut
 	CTRL+D
-	(Default is D, can be changed in the settings)
+	(Can be changed in the Advanced Options section)
+
+To activate the Weapon Cycle, use any of these three options:
+1. A macro with the following
+	/console WC
+2. An alias command
+	//wc
+3. A keybind shortcut
+	CTRL+H
+	(Can be changed in the Advanced Options section)
 
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
 
 Hide or show the HUD at any time by typing
-	//hidehud or //showhud
-
-For the HUD function (see options below), suggested placement is center screen, just above your chat log.
+	//hud
 
 IMPORTANT:
-When you load this file for the first time, your HUD may look all wrong. The defaults preloaded are for a screen at 3440x1400.
-Adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
-
-Required Windower Addons: Text
+When you load this file for the first time, your HUD may not be in a good position, or may be too large.
+If the HUD is not in a good position, go to the Heads Up Display options below and adjust the HUDposX and HUDposY
+options, then save and reload the file. Adjust and repeat until positioned as desired.
+If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
+Suggested placement is center screen, just above your chat log.
 
 --]]
+
 -------------------------------------------
 --                OPTIONS                --
 -------------------------------------------
@@ -52,28 +63,27 @@ LockstyleCombat	=	'8'		--[1-200]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-200]		Your Lockstyle set when in a town zone.
 							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'7'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
-Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
+SubWARPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing WAR.
+SubDRGPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing DRG.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
 HFTimer			=	'On'	--[On/Off]		Displays a timer for Hundred Fists in echo.
 ISTimer			=	'On'	--[On/Off]		Displays a timer for Inner Strength in echo.
-DTCtrlPlus		=	'd'		--				Sets the keyboard shortcut you would like to activate the Damage Taken Override.
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
-AutoSuperJump	=	'On'	--[On/Off]		Attempts to use Super Jump when your HP gets critically low.
+AutoSave		=	'On'	--[On/Off]		Attempts to use Chakra, Super Jump, High Jump, then Perfect Counter, in that order, when your HP gets critically low.
+							--				Jumps will not activate while in Mode 4 (Tank).
 DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
 DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
-HUDposX			=	965		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposYLine1	=	794		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-							--				Note that this is for the first line of the HUD, the other lines will self-adjust. If you cannot
-							--				see the HUD, set the x and y both to 100 to make sure it is showing up, then adjust from there.
-FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
-LineSpacer		=	20		--				Space in pixels between each Line of the HUD
-ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
+HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+FontSize		=	12		--	Adjust the font size. Changing this will require you to adjust the Spacers below as well.
+LineSpacer		=	20		--	Space in pixels between each Line of the HUD
+ColumnSpacer	=	93		--	Space in pixels between each Column of the HUD
 
 --HUD Mode Names
 Mode1Name = 'Multi-Attack'		--Names displayed in the HUD for Hasso Mode 1, 2, 3, and 4.
@@ -113,14 +123,18 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
+ShowHUD				=	true	--Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
 StartMode			=	'Mode1'--[Mode1/Mode2/Mode3/Mode4]
 								--	Determines the Mode you will start in. Current Mode can be changed at any time by using any
 								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-ModeCtrlPlus		=	'g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G is default.
+ModeBind			=	'^g'	--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G (^g) is default.
+DTBind				=	'^d'	--Sets the keyboard shortcut you would like to activate the Damage Taken Override. CTRL+D (^d) is default.
+WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
+								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
-CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
+AutoSaveThreshold	=	500		--If your HP goes below this number, a "save" will be used.
+CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
-AutSJmpThreshold	=	500		--If your HP goes below this number, Super Jump will be used.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
@@ -132,9 +146,22 @@ Mode1color		=	'255 125 125'	--Mode 1
 Mode2color		=	'125 125 255'	--Mode 2
 Mode3color		=	'125 255 125'	--Mode 3
 Mode4color		=	'255 255 125'	--Mode 4
-Aftermath1color		=	'0 127 255'		--Aftermath Level 1
-Aftermath2color		=	'75 255 75'		--Aftermath Level 2
-Aftermath3color		=	'255 255 50'	--Aftermath Level 3
+Aftermath1color	=	'0 127 255'		--Aftermath Level 1
+Aftermath2color	=	'75 255 75'		--Aftermath Level 2
+Aftermath3color	=	'255 255 50'	--Aftermath Level 3
+
+-------------------------------------------
+--                WEAPONS                --
+-------------------------------------------
+
+-- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed
+-- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {empty, empty},
+WeaponCycle = {
+	{"Spharai", empty},
+	{"Godhands", empty},
+	{"Xoanon", "Flanged Grip"},
+	--{"Main Slot", "Sub Slot"},
+}
 
 -------------------------------------------
 --               GEAR SETS               --
@@ -192,7 +219,6 @@ function get_sets()
 	-- NOTE: Counter caps at 80%. Job Trait: 22, Merit: 5 (27 total base + Spharai: 14 = 41)
 	sets.modefour = {
 		ammo="Amar Cluster",			--Counter +2
-		ammo="Coiste Bodhar",
 		head="Bhikku Crown +3",
 		body="Mpaca's Doublet",			--Counter +10
 		hands="Bhikku Gloves +2",
@@ -230,7 +256,7 @@ function get_sets()
 		back="Shadow Mantle"
 	}
 
-	-- Weapon Skill (STR, DEX, Multi-hit, Crit, Attack)
+	-- Weapon Skill - Basic (STR, DEX, Multi-hit, Crit, Attack)
 	sets.ws = {
 		ammo="Coiste Bodhar",
 		head="Anch. Crown +2",
@@ -259,26 +285,19 @@ function get_sets()
 	-- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	-- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
 	sets.cappedtpws = set_combine(sets.ws, {
-		left_ear="Lugra Earring +1",
+		head="Nyame Helm",
+		right_ear="Sherida Earring",
 	})
 
-	-- STR WS (STR, Multi-hit, Crit, Attack)
-	sets.strws = set_combine(sets.ws, {
-		left_ear="Sherida Earring",
-		right_ear="Schere Earring",
-		left_ring="Regal Ring",
-		right_ring="Niqmaddu Ring",
-		back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
-	})
-
-	-- Kick WS (Kick Attacks, TP Bonus, STR, VIT )
-	sets.kickws = set_combine(sets.ws, {
+	-- Tornado Kick (Kick Attacks, TP Bonus, STR, VIT )
+	sets["Tornado Kick"] = set_combine(sets.ws, {
 		head="Mpaca's Cap",
 		body="Nyame Mail",
 		hands="Nyame Gauntlets",
-		legs="Bhikku Hose +3",
+		legs="Nyame Flanchard",
 		feet="Anch. Gaiters +3",
 		neck="Mnk. Nodowa +2",
+		waist="Moonbow Belt +1",
 		left_ear="Schere Earring",
 		right_ear="Moonshade Earring",
 		left_ring="Regal Ring",
@@ -287,7 +306,7 @@ function get_sets()
 	})
 
 	-- Final Heaven (VIT, STR, WSD)
-	sets.finalheaven = set_combine(sets.ws, {
+	sets["Final Heaven"] = set_combine(sets.ws, {
 		ammo="Knobkierrie",
 		head="Nyame Helm",
 		body="Nyame Mail",
@@ -295,6 +314,7 @@ function get_sets()
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets",
 		neck="Fotia Gorget",
+		waist="Moonbow Belt +1",
 		left_ear="Schere Earring",
 		right_ear="Bhikku Earring +1",
 		left_ring="Regal Ring",
@@ -302,8 +322,59 @@ function get_sets()
 		back={ name="Segomo's Mantle", augments={'VIT+20','Accuracy+20 Attack+20','VIT+10','Weapon skill damage +10%','Mag. Evasion+15',}},
 	})
 
+	-- Ascetic's Fury (VIT, STR, crit+)
+	sets["Ascetic's Fury"] = set_combine(sets.ws, {
+		ammo="Crepuscular Pebble",
+		head="Adhemar Bonnet +1",
+		body="Bhikku Cyclas +3",
+		hands="Bhikku Gloves +3",
+		legs="Mpaca's Hose",
+		feet="Mpaca's Boots",
+		neck="Fotia Gorget",
+		waist="Fotia Belt",
+		left_ear="Schere Earring",
+		right_ear="Sherida Earring",
+		left_ring="Regal Ring",
+		right_ring="Niqmaddu Ring",
+		back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+	})
+
+	-- Victory Smite (STR, crit+)
+	sets["Victory Smite"] = set_combine(sets.ws, {
+		ammo="Coiste Bodhar",
+		head="Mpaca's Cap",
+		body="Bhikku Cyclas +3",
+		hands="Bhikku Gloves +3",
+		legs="Mpaca's Hose",
+		feet="Mpaca's Boots",
+		neck="Fotia Gorget",
+		waist="Moonbow Belt +1",
+		left_ear="Schere Earring",
+		right_ear="Sherida Earring",
+		left_ring="Regal Ring",
+		right_ring="Niqmaddu Ring",
+		back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+	})
+
+	-- Shijin Spiral (DEX, STR)
+	sets["Shijin Spiral"] = set_combine(sets.ws, {
+		ammo="Coiste Bodhar",
+		head="Mpaca's Cap",
+		body="Bhikku Cyclas +3",
+		hands="Bhikku Gloves +3",
+		legs="Nyame Flanchard",
+		feet="Mpaca's Boots",
+		neck="Fotia Gorget",
+		waist="Moonbow Belt +1",
+		left_ear="Schere Earring",
+		right_ear="Sherida Earring",
+		left_ring="Regal Ring",
+		right_ring="Niqmaddu Ring",
+		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
+	})
+
 	-- Cataclysm (Dark Elem. MAB, INT, Magic Damage, WSD)
-	sets.cataclysm = set_combine(sets.ws, {
+	sets["Cataclysm"] = set_combine(sets.ws, {
 		ammo="Ghastly Tathlum +1",
 		head="Pixie Hairpin +1",
 		body="Nyame Mail",
@@ -316,7 +387,6 @@ function get_sets()
 		right_ear="Moonshade Earring",
 		left_ring="Archon Ring",
 		right_ring="Metamor. Ring +1",
-		
 	})
 
 	-- Ygnas's Resolve +1
@@ -436,7 +506,7 @@ end
 
 
 
-FileVersion = '5.0'
+FileVersion = '6.0'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -447,29 +517,41 @@ MAJOR version updates require changes in the top portion of the file. Changes to
 MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
 
+Version 6.0
+- Added Ascetic's Fury, Victory Smite, and Shijin Spiral gear sets.
+- Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
+- Adjusted AutoSuperJump. Name changed to AutoSave. Will now try Chakra, Super Jump, High Jump, then Perfect Counter, in that order, based on cooldowns. Jumps will not activate while in Mode 4 (Tank).
+- Adjusted Page Option. Now defined for subbing WAR or DRG with a default of 1 for other subjobs.
+- Adjusted HUD positioning options and text for clarity.
+- Adjusted HUD Ability recasts. Removed Counterstance from Mode 4 and added Aggressor in its place. Added High Jump and Super Jump for sub DRG.
+- Adjusted HUD Ability recast colors. Will now give a short blink when an ability is becoming ready to use again.
+- Adjusted ability recast timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to equip properly if you're camping that recast timer.
+- Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
+- Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
+
 Version 5.0
--No gear set changes.
--Added Advanced Option to add commas to the damage numbers.
--Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
--Removed notifications for Magic Bursts and Blood Pacts because I don't know why I added it in there.
+- No gear set changes.
+- Added Advanced Option to add commas to the damage numbers.
+- Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+- Removed notifications for Magic Bursts and Blood Pacts because I don't know why I added it in there.
 
 Version 4.0
--No gear set changes.
--Added AutoSuperJump option. Automatically attempts to use Super Jump when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
+- No gear set changes.
+- Added AutoSuperJump option. Automatically attempts to use Super Jump when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
 
 Version 3.0
--No gear set changes.
--Renamed WS Damage Notification to Damage Notification.
--Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
--Fixed Damage Notification option displaying regardless of being on or off.
--Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
+- No gear set changes.
+- Renamed WS Damage Notification to Damage Notification.
+- Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
+- Fixed Damage Notification option displaying regardless of being on or off.
+- Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
 
 04.28.22 (Version Compatibility Codename: Shoulder Tackle)
--Added Cataclysm set.
+- Added Cataclysm set.
 
 04.15.22 (Version Compatibility Codename: Combo)
--First version
--Started from Samurai file version 02.22.22 (Version Compatibility Codename: Tachi: Yukikaze)
+- First version
+- Started from Samurai file version 02.22.22 (Version Compatibility Codename: Tachi: Yukikaze)
 --]]
 
 -------------------------------------------
@@ -503,19 +585,23 @@ TownZones = S{
 Mode = StartMode --sets the starting mode (selected in the Advanced Options)
 DTOverride = "Off" --Start with the Damage Taken Override off
 RRRCountdown = RRReminderTimer
+HUDposYLine1 = HUDposY
 HWaterRecast = 0
 HWater = true --this is used as a simple on/off for when we run out of Holy Waters
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
 LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
 LoadHUD = false --starts false then switched to true after the LoadDelay
-ShowHUD = true --this changes to false when we zone or are in a cutscene
+Zoning = false --flips automatically to hide the HUD while zoning
+InCS = false --flips automatically to hide the HUD while in a cs
 LockstyleDelay = 3
 AutoLockstyleRun = true
+AutoSaveUsed = false --this is used so we don't trigger multiple "saves" together
 LowHP = false
 Doom = false
 Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 DangerCountdown = 0
 NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
+WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
 
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 FocusRecast = 0
@@ -524,8 +610,9 @@ ImpetusRecast = 0
 FootworkRecast = 0
 AggressorRecast = 0
 BerserkRecast = 0
+HighJumpRecast = 0
+SuperJumpRecast = 0
 PerfectCounterRecast = 0
-CounterstanceRecast = 0
 ChakraRecast = 0
 
 --Space out each line and column properly
@@ -542,9 +629,9 @@ send_command('wait '..LoadDelay..';gs c LoadHUD')
 send_command('wait 1.5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 send_command('wait 1.6;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 send_command('wait 1.7;text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-send_command('wait 1.8;text loading create "Loading Keys MONK file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
+send_command('wait 1.8;text loading create "Loading Keys MONK file ver: '..FileVersion..' ...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 --Create the Aftermath, Mode, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-send_command('wait 1.9;text weapons create "« Weapon loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
+send_command('wait 1.9;text weapons create "« Weapons loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
 if Mode == 'Mode1' then
 	send_command('wait 2.1;text mode create "Mode: '..Mode1Name..'";wait .3;text mode size '..FontSize..';text mode pos '..HUDposXColumn1..' -100;text mode color '..Mode1color..';text mode bg_transparency 1')
 elseif Mode == 'Mode2' then
@@ -561,11 +648,12 @@ send_command('wait 2.3;text focus create "[ Focus ]";wait .3;text focus size '..
 send_command('wait 2.4;text dodge create "[ Dodge ]";wait .3;text dodge size '..FontSize..';text dodge pos '..HUDposXColumn1..' -100;text dodge bg_transparency 1')
 send_command('wait 2.5;text impetus create "[ Impetus ]";wait .3;text impetus size '..FontSize..';text impetus pos '..HUDposXColumn1..' -100;text impetus bg_transparency 1')
 send_command('wait 2.6;text footwork create "[ Footwork ]";wait .3;text footwork size '..FontSize..';text footwork pos '..HUDposXColumn1..' -100;text footwork bg_transparency 1')
-send_command('wait 2.9;text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
-send_command('wait 3.0;text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
 send_command('wait 2.7;text perfectcounter create "[ Perf. C. ]";wait .3;text perfectcounter size '..FontSize..';text perfectcounter pos '..HUDposXColumn1..' -100;text perfectcounter bg_transparency 1')
-send_command('wait 2.8;text counterstance create "[ C. Stance ]";wait .3;text counterstance size '..FontSize..';text counterstance pos '..HUDposXColumn1..' -100;text counterstance bg_transparency 1')
-send_command('wait 3.1;text chakra create "[ Chakra ]";wait .3;text chakra size '..FontSize..';text chakra pos '..HUDposXColumn1..' -100;text chakra bg_transparency 1')
+send_command('wait 2.8;text highjump create "[ High J. ]";wait .3;text highjump size '..FontSize..';text highjump pos '..HUDposXColumn1..' -100;text highjump bg_transparency 1')
+send_command('wait 2.9;text superjump create "[ Super J. ]";wait .3;text superjump size '..FontSize..';text superjump pos '..HUDposXColumn1..' -100;text superjump bg_transparency 1')
+send_command('wait 3.0;text aggressor create "[ Aggres. ]";wait .3;text aggressor size '..FontSize..';text aggressor pos '..HUDposXColumn1..' -100;text aggressor bg_transparency 1')
+send_command('wait 3.1;text berserk create "[ Berserk ]";wait .3;text berserk size '..FontSize..';text berserk pos '..HUDposXColumn1..' -100;text berserk bg_transparency 1')
+send_command('wait 3.2;text chakra create "[ Chakra ]";wait .3;text chakra size '..FontSize..';text chakra pos '..HUDposXColumn1..' -100;text chakra bg_transparency 1')
 
 send_command('alias lockstyle gs c Lockstyle') --creates the first lockstyle aliases
 send_command('alias lstyle gs c Lockstyle') --creates the second lockstyle aliases
@@ -575,15 +663,19 @@ end
 if Book ~= "Off" then
 	send_command('input /macro book '..Book..'')
 end
-if Page ~= "Off" then
-	send_command('wait 2;input /macro set '..Page..'')
+if SubWARPage ~= "Off" and player.sub_job == 'WAR' then
+	send_command('wait 2;input /macro set '..SubWARPage..'')
+elseif SubDRGPage ~= "Off" and player.sub_job == 'DRG' then
+	send_command('wait 2;input /macro set '..SubDRGPage..'')
+else
+	send_command('wait 2;input /macro set 1')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias mode gs c Mode') --creates the Mode alias
-send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
-send_command('alias showhud gs c ShowHUD') --creates the ShowHUD alias
-send_command('bind ^'..ModeCtrlPlus..' gs c Mode') --creates the gear mode keyboard shortcut
-send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboard shortcut
+send_command('alias hud gs c HUD') --creates the HUD alias
+send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
+send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
+send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
 	windower.add_to_chat(8,'[Debug Mode: On]')
@@ -704,7 +796,9 @@ function self_command(command)
 		windower.add_to_chat(3,'--    Keys Gearswap lua file for Monk    --')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(200,'File Version Number: '..(''..FileVersion..''):color(8)..'')
+		windower.add_to_chat(200,'File Version: '..(''..FileVersion..''):color(8)..'')
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'REQUIRED Windower Addons: Text')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Place both this file and the sounds folder')
 		windower.add_to_chat(8,'inside the GearSwap data folder')
@@ -716,35 +810,43 @@ function self_command(command)
 		windower.add_to_chat(200,'        /console mode')
 		windower.add_to_chat(8,'2. An alias command')
 		windower.add_to_chat(200,'        //mode')
-		windower.add_to_chat(8,'3. A keyboard shortcut')
+		windower.add_to_chat(8,'3. A keybind shortcut')
 		windower.add_to_chat(200,'        CTRL+G')
-		windower.add_to_chat(8,'        (Default is G, can be changed in the settings)')
+		windower.add_to_chat(8,'        (Can be changed in the Advanced Options section)')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'To activate Damage Taken Override, use any of these three options:')
 		windower.add_to_chat(8,'1. A macro with the following in it')
 		windower.add_to_chat(200,'        /console DT')
 		windower.add_to_chat(8,'2. An alias command')
 		windower.add_to_chat(200,'        //dt')
-		windower.add_to_chat(8,'3. A keyboard shortcut')
+		windower.add_to_chat(8,'3. A keybind shortcut')
 		windower.add_to_chat(200,'        CTRL+D')
-		windower.add_to_chat(8,'        (Default is D, can be changed in the settings)')
+		windower.add_to_chat(8,'        (Can be changed in the Advanced Options section)')
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,'To activate the Weapon Cycle, use any of these three options:')
+		windower.add_to_chat(8,'1. A macro with the following in it')
+		windower.add_to_chat(200,'        /console WC')
+		windower.add_to_chat(8,'2. An alias command')
+		windower.add_to_chat(200,'        //wc')
+		windower.add_to_chat(8,'3. A keybind shortcut')
+		windower.add_to_chat(200,'        CTRL+H')
+		windower.add_to_chat(8,'        (Can be changed in the Advanced Options section)')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Run the Lockstyle function yourself at any time by typing')
 		windower.add_to_chat(200,'        //lockstyle or //lstyle')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'Hide or show the HUD at any time by typing')
-		windower.add_to_chat(200,'        //hidehud or //showhud')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'For the HUD function, suggested placement')
-		windower.add_to_chat(8,'is center screen, just above your chat log.')
+		windower.add_to_chat(200,'        //hud')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,'IMPORTANT:')
-		windower.add_to_chat(8,'When you load this file for the first time, your HUD')
-		windower.add_to_chat(8,'may look all wrong. The defaults preloaded are for a')
-		windower.add_to_chat(8,'screen at 3440x1400. Adjust the FontSize, LineSpacer,')
-		windower.add_to_chat(8,'and ColumnSpacer options as needed.')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'Recommended Windower Addons: Text')
+		windower.add_to_chat(8,'When you load this file for the first time, your HUD may not be')
+		windower.add_to_chat(8,'in a good position, or may be too large.')
+		windower.add_to_chat(8,'If the HUD is not in a good position, go to the Heads Up Display')
+		windower.add_to_chat(8,'options below and adjust the HUDposX and HUDposY options, then save')
+		windower.add_to_chat(8,'and reload the file. Adjust and repeat until positioned as desired.')
+		windower.add_to_chat(8,'If the HUD is too large (or small), adjust the FontSize,')
+		windower.add_to_chat(8,'LineSpacer, and ColumnSpacer options as needed.')
+		windower.add_to_chat(8,'Suggested placement is center screen, just above your chat log.')
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(3,'--                  Options                  --')
@@ -753,15 +855,15 @@ function self_command(command)
 		windower.add_to_chat(200,'LockstyleCombat: '..(''..LockstyleCombat..''):color(8)..'')
 		windower.add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
 		windower.add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
-		windower.add_to_chat(200,'Page: '..(''..Page..''):color(8)..'')
+		windower.add_to_chat(200,'SubWARPage: '..(''..SubWARPage..''):color(8)..'')
+		windower.add_to_chat(200,'SubDRGPage: '..(''..SubDRGPage..''):color(8)..'')
 		windower.add_to_chat(200,'Chat: '..(''..Chat..''):color(8)..'')
 		windower.add_to_chat(200,'HFTimer: '..(''..HFTimer..''):color(8)..'')
 		windower.add_to_chat(200,'ISTimer: '..(''..ISTimer..''):color(8)..'')
-		windower.add_to_chat(200,'DTCtrlPlus: '..(''..DTCtrlPlus..''):color(8)..'')
 		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
 		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
 		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
-		windower.add_to_chat(200,'AutoSuperJump: '..(''..AutoSuperJump..''):color(8)..'')
+		windower.add_to_chat(200,'AutoSave: '..(''..AutoSave..''):color(8)..'')
 		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
 		windower.add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
 		windower.add_to_chat(200,'DoomOffText: '..(''..DoomOffText..''):color(8)..'')
@@ -810,10 +912,14 @@ function self_command(command)
 		windower.add_to_chat(3,'-------------------------------------------')
 		windower.add_to_chat(3,'--           Advanced Options              --')
 		windower.add_to_chat(3,'-------------------------------------------')
+		windower.add_to_chat(200,'ShowHUD: '..(''..ShowHUD..''):color(8)..'')
 		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
-		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
+		windower.add_to_chat(200,'ModeBind: '..(''..ModeBind..''):color(8)..'')
+		windower.add_to_chat(200,'DTBind: '..(''..DTBind..''):color(8)..'')
+		windower.add_to_chat(200,'WCBind: '..(''..WCBind..''):color(8)..'')
 		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
-		windower.add_to_chat(200,'CappedTPThreshhold: '..(''..CappedTPThreshhold..''):color(8)..'')
+		windower.add_to_chat(200,'AutoSaveThreshold: '..(''..AutoSaveThreshold..''):color(8)..'')
+		windower.add_to_chat(200,'CappedTPThreshold: '..(''..CappedTPThreshold..''):color(8)..'')
 		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
 		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
 		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
@@ -868,18 +974,30 @@ function self_command(command)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Alive set to True]')
 		end
-	elseif command == 'HideHUD' then
-		ShowHUD = false
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to False]')
-		end
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text focus hide;text dodge hide;text impetus hide;text footwork hide;text aggressor hide;text berserk hide;text perfectcounter hide;text counterstance hide;text chakra hide;text loading hide;text mode hide;text notifications hide;text debuffs hide;text weapons hide')
-	elseif command == 'ShowHUD' then
+	elseif command == 'HUD' and ShowHUD == false then
 		ShowHUD = true
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[ShowHUD set to True]')
 		end
-		send_command('text bg1 show;text bg2 show;text bg3 show;text focus show;text dodge show;text impetus show;text footwork show;text aggressor show;text berserk show;text perfectcounter show;text counterstance show;text chakra show;text mode show;text notifications show;text debuffs show;text weapons show')
+		windower.send_command('gs c ShowHUD')
+	elseif command == 'HUD' and ShowHUD == true then
+		ShowHUD = false
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[ShowHUD set to False]')
+		end
+		windower.send_command('gs c HideHUD')
+	elseif command == 'ShowHUD' then
+		send_command('text bg1 show;text bg2 show;text bg3 show;text focus show;text dodge show;text impetus show;text footwork show;text aggressor show;text berserk show;text highjump show;text superjump show;text perfectcounter show;text chakra show;text mode show;text notifications show;text debuffs show;text weapons show')
+	elseif command == 'HideHUD' then
+		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text focus hide;text dodge hide;text impetus hide;text footwork hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text perfectcounter hide;text chakra hide;text loading hide;text mode hide;text notifications hide;text debuffs hide;text weapons hide')
+	elseif command == 'WC' then
+		WeaponCycleIndex = WeaponCycleIndex + 1
+		local pair = WeaponCycle[WeaponCycleIndex]
+        if pair == nil then
+            WeaponCycleIndex = 1
+        end
+		pair = WeaponCycle[WeaponCycleIndex]
+		equip({main=pair[1],sub=pair[2]})
 	end
 end
 
@@ -922,44 +1040,44 @@ function choose_set()
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.modeone, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..' + DT Override]')
+						windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + DT Override]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.modetwo, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..' + DT Override]')
+						windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..') + DT Override]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.modethree, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..' + DT Override]')
+						windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..') + DT Override]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.modefour, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode4Name..' + DT Override]')
+						windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..') + DT Override]')
 					end
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(sets.modeone)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode1Name..']')
+						windower.add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..')]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(sets.modetwo)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode2Name..']')
+						windower.add_to_chat(8,'[Equipped Set: Mode 2 ('..Mode2Name..')]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(sets.modethree)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode3Name..']')
+						windower.add_to_chat(8,'[Equipped Set: Mode 3 ('..Mode3Name..')]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(sets.modefour)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: '..Mode4Name..']')
+						windower.add_to_chat(8,'[Equipped Set: Mode 4 ('..Mode4Name..')]')
 					end
 				end
 			end
@@ -1242,22 +1360,7 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		if spell.english == 'Tornado Kick' or spell.english == 'Dragon Kick' then
-			equip(sets.kickws)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Kick WS + Weapon Skill]')
-			end
-		elseif spell.english == 'Final Heaven' then
-			equip(sets.finalheaven)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Final Heaven + Weapon Skill]')
-			end
-		elseif spell.english == 'Cataclysm' then
-			equip(sets.cataclysm)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Cataclysm + Weapon Skill]')
-			end
-		elseif Mode == 'Mode2' then
+		if Mode == 'Mode2' then
 			if buffactive['Reive Mark'] then
 				equip(set_combine(sets.accws, sets.ygnas))
 				if Debug == 'On' then
@@ -1269,7 +1372,7 @@ function precast(spell)
 					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill]')
 				end
 			end
-		elseif player.tp >= CappedTPThreshhold then
+		elseif player.tp >= CappedTPThreshold then
 			if buffactive['Reive Mark'] then
 				equip(set_combine(sets.cappedtpws, sets.ygnas))
 				if Debug == 'On' then
@@ -1282,74 +1385,81 @@ function precast(spell)
 				end
 			end
 		else
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.ws, sets.ygnas))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Ygnas\'s Resolve]')
+			if sets[spell.english] then
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets[spell.english], sets.ygnas))
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: '..spell.english..' + Ygnas\'s Resolve]')
+					end
+				else
+					equip(sets[spell.english])
+					if Debug == 'On' then
+						windower.add_to_chat(8,'[Equipped Set: '..spell.english..']')
+					end
 				end
 			else
 				equip(sets.ws)
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
+					windower.add_to_chat(8,'[Equipped Set: Weapon Skill - Basic]')
 				end
 			end
 		end
-	elseif spell.english == 'Hundred Fists' and windower.ffxi.get_ability_recasts()[0] <= 1 then
+	elseif spell.english == 'Hundred Fists' and windower.ffxi.get_ability_recasts()[0] < 2 then
 		equip(sets.hundredfists)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Hundred Fists]')
 		end
-	elseif spell.english == 'Boost' and windower.ffxi.get_ability_recasts()[16] <= 1 then
+	elseif spell.english == 'Boost' and windower.ffxi.get_ability_recasts()[16] < 2 then
 		equip(sets.boost)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Boost]')
 		end
-	elseif spell.english == 'Focus' and windower.ffxi.get_ability_recasts()[13] <= 1 then
+	elseif spell.english == 'Focus' and windower.ffxi.get_ability_recasts()[13] < 2 then
 		equip(sets.focus)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Focus]')
 		end
-	elseif spell.english == 'Dodge' and windower.ffxi.get_ability_recasts()[14] <= 1 then
+	elseif spell.english == 'Dodge' and windower.ffxi.get_ability_recasts()[14] < 2 then
 		equip(sets.dodge)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Dodge]')
 		end
-	elseif spell.english == 'Chakra' and windower.ffxi.get_ability_recasts()[15] <= 1 then
+	elseif spell.english == 'Chakra' and windower.ffxi.get_ability_recasts()[15] < 2 then
 		equip(sets.chakra)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Chakra]')
 		end
-	elseif spell.english == 'Chi Blast' and windower.ffxi.get_ability_recasts()[18] <= 1 then
+	elseif spell.english == 'Chi Blast' and windower.ffxi.get_ability_recasts()[18] < 2 then
 		equip(sets.chiblast)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Chi Blast]')
 		end
-	elseif spell.english == 'Counterstance' and windower.ffxi.get_ability_recasts()[17] <= 1 then
+	elseif spell.english == 'Counterstance' and windower.ffxi.get_ability_recasts()[17] < 2 then
 		equip(sets.counterstance)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Counterstance]')
 		end
-	elseif spell.english == 'Footwork' and windower.ffxi.get_ability_recasts()[21] <= 1 then
+	elseif spell.english == 'Footwork' and windower.ffxi.get_ability_recasts()[21] < 2 then
 		equip(sets.footwork)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Footwork]')
 		end
-	elseif spell.english == 'Mantra' and windower.ffxi.get_ability_recasts()[19] <= 1 then
+	elseif spell.english == 'Mantra' and windower.ffxi.get_ability_recasts()[19] < 2 then
 		equip(sets.mantra)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Mantra]')
 		end
-	elseif spell.english == 'Formless Strikes' and windower.ffxi.get_ability_recasts()[20] <= 1 then
+	elseif spell.english == 'Formless Strikes' and windower.ffxi.get_ability_recasts()[20] < 2 then
 		equip(sets.formlessstrikes)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Formless Strikes]')
 		end
-	elseif spell.english == 'Perfect Counter' and windower.ffxi.get_ability_recasts()[22] <= 1 then
+	elseif spell.english == 'Perfect Counter' and windower.ffxi.get_ability_recasts()[22] < 2 then
 		equip(sets.perfectcounter)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Perfect Counter]')
 		end
-	elseif spell.english == 'Impetus' and windower.ffxi.get_ability_recasts()[31] <= 1 then
+	elseif spell.english == 'Impetus' and windower.ffxi.get_ability_recasts()[31] < 2 then
 		equip(sets.impetus)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[Equipped Set: Impetus]')
@@ -1388,9 +1498,13 @@ function aftercast(spell)
 		else
 			send_command('input /echo [Hundred Fists] 45 seconds;wait 15;input /echo [Hundred Fists] 30 seconds;wait 10;input /echo [Hundred Fists] 20 seconds;wait 10;input /echo [Hundred Fists] 10 seconds')
 		end
-
 	elseif spell.english == 'Inner Strength' and ISTimer == 'On' and not spell.interrupted then
 		send_command('input /echo [Inner Strength] 30 seconds;wait 10;input /echo [Inner Strength] 20 seconds;wait 10;input /echo [Inner Strength] 10 seconds')
+	elseif (spell.english == 'Chakra' or spell.english == 'Super Jump' or spell.english == 'High Jump') and not spell.interrupted and player.hp <= AutoSaveThreshold then
+		AutoSaveUsed = true
+		if Debug == 'On' then
+			windower.add_to_chat(8,'[AutoSaveUsed set to True]')
+		end
 	end
 	choose_set()
 end
@@ -1404,22 +1518,22 @@ function status_change(new,old)
 end
 
 -------------------------------------------
---             SHOW/HIDE HUD             --
+--          CUTSCENE: HIDE HUD           --
 -------------------------------------------
 
 windower.register_event('status change', function(status)
-    if status == 4 and ShowHUD == true then --In a cutscene: Hide the HUD
-		ShowHUD = false
+    if status == 4 and InCS == false and ShowHUD == true then --In a cutscene: Hide the HUD
+		InCS = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to False]')
+			windower.add_to_chat(8,'[InCS set to True]')
 		end
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text focus hide;text dodge hide;text impetus hide;text footwork hide;text aggressor hide;text berserk hide;text perfectcounter hide;text counterstance hide;text chakra hide;text loading hide;text mode hide;text notifications hide;text debuffs hide;text weapons hide')
-    elseif status ~= 4 and ShowHUD == false then --Out of cutscene: Show the HUD
-		ShowHUD = true
+		windower.send_command('gs c HideHUD')
+    elseif status ~= 4 and InCS == true and ShowHUD == true then --Out of cutscene: Show the HUD
+		InCS = false
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to True]')
+			windower.add_to_chat(8,'[InrCS set to False]')
 		end
-		send_command('text bg1 show;text bg2 show;text bg3 show;text focus show;text dodge show;text impetus show;text footwork show;text aggressor show;text berserk show;text perfectcounter show;text counterstance show;text chakra show;text mode show;text notifications show;text debuffs show;text weapons show')
+		windower.send_command('gs c ShowHUD')
     end
 end)
 
@@ -1606,19 +1720,19 @@ end)
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
 
-	--Zoning check for HUD
+	--Zoning: hide HUD
 	local pos = windower.ffxi.get_position()
-	if pos == "(?-?)" and ShowHUD then
-		windower.send_command('gs c HideHUD')
-		ShowHUD = false
+	if pos == "(?-?)" and Zoning == false and ShowHUD == true then
+		send_command('gs c HideHUD')
+		Zoning = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to False]')
+			windower.add_to_chat(8,'[Zoning set to True]')
 		end
-	elseif pos ~= "(?-?)" and not ShowHUD then
-		windower.send_command('gs c ShowHUD')
-		ShowHUD = true
+	elseif pos ~= "(?-?)" and Zoning == true and ShowHUD == true then
+		send_command('gs c ShowHUD')
+		Zoning = false
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to True]')
+			windower.add_to_chat(8,'[Zoning set to False]')
 		end
 	end
 
@@ -1802,6 +1916,12 @@ windower.register_event('prerender', function()
 			end
 			choose_set()
 		end
+		if player.hp > AutoSaveThreshold and AutoSaveUsed == true then --when HP goes back above a certain amount after we used a "save", turn off the AutoSave flag so we can use another "save"
+			AutoSaveUsed = false
+			if Debug == 'On' then
+				windower.add_to_chat(8,'[AutoSaveUsed set to False]')
+			end
+		end
 	end
 
 	--1 second heartbeat
@@ -1827,11 +1947,19 @@ windower.register_event('prerender', function()
 		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
-		if AutoSuperJump == 'On' and player.sub_job == 'DRG' and player.sub_job_level >= 50 and player.hp <= AutSJmpThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and windower.ffxi.get_ability_recasts()[160] == 0 and not TownZones:contains(world.area) then
-			send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
+		if AutoSave == 'On' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and not TownZones:contains(world.area) then
+			if windower.ffxi.get_ability_recasts()[15] == 0 then
+				send_command('input /ja "Chakra" <me>;wait .5;input /ja "Chakra <me>')
+			elseif player.status == "Engaged" and Mode ~= 'Mode4' and player.sub_job == 'DRG' and player.sub_job_level >= 50 and windower.ffxi.get_ability_recasts()[160] == 0 then
+				send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
+			elseif player.status == "Engaged" and Mode ~= 'Mode4' and player.sub_job == 'DRG' and player.sub_job_level >= 35 and windower.ffxi.get_ability_recasts()[159] == 0 then
+				send_command('input /ja "High Jump" <t>;wait .5;input /ja "High Jump <t>')
+			elseif player.status == "Engaged" and windower.ffxi.get_ability_recasts()[22] == 0 then
+				send_command('input /ja "Perfect Counter" <me>;wait .5;input /ja "Perfect Counter <me>')
+			end
 		end
 		if player.equipment.main == nil or player.equipment.sub == nil then
-			EquipMain = 'Weapon loading...'
+			EquipMain = 'Weapons loading...'
 		else
 			EquipMain = player.equipment.main
 		end
@@ -1886,12 +2014,23 @@ windower.register_event('prerender', function()
 				send_command('text dodge pos '..HUDposXColumn1..' '..HUDposYLine1..'')			--Dodge goes in Column 1
 				send_command('text impetus pos '..HUDposXColumn2..' '..HUDposYLine1..'')		--Impetus goes in Column 2
 				send_command('text footwork pos '..HUDposXColumn3..' '..HUDposYLine1..'')		--Footwork goes in Column 3
-				send_command('text perfectcounter pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Perfect Counter goes in Column 4
-				send_command('text counterstance pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Counterstance goes in Column 5
+				send_command('text perfectcounter pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Perfect Counter goes in Column 5
 				send_command('text chakra pos '..HUDposXColumn6..' '..HUDposYLine1..'')			--Chakra goes in Column 6
 				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					send_command('text aggressor pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Aggressor goes in Column 4
+					send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
+					send_command('text highjump pos '..HUDposXColumn5..' -100')					--High Jump is not visible
+					send_command('text superjump pos '..HUDposXColumn6..' -100')				--Super Jump is not visible
+				elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
 					send_command('text aggressor pos '..HUDposXColumn4..' -100')				--Aggressor is not visible
 					send_command('text berserk pos '..HUDposXColumn5..' -100')					--Berserk is not visible
+					send_command('text highjump pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--High Jump goes in Column 4
+					send_command('text superjump pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Super Jump goes in Column 5
+				else
+					send_command('text berserk pos '..HUDposXColumn4..' -100')					--Berserk is not visible
+					send_command('text aggressor pos '..HUDposXColumn5..' -100')				--Aggressor is not visible
+					send_command('text highjump pos '..HUDposXColumn4..' -100')					--High Jump is not visible
+					send_command('text superjump pos '..HUDposXColumn5..' -100')				--Super Jump is not visible
 				end
 			else --if not Tank Mode, then we are in one of the DPS modes
 				send_command('text focus pos '..HUDposXColumn1..' '..HUDposYLine1..'')			--Focus goes in Column 1
@@ -1899,12 +2038,28 @@ windower.register_event('prerender', function()
 				send_command('text impetus pos '..HUDposXColumn2..' '..HUDposYLine1..'')		--Impetus goes in Column 2
 				send_command('text footwork pos '..HUDposXColumn3..' '..HUDposYLine1..'')		--Footwork goes in Column 3
 				send_command('text perfectcounter pos '..HUDposXColumn4..' -100')				--Perfect Counter is not visible
-				send_command('text counterstance pos '..HUDposXColumn4..' -100')				--Counterstance is not visible
 				send_command('text chakra pos '..HUDposXColumn6..' '..HUDposYLine1..'')			--Chakra goes in Column 6
 				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 					send_command('text aggressor pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Aggressor goes in Column 4
 					send_command('text berserk pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Berserk goes in Column 5
 				end
+				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					send_command('text aggressor pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--Aggressor goes in Column 4
+					send_command('text berserk pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Berserk goes in Column 5
+					send_command('text highjump pos '..HUDposXColumn4..' -100')					--High Jump is not visible
+					send_command('text superjump pos '..HUDposXColumn5..' -100')				--Super Jump is not visible
+				elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
+					send_command('text berserk pos '..HUDposXColumn4..' -100')					--Berserk is not visible
+					send_command('text aggressor pos '..HUDposXColumn5..' -100')				--Aggressor is not visible
+					send_command('text highjump pos '..HUDposXColumn4..' '..HUDposYLine1..'')	--High Jump goes in Column 4
+					send_command('text superjump pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Super Jump goes in Column 5
+				else
+					send_command('text berserk pos '..HUDposXColumn4..' -100')					--Berserk is not visible
+					send_command('text aggressor pos '..HUDposXColumn5..' -100')				--Aggressor is not visible
+					send_command('text highjump pos '..HUDposXColumn4..' -100')					--High Jump is not visible
+					send_command('text superjump pos '..HUDposXColumn5..' -100')				--Super Jump is not visible
+				end
+
 			end
 			send_command('text mode pos '..HUDposXColumn1..' '..HUDposYLine2..'')				--Mode goes in Line 2, Column 1
 			send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')		--Notifications goes in Line 3, Column 1
@@ -1915,48 +2070,83 @@ windower.register_event('prerender', function()
 			ImpetusRecast = windower.ffxi.get_ability_recasts()[31]
 			FootworkRecast = windower.ffxi.get_ability_recasts()[21]
 			PerfectCounterRecast = windower.ffxi.get_ability_recasts()[22]
-			CounterstanceRecast = windower.ffxi.get_ability_recasts()[17]
 			ChakraRecast = windower.ffxi.get_ability_recasts()[15]
 			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
 				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
+			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
+				HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
+				SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
 			end
 			--Recast color updates - decide the colors:
 			if buffactive['Focus'] then FocusColor = '75 255 75'
+			elseif FocusRecast < 2 and FocusRecast ~= 0 then
+				FocusColor = '255 165 0'
+				send_command('wait .25;text focus color 255 50 50;wait .25;text focus color 255 165 0;wait .25;text focus color 255 50 50')
 			elseif FocusRecast > 0 then FocusColor = '255 165 0'
 			else FocusColor = '255 50 50'
 			end
 			if buffactive['Dodge'] then DodgeColor = '75 255 75'
+			elseif DodgeRecast < 2 and DodgeRecast ~= 0 then
+				DodgeColor = '255 165 0'
+				send_command('wait .25;text dodge color 255 50 50;wait .25;text dodge color 255 165 0;wait .25;text dodge color 255 50 50')
 			elseif DodgeRecast > 0 then DodgeColor = '255 165 0'
 			else DodgeColor = '255 50 50'
 			end
 			if buffactive['Impetus'] then ImpetusColor = '75 255 75'
+			elseif ImpetusRecast < 2 and ImpetusRecast ~= 0 then
+				ImpetusColor = '255 165 0'
+				send_command('wait .25;text impetus color 255 50 50;wait .25;text impetus color 255 165 0;wait .25;text impetus color 255 50 50')
 			elseif ImpetusRecast > 0 then ImpetusColor = '255 165 0'
 			else ImpetusColor = '255 50 50'
 			end
 			if buffactive['Footwork'] then FootworkColor = '75 255 75'
+			elseif FootworkRecast < 2 and FootworkRecast ~= 0 then
+				FootworkColor = '255 165 0'
+				send_command('wait .25;text footwork color 255 50 50;wait .25;text footwork color 255 165 0;wait .25;text footwork color 255 50 50')
 			elseif FootworkRecast > 0 then FootworkColor = '255 165 0'
 			else FootworkColor = '255 50 50'
 			end
 			if buffactive['Perfect Counter'] then PerfectCounterColor = '75 255 75'
+			elseif PerfectCounterRecast < 2 and PerfectCounterRecast ~= 0 then
+				PerfectCounterColor = '255 165 0'
+				send_command('wait .25;text perfectcounter color 255 50 50;wait .25;text perfectcounter color 255 165 0;wait .25;text perfectcounter color 255 50 50')
 			elseif PerfectCounterRecast > 0 then PerfectCounterColor = '255 165 0'
 			else PerfectCounterColor = '255 50 50'
 			end
-			if buffactive['Counterstance'] then CounterstanceColor = '75 255 75'
-			elseif CounterstanceRecast > 0 then CounterstanceColor = '255 165 0'
-			else CounterstanceColor = '255 50 50'
-			end
-			if ChakraRecast == 0 then ChakraColor = '255 50 50'
-			else ChakraColor = '255 165 0'
+			if ChakraRecast < 2 and ChakraRecast ~= 0 then
+				ChakraColor = '255 165 0'
+				send_command('wait .25;text chakra color 255 50 50;wait .25;text chakra color 255 165 0;wait .25;text chakra color 255 50 50')
+			elseif ChakraRecast > 0 then ChakraColor = '255 165 0'
+			else ChakraColor = '255 50 50'
 			end
 			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				if buffactive['Aggressor'] then AggressorColor = '75 255 75'
+				elseif AggressorRecast < 2 and AggressorRecast ~= 0 then
+					AggressorColor = '255 165 0'
+					send_command('wait .25;text aggressor color 255 50 50;wait .25;text aggressor color 255 165 0;wait .25;text aggressor color 255 50 50')
 				elseif AggressorRecast > 0 then AggressorColor = '255 165 0'
 				else AggressorColor = '255 50 50'
 				end
 				if buffactive['Berserk'] then BerserkColor = '75 255 75'
+				elseif BerserkRecast < 2 and BerserkRecast ~= 0 then
+					BerserkColor = '255 165 0'
+					send_command('wait .25;text berserk color 255 50 50;wait .25;text berserk color 255 165 0;wait .25;text berserk color 255 50 50')
 				elseif BerserkRecast > 0 then BerserkColor = '255 165 0'
 				else BerserkColor = '255 50 50'
+				end
+			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
+				if HighJumpRecast < 2 and HighJumpRecast ~= 0 then
+					HighJumpColor = '255 165 0'
+					send_command('wait .25;text highjump color 255 50 50;wait .25;text highjump color 255 165 0;wait .25;text highjump color 255 50 50')
+				elseif HighJumpRecast > 0 then HighJumpColor = '255 165 0'
+				else HighJumpColor = '255 50 50'
+				end
+				if SuperJumpRecast < 2 and SuperJumpRecast ~= 0 then
+					SuperJumpColor = '255 165 0'
+					send_command('wait .25;text superjump color 255 50 50;wait .25;text superjump color 255 165 0;wait .25;text superjump color 255 50 50')
+				elseif SuperJumpRecast > 0 then SuperJumpColor = '255 165 0'
+				else SuperJumpColor = '255 50 50'
 				end
 			end
 			--Recast color updates - print the colors:
@@ -1965,11 +2155,13 @@ windower.register_event('prerender', function()
 			send_command('text impetus color '..ImpetusColor..'')
 			send_command('text footwork color '..FootworkColor..'')
 			send_command('text perfectcounter color '..PerfectCounterColor..'')
-			send_command('text counterstance color '..CounterstanceColor..'')
 			send_command('text chakra color '..ChakraColor..'')
 			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				send_command('text aggressor color '..AggressorColor..'')
 				send_command('text berserk color '..BerserkColor..'')
+			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then			
+				send_command('text highjump color '..HighJumpColor..'')
+				send_command('text superjump color '..SuperJumpColor..'')
 			end
 		end
 	end
@@ -2004,6 +2196,13 @@ function sub_job_change(newSubjob, oldSubjob)
 		if Debug == 'On' then
 			windower.add_to_chat(8,'[AutoLockstyleRun set to True]')
 		end
+	end
+	if SubWARPage ~= "Off" and newSubjob == 'WAR' then
+		send_command('wait 2;input /macro set '..SubWARPage..'')
+	elseif SubDRGPage ~= "Off" and newSubjob == 'DRG' then
+		send_command('wait 2;input /macro set '..SubDRGPage..'')
+	else
+		send_command('wait 2;input /macro set 1')
 	end
 end
 
@@ -2124,5 +2323,5 @@ end)
 -------------------------------------------
 
 function file_unload()
-	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text focus delete;text dodge delete;text impetus delete;text footwork delete;text aggressor delete;text berserk delete;text perfectcounter delete;text counterstance delete;text chakra delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text weapons delete') --delete the different text objects
+	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text focus delete;text dodge delete;text impetus delete;text footwork delete;text aggressor delete;text berserk delete;text highjump delete;text superjump delete;text perfectcounter delete;text chakra delete;text loading delete;text mode delete;text notifications delete;text debuffs delete;text weapons delete') --delete the different text objects
 end
