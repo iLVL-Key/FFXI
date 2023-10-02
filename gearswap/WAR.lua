@@ -80,8 +80,8 @@ DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed.
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
-HUDposX			=	965		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposY			=	794		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
 FontSize		=	12		--	Adjust the font size. Changing this will require you to adjust the Spacers below as well.
 LineSpacer		=	20		--	Space in pixels between each Line of the HUD
 ColumnSpacer	=	93		--	Space in pixels between each Column of the HUD
