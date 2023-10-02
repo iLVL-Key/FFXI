@@ -2,6 +2,12 @@
 ## Options ##
 Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
 
+## Gear Modes ##
+Certain files have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
+
+## Weapon Cycler ##
+Certain files have the ability to cycle between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
+
 ## Sound Effects ##
 All files utilize subtle sound effects found in the sounds folder. While not required, it is recommended to download the sounds folder and add it under the Gearswap/data folder to make full use of what the files offer. Don't worry, I've made sure they are not loud or annoying.
 
@@ -12,7 +18,7 @@ The file structure should look like this:
 `/addons/Gearswap/data/JOB.lua`
 
 ## HUDs ##
-Each file has a unique HUD. Some are a little more unique than the others. All have a line for the most commonly used recasts and may change based on a few factors such as the Gear Mode you are currently in (switch to a tank mode and it will display defensive oriented abilities).  
+Each file has a unique HUD. Some are a little more unique than the others. All have up to 6 of the most commonly used recasts displayed and may change based on a few factors such as the Gear Mode you are currently in (switch to a tank mode and it will display defensive oriented abilities).  
 An ability/spell recast in RED means it is ready to use. GREEN means it is currently active. ORANGE means it is not active and not yet ready to use. Will give a short flash of YELLOW/ORANGE just before it is available to use again.
 ### BLU ###
 Image coming soon.
