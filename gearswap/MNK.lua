@@ -523,6 +523,7 @@ Version 6.0.1
 
 Version 6.0
 - Added Ascetic's Fury, Victory Smite, and Shijin Spiral gear sets.
+- Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
 - Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
 - Adjusted AutoSuperJump. Name changed to AutoSave. Will now try Chakra, Super Jump, High Jump, then Perfect Counter, in that order, based on cooldowns. Jumps will not activate while in Mode 4 (Tank).
 - Adjusted Page Option. Now defined for subbing WAR or DRG with a default of 1 for other subjobs.
