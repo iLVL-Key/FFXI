@@ -3,6 +3,8 @@
 -------------------------------------------
 --[[
 
+REQUIRED Windower Addons: Text
+
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
 
@@ -15,34 +17,43 @@ To switch between gear modes, use any of these three options:
 	/console mode
 2. An alias command
 	//mode
-3. A keyboard shortcut
+3. A keybind shortcut
 	CTRL+G
-	(Default is G, can be changed in the settings)
+	(Can be changed in the Advanced Options section)
 
 To activate Damage Taken Override, use any of these three options:
 1. A macro with the following
 	/console DT
 2. An alias command
 	//dt
-3. A keyboard shortcut
+3. A keybind shortcut
 	CTRL+D
-	(Default is D, can be changed in the settings)
+	(Can be changed in the Advanced Options section)
+
+To activate the Weapon Cycle, use any of these three options:
+1. A macro with the following
+	/console WC
+2. An alias command
+	//wc
+3. A keybind shortcut
+	CTRL+H
+	(Can be changed in the Advanced Options section)
 
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
 
 Hide or show the HUD at any time by typing
-	//hidehud or //showhud
-
-For the HUD function (see options below), suggested placement is center screen, just above your chat log.
+	//hud
 
 IMPORTANT:
-When you load this file for the first time, your HUD may look all wrong. The defaults preloaded are for a screen at 3440x1400.
-Adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
-
-Required Windower Addons: Text
+When you load this file for the first time, your HUD may not be in a good position, or may be too large.
+If the HUD is not in a good position, go to the Heads Up Display options below and adjust the HUDposX and HUDposY
+options, then save and reload the file. Adjust and repeat until positioned as desired.
+If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
+Suggested placement is center screen, just above your chat log.
 
 --]]
+
 -------------------------------------------
 --                OPTIONS                --
 -------------------------------------------
@@ -52,29 +63,27 @@ LockstyleCombat	=	'3'		--[1-200]		Your Lockstyle set when in a field zone.
 LockstyleTown	=	'1'		--[1-200]		Your Lockstyle set when in a town zone.
 							--				If you do not want a separate town lockstyle, set this to the same as LockstyleCombat.
 Book			=	'2'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
-Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load.
+SubDRGPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing DRG.
+SubWARPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing WAR.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
 MeikTimer		=	'On'	--[On/Off]		Displays a timer for Meikyo Shisui in echo.
 YaegTimer		=	'On'	--[On/Off]		Displays a timer for Yaegasumi in echo.
-DTCtrlPlus		=	'd'		--				Sets the keyboard shortcut you would like to activate the Damage Taken Override.
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 AutoHWater		=	'On'	--[On/Off]		Automatically attempts to use Holy Waters when you get Doomed until it wears off.
 AutoStance		=	'On'	--[On/Off]		Automatically activates and keeps Stances active.
-AutoSuperJump	=	'On'	--[On/Off]		Attempts to use Super Jump when your HP gets critically low.
+AutoSave		=	'On'	--[On/Off]		Attempts to use Super Jump then High Jump, in that order, when your HP gets critically low. Will not activate while in Seigan Stance.
 DoomAlert		=	'On'	--[On/Off]		Alerts your party when you are doomed.
 DoomOnText		=	'doom'			--		Text that displays in party chat when you are doomed. 
 DoomOffText		=	'doom off'		--		That that displays in party chat when you are no longer doomed.
 
 -- Heads Up Display --
-HUDposX			=	965		--				X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposYLine1	=	794		--				Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-							--				Note that this is for the first line of the HUD, the other lines will self-adjust. If you cannot
-							--				see the HUD, set the x and y both to 100 to make sure it is showing up, then adjust from there.
-FontSize		=	12		--				Font size. Changing this will require you to adjust the Spacers below as well.
-LineSpacer		=	20		--				Space in pixels between each Line of the HUD
-ColumnSpacer	=	93		--				Space in pixels between each Column of the HUD
+HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+FontSize		=	12		--	Adjust the font size. Changing this will require you to adjust the Spacers below as well.
+LineSpacer		=	20		--	Space in pixels between each Line of the HUD
+ColumnSpacer	=	93		--	Space in pixels between each Column of the HUD
 
 --HUD Mode Names
 Mode1Name = 'Multi-Attack'		--Names displayed in the HUD for Hasso Mode 1, 2, 3, and 4.
@@ -114,16 +123,19 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
+ShowHUD				=	true	--Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
 StartMode			=	'Mode1'--[Mode1/Mode2/Mode3/Mode4]
 								--	Determines the Hasso Mode you will start in. Current Mode can be changed at any time by using any
 								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-ModeCtrlPlus		=	'g'		--Sets the keyboard shortcut you would like to cycle between Hasso Modes. CTRL+G is default.
+ModeBind			=	'^g'	--Sets the keyboard shortcut you would like to cycle between Hasso Modes. CTRL+G (^g) is default.
+DTBind				=	'^d'	--Sets the keyboard shortcut you would like to activate the Damage Taken Override. CTRL+D (^d) is default.
+WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
-CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will layer in the Capped TP WS set.
-AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
+AutoSaveThreshold	=	500		--If your HP goes below this number, Super Jump will be used.
+CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will layer in the Capped TP WS set.
+AttackCapThreshold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
-AutSJmpThreshold	=	500		--If your HP goes below this number, Super Jump will be used.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans			= 	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
@@ -136,6 +148,21 @@ SeiganStanceColor	=	'255 125 125'	--Seigan
 Aftermath1color		=	'0 127 255'		--Aftermath Level 1
 Aftermath2color		=	'75 255 75'		--Aftermath Level 2
 Aftermath3color		=	'255 255 50'	--Aftermath Level 3
+
+-------------------------------------------
+--                WEAPONS                --
+-------------------------------------------
+
+-- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed
+-- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {empty, empty},
+WeaponCycle = {
+	{"Masamune", "Utu Grip"},
+	{"Dojikiri Yasutsuna", "Utu Grip"},
+	{"Amanomurakumo", "Utu Grip"},
+	{"Soboro Sukehiro", "Utu Grip"},
+	{"Shining One", "Utu Grip"},
+	--{"Main Slot", "Sub Slot"},
+}
 
 -------------------------------------------
 --               GEAR SETS               --
@@ -216,7 +243,7 @@ function get_sets()
 	-- Seigan (Seigan+, Third Eye+, Counter, DT-)
 	-- NOTE: Intended as a more defense oriented set for when you have to put Seigan up.
 	sets.seigan = {
-		ammo="Staunch Tathlum",
+		ammo="Staunch Tathlum +1",
 		head="Kasuga Kabuto +3",
 		body="Dagon Breast.",
 		--body="Mpaca's Doublet",
@@ -264,7 +291,7 @@ function get_sets()
 		back="Shadow Mantle"
 	}
 
-	-- Weapon Skill (TP Bonus, STR, Weapon Skill Damage, Attack, Double/Triple Attack)
+	-- Weapon Skill - Basic (TP Bonus, STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 	sets.ws = {
 		ammo="Knobkierrie",
 		head="Mpaca's Cap",
@@ -319,7 +346,7 @@ function get_sets()
 	})
 
 	-- Tachi: Ageha (Magic Accuracy)
-	sets.ageha = set_combine(sets.ws, {
+	sets["Tachi: Ageha"] = set_combine(sets.ws, {
 		head="Kasuga Kabuto +3",
 		body="Kasuga Domaru +3",
 		hands="Kasuga Kote +3",
@@ -331,19 +358,19 @@ function get_sets()
 
 	-- Tachi: Shoha
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-	sets.shoha = set_combine(sets.ws, {
+	sets["Tachi: Shoha"] = set_combine(sets.ws, {
 
 	})
 
 	-- Stardiver
 	-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-	sets.stardiver = set_combine(sets.ws, {
+	sets["Stardiver"] = set_combine(sets.ws, {
 
 	})
 
 	-- Hachirin-no-obi
 	sets.hachirin = set_combine(sets.hybridws, {
-		--waist="Hachirin-no-obi",
+		waist="Hachirin-no-obi",
 	})
 
 	-- Ygnas's Resolve +1
@@ -446,7 +473,7 @@ end
 
 
 
-FileVersion = '12.0'
+FileVersion = '13.0'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -457,156 +484,167 @@ MAJOR version updates require changes in the top portion of the file. Changes to
 MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
 
+Version 13.0
+- Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
+- Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
+- Adjusted AutoSuperJump. Name changed to AutoSave. Will now try Super Jump then High Jump, in that order, based on cooldowns. Will not activate while in Seigan Stance.
+- Adjusted Page Option. Now defined for subbing DRG or WAR with a default of 1 for other subjobs.
+- Adjusted HUD positioning options and text for clarity.
+- Adjusted HUD Ability recast colors. Will now give a short blink when an ability is becoming ready to use again.
+- Adjusted ability recast timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to fire off properly if you're camping that recast timer.
+- Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
+- Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
+
 Version 12.0
--No gear set changes.
--Added Advanced Option to add commas to the damage numbers.
--Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
--Removed notifications for Magic Bursts and Blood Pacts because I don't know why I added it in there.
+- No gear set changes.
+- Added Advanced Option to add commas to the damage numbers.
+- Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
+- Removed notifications for Magic Bursts and Blood Pacts because I don't know why I added it in there.
 
 Version 11.0
--No gear set changes.
--Added AutoSuperJump option. Automatically attempts to use Super Jump when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
+- No gear set changes.
+- Added AutoSuperJump option. Automatically attempts to use Super Jump when your HP gets critically low. HP threshold required to activate is adjustable in the Advanced Options.
 
 Version 10.0
--Added Attack Capped WS set. Attack threshold required to activate is adjustable in the Advanced Options.
+- Added Attack Capped WS set. Attack threshold required to activate is adjustable in the Advanced Options.
 
 Version 9.0
--No gear set changes.
--Renamed WS Damage Notification to Damage Notification.
--Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
--Fixed Damage Notification option displaying regardless of being on or off.
--Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
+- No gear set changes.
+- Renamed WS Damage Notification to Damage Notification.
+- Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
+- Fixed Damage Notification option displaying regardless of being on or off.
+- Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
 
 04.15.23 (Version Compatibility Codename: Tachi: Gekko)
--Added StartMode Advanced Option. Brings this file in line with other files that already have this.
--Adjusted Weapon Skill Accuracy set to inherit undefined slots from the Weapon Skill set.
--Fixed missing options listings in the File Info (//fileinfo)
--Fixed an error within the Hybrid WS rule regarding Tachi: Jinpu and opposing weather element.
+- Added StartMode Advanced Option. Brings this file in line with other files that already have this.
+- Adjusted Weapon Skill Accuracy set to inherit undefined slots from the Weapon Skill set.
+- Fixed missing options listings in the File Info (//fileinfo)
+- Fixed an error within the Hybrid WS rule regarding Tachi: Jinpu and opposing weather element.
 
 02.22.23 (Version Compatibility Codename: Tachi: Yukikaze)
--Adjusted Yaegasumi timer.
--Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
+- Adjusted Yaegasumi timer.
+- Adjusted WS Damage Notification to display WSs for zero like normal. This reverses a previous change, but now with Skillchain damage being displayed alongside WS damage it made sense to show the zero damage instead of displaying as a miss.
 
 02.07.23 (Version Compatibility Codename: Tachi: Yukikaze)
--Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
+- Adjusted WS Damage Notification to filter out some Job Abilities that get listed in the same action category as Weapon Skills.
 
 01.24.23 (Version Compatibility Codename: Tachi: Yukikaze)
--Adjusted WS Damage Notification to display Skillchain damage.
+- Adjusted WS Damage Notification to display Skillchain damage.
 
 01.21.23 (Version Compatibility Codename: Tachi: Yukikaze)
--Added Tachi: Ageha, Tachi: Shoha, and Stardiver sets.
--Added High Accuracy Weapon Skill set. This set is linked to Hasso Mode 2, which is a special set for when you need high accuracy.
--Added Hachirin-no-obi set. Will use the Hachirin-no-obi based on day/weather/scholar weather conditions.
--Added Ygnas's Resolve +1 set. Will use the Ygnas's Resolve +1 when you are in a Reive battle.
--Adjusted precast for when both Meikyo Shisui and Sekkanoki is up to combine those two sets with the appropriate Weapon Skill set.
--Adjusted HUD to automatically hide during zoning.
--Adjusted Macro Page timing. Should fix occasional issue with macros deleting themselves.
--Adjusted WS Damage Notification to count blinked WSs and WSs for zero as a miss. Blinks would previously display the number of shadows as the damage number.
--Fixed issue with WS Damage Notification where some abilities and weapon skills would occasionally gets mixed up.
--Removed Omen and Vagary notifications. Those have been spun out into their own windower addon called Callouts.
--Updated Version Compatibility Codename to Tachi: Yukikaze.
+- Added Tachi: Ageha, Tachi: Shoha, and Stardiver sets.
+- Added High Accuracy Weapon Skill set. This set is linked to Hasso Mode 2, which is a special set for when you need high accuracy.
+- Added Hachirin-no-obi set. Will use the Hachirin-no-obi based on day/weather/scholar weather conditions.
+- Added Ygnas's Resolve +1 set. Will use the Ygnas's Resolve +1 when you are in a Reive battle.
+- Adjusted precast for when both Meikyo Shisui and Sekkanoki is up to combine those two sets with the appropriate Weapon Skill set.
+- Adjusted HUD to automatically hide during zoning.
+- Adjusted Macro Page timing. Should fix occasional issue with macros deleting themselves.
+- Adjusted WS Damage Notification to count blinked WSs and WSs for zero as a miss. Blinks would previously display the number of shadows as the damage number.
+- Fixed issue with WS Damage Notification where some abilities and weapon skills would occasionally gets mixed up.
+- Removed Omen and Vagary notifications. Those have been spun out into their own windower addon called Callouts.
+- Updated Version Compatibility Codename to Tachi: Yukikaze.
 
 12.29.22 (Version Compatibility Codename: Tachi: Koki)
--Overhauled the Aftermath notification. Renamed to Weapons. Will now always show your equipped weapon as a default state when no aftermath is up. Will change colors based on what your current TP will give you for an Aftermath effect.
--Added AutoStance option. Automatically activates and keeps Stances active.
--Added Advanced Option to adjust the TP threshhold for using the Capped TP WS set.
--Removed the option to turn off the HUD. While I generally think the more options the better, the HUD is a main part of this lua.
--Removed the NotiAftermath option in line with the Aftermath notification overhaul.
--Removed the StartMode Advanced Option. Unnecessary since you can label and make the Modes anything you want.
--Fixed occasional error messages from the Text addon when loading/reloading the file.
--Updated Version Compatibility Codename to Tachi: Koki.
--Code cleanup.
+- Overhauled the Aftermath notification. Renamed to Weapons. Will now always show your equipped weapon as a default state when no aftermath is up. Will change colors based on what your current TP will give you for an Aftermath effect.
+- Added AutoStance option. Automatically activates and keeps Stances active.
+- Added Advanced Option to adjust the TP threshold for using the Capped TP WS set.
+- Removed the option to turn off the HUD. While I generally think the more options the better, the HUD is a main part of this lua.
+- Removed the NotiAftermath option in line with the Aftermath notification overhaul.
+- Removed the StartMode Advanced Option. Unnecessary since you can label and make the Modes anything you want.
+- Fixed occasional error messages from the Text addon when loading/reloading the file.
+- Updated Version Compatibility Codename to Tachi: Koki.
+- Code cleanup.
 
 12.06.22 (Version Compatibility Codename: Tachi: Jinpu)
--Overhauled Low HP notification. Notification and sound no longer activates in towns. Changed the Advanced Option from selecting "Once" or "Constant" to instead selecting the number of times the sound will repeat while your HP is low. Removed the 30 second window before triggering again.
--Added a fourth Hasso mode.
--Adjusted certain notification to now automatically clear after a short delay.
--Removed the option for using the OhShit gear set. The gear set itself still remains and funtionality has not changed. Having the option was redundant as you can simply leave the set empty.
--Updated Version Compatibility Codename to Tachi: Jinpu.
--Code cleanup.
+- Overhauled Low HP notification. Notification and sound no longer activates in towns. Changed the Advanced Option from selecting "Once" or "Constant" to instead selecting the number of times the sound will repeat while your HP is low. Removed the 30 second window before triggering again.
+- Added a fourth Hasso mode.
+- Adjusted certain notification to now automatically clear after a short delay.
+- Removed the option for using the OhShit gear set. The gear set itself still remains and funtionality has not changed. Having the option was redundant as you can simply leave the set empty.
+- Updated Version Compatibility Codename to Tachi: Jinpu.
+- Code cleanup.
 
 11.30.22 (Version Compatibility Codename: Tachi: Kagero)
--Overhauled how death is handled. More cleanly prevents unnecessary notifications from activating immediately upon raising (ie Reraise wearing off and Low HP).
--Added Danger sound file. Used by Doom and Low HP.
--Added Advanced Option for the Danger sound to play constantly while in danger or only once (with a 30 second delay to be able to play again).
--Added WSDamage option. Displays your damage (or miss) after a Weapon Skill.
--Added the //hidehud and //showhud alias commands.
--Added debug lines for redefining variables.
--Adjusted Low HP Notification to not trigger while weakened.
--Adjusted Low HP Notification Sound to have a 30 second window after triggering where it will not trigger again.
--Adjusted HUD text object loading timing to avoid them occasionally not loading correctly.
--Adjusted AutoHWater option to stop and notify you once you are out of useable Holy Waters.
--Adjusted the Trade notification to clear once the trade is complete.
--Removed the option to turn off the HUDRecast. While I generally think the more options the better, the recasts are a main part of the HUD.
--Removed the CharmNaked option. Apparently you can't Do Stuff while charmed ¯\_(ツ)_/¯
--Fixed incorrect SP Ability timers when wearing gear that augments (adds additional time to) the ability.
--Fixed ordering of Status Notifications.
--Renamed OhShitThreshold to LowHPThreshold since it controls more than just the OhShit option.
--Updated Version Compatibility Codename to Tachi: Kagero.
--Code cleanup.
+- Overhauled how death is handled. More cleanly prevents unnecessary notifications from activating immediately upon raising (ie Reraise wearing off and Low HP).
+- Added Danger sound file. Used by Doom and Low HP.
+- Added Advanced Option for the Danger sound to play constantly while in danger or only once (with a 30 second delay to be able to play again).
+- Added WSDamage option. Displays your damage (or miss) after a Weapon Skill.
+- Added the //hidehud and //showhud alias commands.
+- Added debug lines for redefining variables.
+- Adjusted Low HP Notification to not trigger while weakened.
+- Adjusted Low HP Notification Sound to have a 30 second window after triggering where it will not trigger again.
+- Adjusted HUD text object loading timing to avoid them occasionally not loading correctly.
+- Adjusted AutoHWater option to stop and notify you once you are out of useable Holy Waters.
+- Adjusted the Trade notification to clear once the trade is complete.
+- Removed the option to turn off the HUDRecast. While I generally think the more options the better, the recasts are a main part of the HUD.
+- Removed the CharmNaked option. Apparently you can't Do Stuff while charmed ¯\_(ツ)_/¯
+- Fixed incorrect SP Ability timers when wearing gear that augments (adds additional time to) the ability.
+- Fixed ordering of Status Notifications.
+- Renamed OhShitThreshold to LowHPThreshold since it controls more than just the OhShit option.
+- Updated Version Compatibility Codename to Tachi: Kagero.
+- Code cleanup.
 
 10.15.22 (Version Compatibility Codename: Tachi: Goten)
--Renamed Mode to Stance.
--Added new Hasso Modes. Seigan still uses one set while Hasso is split into 3. These modes can be used (and named) however you'd like. You can switch between the 3 modes on the fly with a macro, alias, or keyboard shortcut.
--Added Capped TP Weapon Skill set.
--Added Hybrid Weaponskill set.
--Added an Oh Shit gear set and accompanying option to use it. HP threshold required to activate is adjustable in the Advanced Options.
--Added Low HP Notification.
--Added AutoHWater option. Automatically attempts to use Holy Waters when you get Doomed until it wears off. Currently will keep trying even if you run out of Holy Waters.
--Added DoomAlert option. Will alert your party when you are doomed. You can also customize the text that displays in party chat.
--Added Sneak and Invisible status notification.
--Added missing listings in the /fileinfo printout for a few Notifications.
--Added Silver Knife to list of Adoulin/Town areas.
--Adjusted CharmNaked option to have three options: all gear, all gear except weapons, or off.
--Adjusted the code that tries to wake you when you are asleep to not trigger if you are charmed.
--Moved RRReminderTimer from Options to Advanced Options.
--Removed Gearswaps built-in showswaps function from the files debug mode.
--Updated Version Compatibility Codename to Tachi: Goten.
--Code cleanup.
+- Renamed Mode to Stance.
+- Added new Hasso Modes. Seigan still uses one set while Hasso is split into 3. These modes can be used (and named) however you'd like. You can switch between the 3 modes on the fly with a macro, alias, or keyboard shortcut.
+- Added Capped TP Weapon Skill set.
+- Added Hybrid Weaponskill set.
+- Added an Oh Shit gear set and accompanying option to use it. HP threshold required to activate is adjustable in the Advanced Options.
+- Added Low HP Notification.
+- Added AutoHWater option. Automatically attempts to use Holy Waters when you get Doomed until it wears off. Currently will keep trying even if you run out of Holy Waters.
+- Added DoomAlert option. Will alert your party when you are doomed. You can also customize the text that displays in party chat.
+- Added Sneak and Invisible status notification.
+- Added missing listings in the /fileinfo printout for a few Notifications.
+- Added Silver Knife to list of Adoulin/Town areas.
+- Adjusted CharmNaked option to have three options: all gear, all gear except weapons, or off.
+- Adjusted the code that tries to wake you when you are asleep to not trigger if you are charmed.
+- Moved RRReminderTimer from Options to Advanced Options.
+- Removed Gearswaps built-in showswaps function from the files debug mode.
+- Updated Version Compatibility Codename to Tachi: Goten.
+- Code cleanup.
 
 09.04.22 (Version Compatibility Codename: Tachi: Hobaku)
--Added all DOTs to the rule that removes Stoneskin if asleep.
+- Added all DOTs to the rule that removes Stoneskin if asleep.
 
 08.13.22 (Version Compatibility Codename: Tachi: Hobaku)
--Added Leafallia to list of towns.
--Added equipping the DT Override set when petrified, stunned, or terrored.
--Added option to remove all gear (except weapons) when you are charmed.
--Added a Holy Water set.
--Adjusted the Vim Torque code to first remove Stoneskin if its up, then check that we're not already poisoned and HP is above 50.
--Adjusted abilities to not equip their gear sets if they are still on cooldown.
--Renamed LockstyleField to LockstyleCombat. Just makes more sense.
--Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
--Fixed a duplicate line in the sleep debuff code.
--Updated Version Compatibility Codename to Tachi: Hobaku.
--Code cleanup.
+- Added Leafallia to list of towns.
+- Added equipping the DT Override set when petrified, stunned, or terrored.
+- Added option to remove all gear (except weapons) when you are charmed.
+- Added a Holy Water set.
+- Adjusted the Vim Torque code to first remove Stoneskin if its up, then check that we're not already poisoned and HP is above 50.
+- Adjusted abilities to not equip their gear sets if they are still on cooldown.
+- Renamed LockstyleField to LockstyleCombat. Just makes more sense.
+- Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
+- Fixed a duplicate line in the sleep debuff code.
+- Updated Version Compatibility Codename to Tachi: Hobaku.
+- Code cleanup.
 
 07.18.22 (Version Compatibility Codename: Tachi: Enpi)
--Overhauled how area checks are handled. Uses tables now for groups of areas.
--Fixed some errors that would show up on job change. These were caused by the Heartbeat function constantly checking for any debuffs present; when you unload the file (change job) it will delete the debuff text objects used for the HUD which will cause a split second where the debuff check freaks out. The fix was to simply disable the debuff checks in town zones.
--Fixed the DTOverride set not equipping correctly when idle.
--Fixed an issue with the Sleep debuff not showing properly in the HUD.
--Code cleanup.
+- Overhauled how area checks are handled. Uses tables now for groups of areas.
+- Fixed some errors that would show up on job change. These were caused by the Heartbeat function constantly checking for any debuffs present; when you unload the file (change job) it will delete the debuff text objects used for the HUD which will cause a split second where the debuff check freaks out. The fix was to simply disable the debuff checks in town zones.
+- Fixed the DTOverride set not equipping correctly when idle.
+- Fixed an issue with the Sleep debuff not showing properly in the HUD.
+- Code cleanup.
 
 06.14.22 (Version Compatibility Codename: Tachi: Enpi)
--Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
--Fixed Relic Aftermath not displaying in the HUD.
--Removed Gearswaps built-in debugmode from the files Debug mode.
--Moved the Updates section towards the top of the file.
--Code cleanup.
+- Adjusted HUD timings on load. Should fix the occasional errors about text objects not existing as well as objects loading underneath the background layer.
+- Fixed Relic Aftermath not displaying in the HUD.
+- Removed Gearswaps built-in debugmode from the files Debug mode.
+- Moved the Updates section towards the top of the file.
+- Code cleanup.
 
 03.10.22 (Version Compatibility Codename: Tachi: Enpi)
--Added missing On/Off option/rules to Time Remaining (currently only for Abyssea), Omen, and Vagary
--Fixed Alliance invite incorrectly triggering Party invite notification.
--Fixed some subjob conditions throwing errors when you have no subjob (ie Odyssey NMs)
+- Added missing On/Off option/rules to Time Remaining (currently only for Abyssea), Omen, and Vagary
+- Fixed Alliance invite incorrectly triggering Party invite notification.
+- Fixed some subjob conditions throwing errors when you have no subjob (ie Odyssey NMs)
 
 02.02.22 (Version Compatibility Codename: Tachi: Enpi)
--Added Weak status notification.
--Fixed gear not fully equipping in towns.
--Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
+- Added Weak status notification.
+- Fixed gear not fully equipping in towns.
+- Fixed Abyssea Visitant status triggering on incorrect time remaining (ie 110 minutes would trigger the 10 minute)
 
 02.01.22 (Version Compatibility Codename: Tachi: Enpi)
--First version
--Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
+- First version
+- Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
 --]]
 
 -------------------------------------------
@@ -649,20 +687,24 @@ Mode = StartMode --sets the starting mode (selected in the Advanced Options)
 Stance = 'None' --Start off without Hasso/Seigan up, this will update when either is activated
 DTOverride = "Off" --Start with the Damage Taken Override off
 RRRCountdown = RRReminderTimer
+HUDposYLine1 = HUDposY
 HWaterRecast = 0
 HWater = true --this is used as a simple on/off for when we run out of Holy Waters
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
 LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get set correctly before being used, displays file version info, and waits to use lockstyle
 LoadHUD = false --starts false then switched to true after the LoadDelay
-ShowHUD = true --this changes to false when we zone or are in a cutscene
+Zoning = false --flips automatically to hide the HUD while zoning
+InCS = false --flips automatically to hide the HUD while in a cs
 StanceTimer = 0
 LockstyleDelay = 3
 AutoLockstyleRun = true
+AutoSaveUsed = false --this is used so we don't trigger multiple "saves" together
 LowHP = false
 Doom = false
 Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 DangerCountdown = 0
 NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
+WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
 
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 MeditateRecast = 0
@@ -690,9 +732,9 @@ send_command('wait '..LoadDelay..';gs c LoadHUD')
 send_command('wait 1.5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 send_command('wait 1.6;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
 send_command('wait 1.7;text bg3 create "                                                                                                                          ";wait .3;text bg3 size '..FontSize..';text bg3 pos '..HUDposXColumn1..' -100;text bg3 bg_transparency '..HUDBGTrans..'')--Background Line 3
-send_command('wait 1.8;text loading create "Loading Keys SAMURAI file ver: '..FileVersion..'...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
+send_command('wait 1.8;text loading create "Loading Keys SAMURAI file ver: '..FileVersion..' ...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 --Create the Aftermath, Stance, Notifications, and Debuffs text objects and put them above the screen for now, we'll move them to the correct place next
-send_command('wait 1.9;text weapons create "« Weapon loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
+send_command('wait 1.9;text weapons create "« Weapons loading... »";wait .3;text weapons size '..FontSize..';text weapons pos '..HUDposXColumn4..' -100;text weapons color 255 50 50;text weapons bg_transparency 1') --Aftermath
 send_command('wait 2;text stance create "Stance: '..Stance..'";wait .3;text stance size '..FontSize..';text stance pos '..HUDposXColumn1..' -100;text stance bg_color 255 50 50;text stance bg_transparency 1') --Stance
 send_command('wait 2.1;text notifications create "Hello, '..player.name..'! (type //fileinfo for more information)";wait .3;text notifications size '..FontSize..';text notifications pos '..HUDposXColumn1..' -100;text notifications bg_transparency 1') --Notifications
 send_command('wait 2.2;text debuffs create " ";wait .3;text debuffs size '..FontSize..';text debuffs pos '..HUDposXColumn4..' -100;text debuffs bg_transparency 1') --Debuffs
@@ -716,18 +758,23 @@ end
 if Book ~= "Off" then
 	send_command('input /macro book '..Book..'')
 end
-if Page ~= "Off" then
-	send_command('wait 2;input /macro set '..Page..'')
+if SubDRGPage ~= "Off" and player.sub_job == 'DRG' then
+	send_command('wait 2;input /macro set '..SubDRGPage..'')
+elseif SubWARPage ~= "Off" and player.sub_job == 'WAR' then
+	send_command('wait 2;input /macro set '..SubWARPage..'')
+else
+	send_command('wait 2;input /macro set 1')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias mode gs c Mode') --creates the Mode alias
 send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
 send_command('alias showhud gs c ShowHUD') --creates the ShowHUD alias
-send_command('bind ^'..ModeCtrlPlus..' gs c Mode') --creates the gear mode keyboard shortcut
-send_command('bind ^'..DTCtrlPlus..' gs c DT') --creates the DT Override keyboard shortcut
+send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
+send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
+send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
-	windower.add_to_chat(8,'[Debug Mode: On]')
+	add_to_chat(8,'[Debug Mode: On]')
 end
 
 -- Add commas to numbers to make them easier to read
@@ -784,19 +831,19 @@ function self_command(command)
 			end
 		end
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Mode set to '..Mode..']')
+			add_to_chat(8,'[Mode set to '..Mode..']')
 		end
 		choose_set()
 	elseif command == 'DT' then
 		if DTOverride == 'Off' then
 			DTOverride = 'On'
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[DTOverride set to On]')
+				add_to_chat(8,'[DTOverride set to On]')
 			end
 		elseif DTOverride == 'On' then
 			DTOverride = 'Off'
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[DTOverride set to Off]')
+				add_to_chat(8,'[DTOverride set to Off]')
 			end
 		end
 		choose_set()
@@ -829,7 +876,7 @@ function self_command(command)
 	elseif command == 'LoadHUD' then
 		LoadHUD = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[LoadHUD set to True]')
+			add_to_chat(8,'[LoadHUD set to True]')
 		end
 		send_command('text loading hide')
 		send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
@@ -841,138 +888,153 @@ function self_command(command)
 		send_command('wait .8;text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')
 		send_command('wait .8;text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')
 	elseif command == 'Fileinfo' then
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--  Keys Gearswap lua file for Samurai  --')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(200,'File Version Number: '..(''..FileVersion..''):color(8)..'')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'Place both this file and the sounds folder')
-		windower.add_to_chat(8,'inside the GearSwap data folder')
-		windower.add_to_chat(200,'ex:     /addons/GearSwap/data/sounds/')
-		windower.add_to_chat(200,'        /addons/GearSwap/data/SAM.lua')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'To switch between gear modes, use any of these three options:')
-		windower.add_to_chat(8,'1. A macro with the following in it')
-		windower.add_to_chat(200,'        /console mode')
-		windower.add_to_chat(8,'2. An alias command')
-		windower.add_to_chat(200,'        //mode')
-		windower.add_to_chat(8,'3. A keyboard shortcut')
-		windower.add_to_chat(200,'        CTRL+G')
-		windower.add_to_chat(8,'        (Default is G, can be changed in the settings)')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'To activate Damage Taken Override, use any of these three options:')
-		windower.add_to_chat(8,'1. A macro with the following in it')
-		windower.add_to_chat(200,'        /console DT')
-		windower.add_to_chat(8,'2. An alias command')
-		windower.add_to_chat(200,'        //dt')
-		windower.add_to_chat(8,'3. A keyboard shortcut')
-		windower.add_to_chat(200,'        CTRL+D')
-		windower.add_to_chat(8,'        (Default is D, can be changed in the settings)')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'Run the Lockstyle function yourself at any time by typing')
-		windower.add_to_chat(200,'        //lockstyle or //lstyle')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'Hide or show the HUD at any time by typing')
-		windower.add_to_chat(200,'        //hidehud or //showhud')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'For the HUD function, suggested placement')
-		windower.add_to_chat(8,'is center screen, just above your chat log.')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'IMPORTANT:')
-		windower.add_to_chat(8,'When you load this file for the first time, your HUD')
-		windower.add_to_chat(8,'may look all wrong. The defaults preloaded are for a')
-		windower.add_to_chat(8,'screen at 3440x1400. Adjust the FontSize, LineSpacer,')
-		windower.add_to_chat(8,'and ColumnSpacer options as needed.')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,'Recommended Windower Addons: Text')
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--                  Options                  --')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(200,'AutoLockstyle: '..(''..AutoLockstyle..''):color(8)..'')
-		windower.add_to_chat(200,'LockstyleCombat: '..(''..LockstyleCombat..''):color(8)..'')
-		windower.add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
-		windower.add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
-		windower.add_to_chat(200,'Page: '..(''..Page..''):color(8)..'')
-		windower.add_to_chat(200,'Chat: '..(''..Chat..''):color(8)..'')
-		windower.add_to_chat(200,'MeikTimer: '..(''..MeikTimer..''):color(8)..'')
-		windower.add_to_chat(200,'YaegTimer: '..(''..YaegTimer..''):color(8)..'')
-		windower.add_to_chat(200,'DTCtrlPlus: '..(''..DTCtrlPlus..''):color(8)..'')
-		windower.add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
-		windower.add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
-		windower.add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
-		windower.add_to_chat(200,'AutoSuperJump: '..(''..AutoSuperJump..''):color(8)..'')
-		windower.add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
-		windower.add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
-		windower.add_to_chat(200,'DoomOffText: '..(''..DoomOffText..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'-- Heads Up Display --')
-		windower.add_to_chat(200,'HUDposX: '..(''..HUDposX..''):color(8)..'')
-		windower.add_to_chat(200,'HUDposYLine1: '..(''..HUDposYLine1..''):color(8)..'')
-		windower.add_to_chat(200,'FontSize: '..(''..FontSize..''):color(8)..'')
-		windower.add_to_chat(200,'LineSpacer: '..(''..LineSpacer..''):color(8)..'')
-		windower.add_to_chat(200,'ColumnSpacer: '..(''..ColumnSpacer..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'-- HUD Mode Names --')
-		windower.add_to_chat(200,'Mode1Name: '..(''..Mode1Name..''):color(8)..'')
-		windower.add_to_chat(200,'Mode2Name: '..(''..Mode2Name..''):color(8)..'')
-		windower.add_to_chat(200,'Mode3Name: '..(''..Mode3Name..''):color(8)..'')
-		windower.add_to_chat(200,'Mode4Name: '..(''..Mode4Name..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'-- General Notifications --')
-		windower.add_to_chat(200,'Noti3000TP: '..(''..Noti3000TP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiWeapons: '..(''..NotiWeapons..''):color(8)..'')
-		windower.add_to_chat(200,'NotiTrade: '..(''..NotiTrade..''):color(8)..'')
-		windower.add_to_chat(200,'NotiInvite: '..(''..NotiInvite..''):color(8)..'')
-		windower.add_to_chat(200,'NotiSneak: '..(''..NotiSneak..''):color(8)..'')
-		windower.add_to_chat(200,'NotiInvis: '..(''..NotiInvis..''):color(8)..'')
-		windower.add_to_chat(200,'NotiReraise: '..(''..NotiReraise..''):color(8)..'')
-		windower.add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
-		windower.add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
-		windower.add_to_chat(200,'NotiDamage: '..(''..NotiDamage..''):color(8)..'')
-		windower.add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
-		windower.add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'-- Debuff Notifications --')
-		windower.add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
-		windower.add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
-		windower.add_to_chat(200,'NotiPetrification: '..(''..NotiPetrification..''):color(8)..'')
-		windower.add_to_chat(200,'NotiCurse: '..(''..NotiCurse..''):color(8)..'')
-		windower.add_to_chat(200,'NotiStun: '..(''..NotiStun..''):color(8)..'')
-		windower.add_to_chat(200,'NotiCharm: '..(''..NotiCharm..''):color(8)..'')
-		windower.add_to_chat(200,'NotiDoom: '..(''..NotiDoom..''):color(8)..'')
-		windower.add_to_chat(200,'NotiAmnesia: '..(''..NotiAmnesia..''):color(8)..'')
-		windower.add_to_chat(200,'NotiTerror: '..(''..NotiTerror..''):color(8)..'')
-		windower.add_to_chat(200,'NotiMute: '..(''..NotiMute..''):color(8)..'')
-		windower.add_to_chat(200,'NotiPlague: '..(''..NotiPlague..''):color(8)..'')
-		windower.add_to_chat(200,'NotiPara: '..(''..NotiPara..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(3,'--           Advanced Options              --')
-		windower.add_to_chat(3,'-------------------------------------------')
-		windower.add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
-		windower.add_to_chat(200,'ModeCtrlPlus: '..(''..ModeCtrlPlus..''):color(8)..'')
-		windower.add_to_chat(200,'AutoStanceWindow: '..(''..AutoStanceWindow..''):color(8)..'')
-		windower.add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
-		windower.add_to_chat(200,'CappedTPThreshhold: '..(''..CappedTPThreshhold..''):color(8)..'')
-		windower.add_to_chat(200,'AttackCapThreshhold: '..(''..AttackCapThreshhold..''):color(8)..'')
-		windower.add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
-		windower.add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
-		windower.add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
-		windower.add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
-		windower.add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
-		windower.add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'-- Color Values --')
-		windower.add_to_chat(200,'HassoStanceColor: '..(''..HassoStanceColor..''):color(8)..'')
-		windower.add_to_chat(200,'SeiganStanceColor: '..(''..SeiganStanceColor..''):color(8)..'')
-		windower.add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
-		windower.add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
-		windower.add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
-		windower.add_to_chat(200,' ')
-		windower.add_to_chat(3,'Options can be changed in the file itself.')
+		add_to_chat(3,'-------------------------------------------')
+		add_to_chat(3,'--  Keys Gearswap lua file for Samurai  --')
+		add_to_chat(3,'-------------------------------------------')
+		add_to_chat(8,' ')
+		add_to_chat(200,'File Version: '..(''..FileVersion..''):color(8)..'')
+		add_to_chat(8,' ')
+		add_to_chat(8,'REQUIRED Windower Addons: Text')
+		add_to_chat(8,' ')
+		add_to_chat(8,'Place both this file and the sounds folder')
+		add_to_chat(8,'inside the GearSwap data folder')
+		add_to_chat(200,'ex:     /addons/GearSwap/data/sounds/')
+		add_to_chat(200,'        /addons/GearSwap/data/SAM.lua')
+		add_to_chat(8,' ')
+		add_to_chat(8,'To switch between gear modes, use any of these three options:')
+		add_to_chat(8,'1. A macro with the following in it')
+		add_to_chat(200,'        /console mode')
+		add_to_chat(8,'2. An alias command')
+		add_to_chat(200,'        //mode')
+		add_to_chat(8,'3. A keybind shortcut')
+		add_to_chat(200,'        CTRL+G')
+		add_to_chat(8,'        (Can be changed in the Advanced Options section)')
+		add_to_chat(8,' ')
+		add_to_chat(8,'To activate Damage Taken Override, use any of these three options:')
+		add_to_chat(8,'1. A macro with the following in it')
+		add_to_chat(200,'        /console DT')
+		add_to_chat(8,'2. An alias command')
+		add_to_chat(200,'        //dt')
+		add_to_chat(8,'3. A keybind shortcut')
+		add_to_chat(200,'        CTRL+D')
+		add_to_chat(8,'        (Can be changed in the Advanced Options section)')
+		add_to_chat(8,' ')
+		add_to_chat(8,'To activate the Weapon Cycle, use any of these three options:')
+		add_to_chat(8,'1. A macro with the following in it')
+		add_to_chat(200,'        /console WC')
+		add_to_chat(8,'2. An alias command')
+		add_to_chat(200,'        //wc')
+		add_to_chat(8,'3. A keybind shortcut')
+		add_to_chat(200,'        CTRL+H')
+		add_to_chat(8,'        (Can be changed in the Advanced Options section)')
+		add_to_chat(8,' ')
+		add_to_chat(8,'Run the Lockstyle function yourself at any time by typing')
+		add_to_chat(200,'        //lockstyle or //lstyle')
+		add_to_chat(8,' ')
+		add_to_chat(8,'Hide or show the HUD at any time by typing')
+		add_to_chat(200,'        //hud')
+		add_to_chat(8,' ')
+		add_to_chat(8,'IMPORTANT:')
+		add_to_chat(8,'When you load this file for the first time, your HUD may not be')
+		add_to_chat(8,'in a good position, or may be too large.')
+		add_to_chat(8,'If the HUD is not in a good position, go to the Heads Up Display')
+		add_to_chat(8,'options below and adjust the HUDposX and HUDposY options, then save')
+		add_to_chat(8,'and reload the file. Adjust and repeat until positioned as desired.')
+		add_to_chat(8,'If the HUD is too large (or small), adjust the FontSize,')
+		add_to_chat(8,'LineSpacer, and ColumnSpacer options as needed.')
+		add_to_chat(8,'Suggested placement is center screen, just above your chat log.')
+		add_to_chat(8,' ')
+		add_to_chat(3,'-------------------------------------------')
+		add_to_chat(3,'--                  Options                  --')
+		add_to_chat(3,'-------------------------------------------')
+		add_to_chat(200,'AutoLockstyle: '..(''..AutoLockstyle..''):color(8)..'')
+		add_to_chat(200,'LockstyleCombat: '..(''..LockstyleCombat..''):color(8)..'')
+		add_to_chat(200,'LockstyleTown: '..(''..LockstyleTown..''):color(8)..'')
+		add_to_chat(200,'Book: '..(''..Book..''):color(8)..'')
+		add_to_chat(200,'SubDRGPage: '..(''..SubDRGPage..''):color(8)..'')
+		add_to_chat(200,'SubWARPage: '..(''..SubWARPage..''):color(8)..'')
+		add_to_chat(200,'Chat: '..(''..Chat..''):color(8)..'')
+		add_to_chat(200,'MeikTimer: '..(''..MeikTimer..''):color(8)..'')
+		add_to_chat(200,'YaegTimer: '..(''..YaegTimer..''):color(8)..'')
+		add_to_chat(200,'ZoneGear: '..(''..ZoneGear..''):color(8)..'')
+		add_to_chat(200,'AlertSounds: '..(''..AlertSounds..''):color(8)..'')
+		add_to_chat(200,'AutoHWater: '..(''..AutoHWater..''):color(8)..'')
+		add_to_chat(200,'AutoStance: '..(''..AutoStance..''):color(8)..'')
+		add_to_chat(200,'AutoSave: '..(''..AutoSave..''):color(8)..'')
+		add_to_chat(200,'DoomAlert: '..(''..DoomAlert..''):color(8)..'')
+		add_to_chat(200,'DoomOnText: '..(''..DoomOnText..''):color(8)..'')
+		add_to_chat(200,'DoomOffText: '..(''..DoomOffText..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(3,'-- Heads Up Display --')
+		add_to_chat(200,'HUDposX: '..(''..HUDposX..''):color(8)..'')
+		add_to_chat(200,'HUDposYLine1: '..(''..HUDposYLine1..''):color(8)..'')
+		add_to_chat(200,'FontSize: '..(''..FontSize..''):color(8)..'')
+		add_to_chat(200,'LineSpacer: '..(''..LineSpacer..''):color(8)..'')
+		add_to_chat(200,'ColumnSpacer: '..(''..ColumnSpacer..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(200,' ')
+		add_to_chat(3,'-- HUD Mode Names --')
+		add_to_chat(200,'Mode1Name: '..(''..Mode1Name..''):color(8)..'')
+		add_to_chat(200,'Mode2Name: '..(''..Mode2Name..''):color(8)..'')
+		add_to_chat(200,'Mode3Name: '..(''..Mode3Name..''):color(8)..'')
+		add_to_chat(200,'Mode4Name: '..(''..Mode4Name..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(3,'-- General Notifications --')
+		add_to_chat(200,'Noti3000TP: '..(''..Noti3000TP..''):color(8)..'')
+		add_to_chat(200,'NotiWeapons: '..(''..NotiWeapons..''):color(8)..'')
+		add_to_chat(200,'NotiTrade: '..(''..NotiTrade..''):color(8)..'')
+		add_to_chat(200,'NotiInvite: '..(''..NotiInvite..''):color(8)..'')
+		add_to_chat(200,'NotiSneak: '..(''..NotiSneak..''):color(8)..'')
+		add_to_chat(200,'NotiInvis: '..(''..NotiInvis..''):color(8)..'')
+		add_to_chat(200,'NotiReraise: '..(''..NotiReraise..''):color(8)..'')
+		add_to_chat(200,'NotiFood: '..(''..NotiFood..''):color(8)..'')
+		add_to_chat(200,'NotiLowHP: '..(''..NotiLowHP..''):color(8)..'')
+		add_to_chat(200,'NotiDamage: '..(''..NotiDamage..''):color(8)..'')
+		add_to_chat(200,'ReraiseReminder: '..(''..ReraiseReminder..''):color(8)..'')
+		add_to_chat(200,'NotiTime: '..(''..NotiTime..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(3,'-- Debuff Notifications --')
+		add_to_chat(200,'NotiSleep: '..(''..NotiSleep..''):color(8)..'')
+		add_to_chat(200,'NotiSilence: '..(''..NotiSilence..''):color(8)..'')
+		add_to_chat(200,'NotiPetrification: '..(''..NotiPetrification..''):color(8)..'')
+		add_to_chat(200,'NotiCurse: '..(''..NotiCurse..''):color(8)..'')
+		add_to_chat(200,'NotiStun: '..(''..NotiStun..''):color(8)..'')
+		add_to_chat(200,'NotiCharm: '..(''..NotiCharm..''):color(8)..'')
+		add_to_chat(200,'NotiDoom: '..(''..NotiDoom..''):color(8)..'')
+		add_to_chat(200,'NotiAmnesia: '..(''..NotiAmnesia..''):color(8)..'')
+		add_to_chat(200,'NotiTerror: '..(''..NotiTerror..''):color(8)..'')
+		add_to_chat(200,'NotiMute: '..(''..NotiMute..''):color(8)..'')
+		add_to_chat(200,'NotiPlague: '..(''..NotiPlague..''):color(8)..'')
+		add_to_chat(200,'NotiPara: '..(''..NotiPara..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(3,'-------------------------------------------')
+		add_to_chat(3,'--           Advanced Options              --')
+		add_to_chat(3,'-------------------------------------------')
+		add_to_chat(200,'ShowHUD: '..(''..ShowHUD..''):color(8)..'')
+		add_to_chat(200,'StartMode: '..(''..StartMode..''):color(8)..'')
+		add_to_chat(200,'ModeBind: '..(''..ModeBind..''):color(8)..'')
+		add_to_chat(200,'DTBind: '..(''..DTBind..''):color(8)..'')
+		add_to_chat(200,'WCBind: '..(''..WCBind..''):color(8)..'')
+		add_to_chat(200,'AutoStanceWindow: '..(''..AutoStanceWindow..''):color(8)..'')
+		add_to_chat(200,'LowHPThreshold: '..(''..LowHPThreshold..''):color(8)..'')
+		add_to_chat(200,'AutoSaveThreshold: '..(''..AutoSaveThreshold..''):color(8)..'')
+		add_to_chat(200,'CappedTPThreshold: '..(''..CappedTPThreshold..''):color(8)..'')
+		add_to_chat(200,'AttackCapThreshold: '..(''..AttackCapThreshold..''):color(8)..'')
+		add_to_chat(200,'DangerRepeat: '..(''..DangerRepeat..''):color(8)..'')
+		add_to_chat(200,'RRReminderTimer: '..(''..RRReminderTimer..''):color(8)..'')
+		add_to_chat(200,'NotiDelay: '..(''..NotiDelay..''):color(8)..'')
+		add_to_chat(200,'HUDBGTrans: '..(''..HUDBGTrans..''):color(8)..'')
+		add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
+		add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(3,'-- Color Values --')
+		add_to_chat(200,'HassoStanceColor: '..(''..HassoStanceColor..''):color(8)..'')
+		add_to_chat(200,'SeiganStanceColor: '..(''..SeiganStanceColor..''):color(8)..'')
+		add_to_chat(200,'Aftermath1color: '..(''..Aftermath1color..''):color(8)..'')
+		add_to_chat(200,'Aftermath2color: '..(''..Aftermath2color..''):color(8)..'')
+		add_to_chat(200,'Aftermath3color: '..(''..Aftermath3color..''):color(8)..'')
+		add_to_chat(200,' ')
+		add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
 			if TownZones:contains(world.area) then
@@ -1002,7 +1064,7 @@ function self_command(command)
 			send_command('text notifications text "«« Radialens Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif command == 'StanceCheck' then
@@ -1012,20 +1074,32 @@ function self_command(command)
 	elseif command == 'AliveDelay' then
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Alive set to True]')
+			add_to_chat(8,'[Alive set to True]')
 		end
-	elseif command == 'HideHUD' then
-		ShowHUD = false
-		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to False]')
-		end
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text meditate hide;text sekkanoki hide;text sengikori hide;text hagakure hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text hasso hide;text seigan hide;text stance hide;text notifications hide;text debuffs hide;text weapons hide')
-	elseif command == 'ShowHUD' then
+	elseif command == 'HUD' and ShowHUD == false then
 		ShowHUD = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to True]')
+			add_to_chat(8,'[ShowHUD set to True]')
 		end
+		windower.send_command('gs c ShowHUD')
+	elseif command == 'HUD' and ShowHUD == true then
+		ShowHUD = false
+		if Debug == 'On' then
+			add_to_chat(8,'[ShowHUD set to False]')
+		end
+		windower.send_command('gs c HideHUD')
+	elseif command == 'ShowHUD' then
 		send_command('text bg1 show;text bg2 show;text bg3 show;text meditate show;text sekkanoki show;text sengikori show;text hagakure show;text aggressor show;text berserk show;text highjump show;text superjump show;text hasso show;text seigan show;text stance show;text notifications show;text debuffs show;text weapons show')
+	elseif command == 'HideHUD' then
+		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text meditate hide;text sekkanoki hide;text sengikori hide;text hagakure hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text hasso hide;text seigan hide;text stance hide;text notifications hide;text debuffs hide;text weapons hide')
+	elseif command == 'WC' then
+		WeaponCycleIndex = WeaponCycleIndex + 1
+		local pair = WeaponCycle[WeaponCycleIndex]
+        if pair == nil then
+            WeaponCycleIndex = 1
+        end
+		pair = WeaponCycle[WeaponCycleIndex]
+		equip({main=pair[1],sub=pair[2]})
 	end
 end
 
@@ -1061,51 +1135,51 @@ function choose_set()
 		if LowHP == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
 			equip(sets.ohshit)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Oh Shit]')
+				add_to_chat(8,'[Equipped Set: Oh Shit]')
 			end
 		elseif Stance == 'Hasso' then
 			if DTOverride == 'On' then
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + DT Override]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + DT Override]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + DT Override]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + DT Override]')
 					end
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(sets.hassomodeone)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..')]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..')]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(sets.hassomodetwo)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..')]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..')]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(sets.hassomodethree)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..')]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..')]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(sets.hassomodefour)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..')]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..')]')
 					end
 				end
 			end
@@ -1113,12 +1187,12 @@ function choose_set()
 			if DTOverride == 'On' then
 				equip(set_combine(sets.seigan, sets.dtoverride))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + DT Override]')
+					add_to_chat(8,'[Equipped Set: Seigan + DT Override]')
 				end
 			else
 				equip(sets.seigan)
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan]')
+					add_to_chat(8,'[Equipped Set: Seigan]')
 				end
 			end
 		end
@@ -1144,28 +1218,28 @@ function choose_set()
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.adoulin, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + Adoulin + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + Adoulin + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.adoulin, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Adoulin + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Adoulin + Idle]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.adoulin, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Adoulin + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Adoulin + Idle]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.adoulin, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Adoulin + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Adoulin + Idle]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.adoulin, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Adoulin + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Adoulin + Idle]')
 					end
 				end
 			end
@@ -1173,28 +1247,28 @@ function choose_set()
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.bastok, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + Bastok + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + Bastok + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.bastok, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Bastok + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Bastok + Idle]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.bastok, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Bastok + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Bastok + Idle]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.bastok, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Bastok + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Bastok + Idle]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.bastok, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Bastok + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Bastok + Idle]')
 					end
 				end
 			end
@@ -1202,28 +1276,28 @@ function choose_set()
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.sandoria, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + San d\'Oria + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + San d\'Oria + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.sandoria, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + San d\'Oria + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + San d\'Oria + Idle]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.sandoria, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + San d\'Oria + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + San d\'Oria + Idle]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.sandoria, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + San d\'Oria + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + San d\'Oria + Idle]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.sandoria, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + San d\'Oria + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + San d\'Oria + Idle]')
 					end
 				end
 			end
@@ -1231,28 +1305,28 @@ function choose_set()
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.windurst, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + Windurst + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + Windurst + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.windurst, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Windurst + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Windurst + Idle]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.windurst, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Windurst + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Windurst + Idle]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.windurst, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Windurst + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Windurst + Idle]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.windurst, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Windurst + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Windurst + Idle]')
 					end
 				end
 			end
@@ -1260,62 +1334,62 @@ function choose_set()
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.town, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + Town + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + Town + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.town, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Town + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Town + Idle]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.town, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Town + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Town + Idle]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.town, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Town + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Town + Idle]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.town, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Town + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Town + Idle]')
 					end
 				end
 			end
 		elseif LowHP == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Idle + Oh Shit]')
+				add_to_chat(8,'[Equipped Set: Idle + Oh Shit]')
 			end
 		elseif DTOverride == 'On' then
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.idle, sets.dtoverride))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + DT Override + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + DT Override + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.idle, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Idle + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Idle + DT Override]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.idle, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Idle + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Idle + DT Override]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.idle, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Idle + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Idle + DT Override]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.idle, sets.dtoverride))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Idle + DT Override]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Idle + DT Override]')
 					end
 				end
 			end
@@ -1323,28 +1397,28 @@ function choose_set()
 			if Stance == 'Seigan' then
 				equip(set_combine(sets.seigan, sets.idle))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Seigan + Idle]')
+					add_to_chat(8,'[Equipped Set: Seigan + Idle]')
 				end
 			else
 				if Mode == 'Mode1' then
 					equip(set_combine(sets.hassomodeone, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 1 ('..Mode1Name..') + Idle]')
 					end
 				elseif Mode == 'Mode2' then
 					equip(set_combine(sets.hassomodetwo, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 2 ('..Mode2Name..') + Idle]')
 					end
 				elseif Mode == 'Mode3' then
 					equip(set_combine(sets.hassomodethree, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 3 ('..Mode3Name..') + Idle]')
 					end
 				elseif Mode == 'Mode4' then
 					equip(set_combine(sets.hassomodefour, sets.idle))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Idle]')
+						add_to_chat(8,'[Equipped Set: Hasso Mode 4 ('..Mode4Name..') + Idle]')
 					end
 				end
 			end
@@ -1429,7 +1503,7 @@ function precast(spell)
 				send_command('text notifications text "«« Not Enough TP »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 				NotiCountdown = NotiDelay
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+					add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 				end
 			end
 			cancel_spell()
@@ -1443,297 +1517,310 @@ function precast(spell)
 				send_command('text notifications text "«« Too Far »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 				NotiCountdown = NotiDelay
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+					add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 				end
 			end
 			cancel_spell()
 			return
 		end
-		if buffactive['Sekkanoki'] and buffactive['Meikyo Shisui']then
+		if buffactive['Meikyo Shisui'] then
 			if HybridWS:contains(spell.english) then
 				if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
-					equip(set_combine(sets.hachirin, sets.meikyoshisui, sets.sekkanoki))
+					if buffactive['Reive Mark'] then
+						equip(set_combine(sets.hachirin, sets.ygnas, sets.meikyoshisui))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Ygnas\'s Resolve + Meikyo Shisui]')
+						end
+					else
+						equip(set_combine(sets.hachirin, sets.meikyoshisui))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Meikyo Shisui]')
+						end
+					end
+				elseif buffactive['Reive Mark'] then
+					equip(set_combine(sets.hybridws, sets.ygnas, sets.meikyoshisui))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Meikyo Shisui + Sekkanoki]')
+						add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Ygnas\'s Resolve + Meikyo Shisui]')
 					end
 				else
-					equip(set_combine(sets.hybridws, sets.meikyoshisui, sets.sekkanoki))
+					equip(set_combine(sets.hybridws, sets.meikyoshisui))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Meikyo Shisui + Sekkanoki]')
+						add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Meikyo Shisui]')
 					end
 				end
 			elseif spell.english == 'Tachi: Ageha' then
-				equip(set_combine(sets.ageha, sets.meikyoshisui, sets.sekkanoki))
+				equip(set_combine(sets["Tachi: Ageha"], sets.meikyoshisui))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui + Sekkanoki]')
-				end
-			elseif spell.english == 'Tachi: Shoha' then
-				equip(set_combine(sets.shoha, sets.meikyoshisui, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Meikyo Shisui + Sekkanoki]')
-				end
-			elseif spell.english == 'Tachi: Stardiver' then
-				equip(set_combine(sets.stardiver, sets.meikyoshisui, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Stardiver + Meikyo Shisui + Sekkanoki]')
+					add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.accws, sets.meikyoshisui, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Meikyo Shisui + Sekkanoki]')
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets.accws, sets.ygnas, sets.meikyoshisui))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Ygnas\'s Resolve + Meikyo Shisui]')
+					end
+				else
+					equip(set_combine(sets.accws, sets.meikyoshisui))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Meikyo Shisui]')
+					end
 				end
 			else
-				equip(set_combine(sets.ws, sets.meikyoshisui, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Meikyo Shisui + Sekkanoki]')
+				if sets[spell.english] then
+					if buffactive['Reive Mark'] then
+						equip(set_combine(sets[spell.english], sets.ygnas, sets.meikyoshisui))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Ygnas\'s Resolve + Meikyo Shisui]')
+						end
+					else
+						equip(set_combine(sets[spell.english], sets.meikyoshisui))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Meikyo Shisui]')
+						end
+					end
+				elseif buffactive['Reive Mark'] then
+					equip(set_combine(sets.ws, sets.ygnas, sets.meikyoshisui))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Ygnas\'s Resolve + Meikyo Shisui]')
+					end
+				else
+					equip(set_combine(sets.ws, sets.meikyoshisui))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Meikyo Shisui]')
+					end
 				end
 			end
 		elseif buffactive['Sekkanoki'] then
 			if HybridWS:contains(spell.english) then
 				if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
-					equip(set_combine(sets.hachirin, sets.sekkanoki))
+					if buffactive['Reive Mark'] then
+						equip(set_combine(sets.hachirin, sets.ygnas, sets.sekkanoki))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Ygnas\'s Resolve + Sekkanoki]')
+						end
+					else
+						equip(set_combine(sets.hachirin, sets.sekkanoki))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Sekkanoki]')
+						end
+					end
+				elseif buffactive['Reive Mark'] then
+					equip(set_combine(sets.hybridws, sets.ygnas, sets.sekkanoki))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Sekkanoki]')
+						add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Ygnas\'s Resolve + Sekkanoki]')
 					end
 				else
 					equip(set_combine(sets.hybridws, sets.sekkanoki))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Sekkanoki]')
+						add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Sekkanoki]')
 					end
 				end
 			elseif spell.english == 'Tachi: Ageha' then
-				equip(set_combine(sets.ageha, sets.sekkanoki))
+				equip(set_combine(sets["Tachi: Ageha"], sets.sekkanoki))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Sekkanoki]')
-				end
-			elseif spell.english == 'Tachi: Shoha' then
-				equip(set_combine(sets.shoha, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Sekkanoki]')
-				end
-			elseif spell.english == 'Tachi: Stardiver' then
-				equip(set_combine(sets.stardiver, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Stardiver + Sekkanoki]')
+					add_to_chat(8,'[Equipped Set: Tachi: Ageha + Sekkanoki]')
 				end
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.accws, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Sekkanoki]')
-				end
-			else
-				equip(set_combine(sets.ws, sets.sekkanoki))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Sekkanoki]')
-				end
-			end
-		elseif buffactive['Meikyo Shisui'] then
-			if HybridWS:contains(spell.english) then
-				if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
-					equip(set_combine(sets.hachirin, sets.meikyoshisui))
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets.accws, sets.ygnas, sets.sekkanoki))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Meikyo Shisui]')
+						add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Ygnas\'s Resolve + Sekkanoki]')
 					end
 				else
-					equip(set_combine(sets.hybridws, sets.meikyoshisui))
+					equip(set_combine(sets.accws, sets.sekkanoki))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Meikyo Shisui]')
+						add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Sekkanoki]')
 					end
 				end
-			elseif spell.english == 'Tachi: Ageha' then
-				equip(set_combine(sets.ageha, sets.meikyoshisui))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha + Meikyo Shisui]')
-				end
-			elseif spell.english == 'Tachi: Shoha' then
-				equip(set_combine(sets.shoha, sets.meikyoshisui))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Meikyo Shisui]')
-				end
-			elseif spell.english == 'Stardiver' then
-				equip(set_combine(sets.stardiver, sets.meikyoshisui))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Stardiver + Meikyo Shisui]')
-				end
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.accws, sets.meikyoshisui))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Meikyo Shisui]')
-				end
 			else
-				equip(set_combine(sets.ws, sets.meikyoshisui))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Meikyo Shisui]')
+				if sets[spell.english] then
+					if buffactive['Reive Mark'] then
+						equip(set_combine(sets[spell.english], sets.ygnas, sets.sekkanoki))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Ygnas\'s Resolve + Sekkanoki]')
+						end
+					else
+						equip(set_combine(sets[spell.english], sets.sekkanoki))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Sekkanoki]')
+						end
+					end
+				elseif buffactive['Reive Mark'] then
+					equip(set_combine(sets.ws, sets.ygnas, sets.sekkanoki))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Ygnas\'s Resolve + Sekkanoki]')
+					end
+				else
+					equip(set_combine(sets.ws, sets.sekkanoki))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Sekkanoki]')
+					end
 				end
 			end
 		elseif HybridWS:contains(spell.english) then
-			if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Ice" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+			if ((spell.english == "Flaming Arrow" or spell.english == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (spell.english == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (spell.english == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (spell.english == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
 				if buffactive['Reive Mark'] then
 					equip(set_combine(sets.hachirin, sets.ygnas))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Ygnas\'s Resolve]')
+						add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill + Ygnas\'s Resolve]')
 					end
 				else
 					equip(sets.hachirin)
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill]')
-					end				
+						add_to_chat(8,'[Equipped Set: Hachirin-no-obi + Hybrid Weapon Skill]')
+					end
 				end
 			elseif buffactive['Reive Mark'] then
 				equip(set_combine(sets.hybridws, sets.ygnas))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Ygnas\'s Resolve]')
+					add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill + Ygnas\'s Resolve]')
 				end
 			else
 				equip(sets.hybridws)
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Hybrid Weapon Skill]')
+					add_to_chat(8,'[Equipped Set: Hybrid Weapon Skil]')
 				end
 			end
 		elseif spell.english == 'Tachi: Ageha' then
 			equip(sets.ageha)
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Tachi: Ageha]')
+				add_to_chat(8,'[Equipped Set: Tachi: Ageha]')
 			end
-		elseif player.tp >= CappedTPThreshhold then
-			if player.attack >= AttackCapThreshhold then
-				if buffactive['Reive Mark'] then
+		elseif player.tp >= CappedTPThreshold then
+			if player.attack >= AttackCapThreshold then
+				if sets[spell.english] then
+					if buffactive['Reive Mark'] then
+						equip(set_combine(sets[spell.english], sets.attackcapws, sets.cappedtpws, sets.ygnas))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Attack Cap + Capped TP + Ygnas\'s Resolve]')
+						end
+					else
+						equip(set_combine(sets[spell.english], sets.attackcapws, sets.cappedtpwss))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Attack Cap + Capped TP]')
+						end
+					end
+				elseif buffactive['Reive Mark'] then
 					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpws, sets.ygnas))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Capped TP + Ygnas\'s Resolve]')
-					end
-				elseif spell.english == 'Tachi: Shoha' then
-					equip(set_combine(sets.shoha, sets.attackcapws, sets.cappedtpws))
-					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Attack Cap + Capped TP]')
-					end
-				elseif spell.english == 'Stardiver' then
-					equip(set_combine(sets.stardiver, sets.attackcapws, sets.cappedtpws))
-					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Stardiver + Attack Cap + Capped TP]')
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Attack Cap + Capped TP + Ygnas\'s Resolve]')
 					end
 				else
-					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpws))
+					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpwss))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Capped TP]')
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Attack Cap + Capped TP]')
 					end
 				end
 			else
-				if buffactive['Reive Mark'] then
+				if sets[spell.english] then
+					if buffactive['Reive Mark'] then
+						equip(set_combine(sets[spell.english], sets.cappedtpws, sets.ygnas))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Capped TP + Ygnas\'s Resolve]')
+						end
+					else
+						equip(set_combine(sets[spell.english], sets.cappedtpwss))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: '..spell.english..' + Capped TP]')
+						end
+					end
+				elseif buffactive['Reive Mark'] then
 					equip(set_combine(sets.ws, sets.cappedtpws, sets.ygnas))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP + Ygnas\'s Resolve]')
-					end
-				elseif spell.english == 'Tachi: Shoha' then
-					equip(set_combine(sets.shoha, sets.cappedtpws))
-					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Capped TP]')
-					end
-				elseif spell.english == 'Stardiver' then
-					equip(set_combine(sets.stardiver, sets.cappedtpws))
-					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Stardiver + Capped TP]')
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Capped TP + Ygnas\'s Resolve]')
 					end
 				else
-					equip(set_combine(sets.ws, sets.cappedtpws))
+					equip(set_combine(sets.ws, sets.cappedtpwss))
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Capped TP]')
+						add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Capped TP]')
 					end
 				end
 			end
-		elseif player.attack > AttackCapThreshhold then
-			if buffactive['Reive Mark'] then
+		elseif player.attack >= AttackCapThreshold then
+			if sets[spell.english] then
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets[spell.english], sets.attackcapws, sets.ygnas))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: '..spell.english..' + Attack Cap + Ygnas\'s Resolve]')
+					end
+				else
+					equip(set_combine(sets[spell.english], sets.attackcapwss))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: '..spell.english..' + Attack Cap]')
+					end
+				end
+			elseif buffactive['Reive Mark'] then
 				equip(set_combine(sets.ws, sets.attackcapws, sets.ygnas))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap + Ygnas\'s Resolve]')
-				end
-			elseif spell.english == 'Tachi: Shoha' then
-				equip(set_combine(sets.shoha, sets.attackcapws))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Tachi: Shoha + Attack Cap]')
-				end
-			elseif spell.english == 'Stardiver' then
-				equip(set_combine(sets.stardiver, sets.attackcapws))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Stardiver + Attack Cap]')
+					add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Attack Cap + Ygnas\'s Resolve]')
 				end
 			else
-				equip(set_combine(sets.ws, sets.attackcapws))
+				equip(set_combine(sets.ws, sets.attackcapwss))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Attack Cap]')
-				end
-			end
-		elseif spell.english == 'Tachi: Shoha' then
-			equip(sets.shoha)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Shoha: Ageha]')
-			end
-		elseif spell.english == 'Stardiver' then
-			equip(sets.stardiver)
-			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Set: Stardiver]')
-			end
-		elseif Mode == 'Mode3' then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.accws, sets.ygnas))
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill + Ygnas\'s Resolve]')
-				end
-			else
-				equip(sets.accws)
-				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Accuracy Weapon Skill]')
+					add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Attack Cap]')
 				end
 			end
 		else
-			if buffactive['Reive Mark'] then
+			if sets[spell.english] then
+				if buffactive['Reive Mark'] then
+					equip(set_combine(sets[spell.english], sets.ygnas))
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: '..spell.english..' + Ygnas\'s Resolve]')
+					end
+				else
+					equip(sets[spell.english])
+					if Debug == 'On' then
+						add_to_chat(8,'[Equipped Set: '..spell.english..']')
+					end
+				end
+			elseif buffactive['Reive Mark'] then
 				equip(set_combine(sets.ws, sets.ygnas))
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill + Ygnas\'s Resolve]')
+					add_to_chat(8,'[Equipped Set: Weapon Skill - Basic + Ygnas\'s Resolve]')
 				end
 			else
 				equip(sets.ws)
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[Equipped Set: Weapon Skill]')
+					add_to_chat(8,'[Equipped Set: Weapon Skill - Basic]')
 				end
 			end
 		end
-	elseif spell.english == 'Meditate' and windower.ffxi.get_ability_recasts()[134] <= 1 then
+	elseif spell.english == 'Meditate' and windower.ffxi.get_ability_recasts()[134] < 2 then
 		equip(sets.meditate)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Meditate]')
+			add_to_chat(8,'[Equipped Set: Meditate]')
 		end
-	elseif string.find(spell.english,'Jump') and windower.ffxi.get_ability_recasts()[158] <= 1 then
+	elseif string.find(spell.english,'Jump') and windower.ffxi.get_ability_recasts()[158] < 2 then
 		equip(sets.jump)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Jump]')
+			add_to_chat(8,'[Equipped Set: Jump]')
 		end
-	elseif spell.english == 'Warding Circle' and windower.ffxi.get_ability_recasts()[135] <= 1 then
+	elseif spell.english == 'Warding Circle' and windower.ffxi.get_ability_recasts()[135] < 2 then
 		equip(sets.wardingcircle)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Warding Circle]')
+			add_to_chat(8,'[Equipped Set: Warding Circle]')
 		end
-	elseif spell.english == 'Shikikoyo' and windower.ffxi.get_ability_recasts()[136] <= 1 then
+	elseif spell.english == 'Shikikoyo' and windower.ffxi.get_ability_recasts()[136] < 2 then
 		equip(sets.shikikoyo)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Shikikoyo]')
+			add_to_chat(8,'[Equipped Set: Shikikoyo]')
 		end
-	elseif spell.english == 'Blade Bash' and windower.ffxi.get_ability_recasts()[137] <= 1 then
+	elseif spell.english == 'Blade Bash' and windower.ffxi.get_ability_recasts()[137] < 2 then
 		equip(sets.bladebash)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Blade Bash]')
+			add_to_chat(8,'[Equipped Set: Blade Bash]')
 		end
-	elseif spell.english == 'Sengikori' and windower.ffxi.get_ability_recasts()[141] <= 1 then
+	elseif spell.english == 'Sengikori' and windower.ffxi.get_ability_recasts()[141] < 2 then
 		equip(sets.sengikori)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Sengikori]')
+			add_to_chat(8,'[Equipped Set: Sengikori]')
 		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
 		equip(sets.hwater)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Holy Water]')
+			add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
 	end
 end
@@ -1746,7 +1833,7 @@ function midcast(spell)
 	if spell.type == 'Trust' then
 		equip(sets.unity)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: Unity]')
+			add_to_chat(8,'[Equipped Set: Unity]')
 		end
 	end
 end
@@ -1764,24 +1851,27 @@ function aftercast(spell)
 		Stance = 'Hasso' --Set Stance to Hasso when we use it
 		send_command('text stance bg_transparency 150')
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Stance set to Hasso]')
+			add_to_chat(8,'[Stance set to Hasso]')
 		end
 		StanceTimer = 300
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[StanceTimer set to 300]')
+			add_to_chat(8,'[StanceTimer set to 300]')
 		end
-		choose_set() --run the choose_set function to choose based on our status.
 	elseif spell.english == 'Seigan' and not spell.interrupted then
 		Stance = 'Seigan' --Set Stance to Seigan when we use it
 		send_command('text stance bg_transparency 150')
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Stance set to Seigan]')
+			add_to_chat(8,'[Stance set to Seigan]')
 		end
 		StanceTimer = 300
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[StanceTimer set to 300]')
+			add_to_chat(8,'[StanceTimer set to 300]')
 		end
-		choose_set() --run the choose_set function to choose based on our status.
+	elseif (spell.english == 'Super Jump' or spell.english == 'High Jump') and not spell.interrupted and player.hp <= AutoSaveThreshold then
+		AutoSaveUsed = true
+		if Debug == 'On' then
+			add_to_chat(8,'[AutoSaveUsed set to True]')
+		end
 	end
 	choose_set()
 	if AutoStance and StanceTimer < AutoStanceWindow and not buffactive['Amnesia'] and not spell.interrupted then
@@ -1806,7 +1896,7 @@ end
 -------------------------------------------
 
 function status_change(new,old)
-		choose_set() --run this any time your status changes (engage, disengage, rest)
+	choose_set() --run this any time your status changes (engage, disengage, rest)
 	if new == 'Engaged' or new == 'Idle' then
 		if AutoStance and StanceTimer < AutoStanceWindow and not buffactive['Amnesia'] and not TownZones:contains(world.area) then
 			if Stance == 'Seigan' and windower.ffxi.get_ability_recasts()[139] == 0 then
@@ -1819,22 +1909,22 @@ function status_change(new,old)
 end
 
 -------------------------------------------
---             SHOW/HIDE HUD             --
+--          CUTSCENE: HIDE HUD           --
 -------------------------------------------
 
 windower.register_event('status change', function(status)
-    if status == 4 and ShowHUD == true then --In a cutscene: Hide the HUD
-		ShowHUD = false
+    if status == 4 and InCS == false and ShowHUD == true then --In a cutscene: Hide the HUD
+		InCS = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to False]')
+			add_to_chat(8,'[InCS set to True]')
 		end
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text meditate hide;text sekkanoki hide;text sengikori hide;text hagakure hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text hasso hide;text seigan hide;text stance hide;text notifications hide;text debuffs hide;text weapons hide')
-    elseif status ~= 4 and ShowHUD == false then --Out of cutscene: Show the HUD
-		ShowHUD = true
+		windower.send_command('gs c HideHUD')
+    elseif status ~= 4 and InCS == true and ShowHUD == true then --Out of cutscene: Show the HUD
+		InCS = false
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to True]')
+			add_to_chat(8,'[InrCS set to False]')
 		end
-		send_command('text bg1 show;text bg2 show;text bg3 show;text meditate show;text sekkanoki show;text sengikori show;text hagakure show;text aggressor show;text berserk show;text highjump show;text superjump show;text hasso show;text seigan show;text stance show;text notifications show;text debuffs show;text weapons show')
+		windower.send_command('gs c ShowHUD')
     end
 end)
 
@@ -1852,23 +1942,23 @@ windower.register_event('gain buff', function(buff)
 		if not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already DOT'd, have more than 50 HP, and are engaged,
 			equip({neck="Vim Torque"}) --equip the Vim Torque to wake us up
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Equipped Item: Vim Tourque]')
+				add_to_chat(8,'[Equipped Item: Vim Tourque]')
 			end
 		end
 	elseif buff == 7 or Buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the DT Override set
 		equip(sets.dtoverride)
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[Equipped Set: DT Override]')
+			add_to_chat(8,'[Equipped Set: DT Override]')
 		end
 	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[DangerCountdown set to '..DangerRepeat..']')
+			add_to_chat(8,'[DangerCountdown set to '..DangerRepeat..']')
 		end
 		if DoomAlert == 'On' then
 			Doom = true --Setting "Doom" to true now, so that it can get set to false if we die, that way we don't announce that doom is off when we raise from the dead
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Doom set to True]')
+				add_to_chat(8,'[Doom set to True]')
 			end
 			send_command('input /p '..DoomOnText..'')
 		end
@@ -1876,7 +1966,7 @@ windower.register_event('gain buff', function(buff)
 			HWaterRecast = 3 --Set the recast timer so we can start using the Holy Waters
 			HWater = true
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[HWaterRecast set to 3 | HWater set to True]')
+				add_to_chat(8,'[HWaterRecast set to 3 | HWater set to True]')
 			end
 		end
 	elseif buff == 17 then --Charm
@@ -1899,7 +1989,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Food Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
@@ -1910,7 +2000,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Reraise Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
@@ -1921,7 +2011,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Vorseal Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 253 then --Signet
@@ -1932,7 +2022,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Signet Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 256 then --Sanction
@@ -1943,7 +2033,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Sanction Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 268 then --Sigil
@@ -1954,7 +2044,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Sigil Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 512 then --Ionis
@@ -1965,7 +2055,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Ionis Has Worn Off »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 1 and Alive == true then --Weakness
@@ -1976,7 +2066,7 @@ windower.register_event('lose buff', function(buff)
 			send_command('text notifications text "«« Weakness Has Worn Off »»";text notifications color 75 255 75;text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	elseif buff == 2 or buff == 19 or buff == 7 or buff == 17 then --lose sleep, petrify, or charm run choose_set since we changed gear for those
@@ -1984,12 +2074,12 @@ windower.register_event('lose buff', function(buff)
 	elseif buff == 15 then --Doom
 		DangerCountdown = 0 --Set to 0 to turn the sound off when we are no longer Doomed
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[DangerCountdown set to 0]')
+			add_to_chat(8,'[DangerCountdown set to 0]')
 		end
 		if DoomAlert == 'On' and Doom == true then
 			Doom = false --"Doom" gets set to false so that we don't announce that doom is off when we raise from the dead after dying to it.
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Doom set to False]')
+				add_to_chat(8,'[Doom set to False]')
 			end
 			send_command('input /p '..DoomOffText..'')
 		end
@@ -2010,7 +2100,7 @@ windower.register_event('tp change',function()
 			send_command('text notifications text "«« 3000 TP »»";text notifications color '..Aftermath3color..';text notifications bg_transparency 1')
 			NotiCountdown = NotiDelay
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+				add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 			end
 		end
 	end
@@ -2023,19 +2113,19 @@ end)
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
 
-	--Zoning check for HUD
+	--Zoning: hide HUD
 	local pos = windower.ffxi.get_position()
-	if pos == "(?-?)" and ShowHUD then
-		windower.send_command('gs c HideHUD')
-		ShowHUD = false
+	if pos == "(?-?)" and Zoning == false and ShowHUD == true then
+		send_command('gs c HideHUD')
+		Zoning = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to False]')
+			add_to_chat(8,'[Zoning set to True]')
 		end
-	elseif pos ~= "(?-?)" and not ShowHUD then
-		windower.send_command('gs c ShowHUD')
-		ShowHUD = true
+	elseif pos ~= "(?-?)" and Zoning == true and ShowHUD == true then
+		send_command('gs c ShowHUD')
+		Zoning = false
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[ShowHUD set to True]')
+			add_to_chat(8,'[Zoning set to False]')
 		end
 	end
 
@@ -2171,20 +2261,20 @@ windower.register_event('prerender', function()
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+				add_to_chat(8,'[NotiCountdown set to -1]')
 			end
 			Alive = false
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[Alive set to False]')
+				add_to_chat(8,'[Alive set to False]')
 			end
 			Doom = false --turn this off so it doesn't trigger the "doom is off" notification once we raise
 			if Debug == 'On' then
-				windower.add_to_chat(8,'Doom set to False]')
+				add_to_chat(8,'Doom set to False]')
 			end
 			if LowHP == true then
 				LowHP = false
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[LowHP set to False]')
+					add_to_chat(8,'[LowHP set to False]')
 				end
 			end
 		end
@@ -2195,7 +2285,7 @@ windower.register_event('prerender', function()
 			end
 			NotiCountdown = -1
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[NotiCountdown set to -1]')
+				add_to_chat(8,'[NotiCountdown set to -1]')
 			end
 			send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
 		end
@@ -2203,11 +2293,11 @@ windower.register_event('prerender', function()
 			if LowHP == false then
 				LowHP = true
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[LowHP set to True]')
+					add_to_chat(8,'[LowHP set to True]')
 				end
 				DangerCountdown = DangerRepeat
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[DangerCountdown set to '..DangerRepeat..']')
+					add_to_chat(8,'[DangerCountdown set to '..DangerRepeat..']')
 				end
 				choose_set()
 			end
@@ -2215,9 +2305,15 @@ windower.register_event('prerender', function()
 			send_command('gs c ClearNotifications')
 			LowHP = false
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[LowHP set to False]')
+				add_to_chat(8,'[LowHP set to False]')
 			end
 			choose_set()
+		end
+		if player.hp > AutoSaveThreshold and AutoSaveUsed == true then --when HP goes back above a certain amountafter we use a "save", turn off the AutoSave flag so we can use another "save"
+			AutoSaveUsed = false
+			if Debug == 'On' then
+				add_to_chat(8,'[AutoSaveUsed set to False]')
+			end
 		end
 	end
 
@@ -2230,7 +2326,7 @@ windower.register_event('prerender', function()
 			send_command('gs c Lockstyle')
 			AutoLockstyleRun = false
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[AutoLockstyleRun set to False]')
+				add_to_chat(8,'[AutoLockstyleRun set to False]')
 			end
 		end
 		if HWaterRecast == 3 then
@@ -2239,16 +2335,20 @@ windower.register_event('prerender', function()
 		elseif HWaterRecast == 0 and HWater == true and buffactive['Doom'] then
 			HWaterRecast = 3
 			if Debug == 'On' then
-				windower.add_to_chat(8,'[HWaterRecast set to 3]')
+				add_to_chat(8,'[HWaterRecast set to 3]')
 			end
 		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
-		if AutoSuperJump == 'On' and player.sub_job == 'DRG' and player.sub_job_level >= 50 and player.hp <= AutSJmpThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and windower.ffxi.get_ability_recasts()[160] == 0 and not TownZones:contains(world.area) then
-			send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
+		if AutoSave == 'On' and player.sub_job == 'DRG' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep'] or Stance == 'Seigan') and player.status == "Engaged" and not TownZones:contains(world.area) then
+			if player.sub_job_level >= 50 and windower.ffxi.get_ability_recasts()[160] == 0 then
+				send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
+			elseif player.sub_job_level >= 35 and windower.ffxi.get_ability_recasts()[159] == 0 then
+				send_command('input /ja "High Jump" <t>;wait .5;input /ja "High Jump <t>')
+			end
 		end
 		if player.equipment.main == nil or player.equipment.sub == nil then
-			EquipMain = 'Weapon loading...'
+			EquipMain = 'Weapons loading...'
 		else
 			EquipMain = player.equipment.main
 		end
@@ -2268,10 +2368,7 @@ windower.register_event('prerender', function()
 				end
 			end
 			if buffactive['Hasso'] then --Hasso is up, so we're in Hasso Stance
-				Stance = 'Hasso'
-				if Debug == 'On' then
-					--windower.add_to_chat(8,'[Stance set to Hasso]')
-				end
+				--Stance = 'Hasso'
 				if StanceTimer == 0 then
 					send_command('text stance text "Stance: Hasso ('..Mode1Name..')";text stance bg_color '..HassoStanceColor..'')
 				elseif StanceTimer <= 20 then
@@ -2286,10 +2383,7 @@ windower.register_event('prerender', function()
 					send_command('text stance text "Stance: Hasso ('..Mode4Name..')";text stance bg_color '..HassoStanceColor..'')
 				end
 			elseif buffactive['Seigan'] then --Seigan is up, so we're in Seigan Stance
-				Stance = 'Seigan'
-				if Debug == 'On' then
-					--windower.add_to_chat(8,'[Stance set to Seigan]')
-				end
+				--Stance = 'Seigan'
 				if StanceTimer <= 20 then
 					send_command('text stance text "Stance: Wearing off in '..StanceTimer..'";text stance bg_color '..SeiganStanceColor..'')
 				else
@@ -2309,12 +2403,12 @@ windower.register_event('prerender', function()
 						send_command('text notifications text "«« No Reraise »»";text notifications color 255 50 50;text notifications bg_transparency 1')
 						NotiCountdown = NotiDelay
 						if Debug == 'On' then
-							windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+							add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 						end
 					end
 					RRRCountdown = RRReminderTimer --start the timer back up
 					if Debug == 'On' then
-						windower.add_to_chat(8,'[RRRCountdown set to '..RRReminderTimer..']')
+						add_to_chat(8,'[RRRCountdown set to '..RRReminderTimer..']')
 					end
 				end
 			end
@@ -2325,7 +2419,7 @@ windower.register_event('prerender', function()
 				send_command('text notifications text "Status: LOW HP";text notifications bg_transparency 200;text notifications color 0 0 0;text notifications bg_color 255 255 255;wait .5;text notifications bg_color 255 204 51')
 				NotiCountdown = -1
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[NotiCountdown set to -1]')
+					add_to_chat(8,'[NotiCountdown set to -1]')
 				end
 			end
 			if (NotiDoom == 'On' and buffactive['Doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
@@ -2338,7 +2432,7 @@ windower.register_event('prerender', function()
 				send_command('gs c ClearNotifications')
 				NotiCountdown = -1
 				if Debug == 'On' then
-					windower.add_to_chat(8,'[NotiCountdown set to -1]')
+					add_to_chat(8,'[NotiCountdown set to -1]')
 				end
 			end
 			--Moving text object to their appropriate places
@@ -2396,49 +2490,79 @@ windower.register_event('prerender', function()
 			end
 			--Recast color updates - decide the colors:
 			if MeditateRecast == 0 then MeditateColor = '255 50 50'
+			elseif MeditateRecast < 2 then
+				MeditateColor = '255 165 0'
+				send_command('wait .25;text meditate color 255 255 125;wait .25;text meditate color 255 165 0;wait .25;text meditate color 255 255 125')
 			else MeditateColor = '255 165 0'
 			end
 			if buffactive['Sekkanoki'] then SekkanokiColor = '75 255 75'
+			elseif SekkanokiRecast < 2 and SekkanokiRecast ~= 0 then
+				SekkanokiColor = '255 165 0'
+				send_command('wait .25;text sekkanoki color 255 255 125;wait .25;text sekkanoki color 255 165 0;wait .25;text sekkanoki color 255 255 125')
 			elseif SekkanokiRecast > 0 then SekkanokiColor = '255 165 0'
 			else SekkanokiColor = '255 50 50'
 			end
 			if buffactive['Sengikori'] then SengikoriColor = '75 255 75'
+			elseif SengikoriRecast < 2 and SengikoriRecast ~= 0 then
+				SengikoriColor = '255 165 0'
+				send_command('wait .25;text sengikori color 255 255 125;wait .25;text sengikori color 255 165 0;wait .25;text sengikori color 255 255 125')
 			elseif SengikoriRecast > 0 then SengikoriColor = '255 165 0'
 			else SengikoriColor = '255 50 50'
 			end
 			if buffactive['Hagakure'] then HagakureColor = '75 255 75'
+			elseif HagakureRecast < 2 and HagakureRecast ~= 0 then
+				HagakureColor = '255 165 0'
+				send_command('wait .25;text hagakure color 255 255 125;wait .25;text hagakure color 255 165 0;wait .25;text hagakure color 255 255 125')
 			elseif HagakureRecast > 0 then HagakureColor = '255 165 0'
 			else HagakureColor = '255 50 50'
 			end
 			if buffactive['Hasso'] then HassoColor = '75 255 75'
+			elseif HassoRecast < 2 and HassoRecast ~= 0 then
+				HassoColor = '255 165 0'
+				send_command('wait .25;text hasso color 255 255 125;wait .25;text hasso color 255 165 0;wait .25;text hasso color 255 255 125')
 			elseif HassoRecast > 0 then HassoColor = '255 165 0'
 			else HassoColor = '255 50 50'
 			end
 			if buffactive['Seigan'] then SeiganColor = '75 255 75'
+			elseif SeiganRecast < 2 and SeiganRecast ~= 0 then
+				SeiganColor = '255 165 0'
+				send_command('wait .25;text seigan color 255 255 125;wait .25;text seigan color 255 165 0;wait .25;text seigan color 255 255 125')
 			elseif SeiganRecast > 0 then SeiganColor = '255 165 0'
 			else SeiganColor = '255 50 50'
 			end
 			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
 				if buffactive['Aggressor'] then AggressorColor = '75 255 75'
+				elseif AggressorRecast < 2 and AggressorRecast ~= 0 then
+					AggressorColor = '255 165 0'
+					send_command('wait .25;text aggressor color 255 255 125;wait .25;text aggressor color 255 165 0;wait .25;text aggressor color 255 255 125')
 				elseif AggressorRecast > 0 then AggressorColor = '255 165 0'
 				else AggressorColor = '255 50 50'
 				end
 				if buffactive['Berserk'] then BerserkColor = '75 255 75'
+				elseif BerserkRecast < 2 and BerserkRecast ~= 0 then
+					BerserkColor = '255 165 0'
+					send_command('wait .25;text berserk color 255 255 125;wait .25;text berserk color 255 165 0;wait .25;text berserk color 255 255 125')
 				elseif BerserkRecast > 0 then BerserkColor = '255 165 0'
 				else BerserkColor = '255 50 50'
 				end
 			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
-				if HighJumpRecast == 0 then HighJumpColor = '255 50 50'
-				else HighJumpColor = '255 165 0'
+				if HighJumpRecast < 2 and HighJumpRecast ~= 0 then
+					HighJumpColor = '255 165 0'
+					send_command('wait .25;text highjump color 255 255 125;wait .25;text highjump color 255 165 0;wait .25;text highjump color 255 255 125')
+				elseif HighJumpRecast > 0 then HighJumpColor = '255 165 0'
+				else HighJumpColor = '255 50 50'
 				end
-				if SuperJumpRecast == 0 then SuperJumpColor = '255 50 50'
-				else SuperJumpColor = '255 165 0'
+				if SuperJumpRecast < 2 and SuperJumpRecast ~= 0 then
+					SuperJumpColor = '255 165 0'
+					send_command('wait .25;text superjump color 255 255 125;wait .25;text superjump color 255 165 0;wait .25;text superjump color 255 255 125')
+				elseif SuperJumpRecast > 0 then SuperJumpColor = '255 165 0'
+				else SuperJumpColor = '255 50 50'
 				end
 			end
 			--Recast color updates - print the colors:
 			send_command('text meditate color '..MeditateColor..'')
 			send_command('text sekkanoki color '..SekkanokiColor..'')
-			send_command('text Sengikori color '..SengikoriColor..'')
+			send_command('text sengikori color '..SengikoriColor..'')
 			send_command('text hagakure color '..HagakureColor..'')
 			send_command('text hasso color '..HassoColor..'')
 			send_command('text seigan color '..SeiganColor..'')
@@ -2475,13 +2599,20 @@ end)
 function sub_job_change(newSubjob, oldSubjob)
 	LockstyleDelay = 3
 	if Debug == 'On' then
-		windower.add_to_chat(8,'[LockstyleDelay set to 3]')
+		add_to_chat(8,'[LockstyleDelay set to 3]')
 	end
 	if AutoLockstyle == 'On' then
 		AutoLockstyleRun = true
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[AutoLockstyleRun set to True]')
+			add_to_chat(8,'[AutoLockstyleRun set to True]')
 		end
+	end
+	if SubDRGPage ~= "Off" and newSubjob == 'DRG' then
+		send_command('wait 2;input /macro set '..SubDRGPage..'')
+	elseif SubWARPage ~= "Off" and newSubjob == 'WAR' then
+		send_command('wait 2;input /macro set '..SubWARPage..'')
+	else
+		send_command('wait 2;input /macro set 1')
 	end
 end
 
@@ -2519,7 +2650,7 @@ windower.register_event('incoming text',function(org)
 		end
 		NotiCountdown = 180
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[NotiCountdown set to 180]')
+			add_to_chat(8,'[NotiCountdown set to 180]')
 		end
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
@@ -2546,17 +2677,17 @@ windower.register_event('incoming text',function(org)
 		end
 		NotiCountdown = NotiDelay
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
+			add_to_chat(8,'[NotiCountdown set to '..NotiDelay..']')
 		end
 	elseif org:find('Style lock mode enabled.') then
 		LockstyleDelay = 5
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[LockstyleDelay set to 5]')
+			add_to_chat(8,'[LockstyleDelay set to 5]')
 		end
 	elseif org:find('>> /item "Holy Water" <me>') then
 		HWater = false
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[HWater set to False]')
+			add_to_chat(8,'[HWater set to False]')
 		end
 		if LoadHUD == true then
 			send_command('text notifications text "«« Out Of Holy Waters »»";text notifications color 255 50 50;text notifications bg_transparency 1')
@@ -2592,7 +2723,7 @@ windower.register_event('action',function(act)
 		end
 		NotiCountdown = -1
 		if Debug == 'On' then
-			windower.add_to_chat(8,'[NotiCountdown set to -1]')
+			add_to_chat(8,'[NotiCountdown set to -1]')
 		end
 	end
 end)
