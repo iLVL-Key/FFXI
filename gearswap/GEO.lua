@@ -1366,7 +1366,7 @@ function precast(spell)
 		end
 	elseif string.find(spell.english,'Geo-') and LuopanActive == true and AutoFullCircle == 'On' and windower.ffxi.get_ability_recasts()[243] == 0 then
 		--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle instead
-		send_command('input /ja "Full Circle" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..''')
+		send_command('input /ja "Full Circle" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
 		cancel_spell()
 		return
 
