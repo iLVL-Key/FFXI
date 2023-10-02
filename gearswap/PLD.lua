@@ -606,7 +606,6 @@ Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch versio
 Version 12.0
 -No gear set changes.
 -Added Advanced Option to add commas to the damage numbers.
-- Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
 -Adjusted Weaponskill Missed notification to also display when a Weaponskill gets blinked.
 -Removed notifications for Blood Pacts because I don't know why I added it in there.
 
