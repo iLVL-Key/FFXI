@@ -21,7 +21,7 @@ The file structure should look like this:
 Each file has a unique HUD. Some are a little more unique than the others. All have up to 6 of the most commonly used recasts displayed and may change based on a few factors such as the Gear Mode you are currently in (switch to a tank mode and it will display defensive oriented abilities).  
 An ability/spell recast in RED means it is ready to use. GREEN means it is currently active. ORANGE means it is not active and not yet ready to use. Will give a short flash of YELLOW/ORANGE just before it is available to use again.
 ### BLU ###
-Image coming soon.
+![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
 
 ### GEO ###
 ![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/01b1ad30-6f03-4047-8ba2-4304574b2691)
