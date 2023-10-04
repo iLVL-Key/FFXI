@@ -24,7 +24,7 @@ An ability/spell recast in RED means it is ready to use. GREEN means it is curre
 Image coming soon.
 
 ### GEO ###
-Image coming soon.
+![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/01b1ad30-6f03-4047-8ba2-4304574b2691)
 
 ### MNK: ###
 ![HUD_MNK](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
@@ -33,7 +33,7 @@ Image coming soon.
 Image coming soon.
 
 ### RUN ###
-Image coming soon.
+![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)
 
 ### SAM ###
 Image coming soon.
