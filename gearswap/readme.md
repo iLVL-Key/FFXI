@@ -36,7 +36,7 @@ Image coming soon.
 ![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)
 
 ### SAM ###
-Image coming soon.
+![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
 
 ### SMN ###
 Image coming soon.
