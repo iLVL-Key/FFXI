@@ -49,14 +49,8 @@ Image coming soon.
 - When you load this file for the first time, your HUD may not be in a good position, or may be too large. If the HUD is not in a good position, go to the Heads Up Display options and adjust the HUDposX and HUDposY options, then save and reload the file. Adjust and repeat until positioned as desired. If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed. Suggested placement is center screen, just above your chat log.
 
 # Changelog #
+
 ### BLU: ###
-Version 17.0
-- Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
-- Adjusted HUD positioning options and text for clarity.
-- Adjusted HUD Ability recast colors. Will now give a short blink when an ability is becoming ready to use again.
-- Adjusted ability recast timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to fire off properly if you're camping that recast timer.
-- Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
-- Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
 
 Version 16.0
 - No gear set changes.
@@ -320,6 +314,7 @@ Version 15.0
 - Lots of code cleanup.
 
 ### GEO: ###
+
 Version 13.0
 - Added Black halo and Exudation gear sets.
 - Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
@@ -501,6 +496,10 @@ Version 11.0.0
 - Started from Blue Mage file version 11.30.21
 
 ### MNK: ###
+
+Version 6.1
+- Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
+
 Version 6.0.1
 - Adjusted HUD Ability recast colors. The short blink is now yellow, only using red when the ability is ready to use.
 - Fixed minor issue with WS code not including code for Reive status in a few situations.
@@ -542,6 +541,21 @@ Version 3.0
 - Started from Samurai file version 02.22.22 (Version Compatibility Codename: Tachi: Yukikaze)
 
 ### PLD: ###
+
+Version 13.0
+- Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
+- Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
+- Adjusted Page Option. Now defined for subbing BLU or WAR with a default of 1 for other subjobs.
+- Adjusted HUD positioning options and text for clarity.
+- Adjusted HUD Ability recasts. Removed Enlight and added Sentinel in its place.
+- Adjusted HUD Ability recast colors. Will now give a short blink when an ability is becoming ready to use again.
+- Adjusted ability recast and sub BLU AOE/single spell timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to fire off properly if you're camping that recast timer.
+- Adjusted sub BLU AOE/single spells to now check if a spell is set before attempting to cast.
+- Adjusted sub BLU AOE spells to include Feather Barrier in the list of spells to cycle through.
+- Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
+- Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
+- Fixed issue introduced with previous version where /BLU AOE spells would skip Sheep Song entirely.
+
 Version 12.0
 - No gear set changes.
 - Added Advanced Option to add commas to the damage numbers.
@@ -710,6 +724,19 @@ Version 11.0
 - Started from Blue Mage file version 02.01.22
 
 ### RUN: ###
+
+Version 8.0
+- Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
+- Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
+- Adjusted Page Option. Now defined for subbing BLU, DRK, WHM, PLD, SAM, or WAR with a default of 1 for other subjobs.
+- Adjusted HUD positioning options and text for clarity.
+- Adjusted HUD Ability recast colors. Will now give a short blink when an ability is becoming ready to use again.
+- Adjusted ability recast and sub BLU AOE/single spell timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to fire off properly if you're camping that recast timer.
+- Adjusted sub BLU AOE/single spells to now check if a spell is set before attempting to cast.
+- Adjusted sub BLU AOE spells to include Feather Barrier in the list of spells to cycle through.
+- Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
+- Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
+
 Version 7.0
 - No gear set changes.
 - Added Advanced Option to add commas to the damage numbers.
@@ -813,6 +840,10 @@ Version 6.0.0
 - Code cleanup.
 
 ### SAM: ###
+
+Version 13.1
+- Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
+
 Version 13.0
 - Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
 - Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
@@ -976,6 +1007,7 @@ Version 9.0
 - Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
 
 ### SMN: ###
+
 Version 10.0
 - Added Summoning and Garland of Bliss gear set.
 - Added Advanced Option for Avatar colors.
@@ -1106,6 +1138,11 @@ Version 8.0
 - Started from Geomancer file version 06.14.21
 
 ### WAR ###
+
+Version 7.1
+- Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
+- Updated the apostrophes used to define the TwoHandedWeapons and the DualWieldWeapons to quotation marks to avoid needing to escape any apostrophes in a weapons name.
+
 Version 7.0
 - Added Mode 1 Dual Wield gear set. This set will be used if you have one of the dual wield weapons equipped in the offhand that are listed in the Weapons sections directly above the gear sets.
 - Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
