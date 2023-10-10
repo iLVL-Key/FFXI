@@ -125,7 +125,7 @@ NotiPara			=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 -------------------------------------------
 
 ShowHUD				=	true	--Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
-StartMode			=	'Mode1'	--[Mode1/Mode2/Mode3]
+StartMode			=	'Mode1'	--[Mode1/Mode2/Mode3/Mode4]
 								--	Determines the Mode you will start in. Current Mode can be changed at any time by using any
 								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 ModeBind			=	'^g'	--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G (^g) is default.
@@ -134,7 +134,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
-AutoSaveThreshold	=	500		--If your HP goes below this number, a "save" will be used.
+AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
 CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
@@ -159,34 +159,49 @@ Aftermath3color	=	'255 255 50'	--Aftermath Level 3
 
 -- Equipping these weapons will trigger using the Two-Handed set in Mode 1. Add more weapons on new lines as needed.
 TwoHandedWeapons = S{
-	'Shining One',
-	'Chango',
-	'Ukonvasara',
-	'Lycurgos',
-	'Ragnarok',
-	'Bravura',
-	'Conqueror',
-	'Helheim',
-	'Laphria',
-	'War. Chopper',
-	'Agoge Chopper',
-	'Labraunda',
+	"Shining One",
+	"Chango",
+	"Ukonvasara",
+	"Lycurgos",
+	"Ragnarok",
+	"Bravura",
+	"Conqueror",
+	"Helheim",
+	"Laphria",
+	"War. Chopper",
+	"Agoge Chopper",
+	"Labraunda",
 }
 
 -- Equipping these weapons in the OFFHAND slot will trigger using the Dual Wield set in Mode 1. Add more weapons on new lines as needed.
 DualWieldWeapons = S{
-	'Fernagu',
-	'Thibron',
-	'Zantetsuken',
-	'Sangarius +1',
+	"Fernagu",
+	"Thibron",
+	"Zantetsuken",
+	"Sangarius +1",
 }
 
 -- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed
--- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {empty, empty},
+-- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 WeaponCycle = {
 	{"Naegling", "Blurred Shield +1"},
 	{"Ukonvasara", "Utu Grip"},
+	{"Chango", "Utu Grip"},
 	{"Shining One", "Utu Grip"},
+	--{"Main Slot", "Sub Slot"},
+}
+
+-- These are the Main/Sub combos that get added to the Weapon Cycle while in Abyssea for Procs. Add more pairs on new lines as needed
+-- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
+AbysseaProcCycle = {
+	{"Excalipoor II", "Blurred Shield +1"},
+	--{"Chocobo Wand", "Blurred Shield +1"},
+	--{"Yagyu Shortblade", "Blurred Shield +1"},
+	--{"Hapy Staff", "Flanged Grip"},
+	--{"Melon Slicer", "Flanged Grip"},
+	--{"Ark Scythe", "Flanged Grip"},
+	--{"Za'Dha Chopper", "Flanged Grip"},
+	--{"Sha Wujing's Lance", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -448,16 +463,21 @@ end
 
 
 
-FileVersion = '7.0'
+FileVersion = '7.1'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
-MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+MAJOR version updates add new feature(s). Usually require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
+PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 7.1
+- Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
+- Updated the apostrophes used to define the TwoHandedWeapons and the DualWieldWeapons to quotation marks to avoid needing to escape any apostrophes in a weapons name.
 
 Version 7.0
 - Added Mode 1 Dual Wield gear set. This set will be used if you have one of the dual wield weapons equipped in the offhand that are listed in the Weapons sections directly above the gear sets.
@@ -561,6 +581,15 @@ Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 DangerCountdown = 0
 NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
 WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
+
+--create a new table that combines both the WeaponCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
+local WeaponCyclePlusAbyssea = {}
+for _, v in ipairs(WeaponCycle) do
+    table.insert(WeaponCyclePlusAbyssea, {v[1], v[2]})
+end
+for _, v in ipairs(AbysseaProcCycle) do
+    table.insert(WeaponCyclePlusAbyssea, {v[1], v[2]})
+end
 
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 AggressorRecast = 0
@@ -950,13 +979,21 @@ function self_command(command)
 	elseif command == 'HideHUD' then
 		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text aggressor hide;text berserk hide;text warcry hide;text restraint hide;text retaliation hide;text bloodrage hide;text loading hide;text mode hide;text notifications hide;text debuffs hide;text weapons hide')
 	elseif command == 'WC' then
-		WeaponCycleIndex = WeaponCycleIndex + 1
-		local pair = WeaponCycle[WeaponCycleIndex]
-        if pair == nil then
-            WeaponCycleIndex = 1
-        end
-		pair = WeaponCycle[WeaponCycleIndex]
+		if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
+			pair = WeaponCyclePlusAbyssea[WeaponCycleIndex]
+			if pair == nil then
+				WeaponCycleIndex = 1
+				pair = WeaponCyclePlusAbyssea[WeaponCycleIndex]
+			end
+		else --otherwise, use just the basic WeaponCycle table
+			pair = WeaponCycle[WeaponCycleIndex]
+			if pair == nil then
+				WeaponCycleIndex = 1
+				pair = WeaponCycle[WeaponCycleIndex]
+			end
+		end
 		equip({main=pair[1],sub=pair[2]})
+		WeaponCycleIndex = WeaponCycleIndex + 1
 	end
 end
 
