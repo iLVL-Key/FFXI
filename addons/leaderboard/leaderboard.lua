@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.5'
+_addon.version = '3.6'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -40,13 +40,13 @@ packets = require('packets')
 defaults = {}					-- In addition to the settings file, all of these are also configurable via commands in-game (//lb help).
 
 defaults.party_commands = true	-- Allow party/alliance members to trigger certain commands via chat while in Party/Lite Mode.
-defaults.flood_delay = 5		-- Sets the delay between incoming party commands, preventing party members from spamming commands.
+defaults.flood_delay = 5		-- Delay in seconds between incoming party commands, preventing party members from spamming commands.
 defaults.reminder = true		-- Display a reminder upon zoning that Leaderboard is running while in Party/Lite Mode.
 defaults.commas = true			-- Add commas to the scores.
 defaults.optout = {}			-- List of names to be excluded from data collection.
 defaults.mode = 'Silent'		-- Default mode Leaderboards starts in.
 defaults.rival = ''				-- Name of an optional Rival to track.
-defaults.taunt = 'I&apos;m beating you on %s. Just thought you should know.'	-- Text the taunt command sends your Rival
+defaults.taunt = "I'm beating you on %s. Just thought you should know."	-- Text the taunt command sends your Rival
 
 defaults.party_calls = T{}			-- Party/Lite Mode party chat calls for:
 defaults.party_calls.cure	= true	--  Cure, every 25k up to 100k then every 50k. Lite Mode: every 50k
@@ -83,7 +83,7 @@ defaults.basept.kill	= 1
 defaults.basept.ls		= 1
 defaults.basept.mb		= 2
 defaults.basept.murder	= 1
-defaults.basept.nuke	= 1
+defaults.basept.nuke	= 2
 defaults.basept.victim	= 1
 defaults.basept.sc		= 1
 defaults.basept.whiff	= 0
@@ -103,8 +103,8 @@ defaults.bonuspt.tenth	= 0
 
 -- Percent of points lost per
 defaults.pctloss = {}
-defaults.pctloss.death	= 5 -- A Murder will transfer this amount from the Murderer to the Victim
-defaults.pctloss.whiff	= 1
+defaults.pctloss.death	= 10 -- A Murder will also transfer this amount from the Murderer to the Victim
+defaults.pctloss.whiff	= 5
 
 defaults.first_load = true
 defaults.visible = true
@@ -196,6 +196,10 @@ local Heartbeat = 0
 local flood_timer = 0
 local box_display = 'hs'
 local zoning = false
+
+local partyCalloutsTable = {} -- Temporarily stores party chat callouts before they are printed to chat
+local partyCalloutsDelay = 2  -- Delay between checking for and printing said party chat callouts
+local partyCalloutsTimer = partyCalloutsDelay
 
 
 -- When logging in, show the box
@@ -599,49 +603,49 @@ end
 -- Update the point board
 function updatePointsBoards(board)
 
-	local indivPoints = live.individuals.point
+	local indPts = live.individuals.point
 	local base = settings.basept
 	local bonus = settings.bonuspt
 
 	if live.places[board] and live.places[board].first then
-		local points = (indivPoints[live.places[board].first.name] and indivPoints[live.places[board].first.name].score) or 0
-		indivPoints[live.places[board].first.name] = {score = points + base[board] + bonus.first, nines = 0, index = 0}
+		local points = (indPts[live.places[board].first.name] and indPts[live.places[board].first.name].score) or (not settings.optout[live.places[board].first.name] and 0) or 0
+		indPts[live.places[board].first.name] = {score = points + base[board] + bonus.first, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].second then
-		local points = (indivPoints[live.places[board].second.name] and indivPoints[live.places[board].second.name].score) or 0
-		indivPoints[live.places[board].second.name] = {score = points + base[board] + bonus.second, nines = 0, index = 0}
+		local points = (indPts[live.places[board].second.name] and indPts[live.places[board].second.name].score) or (not settings.optout[live.places[board].second.name] and 0) or 0
+		indPts[live.places[board].second.name] = {score = points + base[board] + bonus.second, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].third then
-		local points = (indivPoints[live.places[board].third.name] and indivPoints[live.places[board].third.name].score) or 0
-		indivPoints[live.places[board].third.name] = {score = points + base[board] + bonus.third, nines = 0, index = 0}
+		local points = (indPts[live.places[board].third.name] and indPts[live.places[board].third.name].score) or (not settings.optout[live.places[board].third.name] and 0) or 0
+		indPts[live.places[board].third.name] = {score = points + base[board] + bonus.third, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].fourth then
-		local points = (indivPoints[live.places[board].fourth.name] and indivPoints[live.places[board].fourth.name].score) or 0
-		indivPoints[live.places[board].fourth.name] = {score = points + base[board] + bonus.fourth, nines = 0, index = 0}
+		local points = (indPts[live.places[board].fourth.name] and indPts[live.places[board].fourth.name].score) or (not settings.optout[live.places[board].fourth.name] and 0) or 0
+		indPts[live.places[board].fourth.name] = {score = points + base[board] + bonus.fourth, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].fifth then
-		local points = (indivPoints[live.places[board].fifth.name] and indivPoints[live.places[board].fifth.name].score) or 0
-		indivPoints[live.places[board].fifth.name] = {score = points + base[board] + bonus.fifth, nines = 0, index = 0}
+		local points = (indPts[live.places[board].fifth.name] and indPts[live.places[board].fifth.name].score) or (not settings.optout[live.places[board].fifth.name] and 0) or 0
+		indPts[live.places[board].fifth.name] = {score = points + base[board] + bonus.fifth, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].sixth then
-		local points = (indivPoints[live.places[board].sixth.name] and indivPoints[live.places[board].sixth.name].score) or 0
-		indivPoints[live.places[board].sixth.name] = {score = points + base[board] + bonus.sixth, nines = 0, index = 0}
+		local points = (indPts[live.places[board].sixth.name] and indPts[live.places[board].sixth.name].score) or (not settings.optout[live.places[board].sixth.name] and 0) or 0
+		indPts[live.places[board].sixth.name] = {score = points + base[board] + bonus.sixth, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].seventh then
-		local points = (indivPoints[live.places[board].seventh.name] and indivPoints[live.places[board].seventh.name].score) or 0
-		indivPoints[live.places[board].seventh.name] = {score = points + base[board] + bonus.seventh, nines = 0, index = 0}
+		local points = (indPts[live.places[board].seventh.name] and indPts[live.places[board].seventh.name].score) or (not settings.optout[live.places[board].seventh.name] and 0) or 0
+		indPts[live.places[board].seventh.name] = {score = points + base[board] + bonus.seventh, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].eighth then
-		local points = (indivPoints[live.places[board].eighth.name] and indivPoints[live.places[board].eighth.name].score) or 0
-		indivPoints[live.places[board].eighth.name] = {score = points + base[board] + bonus.eighth, nines = 0, index = 0}
+		local points = (indPts[live.places[board].eighth.name] and indPts[live.places[board].eighth.name].score) or (not settings.optout[live.places[board].eighth.name] and 0) or 0
+		indPts[live.places[board].eighth.name] = {score = points + base[board] + bonus.eighth, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].ninth then
-		local points = (indivPoints[live.places[board].ninth.name] and indivPoints[live.places[board].ninth.name].score) or 0
-		indivPoints[live.places[board].ninth.name] = {score = points + base[board] + bonus.ninth, nines = 0, index = 0}
+		local points = (indPts[live.places[board].ninth.name] and indPts[live.places[board].ninth.name].score) or (not settings.optout[live.places[board].ninth.name] and 0) or 0
+		indPts[live.places[board].ninth.name] = {score = points + base[board] + bonus.ninth, nines = 0, index = 0}
 	end
 	if live.places[board] and live.places[board].tenth then
-		local points = (indivPoints[live.places[board].tenth.name] and indivPoints[live.places[board].tenth.name].score) or 0
-		indivPoints[live.places[board].tenth.name] = {score = points + base[board] + bonus.tenth, nines = 0, index = 0}
+		local points = (indPts[live.places[board].tenth.name] and indPts[live.places[board].tenth.name].score) or (not settings.optout[live.places[board].tenth.name] and 0) or 0
+		indPts[live.places[board].tenth.name] = {score = points + base[board] + bonus.tenth, nines = 0, index = 0}
 	end
 
 end
@@ -729,15 +733,30 @@ function reportPlayerScores(name)
 		text1 = '(Points: '..text_point..') (High WS: '..text_hs..') (Low WS: '..text_ls..') (Skillchain: '..text_sc..') (Magic Burst: '..text_mb..')'
 		text2 = '(Whiffs: '..text_whiff..') (Nukes: '..text_nuke..') (Cures: '..text_cure..') (Victims: '..text_victim..') (Murders: '..text_murder..') (Deaths: '..text_death..') (Kills: '..text_kill..')'
 	end
-	say('/t '..name..' '..text1)
+	addToPartyCalloutsTable('/t '..name..' '..text1)
 	if text2 ~= '' then
-		coroutine.sleep(1.5)
-		say('/t '..name..' '..text2)
+		addToPartyCalloutsTable('/t '..name..' '..text2)
 	end
 end
 
 
---Reset boards
+-- Add a Party Chat Callout to the temporary table
+function addToPartyCalloutsTable(str)
+    table.insert(partyCalloutsTable, str)
+end
+
+
+-- Check if there are any party chat callouts stored in the partyChatCallouts table, print them to chat and remove them from the table if there are
+function checkPartyCalloutsTable()
+    if #partyCalloutsTable > 0 then
+        local message = partyCalloutsTable[1]
+        say(message)
+        table.remove(partyCalloutsTable, 1)
+    end
+end
+
+
+-- Reset boards
 function resetC()
 	live.individuals.cure = {}
 	live.places.cure = {}
@@ -870,15 +889,15 @@ windower.register_event('chat message', function(message, sender, mode)
 	elseif message:find('!lb optout') then
 		if settings.optout[l_name] then
 			removeFromOptout(sender)
-			say('/t '..sender..' [Leaderboard] You have been removed from the Optout list.')
+			addToPartyCalloutsTable('/t '..sender..' [Leaderboard] You have been removed from the Optout list.')
 		else
 			addToOptout(sender)
-			say('/t '..sender..' [Leaderboard] You have been added to the Optout list. Any related data has been deleted.')
+			addToPartyCalloutsTable('/t '..sender..' [Leaderboard] You have been added to the Optout list. Any related data has been deleted.')
 		end
 
 	-- Unknown command
 	elseif message:find('!lb') then
-		say('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c/d/hs/k/ls/m/mb/n/p/sc/v/w/report/optout\'')
+		addToPartyCalloutsTable('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c/d/hs/k/ls/m/mb/n/p/sc/v/w/report/optout\'')
 
 	end
 
@@ -908,8 +927,8 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 
 			local data = {}
 			data.actor = actor.id
-			data.actor_name = actor.name or 'unknown'
-			data.actor_lower_name = string.lower(actor.name) or 'unknown'
+			data.actor_name = actor.name or '[REDACTED]'
+			data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 
 			-- Make sure the actor is not on the Optout list
 			if settings.optout[data.actor_lower_name] then
@@ -948,7 +967,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			if settings.mode ~= "Silent" and settings.party_calls.kill then
 				local everyNumKills = kills % 10 -- returns the remainder after euclidean division (division by subtraction)
 				if everyNumKills == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
-					say('/p [KILL] '..data.actor_name..' has racked up '..addCommas(kills)..' kills!')
+					addToPartyCalloutsTable('/p [KILL] '..data.actor_name..' has racked up '..addCommas(kills)..' kills!')
 				end
 			end
 
@@ -969,8 +988,8 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 
 				local data = {}
 				data.target = target.id
-				data.target_name = target.name or 'unknown'
-				data.target_lower_name = string.lower(target.name) or 'unknown'
+				data.target_name = target.name or '[REDACTED]'
+				data.target_lower_name = string.lower(target.name) or '[REDACTED]'
 
 				-- Make sure the target is not on the Optout list
 				if settings.optout[data.target_lower_name] then
@@ -1016,15 +1035,15 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				-- Call out Deaths, depending on the mode and how many Deaths they are at
 				if settings.mode ~= "Silent" and settings.party_calls.death then
 					if deaths == 1 and data.target_lower_name == deathPlaces.first.name then
-						say('/p [DEATH] '..data.target_name..' is the first to die!')
+						addToPartyCalloutsTable('/p [DEATH] '..data.target_name..' is the first to die!')
 					elseif deaths == 1 then
-						say('/p [DEATH] '..data.target_name..' has their first death!')
+						addToPartyCalloutsTable('/p [DEATH] '..data.target_name..' has their first death!')
 					elseif deaths < 10 then
-						say('/p [DEATH] '..data.target_name..(' has died %s'):format(deaths < 5 and '' or 'yet ')..'again...')
+						addToPartyCalloutsTable('/p [DEATH] '..data.target_name..(' has died %s'):format(deaths < 5 and '' or 'yet ')..'again...')
 					else
 						local everyNumDeaths = deaths % 5 -- returns the remainder after euclidean division (division by subtraction)
 						if everyNumDeaths == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
-							say('/p [DEATH] '..data.target_name..' is up to '..addCommas(deaths)..' deaths!')
+							addToPartyCalloutsTable('/p [DEATH] '..data.target_name..' is up to '..addCommas(deaths)..' deaths!')
 						end
 					end
 				end
@@ -1043,11 +1062,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 
 				local data = {}
 				data.actor = actor.id
-				data.actor_name = actor.name or 'unknown'
-				data.actor_lower_name = string.lower(actor.name) or 'unknown'
+				data.actor_name = actor.name or '[REDACTED]'
+				data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 				data.target = target.id
-				data.target_name = target.name or 'unknown'
-				data.target_lower_name = string.lower(target.name) or 'unknown'
+				data.target_name = target.name or '[REDACTED]'
+				data.target_lower_name = string.lower(target.name) or '[REDACTED]'
 				local points_transfered = 0
 
 				-- Make sure the actor (Murderer) is not on the Optout list
@@ -1138,11 +1157,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				-- Call out Murders/Victims
 				if settings.mode ~= "Silent" and settings.party_calls.murder then
 					if not settings.optout[data.actor_lower_name] and not settings.optout[data.target_lower_name] then
-						say('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..data.target_name..' to Altana!')
+						addToPartyCalloutsTable('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..data.target_name..' to Altana!')
 					elseif not settings.optout[data.actor_lower_name] then
-						say('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed a victim to Altana!')
+						addToPartyCalloutsTable('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed a victim to Altana!')
 					elseif not settings.optout[data.target_lower_name] then
-						say('/p [MURDER/VICTIM] '..data.target_name..(' %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
+						addToPartyCalloutsTable('/p [MURDER/VICTIM] '..data.target_name..(' %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
 					end
 				end
 
@@ -1171,16 +1190,16 @@ windower.register_event('action',function(act)
 		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'unknown'
-		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.actor_name = actor.name or '[REDACTED]'
+		data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 		if act.category == 4 then 
-			data.cureThing = (spells[act.param] and spells[act.param].english) or 'unknown'
+			data.cureThing = (spells[act.param] and spells[act.param].english) or '[REDACTED]'
 		elseif act.category == 5 then
-			data.cureThing = (mabils[act.param] and mabils[act.param].english) or 'unknown'
+			data.cureThing = (mabils[act.param] and mabils[act.param].english) or '[REDACTED]'
 		elseif act.category == 6 or act.category == 13 or act.category == 14 then
-			data.cureThing = (jabils[act.param] and jabils[act.param].english) or 'unknown'
+			data.cureThing = (jabils[act.param] and jabils[act.param].english) or '[REDACTED]'
 		elseif act.category == 11 then
-			data.cureThing = (mabils[act.param] and mabils[act.param].english) or 'unknown'
+			data.cureThing = (mabils[act.param] and mabils[act.param].english) or '[REDACTED]'
 		end
 
 		-- Make sure the actor is not on the Optout list
@@ -1228,13 +1247,13 @@ windower.register_event('action',function(act)
 
 					-- Party Mode under 100k cures: call it out every 25k
 					if everyNumCures < 5 and settings.mode == 'Party' then
-						say('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+						addToPartyCalloutsTable('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
 
 					-- Party Mode over 100k cures, or Lite Mode: call it out every 50k
 					else
 						local everyOtherNum = everyNumCures % 2 -- returns the remainder after euclidean division (division by subtraction)
 						if everyOtherNum == 0 then -- if that leftover number equals 0, then the number is a multiple of 2
-							say('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+							addToPartyCalloutsTable('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
 						end
 
 					end
@@ -1257,14 +1276,14 @@ windower.register_event('action',function(act)
 		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'unknown'
-		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.actor_name = actor.name or '[REDACTED]'
+		data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 		data.target = act.targets[1].id
-		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'unknown'
+		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or '[REDACTED]'
 		data.damage = act.targets[1].actions[1].param
-		data.ws = weaponskills[act.param] and weaponskills[act.param].english or 'unknown'
-		data.spell = spells[act.param] and spells[act.param].english or 'unknown'
-		data.jabils = jabils[act.param] and jabils[act.param].english or 'unknown'
+		data.ws = weaponskills[act.param] and weaponskills[act.param].english or '[REDACTED]'
+		data.spell = spells[act.param] and spells[act.param].english or '[REDACTED]'
+		data.jabils = jabils[act.param] and jabils[act.param].english or '[REDACTED]'
 
 		-- Make sure the actor is not on the Optout list
 		if settings.optout[data.actor_lower_name] then
@@ -1301,9 +1320,17 @@ windower.register_event('action',function(act)
 			local name = data.actor_lower_name
 			local pct_loss = 100 - settings.pctloss.whiff
 			
+			-- local old_amount = (points[name] and points[name].score) or 0
+			-- local amount_lost = math.floor(points[name].score * (settings.pctloss.whiff / 100))
+			-- local new_amount = math.floor(points[name].score * (pct_loss / 100))
+			
 			if points[name] and points[name].score then
 				points[name].score = math.floor(points[name].score * (pct_loss / 100))
 			end
+
+			
+			--print('Name: '..name..' Old Amount: '..old_amount..' Amount Lost: '..amount_lost..' New Amount: '..new_amount)
+
 
 			-- Update the leaderboard places
 			local board = sortNamesHigh(live.individuals.whiff)
@@ -1323,18 +1350,22 @@ windower.register_event('action',function(act)
 			if settings.mode ~= "Silent" and settings.party_calls.whiff then
 				if whiffs == 1 then
 					if settings.mode == 'Party' then
-						say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
+						--say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
+						addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
 					end
 				elseif whiffs == 5 or whiffs == 10 then
-					say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
+					--say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
+					addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
 				elseif whiffs < 10 then
 					if settings.mode == 'Party' then
-						say:schedule(1,'/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
+						--say:schedule(1,'/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
+						addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
 					end
 				elseif whiffs > 10 then
 					local everyFiveWhiffs = whiffs % 5 -- returns the remainder after euclidean division (division by subtraction)
 					if everyFiveWhiffs == 0 then -- if that leftover number equals 0, then the number is a multiple of 5
-						say:schedule(1,'/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
+						--say:schedule(1,'/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
+						addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
 					end
 				end
 			end
@@ -1503,27 +1534,27 @@ windower.register_event('action',function(act)
 				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) and settings.party_calls.hs then
 					local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
 					if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
-						say('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						addToPartyCalloutsTable('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 				elseif newHSPlace < originalHSPlace and settings.party_calls.hs then
 					if newHSPlace == 1 then
 						if data.damage > originalHSfirstscore then
-							say('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+							addToPartyCalloutsTable('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 						end
 					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and settings.mode == 'Party' then
-						say('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						addToPartyCalloutsTable('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 
 				-- Did the actor move up the LOW WS leaderboard
 				elseif newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore and settings.party_calls.ls then
-					say('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+					addToPartyCalloutsTable('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 				elseif newLSPlace < originalLSPlace and settings.party_calls.ls then
 					if newLSPlace == 1 then
 						if data.damage < originalLSfirstscore then
-							say('/p [LOW WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+							addToPartyCalloutsTable('/p [LOW WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 						end
 					elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and settings.mode == 'Party' then
-						say('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+						addToPartyCalloutsTable('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 					end
 				end
 
@@ -1565,12 +1596,12 @@ windower.register_event('action',function(act)
 		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'unknown'
-		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.actor_name = actor.name or '[REDACTED]'
+		data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 		data.target = act.targets[1].id
-		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'unknown'
+		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or '[REDACTED]'
 		data.damage = act.targets[1].actions[1].add_effect_param
-		data.sc = sc[act.targets[1].actions[1].add_effect_animation] or 'unknown'
+		data.sc = sc[act.targets[1].actions[1].add_effect_animation] or '[REDACTED]'
 
 		-- Make sure the actor is not on the Optout list
 		if settings.optout[data.actor_lower_name] then
@@ -1652,17 +1683,15 @@ windower.register_event('action',function(act)
 			if newSCPlace == originalSCPlace and newSCPlace == 1 and (data.damage > originalSCfirstscore or data.damage == 99999) then
 				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
 				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
-					say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					addToPartyCalloutsTable('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			elseif newSCPlace < originalSCPlace then
 				if newSCPlace == 1 then
 					if data.damage > originalSCfirstscore then
-						coroutine.sleep(1.5)
-						say('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' takes the board! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						addToPartyCalloutsTable('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' takes the board! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and settings.mode == 'Party' then
-					coroutine.sleep(1.5)
-					say('/p [SKILLCHAIN] '..data.actor_name..' moves up to No.'..newSCPlace..'! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					addToPartyCalloutsTable('/p [SKILLCHAIN] '..data.actor_name..' moves up to No.'..newSCPlace..'! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			end
 		end
@@ -1700,15 +1729,15 @@ windower.register_event('action',function(act)
 		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'unknown'
-		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.actor_name = actor.name or '[REDACTED]'
+		data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 		data.target = act.targets[1].id
-		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or 'unknown'
+		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or '[REDACTED]'
 		data.damage = act.targets[1].actions[1].param
 		if act.category == 4 then
-			data.spell = spells[act.param] and spells[act.param].english or 'unknown'
+			data.spell = spells[act.param] and spells[act.param].english or '[REDACTED]'
 		else
-			data.spell = jabils[act.param] and jabils[act.param].english or 'unknown'
+			data.spell = jabils[act.param] and jabils[act.param].english or '[REDACTED]'
 		end
 
 		-- Make sure the actor is not on the Optout list
@@ -1791,17 +1820,15 @@ windower.register_event('action',function(act)
 			if newMBPlace == originalMBPlace and newMBPlace == 1 and (data.damage > originalMBfirstscore or data.damage == 99999) then
 				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
 				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
-					say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					addToPartyCalloutsTable('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			elseif newMBPlace < originalMBPlace then
 				if newMBPlace == 1 then
 					if data.damage > originalMBfirstscore then
-						coroutine.sleep(1)
-						say('/p [MAGIC BURST] '..uppercase(data.actor_name)..' takes the board! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						addToPartyCalloutsTable('/p [MAGIC BURST] '..uppercase(data.actor_name)..' takes the board! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and settings.mode == 'Party' then
-					coroutine.sleep(1)
-					say('/p [MAGIC BURST] '..data.actor_name..' moves up to No.'..newMBPlace..'! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					addToPartyCalloutsTable('/p [MAGIC BURST] '..data.actor_name..' moves up to No.'..newMBPlace..'! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			end
 		end
@@ -1838,8 +1865,8 @@ windower.register_event('action',function(act)
 		-- Determine the actors relevant data
 		local data = {}
 		data.actor = actor.id
-		data.actor_name = actor.name or 'unknown'
-		data.actor_lower_name = string.lower(actor.name) or 'unknown'
+		data.actor_name = actor.name or '[REDACTED]'
+		data.actor_lower_name = string.lower(actor.name) or '[REDACTED]'
 
 		-- Make sure the actor is not on the Optout list
 		if settings.optout[data.actor_lower_name] then
@@ -1883,13 +1910,13 @@ windower.register_event('action',function(act)
 
 				-- Party Mode under 1m nukes: call it out every 250k
 				if everyNumNukes < 5 and settings.mode == 'Party' then
-					say('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+					addToPartyCalloutsTable('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
 
 				-- Party Mode over 1m nukes, or Lite Mode: call it out every 500k
 				else
 					local everyOtherNum = everyNumNukes % 2 -- returns the remainder after euclidean division (division by subtraction)
 					if everyOtherNum == 0 then -- if that leftover number equals 0, then the number is a multiple of 2
-						say('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+						addToPartyCalloutsTable('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
 					end
 
 				end
@@ -1981,7 +2008,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			return
 		end
 		if settings.mode ~= "Silent" then
-			say('/p [Leaderboard] '..board..' data reset.')
+			addToPartyCalloutsTable('/p [Leaderboard] '..board..' data reset.')
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..(board..' data reset.'):color(8))
 		end
@@ -2148,7 +2175,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		end
 		live:save('all')
 		if settings.mode ~= "Silent" then
-			say(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).')
+			addToPartyCalloutsTable(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).')
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).'):color(36))
 		end
@@ -2159,7 +2186,7 @@ windower.register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'party' or (addcmd == 'mode' and (arg == 'party' or arg == 'p')) then
 		settings.mode = "Party"
 		settings:save('all')
-		say(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		addToPartyCalloutsTable(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 		coroutine.sleep(1)
 		windower.add_to_chat(220,'[Leaderboard] '..('Beware - Party Mode uses party chat heavily.'):color(8))
 		updateBox(box_display)
@@ -2169,7 +2196,7 @@ windower.register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'lite' or (addcmd == 'mode' and (arg == 'lite' or arg == 'l')) then
 		settings.mode = "Lite"
 		settings:save('all')
-		windower.add_to_chat(220,'[Leaderboard] '..(('Mode set to Lite (%s)'):format(live.paused and 'paused' or 'running')):color(8))
+		addToPartyCalloutsTable(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 		updateBox(box_display)
 
 
@@ -2239,7 +2266,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2279,7 +2306,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2318,7 +2345,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2358,7 +2385,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2398,7 +2425,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2438,7 +2465,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2478,7 +2505,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2518,7 +2545,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2554,7 +2581,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2594,7 +2621,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2634,7 +2661,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2674,7 +2701,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			say(text)
+			addToPartyCalloutsTable(text)
 		end
 
 
@@ -2864,7 +2891,7 @@ windower.register_event('addon command',function(addcmd, ...)
 				end
 			end
 		end
-		say("/t "..settings.rival.." "..(text):format(imBeatingText))
+		addToPartyCalloutsTable("/t "..settings.rival.." "..(text):format(imBeatingText))
 
 
 	-- Unknown command
@@ -2875,12 +2902,24 @@ windower.register_event('addon command',function(addcmd, ...)
 end)
 
 
--- Creates the countdown for the flood delay timer
+-- Creates a 1 second Heartbeat
 windower.register_event('prerender', function()
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
+		
+		-- Party command Flood delay
 		if flood_timer >= 1 then
 			flood_timer = flood_timer - 1
+		end
+
+		-- Party Chat Callout
+		if partyCalloutsTimer == 0 then
+			if #partyCalloutsTable > 0 then
+				checkPartyCalloutsTable()
+			end
+			partyCalloutsTimer = partyCalloutsDelay
+		else
+			partyCalloutsTimer = partyCalloutsTimer - 1
 		end
 	end
 end)
