@@ -653,8 +653,7 @@ else
 	send_command('wait 2;input /macro set 1')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
-send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
-send_command('alias showhud gs c ShowHUD') --creates the ShowHUD alias
+send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
