@@ -156,7 +156,7 @@ Aftermath3color	=	'255 255 50'	--Aftermath Level 3
 
 -- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
-WeaponCycler = {
+WeaponCycle = {
 	{"Spharai", empty},
 	{"Godhands", empty},
 	{"Xoanon", "Flanged Grip"},
