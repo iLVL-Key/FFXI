@@ -86,6 +86,11 @@ All commands must be prefixed with `!lb` (ex: `!lb report`).
 
 ### Version History
 
+**3.6**
+- Added a new buffer system that prevents when multiple things try to trigger chat at the same time, causing one of them to receive an error and not actually display in chat. In short, any chat messages are temporarily held in a table, then every 2 seconds the table is checked and the message at the top of the list is put to chat and removed from the table.
+- Adjusted the default % loss of points for a death (or transfer of said points in the case of a murder) from 5 to 10, and for whiffs from 1 to 5.
+- Adjusted unknown spells/abilities/etc to be named `[REDACTED]` instead of simply `unknown`. This mosly only happens on SMN Blood Pacts for [REDACTED] reasons.
+
 **3.5**
 - Added Point Board. Points are accrued continually over time. The rate that points are accrued changes based on which boards and in which place a player is in at each interval. The interval is dependant on party/alliance actions, no points are gained while nothing is happening. The more boards a player is on, and the higher place they are in, the faster their points will accrue. Death and Whiff Boards do not accrue points. Instead, a percentage of your current point total is lost each time. When a murder happens, the murderer loses a percentage of their current point total, and the victim is awarded that number of points. Point weights per board and per place, as well as percentages lost, are adjustable in the settings file.
 - Added Victim Board. A Murder (player killing another player) now produces both a Murder Board and a Victim Board. Callout settings for the Victim Board are linked to the Murder Board (since they are called out in the same line).
