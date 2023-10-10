@@ -50,7 +50,8 @@ Image coming soon.
 
 # Changelog #
 
-### BLU: ###
+<details>
+<summary>BLU</summary>
 
 Version 16.0
 - No gear set changes.
@@ -312,8 +313,9 @@ Version 15.0
 - Will now warn you when you have certain items equipped (Warp Ring, Reraise Hairpin, etc.)
 - Added a //help command that will print out the Notes/Options
 - Lots of code cleanup.
-
-### GEO: ###
+</details>
+<details>
+<summary>GEO</summary>
 
 Version 13.0
 - Added Black halo and Exudation gear sets.
@@ -494,8 +496,9 @@ Version 11.0.0
 12.02.21 (Version Compatibility Codename: Indi-Regen)
 - First version
 - Started from Blue Mage file version 11.30.21
-
-### MNK: ###
+</details>
+<details>
+<summary>MNK</summary>
 
 Version 6.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -539,8 +542,9 @@ Version 3.0
 04.15.22 (Version Compatibility Codename: Combo)
 - First version
 - Started from Samurai file version 02.22.22 (Version Compatibility Codename: Tachi: Yukikaze)
-
-### PLD: ###
+</details>
+<details>
+<summary>PLD</summary>
 
 Version 13.0
 - Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
@@ -722,8 +726,9 @@ Version 11.0
 02.01.22 (Version Compatibility Codename: Undead Killer)
 - First version
 - Started from Blue Mage file version 02.01.22
-
-### RUN: ###
+</details>
+<details>
+<summary>RUN</summary>
 
 Version 8.0
 - Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
@@ -838,8 +843,9 @@ Version 6.0.0
 - Fixed incorrect SP Ability timers when wearing gear that augments (adds additional time to) the ability.
 - Fixed an issue where the debuff background color change from Doom (flashing white and yellow) would get stuck on yellow after Doom wears off and you have another debuff on that takes over in the debuff spot.
 - Code cleanup.
-
-### SAM: ###
+</details>
+<details>
+<summary>SAM</summary>
 
 Version 13.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -1005,8 +1011,9 @@ Version 9.0
 02.01.22 (Version Compatibility Codename: Tachi: Enpi)
 - First version
 - Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
-
-### SMN: ###
+</details>
+<details>
+<summary>SMN</summary>
 
 Version 10.0
 - Added Summoning and Garland of Bliss gear set.
@@ -1136,8 +1143,9 @@ Version 8.0
 06.14.22 (Version Compatibility Codename: Inferno)
 - First version
 - Started from Geomancer file version 06.14.21
-
-### WAR ###
+</details>
+<details>
+<summary>WAR</summary>
 
 Version 7.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -1185,3 +1193,4 @@ Version 2.0
 04.15.22 (Version Compatibility Codename: Fast Blade)
 - First version
 - Started from Samurai file version 02.22.22 (Version Compatibility Codename: Tachi: Yukikaze)
+</details>
