@@ -778,8 +778,7 @@ if Page ~= "Off" then
 	send_command('wait 2;input /macro set '..Page..'')
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
-send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
-send_command('alias showhud gs c ShowHUD') --creates the ShowHUD alias
+send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 send_command('alias dt gs c DT') --creates the DT Override and alias
 if Debug == 'On' then
