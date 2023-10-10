@@ -132,7 +132,7 @@ DTBind				=	'^d'	--Sets the keyboard shortcut you would like to activate the Dam
 WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
-AutoSaveThreshold	=	500		--If your HP goes below this number, Super Jump will be used.
+AutoSaveThreshold	=	1000	--If your HP goes below this number, Super Jump will be used.
 CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will layer in the Capped TP WS set.
 AttackCapThreshold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
@@ -154,13 +154,23 @@ Aftermath3color		=	'255 255 50'	--Aftermath Level 3
 -------------------------------------------
 
 -- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed
--- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {empty, empty},
+-- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 WeaponCycle = {
 	{"Masamune", "Utu Grip"},
 	{"Dojikiri Yasutsuna", "Utu Grip"},
 	{"Amanomurakumo", "Utu Grip"},
 	{"Soboro Sukehiro", "Utu Grip"},
 	{"Shining One", "Utu Grip"},
+	--{"Main Slot", "Sub Slot"},
+}
+
+-- These are the Main/Sub combos that get added to the Weapon Cycle while in Abyssea for Procs. Add more pairs on new lines as needed
+-- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
+AbysseaProcCycle = {
+	{"Excalipoor II", "Blurred Shield +1"},
+	{"Yagyu Shortblade", "Blurred Shield +1"},
+	{"Melon Slicer", "Flanged Grip"},
+	{"Sha Wujing's Lance", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -473,16 +483,20 @@ end
 
 
 
-FileVersion = '13.0'
+FileVersion = '13.1'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
-MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+MAJOR version updates add new feature(s). Usually require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
+PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.1
+- Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
 
 Version 13.0
 - Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
@@ -705,6 +719,15 @@ Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 DangerCountdown = 0
 NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
 WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
+
+--create a new table that combines both the WeaponCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
+local WeaponCyclePlusAbyssea = {}
+for _, v in ipairs(WeaponCycle) do
+    table.insert(WeaponCyclePlusAbyssea, {v[1], v[2]})
+end
+for _, v in ipairs(AbysseaProcCycle) do
+    table.insert(WeaponCyclePlusAbyssea, {v[1], v[2]})
+end
 
 --set the initial recasts to 0, they will get updated in the Heartbeat function:
 MeditateRecast = 0
@@ -1093,13 +1116,21 @@ function self_command(command)
 	elseif command == 'HideHUD' then
 		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text meditate hide;text sekkanoki hide;text sengikori hide;text hagakure hide;text aggressor hide;text berserk hide;text highjump hide;text superjump hide;text hasso hide;text seigan hide;text stance hide;text notifications hide;text debuffs hide;text weapons hide')
 	elseif command == 'WC' then
-		WeaponCycleIndex = WeaponCycleIndex + 1
-		local pair = WeaponCycle[WeaponCycleIndex]
-        if pair == nil then
-            WeaponCycleIndex = 1
-        end
-		pair = WeaponCycle[WeaponCycleIndex]
+		if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
+			pair = WeaponCyclePlusAbyssea[WeaponCycleIndex]
+			if pair == nil then
+				WeaponCycleIndex = 1
+				pair = WeaponCyclePlusAbyssea[WeaponCycleIndex]
+			end
+		else --otherwise, use just the basic WeaponCycle table
+			pair = WeaponCycle[WeaponCycleIndex]
+			if pair == nil then
+				WeaponCycleIndex = 1
+				pair = WeaponCycle[WeaponCycleIndex]
+			end
+		end
 		equip({main=pair[1],sub=pair[2]})
+		WeaponCycleIndex = WeaponCycleIndex + 1
 	end
 end
 
