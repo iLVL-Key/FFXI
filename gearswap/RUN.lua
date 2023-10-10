@@ -855,8 +855,7 @@ else
 end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias mode gs c Mode') --creates the Mode alias
-send_command('alias hidehud gs c HideHUD') --creates the HideHUD alias
-send_command('alias showhud gs c ShowHUD') --creates the ShowHUD alias
+send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
 if Debug == 'On' then
