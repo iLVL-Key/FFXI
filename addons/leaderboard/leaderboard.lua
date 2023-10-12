@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '3.6'
+_addon.version = '3.6.1'
 _addon.author = 'Key'
 _addon.commands = {'leaderboard','lb'}
 
@@ -196,10 +196,11 @@ local Heartbeat = 0
 local flood_timer = 0
 local box_display = 'hs'
 local zoning = false
+local releaseValveOpen = true
 
-local partyCalloutsTable = {} -- Temporarily stores party chat callouts before they are printed to chat
-local partyCalloutsDelay = 2  -- Delay between checking for and printing said party chat callouts
-local partyCalloutsTimer = partyCalloutsDelay
+local chatMessageTable = {} -- Temporarily stores party chat callouts before they are printed to chat
+--local partyCalloutsDelay = 2  -- Delay between checking for and printing said party chat callouts
+--local partyCalloutsTimer = partyCalloutsDelay
 
 
 -- When logging in, show the box
@@ -733,26 +734,45 @@ function reportPlayerScores(name)
 		text1 = '(Points: '..text_point..') (High WS: '..text_hs..') (Low WS: '..text_ls..') (Skillchain: '..text_sc..') (Magic Burst: '..text_mb..')'
 		text2 = '(Whiffs: '..text_whiff..') (Nukes: '..text_nuke..') (Cures: '..text_cure..') (Victims: '..text_victim..') (Murders: '..text_murder..') (Deaths: '..text_death..') (Kills: '..text_kill..')'
 	end
-	addToPartyCalloutsTable('/t '..name..' '..text1)
+	newChatMessage('/t '..name..' '..text1)
 	if text2 ~= '' then
-		addToPartyCalloutsTable('/t '..name..' '..text2)
+		newChatMessage('/t '..name..' '..text2)
 	end
 end
 
 
--- Add a Party Chat Callout to the temporary table
-function addToPartyCalloutsTable(str)
-    table.insert(partyCalloutsTable, str)
+-- Handle a new chat message
+function newChatMessage(str)
+	
+	-- If the releaseValve is open, send the new chat message straight to chat and close the valve
+	if releaseValveOpen then
+		say(str)
+		releaseValveOpen = false
+		coroutine.sleep(1.5)
+		checkMessageTable()
+	
+	-- If the releaseValve is closed, add the new chat message to the chatMessageTable
+	else
+    	table.insert(chatMessageTable, str)
+	end
 end
 
 
--- Check if there are any party chat callouts stored in the partyChatCallouts table, print them to chat and remove them from the table if there are
-function checkPartyCalloutsTable()
-    if #partyCalloutsTable > 0 then
-        local message = partyCalloutsTable[1]
+-- Check the chatMessageTable for messages
+function checkMessageTable()
+    
+	-- If the chatMessageTable has messages in it, send them to chat then remove them, then check again after a short wait
+	if #chatMessageTable > 0 then
+        local message = chatMessageTable[1]
         say(message)
-        table.remove(partyCalloutsTable, 1)
-    end
+        table.remove(chatMessageTable, 1)
+		coroutine.sleep(1.5)
+		checkMessageTable()
+	
+	-- If there are no more messages in the chatMessageTable, open the releaseValve back up for new messages
+	else
+		releaseValveOpen = true
+	end
 end
 
 
@@ -889,15 +909,15 @@ windower.register_event('chat message', function(message, sender, mode)
 	elseif message:find('!lb optout') then
 		if settings.optout[l_name] then
 			removeFromOptout(sender)
-			addToPartyCalloutsTable('/t '..sender..' [Leaderboard] You have been removed from the Optout list.')
+			newChatMessage('/t '..sender..' [Leaderboard] You have been removed from the Optout list.')
 		else
 			addToOptout(sender)
-			addToPartyCalloutsTable('/t '..sender..' [Leaderboard] You have been added to the Optout list. Any related data has been deleted.')
+			newChatMessage('/t '..sender..' [Leaderboard] You have been added to the Optout list. Any related data has been deleted.')
 		end
 
 	-- Unknown command
 	elseif message:find('!lb') then
-		addToPartyCalloutsTable('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c/d/hs/k/ls/m/mb/n/p/sc/v/w/report/optout\'')
+		newChatMessage('/t '..sender..' [Leaderboard] Unknown command. Valid cammands are: \'!lb c/d/hs/k/ls/m/mb/n/p/sc/v/w/report/optout\'')
 
 	end
 
@@ -967,7 +987,7 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 			if settings.mode ~= "Silent" and settings.party_calls.kill then
 				local everyNumKills = kills % 10 -- returns the remainder after euclidean division (division by subtraction)
 				if everyNumKills == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
-					addToPartyCalloutsTable('/p [KILL] '..data.actor_name..' has racked up '..addCommas(kills)..' kills!')
+					newChatMessage('/p [KILL] '..data.actor_name..' has racked up '..addCommas(kills)..' kills!')
 				end
 			end
 
@@ -1035,15 +1055,15 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				-- Call out Deaths, depending on the mode and how many Deaths they are at
 				if settings.mode ~= "Silent" and settings.party_calls.death then
 					if deaths == 1 and data.target_lower_name == deathPlaces.first.name then
-						addToPartyCalloutsTable('/p [DEATH] '..data.target_name..' is the first to die!')
+						newChatMessage('/p [DEATH] '..data.target_name..' is the first to die!')
 					elseif deaths == 1 then
-						addToPartyCalloutsTable('/p [DEATH] '..data.target_name..' has their first death!')
+						newChatMessage('/p [DEATH] '..data.target_name..' has their first death!')
 					elseif deaths < 10 then
-						addToPartyCalloutsTable('/p [DEATH] '..data.target_name..(' has died %s'):format(deaths < 5 and '' or 'yet ')..'again...')
+						newChatMessage('/p [DEATH] '..data.target_name..(' has died %s'):format(deaths < 5 and '' or 'yet ')..'again...')
 					else
 						local everyNumDeaths = deaths % 5 -- returns the remainder after euclidean division (division by subtraction)
 						if everyNumDeaths == 0 then -- if that leftover number equals 0, then the number is a multiple of Num
-							addToPartyCalloutsTable('/p [DEATH] '..data.target_name..' is up to '..addCommas(deaths)..' deaths!')
+							newChatMessage('/p [DEATH] '..data.target_name..' is up to '..addCommas(deaths)..' deaths!')
 						end
 					end
 				end
@@ -1157,11 +1177,11 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 				-- Call out Murders/Victims
 				if settings.mode ~= "Silent" and settings.party_calls.murder then
 					if not settings.optout[data.actor_lower_name] and not settings.optout[data.target_lower_name] then
-						addToPartyCalloutsTable('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..data.target_name..' to Altana!')
+						newChatMessage('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..data.target_name..' to Altana!')
 					elseif not settings.optout[data.actor_lower_name] then
-						addToPartyCalloutsTable('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed a victim to Altana!')
+						newChatMessage('/p [MURDER/VICTIM] '..data.actor_name..(' has %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed a victim to Altana!')
 					elseif not settings.optout[data.target_lower_name] then
-						addToPartyCalloutsTable('/p [MURDER/VICTIM] '..data.target_name..(' %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
+						newChatMessage('/p [MURDER/VICTIM] '..data.target_name..(' %s'):format((murders == 1 and data.actor_lower_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
 					end
 				end
 
@@ -1247,13 +1267,13 @@ windower.register_event('action',function(act)
 
 					-- Party Mode under 100k cures: call it out every 25k
 					if everyNumCures < 5 and settings.mode == 'Party' then
-						addToPartyCalloutsTable('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+						newChatMessage('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
 
 					-- Party Mode over 100k cures, or Lite Mode: call it out every 50k
 					else
 						local everyOtherNum = everyNumCures % 2 -- returns the remainder after euclidean division (division by subtraction)
 						if everyOtherNum == 0 then -- if that leftover number equals 0, then the number is a multiple of 2
-							addToPartyCalloutsTable('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
+							newChatMessage('/p [CURE] '..data.actor_name..' has cured for over '..addCommas(points)..' HP!')
 						end
 
 					end
@@ -1351,21 +1371,21 @@ windower.register_event('action',function(act)
 				if whiffs == 1 then
 					if settings.mode == 'Party' then
 						--say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
-						addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
+						newChatMessage('/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..('%s'):format(data.actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.'))
 					end
 				elseif whiffs == 5 or whiffs == 10 then
 					--say:schedule(1,'/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
-					addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
+					newChatMessage('/p [WHIFF] '..data.actor_name..' whiffs '..data.ws..' and is up to '..whiffs..' whiffs now.')
 				elseif whiffs < 10 then
 					if settings.mode == 'Party' then
 						--say:schedule(1,'/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
-						addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
+						newChatMessage('/p [WHIFF] '..data.actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..data.ws..'...')
 					end
 				elseif whiffs > 10 then
 					local everyFiveWhiffs = whiffs % 5 -- returns the remainder after euclidean division (division by subtraction)
 					if everyFiveWhiffs == 0 then -- if that leftover number equals 0, then the number is a multiple of 5
 						--say:schedule(1,'/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
-						addToPartyCalloutsTable('/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
+						newChatMessage('/p [WHIFF] '..data.actor_name..' is up to '..whiffs..' whiffs now.')
 					end
 				end
 			end
@@ -1534,27 +1554,27 @@ windower.register_event('action',function(act)
 				if newHSPlace == originalHSPlace and newHSPlace == 1 and (data.damage > originalHSfirstscore or data.damage == 99999) and settings.party_calls.hs then
 					local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
 					if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
-						addToPartyCalloutsTable('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						newChatMessage('/p [HIGH WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 				elseif newHSPlace < originalHSPlace and settings.party_calls.hs then
 					if newHSPlace == 1 then
 						if data.damage > originalHSfirstscore then
-							addToPartyCalloutsTable('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+							newChatMessage('/p [HIGH WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 						end
 					elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and settings.mode == 'Party' then
-						addToPartyCalloutsTable('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						newChatMessage('/p [HIGH WS] '..data.actor_name..' moves up to No.'..newHSPlace..'! '..data.ws..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 
 				-- Did the actor move up the LOW WS leaderboard
 				elseif newLSPlace == originalLSPlace and newLSPlace == 1 and data.damage < originalLSfirstscore and settings.party_calls.ls then
-					addToPartyCalloutsTable('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+					newChatMessage('/p [LOW WS] '..uppercase(data.actor_name)..' extends the lead! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 				elseif newLSPlace < originalLSPlace and settings.party_calls.ls then
 					if newLSPlace == 1 then
 						if data.damage < originalLSfirstscore then
-							addToPartyCalloutsTable('/p [LOW WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+							newChatMessage('/p [LOW WS] '..uppercase(data.actor_name)..' takes the board! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 						end
 					elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and settings.mode == 'Party' then
-						addToPartyCalloutsTable('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
+						newChatMessage('/p [LOW WS] '..data.actor_name..' moves up to No.'..newLSPlace..'! '..data.ws..' for '..addCommas(data.damage)..' on the '..data.target_name..'!')
 					end
 				end
 
@@ -1683,15 +1703,15 @@ windower.register_event('action',function(act)
 			if newSCPlace == originalSCPlace and newSCPlace == 1 and (data.damage > originalSCfirstscore or data.damage == 99999) then
 				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
 				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
-					addToPartyCalloutsTable('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					newChatMessage('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' extends the lead! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			elseif newSCPlace < originalSCPlace then
 				if newSCPlace == 1 then
 					if data.damage > originalSCfirstscore then
-						addToPartyCalloutsTable('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' takes the board! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						newChatMessage('/p [SKILLCHAIN] '..uppercase(data.actor_name)..' takes the board! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and settings.mode == 'Party' then
-					addToPartyCalloutsTable('/p [SKILLCHAIN] '..data.actor_name..' moves up to No.'..newSCPlace..'! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					newChatMessage('/p [SKILLCHAIN] '..data.actor_name..' moves up to No.'..newSCPlace..'! '..data.sc..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			end
 		end
@@ -1820,15 +1840,15 @@ windower.register_event('action',function(act)
 			if newMBPlace == originalMBPlace and newMBPlace == 1 and (data.damage > originalMBfirstscore or data.damage == 99999) then
 				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
 				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
-					addToPartyCalloutsTable('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					newChatMessage('/p [MAGIC BURST] '..uppercase(data.actor_name)..' extends the lead! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			elseif newMBPlace < originalMBPlace then
 				if newMBPlace == 1 then
 					if data.damage > originalMBfirstscore then
-						addToPartyCalloutsTable('/p [MAGIC BURST] '..uppercase(data.actor_name)..' takes the board! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+						newChatMessage('/p [MAGIC BURST] '..uppercase(data.actor_name)..' takes the board! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 					end
 				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and settings.mode == 'Party' then
-					addToPartyCalloutsTable('/p [MAGIC BURST] '..data.actor_name..' moves up to No.'..newMBPlace..'! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
+					newChatMessage('/p [MAGIC BURST] '..data.actor_name..' moves up to No.'..newMBPlace..'! '..data.spell..' for '..addCommas(data.damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..data.target_name..'!')
 				end
 			end
 		end
@@ -1910,13 +1930,13 @@ windower.register_event('action',function(act)
 
 				-- Party Mode under 1m nukes: call it out every 250k
 				if everyNumNukes < 5 and settings.mode == 'Party' then
-					addToPartyCalloutsTable('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+					newChatMessage('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
 
 				-- Party Mode over 1m nukes, or Lite Mode: call it out every 500k
 				else
 					local everyOtherNum = everyNumNukes % 2 -- returns the remainder after euclidean division (division by subtraction)
 					if everyOtherNum == 0 then -- if that leftover number equals 0, then the number is a multiple of 2
-						addToPartyCalloutsTable('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
+						newChatMessage('/p [NUKE] '..data.actor_name..' has nuked for over '..addCommas(points)..' damage!')
 					end
 
 				end
@@ -2008,7 +2028,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			return
 		end
 		if settings.mode ~= "Silent" then
-			addToPartyCalloutsTable('/p [Leaderboard] '..board..' data reset.')
+			newChatMessage('/p [Leaderboard] '..board..' data reset.')
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..(board..' data reset.'):color(8))
 		end
@@ -2175,7 +2195,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		end
 		live:save('all')
 		if settings.mode ~= "Silent" then
-			addToPartyCalloutsTable(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).')
+			newChatMessage(('/p [Leaderboard] %s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).')
 		else
 			windower.add_to_chat(220,'[Leaderboard] '..(('%s'):format(live.paused and 'Paused' or 'Unpaused')..' ('..settings.mode..' Mode).'):color(36))
 		end
@@ -2186,7 +2206,7 @@ windower.register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'party' or (addcmd == 'mode' and (arg == 'party' or arg == 'p')) then
 		settings.mode = "Party"
 		settings:save('all')
-		addToPartyCalloutsTable(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		newChatMessage(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 		coroutine.sleep(1)
 		windower.add_to_chat(220,'[Leaderboard] '..('Beware - Party Mode uses party chat heavily.'):color(8))
 		updateBox(box_display)
@@ -2196,7 +2216,7 @@ windower.register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'lite' or (addcmd == 'mode' and (arg == 'lite' or arg == 'l')) then
 		settings.mode = "Lite"
 		settings:save('all')
-		addToPartyCalloutsTable(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
+		newChatMessage(('/p [Leaderboard] Mode set to '..settings.mode..' (%s).'):format(live.paused and 'paused' or 'running'))
 		updateBox(box_display)
 
 
@@ -2266,7 +2286,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2306,7 +2326,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2345,7 +2365,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2385,7 +2405,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2425,7 +2445,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2465,7 +2485,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2505,7 +2525,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2545,7 +2565,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2581,7 +2601,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2621,7 +2641,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2661,7 +2681,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2701,7 +2721,7 @@ windower.register_event('addon command',function(addcmd, ...)
 					end
 				end
 			end
-			addToPartyCalloutsTable(text)
+			newChatMessage(text)
 		end
 
 
@@ -2891,7 +2911,7 @@ windower.register_event('addon command',function(addcmd, ...)
 				end
 			end
 		end
-		addToPartyCalloutsTable("/t "..settings.rival.." "..(text):format(imBeatingText))
+		newChatMessage("/t "..settings.rival.." "..(text):format(imBeatingText))
 
 
 	-- Unknown command
@@ -2906,20 +2926,10 @@ end)
 windower.register_event('prerender', function()
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
-		
+
 		-- Party command Flood delay
 		if flood_timer >= 1 then
 			flood_timer = flood_timer - 1
-		end
-
-		-- Party Chat Callout
-		if partyCalloutsTimer == 0 then
-			if #partyCalloutsTable > 0 then
-				checkPartyCalloutsTable()
-			end
-			partyCalloutsTimer = partyCalloutsDelay
-		else
-			partyCalloutsTimer = partyCalloutsTimer - 1
 		end
 	end
 end)
