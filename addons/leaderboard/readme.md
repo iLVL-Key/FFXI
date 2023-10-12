@@ -90,7 +90,7 @@ All commands must be prefixed with `!lb` (ex: `!lb report`).
 - Adjusted Chat Buffer system. New messages will go straight to chat if no other message had immediately preceded it, otherwise they will get added into the buffer table to wait their turn to be sent to chat. Delay between multiple chat messages sent to chat reduced from 2 seconds to 1.5.
 
 **3.6**
-- Added a new buffer system that prevents when multiple things try to trigger chat at the same time, causing one of them to receive an error and not actually display in chat. In short, any chat messages are temporarily held in a table, then every 2 seconds the table is checked and the message at the top of the list is put to chat and removed from the table.
+- Added a new Chat Buffer system that prevents when multiple things try to trigger chat at the same time, causing one of them to receive an error and not actually display in chat. In short, any chat messages are temporarily held in a table, then every 2 seconds the table is checked and the message at the top of the list is put to chat and removed from the table.
 - Adjusted the default % loss of points for a death (or transfer of said points in the case of a murder) from 5 to 10, and for whiffs from 1 to 5.
 - Adjusted unknown spells/abilities/etc to be named `[REDACTED]` instead of simply `unknown`. This mosly only happens on SMN Blood Pacts for [REDACTED] reasons.
 
