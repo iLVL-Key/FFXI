@@ -463,7 +463,7 @@ end
 
 
 
-FileVersion = '7.1'
+FileVersion = '7.1.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -474,6 +474,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 7.1.1
+- Fixed AutoStance calling for a text object that does not exist.
 
 Version 7.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -1753,7 +1756,6 @@ function aftercast(spell)
 		send_command('input /echo [Brazen Rush] 30 seconds;wait 10;input /echo [Brazen Rush] 20 seconds;wait 10;input /echo [Brazen Rush] 10 seconds')
 	elseif spell.english == 'Hasso' and not spell.interrupted then
 		Stance = 'Hasso' --Set Stance to Hasso when we use it
-		send_command('text stance bg_transparency 150')
 		if Debug == 'On' then
 			add_to_chat(8,'[Stance set to Hasso]')
 		end
@@ -1763,7 +1765,6 @@ function aftercast(spell)
 		end
 	elseif spell.english == 'Seigan' and not spell.interrupted then
 		Stance = 'Seigan' --Set Stance to Seigan when we use it
-		send_command('text stance bg_transparency 150')
 		if Debug == 'On' then
 			add_to_chat(8,'[Stance set to Seigan]')
 		end
