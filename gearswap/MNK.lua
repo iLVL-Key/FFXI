@@ -513,7 +513,7 @@ end
 
 
 
-FileVersion = '6.1'
+FileVersion = '6.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -524,6 +524,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 6.2
+- Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
 Version 6.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -730,6 +733,16 @@ function addCommas(number)
 
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
     return formattedNumber
+end
+
+-- Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
+function checkProcWeapons(mainSlot, subSlot)
+    for _, equipmentPair in pairs(AbysseaProcCycle) do
+        if equipmentPair[1] == mainSlot and equipmentPair[2] == subSlot then
+            return true
+        end
+    end
+    return false
 end
 
 -------------------------------------------
@@ -1391,6 +1404,10 @@ function precast(spell)
 				end
 			end
 			cancel_spell()
+			return
+		end
+		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
+		if checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
 		if Mode == 'Mode2' then
