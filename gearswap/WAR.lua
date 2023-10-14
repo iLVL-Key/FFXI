@@ -195,10 +195,10 @@ WeaponCycle = {
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 AbysseaProcCycle = {
 	{"Excalipoor II", "Blurred Shield +1"},
-	--{"Chocobo Wand", "Blurred Shield +1"},
+	{"Chocobo Wand", "Blurred Shield +1"},
 	--{"Yagyu Shortblade", "Blurred Shield +1"},
-	--{"Hapy Staff", "Flanged Grip"},
-	--{"Melon Slicer", "Flanged Grip"},
+	{"Hapy Staff", "Flanged Grip"},
+	{"Melon Slicer", "Flanged Grip"},
 	--{"Ark Scythe", "Flanged Grip"},
 	--{"Za'Dha Chopper", "Flanged Grip"},
 	--{"Sha Wujing's Lance", "Flanged Grip"},
@@ -463,7 +463,7 @@ end
 
 
 
-FileVersion = '7.1.1'
+FileVersion = '7.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -474,6 +474,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 7.2
+- Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
 Version 7.1.1
 - Fixed AutoStance calling for a text object that does not exist.
@@ -691,6 +694,16 @@ function addCommas(number)
 
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
     return formattedNumber
+end
+
+-- Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
+function checkProcWeapons(mainSlot, subSlot)
+    for _, equipmentPair in pairs(AbysseaProcCycle) do
+        if equipmentPair[1] == mainSlot and equipmentPair[2] == subSlot then
+            return true
+        end
+    end
+    return false
 end
 
 -------------------------------------------
@@ -1536,6 +1549,10 @@ function precast(spell)
 				end
 			end
 			cancel_spell()
+			return
+		end
+		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
+		if checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
 		if MagicWS:contains(spell.english) then
