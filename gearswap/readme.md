@@ -52,7 +52,7 @@ Image coming soon.
 ![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/68e4b257-1e66-42e1-b3b3-ab864dd47d10)
 
 ### WAR ###
-Image coming soon.
+![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
 
 # IMPORTANT #
 - You must have the _**Text**_ addon loaded in order to use these Gearswap lua files. It can be found in the Windower launcher under the addons tab.  
