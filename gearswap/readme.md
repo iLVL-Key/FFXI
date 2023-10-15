@@ -1,3 +1,5 @@
+**PLEASE NOTE: These files require the Text plugin to be loaded in order to work.**
+
 # Features #
 ## Options ##
 Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
@@ -6,7 +8,7 @@ Each file has an Options and Advanced Options section at the top. Nearly everyth
 Certain files have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
 
 ## Weapon Cycler ##
-Certain files have the ability to cycle between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons or add Abyssea proc weapons. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
+Certain files have the ability to cycle between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Will not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
 
 ## Sound Effects ##
 All files utilize subtle sound effects found in the sounds folder. While not required, it is recommended to download the sounds folder and add it under the Gearswap/data folder to make full use of what the files offer. Don't worry, I've made sure they are not loud or annoying.
@@ -18,8 +20,16 @@ The file structure should look like this:
 `/addons/Gearswap/data/JOB.lua`
 
 ## HUDs ##
-Each file has a unique HUD. Some are a little more unique than the others. All have up to 6 of the most commonly used recasts displayed and may change based on a few factors such as the Gear Mode you are currently in (switch to a tank mode and it will display defensive oriented abilities).  
-An ability/spell recast in RED means it is ready to use. GREEN means it is currently active. ORANGE means it is not active and not yet ready to use. Will give a short flash of YELLOW/ORANGE just before it is available to use again.
+Each file has a unique HUD, some are a little more unique than the others.  
+In general, each HUD has..  
+
+**Top row:** Status Notifications (things like Sneak/Invis, WS/SC damage, party invites, etc.) and Debuff Notifications (displayed one at a time, most important ones take priority).  
+
+**Middle row(s):** Gear Mode and Weapon Notifications. Will display your currently equipped weapons(s) by default, this changes color based on your TP level and REMA equipped. Relics turn yellow when over 1k TP. Empyreans/Mythics/Aeonics turn blue when over 1k TP, green over 2k TP, and yellow at 3K TP. Displays current Aftermath and effect when appropriate. Some files have more specialized things in here such as SMN Avatars, GEO bubbles, and RUN runes.  
+
+**Bottom row:** Up to 6 of the most commonly used ability/spell recasts. RED means it is ready to use. GREEN means it is currently active. ORANGE means it is not active and not yet ready to use. Gives a short flash of YELLOW/ORANGE just before it is available to use again.  
+
+
 ### BLU ###
 ![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
 
@@ -39,7 +49,7 @@ Image coming soon.
 ![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
 
 ### SMN ###
-Image coming soon.
+![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/68e4b257-1e66-42e1-b3b3-ab864dd47d10)
 
 ### WAR ###
 Image coming soon.
@@ -47,6 +57,16 @@ Image coming soon.
 # IMPORTANT #
 - You must have the _**Text**_ addon loaded in order to use these Gearswap lua files. It can be found in the Windower launcher under the addons tab.  
 - When you load this file for the first time, your HUD may not be in a good position, or may be too large. If the HUD is not in a good position, go to the Heads Up Display options and adjust the HUDposX and HUDposY options, then save and reload the file. Adjust and repeat until positioned as desired. If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed. Suggested placement is center screen, just above your chat log.
+
+# FAQ #
+**Q:** Why am I crashing when I load one of your luas?  
+**A:** You're missing the Text plugin.  
+
+**Q:** Can I use these without the HUD?  
+**A:** Yes, you can turn off the HUD by going into the Advanced Options in the file and changing ShowHUD to false, this will make it so it is not shown by default when you change job and load the file. You can also turn it on and off in the game by typing //hud. You MUST still have the Text plugin regardless.  
+
+**Q:** Can I request a feature or change, or report a bug?  
+**A:** Abso-freakin-lutely.  Message me @ Valefor.Keylesta on ffxiah.com
 
 # Changelog #
 
@@ -315,6 +335,7 @@ Version 15.0
 - Lots of code cleanup.
 </details>
 <details>
+ 
 <summary>GEO</summary>
 
 Version 13.0
@@ -498,7 +519,11 @@ Version 11.0.0
 - Started from Blue Mage file version 11.30.21
 </details>
 <details>
+ 
 <summary>MNK</summary>
+
+Version 6.2
+- Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
 Version 6.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -544,7 +569,11 @@ Version 3.0
 - Started from Samurai file version 02.22.22 (Version Compatibility Codename: Tachi: Yukikaze)
 </details>
 <details>
+ 
 <summary>PLD</summary>
+
+Version 13.1
+- Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
 Version 13.0
 - Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
@@ -728,6 +757,7 @@ Version 11.0
 - Started from Blue Mage file version 02.01.22
 </details>
 <details>
+ 
 <summary>RUN</summary>
 
 Version 8.0
@@ -845,7 +875,11 @@ Version 6.0.0
 - Code cleanup.
 </details>
 <details>
+ 
 <summary>SAM</summary>
+
+Version 13.2
+- Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
 Version 13.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
@@ -1013,6 +1047,7 @@ Version 9.0
 - Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
 </details>
 <details>
+ 
 <summary>SMN</summary>
 
 Version 10.0
@@ -1145,7 +1180,14 @@ Version 8.0
 - Started from Geomancer file version 06.14.21
 </details>
 <details>
+ 
 <summary>WAR</summary>
+
+Version 7.2
+- Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
+
+Version 7.1.1
+- Fixed AutoStance calling for a text object that does not exist.
 
 Version 7.1
 - Adjusted the Weapon Cycle have a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea.
