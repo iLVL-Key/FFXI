@@ -760,6 +760,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 8.1.1
+- Fixed an issue with the HUD Mode occasionally displaying in the wrong color.
+
 Version 8.1
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
