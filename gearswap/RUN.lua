@@ -562,7 +562,7 @@ end
 
 
 
-FileVersion = '8.1'
+FileVersion = '8.1.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -573,6 +573,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 8.1.1
+- Fixed an issue with the HUD Mode occasionally displaying in the wrong color.
 
 Version 8.1
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
@@ -2315,7 +2318,7 @@ windower.register_event('prerender', function()
 					add_to_chat(8,'[Combat set to True]')
 				end
 				if LoadHUD == true then
-					send_command('text mode text "Mode: '..Mode..' (Combat)";text mode color '..AutoParrycolor..'')
+					send_command('text mode text "Mode: '..Mode..' (Combat)";text mode color '..(Mode == 'Auto-Parry' and AutoParrycolor or AutoDTcolor)..'')
 				end
 			end
 		elseif player.in_combat == false then
@@ -2326,7 +2329,7 @@ windower.register_event('prerender', function()
 					add_to_chat(8,'[Combat set to False]')
 				end
 				if LoadHUD == true then
-					send_command('text mode text "Mode: '..Mode..' (Neutral)";text mode color '..AutoDTcolor..'')
+					send_command('text mode text "Mode: '..Mode..' (Neutral)";text mode color '..(Mode == 'Auto-Parry' and AutoParrycolor or AutoDTcolor)..'')
 				end
 			end
 		end
