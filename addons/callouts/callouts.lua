@@ -25,8 +25,8 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.5'
-_addon.author = 'Key'
+_addon.version = '1.5.1'
+_addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
 require 'logger'
@@ -42,7 +42,11 @@ local chat = windower.chat.input
 
 windower.register_event('action',function(act)
 
-	local actor = (windower.ffxi.get_mob_by_id(act.actor_id) or {}).name or 'unknown'
+	local actor = (act.actor_id and windower.ffxi.get_mob_by_id(act.actor_id)) or 'unknown'
+	if type(actor) == "table" then
+		actor = actor.name
+	end
+
 	local monster_ability = res.monster_abilities[act.targets[1].actions[1].param]
 	local spell_start = res.spells[act.targets[1].actions[1].param]
 
@@ -277,7 +281,7 @@ windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
 		windower.add_to_chat(220,'[Callouts] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key'):color(220))
-    	windower.add_to_chat(220,' ')
+		windower.add_to_chat(220,' ')
 		windower.add_to_chat(200,' Addon Commands'..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
 		windower.add_to_chat(36,'   chatmode/chat/mode'..(' - Switch between Echo and Party chat modes.'):color(8)..'')
 		windower.add_to_chat(36,'   list'..(' - List the current callouts.'):color(8)..'')
@@ -285,18 +289,16 @@ windower.register_event('addon command', function(addcmd)
 	elseif addcmd == 'chatmode' or addcmd == 'chat' or addcmd == 'mode' then
 		if settings.chatmode == 'echo' then
 			settings.chatmode = 'party'
-			windower.add_to_chat(220,'[Callouts] '..('Chat mode is now set to Party.'):color(8)..'')
-			settings:save()
 		else
 			settings.chatmode = 'echo'
-			windower.add_to_chat(220,'[Callouts] '..('Chat mode is now set to Echo.'):color(8)..'')
-			settings:save()
 		end
+		windower.add_to_chat(220,'[Callouts] '..(('Chat mode is now set to %s.'):format(settings.chatmode == 'party' and 'Party' or 'Echo')):color(8)..'')
+		settings:save()
 
 	elseif addcmd == 'list' or addcmd == 'lists' then
 		windower.add_to_chat(220,'[Callouts] '..('Current callouts:'):color(200)..'')
 		windower.add_to_chat(36,'   General'..(' - Charm'):color(8)..'')
-		windower.add_to_chat(36,'   Odyssey'..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga Blistering Roar (fetters)'):color(8)..'')
+		windower.add_to_chat(36,'   Odyssey'..(' - Hate resets, full dispels, Bumba 1-HRs (beta), Kalunga fetters'):color(8)..'')
 		windower.add_to_chat(36,'   Dyna-D'..(' - Halphas hate reset'):color(8)..'')
 		windower.add_to_chat(36,'   Omen'..(' - Scales, Pain Sync, Prophylaxis, Target'):color(8)..'')
 		windower.add_to_chat(36,'   Vagary'..(' - Perfidien/Plouton pop, weaknesses'):color(8)..'')
@@ -304,8 +306,8 @@ windower.register_event('addon command', function(addcmd)
 		windower.add_to_chat(36,'   Ambuscade'..(' - Bozzetto Autarch Mijin Gakure'):color(8)..'')
 
 	elseif addcmd == 'reload' then
-        windower.send_command('lua r callouts')
-        return
+		windower.send_command('lua r callouts')
+		return
 
 	else
 		windower.add_to_chat(220,'[Callouts] '..('Unknown command. Type \'//co help\' for list of commands.'):color(8)..'')
