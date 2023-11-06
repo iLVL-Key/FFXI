@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'ReadyCheck'
-_addon.version = '1.0'
+_addon.version = '0.9'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'readycheck','rc'}
 
@@ -349,11 +349,11 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if (message:find('/') or message:find('\\') or message:find('|')) and rc_countdown > 0 and mode == 4 then
+	if message:match("^[/|\\]") and rc_countdown > 0 then
 		addToReadyList(sender)
-
+		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
-	elseif (message:find('x') or message:find('X')) and rc_countdown > 0 and mode == 4 then
+	elseif message:match("^[xX]") and rc_countdown > 0 then
 		addToNotReadyList(sender)
 
 	-- Look for the RC indicator
