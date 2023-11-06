@@ -142,7 +142,7 @@ function updateBox()
 		local member = windower.ffxi.get_party()[pos]
 
 		-- If there is a party member in that position, add them to the list in the RC box
-		if member and not windower.ffxi.get_mob_by_target(pos).is_npc then
+		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
 			local name = member.name
 
 			-- They are ready, highlight their name
@@ -229,7 +229,7 @@ function bgGreen()
 		local member = windower.ffxi.get_party()[pos]
 
 		-- If there is a party member in that position, add to the totalNames table
-		if member and not windower.ffxi.get_mob_by_target(pos).is_npc then
+		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
 			local name = member.name
 			table.insert(totalNames, member.name)
 
@@ -265,7 +265,7 @@ function checkAllReady()
 		local member = windower.ffxi.get_party()[pos]
 
 		-- Set to false and break out of the loop at the first member that it not ready
-		if member and not ready[member.name] and not windower.ffxi.get_mob_by_target(pos).is_npc then
+		if member and not ready[member.name] and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
 			allMembersReady = false
 			break
 
@@ -307,7 +307,7 @@ function notAllReady()
 		local member = windower.ffxi.get_party()[pos]
 
 		-- If there is a party member in that position...
-		if member and not windower.ffxi.get_mob_by_target(pos).is_npc then
+		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
 			local name = member.name
 
 			-- ... and they are not ready...
@@ -389,8 +389,17 @@ end)
 
 windower.register_event('addon command',function(addcmd)
 
+	if addcmd == 'help' then
+		windower.add_to_chat(220,'[ReadyCheck] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
+		windower.add_to_chat(36,'//readycheck or //rc'..(' - Start/Stop a Ready Check'):color(8))
+		return
+	elseif addcmd == 'reload' then
+		windower.send_command('lua r readycheck')
+		return
+	end
+
 	if someoneElseIsAlreadyRunningAReadyCheck then
-		windower.add_to_chat(220,'[Ready Check] '..('Another member has already inititated a Ready Check.'):color(8)..'')
+		windower.add_to_chat(220,'[ReadyCheck] '..('Another member has already inititated a Ready Check.'):color(8)..'')
 		return
 	end
 
