@@ -355,7 +355,7 @@ function areYouSolo()
 		local member = windower.ffxi.get_party()[pos]
 		
 		-- Set to false and break out of the loop at the first position that contains another member
-		if member and not member.name == self_name and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not (member.name == self_name) and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
 			solo = false
 			break
 
