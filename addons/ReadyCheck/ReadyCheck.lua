@@ -348,17 +348,16 @@ end
 function areYouSolo()
 	
 	-- Start with true
-	solo = true
+	local solo = true
 	
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
 		local member = windower.ffxi.get_party()[pos]
-		
+
 		-- Set to false and break out of the loop at the first position that contains another member
 		if member and not (member.name == self_name) and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
 			solo = false
 			break
-
 		end
 	end
 
