@@ -344,20 +344,49 @@ function notAllReady()
 end
 
 
+-- Check if you are solo
+function areYouSolo()
+	
+	-- Start with true
+	solo = true
+	
+	-- Loop through all party/alliance positions
+	for _, pos in ipairs(ally_pos) do
+		local member = windower.ffxi.get_party()[pos]
+		
+		-- Set to false and break out of the loop at the first position that contains another member
+		if member and not member.name == self_name and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+			solo = false
+			break
+
+		end
+	end
+
+	-- Return the results
+	return solo
+
+end
+
+
 -- Incoming chat message - NOTE: these are checking incoming packets, messages originating from yourself will not trigger them
 -- (tells work though because they go out to the server first then back to you as the receiver)
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if message:match("^[/|\\]") and rc_countdown > 0 then
+	if message:match("^[/|\\]") and rc_countdown > 0 and mode == 4 then
 		addToReadyList(sender)
 		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
-	elseif message:match("^[xX]") and rc_countdown > 0 then
+	elseif message:match("^[xX]") and rc_countdown > 0 and mode == 4 then
 		addToNotReadyList(sender)
 
 	-- Look for the RC indicator
-	elseif message:find('[RC]') then
+	elseif message:find('[RC]') and mode == 4 then
+
+		-- Someone else cancels a Ready Check
+		elseif message:find('Ready Check cancelled.') then
+			rc_countdown = -1
+			hideBox()
 
 		-- Someone else starts a Ready Check
 		if message:find('Ready Check!') then
@@ -392,33 +421,47 @@ windower.register_event('addon command',function(addcmd)
 	if addcmd == 'help' then
 		windower.add_to_chat(220,'[ReadyCheck] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 		windower.add_to_chat(36,'//readycheck or //rc'..(' - Start/Stop a Ready Check'):color(8))
-		return
+		windower.add_to_chat(36,'   cancel'..(' - Cancel a Ready Check'):color(8))
+
 	elseif addcmd == 'reload' then
 		windower.send_command('lua r readycheck')
-		return
-	end
 
-	if someoneElseIsAlreadyRunningAReadyCheck then
-		windower.add_to_chat(220,'[ReadyCheck] '..('Another member has already inititated a Ready Check.'):color(8)..'')
-		return
-	end
+	elseif addcmd == 'cancel' then
+		if someoneElseIsAlreadyRunningAReadyCheck then
+			windower.add_to_chat(220,'[ReadyCheck] '..('You cannot cancel a Ready Check started by another member.'):color(8)..'')
 
-	-- Start a ready check
-	if rc_countdown == -1 then
-		say('/p [RC] Ready Check!   / = ready   x = not ready   <call'..settings.call_num..'>')
-		clearLists()
-		addToReadyList(self_name)
-		showBox()
-		rc_countdown = timer
+		else
+			say('/p [RC] Ready Check cancelled.')
+			rc_countdown = -1
+			hideBox()
 
-	-- End the ready check
-	elseif rc_countdown > 0 then
-		rc_countdown = -1
-		updateBox()
-		notAllReady()
-		coroutine.sleep(5)
-		hideBox()
+		end
 
+	elseif someoneElseIsAlreadyRunningAReadyCheck then
+		windower.add_to_chat(220,'[ReadyCheck] '..('Another member has already started a Ready Check.'):color(8)..'')
+
+	else
+		-- Start a ready check
+		if rc_countdown == -1 then
+			if areYouSolo() then
+				windower.add_to_chat(220,'[ReadyCheck] '..('You cannot start a Ready Check when you are solo.'):color(8)..'')
+				return
+			end
+			say('/p [RC] Ready Check!   / = ready   x = not ready   <call'..settings.call_num..'>')
+			clearLists()
+			addToReadyList(self_name)
+			showBox()
+			rc_countdown = timer
+
+		-- End the ready check
+		elseif rc_countdown > 0 then
+			rc_countdown = -1
+			updateBox()
+			notAllReady()
+			coroutine.sleep(5)
+			hideBox()
+
+		end
 	end
 end)
 
@@ -429,8 +472,8 @@ windower.register_event('prerender', function()
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
 
-		-- Ready Check countdown in progress (paused while zoning)
-		if rc_countdown >= 1 and not zoning then
+		-- Ready Check countdown in progress (pause the countdown if we're zoning and its our RC running since we're about to cancel it)
+		if rc_countdown >= 1 and not (zoning and not someoneElseIsAlreadyRunningAReadyCheck) then
 			rc_countdown = rc_countdown - 1
 			updateBox()
 
@@ -446,6 +489,7 @@ windower.register_event('prerender', function()
 	end
 
 	local pos = windower.ffxi.get_position()
+
 	-- Zoning, hide the RC Box
 	if pos == "(?-?)" and not zoning then
 		hideBox()
@@ -453,10 +497,15 @@ windower.register_event('prerender', function()
 
 	-- Finished zoning while a Ready Check in progress, show the RC Box
 	elseif pos ~= "(?-?)" and zoning then
-		if rc_countdown > 0 then
+		zoning = false
+		if not someoneElseIsAlreadyRunningAReadyCheck then
+			rc_countdown = -1
+			coroutine.sleep(1)
+			say('/p [RC] Ready Check cancelled.')
+			--hideBox()
+		elseif rc_countdown > 0 then
 			showBox()
 		end
-		zoning = false
 
 	end
 end)
