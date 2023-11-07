@@ -384,12 +384,12 @@ windower.register_event('chat message', function(message, sender, mode)
 	elseif message:find('[RC]') and mode == 4 then
 
 		-- Someone else cancels a Ready Check
-		elseif message:find('Ready Check cancelled.') then
+		if message:find('Ready Check cancelled.') then
 			rc_countdown = -1
 			hideBox()
 
 		-- Someone else starts a Ready Check
-		if message:find('Ready Check!') then
+		elseif message:find('Ready Check!') then
 			clearLists()
 			addToReadyList(sender)
 			showBox()
