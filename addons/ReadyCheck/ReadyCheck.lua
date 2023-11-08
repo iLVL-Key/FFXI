@@ -497,7 +497,7 @@ windower.register_event('prerender', function()
 	-- Finished zoning while a Ready Check in progress, show the RC Box
 	elseif pos ~= "(?-?)" and zoning then
 		zoning = false
-		if not someoneElseIsAlreadyRunningAReadyCheck then
+		if rc_countdown >= 1 and not someoneElseIsAlreadyRunningAReadyCheck then
 			rc_countdown = -1
 			coroutine.sleep(1)
 			say('/p [RC] Ready Check cancelled.')
