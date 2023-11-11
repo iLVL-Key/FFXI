@@ -296,8 +296,31 @@ function allReady()
 end
 
 
--- Not all players are ready
-function notAllReady()
+-- Display in the RC Box players that are not ready
+function displayNotAllReady()
+	
+	-- Loop through all party/alliance positions
+	for _, pos in ipairs(ally_pos) do
+		local member = windower.ffxi.get_party()[pos]
+
+		-- If there is a party member in that position...
+		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+			local name = member.name
+
+			-- ... and they are not ready...
+			if not ready[name] then
+
+				-- ... add them to the NotReady List so they get displayed as such in the RC Box
+				addToNotReadyList(name)
+
+			end
+		end
+	end
+end
+
+
+-- Say in party chat players that are not ready
+function sayNotAllReady()
 
 	local notReadyNames1 = {}
 	local notReadyNames2 = {}
@@ -313,9 +336,6 @@ function notAllReady()
 			-- ... and they are not ready...
 			if not ready[name] then
 
-				-- ... add them to the NotReady List so they get displayed as such in the RC Box...
-				addToNotReadyList(name)
-
 				-- ... and add them to the notReadyNames list(s) to be printed in chat below
 				if #notReadyNames1 < 9 then
 					table.insert(notReadyNames1, name)
@@ -325,11 +345,6 @@ function notAllReady()
 				end
 			end
 		end
-	end
-
-	-- Don't print to chat if we didn't initiate the Ready Check
-	if someoneElseIsAlreadyRunningAReadyCheck then
-		return
 	end
 
 	-- Print the list of names that are not ready
@@ -397,7 +412,7 @@ windower.register_event('chat message', function(message, sender, mode)
 
 		-- Someone else finishes a Ready Check, not everyone ready
 		elseif message:find('Not ready:') then
-			notAllReady()
+			displayNotAllReady()
 			rc_countdown = -1
 			coroutine.sleep(5)
 			hideBox()
@@ -456,7 +471,8 @@ windower.register_event('addon command',function(addcmd)
 		elseif rc_countdown > 0 then
 			rc_countdown = -1
 			updateBox()
-			notAllReady()
+			displayNotAllReady()
+			sayNotAllReady()
 			coroutine.sleep(5)
 			hideBox()
 
@@ -480,7 +496,8 @@ windower.register_event('prerender', function()
 		elseif rc_countdown == 0 then
 			rc_countdown = -1
 			updateBox()
-			notAllReady()
+			displayNotAllReady()
+			sayNotAllReady()
 			coroutine.sleep(5)
 			hideBox()
 
