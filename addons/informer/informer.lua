@@ -25,9 +25,9 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '02.07.23'
-_addon.author = 'Key'
-_addon.commands = {'info','informer'}
+_addon.version = '1.0.4'
+_addon.author = 'Key (Keylesta@Valefor)'
+_addon.commands = {'informer'}
 
 require 'logger'
 config = require('config')
@@ -134,9 +134,4 @@ windower.register_event('addon command',function(addcmd)
 		windower.add_to_chat(200,'[Informer] '..('This addon has no commands, but I hope you have a great day :)'):color(8)..'')
 	end
 	
-end)
-
-
-windower.register_event('incoming text',function(org)     
-
 end)
