@@ -14,15 +14,20 @@ Tracks battle information and groups it together in different "boards".
 ↑ A Rival Skillchain notification.
 
 ### Features
-- 3 different tracking modes:
+- 4 different tracking modes:
   - **Silent:** Tracks in the background, no party chat call outs. Default.
   - **Lite:** Limited party chat call outs.
   - **Party:** Full party chat call outs. Great for linkshell events.
+  - **Mog Kart:** Inspired by Mario Kart, this mode includes "items" that players (trusts too!) can receive and use to affect other players points.
+    - All items can have their attributes changed in the settings file.
+    - Note: Uses tells to send players their items as well as receive the command to use them
 - Tracks 11 different boards.
 - On-Screen Display for tracking boards in realtime.
 - Rival system. Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
 - Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
-- Party commands. Party members can use party chat (or a tell) to issue certain commands while in Party or Lite Modes.
+- Chat Buffer system. Holds new outgoing messages in a buffer table before sending out to chat to prevent errors with multiple chat messages at the same time.
+- Party commands. Party members can use party chat and/or tells to issue certain commands while in Party or Lite Modes.
+  - Flood delay per player so that individuals can't spam commands and lock others out.
 - Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
 - Tracks every players scores individually. Allows any player in the group to get a report with only their own scores for each board.
 - Tracks the number of "9's" a player has hit.
@@ -49,10 +54,10 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 
 #### Basic Commands `[optional] <required>`
 - `pause/p` - Pause/unpause tracking.
-- `c/d/hs/k/ls/m/mb/n/sc/w` - Print board to party chat.
-- `mode/silent/lite/party` - Display/change the current Mode.
-- `reset <all/c/d/hs/k/ls/m/mb/n/sc/w>` - Reset specified data.
-- `show/hide [c/d/hs/k/ls/m/mb/n/sc/w]` - Display boards on screen.
+- `c/d/hs/k/ls/m/mb/n/p/sc/v/w` - Print board to party chat.
+- `mode/kart/silent/lite/party` - Display/change the current Mode.
+- `reset <all/i/c/d/hs/k/ls/m/mb/n/p/sc/v/w>` - Reset specified data.
+- `show/hide [#/c/d/hs/k/ls/m/mb/n/p/sc/v/w]` - Display board on screen (# = how many lines).
 - `boards` - List the different boards that are tracked.
 - `rival [name]` - Display/Set the specified player as your Rival. Repeat with name to remove.
 - `taunt [text]` - Send your rival a tell with which boards you have them beat on.  
@@ -71,20 +76,39 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `partycommand/partycmd` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
 
+#### Kart Mode Commands  `[optional] <required>`
+- `itemtimer` - Update the interval timer between Item Boxes.
+- `boardtimer` - Update the timer between Points Board chat callout (0 = off).
+- `randomitem` - Give a random player a random item.
+
 (call, reset, and show can be used with their arguments in either order. For example, `//lb show mb` and `//lb mb show` will both work)
 
 ### Party Commands
-Intended to be used by the party. The host must have Party or Lite Mode running and not have Party Commands disabled.  
-All commands must be prefixed with `!lb` (ex: `!lb report`).
-- `c/d/hs/k/ls/m/mb/n/sc/v/w` - Print board to party chat.
-- `optout` - Add your name to the Optout list.
-- `report` - Receive a score report via tell.
+Intended to be used by the party. The host must have Party or Lite Mode running and have Party Commands enabled.  
+- `lb c/d/hs/k/ls/m/mb/n/sc/v/w` - Print board to party chat. (receive command via party chat or tell)
+- `optout` - Add your name to the Optout list. (receive command via tell only)
+- `report` - Receive a score report via tell. (receive command via tell only)
 
-### To-do
-- Add Drains and Dread Spikes/Drain Samba to cures?
+### Current Known Issues
 - Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
+- In high lag situations (seen in Dynamis-Jeuno Divergance), occasionally a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an
 
 ### Version History
+
+**4.0**
+- Added Mog Kart Mode. Inspired by Mario Kart, this mode includes "items" that players can receive and use to affect other players points. Chat callouts are limited to item usage and point movement (deaths, whiffs, and murders are called out and now include points lost/transferred while in Mog Kart Mode) and a timed Point Board chat callout (up to 18 places while in Mog Kart Mode). Settings able to be modified include: item names, accuracy, point modifiers, availability, and place range able to receive them, as well as the interval frequency that items are given out and the frequency of calling the Point Board to chat.
+- Added settings to turn gaining points for each individual board on or off.
+- Added setting to specify the maximum number of places displayed in the on-screen display.
+- Adjusted boards to now fully track up to 18 places.
+- Adjusted the Report command to show which place the player is in for each board.
+- Adjusted the Optout command text to include how to add/remove a player from the list.
+- Adjusted the Flood Delay to now track individual players instead of a global delay.
+- Adjusted the message sent to players, shortened [Leaderboard] to [LB].
+- Adjusted Party Commands. Removed the `!lb` required in front of `report` and `optout`. Removed the `!` previously required in front of the commands (ie just `lb c` now)
+- Fixed an issue when adding a player to the Optout list where they would still accrue points for a few moments until the boards updated and removed their name, leaving them a small amount of points data afterwards. Boards now get updated at the same time as their individual data being deleted.
+- Fixed an issue when adding a player to the Optout list via a tell command from a player where it would not save the name in the correct format, preventing it from working as intended.
+- Fixed an issue with the Reminder not displaying correctly while paused.
+- Fixed an issue when loading the addon while not logged in (autoloading via init) that would produce an error and not keep track of your own characters name correctly.
 
 **3.6.1**
 - Adjusted Chat Buffer system. New messages will go straight to chat if no other message had immediately preceded it, otherwise they will get added into the buffer table to wait their turn to be sent to chat. Delay between multiple chat messages sent to chat reduced from 2 seconds to 1.5.
