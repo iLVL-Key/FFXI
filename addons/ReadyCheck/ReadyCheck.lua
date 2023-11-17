@@ -87,7 +87,15 @@ settings = config.load(defaults)
 ready = {}
 notReady = {}
 
-local self_name = windower.ffxi.get_mob_by_target('me').name
+local self_name
+if windower.ffxi.get_mob_by_target('me') then
+	self_name = windower.ffxi.get_mob_by_target('me').name
+end
+windower.register_event('login', function()
+	coroutine.sleep(3)
+	self_name = windower.ffxi.get_mob_by_target('me').name
+end)
+
 local ally_pos = {
 	'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
 }
@@ -387,11 +395,11 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if message:match("^[/|\\]") and rc_countdown > 0 and mode == 4 then
+	if message:match("^[/|\\]$") and rc_countdown > 0 and mode == 4 then
 		addToReadyList(sender)
 		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
-	elseif message:match("^[xX]") and rc_countdown > 0 and mode == 4 then
+	elseif message:match("^[xX]$") and rc_countdown > 0 and mode == 4 then
 		addToNotReadyList(sender)
 
 	-- Look for the RC indicator
@@ -426,6 +434,18 @@ windower.register_event('chat message', function(message, sender, mode)
 			someoneElseIsAlreadyRunningAReadyCheck = false
 
 		end
+	end
+end)
+
+
+windower.register_event('outgoing text', function(original)
+
+	if original:match("^[/|\\]$") and rc_countdown > 0 then
+		addToReadyList(self_name)
+
+	elseif original:match("^[xX]$") and rc_countdown > 0 then
+		addToNotReadyList(self_name)
+
 	end
 end)
 
@@ -497,7 +517,10 @@ windower.register_event('prerender', function()
 			rc_countdown = -1
 			updateBox()
 			displayNotAllReady()
-			sayNotAllReady()
+			if not someoneElseIsAlreadyRunningAReadyCheck then
+				sayNotAllReady()
+			end
+			someoneElseIsAlreadyRunningAReadyCheck = false
 			coroutine.sleep(5)
 			hideBox()
 
@@ -516,7 +539,7 @@ windower.register_event('prerender', function()
 		zoning = false
 		if rc_countdown >= 1 and not someoneElseIsAlreadyRunningAReadyCheck then
 			rc_countdown = -1
-			coroutine.sleep(1)
+			coroutine.sleep(3)
 			say('/p [RC] Ready Check cancelled.')
 			--hideBox()
 		elseif rc_countdown > 0 then
