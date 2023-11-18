@@ -395,11 +395,11 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if message:match("^[/|\\]$") and rc_countdown > 0 and mode == 4 then
+	if message:match("^[/|\\]") and rc_countdown > 0 and mode == 4 then
 		addToReadyList(sender)
 		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
-	elseif message:match("^[xX]$") and rc_countdown > 0 and mode == 4 then
+	elseif message:match("^[xX]") and rc_countdown > 0 and mode == 4 then
 		addToNotReadyList(sender)
 
 	-- Look for the RC indicator
