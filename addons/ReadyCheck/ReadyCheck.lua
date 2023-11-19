@@ -101,7 +101,9 @@ local ally_pos = {
 }
 local say = windower.chat.input
 local timer = 120 -- This timer is hard-coded so that all players running ReadyCheck have their timers synced
-local rc_countdown = -1 -- A settings of -1 for this means there is no ready check active
+local timer_countdown = -1 -- A settings of -1 for this means there is no ready check active
+local hideDelay = 5
+local hideDelay_countdown = -1
 local Heartbeat = 0
 local zoning = false
 local someoneElseIsAlreadyRunningAReadyCheck = false
@@ -135,7 +137,7 @@ function updateBox()
 	local text = '\\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')'
 
 	-- First row (the +1 is to compensate for a quirk with the timing being displayed)
-	local first_row = ('---READY CHECK%s'):format(rc_countdown >= 0 and ':'..rc_countdown+1 or '')
+	local first_row = ('---READY CHECK%s'):format(timer_countdown >= 0 and ':'..timer_countdown+1 or '')
 	-- Keep it the same widtch
 	while string.len(first_row) < 21 do
 		first_row = first_row..'-'
@@ -295,12 +297,11 @@ end
 
 -- All players are ready
 function allReady()
-	rc_countdown = -1
+	timer_countdown = -1
 	updateBox()
 	coroutine.sleep(.5)
 	say("/p [RC] All members are ready!")
-	coroutine.sleep(5)
-	hideBox()
+	hideDelay_countdown = hideDelay
 end
 
 
@@ -395,11 +396,11 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if message:match("^[/|\\]") and rc_countdown > 0 and mode == 4 then
+	if message:match("^[/|\\]") and timer_countdown > 0 and mode == 4 then
 		addToReadyList(sender)
 		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
-	elseif message:match("^[xX]") and rc_countdown > 0 and mode == 4 then
+	elseif message:match("^[xX]") and timer_countdown > 0 and mode == 4 then
 		addToNotReadyList(sender)
 
 	-- Look for the RC indicator
@@ -407,7 +408,7 @@ windower.register_event('chat message', function(message, sender, mode)
 
 		-- Someone else cancels a Ready Check
 		if message:find('Ready Check cancelled.') then
-			rc_countdown = -1
+			timer_countdown = -1
 			hideBox()
 
 		-- Someone else starts a Ready Check
@@ -415,22 +416,21 @@ windower.register_event('chat message', function(message, sender, mode)
 			clearLists()
 			addToReadyList(sender)
 			showBox()
-			rc_countdown = timer
+			timer_countdown = timer
+			hideDelay_countdown = -1
 			someoneElseIsAlreadyRunningAReadyCheck = true
 
 		-- Someone else finishes a Ready Check, not everyone ready
 		elseif message:find('Not ready:') then
 			displayNotAllReady()
-			rc_countdown = -1
-			coroutine.sleep(5)
-			hideBox()
+			timer_countdown = -1
+			hideDelay_countdown = hideDelay
 			someoneElseIsAlreadyRunningAReadyCheck = false
 		
 		-- Someone else finishes a Ready Check, everyone ready
 		elseif message:find('All members are ready!') then
-			rc_countdown = -1
-			coroutine.sleep(5)
-			hideBox()
+			timer_countdown = -1
+			hideDelay_countdown = hideDelay
 			someoneElseIsAlreadyRunningAReadyCheck = false
 
 		end
@@ -438,12 +438,17 @@ windower.register_event('chat message', function(message, sender, mode)
 end)
 
 
+-- Check outgoing text for ready/not ready
 windower.register_event('outgoing text', function(original)
 
-	if original:match("^[/|\\]$") and rc_countdown > 0 then
+	local message = original:gsub("/p ", "") -- Remove /p if it exists
+
+	-- Ready
+	if message:match("^[/|\\]") and timer_countdown > 0 then
 		addToReadyList(self_name)
 
-	elseif original:match("^[xX]$") and rc_countdown > 0 then
+	--Not ready
+	elseif message:match("^[xX]") and timer_countdown > 0 then
 		addToNotReadyList(self_name)
 
 	end
@@ -466,7 +471,7 @@ windower.register_event('addon command',function(addcmd)
 
 		else
 			say('/p [RC] Ready Check cancelled.')
-			rc_countdown = -1
+			timer_countdown = -1
 			hideBox()
 
 		end
@@ -476,7 +481,7 @@ windower.register_event('addon command',function(addcmd)
 
 	else
 		-- Start a ready check
-		if rc_countdown == -1 then
+		if timer_countdown == -1 then
 			if areYouSolo() then
 				windower.add_to_chat(220,'[ReadyCheck] '..('You cannot start a Ready Check when you are solo.'):color(8)..'')
 				return
@@ -485,16 +490,16 @@ windower.register_event('addon command',function(addcmd)
 			clearLists()
 			addToReadyList(self_name)
 			showBox()
-			rc_countdown = timer
+			timer_countdown = timer
+			hideDelay_countdown = -1
 
 		-- End the ready check
-		elseif rc_countdown > 0 then
-			rc_countdown = -1
+		elseif timer_countdown > 0 then
+			timer_countdown = -1
 			updateBox()
 			displayNotAllReady()
 			sayNotAllReady()
-			coroutine.sleep(5)
-			hideBox()
+			hideDelay_countdown = hideDelay
 
 		end
 	end
@@ -508,20 +513,27 @@ windower.register_event('prerender', function()
 		Heartbeat = os.time()
 
 		-- Ready Check countdown in progress (pause the countdown if we're zoning and its our RC running since we're about to cancel it)
-		if rc_countdown >= 1 and not (zoning and not someoneElseIsAlreadyRunningAReadyCheck) then
-			rc_countdown = rc_countdown - 1
+		if timer_countdown >= 1 and not (zoning and not someoneElseIsAlreadyRunningAReadyCheck) then
+			timer_countdown = timer_countdown - 1
 			updateBox()
 
 		-- Countdown reaches 0
-		elseif rc_countdown == 0 then
-			rc_countdown = -1
+		elseif timer_countdown == 0 then
+			timer_countdown = -1
 			updateBox()
 			displayNotAllReady()
 			if not someoneElseIsAlreadyRunningAReadyCheck then
 				sayNotAllReady()
 			end
 			someoneElseIsAlreadyRunningAReadyCheck = false
-			coroutine.sleep(5)
+			hideDelay_countdown = hideDelay
+
+		end
+
+		if hideDelay_countdown >= 1 then
+			hideDelay_countdown = hideDelay_countdown -1
+		elseif hideDelay_countdown == 0 then
+			hideDelay_countdown = -1
 			hideBox()
 
 		end
@@ -537,12 +549,11 @@ windower.register_event('prerender', function()
 	-- Finished zoning while a Ready Check in progress, show the RC Box
 	elseif pos ~= "(?-?)" and zoning then
 		zoning = false
-		if rc_countdown >= 1 and not someoneElseIsAlreadyRunningAReadyCheck then
-			rc_countdown = -1
+		if timer_countdown >= 1 and not someoneElseIsAlreadyRunningAReadyCheck then
+			timer_countdown = -1
 			coroutine.sleep(3)
 			say('/p [RC] Ready Check cancelled.')
-			--hideBox()
-		elseif rc_countdown > 0 then
+		elseif timer_countdown > 0 then
 			showBox()
 		end
 
