@@ -1189,6 +1189,9 @@ Version 8.0
  
 <summary>WAR</summary>
 
+Version 7.2.1
+- Fixed AutoSave trying to use High/Super Jump while not in combat.
+
 Version 7.2
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
