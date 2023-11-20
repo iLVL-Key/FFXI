@@ -200,7 +200,7 @@ function addToReadyList(name)
 	texts.bg_color(rcBox, 0, bgGreen(), 0)
 
 	-- Did that make it so everyone is now accounted for?
-	if checkAllReady() then
+	if checkAllReady() and not someoneElseIsAlreadyRunningAReadyCheck then
 		allReady()
 
 	end
@@ -221,11 +221,6 @@ function addToNotReadyList(name)
 	-- Update the box bg_color
 	texts.bg_color(rcBox, 0, bgGreen(), 0)
 
-	-- Did that make it so everyone is now accounted for?
-	if checkAllReady() then
-		allReady()
-
-	end
 end
 
 -- Calculate the level of bg_color green based on the percent of players ready
@@ -299,7 +294,7 @@ end
 function allReady()
 	timer_countdown = -1
 	updateBox()
-	coroutine.sleep(.5)
+	coroutine.sleep(1.5)
 	say("/p [RC] All members are ready!")
 	hideDelay_countdown = hideDelay
 end
