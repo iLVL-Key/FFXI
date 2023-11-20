@@ -195,13 +195,15 @@ WeaponCycle = {
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 AbysseaProcCycle = {
 	{"Excalipoor II", "Blurred Shield +1"},
-	{"Chocobo Wand", "Blurred Shield +1"},
+	{"Heartstopper +1", "Blurred Shield +1"},
+	{"Qutrub Knife", "Blurred Shield +1"},
 	--{"Yagyu Shortblade", "Blurred Shield +1"},
 	{"Hapy Staff", "Flanged Grip"},
+	{"Goujian", "Flanged Grip"},
 	{"Melon Slicer", "Flanged Grip"},
 	--{"Ark Scythe", "Flanged Grip"},
 	--{"Za'Dha Chopper", "Flanged Grip"},
-	--{"Sha Wujing's Lance", "Flanged Grip"},
+	{"Sha Wujing's Lance", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -463,7 +465,7 @@ end
 
 
 
-FileVersion = '7.2'
+FileVersion = '7.2.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -474,6 +476,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 7.2.1
+- Fixed AutoSave trying to use High/Super Jump while not in combat.
 
 Version 7.2
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
@@ -578,7 +583,7 @@ LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
 StanceTimer = 0
-LockstyleDelay = 3
+LockstyleDelay = 5
 AutoLockstyleRun = true
 AutoSaveUsed = false --this is used so we don't trigger multiple "saves" together
 LowHP = false
@@ -2268,7 +2273,7 @@ windower.register_event('prerender', function()
 		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
-		if AutoSave == 'On' and player.sub_job == 'DRG' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep'] or Stance == 'Seigan') and not TownZones:contains(world.area) then
+		if AutoSave == 'On' and player.sub_job == 'DRG' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep'] or Stance == 'Seigan') and player.status == "Engaged" and not TownZones:contains(world.area) then
 			if player.sub_job_level >= 50 and windower.ffxi.get_ability_recasts()[160] == 0 then
 				send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
 			elseif player.sub_job_level >= 35 and windower.ffxi.get_ability_recasts()[159] == 0 then
