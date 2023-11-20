@@ -1,4 +1,4 @@
-**PLEASE NOTE: These files require the Text plugin to be loaded in order to work.**
+**PLEASE NOTE: These files require the Text addon to be loaded in order to work.**
 
 # Features #
 ## Options ##
@@ -60,10 +60,10 @@ Image coming soon.
 
 # FAQ #
 **Q:** Why am I crashing when I load one of your luas?  
-**A:** You're missing the Text plugin.  
+**A:** You're missing the Text addon.  
 
 **Q:** Can I use these without the HUD?  
-**A:** Yes, you can turn off the HUD by going into the Advanced Options in the file and changing ShowHUD to false, this will make it so it is not shown by default when you change job and load the file. You can also turn it on and off in the game by typing //hud. You MUST still have the Text plugin regardless.  
+**A:** Yes, you can turn off the HUD by going into the Advanced Options in the file and changing ShowHUD to false, this will make it so it is not shown by default when you change job and load the file. You can also turn it on and off in the game by typing //hud. You MUST still have the Text addon regardless.  
 
 **Q:** Can I request a feature or change, or report a bug?  
 **A:** Abso-freakin-lutely.  Message me @ Valefor.Keylesta on ffxiah.com
@@ -279,7 +279,7 @@ Version 15.0
 - Updated //fileinfo.
 
 03.30.21 (Version Compatibility Codename: Fidant)
-- Added a slight wait into the On-Screen display. This should prevent the occasional Text plugin error on file load.
+- Added a slight wait into the On-Screen display. This should prevent the occasional Text addon error on file load.
 - Added SoundAlerts function. This will play a sound for various things (cancelled spell due to silence, not enough TP for a WS, 3000 TP, etc)
 - Updated which gear sets are equipped for a few of the Unbridled Learning spells where we care more about the additional effect landing than we do about the damage.
 - Fixed Unity Trust set to actually equip as intended.
@@ -305,7 +305,7 @@ Version 15.0
 - Added option to adjust the transparency level of the OnScreen display.
 - Added option to automatically re-equip your gear after you zone. 'All' will either equip whichever Gear Mode you are in, or equip the
  set for the town you are in. 'Town' will only do this when you zone into a town.
-- Added ability to turn off the Chat and Book options in case you either do not want to use them or another plugin does it already.
+- Added ability to turn off the Chat and Book options in case you either do not want to use them or another addon does it already.
 - Moved the GearCheck and AutoDefender functions into a new Experimental Options section.
 - Added a new Top and Bottom version identifier. This will help narrow down issues when updating this file to a new version in the future.
  The idea is that whenever I make changes that require edits to the top half of the file, I will change the Top and Bottom version names.
@@ -510,7 +510,7 @@ Version 11.0.0
 - Fixed the Dead Notification.
 - Changed «« and »» to << and >> for chatlog notifications since «« and »» don't actually display in the chatlog.
 - Fixed displaying DT Override status while in towns.
-- Fixed a lot calls to the Text plugin when not using the Text plugin (HUD turned off)
+- Fixed a lot calls to the Text addon when not using the Text addon (HUD turned off)
 - Fixed the Reraise Reminder.
 - Code cleanup.
 
