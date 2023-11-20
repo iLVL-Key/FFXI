@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '1.0.4'
+_addon.version = '1.0.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer'}
 
@@ -36,7 +36,9 @@ res = require('resources')
 defaults = {}
 defaults.x_pos = 0
 defaults.y_pos = -2
-defaults.font_size = 12
+defaults.font = "Consolas"
+defaults.font_size = 11
+defaults.bold = false
 defaults.text_transparency = 255
 defaults.bg_transparency = 175
 
@@ -45,7 +47,7 @@ settings = config.load(defaults)
 informer_main_show = false
 
 function create_informer_main()
-	windower.send_command('text informer_main create " Loading...";wait .3;text informer_main size '..settings.font_size..';text informer_main pos '..settings.x_pos..' '..settings.y_pos..';text informer_main transparency '..settings.text_transparency..';text informer_main bg_transparency '..settings.bg_transparency..'')
+	windower.send_command('text informer_main create " Loading...";wait .3;text informer_main size '..settings.font_size..';text informer_main pos '..settings.x_pos..' '..settings.y_pos..';text informer_main transparency '..settings.text_transparency..';text informer_main bg_transparency '..settings.bg_transparency..';text informer_main font "'..settings.font..'";text informer_main bold '..tostring(settings.bold))
 	informer_main_show = true
 end
 
@@ -83,21 +85,21 @@ function update_informer_main()
 		facing = windower.ffxi.get_mob_by_target('me').facing
 	end
 	if facing >= (math.pi*.625)*-1 and facing < (math.pi*.375)*-1 then
-		direction = " N  "
+		direction = "N "
 	elseif facing >= (math.pi*.375)*-1 and facing < (math.pi*.125)*-1 then
-		direction = "NE "
+		direction = "NE"
 	elseif (facing >= (math.pi*.125)*-1 and facing < math.pi*.125) or facing == 0 then
-		direction = " E  "
+		direction = "E "
 	elseif facing >= math.pi*.125 and facing < math.pi*.375 then
-		direction = "SE "
+		direction = "SE"
 	elseif facing >= math.pi*.375 and facing < math.pi*.625 then
-		direction = " S  "
+		direction = "S "
 	elseif facing >= math.pi*.625 and facing < math.pi*.875 then
-		direction = "SW "
+		direction = "SW"
 	elseif (facing >= math.pi*.875 and facing <= math.pi) or (facing >= (math.pi)*-1 and facing < (math.pi*.875)*-1) then
-		direction = " W  "
+		direction = "W "
 	elseif facing >= (math.pi*.875)*-1 and facing < (math.pi*.625)*-1 then
-		direction = "NW "
+		direction = "NW"
 	else
 		direction = "    "
 	end
@@ -107,7 +109,7 @@ function update_informer_main()
 		show_informer_main()
 	end
 	if informer_main_show then
-		windower.send_command('text informer_main text " '..player_job..' | '..zone..' '..pos..' '..direction..'| '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
+		windower.send_command('text informer_main text " '..player_job..' | '..zone..' '..pos..' '..direction..' | '..game_day..' ('..game_time..') '..weather..' | Inventory: '..inventory..'"')
 	end
 end
 
