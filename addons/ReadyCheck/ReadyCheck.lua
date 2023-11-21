@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'ReadyCheck'
-_addon.version = '0.9'
+_addon.version = '1.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'readycheck','rc'}
 
