@@ -16,4 +16,6 @@ Iniate a basic automated Ready Check
    - Activates even if started by another member
   
 ## Commands ##
- - `//readycheck` or `//rc` - Start/Stop a Ready Check
+ - `//readycheck` or `//rc` (with no additional commands) - Start/Stop a Ready Check
+   - `cancel` - Cancel the current Ready Check
+   - `hide` - Hide the current Ready Check window
