@@ -348,12 +348,13 @@ function get_sets()
 		back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}}, --10
 	}
 
-	-- Healing (Cure Potency, Potency of Cure effect received)
+	-- Healing (Cure Potency (50% cap), Potency of Cure effect received (30% cap))
 	sets.healing = {
-		body="Vrikodara Jupon",
-		hands="Agwu's Gages",
-		neck="Phalaina Locket",
-		right_ear="Mendi. Earring",
+		body="Nyame Mail",
+		hands="Agwu's Gages",			--		10CR
+		neck="Phalaina Locket",			--4CP	4CR
+		waist="Sroda Belt",				--35CP
+		right_ear="Mendi. Earring",		--5CP
 		back="Moonlight Cape",
 	}
 
@@ -562,7 +563,7 @@ end
 
 
 
-FileVersion = '8.1.1'
+FileVersion = '8.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -573,6 +574,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 8.2
+- Adjusted Wild Carrot, Healing Breeze, and Magic Fruit to use the Healing set.
 
 Version 8.1.1
 - Fixed an issue with the HUD Mode occasionally displaying in the wrong color.
@@ -745,7 +749,7 @@ LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get se
 LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
-LockstyleDelay = 3
+LockstyleDelay = 5
 AutoLockstyleRun = true
 LowHP = false
 Doom = false
@@ -1764,7 +1768,7 @@ end
 -------------------------------------------
 
 function midcast(spell)
-	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
+	if (string.find(spell.english,'Cur') and spell.type == "WhiteMagic") or spell.english == 'Magic Fruit' or spell.english == 'Healing Breeze' or spell.english == 'Wild Carrot' then
 		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
 			if (player.in_combat == false or buffactive['Aquaveil']) then --not in combat, or combat with Aquaveil up, no need for SIRD
 				equip(sets.healing)
