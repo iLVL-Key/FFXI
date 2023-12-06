@@ -760,6 +760,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Verison 8.2
+- Adjusted Wild Carrot, Healing Breeze, and Magic Fruit to use the Healing set.
+
 Version 8.1.1
 - Fixed an issue with the HUD Mode occasionally displaying in the wrong color.
 
