@@ -338,6 +338,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 13.0.1
+- Fixed an issue where the Entrust target is not captured correctly when the Indi- spell and target is typed manually into the chat.
+
 Version 13.0
 - Added Black halo and Exudation gear sets.
 - Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
