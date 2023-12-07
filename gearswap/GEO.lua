@@ -469,16 +469,20 @@ end
 
 
 
-FileVersion = '13'
+FileVersion = '13.0.1'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
-MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+MAJOR version updates add new feature(s). Usually require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
+PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.0.1
+- Fixed an issue where the Entrust target is not captured correctly when the Indi- spell and target is typed manually into the chat.
 
 Version 13.0
 - Added Black halo and Exudation gear sets.
@@ -489,6 +493,7 @@ Version 13.0
 - Adjusted ability recast timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to fire off properly if you're camping that recast timer.
 - Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
 - Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
+- Fixed an issue with the name of the Entrust target being cleared when casting another Indi- spell afterwards.
 - Reversed AutoFullCircle change from Version 12.1.
 
 Version 12.1
@@ -504,7 +509,7 @@ Version 11.0.0
 - No gear set changes.
 - Renamed WS Damage Notification to Damage Notification.
 - Updated Damage Notification to include Weapon Skills, Skillchains, Magic Bursts, and Blood Pacts.
-- Adjusted AutoEntrust behavior. Using a macro to cast an Indi- spell will now instead of directly using Entrust then casting that spell, it will instead activate the AutoEntrust system for use. Simply repeat the cast to use AutoEntrust. AutoEntrust will deactivate after 10 seconds, or after casting on yourself instead. This change was made to prevent misfires in situations where you intend to cast an Indi- spell on yourself, but someone casts on you right before, therefore making you target them, and thus the target of the Indi- spell.
+- Adjusted AutoEntrust behavior. Using a macro to cast an Indi- spell on someone else will now instead of directly using Entrust then casting that spell, it will instead activate the AutoEntrust system for use. Simply repeat the cast to use AutoEntrust. AutoEntrust will deactivate after 10 seconds, or after casting on yourself instead. This change was made to prevent misfires in situations where you intend to cast an Indi- spell on yourself, but someone casts on you right before, therefore making you target them, and thus the target of the Indi- spell.
 - Fixed Luopan gear set not equipping immediately after casting a Geo- spell.
 - Fixed WS Damage Notification option displaying regardless of being on or off.
 - Updated to semantic versioning. This removes the need for the Version Compatibility Codenames.
@@ -704,7 +709,7 @@ LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get se
 LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
-LockstyleDelay = 3
+LockstyleDelay = 5
 AutoLockstyleRun = true
 if pet.isvalid then
 	LuopanActive = true
@@ -1393,7 +1398,7 @@ function precast(spell)
 				cancel_spell()
 				return
 			end
-		elseif spell.target.type == 'SELF' then
+		elseif UseEntrust == true and spell.target.type == 'SELF' then
 			--if we cast an Indi- spell on ourselves we reset UseEntrust back to false, this allows us to cancel the use of AutoEntrust and go through the double-check above again for next time
 			UseEntrust = false
 			if Debug == 'On' then
@@ -1401,12 +1406,6 @@ function precast(spell)
 			end
 			send_command('text entrustlabel text "Entrust";text entrustlabel color 255 255 255;text entrustlabel bg_transparency 1') --reset the label when we deactivate AutoEntrust
 		end
-
-	-- elseif string.find(spell.english,'Indi-') and AutoEntrust == 'On' and windower.ffxi.get_ability_recasts()[93] == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
-		-- --if we're casting an Indi- spell on a party member we use Entrust first
-		-- send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
-		-- cancel_spell()
-		-- return
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
@@ -1550,7 +1549,7 @@ function aftercast(spell)
 				if Debug == 'On' then
 					add_to_chat(8,'[Entrust set to '..SpellSH..']')
 				end
-				Target = player.last_subtarget.name
+				local Target = spell.target.name
 				send_command('text entrustlabel text "Entrust - '..Target..'"')
 				send_command('text entrust text "'..Entrust..'";text entrust color 75 255 75')
 			else
@@ -1566,7 +1565,7 @@ function aftercast(spell)
 				add_to_chat(8,'[GeoColure set to SpellSH]')
 			end
 			send_command('wait 1;gs c Choose Set')
-			--we add in a 1 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
+			--add in a 1 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
 		end
 	elseif spell.english == 'Entrust' and not spell.interrupted and LoadHUD == true then
 		EntrustCountdown = EntrustDuration
