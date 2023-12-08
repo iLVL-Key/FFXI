@@ -481,7 +481,7 @@ windower.register_event('addon command',function(addcmd)
 				windower.add_to_chat(220,'[ReadyCheck] '..('You cannot start a Ready Check when you are solo.'):color(8)..'')
 				return
 			end
-			say('/p [RC] Ready Check!   / = ready   x = not ready   <scall'..settings.call_num..'>')
+			say('/p [RC] Ready Check!   / = ready   x = not ready   <call'..settings.call_num..'>')
 			clearLists()
 			addToReadyList(self_name)
 			showBox()
