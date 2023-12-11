@@ -4,6 +4,8 @@ Initiate a basic automated Ready Check
 
 ![Keylesta 2023-12-10 05 54 49](https://github.com/iLVL-Key/FFXI/assets/101156258/d9771a65-906c-4794-adb0-fcce9d1c900a)
 
+![Keylesta 2023-12-10 10 17 44](https://github.com/iLVL-Key/FFXI/assets/101156258/c9f0b4a6-ec23-4a52-948b-06474023c1d3)
+
 ## Features ##
  - Members can indicate they are `ready` or `not ready` as well as change their status
  - Automatically ends when all members are marked as `ready`
