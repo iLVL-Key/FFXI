@@ -1,6 +1,8 @@
 # READY CHECK #
 <[Ready]> <[Please check it.]>  
-Iniate a basic automated Ready Check
+Initiate a basic automated Ready Check
+
+![Keylesta 2023-12-10 05 54 49](https://github.com/iLVL-Key/FFXI/assets/101156258/d9771a65-906c-4794-adb0-fcce9d1c900a)
 
 ## Features ##
  - Members can indicate they are `ready` or `not ready` as well as change their status
