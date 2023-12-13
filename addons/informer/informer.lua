@@ -70,12 +70,12 @@ function update_informer_main()
 	local items = windower.ffxi.get_bag_info(0)
 	local game = windower.ffxi.get_info()
 	local pos = windower.ffxi.get_position()
-	local player_job = ''..player.main_job..player.main_job_level..'/'..(player.sub_job or '---')..(player.sub_job and player.sub_job_level) or '--'
-	local inventory = ''..items.count..'/'..items.max
+	local player_job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
+	local inventory = items.count..'/'..items.max
 	local game_time_hour = math.floor(game.time/60)
 	local game_time_minute_unformatted = game.time - (math.floor(game.time/60)*60)
 	local game_time_minute = string.format("%02d", game_time_minute_unformatted)
-	local game_time = ''..game_time_hour..':'..game_time_minute
+	local game_time = game_time_hour..':'..game_time_minute
 	local game_day = res.days[windower.ffxi.get_info().day].name
 	local weather = res.weather[windower.ffxi.get_info().weather].name
 	local zone = res.zones[windower.ffxi.get_info().zone].name
