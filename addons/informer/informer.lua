@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '1.0.5'
+_addon.version = '1.0.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer'}
 
@@ -70,12 +70,12 @@ function update_informer_main()
 	local items = windower.ffxi.get_bag_info(0)
 	local game = windower.ffxi.get_info()
 	local pos = windower.ffxi.get_position()
-	local player_job = ''..player.main_job..''..player.main_job_level..'/'..player.sub_job..''..player.sub_job_level..''
-	local inventory = ''..items.count..'/'..items.max..''
+	local player_job = ''..player.main_job..player.main_job_level..'/'..(player.sub_job or '---')..(player.sub_job and player.sub_job_level) or '--'
+	local inventory = ''..items.count..'/'..items.max
 	local game_time_hour = math.floor(game.time/60)
 	local game_time_minute_unformatted = game.time - (math.floor(game.time/60)*60)
 	local game_time_minute = string.format("%02d", game_time_minute_unformatted)
-	local game_time = ''..game_time_hour..':'..game_time_minute..''
+	local game_time = ''..game_time_hour..':'..game_time_minute
 	local game_day = res.days[windower.ffxi.get_info().day].name
 	local weather = res.weather[windower.ffxi.get_info().weather].name
 	local zone = res.zones[windower.ffxi.get_info().zone].name
@@ -133,7 +133,7 @@ windower.register_event('addon command',function(addcmd)
 		windower.send_command('lua r informer')
         return
 	else
-		windower.add_to_chat(200,'[Informer] '..('This addon has no commands, but I hope you have a great day :)'):color(8)..'')
+		windower.add_to_chat(200,'[Informer] '..('This addon has no commands, but I hope you have a great day :)'):color(8))
 	end
 	
 end)
