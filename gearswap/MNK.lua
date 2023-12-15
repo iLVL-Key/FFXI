@@ -1652,12 +1652,12 @@ windower.register_event('gain buff', function(buff)
 		end
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
-	elseif buff == 461 then
+	elseif buff == 461 and player.status == "Engaged" then
 		equip(sets.impetus)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Impetus]')
 		end
-	elseif buff == 406 then
+	elseif buff == 406 and player.status == "Engaged" then
 		equip(sets.footwork)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Footwork]')
