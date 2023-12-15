@@ -525,6 +525,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 6.2.1
+- Fixed Footwork and Impetus keeping their respective sets equipped while they are active.
+
 Version 6.2
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
