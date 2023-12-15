@@ -157,6 +157,7 @@ Aftermath3color	=	'255 255 50'	--Aftermath Level 3
 -- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 WeaponCycle = {
+	{"Verethragna", empty},
 	{"Spharai", empty},
 	{"Godhands", empty},
 	{"Xoanon", "Flanged Grip"},
@@ -181,13 +182,13 @@ function get_sets()
 	sets.modeone = {
 		ammo="Coiste Bodhar",
 		head="Adhemar Bonnet +1",
-		body="Tatena. Harama. +1",
+		body="Mpaca's Doublet",
 		hands="Adhemar Wrist. +1",
 		legs="Bhikku Hose +3",
 		feet="Mpaca's Boots",
 		neck="Mnk. Nodowa +2",
 		waist="Moonbow Belt +1",
-		left_ear="Odr Earring",
+		left_ear="Sherida Earring",
 		right_ear="Schere Earring",
 		left_ring="Hetairoi Ring",
 		right_ring="Niqmaddu Ring",
@@ -266,7 +267,7 @@ function get_sets()
 	-- Weapon Skill - Basic (STR, DEX, Multi-hit, Crit, Attack)
 	sets.ws = {
 		ammo="Coiste Bodhar",
-		head="Anch. Crown +2",
+		head="Anch. Crown +3",
 		body="Mpaca's Doublet",
 		hands="Mpaca's Gloves",
 		legs="Mpaca's Hose",
@@ -351,7 +352,7 @@ function get_sets()
 		ammo="Coiste Bodhar",
 		head="Mpaca's Cap",
 		body="Bhikku Cyclas +3",
-		hands="Bhikku Gloves +3",
+		hands="Ryuo Tekko +1",
 		legs="Mpaca's Hose",
 		feet="Mpaca's Boots",
 		neck="Fotia Gorget",
@@ -409,7 +410,7 @@ function get_sets()
 
 	-- Focus
 	sets.focus = {
-		head="Anch. Crown +2",
+		head="Anch. Crown +3",
 	}
 
 	-- Dodge
@@ -420,11 +421,12 @@ function get_sets()
 	-- Chakra
 	sets.chakra = {
 		body="Anch. Cyclas +2",
+		hands="Hes. Gloves",
 	}
 
 	-- Chi Blast
 	sets.chiblast = {
-
+		head="Hes. Crown",
 	}
  
 	-- Counterstance
@@ -432,19 +434,19 @@ function get_sets()
 
 	}
 
-	-- Footwork
+	-- Footwork (Equipped during the duration of Footwork)
 	sets.footwork = {
 		feet="Bhikku Gaiters +3",
 	}
 
 	-- Mantra
 	sets.mantra = {
-
+		feet="Hes. Gaitors",
 	}
 
 	-- Formless Strikes
 	sets.formlessstrikes = {
-
+		body="Hes. Cyclas",
 	}
 
 	-- Perfect Counter
@@ -452,14 +454,14 @@ function get_sets()
 		head="Bhikku Crown +3",
 	}
 
-	-- Impetus
+	-- Impetus (Equipped during duration of Impetus)
 	sets.impetus = {
-
+		body="bhikku Cyclas +3"
 	}
 
 	-- Hundred Fists
 	sets.hundredfists = {
-
+		legs="Hes. Hose",
 	}
 
 	-- Holy Water (Holy Water+)
@@ -513,7 +515,7 @@ end
 
 
 
-FileVersion = '6.2'
+FileVersion = '6.2.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -524,6 +526,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 6.2.1
+- Fixed Footwork and Impetus keeping their respective sets equipped while they are active.
 
 Version 6.2
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
@@ -612,7 +617,7 @@ LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get se
 LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
-LockstyleDelay = 3
+LockstyleDelay = 5
 AutoLockstyleRun = true
 AutoSaveUsed = false --this is used so we don't trigger multiple "saves" together
 LowHP = false
@@ -1106,9 +1111,26 @@ function choose_set()
 				end
 			else
 				if Mode == 'Mode1' then
-					equip(sets.modeone)
-					if Debug == 'On' then
-						add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..')]')
+					if buffactive['Footwork'] and buffactive['Impetus'] then
+						equip(set_combine(sets.modeone, sets.footwork, sets.impetus))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Footwork + Impetus]')
+						end
+					elseif buffactive['Footwork'] then
+						equip(set_combine(sets.modeone, sets.footwork))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Footwork]')
+						end
+					elseif buffactive['Impetus'] then
+						equip(set_combine(sets.modeone, sets.impetus))
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..') + Impetus]')
+						end
+					else
+						equip(sets.modeone)
+						if Debug == 'On' then
+							add_to_chat(8,'[Equipped Set: Mode 1 ('..Mode1Name..')]')
+						end
 					end
 				elseif Mode == 'Mode2' then
 					equip(sets.modetwo)
@@ -1495,11 +1517,6 @@ function precast(spell)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Counterstance]')
 		end
-	elseif spell.english == 'Footwork' and windower.ffxi.get_ability_recasts()[21] < 2 then
-		equip(sets.footwork)
-		if Debug == 'On' then
-			add_to_chat(8,'[Equipped Set: Footwork]')
-		end
 	elseif spell.english == 'Mantra' and windower.ffxi.get_ability_recasts()[19] < 2 then
 		equip(sets.mantra)
 		if Debug == 'On' then
@@ -1514,11 +1531,6 @@ function precast(spell)
 		equip(sets.perfectcounter)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Perfect Counter]')
-		end
-	elseif spell.english == 'Impetus' and windower.ffxi.get_ability_recasts()[31] < 2 then
-		equip(sets.impetus)
-		if Debug == 'On' then
-			add_to_chat(8,'[Equipped Set: Impetus]')
 		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
@@ -1640,6 +1652,16 @@ windower.register_event('gain buff', function(buff)
 		end
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
+	elseif buff == 461 then
+		equip(sets.impetus)
+		if Debug == 'On' then
+			add_to_chat(8,'[Equipped Set: Impetus]')
+		end
+	elseif buff == 406 then
+		equip(sets.footwork)
+		if Debug == 'On' then
+			add_to_chat(8,'[Equipped Set: Footwork]')
+		end
 	end
 end)
 
