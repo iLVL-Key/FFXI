@@ -525,6 +525,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 6.2.2
+- Fixed AutoSave using multiple "saves" in a row.
+
 Version 6.2.1
 - Fixed Footwork and Impetus keeping their respective sets equipped while they are active.
 
@@ -893,6 +896,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 13.2.1
+- Fixed AutoSave using multiple "saves" in a row.
+
 Version 13.2
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
 
@@ -1197,6 +1203,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 7.2.2
+- Fixed AutoSave using multiple "saves" in a row.
 
 Version 7.2.1
 - Fixed AutoSave trying to use High/Super Jump while not in combat.
