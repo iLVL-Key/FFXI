@@ -515,7 +515,7 @@ end
 
 
 
-FileVersion = '6.2.1'
+FileVersion = '6.2.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -526,6 +526,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 6.2.2
+- Fixed AutoSave using multiple "saves" in a row.
 
 Version 6.2.1
 - Fixed Footwork and Impetus keeping their respective sets equipped while they are active.
@@ -2025,7 +2028,7 @@ windower.register_event('prerender', function()
 		elseif HWater == true then
 			HWaterRecast = HWaterRecast - 1
 		end
-		if AutoSave == 'On' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and not TownZones:contains(world.area) then
+		if AutoSave == 'On' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['Amnesia'] or buffactive['Terror'] or buffactive['Petrification'] or buffactive['Sleep']) and not TownZones:contains(world.area) and not AutoSaveUsed then
 			if windower.ffxi.get_ability_recasts()[15] == 0 then
 				send_command('input /ja "Chakra" <me>;wait .5;input /ja "Chakra <me>')
 			elseif player.status == "Engaged" and Mode ~= 'Mode4' and player.sub_job == 'DRG' and player.sub_job_level >= 50 and windower.ffxi.get_ability_recasts()[160] == 0 then
