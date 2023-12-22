@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'ReadyCheck'
-_addon.version = '1.0'
+_addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'readycheck','rc'}
 
@@ -391,11 +391,11 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if message:match("^[/|\\]") and timer_countdown > 0 and mode == 4 then
+	if( message:match("^[/|\\]") or message:match("^ready") or message:match("^o/")) and timer_countdown > 0 then
 		addToReadyList(sender)
 		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
-	elseif message:match("^[xX]") and timer_countdown > 0 and mode == 4 then
+	elseif message:match("^[xX]") and timer_countdown > 0 then
 		addToNotReadyList(sender)
 
 	-- Look for the RC indicator
@@ -439,7 +439,7 @@ windower.register_event('outgoing text', function(original)
 	local message = original:gsub("/p ", "") -- Remove /p if it exists
 
 	-- Ready
-	if message:match("^[/|\\]") and timer_countdown > 0 then
+	if (message:match("^[/|\\]") or message:match("^ready") or message:match("^o/")) and timer_countdown > 0 then
 		addToReadyList(self_name)
 
 	--Not ready
@@ -456,6 +456,10 @@ windower.register_event('addon command',function(addcmd)
 		windower.add_to_chat(220,'[ReadyCheck] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 		windower.add_to_chat(36,'//readycheck or //rc'..(' - Start/Stop a Ready Check'):color(8))
 		windower.add_to_chat(36,'   cancel'..(' - Cancel a Ready Check'):color(8))
+		windower.add_to_chat(36,'   hide'..(' - Hide the current Ready Check window'):color(8))
+
+	elseif addcmd == 'hide' then
+		hidebox()
 
 	elseif addcmd == 'reload' then
 		windower.send_command('lua r readycheck')
