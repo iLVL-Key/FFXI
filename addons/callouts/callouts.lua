@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.5.1'
+_addon.version = '1.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -55,6 +55,17 @@ windower.register_event('action',function(act)
 		chat(('/%s \r \r'..windower.ffxi.get_mob_by_id(act.targets[1].id).name..' is charmed!%s\r \r'):format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 	end
 
+
+
+
+	-- if actor == 'Bumba' or actor == 'Bozzetto Autarch' then
+	if actor == 'Bumba' then
+		chat('/echo (Actor: '..actor..') (Cat: '..act.category..') (Param: '..act.param..') (Msg: '..act.targets[1].actions[1].message..') (target.actions.param: '..act.targets[1].actions[1].param..') (Target: '..windower.ffxi.get_mob_by_id(act.targets[1].id).name..')')
+	end
+
+
+
+
 	if act.category == 8 then
 		if actor == 'Bozzetto Autarch' then
 			if spell_start == nil then
@@ -76,6 +87,22 @@ windower.register_event('action',function(act)
 	end
 
 	if act.category == 7 then -- initiation of weapon skill or monster TP move
+
+		-- if actor == 'Locus Camelopard' then
+			-- if monster_ability == nil then
+				-- return
+			-- else
+				-- chat('/%s %s used %s on %s%s':format(settings.chatmode,actor,monster_ability.en,target_name,settings.chatmode == 'party' and ' <call14>' or ''))
+			-- end
+		-- end
+
+		-- if actor == 'Locus Dire Bat' then
+		-- 	if monster_ability == nil then
+		-- 		return
+		-- 	else
+		-- 		chat('/%s %s used %s%s':format(settings.chatmode,actor,monster_ability.en,settings.chatmode == 'party' and ' <call14>' or ''))
+		-- 	end
+		-- end
 
 		if actor == 'Aita' or actor == 'Degei' then
 			if monster_ability == nil then
@@ -210,6 +237,8 @@ windower.register_event('action',function(act)
 				return
 			elseif monster_ability.en == 'Protolithic Puncture' then
 				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			elseif monster_ability.en == 'Carcharian Verve' then
+				chat('/%s Fetters incoming!%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
 		elseif actor == 'Xevioso' then
@@ -280,7 +309,7 @@ end)
 windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
-		windower.add_to_chat(220,'[Callouts] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key'):color(220))
+		windower.add_to_chat(220,'[Callouts] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(200,' Addon Commands'..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
 		windower.add_to_chat(36,'   chatmode/chat/mode'..(' - Switch between Echo and Party chat modes.'):color(8)..'')
@@ -298,7 +327,7 @@ windower.register_event('addon command', function(addcmd)
 	elseif addcmd == 'list' or addcmd == 'lists' then
 		windower.add_to_chat(220,'[Callouts] '..('Current callouts:'):color(200)..'')
 		windower.add_to_chat(36,'   General'..(' - Charm'):color(8)..'')
-		windower.add_to_chat(36,'   Odyssey'..(' - Hate resets, full dispels, Bumba 1-HRs (beta), Kalunga fetters'):color(8)..'')
+		windower.add_to_chat(36,'   Odyssey'..(' - Hate resets, full dispels, Bumba 1-HRs (beta), Kalunga/Ngai fetters'):color(8)..'')
 		windower.add_to_chat(36,'   Dyna-D'..(' - Halphas hate reset'):color(8)..'')
 		windower.add_to_chat(36,'   Omen'..(' - Scales, Pain Sync, Prophylaxis, Target'):color(8)..'')
 		windower.add_to_chat(36,'   Vagary'..(' - Perfidien/Plouton pop, weaknesses'):color(8)..'')
