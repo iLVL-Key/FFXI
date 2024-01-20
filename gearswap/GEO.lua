@@ -469,7 +469,7 @@ end
 
 
 
-FileVersion = '13.0.1'
+FileVersion = '13.0.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -480,6 +480,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.0.2
+- Fixed an issue with Aspir II/III and Drain not equipping the correct set.
 
 Version 13.0.1
 - Fixed an issue where the Entrust target is not captured correctly when the Indi- spell and target is typed manually into the chat.
@@ -1439,7 +1442,7 @@ function midcast(spell)
 	elseif spell.skill == 'Enfeebling Magic' then
 		equip(sets.enfeeble)
 		if Debug == 'On' then
-			add_to_chat(8,'[Equipped Set: Elemental]')
+			add_to_chat(8,'[Equipped Set: Enfeeble]')
 		end
 	elseif spell.english == 'Refresh' then
 		equip(set_combine(sets.buff, sets.refresh))
@@ -1456,12 +1459,12 @@ function midcast(spell)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Healing + Buff]')
 		end
-	elseif spell.english == "Aspir" or spell.engage =="Aspir II" or spell.engage =="Aspir III" or spell.engage =="Drain" then
+	elseif string.find(spell.english,'Aspir') or string.find(spell.english,'Drain') then
 		equip(sets.aspirdrain)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Aspir/Drain]')
 		end
-	elseif spell.english == "Absorb-TP" then
+	elseif string.find(spell.english,'Absorb') then
 		equip(sets.magicaccuracy)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Magic Accuracy]')
