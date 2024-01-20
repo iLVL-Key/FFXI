@@ -469,7 +469,7 @@ end
 
 
 
-FileVersion = '13.0.2'
+FileVersion = '13.0.3'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -480,6 +480,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.0.3
+- Fixed a timing issue with the Luopan gear set equipping after casting a Geo- spell.
 
 Version 13.0.2
 - Fixed an issue with Aspir II/III and Drain not equipping the correct set.
@@ -1567,8 +1570,8 @@ function aftercast(spell)
 			if Debug == 'On' then
 				add_to_chat(8,'[GeoColure set to SpellSH]')
 			end
-			send_command('wait 1;gs c Choose Set')
-			--add in a 1 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
+			send_command('wait 2;gs c Choose Set')
+			--add in a 2 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
 		end
 	elseif spell.english == 'Entrust' and not spell.interrupted and LoadHUD == true then
 		EntrustCountdown = EntrustDuration
