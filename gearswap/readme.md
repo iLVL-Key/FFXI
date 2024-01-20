@@ -338,6 +338,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 13.0.2
+- Fixed an issue with Aspir II/III and Drain not equipping the correct set.
+
 Version 13.0.1
 - Fixed an issue where the Entrust target is not captured correctly when the Indi- spell and target is typed manually into the chat.
 
