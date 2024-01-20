@@ -1,8 +1,16 @@
 **PLEASE NOTE: These files require the Text addon to be loaded in order to work.**
 
 # Features #
-## Options ##
-Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
+## QOL Improvements ##
+Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
+- UseEcho - Automatically uses an Echo Drop or Remedy instead of spell when you are silenced.
+- AutoMajesty - Automatically activates and keeps Majesty active.
+- AutoHWater - Automatically attempts to use Holy Waters when you get Doomed until it wears off.
+- AutoStance - Automatically activates and keeps Stances (Hasso/Seigan) active.
+- Doom ALert - Alerts your party when you are doomed.
+- LockstyleTown/LockstyleCombat - Have a separate lockstyle for when you're running around town, and when you're out in combat.
+- Book/Page - set your specific macro book and page for that job (and common subjobs) when the file loads.
+- And many more... (and you can turn any off that you don't like, too)
 
 ## Gear Modes ##
 Certain files have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
@@ -31,28 +39,28 @@ In general, each HUD has..
 
 
 ### BLU ###
-![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
+![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
 
 ### GEO ###
-![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/01b1ad30-6f03-4047-8ba2-4304574b2691)
+![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/01b1ad30-6f03-4047-8ba2-4304574b2691)
 
 ### MNK: ###
-![HUD_MNK](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
+![MNK HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
 
 ### PLD ###
-Image coming soon.
+![PLD HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/daf386e1-3335-4410-aae7-29db223e7d8b)
 
 ### RUN ###
-![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)
+![RUN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)
 
 ### SAM ###
-![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
+![SAM HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
 
 ### SMN ###
-![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/68e4b257-1e66-42e1-b3b3-ab864dd47d10)
+![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/68e4b257-1e66-42e1-b3b3-ab864dd47d10)
 
 ### WAR ###
-![main_full](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
+![WAR HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
 
 # IMPORTANT #
 - You must have the _**Text**_ addon loaded in order to use these Gearswap lua files. It can be found in the Windower launcher under the addons tab.  
@@ -65,8 +73,16 @@ Image coming soon.
 **Q:** Can I use these without the HUD?  
 **A:** Yes, you can turn off the HUD by going into the Advanced Options in the file and changing ShowHUD to false, this will make it so it is not shown by default when you change job and load the file. You can also turn it on and off in the game by typing //hud. You MUST still have the Text addon regardless.  
 
-**Q:** Can I request a feature or change, or report a bug?  
+**Q:** Can I request a feature or change, or report an issue?  
 **A:** Abso-freakin-lutely.  Message me @ Valefor.Keylesta on ffxiah.com
+
+**Q:** Can you make one for X job?  
+**A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
+
+# Issues #
+- Odyssey messes with the files loading (job change while inside using the moogle), and will display a number of errors from the Text plugin. To avoid this, I recommend switching jobs using the JobChange Addon. I haven't been able to figure out why it works with no issues using JobChange, but normal job changing via the moogles throws errors.
+- I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
+- The RUN file has a custom-made timer for keeping track of the Runes you have up. This timer continues to run while you are doing things like using teleports (Sortie, for example), whereas the game pauses its own internal timer for them, creating a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated, you may never even notice it.
 
 # Changelog #
 
