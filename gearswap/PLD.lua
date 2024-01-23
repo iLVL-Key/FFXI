@@ -210,7 +210,24 @@ function get_sets()
 		left_ring="Moonlight Ring",		--5 DT
 		right_ring="Gelatinous Ring +1",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
+		
+		--[[
+		ammo="Staunch Tathlum +1",
+		head="Sakpata's Helm",
+		body="Sakpata's Plate",
+		hands="Sakpata's Gauntlets",
+		legs="Sakpata's Cuisses",
+		feet="Sakpata's Leggings",
+		neck="Moonlight Necklace",
+		waist="Asklepian Belt",
+		left_ear="Eabani Earring",
+		right_ear="Chev. Earring +1",
+		left_ring="Shadow Ring",
+		right_ring="Apeile Ring +1",
+		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
+		]]--
 	}
+
 
 	-- MAX HP (HP-focused tank gear, inherits any leftover slots from the Tank set above)
 	-- NOTE: This set is only used when the "UseMaxHP" option is set to 'On'.
@@ -286,6 +303,7 @@ function get_sets()
 		head={ name="Odyssean Helm", augments={'Pet: Mag. Acc.+20 Pet: "Mag.Atk.Bns."+20','Magic dmg. taken -2%','"Refresh"+2','Accuracy+15 Attack+15','Mag. Acc.+1 "Mag.Atk.Bns."+1',}},
 		body="Crepuscular Mail",
 		hands="Regal Gauntlets",
+		feet={ name="Odyssean Greaves", augments={'Pet: Mag. Acc.+10','Accuracy+10','"Refresh"+2','Accuracy+11 Attack+11','Mag. Acc.+11 "Mag.Atk.Bns."+11',}},
 		neck="Coatl Gorget +1",
 		waist="Flume Belt",
 		left_ring="Stikini Ring +1",
@@ -632,7 +650,7 @@ end
 
 
 
-FileVersion = '13.1'
+FileVersion = '13.1.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -643,6 +661,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.1.1
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 13.1
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
@@ -869,7 +890,7 @@ LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
 MajestyTimer = 0
-LockstyleDelay = 3
+LockstyleDelay = 5
 AutoLockstyleRun = true
 MaxHP = false
 LowHP = false
@@ -2405,16 +2426,18 @@ windower.register_event('prerender', function()
 				send_command('text sentinel pos '..HUDposXColumn5..' '..HUDposYLine1..'')	--Sentinel goes in Column 5
 			end
 			--Recast updates:
-			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
-				DefenderRecast = windower.ffxi.get_ability_recasts()[3]
-			elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
-				CocoonRecast = windower.ffxi.get_spell_recasts()[547]
+			if player.main_job == 'PLD' then --This check prevents errors when these fire off for a second after you switch characters
+				CrusadeRecast = windower.ffxi.get_spell_recasts()[476]
+				PhalanxRecast = windower.ffxi.get_spell_recasts()[106]
+				ReprisalRecast = windower.ffxi.get_spell_recasts()[97]
+				PalisadeRecast = windower.ffxi.get_ability_recasts()[42]
+				SentinelRecast = windower.ffxi.get_ability_recasts()[75]
+				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					DefenderRecast = windower.ffxi.get_ability_recasts()[3]
+				elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
+					CocoonRecast = windower.ffxi.get_spell_recasts()[547]
+				end
 			end
-			CrusadeRecast = windower.ffxi.get_spell_recasts()[476]
-			PhalanxRecast = windower.ffxi.get_spell_recasts()[106]
-			ReprisalRecast = windower.ffxi.get_spell_recasts()[97]
-			PalisadeRecast = windower.ffxi.get_ability_recasts()[42]
-			SentinelRecast = windower.ffxi.get_ability_recasts()[75]
 			--Recast color updates - decide the colors:
 
 			if buffactive['Enmity Boost'] then CrusadeColor = '75 255 75'
