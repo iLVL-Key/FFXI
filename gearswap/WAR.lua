@@ -185,6 +185,7 @@ DualWieldWeapons = S{
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 WeaponCycle = {
 	{"Naegling", "Blurred Shield +1"},
+	{"Loxotic Mace +1", "Blurred Shield +1"},
 	{"Ukonvasara", "Utu Grip"},
 	{"Chango", "Utu Grip"},
 	{"Shining One", "Utu Grip"},
@@ -369,19 +370,19 @@ sets.ygnas = {
 -- Tomahawk
 sets.tomahawk = {
 	ammo="Thr. Tomahawk",
-	feet="Agoge Calligae +1",
+	feet="Agoge Calligae +2",
 }
 
 -- Aggressor
 sets.aggressor = {
 	head="Pumm. Mask +2",
-	body="Agoge Lorica +1",
+	body="Agoge Lorica +3",
 }
 
 -- Berserk
 sets.berserk = {
-	body="Pumm. Lorica +2",
-	feet="Agoge Calligae +1",
+	body="Pumm. Lorica +3",
+	feet="Agoge Calligae +2",
 }
 
 -- Warcry
@@ -465,7 +466,7 @@ end
 
 
 
-FileVersion = '7.2.2'
+FileVersion = '7.2.3'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -476,6 +477,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 7.2.3
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 7.2.2
 - Fixed AutoSave using multiple "saves" in a row.
@@ -2352,12 +2356,14 @@ windower.register_event('prerender', function()
 			send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')	--Notifications goes in Line 3, Column 1
 			send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')		--Debuffs goes in Line 3, Column 4
 			--Recast updates:
-			AggressorRecast = windower.ffxi.get_ability_recasts()[4]
-			BerserkRecast = windower.ffxi.get_ability_recasts()[1]
-			WarcryRecast = windower.ffxi.get_ability_recasts()[2]
-			RestraintRecast = windower.ffxi.get_ability_recasts()[9]
-			RetaliationRecast = windower.ffxi.get_ability_recasts()[8]
-			BloodRageRecast = windower.ffxi.get_ability_recasts()[11]
+			if player.main_job == 'WAR' then --This check prevents errors when these fire off for a second after you switch characters
+				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
+				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
+				WarcryRecast = windower.ffxi.get_ability_recasts()[2]
+				RestraintRecast = windower.ffxi.get_ability_recasts()[9]
+				RetaliationRecast = windower.ffxi.get_ability_recasts()[8]
+				BloodRageRecast = windower.ffxi.get_ability_recasts()[11]
+			end
 			--Recast color updates - decide the colors:
 			if buffactive['Aggressor'] then AggressorColor = '75 255 75'
 			elseif AggressorRecast < 2 and AggressorRecast ~= 0 then
