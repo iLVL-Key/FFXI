@@ -42,7 +42,7 @@ In general, each HUD has..
 ![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
 
 ### GEO ###
-![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/01b1ad30-6f03-4047-8ba2-4304574b2691)
+![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)
 
 ### MNK: ###
 ![MNK HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
@@ -57,7 +57,7 @@ In general, each HUD has..
 ![SAM HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
 
 ### SMN ###
-![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/68e4b257-1e66-42e1-b3b3-ab864dd47d10)
+![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4d1cb7dd-98e9-411f-9532-7b156befb5b6)
 
 ### WAR ###
 ![WAR HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
