@@ -181,18 +181,21 @@ function get_sets()
 	-- NOTE: This is your standard melee set.
 	sets.modeone = {
 		ammo="Coiste Bodhar",
-		head="Adhemar Bonnet +1",
+		head="Ken. Jinpachi +1",
 		body="Mpaca's Doublet",
-		hands="Adhemar Wrist. +1",
+		hands="Mpaca's Gloves",
 		legs="Bhikku Hose +3",
 		feet="Mpaca's Boots",
 		neck="Mnk. Nodowa +2",
 		waist="Moonbow Belt +1",
 		left_ear="Sherida Earring",
-		right_ear="Schere Earring",
-		left_ring="Hetairoi Ring",
-		right_ring="Niqmaddu Ring",
-		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
+		right_ear={ name="Odnowa Earring +1", augments={'Path: A',}},
+		--right_ear="Schere Earring",
+		left_ring={ name="Gelatinous Ring +1", augments={'Path: A',}},
+		right_ring="Shadow Ring",
+		--left_ring="Hetairoi Ring",
+		--right_ring="Niqmaddu Ring",
+		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 	}
 
 	-- Mode 2 (Accuracy) (Example: A focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Store TP, and Attack)
@@ -210,7 +213,7 @@ function get_sets()
 		right_ear="Bhikku Earring +1",
 		left_ring="Ilabrat Ring",
 		right_ring="Niqmaddu Ring",
-		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
+		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 	})
 
 	-- Mode 3 (Subtle Blow) (Example: A focus on Subtle blow, with a mix of Multi-Attack, Store TP, DEX, Accuracy, and Attack)
@@ -327,7 +330,7 @@ function get_sets()
 		right_ear="Bhikku Earring +1",
 		left_ring="Regal Ring",
 		right_ring="Niqmaddu Ring",
-		back={ name="Segomo's Mantle", augments={'VIT+20','Accuracy+20 Attack+20','VIT+10','Weapon skill damage +10%','Mag. Evasion+15',}},
+		back={ name="Segomo's Mantle", augments={'VIT+20','Accuracy+20 Attack+20','VIT+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 	})
 
 	-- Ascetic's Fury (VIT, STR, crit+)
@@ -378,7 +381,7 @@ function get_sets()
 		right_ear="Sherida Earring",
 		left_ring="Regal Ring",
 		right_ring="Niqmaddu Ring",
-		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
+		back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 	})
 
 	-- Cataclysm (Dark Elem. MAB, INT, Magic Damage, WSD)
@@ -515,7 +518,7 @@ end
 
 
 
-FileVersion = '6.2.2'
+FileVersion = '6.2.3'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -526,6 +529,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 6.2.3
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 6.2.2
 - Fixed AutoSave using multiple "saves" in a row.
@@ -2146,18 +2152,20 @@ windower.register_event('prerender', function()
 			send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')		--Notifications goes in Line 3, Column 1
 			send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')			--Debuffs goes in Line 3, Column 4
 			--Recast updates:
-			FocusRecast = windower.ffxi.get_ability_recasts()[13]
-			DodgeRecast = windower.ffxi.get_ability_recasts()[14]
-			ImpetusRecast = windower.ffxi.get_ability_recasts()[31]
-			FootworkRecast = windower.ffxi.get_ability_recasts()[21]
-			PerfectCounterRecast = windower.ffxi.get_ability_recasts()[22]
-			ChakraRecast = windower.ffxi.get_ability_recasts()[15]
-			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
-				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
-				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
-			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
-				HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
-				SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
+			if player.main_job == 'MNK' then --This check prevents errors when these fire off for a second after you switch characters
+				FocusRecast = windower.ffxi.get_ability_recasts()[13]
+				DodgeRecast = windower.ffxi.get_ability_recasts()[14]
+				ImpetusRecast = windower.ffxi.get_ability_recasts()[31]
+				FootworkRecast = windower.ffxi.get_ability_recasts()[21]
+				PerfectCounterRecast = windower.ffxi.get_ability_recasts()[22]
+				ChakraRecast = windower.ffxi.get_ability_recasts()[15]
+				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					AggressorRecast = windower.ffxi.get_ability_recasts()[4]
+					BerserkRecast = windower.ffxi.get_ability_recasts()[1]
+				elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
+					HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
+					SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
+				end
 			end
 			--Recast color updates - decide the colors:
 			if buffactive['Focus'] then FocusColor = '75 255 75'
