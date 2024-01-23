@@ -483,7 +483,7 @@ end
 
 
 
-FileVersion = '13.2.1'
+FileVersion = '13.2.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -494,6 +494,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.2.2
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 13.2.1
 - Fixed AutoSave using multiple "saves" in a row.
@@ -800,7 +803,7 @@ send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
-send_command('alias dt gs c DT') --creates the DT Override and alias
+send_command('alias dt gs c DT') --creates the DT Override alias
 if Debug == 'On' then
 	add_to_chat(8,'[Debug Mode: On]')
 end
@@ -2525,18 +2528,20 @@ windower.register_event('prerender', function()
 			send_command('text notifications pos '..HUDposXColumn1..' '..HUDposYLine3..'')		--Notifications goes in Line 3, Column 1
 			send_command('text debuffs pos '..HUDposXColumn4..' '..HUDposYLine3..'')			--Debuffs goes in Line 3, Column 4
 			--Recast updates:
-			MeditateRecast = windower.ffxi.get_ability_recasts()[134]
-			SekkanokiRecast = windower.ffxi.get_ability_recasts()[140]
-			SengikoriRecast = windower.ffxi.get_ability_recasts()[141]
-			HagakureRecast = windower.ffxi.get_ability_recasts()[54]
-			HassoRecast = windower.ffxi.get_ability_recasts()[138]
-			SeiganRecast = windower.ffxi.get_ability_recasts()[139]
-			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
-				AggressorRecast = windower.ffxi.get_ability_recasts()[4]
-				BerserkRecast = windower.ffxi.get_ability_recasts()[1]
-			elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
-				HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
-				SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
+			if player.main_job == 'SAM' then --This check prevents errors when these fire off for a second after you switch characters
+				MeditateRecast = windower.ffxi.get_ability_recasts()[134]
+				SekkanokiRecast = windower.ffxi.get_ability_recasts()[140]
+				SengikoriRecast = windower.ffxi.get_ability_recasts()[141]
+				HagakureRecast = windower.ffxi.get_ability_recasts()[54]
+				HassoRecast = windower.ffxi.get_ability_recasts()[138]
+				SeiganRecast = windower.ffxi.get_ability_recasts()[139]
+				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					AggressorRecast = windower.ffxi.get_ability_recasts()[4]
+					BerserkRecast = windower.ffxi.get_ability_recasts()[1]
+				elseif player.sub_job == 'DRG' and player.sub_job_level ~= 0 then
+					HighJumpRecast = windower.ffxi.get_ability_recasts()[159]
+					SuperJumpRecast = windower.ffxi.get_ability_recasts()[160]
+				end
 			end
 			--Recast color updates - decide the colors:
 			if MeditateRecast == 0 then MeditateColor = '255 50 50'
