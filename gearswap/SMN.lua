@@ -21,6 +21,12 @@ To activate Damage Taken Override, use any of these three options:
 	CTRL+D
 	(Can be changed in the Advanced Options section)
 
+To use the Auto Elemental Siphon function, use either of these two option:
+1. A macro with the following
+	/console Siphon
+2. An alias command
+	//siphon
+
 Run the Lockstyle function yourself at any time by typing
 	//lockstyle or //lstyle
 
@@ -124,7 +130,7 @@ RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255 = fully opaque)
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
-Debug			=	'Off'	--[On/Off]
+Debug			=	'On'	--[On/Off]
 
 --Color Values
 Aftermath1color		=	'0 127 255'		--Aftermath Level 1
@@ -138,6 +144,9 @@ EarthColor			=	'250 130 40'	--Titan, Earth Spirit
 ThunderColor		=	'186 85 211'	--Ramuh, Thunder Spirit
 WaterColor			=	'30 144 255'	--Leviathan, Water Spirit
 DarkColor			=	'200 30 80'		--Fenrir, Diabolos, Atomos, Odin, Dark Spirit
+PetHPMeter100color	=	'0 255 0'		--Pet HP Meter color up to 100%
+PetHPMeter50color	=	'255 165 0'		--Pet HP Meter color under 50%
+PetHPMeter25color	=	'255 0 50'		--Pet HP Meter color under 25%
 
 -------------------------------------------
 --               GEAR SETS               --
@@ -288,11 +297,11 @@ function get_sets()
 		feet="Baaya. Sabots +1",		--Skill +29
 		neck="Incanter's Torque",		--Skill +10
 		waist="Kobo Obi",				--Skill +8
-		left_ear="Andoaa Earring",		--Skill +5
+		left_ear="Lodurr Earring",		--Skill +10
 		right_ear="Beck. Earring +1",
 		left_ring="Stikini Ring +1",	--Skill +8
 		right_ring="Stikini Ring +1",	--Skill +8
-		back="Conveyance Cape",			--Skill +10		BPD-II -3
+		back="Conveyance Cape",			--Skill +13
 	}
 
 	-- Blood Pact: Rage Physical (BP Damage+, Pet: Att+) (BP midcast)
@@ -364,7 +373,7 @@ function get_sets()
 		feet="Baaya. Sabots +1",
 		neck="Incanter's Torque",
 		waist="Kobo Obi",
-		left_ear="Andoaa Earring",
+		left_ear="Lodurr Earring",
 		right_ear="Beck. Earring +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -383,7 +392,7 @@ function get_sets()
 		feet="Baaya. Sabots +1",
 		neck="Incanter's Torque",
 		waist="Kobo Obi",
-		left_ear="Andoaa Earring",
+		left_ear="Lodurr Earring",
 		right_ear="Beck. Earring +1",
 		left_ring="Stikini Ring +1",
 		right_ring="Stikini Ring +1",
@@ -442,6 +451,7 @@ function get_sets()
 	sets.refresh = {
 		head="Amalric Coif +1",
 		back="Grapevine Cape",
+		waist="Gishdubar Sash",
 	}
 
 	-- Astral Flow (Enhances Astral Flow gear)
@@ -451,6 +461,8 @@ function get_sets()
 
 	-- Elemental Siphon (Enhances Elemental Siphon gear)
 	sets.elementalsiphon = {
+		main="Chatoyant Staff",
+		ammo="Esper Stone +1",
 		back="Conveyance Cape",
 	}
 
@@ -503,16 +515,23 @@ end
 
 
 
-FileVersion = '10.0'
+FileVersion = '11.0'
 
 -------------------------------------------
 --               UPDATES                 --
 -------------------------------------------
 
 --[[
-MAJOR version updates require changes in the top portion of the file. Changes to gear sets will be noted.
-MINOR and PATCH version updates typically only require changes under the "Do Not Edit Below This Line".
+MAJOR version updates add new feature(s). Usually require changes in the top portion of the file. Changes to gear sets will be noted.
+MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
+PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 11.0
+- No gear set changes.
+- Added Auto Elemental Siphon function. This is a command, triggered by either an alias (//siphon), or a macro (/console siphon) that will automatically choose and summon the appropriate Elemental Spirit based on day and weather, use Elemental Siphon, then dismiss the Spirit.
+- Adjusted HUD background to display the Avatar HP as a % meter.
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 10.0
 - Added Summoning and Garland of Bliss gear set.
@@ -719,7 +738,7 @@ LoadDelay = 4 --delays loading the HUD, this makes sure all the variables get se
 LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
-LockstyleDelay = 3
+LockstyleDelay = 5
 AutoLockstyleRun = true
 if pet.isvalid then
 	PetPresent = true
@@ -750,6 +769,9 @@ HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
 HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
 send_command('wait '..LoadDelay..';gs c LoadHUD')
 --Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
+send_command('wait 1.4;text pethpmeter1 create "";wait .3;text pethpmeter1 size '..FontSize..';text pethpmeter1 pos '..HUDposXColumn1..' -100;text pethpmeter1 bg_transparency 0; text pethpmeter1 bg_color 255 0 0')--Pet HP Meter
+send_command('wait 1.4;text pethpmeter2 create "";wait .3;text pethpmeter2 size '..FontSize..';text pethpmeter2 pos '..HUDposXColumn1..' -100;text pethpmeter2 bg_transparency 0; text pethpmeter2 bg_color 255 0 0')--Pet HP Meter
+send_command('wait 1.4;text pethpmeter3 create "";wait .3;text pethpmeter3 size '..FontSize..';text pethpmeter3 pos '..HUDposXColumn1..' -100;text pethpmeter3 bg_transparency 0; text pethpmeter3 bg_color 255 0 0')--Pet HP Meter
 send_command('wait 1.5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 send_command('wait 1.6;text loading create "Loading Keys SUMMONER file ver: '..FileVersion..' ...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 send_command('wait 1.7;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
@@ -781,6 +803,7 @@ send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 send_command('alias dt gs c DT') --creates the DT Override and alias
+send_command('alias siphon gs c Siphon') --creates the Elemental Siphon alias
 if Debug == 'On' then
 	add_to_chat(8,'[Debug Mode: On]')
 end
@@ -860,8 +883,11 @@ function self_command(command)
 	elseif command == 'LoadHUD' then
 		LoadHUD = true
 		send_command('text loading hide')
+		send_command('wait .1;text pethpmeter1 pos '..HUDposXColumn1..' '..HUDposYLine1..'')
 		send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+		send_command('wait .1;text pethpmeter2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
 		send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+		send_command('wait .2;text pethpmeter3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
 		send_command('wait .7;text favor pos '..HUDposXColumn1..' '..HUDposYLine1..'')
 		send_command('wait .7;text siphon pos '..HUDposXColumn2..' '..HUDposYLine1..'')
 		send_command('wait .7;text apogee pos '..HUDposXColumn3..' '..HUDposYLine1..'')
@@ -1011,6 +1037,9 @@ function self_command(command)
 		add_to_chat(200,'ThunderColor: '..(''..ThunderColor..''):color(8)..'')
 		add_to_chat(200,'WaterColor: '..(''..WaterColor..''):color(8)..'')
 		add_to_chat(200,'DarkColor: '..(''..DarkColor..''):color(8)..'')
+		add_to_chat(200,'PetHPMeter100color: '..(''..PetHPMeter100color..''):color(8)..'')
+		add_to_chat(200,'PetHPMeter75color: '..(''..PetHPMeter75color..''):color(8)..'')
+		add_to_chat(200,'PetHPMeter50color: '..(''..PetHPMeter50color..''):color(8)..'')
 		add_to_chat(200,' ')
 		add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
@@ -1055,6 +1084,15 @@ function self_command(command)
 		if Debug == 'On' then
 			add_to_chat(8,'[Alive set to True]')
 		end
+	elseif command == 'Siphon' then
+		SpiritElements={Light='Light Spirit',Fire='Fire Spirit',Ice='Ice Spirit',Wind='Air Spirit',Earth='Earth Spirit',Lightning='Thunder Spirit',Water='Water Spirit',Dark='Dark Spirit'}
+		SpiritOpposing={Light='Dark',Fire='Ice',Ice='Wind',Wind='Earth',Earth='Lightning',Lightning='Water',Water='Fire',Dark='Light'}
+		if world.weather_element ~= 'None' and SpiritOpposing[world.day_element] ~= world.weather_element then
+			send_command('input /ma '..SpiritElements[world.weather_element]..' <me>')
+		else
+			send_command('input /ma '..SpiritElements[world.day_element]..' <me>')
+		end
+		send_command('wait 4.5;input /ja "Elemental Siphon" <me>;wait 1;input /pet Release <me>')
 	elseif command == 'HUD' and ShowHUD == false then
 		ShowHUD = true
 		if Debug == 'On' then
@@ -1068,9 +1106,9 @@ function self_command(command)
 		end
 		windower.send_command('gs c HideHUD')
 	elseif command == 'ShowHUD' then
-		send_command('text bg1 show;text bg2 show;text bg3 show;text favor show;text siphon show;text apogee show;text cede show;text convert show;text weapons show;text notifications show;text debuffs show;text avatar show')
+		send_command('text pethpmeter1 show;text pethpmeter2 show;text pethpmeter3 show;text bg1 show;text bg2 show;text bg3 show;text favor show;text siphon show;text apogee show;text cede show;text convert show;text weapons show;text notifications show;text debuffs show;text avatar show')
 	elseif command == 'HideHUD' then
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text favor hide;text siphon hide;text apogee hide;text cede hide;text convert hide;text weapons hide;text notifications hide;text debuffs hide;text avatar hide')
+		send_command('text pethpmeter1 hide;text pethpmeter2 hide;text pethpmeter3 hide;text bg1 hide;text bg2 hide;text bg3 hide;text favor hide;text siphon hide;text apogee hide;text cede hide;text convert hide;text weapons hide;text notifications hide;text debuffs hide;text avatar hide')
 	end
 end
 
@@ -1348,7 +1386,7 @@ function precast(spell)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Holy Water]')
 		end
-	elseif spell.english == 'Elemental Siphon' and windower.ffxi.get_ability_recasts()[175] < 2 and AutoSiphon == 'Off' then
+	elseif spell.english == 'Elemental Siphon' and windower.ffxi.get_ability_recasts()[175] < 2 then
 		equip(sets.elementalsiphon)
 		if Debug == 'On' then
 			add_to_chat(8,'[Equipped Set: Elemental Siphon]')
@@ -1359,25 +1397,10 @@ function precast(spell)
 			cancel_spell()
 			send_command('input /pet "Release" <me>;wait 1;input /ma '..spell.english..' <me>')
 		end
-
-
-		SpiritElements={Light='Light Spirit',Fire='Fire Spirit',Ice='Ice Spirit',Wind='Air Spirit',Earth='Earth Spirit',Lightning='Thunder Spirit',Water='Water Spirit',Dark='Dark Spirit'}
-		--SpiritOpposing={Light='Dark',Fire='Ice',Ice='Wind',Wind='Earth',Earth='Lightning',Lightning='Water',Water='Fire',Dark='Light'}
-
-		if AutoSiphon == 'On' then
-			if spell.name == 'Dark Spirit' then
-				if world.weather_element ~= 'Dark' and world.weather_element ~= 'None' then
-					cancel_spell()
-					send_command('input /ma '..SpiritElements[world.weather_element]..' <me>')
-				elseif world.weather_element == 'None' then
-					send_command('input /ma '..SpiritElements[world.day_element]..' <me>')
-				end
-			end
-			send_command('wait 3.5;input /ja "Elemental Siphon" <me>;wait 1;input /pet Release <me>')
-		end
 		equip(sets.summoning)
-			
-
+		if Debug == 'On' then
+			add_to_chat(8,'[Equipped Set: Summoning]')
+		end
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
@@ -2049,6 +2072,22 @@ windower.register_event('prerender', function()
 				end
 			end
 			if pet.isvalid == true then
+				local petHPMeter = ""
+				local spaces = math.floor(122 * (pet.hpp / 100))
+				while string.len(petHPMeter) < spaces do
+					petHPMeter = petHPMeter..' '
+				end
+				local color
+				if pet.hpp <= 25 then
+					color = PetHPMeter25color
+				elseif pet.hpp <= 50 then
+					color = PetHPMeter50color
+				else
+					color = PetHPMeter100color
+				end
+				send_command('text pethpmeter1 bg_transparency 75;text pethpmeter2 bg_transparency 75;text pethpmeter3 bg_transparency 75')
+				send_command('text pethpmeter1 bg_color '..color..';text pethpmeter2 bg_color '..color..';text pethpmeter3 bg_color '..color..'')
+				send_command('text pethpmeter1 text "'..petHPMeter..'";text pethpmeter2 text "'..petHPMeter..'";text pethpmeter3 text "'..petHPMeter..'"')
 				send_command('text avatar text "'..pet.name..' - '..pet.hpp..'% ('..pet.status..')"')
 				if pet.name == "Carbuncle" or pet.name == "Cait Sith" or pet.name == "Alexander" or pet.name == "Light Spirit" then
 					send_command('text avatar color '..LightColor)
@@ -2068,16 +2107,19 @@ windower.register_event('prerender', function()
 					send_command('text avatar color '..DarkColor)
 				end
 			else
+				send_command('text pethpmeter1 bg_transparency 1;text pethpmeter2 bg_transparency 1;text pethpmeter3 bg_transparency 1')
 				send_command('text avatar text "No Avatar"')
 				send_command('text avatar color 255 50 50')
 			end
 			--Recast updates:
-			FavorRecast = windower.ffxi.get_ability_recasts()[176]
-			SiphonRecast = windower.ffxi.get_ability_recasts()[175]
-			ApogeeRecast = windower.ffxi.get_ability_recasts()[108]
-			CedeRecast = windower.ffxi.get_ability_recasts()[71]
-			if player.sub_job == 'RDM' and player.sub_job_level ~= 0 then
-				ConvertRecast = windower.ffxi.get_ability_recasts()[49]
+			if player.main_job == 'SMN' then --This check prevents errors when these fire off for a second after you switch characters
+				FavorRecast = windower.ffxi.get_ability_recasts()[176]
+				SiphonRecast = windower.ffxi.get_ability_recasts()[175]
+				ApogeeRecast = windower.ffxi.get_ability_recasts()[108]
+				CedeRecast = windower.ffxi.get_ability_recasts()[71]
+				if player.sub_job == 'RDM' and player.sub_job_level ~= 0 then
+					ConvertRecast = windower.ffxi.get_ability_recasts()[49]
+				end
 			end
 			--Recast color updates - decide the colors:
 			if buffactive['Avatar\'s Favor'] then FavorColor = '75 255 75'
@@ -2308,5 +2350,5 @@ end)
 -------------------------------------------
 
 function file_unload()
-	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text favor delete;text siphon delete;text apogee delete;text cede delete;text convert delete;text weapons delete;text notifications delete;text debuffs delete;text loading delete;text avatar delete') --delete the different text objects
+	send_command('wait 1;text pethpmeter1 delete;text pethpmeter2 delete;text pethpmeter3 delete;text bg1 delete;text bg2 delete;text bg3 delete;text favor delete;text siphon delete;text apogee delete;text cede delete;text convert delete;text weapons delete;text notifications delete;text debuffs delete;text loading delete;text avatar delete') --delete the different text objects
 end
