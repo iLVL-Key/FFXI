@@ -118,6 +118,10 @@ HUDBGTrans		=	'175'	--Background transparency for the HUD. (0 = fully clear, 255
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 Debug			=	'Off'	--[On/Off]
 
+--Color Values
+PetHPMeter100color	=	'0 255 0'	--Pet HP Meter color up to 100%
+PetHPMeter50color	=	'255 165 0'	--Pet HP Meter color under 50%
+PetHPMeter25color	=	'255 0 50'	--Pet HP Meter color under 25%
 
 -------------------------------------------
 --               GEAR SETS               --
@@ -372,6 +376,7 @@ function get_sets()
 	sets.refresh = {
 		head="Amalric Coif +1",
 		back="Grapevine Cape",
+		waist="Gishdubar Sash",
 	}
 
 	-- Cursna (Cursna, Healing Magic)
@@ -469,7 +474,7 @@ end
 
 
 
-FileVersion = '13.0.3'
+FileVersion = '13.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -480,6 +485,10 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.1
+- Adjusted HUD background to display the Luopan HP as a % meter.
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 13.0.3
 - Fixed a timing issue with the Luopan gear set equipping after casting a Geo- spell.
@@ -751,6 +760,10 @@ HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
 HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
 send_command('wait '..LoadDelay..';gs c LoadHUD')
 --Create all the HUD Background text objects and put them above the screen for now, we'll move them to the correct place next
+send_command('wait 1.4;text pethpmeter1 create "";wait .3;text pethpmeter1 size '..FontSize..';text pethpmeter1 pos '..HUDposXColumn1..' -100;text pethpmeter1 bg_transparency 0; text pethpmeter1 bg_color 255 0 0')--Pet HP Meter
+send_command('wait 1.4;text pethpmeter2 create "";wait .3;text pethpmeter2 size '..FontSize..';text pethpmeter2 pos '..HUDposXColumn1..' -100;text pethpmeter2 bg_transparency 0; text pethpmeter2 bg_color 255 0 0')--Pet HP Meter
+send_command('wait 1.4;text pethpmeter3 create "";wait .3;text pethpmeter3 size '..FontSize..';text pethpmeter3 pos '..HUDposXColumn1..' -100;text pethpmeter3 bg_transparency 0; text pethpmeter3 bg_color 255 0 0')--Pet HP Meter
+send_command('wait 1.4;text pethpmeter4 create "";wait .3;text pethpmeter4 size '..FontSize..';text pethpmeter4 pos '..HUDposXColumn1..' -100;text pethpmeter4 bg_transparency 0; text pethpmeter4 bg_color 255 0 0')--Pet HP Meter
 send_command('wait 1.5;text bg1 create "                                                                                                                          ";wait .3;text bg1 size '..FontSize..';text bg1 pos '..HUDposXColumn1..' '..HUDposYLine1..';text bg1 bg_transparency '..HUDBGTrans..'')--Background Line 1
 send_command('wait 1.6;text loading create "Loading Keys GEOMANCER file ver: '..FileVersion..' ...";wait .3;text loading size '..FontSize..';text loading pos '..HUDposXColumn1..' '..HUDposYLine1..';text loading bg_transparency 1') --Loading
 send_command('wait 1.7;text bg2 create "                                                                                                                          ";wait .3;text bg2 size '..FontSize..';text bg2 pos '..HUDposXColumn1..' -100;text bg2 bg_transparency '..HUDBGTrans..'')--Background Line 2
@@ -795,7 +808,7 @@ end
 send_command('alias fileinfo gs c Fileinfo') --creates the fileinfo alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
-send_command('alias dt gs c DT') --creates the DT Override and alias
+send_command('alias dt gs c DT') --creates the DT Override alias
 if Debug == 'On' then
 	add_to_chat(8,'[Debug Mode: On]')
 end
@@ -878,9 +891,13 @@ function self_command(command)
 			add_to_chat(8,'[LoadHUD set to True]')
 		end
 		send_command('text loading hide')
+		send_command('wait .1;text pethpmeter1 pos '..HUDposXColumn1..' '..HUDposYLine1..'')
 		send_command('wait .1;text bg2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
+		send_command('wait .1;text pethpmeter2 pos '..HUDposXColumn1..' '..HUDposYLine2..'')
 		send_command('wait .2;text bg3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
+		send_command('wait .2;text pethpmeter3 pos '..HUDposXColumn1..' '..HUDposYLine3..'')
 		send_command('wait .3;text bg4 pos '..HUDposXColumn1..' '..HUDposYLine4..'')
+		send_command('wait .3;text pethpmeter4 pos '..HUDposXColumn1..' '..HUDposYLine4..'')
 		send_command('wait .8;text radial pos '..HUDposXColumn1..' '..HUDposYLine1..'')
 		send_command('wait .8;text mending pos '..HUDposXColumn2..' '..HUDposYLine1..'')
 		send_command('wait .8;text blaze pos '..HUDposXColumn3..' '..HUDposYLine1..'')
@@ -1008,6 +1025,11 @@ function self_command(command)
 		add_to_chat(200,'AddCommas: '..(''..AddCommas..''):color(8)..'')
 		add_to_chat(200,'Debug: '..(''..Debug..''):color(8)..'')
 		add_to_chat(200,' ')
+		add_to_chat(3,'-- Color Values --')
+		add_to_chat(200,'PetHPMeter100color: '..(''..PetHPMeter100color..''):color(8)..'')
+		add_to_chat(200,'PetHPMeter75color: '..(''..PetHPMeter75color..''):color(8)..'')
+		add_to_chat(200,'PetHPMeter50color: '..(''..PetHPMeter50color..''):color(8)..'')
+		add_to_chat(200,' ')
 		add_to_chat(3,'Options can be changed in the file itself.')
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
@@ -1064,9 +1086,9 @@ function self_command(command)
 		end
 		windower.send_command('gs c HideHUD')
 	elseif command == 'ShowHUD' then
-		send_command('text bg1 show;text bg2 show;text bg3 show;text bg4 show;text indicolure show;text indicolurelabel show;text geocolure show;text geocolurelabel show;text entrust show;text entrustlabel show;text blaze show;text ecliptic show;text dematerialize show;text life show;text radial show;text mending show;text notifications show;text debuffs show')
+		send_command('text pethpmeter1 show;text pethpmeter2 show;text pethpmeter3 show;text pethpmeter4 show;text bg1 show;text bg2 show;text bg3 show;text bg4 show;text indicolure show;text indicolurelabel show;text geocolure show;text geocolurelabel show;text entrust show;text entrustlabel show;text blaze show;text ecliptic show;text dematerialize show;text life show;text radial show;text mending show;text notifications show;text debuffs show')
 	elseif command == 'HideHUD' then
-		send_command('text bg1 hide;text bg2 hide;text bg3 hide;text bg4 hide;text indicolure hide;text indicolurelabel hide;text geocolure hide;text geocolurelabel hide;text entrust hide;text entrustlabel hide;text blaze hide;text ecliptic hide;text dematerialize hide;text life hide;text radial hide;text mending hide;text notifications hide;text debuffs hide')
+		send_command('text pethpmeter1 hide;text pethpmeter2 hide;text pethpmeter3 hide;text pethpmeter4 hide;text bg1 hide;text bg2 hide;text bg3 hide;text bg4 hide;text indicolure hide;text indicolurelabel hide;text geocolure hide;text geocolurelabel hide;text entrust hide;text entrustlabel hide;text blaze hide;text ecliptic hide;text dematerialize hide;text life hide;text radial hide;text mending hide;text notifications hide;text debuffs hide')
 	elseif command == 'CancelUseEntrust' then
 		if UseEntrust == true then
 			UseEntrust = false
@@ -1986,6 +2008,22 @@ windower.register_event('prerender', function()
 				end
 			end
 			if pet.isvalid == true then
+				local petHPMeter = ""
+				local spaces = math.floor(122 * (pet.hpp / 100))
+				while string.len(petHPMeter) < spaces do
+					petHPMeter = petHPMeter..' '
+				end
+				local color
+				if pet.hpp <= 25 then
+					color = PetHPMeter25color
+				elseif pet.hpp <= 50 then
+					color = PetHPMeter50color
+				else
+					color = PetHPMeter100color
+				end
+				send_command('text pethpmeter1 bg_transparency 100;text pethpmeter2 bg_transparency 100;text pethpmeter3 bg_transparency 100;text pethpmeter4 bg_transparency 100')
+				send_command('text pethpmeter1 bg_color '..color..';text pethpmeter2 bg_color '..color..';text pethpmeter3 bg_color '..color..';text pethpmeter4 bg_color '..color..'')
+				send_command('text pethpmeter1 text "'..petHPMeter..'";text pethpmeter2 text "'..petHPMeter..'";text pethpmeter3 text "'..petHPMeter..'";text pethpmeter4 text "'..petHPMeter..'"')
 				send_command('text geocolurelabel text "Luopan - '..pet.hpp..'%"')
 				send_command('text geocolure text "'..GeoColure..'";text geocolure color 0 255 0')
 				LuopanActive = true
@@ -1993,6 +2031,7 @@ windower.register_event('prerender', function()
 					add_to_chat(8,'[LuopanActive set to True]')
 				end
 			else
+				send_command('text pethpmeter1 bg_transparency 1;text pethpmeter2 bg_transparency 1;text pethpmeter3 bg_transparency 1;text pethpmeter4 bg_transparency 1')
 				send_command('text geocolurelabel text "Luopan"')
 				send_command('text geocolure text "None";text geocolure color 255 50 50')
 				LuopanActive = false
@@ -2030,13 +2069,15 @@ windower.register_event('prerender', function()
 				end
 			end
 			--Recast updates:
-			EntrustRecast = windower.ffxi.get_ability_recasts()[93]
-			BlazeRecast = windower.ffxi.get_ability_recasts()[247]
-			EclipticRecast = windower.ffxi.get_ability_recasts()[244]
-			DematerializeRecast = windower.ffxi.get_ability_recasts()[248]
-			LifeRecast = windower.ffxi.get_ability_recasts()[246]
-			RadialRecast = windower.ffxi.get_ability_recasts()[252]
-			MendingRecast = windower.ffxi.get_ability_recasts()[251]
+			if player.main_job == 'GEO' then --This check prevents errors when these fire off for a second after you switch characters
+				EntrustRecast = windower.ffxi.get_ability_recasts()[93]
+				BlazeRecast = windower.ffxi.get_ability_recasts()[247]
+				EclipticRecast = windower.ffxi.get_ability_recasts()[244]
+				DematerializeRecast = windower.ffxi.get_ability_recasts()[248]
+				LifeRecast = windower.ffxi.get_ability_recasts()[246]
+				RadialRecast = windower.ffxi.get_ability_recasts()[252]
+				MendingRecast = windower.ffxi.get_ability_recasts()[251]
+			end
 			--Recast color updates - decide the colors:
 			if EntrustCountdown > 0 then EntrustColor = '75 255 75'
 			elseif EntrustRecast < 2 and EntrustRecast ~= 0 then
@@ -2272,5 +2313,5 @@ end)
 -------------------------------------------
 
 function file_unload()
-	send_command('wait 1;text bg1 delete;text bg2 delete;text bg3 delete;text bg4 delete;text indicolure delete;text indicolurelabel delete;text geocolure delete;text geocolurelabel delete;text entrust delete;text entrustlabel delete;text blaze delete;text ecliptic delete;text dematerialize delete;text life delete;text radial delete;text mending delete;text loading delete;text notifications delete;text debuffs delete') --delete the different text objects
+	send_command('wait 1;text pethpmeter1 delete;text pethpmeter2 delete;text pethpmeter3 delete;text pethpmeter4 delete;text bg1 delete;text bg2 delete;text bg3 delete;text bg4 delete;text indicolure delete;text indicolurelabel delete;text geocolure delete;text geocolurelabel delete;text entrust delete;text entrustlabel delete;text blaze delete;text ecliptic delete;text dematerialize delete;text life delete;text radial delete;text mending delete;text loading delete;text notifications delete;text debuffs delete') --delete the different text objects
 end
