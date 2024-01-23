@@ -402,6 +402,7 @@ function get_sets()
 		head="Erilaz Galea +3",
 		hands="Regal Gauntlets",
 		feet="Futhark Trousers +3",
+		waist="Gishdubar Sash",
 	}
 
 	-- Holy Water (Holy Water+)
@@ -563,7 +564,7 @@ end
 
 
 
-FileVersion = '8.2'
+FileVersion = '8.2.1'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -574,6 +575,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 8.2.1
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 8.2
 - Adjusted Wild Carrot, Healing Breeze, and Magic Fruit to use the Healing set.
@@ -2573,16 +2577,18 @@ windower.register_event('prerender', function()
 				send_command('text vpulse pos '..HUDposXColumn5..' '..HUDposYLine1..'')		--Vivacious Pulse goes in Column 5
 			end
 			--Recast updates:
-			if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
-				DefenderRecast = windower.ffxi.get_ability_recasts()[3]
-			elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
-				CocoonRecast = windower.ffxi.get_spell_recasts()[547]
+			if player.main_job == 'RUN' then --This check prevents errors when these fire off for a second after you switch characters
+				CrusadeRecast = windower.ffxi.get_spell_recasts()[476]
+				PhalanxRecast = windower.ffxi.get_spell_recasts()[106]
+				BattutaRecast = windower.ffxi.get_ability_recasts()[120]
+				SwordplayRecast = windower.ffxi.get_ability_recasts()[24]
+				VPulseRecast = windower.ffxi.get_ability_recasts()[242]
+				if player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
+					DefenderRecast = windower.ffxi.get_ability_recasts()[3]
+				elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
+					CocoonRecast = windower.ffxi.get_spell_recasts()[547]
+				end
 			end
-			CrusadeRecast = windower.ffxi.get_spell_recasts()[476]
-			PhalanxRecast = windower.ffxi.get_spell_recasts()[106]
-			BattutaRecast = windower.ffxi.get_ability_recasts()[120]
-			SwordplayRecast = windower.ffxi.get_ability_recasts()[24]
-			VPulseRecast = windower.ffxi.get_ability_recasts()[242]
 			--Recast color updates - decide the colors:
 			if buffactive['Enmity Boost'] then CrusadeColor = '75 255 75'
 			elseif CrusadeRecast < 120 and CrusadeRecast ~= 0 then
