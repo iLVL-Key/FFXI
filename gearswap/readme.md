@@ -89,6 +89,17 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 17.0.1
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
+
+Version 17.0
+- Added Weapon Cycle feature. Cycles between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Will not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
+- Adjusted how the Weapon Skill sets are coded. You can now add a new set for a WS that is not already defined by simply copying another WS set and changing the set name to match the desired WS name. This change also tidies up the backend code a bit as well which was totally not the main reason for doing it.
+- Adjusted HUD positioning options and text for clarity.
+- Adjusted ability recast timings for equipping gear from `<= 1` to `< 2`. Should give a touch more room to fire off properly if you're camping that recast timer.
+- Adjusted Gear Mode keybind Advanced Option to remove the hardcoded "CTRL+" requirement. Can now be fully customized (WIN+G, ALT+5, F9, etc.)
+- Adjusted the //hidehud and //showhud aliases to condense to just //hud. It also now actually works.
+
 Version 16.0
 - No gear set changes.
 - Added Advanced Option to add commas to the damage numbers.
@@ -354,6 +365,13 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 13.1
+- Adjusted HUD background to display the Luopan HP as a % meter.
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
+
+Version 13.0.3
+- Fixed a timing issue with the Luopan gear set equipping after casting a Geo- spell.
+
 Version 13.0.2
 - Fixed an issue with Aspir II/III and Drain not equipping the correct set.
 
@@ -544,6 +562,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 6.2.3
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
+
 Version 6.2.2
 - Fixed AutoSave using multiple "saves" in a row.
 
@@ -599,6 +620,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 13.1.1
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 13.1
 - Adjusted Weaponskills to not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped.
@@ -788,6 +812,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 8.2.1
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
+
 Verison 8.2
 - Adjusted Wild Carrot, Healing Breeze, and Magic Fruit to use the Healing set.
 
@@ -914,6 +941,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 13.2.2
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 13.2.1
 - Fixed AutoSave using multiple "saves" in a row.
@@ -1090,6 +1120,12 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 11.0
+- No gear set changes.
+- Added Auto Elemental Siphon function. This is a command, triggered by either an alias (//siphon), or a macro (/console siphon) that will automatically choose and summon the appropriate Elemental Spirit based on day and weather, use Elemental Siphon, then dismiss the Spirit.
+- Adjusted HUD background to display the Avatar HP as a % meter.
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
+
 Version 10.0
 - Added Summoning and Garland of Bliss gear set.
 - Added Advanced Option for Avatar colors.
@@ -1222,6 +1258,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 7.2.3
+- Fixed some errors that would display under certain circumstances immediately after switching characters.
 
 Version 7.2.2
 - Fixed AutoSave using multiple "saves" in a row.
