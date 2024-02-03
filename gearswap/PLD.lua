@@ -206,7 +206,7 @@ function get_sets()
 		neck="Unmoving Collar +1",
 		waist="Plat. Mog. Belt",		--3 DT
 		left_ear="Tuisto Earring",
-		right_ear="Chev. Earring +1",	--5 DT                  Don't need the DT or shield skill on this piece, what will be better?
+		right_ear="Chev. Earring +1",	--5 DT
 		left_ring="Moonlight Ring",		--5 DT
 		right_ring="Gelatinous Ring +1",
 		back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
@@ -650,7 +650,7 @@ end
 
 
 
-FileVersion = '13.1.1'
+FileVersion = '13.1.2'
 
 -------------------------------------------
 --               UPDATES                 --
@@ -661,6 +661,9 @@ MAJOR version updates add new feature(s). Usually require changes in the top por
 MINOR version updates change how existing feature(s) function. Usually only require changes under the "Do Not Edit Below This Line".
 PATCH version updates fix feature(s) that may not be functioning correctly or are otherwise broken. Usually only require changes under the "Do Not Edit Below This Line".
 Ex: 1.2.3 (1 is the Major version, 2 is the Minor version, 3 is the patch version)
+
+Version 13.1.2
+- Fixed issue with SIRD sets still equipping with Aquaveil active.
 
 Version 13.1.1
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
@@ -890,7 +893,7 @@ LoadHUD = false --starts false then switched to true after the LoadDelay
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
 MajestyTimer = 0
-LockstyleDelay = 5
+LockstyleDelay = 6
 AutoLockstyleRun = true
 MaxHP = false
 LowHP = false
@@ -1741,7 +1744,7 @@ end
 
 function midcast(spell)
 	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
-		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			if player.hpp >= MaxHPThreshold and spell.target.type == 'SELF' and UseMaxHP == 'On' then
 				equip(sets.maxhpsird)
 				if Debug == 'On' then
@@ -1753,7 +1756,7 @@ function midcast(spell)
 					add_to_chat(8,'[Equipped Set: Enmity + Healing with SIRD]')
 				end
 			end
-		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
+		else
 			if spell.target.type == 'SELF' then
 				equip(sets.maxhp)
 				if Debug == 'On' then
@@ -1772,48 +1775,48 @@ function midcast(spell)
 			add_to_chat(8,'[Equipped Set: Raise]')
 		end		
 	elseif spell.english == 'Flash' or string.find(spell.english,'Holy') or string.find(spell.english,'Banish') or spell.type == "BlueMagic" then
-		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enmityspellssird)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Enmity Spells with SIRD]')
 			end
-		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
+		else
 			equip(sets.enmityspells)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Enmity Spells]')
 			end
 		end
 	elseif string.find(spell.english,'Enlight') then
-		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') == 'Auto' and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') == 'Auto' and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enlightsird)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Enlight Spells with SIRD]')
 			end
-		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
+		else
 			equip(sets.enlight)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Enlight]')
 			end
 		end
 	elseif spell.english == 'Phalanx' then
-		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.phalanxsird)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Phalanx with SIRD]')
 			end
-		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
+		else
 			equip(sets.phalanx)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Phalanx]')
 			end
 		end
 	elseif spell.skill == "Enhancing Magic" then
-		if Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enhancingsird)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Enhancing with SIRD]')
 			end
-		elseif Mode == 'Neutral' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == false) then --not in combat, no need for SIRD
+		else
 			equip(sets.enhancing)
 			if Debug == 'On' then
 				add_to_chat(8,'[Equipped Set: Enhancing Magic]')
