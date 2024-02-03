@@ -621,6 +621,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 13.1.2
+- Fixed issue with SIRD sets still equipping with Aquaveil active.
+
 Version 13.1.1
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
 
