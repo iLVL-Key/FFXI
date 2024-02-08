@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '0.1'
+_addon.version = '1.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle'}
 
