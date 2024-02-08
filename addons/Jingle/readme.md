@@ -1,6 +1,6 @@
 # Jingle #
 
-Plays a sound when a player/mob/npc is nearby.
+Plays a sound when a player/mob/NPC is nearby.
 
 ## Features ##
  - Plays only once until they move out of range again.
@@ -12,6 +12,7 @@ Plays a sound when a player/mob/npc is nearby.
 `[optional] <required>`
  - add/a \<name> [sound file name] - Add a name with an optional sound file.
    - Do not include the extension in the sound file name.
+   - Use quotes to surround an NPC/mob name that contains spaces.
  - remove/r \<name> - Remove a name.
  - test/t \<sound file name> - Test a sound file. Do not include the file extension.
    - New sounds added to the /data/sounds folder must be .wav format.
