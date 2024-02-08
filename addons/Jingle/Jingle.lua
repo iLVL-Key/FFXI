@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '1.0'
+_addon.version = '1.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle'}
 
@@ -123,6 +123,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(220,' Commands '..('[optional]'):color(53)..(' <required>'):color(2))
 		windower.add_to_chat(36,'   add/a '..('<name>'):color(2)..(' [sound file name]'):color(53)..(' - Add a name with an optional sound file.'):color(8))
 		windower.add_to_chat(36,'   '..(' - Do not include the extension in the sound file name.'):color(8))
+		windower.add_to_chat(36,'   '..(' - Use quotes to surround an NPC/mob name that contains spaces.'):color(8))
 		windower.add_to_chat(36,'   remove/r '..('<name>'):color(2)..(' - Remove a name.'):color(8))
 		windower.add_to_chat(36,'   test/t '..('<sound file name>'):color(2)..(' - Test a sound file. Do not include the file extension.'):color(8))
 		windower.add_to_chat(36,'   '..(' - New sounds added to the /data/sounds folder must be .wav format.'):color(8))
