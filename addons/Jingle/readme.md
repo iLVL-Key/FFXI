@@ -17,3 +17,15 @@ Plays a sound when a player/mob/NPC is nearby.
  - test/t \<sound file name> - Test a sound file. Do not include the file extension.
    - New sounds added to the /data/sounds folder must be .wav format.
  - list/l - Show the list of names and sounds associated.
+
+## Version History ##
+
+1.1
+- Added setting for detection distance range.
+- Fixed a name save formatting issue.
+
+1.0.1
+- Updated help
+
+1.0
+- Initial release.
