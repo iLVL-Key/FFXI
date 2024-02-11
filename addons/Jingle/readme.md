@@ -20,6 +20,11 @@ Plays a sound when a player/mob/NPC is nearby.
 
 ## Version History ##
 
+1.2
+- Added ability to search by id and hex id as well as by name.
+- Adjusted the list command to now display alphanumerically.
+- Adjusted the term "name" to "target" since we're able to search by more than just names now.
+
 1.1
 - Added setting for detection distance range.
 - Fixed a name save formatting issue.
