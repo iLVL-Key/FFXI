@@ -42,7 +42,8 @@ In general, each HUD has..
 ![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
 
 ### GEO ###
-![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)
+![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
+(The green in the background is an HP bar for your luopan)
 
 ### MNK: ###
 ![MNK HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
@@ -57,7 +58,8 @@ In general, each HUD has..
 ![SAM HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
 
 ### SMN ###
-![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4d1cb7dd-98e9-411f-9532-7b156befb5b6)
+![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4d1cb7dd-98e9-411f-9532-7b156befb5b6)  
+(The green in the background is an HP bar for your summon)
 
 ### WAR ###
 ![WAR HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
@@ -80,7 +82,7 @@ In general, each HUD has..
 **A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
 
 # Issues #
-- Odyssey messes with the files loading (job change while inside using the moogle), and will display a number of errors from the Text plugin. To avoid this, I recommend switching jobs using the JobChange Addon. I haven't been able to figure out why it works with no issues using JobChange, but normal job changing via the moogles throws errors.
+- Odyssey messes with the files loading (job change while inside using the moogle), and will display a number of errors from the Text plugin. The file will still load and work like normal, however. To avoid this, I recommend switching jobs using the JobChange Addon. I haven't been able to figure out why it works with no issues using JobChange, but normal job changing via the moogles throws errors.
 - I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
 - The RUN file has a custom-made timer for keeping track of the Runes you have up. This timer continues to run while you are doing things like using teleports (Sortie, for example), whereas the game pauses its own internal timer for them, creating a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated, you may never even notice it.
 
