@@ -76,8 +76,6 @@ defaults.display.day = true
 defaults.display.inventory = true
 defaults.display.food = true
 
-defaults.food = "None"
-
 settings = config.load(defaults)
 
 informer_main = texts.new('${current_string}', settings)
@@ -106,10 +104,10 @@ function update_informer_main()
 		elseif useColors and bag.max - bag.count <= 10 then
 			inventory_color = settings.colors.warning
 		end
-	local food = settings.food
+	local food = settings.food and settings.food or "None"
 	local food_color = settings.colors.none
 		if useColors then
-			food_color = settings.food == "None" and settings.colors.bad or settings.colors.good
+			food_color = (settings.food == "None" or not settings.food) and settings.colors.bad or settings.colors.good
 		end
 	local game_time_hour = math.floor(game.time/60)
 	local game_time_minute_unformatted = game.time - (math.floor(game.time/60)*60)
