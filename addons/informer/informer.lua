@@ -76,11 +76,13 @@ defaults.display.day = true
 defaults.display.inventory = true
 defaults.display.food = true
 
+defaults.food = {}
+
 settings = config.load(defaults)
 
 informer_main = texts.new('${current_string}', settings)
 
-local latest_item_used = {}
+local last_item_used = nil
 
 function show_informer_main()
 	informer_main:show()
@@ -104,10 +106,15 @@ function update_informer_main()
 		elseif useColors and bag.max - bag.count <= 10 then
 			inventory_color = settings.colors.warning
 		end
-	local food = settings.food and settings.food or "None"
+	local food = "None"
+		if settings.food[string.lower(player.name)] then
+			food = settings.food[string.lower(player.name)]
+		elseif foodActive() then
+			food = "Unknown Food"
+		end
 	local food_color = settings.colors.none
 		if useColors then
-			food_color = (settings.food == "None" or not settings.food) and settings.colors.bad or settings.colors.good
+			food_color = foodActive() and settings.colors.good or settings.colors.bad
 		end
 	local game_time_hour = math.floor(game.time/60)
 	local game_time_minute_unformatted = game.time - (math.floor(game.time/60)*60)
@@ -148,12 +155,15 @@ function update_informer_main()
 	else
 		direction = "    "
 	end
+
+	--Zoning
 	if pos == "(?-?)" then
 		hide_informer_main()
 	elseif pos ~= "(?-?)" then
 		show_informer_main()
 	end
 
+	--Build the string to be displayed
 	local text = ''
 
 	if settings.display.job then
@@ -188,6 +198,21 @@ function update_informer_main()
 
 end
 
+-- Check if we have food active
+function foodActive()
+	local buffs = windower.ffxi.get_player().buffs
+
+	for _, buffId in ipairs(buffs) do
+		if buffId == 251 then
+			return true
+		end
+	end
+
+	return false
+
+end
+
+-- Is this player in our party (accounting for AOE foods)
 function isInParty(id)
 	local actor = windower.ffxi.get_mob_by_id(id)
 
@@ -201,23 +226,44 @@ function isInParty(id)
 
 end
 
+--Record the last item used
 windower.register_event('action',function(act)
-	if settings.food and isInParty(act.actor_id) and act.category == 9 and act.targets[1].actions[1].message == 28 then
-		latest_item_used[windower.ffxi.get_mob_by_target('me').name] = res.items[act.targets[1].actions[1].param].en
+	if not foodActive() and isInParty(act.actor_id) and act.category == 9 and act.targets[1].actions[1].message == 28 then
+		last_item_used = res.items[act.targets[1].actions[1].param].en
 	end
 end)
 
+--Food buffs appears, so the last item used was food
 windower.register_event('gain buff', function(buff)
+	local player = windower.ffxi.get_player()
+
 	if buff == 251 then
-		settings.food = latest_item_used[windower.ffxi.get_mob_by_target('me').name]
-		settings:save()
+
+		--First check if we already have food saved, if do that means we just logged back into a character with food on
+		if settings.food[string.lower(player.name)] then
+			print('gain_buff 1')
+		--If not, check if last_item_used exists, if it does that means we just used food (or a party member used AOE food)
+		elseif last_item_used then
+			settings.food[string.lower(player.name)] = last_item_used
+			print('gain_buff 2')
+		--If neither of those exist then we probably just re/loaded the addon with food already on so use "Unknown Food" for now
+		else
+			settings.food[string.lower(player.name)] = "Unknown Food"
+			print('gain_buff 3')
+		end
+
+		settings:save('all')
+		last_item_used = nil --delete the last item used after we gain the food buff
+
 	end
 end)
 
-windower.register_event('lose buff', function(buff)
-	if buff == 251 then
-		settings.food = "None"
-		settings:save()
+-- Food wears off (use incoming text since we "lose_buff" on food for a second when logging into a character, resulting in food being deleted)
+windower.register_event('incoming text',function(org)
+	local player = windower.ffxi.get_player()
+	if org:find(player.name) and org:find('Food') and org:find('effect wears off.') then
+		settings.food[string.lower(player.name)] = nil
+		settings:save('all')
 	end
 end)
 
@@ -229,18 +275,20 @@ windower.register_event('prerender', function()
 
 end)
 
---windower.register_event('load', create_informer_main)
 windower.register_event('login', show_informer_main)
-windower.register_event('logout', hide_informer_main)
+windower.register_event('logout', function()
+	hide_informer_main()
+	last_item_used = nil -- delete the last item used when we switch characters
+end)
 
 function displayUnregnizedCommand()
 	windower.add_to_chat(220,'[Informer] '..('Unrecognized command. Type'):color(39)..(' //informer help'):color(1)..(' if you need help.'):color(39))
 end
 
 windower.register_event('addon command',function(addcmd, ...)
-	-- Update the position
-	if addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' or addcmd == 'lock' or addcmd == 'unlock' then
 
+	-- Update the bar position
+	if addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' or addcmd == 'lock' or addcmd == 'unlock' then
 		local pos = {...}
 
 		-- Lock by turning drag off
@@ -249,7 +297,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			windower.add_to_chat(220,'[Informer] '..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y..' - Locked'):color(200))
 		
-		--Unlock by turning drag on
+		-- Unlock by turning drag on
 		elseif addcmd == 'unlock' or pos[1] == 'unlock' then
 			settings.flags.draggable = true
 			settings:save('all')
@@ -265,20 +313,22 @@ windower.register_event('addon command',function(addcmd, ...)
 			-- Take the provided string parameters and turn them into numbers
 			settings.pos.x = tonumber(pos[1])
 			settings.pos.y = tonumber(pos[2])
-			
-			-- Save the new setting, update the position, then alert the user
+
+			-- Position must be numbers
 			if settings.pos.x == nil or settings.pos.y == nil then
 				displayUnregnizedCommand()
+
+			-- Save the new setting, update the position, then alert the user
 			else
 				settings:save('all')
 				texts.pos(informer_main, settings.pos.x, settings.pos.y)
 				windower.add_to_chat(220,'[Informer] '..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200)..' %s':format(settings.flags.draggable and ('- Unlocked'):color(200)..(' (draggable)'):color(8) or ('- Locked'):color(200)))
+
 			end
 		end
 
 	-- Update the font size
 	elseif addcmd == 'size' or addcmd == 'fontsize' then
-		
 		local size = {...}
 		
 		-- If there are no parameters then output the current size and remind how to update
@@ -303,7 +353,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn bold on or off
 	elseif addcmd == 'bold' then
-
 		settings.flags.bold = not settings.flags.bold
 
 		-- Save the new setting, update the bold setting, then alert the user
@@ -313,7 +362,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn colors on or off
 	elseif addcmd == 'color' or addcmd == 'colors' then
-
 		settings.display.colors = not settings.display.colors
 
 		-- Save the new setting, update the colors setting, then alert the user
@@ -322,7 +370,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn job display on or off
 	elseif addcmd == 'job' then
-
 		settings.display.job = not settings.display.job
 
 		-- Save the new setting, update the job display setting, then alert the user
@@ -331,7 +378,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn location display on or off
 	elseif addcmd == 'location' or addcmd == 'loc' then
-
 		settings.display.location = not settings.display.location
 
 		-- Save the new setting, update the location display setting, then alert the user
@@ -340,7 +386,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn day display on or off
 	elseif addcmd == 'day' then
-
 		settings.display.day = not settings.display.day
 
 		-- Save the new setting, update the day display setting, then alert the user
@@ -349,7 +394,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn inventory display on or off
 	elseif addcmd == 'inventory' or addcmd == 'inv' then
-
 		settings.display.inventory = not settings.display.inventory
 
 		-- Save the new setting, update the inventory display setting, then alert the user
@@ -358,7 +402,6 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	-- Turn food display on or off
 	elseif addcmd == 'food' then
-
 		settings.display.food = not settings.display.food
 
 		-- Save the new setting, update the food display setting, then alert the user
@@ -375,7 +418,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		local currDay = settings.display.day
 		local currInv = settings.display.inventory
 		local currFood = settings.display.food
-		
+
 		windower.add_to_chat(220,'[Informer] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Commands ')
@@ -389,7 +432,8 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == 'reload' then
 		windower.send_command('lua r informer')
-        return
+		return
+
 	else
 		displayUnregnizedCommand()
 	end
