@@ -241,15 +241,12 @@ windower.register_event('gain buff', function(buff)
 
 		--First check if we already have food saved, if do that means we just logged back into a character with food on
 		if settings.food[string.lower(player.name)] then
-			print('gain_buff 1')
 		--If not, check if last_item_used exists, if it does that means we just used food (or a party member used AOE food)
 		elseif last_item_used then
 			settings.food[string.lower(player.name)] = last_item_used
-			print('gain_buff 2')
 		--If neither of those exist then we probably just re/loaded the addon with food already on so use "Unknown Food" for now
 		else
 			settings.food[string.lower(player.name)] = "Unknown Food"
-			print('gain_buff 3')
 		end
 
 		settings:save('all')
