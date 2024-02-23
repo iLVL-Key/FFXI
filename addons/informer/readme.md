@@ -15,6 +15,7 @@ Displays a bar with information (much like InfoBar!)
   - ${job} - Current job/sub you are on
   - ${mlvl} - Current jobs master level (NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)
   - ${pos} - Current map position
+  - ${reraise} - Current reraise status
   - ${target} - Current target/subtarget
   - ${target_w_hpp} - Current target/subtarget including its HP%
   - ${time} - Current Vana'diel time
