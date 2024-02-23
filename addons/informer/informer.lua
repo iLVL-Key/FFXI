@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '3.0'
+_addon.version = '3.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer'}
 
@@ -41,7 +41,7 @@ defaults.first_load = true
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${food} ${gil} ${inventory} ${job} ${mlvl} ${pos} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${food} ${gil} ${inventory} ${job} ${mlvl} ${pos} ${reraise} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
 defaults.layout.ac_help = '(NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.default = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
@@ -132,6 +132,7 @@ local informer_main = texts.new('${current_string}', settings)
 
 local last_item_used = nil
 local master_level = nil
+local reraise = false
 
 function firstLoadMessage()
 	windower.add_to_chat(220,'[informer] '..('First load detected.'):color(8))
@@ -278,6 +279,15 @@ function updateInformerMain()
 			weather_color = settings.colors[string.lower(res.elements[res.weather[windower.ffxi.get_info().weather].element].name)]
 		end
 
+	local rr = 'No Reraise'
+	local rr_color = settings.colors.none
+		if reraise then
+			rr = 'Reraise On'
+			if use_colors then
+				rr_color = settings.colors.good
+			end
+		end
+
 	if windower.ffxi.get_mob_by_target('me') == nil then
 		facing = 10
 	else
@@ -400,7 +410,8 @@ function updateInformerMain()
 		target = '\\cs('..target_color..')'..target_name..'\\cr',
 		target_w_hpp = '\\cs('..target_color..')'..target_w_hpp..'\\cr',
 		tp = '\\cs('..tp_color..')'..tp..'\\cr',
-		mlvl = mlvl
+		mlvl = mlvl,
+		reraise = '\\cs('..rr_color..')'..rr..'\\cr',
 	})
 
 	-- Update the bar with the rebuilt text string
@@ -488,11 +499,11 @@ windower.register_event('action',function(act)
 	end
 end)
 
--- Gain food buff, so the last item used was food
+-- Gain buffs
 windower.register_event('gain buff', function(buff)
 	local player = windower.ffxi.get_player()
 
-	if buff == 251 then
+	if buff == 251 then -- Food, so the last item used was food
 
 		--First check if we already have food saved, if do that means we just logged back into a character with food on
 		if settings.food[string.lower(player.name)] then
@@ -507,15 +518,23 @@ windower.register_event('gain buff', function(buff)
 		settings:save('all')
 		last_item_used = nil --delete the last item used after we gain the food buff
 
+	elseif buff == 113 then -- Reraise
+		reraise = true
+
 	end
 end)
 
--- Lose food buff
+-- Lose buffs
 windower.register_event('lose buff', function(buff)
 	local player = windower.ffxi.get_player()
-	if buff == 251 and not food_loading then
+
+	if buff == 251 and not food_loading then -- Food
 		settings.food[string.lower(player.name)] = nil
 		settings:save('all')
+
+	elseif buff == 113 then -- Reraise
+		reraise = false
+
 	end
 end)
 
