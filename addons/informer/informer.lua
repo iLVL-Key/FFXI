@@ -132,7 +132,6 @@ local informer_main = texts.new('${current_string}', settings)
 
 local last_item_used = nil
 local master_level = nil
-local reraise = false
 
 function firstLoadMessage()
 	windower.add_to_chat(220,'[informer] '..('First load detected.'):color(8))
@@ -281,7 +280,7 @@ function updateInformerMain()
 
 	local rr = 'No Reraise'
 	local rr_color = settings.colors.none
-		if reraise then
+		if reraiseActive() then
 			rr = 'Reraise On'
 			if use_colors then
 				rr_color = settings.colors.good
@@ -464,6 +463,20 @@ function foodActive()
 
 end
 
+-- Check if we have reraise active
+function reraiseActive()
+	local buffs = windower.ffxi.get_player().buffs
+
+	for _, buffId in ipairs(buffs) do
+		if buffId == 113 then
+			return true
+		end
+	end
+
+	return false
+
+end
+
 -- Is this player in our party
 function isInParty(id)
 	local actor = windower.ffxi.get_mob_by_id(id)
@@ -518,9 +531,6 @@ windower.register_event('gain buff', function(buff)
 		settings:save('all')
 		last_item_used = nil --delete the last item used after we gain the food buff
 
-	elseif buff == 113 then -- Reraise
-		reraise = true
-
 	end
 end)
 
@@ -531,9 +541,6 @@ windower.register_event('lose buff', function(buff)
 	if buff == 251 and not food_loading then -- Food
 		settings.food[string.lower(player.name)] = nil
 		settings:save('all')
-
-	elseif buff == 113 then -- Reraise
-		reraise = false
 
 	end
 end)
