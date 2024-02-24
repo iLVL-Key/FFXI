@@ -285,6 +285,8 @@ function updateInformerMain()
 			if use_colors then
 				rr_color = settings.colors.good
 			end
+		elseif use_colors then
+			rr_color = settings.colors.bad
 		end
 
 	if windower.ffxi.get_mob_by_target('me') == nil then
