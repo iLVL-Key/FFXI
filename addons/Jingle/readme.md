@@ -29,18 +29,18 @@ Copy the following into your settings file (inside the targets) for all the Sort
 <summary>Sortie Targets</summary>
  
 ```
-            <21001028>
+            <21005124>
                 <soundfile>default</soundfile>
-            </21001028>
-            <21001029>
+            </21005124>
+            <21005125>
                 <soundfile>default</soundfile>
-            </21001029>
-            <21001030>
+            </21005125>
+            <21005126>
                 <soundfile>default</soundfile>
-            </21001030>
-            <21001031>
+            </21005126>
+            <21005127>
                 <soundfile>default</soundfile>
-            </21001031>
+            </21005127>
             <abject_obdella>
                 <soundfile>default</soundfile>
             </abject_obdella>
