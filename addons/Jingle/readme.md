@@ -24,7 +24,7 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
    - New sounds added to the /data/sounds folder must be .wav format.
 
 ## Sortie targets ##
-Copy the following into your settings file (inside the targets) for all the Sortie targets. The top 4 sets of numbers are the IDs for the 4 exit bitzers in the basement, for some reason using the name for the as a target does not work correctly.
+Copy the following into your settings file (inside the targets) for all the Sortie targets. The top 8 sets of numbers are the IDs for the 4 exit bitzers in the basement, for some reason using the name for the as a target does not work correctly, and there are multiple sets.
 <details>
 <summary>Sortie Targets</summary>
  
@@ -41,6 +41,18 @@ Copy the following into your settings file (inside the targets) for all the Sort
             <21005127>
                 <soundfile>default</soundfile>
             </21005127>
+            <21001028>
+                <soundfile>default</soundfile>
+            </21001028>
+            <21001029>
+                <soundfile>default</soundfile>
+            </21001029>
+            <21001030>
+                <soundfile>default</soundfile>
+            </21001030>
+            <21001031>
+                <soundfile>default</soundfile>
+            </21001031>
             <abject_obdella>
                 <soundfile>default</soundfile>
             </abject_obdella>
