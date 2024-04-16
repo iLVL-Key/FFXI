@@ -33,7 +33,7 @@ In general, each HUD has..
 
 **Top row:** Status Notifications (things like Sneak/Invis, WS/SC damage, party invites, etc.) and Debuff Notifications (displayed one at a time, most important ones take priority).  
 
-**Middle row(s):** Gear Mode and Weapon Notifications. Will display your currently equipped weapons(s) by default, this changes color based on your TP level and REMA equipped. Relics and Primes turn yellow when over 1k TP. Empyreans/Mythics/Aeonics turn blue when over 1k TP, green over 2k TP, and yellow at 3K TP. Displays current Aftermath and effect when appropriate. Some files have more specialized things in here such as SMN Avatars, GEO bubbles, and RUN runes.  
+**Middle row(s):** Gear Mode and Weapon Notifications. Will display your currently equipped weapon(s) by default, this changes color based on your TP level and REMA equipped. Relics turn yellow when over 1k TP. Primes, Empyreans, Mythics, and Aeonics turn blue when over 1k TP, green over 2k TP, and yellow at 3K TP. Displays current Aftermath and effect when appropriate. Some files have more specialized things in here such as SMN Avatars, GEO bubbles, and RUN runes.  
 
 **Bottom row:** Up to 6 of the most commonly used ability/spell recasts. RED means it is ready to use. GREEN means it is currently active. ORANGE means it is not active and not yet ready to use. Gives a short flash of YELLOW/ORANGE just before it is available to use again.  
 
