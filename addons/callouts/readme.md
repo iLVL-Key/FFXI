@@ -3,9 +3,10 @@
 Various callouts for endgame things.
 
 ## Current Callouts:
-- Odyssey: Hate resets, full dispels, Bumba 1-HRs (beta), Kalunga/Ngai fetters
+- General: Charm
+- Odyssey: Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters
 - Dyna-D: Halphas hate reset
-- Omen: Scales, Pain Sync, Prophylaxis, Target
+- Omen: Scales, Pain Sync, Target, Ou abilities
 - Vagary: Perfidien/Plouton pop, weaknesses
 - Sortie: Elements/weaknesses, hate resets
 - Ambuscade: Bozzetto Autarch Mijin Gakure
