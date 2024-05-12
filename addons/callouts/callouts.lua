@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.8'
+_addon.version = '1.8.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -381,7 +381,7 @@ function OuCallouts()
 			chat('/%s Next Up @ 10%% - Prophylaxis: HP recover to 22%%, 30 seconds to kill or complete battle reset':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 		end
 
-		if Ou_100 and Ou.hpp == 100 then
+		if Ou_95 and Ou.hpp == 100 then
 			resetOu()
 
 		end
