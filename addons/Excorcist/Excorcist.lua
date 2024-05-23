@@ -49,29 +49,13 @@ defaults.flags.draggable = true
 
 defaults.show_box = true
 
-defaults.DoomOnText = ""
-defaults.DoomOffText = ""
+defaults.DoomOnText = "doom"
+defaults.DoomOffText = "doom off"
+defaults.wait = 3
 
 settings = config.load(defaults)
-
--- Count the number of Holy Waters and return the number
-local function countHW()
-	local HolyWater = 4154 --id number of Holy Water
-	local items = windower.ffxi.get_items()
-	local inventory = items.inventory
-	local invNum = 0
-
-	-- Find the item and get the count
-	for i, item in ipairs(inventory) do
-		if item.id == HolyWater then
-			invNum = invNum + item.count
-			break
-		end
-	end
-
-	return invNum
-
-end
+local HWcount
+local Doom = false
 
 -- Create the Excorcist text object
 local Excorcist_box = texts.new()
@@ -82,10 +66,60 @@ Excorcist_box:pos(settings.pos.x,settings.pos.y)
 Excorcist_box:bold(settings.flags.bold)
 Excorcist_box:draggable(settings.flags.draggable)
 
-local HWaterRecast = 0
-local Doom = false
-local Heartbeat = 0
-local buffactive = windower.ffxi.get_player().buffs
+
+-- Count the number of Holy Waters and return the number
+local function countHW()
+	local inventory = windower.ffxi.get_items().inventory
+	local invNum = 0
+
+	-- Find the item and get the count
+	for i, item in ipairs(inventory) do
+		if item.id == 4154 then --id number of Holy Water
+			invNum = invNum + item.count
+			break
+		end
+	end
+
+	return invNum
+
+end
+
+
+--Update the on-screen box
+local function updateBox()
+
+	local formattedNum = string.format("%2s", HWcount)
+
+	if Doom then
+		if HWcount > 0 then
+			Excorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n      '..formattedNum..' Holy Water'..(HWcount > 1 and 's' or '')..' remaining')
+		else
+			Excorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n        \\cs(255,75,75)Out of Holy Waters!!\\cr')
+		end
+	end
+
+end
+
+
+--Main function the gets repeated until Doom wears off
+local function useHolyWater()
+
+	HWcount = countHW()
+
+	if settings.show_box then
+		updateBox()
+		Excorcist_box:show()
+	end
+
+	if HWcount ~= 0 and Doom then
+		windower.send_command('input /item "Holy Water" <me>')
+	end
+	coroutine.sleep(settings.wait)
+	if HWcount ~= 0 and Doom then
+		useHolyWater()
+	end
+end
+
 
 windower.register_event('gain buff', function(buff)
 
@@ -94,19 +128,16 @@ windower.register_event('gain buff', function(buff)
 		--Setting "Doom" to true now, so that it can get set to false if we die, that way we don't announce that doom is off when we raise from the dead
 		Doom = true
 
-		if settings.show_box then
-			Excorcist_box:show()
-		end
-
 		if settings.DoomOnText ~= "" then
 			windower.send_command('input /p '..settings.DoomOnText..'')
 		end
 
-		--Set the recast timer so we can start using the Holy Waters
-		HWaterRecast = 2
+		--Start up the Holy Waters
+		useHolyWater()
 
 	end
 end)
+
 
 windower.register_event('lose buff', function(buff)
 
@@ -123,38 +154,6 @@ windower.register_event('lose buff', function(buff)
 				windower.send_command('input /p '..settings.DoomOffText..'')
 			end
 
-			--Stop the timer
-			HWaterRecast = 0
-
 		end
 	end
-end)
-
-windower.register_event('prerender', function()
-
-	local HWcount = countHW()
-	local formattedNum = string.format("%2s", HWcount)
-
-	if Doom then
-		if HWcount > 0 then
-			Excorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n      '..formattedNum..' Holy Waters remaining')
-		else
-			Excorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n        \\cs(255,75,75)Out of Holy Waters!!\\cr')
-		end
-	end
-
-	if os.time() > Heartbeat then
-		Heartbeat = os.time()
-
-		if HWaterRecast == 2 and HWcount ~= 0 and Doom then
-			windower.send_command('input /item "Holy Water" <me>')
-			HWaterRecast = HWaterRecast - 1
-		elseif HWaterRecast == 0 and Doom then
-			HWaterRecast = 2
-		elseif Doom then
-			HWaterRecast = HWaterRecast - 1
-		end
-
-	end
-
 end)
