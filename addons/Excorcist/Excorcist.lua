@@ -157,3 +157,10 @@ windower.register_event('lose buff', function(buff)
 		end
 	end
 end)
+
+windower.register_event('addon command',function(addcmd)
+	windower.add_to_chat(220,'[Excorcist] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
+	windower.add_to_chat(36,'   This addon has no commands, but you can change a few things in the settings file.')
+	windower.add_to_chat(36,'   PRO TIP: Make sure your gearswap file has a rule and gear set for using Holy Waters.')
+	windower.add_to_chat(36,'   Have a great day!')
+end)
