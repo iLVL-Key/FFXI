@@ -25,9 +25,9 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '3.1'
+_addon.version = '3.2'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.commands = {'informer'}
+_addon.commands = {'informer','info'}
 
 require 'logger'
 config = require('config')
@@ -41,7 +41,7 @@ defaults.first_load = true
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${food} ${gil} ${inventory} ${job} ${mlvl} ${pos} ${reraise} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${earth_time_12} ${earth_time_24} ${food} ${gil} ${inventory} ${job} ${mlvl} ${pos} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
 defaults.layout.ac_help = '(NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.default = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
@@ -177,6 +177,8 @@ function updateInformerMain()
 	local player = windower.ffxi.get_player()
 	local player_job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
 	local mlvl = master_level or '--'
+	local speed = windower.ffxi.get_mob_by_target('me') and math.floor(100 * (windower.ffxi.get_mob_by_target('me').movement_speed / 5 - 1) + .1)
+	local formatted_speed = speed and (speed >= 0 and '+' or '-')..speed..'%'
 
 	local gil = windower.ffxi.get_items().gil
 		gil = addCommas(gil)
@@ -263,6 +265,10 @@ function updateInformerMain()
 		end
 		game_time_hour = string.format("%02d", game_time_hour)
 	local game_time = game_time_hour..':'..game_time_minute
+
+	local earth_time_raw = os.time()
+	local earth_time_12 = os.date('%I:%M:%S %p', earth_time_raw)
+	local earth_time_24 = os.date('%H:%M:%S', earth_time_raw)
 
 	local game_day = res.days[windower.ffxi.get_info().day].name
 		game_day = string.format("%-"..day_width.."s", game_day)
@@ -405,6 +411,8 @@ function updateInformerMain()
 		direction = direction,
 		day = '\\cs('..day_color..')'..game_day..'\\cr',
 		time = '\\cs('..time_color..')'..game_time..'\\cr',
+		earth_time_12 = earth_time_12,
+		earth_time_24 = earth_time_24,
 		weather = '\\cs('..weather_color..')'..weather..'\\cr',
 		inventory = '\\cs('..inventory_color..')'..inventory..'\\cr',
 		food = '\\cs('..food_color..')'..food..'\\cr',
@@ -413,6 +421,7 @@ function updateInformerMain()
 		tp = '\\cs('..tp_color..')'..tp..'\\cr',
 		mlvl = mlvl,
 		reraise = '\\cs('..rr_color..')'..rr..'\\cr',
+		speed = formatted_speed,
 	})
 
 	-- Update the bar with the rebuilt text string
