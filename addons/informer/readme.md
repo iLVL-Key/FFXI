@@ -9,6 +9,8 @@ Displays a bar with information (much like InfoBar!)
 - Uses a layout (per job) that you can customize however you'd like using placeholders:
   - ${day} - Current Vana'diel day
   - ${direction} - Current direction your character is facing
+  - ${earth_time_12} - Current Earth time (12HR format)
+  - ${earth_time_24} - Current Earth time (24HR format)
   - ${food} - Current food you have (tracked per character)
   - ${gil} - Current gil amount
   - ${inventory} - Current number of items in your main inventory / total main inventory slots
@@ -16,15 +18,16 @@ Displays a bar with information (much like InfoBar!)
   - ${mlvl} - Current jobs master level (NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)
   - ${pos} - Current map position
   - ${reraise} - Current reraise status
+  - ${speed} - Current movement speed
   - ${target} - Current target/subtarget
   - ${target_w_hpp} - Current target/subtarget including its HP%
   - ${time} - Current Vana'diel time
   - ${tp} - Current TP
-  - ${weather} - Current Vana'diel weather
-  - ${zone} - Current zone you are in
   - ${track:Item Name} - Current number of X item in your main inventory / current total number of X item between your inventory, satchel, case, and sack
     - Informer is able to track any item in the game.
     - The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive.
+  - ${weather} - Current Vana'diel weather
+  - ${zone} - Current zone you are in
 - Minimum widths for most sections.
   - Controls how wide these sections are, creating a more static overall width for the bar, and preventing other sections after them from moving around.
   - Set to 0 to turn off
