@@ -1,5 +1,5 @@
 --[[
-Copyright © 2023, Key
+Copyright © 2024, Key
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '4.0'
+_addon.version = '4.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -1303,12 +1303,14 @@ function useItem(name, specifiedTarget)
 		local targetPlace = findPlace(targetName, "point")
 		local updatedPlayerPlace = findPlace(name, "point")
 
-		if effects[targetName] and (effects[targetName].active == "bullet_bill" or effects[targetName].active == "super_star") then
-			newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (Invincible!)')
-		else
-			local lostPoints = math.floor(points[targetName].score * (banana.points / 100))
-			points[targetName].score = points[targetName].score - lostPoints
-			newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (-'..addCommas(lostPoints)..')')
+		if targetName then
+			if effects[targetName] and (effects[targetName].active == "bullet_bill" or effects[targetName].active == "super_star") then
+				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (Invincible!)')
+			else
+				local lostPoints = math.floor(points[targetName].score * (banana.points / 100))
+				points[targetName].score = points[targetName].score - lostPoints
+				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (-'..addCommas(lostPoints)..')')
+			end
 		end
 
 
@@ -2403,7 +2405,7 @@ windower.register_event('action',function(act)
 		end
 
 		-- Weapon Skill misses, gets blinked, or hits for 0
-		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.category == 13 and act.targets[1].actions[1].message == 324) or (act.targets[1].actions[1].message == 185 and data.damage == 0) then 
+		if act.targets[1].actions[1].message == 188 or act.targets[1].actions[1].message == 31 or (act.category == 13 and (act.targets[1].actions[1].message == 324 or (act.targets[1].actions[1].message == 317 and data.damage == 0))) or (act.targets[1].actions[1].message == 185 and data.damage == 0) then 
 
 			-----------
 			-- WHIFF --
@@ -4245,7 +4247,7 @@ windower.register_event('prerender', function()
 		Heartbeat = os.time()
 
 		-- Mog Kart Mode Party Board
-		if settings.kart_p_board_time > 0 and settings.mode == "Mog Kart" then
+		if settings.kart_p_board_time > 0 and settings.mode == "Mog Kart" and not live.paused then
 			if kart_p_board_time <= settings.kart_p_board_time then
 				kart_p_board_time = kart_p_board_time + 1
 			else
