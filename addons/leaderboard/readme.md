@@ -20,6 +20,7 @@ Tracks battle information and groups it together in different "boards".
   - **Party:** Full party chat call outs. Great for linkshell events.
   - **Mog Kart:** Inspired by Mario Kart, this mode includes "items" that players (trusts too!) can receive and use to affect other players points.
     - All items can have their attributes changed in the settings file.
+    - Trusts will also play Mario Kart along with you and your party members (IT'S AI! ...not really)!
     - Note: Uses tells to send players their items as well as receive the command to use them
 - Tracks 11 different boards.
 - On-Screen Display for tracking boards in realtime.
