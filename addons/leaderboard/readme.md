@@ -98,7 +98,7 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 **4.0.1**
 - Fixed the Points Board callout not pausing when Mog Kart mode is paused.
 - Fixed an issue when in Mog Kart mode and a banana item is used but has no target by the time it "lands".
-- Fixed an issue where a SMN Blood Pact: Ward landing for zero was not counted as a whiff.
+- Fixed an issue where a SMN Blood Pact: Rage landing for zero was not counted as a whiff.
 
 **4.0**
 - Added Mog Kart Mode. Inspired by Mario Kart, this mode includes "items" that players can receive and use to affect other players points. Chat callouts are limited to item usage and point movement (deaths, whiffs, and murders are called out and now include points lost/transferred while in Mog Kart Mode) and a timed Point Board chat callout (up to 18 places while in Mog Kart Mode). Settings able to be modified include: item names, accuracy, point modifiers, availability, and place range able to receive them, as well as the interval frequency that items are given out and the frequency of calling the Point Board to chat.
