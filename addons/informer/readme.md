@@ -37,6 +37,7 @@ Displays a bar with information (much like InfoBar!)
   - Warning when tracked items are low
 
 ## Commands
+All commands must be prefixed with either `//informer` or `//info` (ex: `//info color`)
 - help - display these commands
 - pos [x y] - Update position.
 - lock/unlock - Update position via drag.
