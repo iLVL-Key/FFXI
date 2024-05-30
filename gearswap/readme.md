@@ -2,8 +2,6 @@
 ## MAJOR UPDATE INCOMING
 No longer requires the Text plugin to work!  
 
-![PLD HUD](https://i.imgur.com/wpqbqpb.gif)
-
 ## Features
 ### QOL Improvements
 Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
