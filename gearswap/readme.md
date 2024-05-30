@@ -1,24 +1,29 @@
-**PLEASE NOTE: These files require the Text addon to be loaded in order to work.**
+# Keys Gearswap files
+## MAJOR UPDATE INCOMING
+No longer requires the Text plugin to work!  
 
-# Features #
-## QOL Improvements ##
+![PLD HUD](https://i.imgur.com/wpqbqpb.gif)
+
+## Features
+### QOL Improvements
 Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
 - UseEcho - Automatically uses an Echo Drop or Remedy instead of spell when you are silenced.
 - AutoMajesty - Automatically activates and keeps Majesty active.
-- AutoHWater - Automatically attempts to use Holy Waters when you get Doomed until it wears off.
 - AutoStance - Automatically activates and keeps Stances (Hasso/Seigan) active.
-- Doom Alert - Alerts your party when you are doomed.
-- LockstyleTown/LockstyleCombat - Have a separate lockstyle for when you're running around town, and when you're out in combat.
 - Book/Page - set your specific macro book and page for that job (and common subjobs) when the file loads.
-- And many more... (and you can turn any off that you don't like, too)
+- Displays your main/sub job while in town, no more Dynamis as a PLD/DRG.
+- "Oh Shit" gear set for when you are in critical health, or are stunned, petrified, or terrorized.
+- Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
+- And many more...
+- NOTE: AutoHWater/DoomAlert and AutoLockstyle option have been removed and now have their own standalone addons: [Excorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Excorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
 
-## Gear Modes ##
+### Gear Modes
 Certain files have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
 
-## Weapon Cycler ##
+### Weapon Cycler
 Certain files have the ability to cycle between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Will not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
 
-## Sound Effects ##
+### Sound Effects
 All files utilize subtle sound effects found in the sounds folder. While not required, it is recommended to download the sounds folder and add it under the Gearswap/data folder to make full use of what the files offer. Don't worry, I've made sure they are not loud or annoying.
 
 The file structure should look like this:
@@ -27,53 +32,50 @@ The file structure should look like this:
 
 `/addons/Gearswap/data/JOB.lua`
 
-## HUDs ##
+### HUDs
 Each file has a unique HUD, some are a little more unique than the others.  
 In general, each HUD has..  
 
-**Top row:** Status Notifications (things like Sneak/Invis, WS/SC damage, party invites, etc.) and Debuff Notifications (displayed one at a time, most important ones take priority).  
+**Top row:** Status Notifications (things like Sneak/Invis, WS/SC damage, party invites, etc.) and Debuff Notifications.  
 
-**Middle row(s):** Gear Mode and Weapon Notifications. Will display your currently equipped weapon(s) by default, this changes color based on your TP level and REMA equipped. Relics turn yellow when over 1k TP. Primes, Empyreans, Mythics, and Aeonics turn blue when over 1k TP, green over 2k TP, and yellow at 3K TP. Displays current Aftermath and effect when appropriate. Some files have more specialized things in here such as SMN Avatars, GEO bubbles, and RUN runes.  
+**Middle row(s):** Gear Mode and Weapon Notifications. Displays your currently equipped weapon(s) and Aftermath info when appropriate, as well as a TP meter behind it. Some files have more specialized things such as SMN Avatars, GEO bubbles, and RUN runes.  
 
-**Bottom row:** Up to 6 of the most commonly used ability/spell recasts. RED means it is ready to use. GREEN means it is currently active. ORANGE means it is not active and not yet ready to use. Gives a short flash of YELLOW/ORANGE just before it is available to use again.  
+**Bottom row:** Up to 6 of the most commonly used ability/spell recasts (GREEN is currently active, ORANGE is not active butnot ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
 
 
-### BLU ###
+#### BLU
 ![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
 
-### GEO ###
+#### GEO
 ![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
 (The green in the background is an HP bar for your luopan)
 
-### MNK: ###
+#### MNK
 ![MNK HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
 
-### PLD ###
+#### PLD
 ![PLD HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/daf386e1-3335-4410-aae7-29db223e7d8b)
 
-### RUN ###
+#### RUN
 ![RUN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)
 
-### SAM ###
+#### SAM
 ![SAM HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
 
-### SMN ###
+#### SMN
 ![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4d1cb7dd-98e9-411f-9532-7b156befb5b6)  
 (The green in the background is an HP bar for your summon)
 
-### WAR ###
+#### WAR
 ![WAR HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
 
-# IMPORTANT #
-- You must have the _**Text**_ addon loaded in order to use these Gearswap lua files. It can be found in the Windower launcher under the addons tab.  
+## IMPORTANT
 - When you load this file for the first time, your HUD may not be in a good position, or may be too large. If the HUD is not in a good position, go to the Heads Up Display options and adjust the HUDposX and HUDposY options, then save and reload the file. Adjust and repeat until positioned as desired. If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed. Suggested placement is center screen, just above your chat log.
 
-# FAQ #
-**Q:** Why am I crashing when I load one of your luas?  
-**A:** You're missing the Text addon.  
+## FAQ
 
 **Q:** Can I use these without the HUD?  
-**A:** Yes, you can turn off the HUD by going into the Advanced Options in the file and changing ShowHUD to false, this will make it so it is not shown by default when you change job and load the file. You can also turn it on and off in the game by typing //hud. You MUST still have the Text addon regardless.  
+**A:** Yes, you can turn off the HUD by going into the Advanced Options in the file and changing ShowHUD to false, this will make it so it is not shown by default when you change job and load the file. You can also turn it on and off in the game by typing //hud.  
 
 **Q:** Can I request a feature or change, or report an issue?  
 **A:** Abso-freakin-lutely.  Message me @ Valefor.Keylesta on ffxiah.com
@@ -81,12 +83,11 @@ In general, each HUD has..
 **Q:** Can you make one for X job?  
 **A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
 
-# Issues #
-- Odyssey messes with the files loading (job change while inside using the moogle), and will display a number of errors from the Text plugin. The file will still load and work like normal, however. To avoid this, I recommend switching jobs using the JobChange Addon. I haven't been able to figure out why it works with no issues using JobChange, but normal job changing via the moogles throws errors.
+## Issues
 - I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
 - The RUN file has a custom-made timer for keeping track of the Runes you have up. This timer continues to run while you are doing things like using teleports (Sortie, for example), whereas the game pauses its own internal timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
 
-# Changelog #
+## Changelog
 
 <details>
 <summary>BLU</summary>
