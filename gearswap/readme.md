@@ -10,6 +10,7 @@ Lots of little things to improve your experience. Each file has an Options and A
 - AutoStance - Automatically activates and keeps Stances (Hasso/Seigan) active.
 - Book/Page - set your specific macro book and page for that job (and common subjobs) when the file loads.
 - Displays your main/sub job while in town, no more Dynamis as a PLD/DRG.
+- Different Gear Modes for different situations.
 - "Oh Shit" gear set for when you are in critical health, or are stunned, petrified, or terrorized.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
@@ -34,38 +35,46 @@ The file structure should look like this:
 Each file has a unique HUD, some are a little more unique than the others.  
 In general, each HUD has..  
 
-**Top row:** Status Notifications (things like Sneak/Invis, WS/SC damage, party invites, etc.) and Debuff Notifications.  
-
-**Middle row(s):** Gear Mode and Weapon Notifications. Displays your currently equipped weapon(s) and Aftermath info when appropriate, as well as a TP meter behind it. Some files have more specialized things such as SMN Avatars, GEO bubbles, and RUN runes.  
-
-**Bottom row:** Up to 6 of the most commonly used ability/spell recasts (GREEN is currently active, ORANGE is not active butnot ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
-
+- Status Notifications. Things like Sneak & Invis, WS & SC damage, party invites, and others general things to be notified of.
+- Debuff Notifications. A number of the more common/important debuffs (ie Paralyze, Amnesia, Silence) are displayed in their own slots side-by-side, whereas the debuffs that fully debilitate you (ie Charm, Terro, Sleep) take priority and are displayed on top of those others.
+- Gear Mode. Files that have this feature will also change background color of the HUD based on which mode is currently active.
+- AftermathWeapon Notifications. Displays your currently equipped weapon(s) and Aftermath info (including potency and timers!) when appropriate, as well as a TP meter behind it.
+- Recasts. Display 6 CUSTOMIZABLE ability/spell recasts (GREEN is currently active, ORANGE is not active butnot ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
+- Some files show more specialized information such as SMN Avatars, GEO bubbles (with realtime potency numbers!), and RUN runes.  
 
 #### BLU
-![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)
+![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)  
+(OLD HUD, new image Coming Soon™)
 
 #### GEO
 ![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
-(The green in the background is an HP bar for your luopan)
+(The green in the background is an HP bar for your luopan)  
+(OLD HUD, new image Coming Soon™)
 
 #### MNK
-![MNK HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)
+![MNK HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4b6cab79-f7e5-4f8c-96f6-0102899dca2c)  
+(OLD HUD, new image Coming Soon™)
 
 #### PLD
-![PLD HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/daf386e1-3335-4410-aae7-29db223e7d8b)
+![PLD HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/daf386e1-3335-4410-aae7-29db223e7d8b)  
+(OLD HUD, new image Coming Soon™)
 
 #### RUN
-![RUN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)
+![RUN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/8943d3cc-23a8-4af2-bfc5-e53379e6c05f)  
+(OLD HUD, new image Coming Soon™)
 
 #### SAM
-![SAM HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)
+![SAM HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4ab4954b-3896-48c4-856d-156afd2f13b2)  
+(OLD HUD, new image Coming Soon™)
 
 #### SMN
 ![SMN HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/4d1cb7dd-98e9-411f-9532-7b156befb5b6)  
-(The green in the background is an HP bar for your summon)
+(The green in the background is an HP bar for your summon)  
+(OLD HUD, new image Coming Soon™)
 
 #### WAR
-![WAR HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)
+![WAR HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/0e6b013f-67d5-4f7e-8e1a-5632af235247)  
+(OLD HUD, new image Coming Soon™)
 
 ## IMPORTANT
 - When you load this file for the first time, your HUD may not be in a good position, or may be too large. If the HUD is not in a good position, go to the Heads Up Display options and adjust the HUDposX and HUDposY options, then save and reload the file. Adjust and repeat until positioned as desired. If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed. Suggested placement is center screen, just above your chat log.
@@ -83,12 +92,45 @@ In general, each HUD has..
 
 ## Issues
 - I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
-- The RUN file has a custom-made timer for keeping track of the Runes you have up. This timer continues to run while you are doing things like using teleports (Sortie, for example), whereas the game pauses its own internal timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
+- TThe Rune timers in the RUN file are tracked via an internal timer. In Sortie, this timer continues to run while you are teleporting around, whereas the game pauses the timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
 
 ## Changelog
 
 <details>
 <summary>BLU</summary>
+
+Version 18.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added equipping the Oh Shit set when petrified, stunned, or terrored.
+- Added the Prime Weapon Caliburnus to Aftermath Notifications.
+- Added an additional Mode for use, bringing the total available up to 5.
+- Added Idle and DPS gear sets for each Mode. They are not required and will all default to using the set for Mode 1 unless you specifically want to add gear to them (ex: a Tank Mode).
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and magic accuracy values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted equipping the DT Override set when petrified, stunned, or terrored. This now equips the Oh Shit set instead.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed spelling of the Luhlaza Bazubands to Luh. Bazubands for Azure Lore Timer gear check.
+- Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
+- Fixed ZoneGear still running when set to Off.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed reliance on code edits to the AzureSets addon in order for the Spell cooldown notification to work. Only AzureSets edits are now to remove the redundant cooldown timer put on screen.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
 
 Version 17.0.1
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
@@ -366,6 +408,30 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 14.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added equipping the Oh Shit set when petrified, stunned, or terrored.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted Luopan HP meter to update faster.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed the DPS set not equipping.
+- Fixed ZoneGear still running when set to Off.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed debug option. I feel this is no longer necessary at this point.
+
 Version 13.1
 - Adjusted HUD background to display the Luopan HP as a % meter.
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
@@ -563,6 +629,39 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added the Prime Weapon Varga Purnikawa to Aftermath Notifications, including displaying the amount of PDL received (accounting for both amount of TP used and the current stage of the weapon).
+- Added subbing DNC to the Page Option.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and attack values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted Modes. Mode 2 is now a standard set for Multi-Attack w/ DT. Mode 3 is now the Accuracy set.
+- Adjusted Boost to work with the Ask Sash to create a "MNK Meditate" using it.
+- Adjusted equipping the DT Override set when petrified, stunned, or terrored. This now equips the Oh Shit set instead.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
+- Fixed an error with Super Jump recast when level synced below Master Level 5.
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed ZoneGear still running when set to Off.
+- Removed the DT Override option. This is now a Mode instead.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
+
 Version 6.2.3
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
 
@@ -621,6 +720,37 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added the Prime Weapons Caliburnus and Helheim to Aftermath Notifications, including displaying the amount of PDL received (accounting for both amount of TP used and the current stage of the weapon).
+- Added Stoneskin cancel when casting Stoneskin and it is already up, preventing "No effect".
+- Added equipping the Oh Shit set when petrified, stunned, or terrored.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted the Weapon Cycler to display the next set of intended weapons in the HUD immediately before switching back to the normal display of what is currently equipped. In most cases this switch is invisible and results in a much faster HUD update when switching weapons via the Weapon Cycler. Only when you do not have the intended weapons available to be equipped will the switch be noticeable, as it will display the intended weapons then display what is still actually equipped.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and attack values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted sub BLU AOE spells to sdwap out Feather Barrier for Sound Blast. This reverts a previous change in 13.0.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed spelling of the Caballarius Breeches to Cab. Breeches for Invincible Timer gear check.
+- Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
+- Fixed ZoneGear still running when set to Off.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
 
 Version 13.1.2
 - Fixed issue with SIRD sets still equipping with Aquaveil active.
@@ -816,6 +946,34 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added the Prime Weapon Helheim to Aftermath Notifications.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and attack values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted equipping the Tank DT set when petrified, stunned, or terrored. This now equips the Oh Shit set instead.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
+- Fixed ZoneGear still running when set to Off.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
+
 Version 8.2.1
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
 
@@ -945,6 +1103,39 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added the Prime Weapon Kusanagi to Aftermath Notifications, including displaying the amount of PDL received (accounting for both amount of TP used and the current stage of the weapon).
+- Added subbing DNC to the Page Option.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and attack values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted Hasso Modes. Mode 2 is now a standard set for Multi-Attack w/ DT. Mode 3 is now the Accuracy set.
+- Adjusted equipping the DT Override set when petrified, stunned, or terrored. This now equips the Oh Shit set instead.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
+- Fixed AutoStance attempting to activate Hasso when level-synced under level 25.
+- Fixed an error with Super Jump recast when level synced below Master Level 5.
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed ZoneGear still running when set to Off.
+- Removed the DT Override option. This is now a Mode instead.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
 
 Version 13.2.2
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
@@ -1124,6 +1315,35 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added the Prime Weapon Opashoro to Aftermath Notifications.
+- Added equipping the Oh Shit set when petrified, stunned, or terrored.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and attack values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted Avatar HP meter to update faster.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed looking in the body slot for the Glyphic head for Astral Flow Timer gear check.
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed ZoneGear still running when set to Off.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
+
 Version 11.0
 - No gear set changes.
 - Added Auto Elemental Siphon function. This is a command, triggered by either an alias (//siphon), or a macro (/console siphon) that will automatically choose and summon the appropriate Elemental Spirit based on day and weather, use Elemental Siphon, then dismiss the Spirit.
@@ -1262,6 +1482,42 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.0
+- Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
+- Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
+- Added the Advanced Option to specifiy which abilities/spells are displayed in the HUD Recast section. A list of valid abilities/spells is provided.
+- Added the Advanced Option to create a custom name for the ability/spell displayed in the HUD Recast section.
+- Added the Prime Weapons Helheim and Laphria to Aftermath Notifications.
+- Added subbing NIN to the Page Option.
+- Added Debuff Notification for Animated, Haunt, and Taint.
+- Added Mounted status Notification.
+- Added a Defender gear set.
+- Added proper cleanup of custom text objects, aliases, and binds.
+- Adjusted Aftermath notifications to display their time remaining.
+- Adjusted Aftermath notification area in the HUD to display as a meter for your TP.
+- Adjusted Mythic Aftermath level 1 and 2 to now display their accuracy and attack values.
+- Adjusted the formatting of a few areas of the HUD, including the centering of some objects, flashing, automatic truncating of certain sections to keep text within the HUD boundary (equipping a main and sub item with really long names no longer breaks out of the HUD), and some coloring.
+- Adjusted HUD Recasts to now display a countdown timer under 60 seconds remaining on recast.
+- Adjusted how the Debuff Notifications, Aftermath Notifications, and Alive Notification all work. More efficient now with a huge reduction in calls to update their respective text objects.
+- Adjusted Modes. Mode 2 is now a standard set for Multi-Attack w/ DT. Mode 3 is now the Accuracy set.
+- Adjusted how Two-handed and dualwield detection works. No longer requires defining which weapons will trigger each (works automagically now).
+- Adjusted AutoStance to only attempt to activate if using a two-handed weapon.
+- Adjusted equipping the DT Override set when petrified, stunned, or terrored. This now equips the Oh Shit set instead.
+- Adjusted Modes. Mode 2 is now a standard set for Multi-Attack w/ DT. Mode 3 is now the Accuracy set.
+- Adjusted AutoLockstyle. Lockstyling after subjob changes should be more smooth overall.
+- Fixed an issue where your maximum HP going under the LowHPThreshold (ex. level-syncing low enough) would trigger the Low HP warning.
+- Fixed looking in the legs slot for the Agoge hands for Mighty Strikes Timer gear check.
+- Fixed AutoStance attempting to activate Hasso when level-synced under level 50 (SAM subjob level 25).
+- Fixed two different things both doing status checks in two different ways, combining the two into one.
+- Fixed ZoneGear still running when set to Off.
+- Removed the DT Override option. This is now a Mode instead.
+- Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
+- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed the //fileinfo command.
+- Removed the NotiWeapons option.
+- Removed debug option. I feel this is no longer necessary at this point.
 
 Version 7.2.3
 - Fixed some errors that would display under certain circumstances immediately after switching characters.
