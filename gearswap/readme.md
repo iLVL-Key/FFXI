@@ -7,8 +7,8 @@ Lots of little things to improve your experience. Each file has an Options and A
 - AutoMajesty - Automatically activates and keeps Majesty active.
 - AutoStance - Automatically activates and keeps Stances (Hasso/Seigan) active.
 - Book/Page - set your specific macro book and page for that job (and common subjobs) when the file loads.
-- Displays your main/sub job while in town, no more Dynamis as a PLD/DRG.
-- Different Gear Modes for different situations.
+- DD jobs will attempt to use a "save" when you are at low HP (Super/High Jump, Chakra, etc depending on main/sub job).
+- Reminder to put Reraise up if it's down.
 - "Oh Shit" gear set for when you are in critical health, or are stunned, petrified, or terrorized.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
