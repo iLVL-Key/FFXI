@@ -1,6 +1,4 @@
 # Keys Gearswap files
-## MAJOR UPDATE INCOMING
-No longer requires the Text plugin to work!  
 
 ## Features
 ### QOL Improvements
