@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '1.0'
+_addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -35,8 +35,13 @@ require 'chat'
 
 defaults = {}
 
-defaults.after_zone_delay = 5
-defaults.after_job_change_delay = 6
+defaults.options = {}
+defaults.options.after_disable = true
+defaults.options.after_disable_delay = 9
+defaults.options.after_job_change = true
+defaults.options.after_job_change_delay = 6
+defaults.options.after_zone = true
+defaults.options.after_zone_delay = 5
 
 defaults.lockstyles = {}
 
@@ -148,6 +153,7 @@ function uppercase(str)
 
 end
 
+-- Are we located in a town zone?
 local function townZone()
 	local zone_name = res.zones[windower.ffxi.get_info().zone].name
 
@@ -160,6 +166,7 @@ local function townZone()
 	return false
 end
 
+-- Run the lockstyle game command for the job/location combination
 local function setLockstyle()
 
 	local job = string.lower(windower.ffxi.get_player().main_job)
@@ -174,15 +181,19 @@ end
 
 windower.register_event('job change',function()
 
-	LockstyleDelay = settings.after_job_change_delay --start/restart the timer
+	--We use this way for a timer (instead of the coroutine.sleep like with zoning) so that we can reset it during the countdown in case we change jobs again while its running, preventing it from trying to set the lockstyle multiple times.
+	if settings.options.after_job_change then
+		LockstyleDelay = settings.options.after_job_change_delay --start/restart the timer
+	end
 
 end)
 
 windower.register_event('zone change',function()
 
-	coroutine.sleep(settings.after_zone_delay) --wait a short delay after zoning, if too early will error
-
-	setLockstyle() --set the appropriate lockstyle
+	if settings.options.after_zone then
+		coroutine.sleep(settings.options.after_zone_delay) --wait a short delay after zoning, if too early will error
+		setLockstyle() --set the appropriate lockstyle
+	end
 
 end)
 
@@ -220,69 +231,112 @@ windower.register_event('addon command',function(addcmd, ...)
 			match = true
 			if arg == 'combat' then
 				if arg2 == nil then
-					windower.add_to_chat(220,'[Vanity] '..(uppercase(job)..' Combat'):color(1)..(' lockstyle currently set to '):color(8)..('Equipment Set '..settings.lockstyles[job].combat):color(1)..('.'):color(8))
+					windower.add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Combat'):color(1)..(' lockstyle is currently '):color(8)..(settings.lockstyles[job].combat == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].combat):color(1))..('.'):color(8))
 				elseif arg2 and arg2 >= 0 and arg2 <= 200 then
 					settings.lockstyles[job].combat = arg2
 					settings:save()
-					windower.add_to_chat(220,'[Vanity] '..(uppercase(job)..' Combat'):color(1)..(' lockstyle set to '):color(8)..('Equipment Set '..settings.lockstyles[job].combat):color(1)..('.'):color(8))
+					windower.add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Combat'):color(1)..(' lockstyle is now '):color(8)..(settings.lockstyles[job].combat == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].combat):color(1))..('.'):color(8))
 				else
-					windower.add_to_chat(220,'[Vanity] '..('Please select an Equipment Set number between '):color(8)..('1'):color(1)..(' and '):color(8)..('200'):color(1)..(' ('):color(8)..('0'):color(1)..(' to disable).'):color(8))
+					windower.add_to_chat(8,('[Vanity] '):color(220)..('Please select an Equipment Set number between '):color(8)..('1'):color(1)..(' and '):color(8)..('200'):color(1)..(' ('):color(8)..('0'):color(1)..(' to disable).'):color(8))
 					windower.add_to_chat(8,'  Example: '..('//vanity '..job..' combat '..randomEquipSet):color(1))
 				end
 			elseif arg == 'town' then
 				if arg2 == nil then
-					windower.add_to_chat(220,'[Vanity] '..(uppercase(job)..'Town'):color(1)..(' lockstyle currently set to '):color(8)..('Equipment Set '..settings.lockstyles[job].town):color(1)..('.'):color(8))
+					windower.add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Town'):color(1)..(' lockstyle is currently '):color(8)..(settings.lockstyles[job].town == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].town):color(1))..('.'):color(8))
 				elseif arg2 and arg2 >= 0 and arg2 <= 200 then
 					settings.lockstyles[job].town = arg2
 					settings:save()
-					windower.add_to_chat(220,'[Vanity] '..(uppercase(job)..'Town'):color(1)..(' lockstyle set to '):color(8)..('Equipment Set '..settings.lockstyles[job].town):color(1)..('.'):color(8))
+					windower.add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Town'):color(1)..(' lockstyle is now '):color(8)..(settings.lockstyles[job].town == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].town):color(1))..('.'):color(8))
 				else
-					windower.add_to_chat(220,'[Vanity] '..('Please select an Equipment Set number between '):color(8)..('1'):color(1)..(' and '):color(8)..('200'):color(1)..(' ('):color(8)..('0'):color(1)..(' to disable).'):color(8))
+					windower.add_to_chat(8,('[Vanity] '):color(220)..('Please select an Equipment Set number between '):color(8)..('1'):color(1)..(' and '):color(8)..('200'):color(1)..(' ('):color(8)..('0'):color(1)..(' to disable).'):color(8))
 					windower.add_to_chat(8,'  Example: '..('//vanity '..job..' town '..randomEquipSet):color(1))
 				end
 			else
-				windower.add_to_chat(220,'[Vanity] '..('Please select either the '):color(8)..('combat'):color(1)..(' or '):color(8)..('town'):color(1)..(' lockstyle to update.'):color(8))
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('Please select either the '):color(8)..('combat'):color(1)..(' or '):color(8)..('town'):color(1)..(' lockstyle to update.'):color(8))
 				windower.add_to_chat(8,'  Example: '..('//vanity '..job..' '..randomGear..' '..randomEquipSet):color(1))
 			end
 		end
 	end
 
 	if addcmd == nil or addcmd == 'help' then
-		windower.add_to_chat(220,'[Vanity] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
-		windower.add_to_chat(220,' ')
-		windower.add_to_chat(220,'Commands '..('[optional]'):color(53)..(' <required>'):color(2))
-		windower.add_to_chat(36,'   blm/blu/brd/etc '..('<combat/town> [#]'):color(2)..(' - Display/update which Equipment Set # is used (1-200, 0 to disable).'):color(8))
-		windower.add_to_chat(36,'   set/s'..(' - Manually set lockstyle based on job and zone.'):color(8))
-		windower.add_to_chat(36,'   job/j [#]'..(' - Display/update After Job Change Delay (1-10).'):color(8))
-		windower.add_to_chat(36,'   zone/z [#]'..(' - Display/update After Zone Delay (1-10).'):color(8))
+		windower.add_to_chat(8,('[Vanity] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,('Commands '):color(220)..('[optional]'):color(53)..(' <required>'):color(2))
+		windower.add_to_chat(8,('   blm/blu/brd/etc '):color(36)..('<combat/town>'):color(2)..(' [#]'):color(53)..(' - Display/update which Equipment Set # is used (1-200, 0 to disable).'):color(8))
+		windower.add_to_chat(8,('   set/s'):color(36)..(' - Manually set lockstyle based on job and zone.'):color(8))
+		windower.add_to_chat(8,('   disable/d'):color(36)..(' [#/on/off]'):color(53)..(' - Display/update After Disable Delay (1-20).'):color(8))
+		windower.add_to_chat(8,('   job/j'):color(36)..(' [#/on/off]'):color(53)..(' - Display/update After Job Change Delay (1-20).'):color(8))
+		windower.add_to_chat(8,('   zone/z'):color(36)..(' [#/on/off]'):color(53)..(' - Display/update After Zone Delay (1-20).'):color(8))
 	elseif addcmd == 'set' or addcmd == 's' then
 		setLockstyle()
-	elseif addcmd == 'change' or addcmd == 'job' or addcmd == 'jc' or addcmd == 'j' or addcmd == 'c' or addcmd == 'changedelay' then
-		arg = tonumber(arg)
+	elseif addcmd == 'disable' or addcmd == 'd' or addcmd == 'disabledelay' then
 		if arg == nil then
-			windower.add_to_chat(220,'[Vanity] '..('After Job Change Delay'):color(1)..(' currently set to '):color(8)..(settings.after_job_change_delay..' seconds.'):color(1))
-		elseif arg and arg >= 1 and arg <= 10 then
-			settings.after_job_change_delay = arg
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is currently '):color(8)..(settings.options.after_disable and ('ON'):color(1)..(' - '):color(8)..(settings.options.after_disable_delay..' seconds'):color(1) or ('OFF'):color(1))..('.'):color(8))
+		elseif arg == 'on' or arg == 'true' then
+			settings.options.after_disable = true
 			settings:save('all')
-			windower.add_to_chat(220,'[Vanity] '..('After Job Change Delay'):color(1)..(' set to '):color(8)..(settings.after_job_change_delay..' seconds.'):color(1))
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..('ON'):color(1)..('.'):color(8))
+		elseif arg == 'off' or arg == 'false' then
+			settings.options.after_disable = false
+			settings:save('all')
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 		else
-			windower.add_to_chat(220,'[Vanity] '..('Please select an After Job Change Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('10'):color(1)..('.'):color(8))
-			windower.add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 6'):color(1))
+			arg = tonumber(arg)
+			if arg and arg >= 1 and arg <= 20 then
+				settings.options.after_disable_delay = arg
+				settings:save('all')
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..(settings.options.after_disable_delay..' seconds'):color(1)..('.'):color(8))
+			else
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('Please select a Disable Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
+				windower.add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
+			end
+		end
+	elseif addcmd == 'job' or addcmd == 'change' or addcmd == 'jc' or addcmd == 'j' or addcmd == 'c' or addcmd == 'changedelay' then
+		if arg == nil then
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is currently '):color(8)..(settings.options.after_job_change and ('ON'):color(1)..(' - '):color(8)..(settings.options.after_job_change_delay..' seconds'):color(1) or ('OFF'):color(1))..('.'):color(8))
+		elseif arg == 'on' or arg == 'true' then
+			settings.options.after_job_change = true
+			settings:save('all')
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..('ON'):color(1)..('.'):color(8))
+		elseif arg == 'off' or arg == 'false' then
+			settings.options.after_job_change = false
+			settings:save('all')
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
+		else
+			arg = tonumber(arg)
+			if arg and arg >= 1 and arg <= 20 then
+				settings.options.after_job_change_delay = arg
+				settings:save('all')
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..(settings.options.after_job_change_delay..' seconds'):color(1)..('.'):color(8))
+			else
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('Please select a Job Change Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
+				windower.add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
+			end
 		end
 	elseif addcmd == 'zone' or addcmd == 'zoning' or addcmd == 'z' or addcmd == 'zonedelay' or addcmd == 'zoningdelay' then
-		arg = tonumber(arg)
 		if arg == nil then
-			windower.add_to_chat(220,'[Vanity] '..('After Zone Delay'):color(1)..(' currently set to '):color(8)..(settings.after_zone_delay..' seconds.'):color(1))
-		elseif arg and arg >= 1 and arg <= 10 then
-			settings.after_job_change_delay = arg
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is currently '):color(8)..(settings.options.after_zone and ('ON'):color(1)..(' - '):color(8)..(settings.options.after_zone_delay..' seconds'):color(1) or ('OFF'):color(1))..('.'):color(8))
+		elseif arg == 'on' or arg == 'true' then
+			settings.options.after_zone = true
 			settings:save('all')
-			windower.add_to_chat(220,'[Vanity] '..('After Zone Delay'):color(1)..(' set to '):color(8)..(settings.after_zone_delay..' seconds.'):color(1))
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..('ON'):color(1)..('.'):color(8))
+		elseif arg == 'off' or arg == 'false' then
+			settings.options.after_zone = false
+			settings:save('all')
+			windower.add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 		else
-			windower.add_to_chat(220,'[Vanity] '..('Please select an After Zone Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('10'):color(1)..('.'):color(8))
-			windower.add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 5'):color(1))
+			arg = tonumber(arg)
+			if arg and arg >= 1 and arg <= 20 then
+				settings.options.after_zone_delay = arg
+				settings:save('all')
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..(settings.options.after_zone_delay..' seconds'):color(1)..('.'):color(8))
+			else
+				windower.add_to_chat(8,('[Vanity] '):color(220)..('Please select a Zone Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
+				windower.add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
+			end
 		end
 	elseif not match then
-		windower.add_to_chat(220,'[Vanity] '..('Please use the 3 letter abbreviation for the job lockstyle you would like to update.'):color(8))
+		windower.add_to_chat(8,('[Vanity] '):color(220)..('Please use the 3 letter abbreviation for the job lockstyle you would like to update.'):color(8))
 		windower.add_to_chat(8,'  Example: '..('//vanity '..randomJob..' '..randomGear..' '..randomEquipSet):color(1))
 	end
 
@@ -291,12 +345,21 @@ end)
 windower.register_event('prerender', function()
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
-		--We use this way for a timer (instead of the coroutine.sleep like with zoning) so that we can reset it during the countdown in case we change jobs again while its running, preventing it from trying to set the lockstyle multiple times.
 		if LockstyleDelay > 0 then
 			LockstyleDelay = LockstyleDelay -1
 		elseif LockstyleDelay == 0 then
 			LockstyleDelay = -1
 			setLockstyle()
 		end
+	end
+end)
+
+windower.register_event('incoming text',function(org)
+	if settings.options.after_disable and not townZone() and org:find('Style lock mode disabled.') then
+
+		coroutine.sleep(settings.options.after_disable_delay) --wait a short delay after lockstyle is disabled, if too early will error
+
+		setLockstyle() --set the appropriate lockstyle
+
 	end
 end)
