@@ -179,6 +179,30 @@ local function setLockstyle()
 
 end
 
+-- List all lockstyles that have been designated (not 0)
+local function listLockstyles()
+
+	local noneDesignated = true
+
+	windower.add_to_chat(8,('[Vanity] '):color(220)..('Lockstyles:'):color(8))
+
+	for job, data in pairs(settings.lockstyles) do
+		if data.combat ~= 0 then
+			windower.add_to_chat(8,' - '..(uppercase(job)..' Combat: '..data.combat):color(1))
+			noneDesignated = false
+		end
+		if data.town ~= 0 then
+			windower.add_to_chat(8,' - '..(uppercase(job)..' Town: '..data.town):color(1))
+			noneDesignated = false
+		end
+	end
+
+	if noneDesignated then
+		windower.add_to_chat(8,' -'..('[None Designated]'):color(1))
+	end
+
+end
+
 windower.register_event('job change',function()
 
 	--We use this way for a timer (instead of the coroutine.sleep like with zoning) so that we can reset it during the countdown in case we change jobs again while its running, preventing it from trying to set the lockstyle multiple times.
@@ -264,6 +288,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(8,('Commands '):color(220)..('[optional]'):color(53)..(' <required>'):color(2))
 		windower.add_to_chat(8,('   blm/blu/brd/etc '):color(36)..('<combat/town>'):color(2)..(' [#]'):color(53)..(' - Display/update which Equipment Set # is used (1-200, 0 to disable).'):color(8))
 		windower.add_to_chat(8,('   set/s'):color(36)..(' - Manually set lockstyle based on job and zone.'):color(8))
+		windower.add_to_chat(8,('   list/l'):color(36)..(' - List all non-disabled lockstyles for the current character.'):color(8))
 		windower.add_to_chat(8,('   disable/d'):color(36)..(' [#/on/off]'):color(53)..(' - Display/update After Disable Delay (1-20).'):color(8))
 		windower.add_to_chat(8,('   job/j'):color(36)..(' [#/on/off]'):color(53)..(' - Display/update After Job Change Delay (1-20).'):color(8))
 		windower.add_to_chat(8,('   zone/z'):color(36)..(' [#/on/off]'):color(53)..(' - Display/update After Zone Delay (1-20).'):color(8))
@@ -335,6 +360,8 @@ windower.register_event('addon command',function(addcmd, ...)
 				windower.add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
 			end
 		end
+	elseif addcmd == 'list' or addcmd == 'l' then
+		listLockstyles()
 	elseif not match then
 		windower.add_to_chat(8,('[Vanity] '):color(220)..('Please use the 3 letter abbreviation for the job lockstyle you would like to update.'):color(8))
 		windower.add_to_chat(8,'  Example: '..('//vanity '..randomJob..' '..randomGear..' '..randomEquipSet):color(1))
