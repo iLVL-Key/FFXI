@@ -621,7 +621,7 @@ end
 
 
 
-FileVersion = '12.0'
+FileVersion = '12.0.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -690,6 +690,13 @@ TownZones = S{
 sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 --debuffs table used so we're not spamming the Debuff Notifications with text updates (when they get flipped to true it stops updating)
 debuffs = {Amnesia = false, Animated = false, Charm = false, Curse = false, Doom = false, Encumbrance = false, Haunt = false, Mute = false, None = false, Paralysis = false, Petrification = false, Plague = false, Silence = false, Sleep = false, Stun = false, Taint = false, Terror = false, Zombie = false}
+SIL = '    '
+PAR = '     '
+PLG = '     '
+CUR = '     '
+AMN = '     '
+TNT = '     '
+ENC = '     '
 res = require('resources')
 texts = require('texts')
 weaponskills = res.weapon_skills
