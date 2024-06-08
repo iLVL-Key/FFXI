@@ -332,8 +332,8 @@ AbysseaProcCycle = {
 	{"Hapy Staff", "Flanged Grip"},
 	{"Goujian", "Flanged Grip"},
 	{"Melon Slicer", "Flanged Grip"},
-	{"Ark Scythe", "Flanged Grip"},
-	{"Za'Dha Chopper", "Flanged Grip"},
+	{"Maven's Scythe", "Flanged Grip"},
+	{"Dispatcher's Axe", "Flanged Grip"},
 	{"Sha Wujing's Lance", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
 }
@@ -346,7 +346,7 @@ function get_sets()
 
 -- Mode 1 (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
-sets.Mode1 = {
+sets.Mode1.singlewield = {
 	ammo="Coiste Bodhar",
 	head="Sakpata's Helm",
 	--head="Boii Mask +3",
@@ -386,11 +386,11 @@ sets.Mode1.twohand = set_combine(sets.Mode1, {
 -- Mode 1 Dual Wield (Multi-Attack) (Example: A focus on Dual Wield, Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
 sets.Mode1.dualwield = set_combine(sets.Mode1, {
-
+	body="Nyame Mail",
 })
 
 -- Mode 2 (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
-sets.Mode2 = set_combine(sets.Mode1, {
+sets.Mode2.singlewield = set_combine(sets.Mode1, {
 
 })
 
@@ -502,7 +502,7 @@ sets["Upheaval"] = set_combine(sets.ws, {
 
 -- Savage Blade (STR, MND, Fencer, TP Bonus)
 sets["Savage Blade"] = set_combine(sets.ws, {
-	--head="Agoge Mask +3", --Make this!
+	head="Agoge Mask +3",
 	body="Sakpata's Plate",
 	legs="Boii Cuisses +3",
 	left_ring="Regal Ring",
@@ -543,7 +543,7 @@ sets["Impulse Drive"] = set_combine(sets.ws, {
 
 -- Judgment (STR, MND, Fencer, TP Bonus)
 sets["Judgment"] = set_combine(sets.ws, {
-	--head="Agoge Mask +3", --Make this!
+	head="Agoge Mask +3",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
@@ -596,7 +596,7 @@ sets.defender = {
 
 -- Warcry
 sets.warcry = {
-	head="Agoge Mask +1",
+	head="Agoge Mask +3",
 }
 
 -- Restraint
@@ -675,7 +675,7 @@ end
 
 
 
-FileVersion = '8.0'
+FileVersion = '8.0.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -716,6 +716,13 @@ MagicWS = S{
 sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 --debuffs table used so we're not spamming the Debuff Notifications with text updates (when they get flipped to true it stops updating)
 debuffs = {Amnesia = false, Animated = false, Charm = false, Curse = false, Doom = false, Encumbrance = false, Haunt = false, Mute = false, None = false, Paralysis = false, Petrification = false, Plague = false, Silence = false, Sleep = false, Stun = false, Taint = false, Terror = false, Zombie = false}
+SIL = '    '
+PAR = '     '
+PLG = '     '
+CUR = '     '
+AMN = '     '
+TNT = '     '
+ENC = '     '
 res = require('resources')
 texts = require('texts')
 weaponskills = res.weapon_skills
@@ -1936,12 +1943,12 @@ function choose_set()
 		if LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(sets.ohshit)
 		else
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(sets[Mode].twohand)
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(sets[Mode].dualwield)
 			else
-				equip(sets[Mode])
+				equip(sets[Mode].singlewield)
 			end
 		end
 	elseif player.status == "Idle" then 
@@ -1975,54 +1982,57 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if AdoulinZones:contains(world.area) then
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.adoulin, sets.idle))
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.adoulin, sets.idle))
 			else
-				equip(set_combine(sets[Mode], sets.adoulin, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.adoulin, sets.idle))
 			end
 		elseif BastokZones:contains(world.area) then
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.bastok, sets.idle))
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.bastok, sets.idle))
 			else
-				equip(set_combine(sets[Mode], sets.bastok, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.bastok, sets.idle))
 			end
 		elseif SandyZones:contains(world.area) then
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.sandoria, sets.idle))
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.sandoria, sets.idle))
 			else
-				equip(set_combine(sets[Mode], sets.sandoria, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.sandoria, sets.idle))
 			end
 		elseif WindyZones:contains(world.area) then
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.windurst, sets.idle))
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.windurst, sets.idle))
 			else
-				equip(set_combine(sets[Mode], sets.windurst, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.windurst, sets.idle))
 			end
 		elseif TownZones:contains(world.area) then
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.town, sets.idle))
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+				print('twohand')
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.town, sets.idle))
+				print('dualwield')
 			else
-				equip(set_combine(sets[Mode], sets.town, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.town, sets.idle))
+				print('singlewield')
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
 		else
-			if Mode == 'Mode1' or Mode == 'Mode2' and twoHanded() then
+			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.idle))
-			elseif Mode == 'Mode1' or Mode == 'Mode2' and dualWield() then
+			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.idle))
 			else
-				equip(set_combine(sets[Mode], sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.idle))
 			end
 		end
 	end
