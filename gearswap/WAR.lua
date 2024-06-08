@@ -2016,13 +2016,10 @@ function choose_set()
 		elseif TownZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
 				equip(set_combine(sets[Mode].twohand, sets.town, sets.idle))
-				print('twohand')
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
 				equip(set_combine(sets[Mode].dualwield, sets.town, sets.idle))
-				print('dualwield')
 			else
 				equip(set_combine(sets[Mode].singlewield, sets.town, sets.idle))
-				print('singlewield')
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
