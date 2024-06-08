@@ -717,7 +717,7 @@ end
 
 
 
-FileVersion = '9.0'
+FileVersion = '9.0.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -751,6 +751,13 @@ sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dst
 fMode = {} fMode['Auto-Parry'] = 'AutoParry' fMode['Auto-DT'] = 'AutoDT' fMode['Combat-Parry'] = 'CombatParry' fMode['Combat-DT'] = 'CombatDT' fMode['Neutral'] = 'Neutral' fMode['DPS'] = 'DPS'
 --debuffs table used so we're not spamming the Debuff Notifications with text updates (when they get flipped to true it stops updating)
 debuffs = {Amnesia = false, Animated = false, Charm = false, Curse = false, Doom = false, Encumbrance = false, Haunt = false, Mute = false, None = false, Paralysis = false, Petrification = false, Plague = false, Silence = false, Sleep = false, Stun = false, Taint = false, Terror = false, Zombie = false}
+SIL = '    '
+PAR = '     '
+PLG = '     '
+CUR = '     '
+AMN = '     '
+TNT = '     '
+ENC = '     '
 res = require('resources')
 texts = require('texts')
 weaponskills = res.weapon_skills
