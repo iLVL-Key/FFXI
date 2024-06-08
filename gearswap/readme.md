@@ -97,6 +97,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
+
 Version 18.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
 - Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
@@ -406,6 +409,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 14.0l.1
+- Fixed an issue with turning Debuff Notifications off causing an error
+
 Version 14.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
 - Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
@@ -627,6 +633,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
+
 Version 7.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
 - Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
@@ -718,6 +727,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
 
 Version 14.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
@@ -944,6 +956,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
+
 Version 9.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
 - Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
@@ -1101,6 +1116,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
 
 Version 14.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
@@ -1313,6 +1331,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
+
 Version 12.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
 - Overhauled the Debuffs Notifications. Prioritizes displaying completely debilitating debuffs on top of all others (previous style), with the rest being a displayed in their own position within the Debuff Notification area, allowing multiple debuffs to be displayed at once (Silence/Mute and Curse/Haunt share a spot).
@@ -1480,6 +1501,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error
+- Fixed an issue with the main (singlewield) sets for Mode1 and Mode2 not equipping correctly
 
 Version 8.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
