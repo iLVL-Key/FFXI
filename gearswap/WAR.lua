@@ -386,7 +386,7 @@ sets.Mode1.twohand = set_combine(sets.Mode1, {
 -- Mode 1 Dual Wield (Multi-Attack) (Example: A focus on Dual Wield, Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
 sets.Mode1.dualwield = set_combine(sets.Mode1, {
-	body="Nyame Mail",
+
 })
 
 -- Mode 2 (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
