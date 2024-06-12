@@ -191,7 +191,7 @@ windower.register_event('action',function(act)
 				chat('/%s PAIN SYNC%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor == 'Ou' and settings.callouts.ou then
+		elseif actor == 'Ou' then
 			if monster_ability == nil then
 				return
 			elseif monster_ability.en == 'Ebullient Nullification' then
@@ -203,21 +203,31 @@ windower.register_event('action',function(act)
 			elseif monster_ability.en == 'Zero Hour' then
 				Ou_Zero_Hour_used = true
 			elseif monster_ability.en == 'Target' then
-				chat('/%s Target used on %s%s':format(settings.chatmode,windower.ffxi.get_mob_by_id(act.targets[1].id).name,settings.chatmode == 'party' and ' <call14>' or ''))
+				if settings.callouts.ou then
+					chat('/%s Target used on %s%s':format(settings.chatmode,windower.ffxi.get_mob_by_id(act.targets[1].id).name,settings.chatmode == 'party' and ' <call14>' or ''))
+				end
 				Ou_Target_used = true
 			elseif monster_ability.en == 'Gardez' then
 				Ou_Gardez_used = true
 			elseif monster_ability.en == 'Prophylaxis' then
-				chat('/%s Prophylaxis - 30 second countdown to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				if settings.callouts.ou then
+					chat('/%s Prophylaxis - 30 second countdown to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+				end
 				coroutine.sleep(10)
 				if windower.ffxi.get_mob_by_name('Ou').hpp ~= 0 then
-					chat('/%s 20 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+					if settings.callouts.ou then
+						chat('/%s 20 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+					end
 					coroutine.sleep(10)
 					if windower.ffxi.get_mob_by_name('Ou').hpp ~= 0 then
-						chat('/%s 10 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+						if settings.callouts.ou then
+							chat('/%s 10 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+						end
 						coroutine.sleep(5)
 						if windower.ffxi.get_mob_by_name('Ou').hpp ~= 0 then
-							chat('/%s 5 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+							if settings.callouts.ou then
+								chat('/%s 5 seconds to reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+							end
 						end
 					end
 				end
@@ -372,29 +382,45 @@ function OuCallouts()
 	if Ou_nearby then
 		if not Ou_pop then
 			Ou_pop = true
-			chat('/%s 95%%:Ebullient 75%%:Bravado 60%%:Fullers 45%%:Zero Hour 30%%:Target 15%%:Gardez 10%%:Prophalaxis':format(settings.chatmode))
+			if settings.callouts.ou then
+				chat('/%s 95%%:Ebullient 75%%:Bravado 60%%:Fullers 45%%:Zero Hour 30%%:Target 15%%:Gardez 10%%:Prophalaxis':format(settings.chatmode))
+			end
 		elseif not Ou_100 and Ou.claim_id ~= 0 then --Claimed, start of fight
 			Ou_100 = true
-			chat('/%s First up @ 95%% - Ebullient Nullification: Absorbs all buffs within 20\' AoE (sweet spot: 5~8 buffs)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s First up @ 95%% - Ebullient Nullification: Absorbs all buffs within 20\' AoE (sweet spot: 5~8 buffs)%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		elseif not Ou_95 and Ou_Ebullient_used then
 			Ou_95 = true
-			chat('/%s Next Up @ 75%% - Ulfaltering Bravado: Conal 10k damage split (line up behind tank)':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s Next Up @ 75%% - Ulfaltering Bravado: Conal 10k damage split (line up behind tank)':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		elseif not Ou_75 and Ou_Bravado_used then
 			Ou_75 = true
-			chat('/%s Next Up @ 60%% - Dancing Fullers: 2500 additive damage per player/pet hit dealt to each within 10\' AoE':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s Next Up @ 60%% - Dancing Fullers: 2500 additive damage per player/pet hit dealt to each within 10\' AoE':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		elseif not Ou_60 and Ou_Fullers_used then
 			Ou_60 = true
-			chat('/%s Next Up @ 45%% - Zero Hour: Throat-Stab, hate reset within 10\'(?) AoE':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s Next Up @ 45%% - Zero Hour: Throat-Stab, hate reset within 10\'(?) AoE':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		elseif not Ou_45 and Ou_Zero_Hour_used then
 			Ou_45 = true
-			chat('/%s Next Up @ 30%% - Target: Switch hate after Target lands or 3min Terror':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s Next Up @ 30%% - Target: Switch hate after Target lands or 3min Terror':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		elseif not Ou_30 and Ou_Target_used then
 			Ou_30 = true
 			coroutine.sleep(2)
-			chat('/%s Next Up @ 15%% - Gardez: Short Terror within 20\' AoE':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s Next Up @ 15%% - Gardez: Short Terror within 20\' AoE':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		elseif not Ou_15 and Ou_Gardez_used then
 			Ou_15 = true
-			chat('/%s Next Up @ 10%% - Prophylaxis: HP recover to 22%%, 30 seconds to kill or complete battle reset':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			if settings.callouts.ou then
+				chat('/%s Next Up @ 10%% - Prophylaxis: HP recover to 22%%, 30 seconds to kill or complete battle reset':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
+			end
 		end
 
 		if Ou_95 and Ou.hpp == 100 then
@@ -414,7 +440,6 @@ function checkForCharm()
 			table.insert(justCharmed, member.name)
 			charmed[member.name] = true
 		elseif member and charmed[member.name] and not member.charmed then
-			--print('No longer charmed: '..member.name)
 			charmed[member.name] = nil
 		end
 	end
@@ -430,10 +455,11 @@ windower.register_event('addon command', function(addcmd)
 	if addcmd == 'help' then
 		windower.add_to_chat(220,'[Callouts] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 		windower.add_to_chat(220,' ')
-		windower.add_to_chat(200,' Addon Commands'..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
+		windower.add_to_chat(220,' Commands'..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
 		windower.add_to_chat(36,'   chatmode/chat/mode'..(' - Switch between Echo and Party chat modes. (Current setting:'):color(8)..((' %s'):format(settings.chatmode == 'party' and 'Party' or 'Echo')):color(200)..(')'):color(8))
-		windower.add_to_chat(36,'   ambuscade/charm/dynamis/odyssey/omen/ou/sortie/vagary'..(' - Turn individual callouts on or off.'):color(8))
-		windower.add_to_chat(36,'   list'..(' - List the current callouts and their ON/OFF state.'):color(8))
+		windower.add_to_chat(8,('   ambuscade/charm/dynamis/odyssey/omen/ou/sortie/vagary'):color(36)..(' - Turn individual callouts on or off.'):color(8))
+		windower.add_to_chat(8,'      NOTE: Ou is separate from Omen')
+		windower.add_to_chat(8,('   list'):color(36)..(' - List the current callouts and their ON/OFF state.'):color(8))
 
 	elseif addcmd == 'chatmode' or addcmd == 'chat' or addcmd == 'mode' then
 		if settings.chatmode == 'echo' then
@@ -486,28 +512,28 @@ windower.register_event('addon command', function(addcmd)
 
 	elseif addcmd == 'list' or addcmd == 'lists' then
 		windower.add_to_chat(220,'[Callouts] '..('Current callouts:'):color(200))
-		windower.add_to_chat(36,'   Ambuscade:'..(' %s':format(settings.callouts.ambuscade and 'ON' or 'OFF')):color(200)..(' - Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset'):color(8))
-		windower.add_to_chat(36,'   Charm:'..(' %s':format(settings.callouts.charm and 'ON' or 'OFF')):color(200)..(' - Party/Alliance members who get charmed'):color(8))
-		windower.add_to_chat(36,'   Dynamis:'..(' %s':format(settings.callouts.dynamis and 'ON' or 'OFF')):color(200)..(' - Halphas hate reset'):color(8))
-		windower.add_to_chat(36,'   Odyssey:'..(' %s':format(settings.callouts.odyssey and 'ON' or 'OFF')):color(200)..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters'):color(8))
-		windower.add_to_chat(36,'   Omen:'..(' %s':format(settings.callouts.omen and 'ON' or 'OFF')):color(200)..(' - Scales, Pain Sync, Target'):color(8))
-		windower.add_to_chat(36,'   Ou:'..(' %s':format(settings.callouts.ou and 'ON' or 'OFF')):color(200)..(' - Upcoming abilities'):color(8))
-		windower.add_to_chat(36,'   Sortie:'..(' %s':format(settings.callouts.sortie and 'ON' or 'OFF')):color(200)..(' - Elements/weaknesses, hate resets'):color(8))
-		windower.add_to_chat(36,'   Vagary:'..(' %s':format(settings.callouts.vagary and 'ON' or 'OFF')):color(200)..(' - Perfidien/Plouton pop, weaknesses'):color(8))
+		windower.add_to_chat(8,('   Ambuscade:'):color(36)..(' %s':format(settings.callouts.ambuscade and 'ON' or 'OFF')):color(200)..(' - Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset'):color(8))
+		windower.add_to_chat(8,('   Charm:'):color(36)..(' %s':format(settings.callouts.charm and 'ON' or 'OFF')):color(200)..(' - Party/Alliance members who get charmed'):color(8))
+		windower.add_to_chat(8,('   Dynamis:'):color(36)..(' %s':format(settings.callouts.dynamis and 'ON' or 'OFF')):color(200)..(' - Halphas hate reset'):color(8))
+		windower.add_to_chat(8,('   Odyssey:'):color(36)..(' %s':format(settings.callouts.odyssey and 'ON' or 'OFF')):color(200)..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters'):color(8))
+		windower.add_to_chat(8,('   Omen:'):color(36)..(' %s':format(settings.callouts.omen and 'ON' or 'OFF')):color(200)..(' - Scales, Pain Sync, Target'):color(8))
+		windower.add_to_chat(8,('   Ou:'):color(36)..(' %s':format(settings.callouts.ou and 'ON' or 'OFF')):color(200)..(' - Upcoming abilities'):color(8))
+		windower.add_to_chat(8,('   Sortie:'):color(36)..(' %s':format(settings.callouts.sortie and 'ON' or 'OFF')):color(200)..(' - Elements/weaknesses, hate resets'):color(8))
+		windower.add_to_chat(8,('   Vagary:'):color(36)..(' %s':format(settings.callouts.vagary and 'ON' or 'OFF')):color(200)..(' - Perfidien/Plouton pop, weaknesses'):color(8))
 
 	elseif addcmd == 'reload' then
 		windower.send_command('lua r callouts')
 		return
 
 	else
-		windower.add_to_chat(220,'[Callouts] '..('Unknown command. Type \'//co help\' for list of commands.'):color(8))
+		windower.add_to_chat(8,('[Callouts] '):color(220)..('Unknown command. Type \'//co help\' for list of commands.'):color(8))
 
 	end
 end)
 
 windower.register_event('prerender', function()
 	local zone = windower.ffxi.get_info() and windower.ffxi.get_info().zone
-	if zone and zone == 292 and settings.callouts.ou then -- Reisenjima Henge
+	if zone and zone == 292 then -- Reisenjima Henge
 		OuCallouts()
 	end
 	if os.time() > Heartbeat then
