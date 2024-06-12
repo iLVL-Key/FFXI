@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.9'
+_addon.version = '1.9.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -129,7 +129,7 @@ windower.register_event('action',function(act)
 
 	if act.category == 7 then -- initiation of weapon skill or monster TP move
 
-		if actor == 'Aita' or actor == 'Degei' and settings.callouts.sortie then
+		if (actor == 'Aita' or actor == 'Degei') and settings.callouts.sortie then
 			if monster_ability == nil then
 				return
 			elseif monster_ability.en == 'Flaming Kick' then
@@ -151,14 +151,14 @@ windower.register_event('action',function(act)
 				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor == 'Triboulex' or actor == 'Skomora' and settings.callouts.sortie then
+		elseif (actor == 'Triboulex' or actor == 'Skomora') and settings.callouts.sortie then
 			if monster_ability == nil then
 				return
 			elseif monster_ability.en == 'Last Laugh' then
 				chat('/%s Hate Reset%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor == 'Leshonn' or actor == 'Gartell' and settings.callouts.sortie then
+		elseif (actor == 'Leshonn' or actor == 'Gartell') and settings.callouts.sortie then
 			if monster_ability == nil then
 				return
 			elseif monster_ability.en == 'Undulating Shockwave' or monster_ability.en == 'Shrieking Gale' then
@@ -191,7 +191,7 @@ windower.register_event('action',function(act)
 				chat('/%s PAIN SYNC%s':format(settings.chatmode,settings.chatmode == 'party' and ' <call14>' or ''))
 			end
 
-		elseif actor == 'Ou' or actor == 'Kin' and settings.callouts.ou then
+		elseif actor == 'Ou' and settings.callouts.ou then
 			if monster_ability == nil then
 				return
 			elseif monster_ability.en == 'Ebullient Nullification' then
