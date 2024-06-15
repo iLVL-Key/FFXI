@@ -69,7 +69,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoStance		=	'On'	--[On/Off]		Automatically activates and keeps Hasso/Seigan Stances active.
-AutoSave		=	'On'	--[On/Off]		Attempts to use Super Jump then High Jump, in that order, when your HP gets critically low. Will not activate while in Seigan Stance.
+AutoSave		=	'On'	--[On/Off]		Attempts to use High Jump when your HP gets critically low. Will not activate while in Seigan Stance.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -675,7 +675,7 @@ end
 
 
 
-FileVersion = '8.0.1'
+FileVersion = '8.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2897,9 +2897,7 @@ windower.register_event('prerender', function()
 		getHUDAbils()
 
 		if AutoSave == 'On' and player.sub_job == 'DRG' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep'] or Stance == 'Seigan') and player.status == "Engaged" and not TownZones:contains(world.area) and not AutoSaveUsed then
-			if player.sub_job_level >= 50 and windower.ffxi.get_ability_recasts()[160] == 0 then
-				send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
-			elseif player.sub_job_level >= 35 and windower.ffxi.get_ability_recasts()[159] == 0 then
+			if player.sub_job_level >= 35 and windower.ffxi.get_ability_recasts()[159] == 0 then
 				send_command('input /ja "High Jump" <t>;wait .5;input /ja "High Jump <t>')
 			end
 		end
