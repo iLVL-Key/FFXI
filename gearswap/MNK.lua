@@ -67,7 +67,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
-AutoSave		=	'On'	--[On/Off]		Attempts to use Chakra, Super Jump, High Jump, then Perfect Counter, in that order, when your HP gets critically low. NOTE: Jumps will not activate while in Mode 5 (Tank).
+AutoSave		=	'On'	--[On/Off]		Attempts to use Chakra, High Jump, then Perfect Counter, in that order, when your HP gets critically low. NOTE: High Jump will not activate while in Mode 5 (Tank).
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -676,7 +676,7 @@ end
 
 
 
-FileVersion = '7.0.1'
+FileVersion = '7.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2787,8 +2787,6 @@ windower.register_event('prerender', function()
 		if AutoSave == 'On' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep']) and not TownZones:contains(world.area) and not AutoSaveUsed then
 			if Chakra.recast and Chakra.recast == 0 then
 				send_command('input /ja "Chakra" <me>;wait .5;input /ja "Chakra <me>')
-			elseif player.status == "Engaged" and Mode ~= 'Mode5' and SuperJump.recast and SuperJump.recast == 0 then
-				send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
 			elseif player.status == "Engaged" and Mode ~= 'Mode5' and HighJump.recast and HighJump.recast == 0 then
 				send_command('input /ja "High Jump" <t>;wait .5;input /ja "High Jump <t>')
 			elseif player.status == "Engaged" and PerfectCounter.recast and PerfectCounter.recast == 0 then
