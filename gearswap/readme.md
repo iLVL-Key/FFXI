@@ -633,6 +633,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.0.2
+- Removed Super Jump from AutoSave. This was causing too many issues with receiving cures while in the air. Will still activate Chakra, High Jump, and Perfect Counter.
+
 Version 7.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
 
@@ -1117,6 +1120,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 14.0.2
+- Removed Super Jump from AutoSave. This was causing too many issues with receiving cures while in the air. Will still activate High Jump.
+
 Version 14.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
 
@@ -1501,6 +1507,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.0.2
+- Removed Super Jump from AutoSave. This was causing too many issues with receiving cures while in the air. Will still activate High Jump.
 
 Version 8.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
