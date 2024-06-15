@@ -68,7 +68,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoStance		=	'On'	--[On/Off]		Automatically activates and keeps Stances active.
-AutoSave		=	'On'	--[On/Off]		Attempts to use Super Jump then High Jump, in that order, when your HP gets critically low. Will not activate while in Seigan Stance.
+AutoSave		=	'On'	--[On/Off]		Attempts to use High Jump when your HP gets critically low. Will not activate while in Seigan Stance.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -386,7 +386,7 @@ sets.hasso.Mode3 = set_combine(sets.hasso.Mode1, {
 -- Hasso Mode 4 (Example: Hasso+, with a focus on Subtle Blow, then filling in the rest with Multi-Attack, Zanshin, Store TP, and DT)
 sets.hasso.Mode4 = set_combine(sets.hasso.Mode1, {
 	ammo="Coiste Bodhar",
-	head="Ken Jinpachi +1",
+	head="Ken. Jinpachi +1",
 	body="Dagon Breast.",
 	hands="Wakido Kote +3",
 	legs="Mpaca's Hose",
@@ -637,7 +637,7 @@ end
 
 
 
-FileVersion = '14.0.1'
+FileVersion = '14.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2836,9 +2836,7 @@ windower.register_event('prerender', function()
 		getHUDAbils()
 
 		if AutoSave == 'On' and player.sub_job == 'DRG' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep'] or Stance == 'Seigan') and player.status == "Engaged" and not TownZones:contains(world.area) and not AutoSaveUsed then
-			if SuperJump.recast and SuperJump.recast == 0 then
-				send_command('input /ja "Super Jump" <t>;wait .5;input /ja "Super Jump <t>')
-			elseif HighJump.recast and HighJump.recast == 0 then
+			if HighJump.recast and HighJump.recast == 0 then
 				send_command('input /ja "High Jump" <t>;wait .5;input /ja "High Jump <t>')
 			end
 		end
