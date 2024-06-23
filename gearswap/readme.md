@@ -633,6 +633,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.0.3
+- Fixed an issue that prevented switching back to the correct gear set in the aftercast stage.
+
 Version 7.0.2
 - Removed Super Jump from AutoSave. This was causing too many issues with receiving cures while in the air. Will still activate Chakra, High Jump, and Perfect Counter.
 
