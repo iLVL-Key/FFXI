@@ -409,8 +409,15 @@ Version 15.0
  
 <summary>GEO</summary>
 
-Version 14.0l.1
-- Fixed an issue with turning Debuff Notifications off causing an error
+Version 14.0.2
+
+- Adjusted Entrust HUD display to track Entrust based on when the Colure Active buff wears off the Entrusted player instead of an adjustable timer option. There is still a timer a little longer than the max Entrust duration possible running as a backup.
+- Removed the EntrustDuration Option.
+- Fixed an issue where the Luopan HP bar would occasionally extend across the screen for a brief moment when first cast.
+- Fixed a double activation of Entrust when activated through the AutoEntrust option.
+
+Version 14.0.1
+- Fixed an issue with turning Debuff Notifications off causing an error.
 
 Version 14.0
 - Overhauled the HUD, REMOVING NEED FOR THE TEXT PLUGIN! Now uses the Windower text library. About time!
@@ -431,8 +438,8 @@ Version 14.0
 - Fixed the DPS set not equipping.
 - Fixed ZoneGear still running when set to Off.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed debug option. I feel this is no longer necessary at this point.
 
@@ -733,6 +740,10 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.0.2
+
+- Fixed a double activation of Divine Emblem when activated through the AutoDEmblem option.
 
 Version 14.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
@@ -1339,6 +1350,10 @@ Version 9.0
 <details>
  
 <summary>SMN</summary>
+
+Version 12.0.2
+- Fixed an issue where the Avatar HP bar would occasionally extend across the screen for a brief moment when first cast.
+- Fixed a double activation of Avatar's Favor when activated through the AutoFavor option.
 
 Version 12.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
