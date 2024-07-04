@@ -676,8 +676,8 @@ Version 7.0
 - Fixed ZoneGear still running when set to Off.
 - Removed the DT Override option. This is now a Mode instead.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed the NotiWeapons option.
 - Removed debug option. I feel this is no longer necessary at this point.
@@ -773,8 +773,8 @@ Version 14.0
 - Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
 - Fixed ZoneGear still running when set to Off.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed the NotiWeapons option.
 - Removed debug option. I feel this is no longer necessary at this point.
@@ -998,8 +998,8 @@ Version 9.0
 - Fixed an error with handling an 'empty' equipment slot in the Weapon Cycler.
 - Fixed ZoneGear still running when set to Off.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed the NotiWeapons option.
 - Removed debug option. I feel this is no longer necessary at this point.
@@ -1167,8 +1167,8 @@ Version 14.0
 - Fixed ZoneGear still running when set to Off.
 - Removed the DT Override option. This is now a Mode instead.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed the NotiWeapons option.
 - Removed debug option. I feel this is no longer necessary at this point.
@@ -1381,8 +1381,8 @@ Version 12.0
 - Fixed two different things both doing status checks in two different ways, combining the two into one.
 - Fixed ZoneGear still running when set to Off.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed the NotiWeapons option.
 - Removed debug option. I feel this is no longer necessary at this point.
@@ -1563,8 +1563,8 @@ Version 8.0
 - Fixed ZoneGear still running when set to Off.
 - Removed the DT Override option. This is now a Mode instead.
 - Removed ability/spell cancelling while a debuff is present that would prevent that ability/spell from activating. This fixes an issue where there is a split second of server lag between the debuff coming off and the client recognizing it, now allowing for hitting the ability/spell right when the debuff comes off and it activating as it should.
-- Removed AutoLockstyle. This has been moved to its own separate adon called Vanity.
-- Removed AutoHWater. This has been moved to its own separate adon called Excorcist.
+- Removed AutoLockstyle. This has been moved to its own separate addon called Vanity.
+- Removed AutoHWater. This has been moved to its own separate addon called Excorcist.
 - Removed the //fileinfo command.
 - Removed the NotiWeapons option.
 - Removed debug option. I feel this is no longer necessary at this point.
