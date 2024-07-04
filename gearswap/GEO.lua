@@ -67,9 +67,6 @@ HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing t
 FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer		=	17		--	Space in pixels between each Line of the HUD
 ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
-EntrustDuration	=	330		--	Duration in seconds of Entrusted Indi spells. Base duration is 180 seconds, this increases with
-							--	Indicolure Duration gear. Adjust as needed to match up when the HUD shows the Entrusted Indicolure
-							--	spell wearing off. This is only used with the HUD.
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
@@ -582,7 +579,7 @@ end
 
 
 
-FileVersion = '14.0.1'
+FileVersion = '14.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -651,6 +648,7 @@ NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hit
 PetHPP = 0
 LuopanDelay = false --used to create a short delay between casting a luopan and checking if it still exists, pet.isvalid does a weird on/off/on thing when a luopan is cast which messes with checking if certain buffs are still active on the lupoan
 EntrustCountdown = 0
+EntrustTarget = nil
 
 -- Sets the inital subjob
 local subjob = 'OTH'
@@ -1627,9 +1625,11 @@ function self_command(command)
 	elseif command == 'CancelUseEntrust' then --reset the label when we deactivate AutoEntrust
 		if UseEntrust == true then
 			UseEntrust = false
-			hud_entrust_label_shdw:text(format24('Entrust'))
-			hud_entrust_label:text(format24('Entrust'))
-			hud_entrust_label:color(255,255,255)
+			if Entrust.recast == 0 then -- If we haven't used Entrust yet, reset the label too
+				hud_entrust_label_shdw:text(format24('Entrust'))
+				hud_entrust_label:text(format24('Entrust'))
+				hud_entrust_label:color(255,255,255)
+			end
 		end
 	elseif command == 'LuopanDelay' then
 		LuopanDelay = false
@@ -1880,10 +1880,15 @@ function precast(spell)
 				return
 			elseif UseEntrust == true then
 				--now that AutoEntrust was activated above, we can Do The Thing
-				send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
-				send_command('gs c CancelUseEntrust')
-				cancel_spell()
-				return
+				if not double_entrust_fix then
+					double_entrust_fix = true --prevents this from running through here a second time after being cast again below
+					send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+					send_command('wait 5;gs c CancelUseEntrust')
+					cancel_spell()
+					return
+				else
+					double_entrust_fix = false
+				end
 			end
 		elseif UseEntrust == true and spell.target.type == 'SELF' then
 			--if we cast an Indi- spell on ourselves we reset UseEntrust back to false, this allows us to cancel the use of AutoEntrust and go through the double-check above again for next time
@@ -2112,9 +2117,17 @@ function aftercast(spell)
 				EntrustSuffix = Suffix
 				hud_entrust_label_shdw:text(format24('Entrust - '..Target))
 				hud_entrust_label:text(format24('Entrust - '..Target))
+				hud_entrust_label:color(255,255,255)
 				hud_entrust_spell_shdw:text(format24(EntrustSpell..EntrustTotal..EntrustSuffix))
 				hud_entrust_spell:text(format24(EntrustSpell..EntrustTotal..EntrustSuffix))
 				hud_entrust_spell:color(75,255,75)
+				local is_npc = windower.ffxi.get_mob_by_name(Target).is_npc
+				if is_npc then
+					EntrustCountdown = 330 -- 5:30 is about the longest you can get with Indi-spell duration gear
+				else
+					EntrustTarget = Target -- this is the main way we determine when the Entrusted spell has worn off another player
+					EntrustCountdown = 360 -- but we still run a slightly longer timer as a backup just in case
+				end
 			else
 				IndiSpell = SpellSH
 				IndiTotal = Total
@@ -2133,8 +2146,6 @@ function aftercast(spell)
 			send_command('wait 2;gs c Choose Set;gs c LuopanDelay')
 			--add in a 2 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
 		end
-	elseif spell.english == 'Entrust' and not spell.interrupted then
-		EntrustCountdown = EntrustDuration
 	elseif spell.english == 'Blaze of Glory' and not spell.interrupted then
 		BlazeActive = true
 		LuopanDelay = true
@@ -2180,6 +2191,21 @@ end)
 --       Buff/Debuff Notifications       --
 -------------------------------------------
 
+function party_buff_change(party_member,name,gain,buff)
+	if name == 'Colure Active' and gain == false and party_member.name == EntrustTarget then
+		EntrustTarget = nil
+		hud_entrust_spell_shdw:text(format24('None'))
+		hud_entrust_spell:text(format24('None'))
+		hud_entrust_label_shdw:text(format24('Entrust'))
+		hud_entrust_label:text(format24('Entrust'))
+		if Entrust.recast and Entrust.recast > 0 then
+			hud_entrust_spell:color(255,165,0)
+		else
+			hud_entrust_spell:color(255,50,50)	
+		end
+	end
+end
+
 windower.register_event('gain buff', function(buff)
 	if (buff == 2 or buff == 19) then
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --If we get slept, remove stoneskin if its up
@@ -2192,7 +2218,7 @@ windower.register_event('gain buff', function(buff)
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 	elseif buff == 17 and AlertSounds == 'On' then --Charm
 		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
-	elseif buff == 612  then --Colure Active
+	elseif buff == 612 then --Colure Active
 		hud_indi_spell_shdw:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(IndiTotal and IndiTotal or '')..(IndiSuffix and IndiSuffix or '')))
 		hud_indi_spell:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(IndiTotal and IndiTotal or '')..(IndiSuffix and IndiSuffix or '')))
 		hud_indi_spell:color(75,255,75)
@@ -2541,7 +2567,7 @@ windower.register_event('prerender', function()
 			PetHPP = pet.hpp
 			local petHPMeter = ''
 			local spaces = math.floor(72 * (pet.hpp / 100)) --HUD is 72 spaces wide
-			while string.len(petHPMeter) < spaces do
+			while string.len(petHPMeter) < spaces and string.len(petHPMeter) < 72 do
 				petHPMeter = petHPMeter..' '
 			end
 			petHPMeter = petHPMeter..'\n'..petHPMeter..'\n'..petHPMeter..'\n'..petHPMeter
@@ -2574,7 +2600,7 @@ windower.register_event('prerender', function()
 		hud_geo_spell:color(0,255,0)
 		LuopanActive = true
 	elseif PetHPP ~= -1 then
-		PetHPP = -1 --We use -1 to avoid an issue with Avatar being killed not triggering this
+		PetHPP = -1 --We use -1 to avoid an issue with Luopan being killed not triggering this
 		hud_bg_color:bg_alpha(0)
 		hud_geo_label_shdw:text(format24('Luopan'))
 		hud_geo_label:text(format24('Luopan'))
@@ -2606,27 +2632,17 @@ windower.register_event('prerender', function()
 
 		if EntrustCountdown > 0 then
 			EntrustCountdown = EntrustCountdown -1
-		elseif Entrust.recast and Entrust.recast > 0 then
-			hud_entrust_spell_shdw:text(format24('None'))
-			hud_entrust_spell:text(format24('None'))
-			hud_entrust_spell:color(255,165,0)
-			if UseEntrust == true then
-				hud_entrust_label_shdw:text(format24('AutoEntrust Activated'))
-				hud_entrust_label:text(format24('AutoEntrust Activated'))
-			else
-				hud_entrust_label_shdw:text(format24('Entrust'))
-				hud_entrust_label:text(format24('Entrust'))
-			end
 		else
 			hud_entrust_spell_shdw:text(format24('None'))
 			hud_entrust_spell:text(format24('None'))
-			hud_entrust_spell:color(255,50,50)				
-			if UseEntrust == true then
-				hud_entrust_label_shdw:text(format24('AutoEntrust Activated'))
-				hud_entrust_label:text(format24('AutoEntrust Activated'))
-			else
+			if not UseEntrust then
 				hud_entrust_label_shdw:text(format24('Entrust'))
 				hud_entrust_label:text(format24('Entrust'))
+			end
+			if Entrust.recast and Entrust.recast > 0 then
+				hud_entrust_spell:color(255,165,0)
+			else
+				hud_entrust_spell:color(255,50,50)	
 			end
 		end
 		if ReraiseReminder == 'On' then
