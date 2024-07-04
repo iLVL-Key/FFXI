@@ -621,7 +621,7 @@ end
 
 
 
-FileVersion = '12.0.1'
+FileVersion = '12.0.2'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1985,9 +1985,14 @@ function precast(spell)
 	elseif (spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard') and not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
 		--if we're using a BP without Avatar's Favor up, we'll put it up before casting:
 		if AutoFavor == 'On' and not buffactive['Avatar\'s Favor'] and not buffactive['amnesia'] and windower.ffxi.get_ability_recasts()[176] == 0 then
-			send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet '..spell.english..' '..spell.target.raw..'')
-			cancel_spell()
-			return
+			if not double_avatars_favor_fix then
+				double_avatars_favor_fix = true --prevents this from running through here a second time after being cast again below
+				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet '..spell.english..' '..spell.target.raw..'')
+				cancel_spell()
+				return
+			else
+				double_avatars_favor_fix = false
+			end
 		else
 			equip(sets.bpdelay)
 		end
@@ -2762,7 +2767,7 @@ windower.register_event('prerender', function()
 			PetHPP = pet.hpp
 			local petHPMeter = ""
 			local spaces = math.floor(72 * (pet.hpp / 100)) --HUD is 72 spaces wide
-			while string.len(petHPMeter) < spaces do
+			while string.len(petHPMeter) < spaces and string.len(petHPMeter) < 72 do
 				petHPMeter = petHPMeter..' '
 			end
 			petHPMeter = petHPMeter..'\n'..petHPMeter..'\n'..petHPMeter
