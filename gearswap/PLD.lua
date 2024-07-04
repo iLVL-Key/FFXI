@@ -772,7 +772,7 @@ end
 
 
 
-FileVersion = '14.0.1'
+FileVersion = '14.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2225,9 +2225,14 @@ function precast(spell)
 	elseif spell.english == "Flash" then
 		if windower.ffxi.get_spell_recasts()[112] < 120 then
 			if AutoDEmblem == 'On' and not buffactive['amnesia'] and DivineEmblem.recast == 0 then
-				send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..'')
-				cancel_spell()
-				return
+				if not double_divine_emblem_fix then
+					double_divine_emblem_fix = true --prevents this from running through here a second time after being cast again below
+					send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..'')
+					cancel_spell()
+					return
+				else
+					double_divine_emblem_fix = false
+				end
 			end
 			equip(sets.fastcast)
 		elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
