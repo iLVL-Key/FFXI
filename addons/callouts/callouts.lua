@@ -355,7 +355,7 @@ windower.register_event('incoming text',function(org)
 			chat('/%s Water%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		end
 
-	elseif org:find('The fiend appears vulnerable to') and callout.abyssea then
+	elseif org:find('The fiend appears vulnerable to') and org:find('weapon skills') and callout.abyssea then
 		if org:find('lightning') then
 			chat('/%s RED Proc: Lightning - Raiden Thrust(PLM)%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('fire') then
