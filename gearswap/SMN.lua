@@ -58,16 +58,16 @@ Page			=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or O
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
 AFTimer			=	'On'	--[On/Off]		Displays a timer for Astral Flow in echo.
 ACTimer			=	'On'	--[On/Off]		Displays a timer for Astral Conduit in echo.
-ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions.
-							--				(Town limits this to town gear only)
+ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
+							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts. 
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoFavor		=	'On'	--[On/Off]		Automatically uses Favor when you summon an avatar.
 AutoRelease		=	'On'	--[On/Off]		Automatically uses Release when you summon an avatar with one already out.
 
 -- Avatar Macro Pages --
-HomePage		=	'1'		--[1-10]		This is your starting macro page with all your summoning macros on them
-IfritPage		=	'2'		--[1-10]		Individual macro pages for avatars
+HomePage		=	'1'		--[1-10]		This is your starting macro page with all your summoning macros on them.
+IfritPage		=	'2'		--[1-10]		Individual macro pages for avatars.
 TitanPage		=	'3'		--[1-10]
 LeviathanPage	=	'4'		--[1-10]
 GarudaPage		=	'5'		--[1-10]
@@ -82,9 +82,10 @@ DiabolosPage	=	'9'		--[1-10]
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	17		--	Space in pixels between each Line of the HUD
-ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
+FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
+ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
@@ -124,7 +125,7 @@ DTBind			=	'^d'	--Sets the keyboard shortcut you would like to activate the Dama
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
-RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 
@@ -621,7 +622,7 @@ end
 
 
 
-FileVersion = '12.0.2'
+FileVersion = '12.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1108,9 +1109,11 @@ hud_abil06:bold(true)
 if ShowHUD == 'On' then
 	hud_bg_color:show()
 	hud_bg:show()
-	hud_tp_meter_bg1:show()
-	hud_tp_meter_bg2:show()
-	hud_tp_meter:show()
+	if ShowTPMeter == 'On' then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
 	hud_noti_bg:show()
 	hud_debuffs_bg:show()
 	hud_abil01_bg:show()
@@ -1638,9 +1641,11 @@ function self_command(command)
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
-		hud_tp_meter_bg1:show()
-		hud_tp_meter_bg2:show()
-		hud_tp_meter:show()
+		if ShowTPMeter == 'On' then
+			hud_tp_meter_bg1:show()
+			hud_tp_meter_bg2:show()
+			hud_tp_meter:show()
+		end
 		hud_noti_bg:show()
 		hud_debuffs_bg:show()
 		hud_abil01_bg:show()
@@ -3120,7 +3125,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
-	elseif org:find('The effect of') and org:find('is about to wear off.')then
+	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
