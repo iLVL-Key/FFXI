@@ -122,16 +122,17 @@ Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell
 SfoTimer		=	'On'	--[On/Off]		Displays a timer for Elemental Sforzo in echo.
 OdyTimer		=	'On'	--[On/Off]		Displays a timer for Odyllic Subterfuge in echo.
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
-							--				(Town limits this to town gear only)
+							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	17		--	Space in pixels between each Line of the HUD
-ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
+FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
+ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
@@ -176,7 +177,7 @@ WCBind			=	'^h'		--Sets the keyboard shortcut you would like to activate the Wea
 								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000		--Below this number is considered Low HP.
 DangerRepeat	=	10			--Maximum number of times the Danger Sound will repeat, once per second.
-RRReminderTimer	=	1800		--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+RRReminderTimer	=	1800		--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay		=	6			--Delay in seconds before certain notifications will automatically clear.
 AddCommas		=	'On'		--[On/Off]  Adds commas to damage numbers.
 
@@ -371,32 +372,32 @@ sets.tankparry = {
 	body="Erilaz Surcoat +3",
 	hands="Turms Mittens +1",
 	legs="Eri. Leg Guards +3",
-	feet="Turms Leggings +1",
-	neck="Warder's Charm +1",
+	feet="Erilaz Greaves +3",
+	neck="Unmoving Collar +1",
 	waist="Plat. Mog. Belt",
-	left_ear="Tuisto Earring",
-	right_ear="Odnowa Earring +1",
-	left_ring="Gelatinous Ring +1",
-	right_ring="Defending Ring",
+	left_ear="Cryptic Earring",
+	right_ear="Erilaz Earring +2",
+	left_ring="Moonlight Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
 }
 
 -- Tank DT (Damage Taken-, Magic Evasion, Multi-Attack, Accuracy, DEX)
 -- This is for certain mobs or times that you cannot parry. Focus on DT- first, then fill in DPS gear around that.
 sets.tankdt = {
-	ammo="Staunch Tathlum +1",
-	head="Nyame Helm",
-	body="Erilaz Surcoat +3",
-	hands="Erilaz Gauntlets +3",
-	legs="Eri. Leg Guards +3",
-	feet="Erilaz Greaves +3",
-	neck="Warder's Charm +1",
-	waist="Carrier's Sash",
-	left_ear="Tuisto Earring",
-	right_ear="Odnowa Earring +1",
-	left_ring="Moonlight Ring",
-	right_ring="Gelatinous Ring +1",
-	back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}},
+    ammo="Coiste Bodhar",
+    head="Nyame Helm",
+    body="Erilaz Surcoat +3",
+    hands="Erilaz Gauntlets +3",
+    legs="Eri. Leg Guards +3",
+    feet="Erilaz Greaves +3",
+    neck="Unmoving Collar +1",
+    waist="Plat. Mog. Belt",
+    left_ear="Cryptic Earring",
+    right_ear="Sherida Earring",
+    left_ring="Moonlight Ring",
+    right_ring="Niqmaddu Ring",
+    back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
 }
 
 --DPS 
@@ -409,8 +410,8 @@ sets.dps = {
 	feet={ name="Herculean Boots", augments={'Attack+21','"Triple Atk."+3','STR+10','Accuracy+15',}},
 	neck="Ziel Charm",
 	waist="Ioskeha Belt +1",
-	left_ear="Sherida Earring",
-	right_ear="Mache Earring +1",
+	left_ear="Cessance Earring",
+	right_ear="Sherida Earring",
 	left_ring="Epona's Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
@@ -471,16 +472,16 @@ sets.fastcast = {
 	ammo="Sapience Orb", --2
 	head="Rune. Bandeau +3", --14
 	body="Erilaz Surcoat +3", --13
-	hands="Leyline Gloves", --5+1
+	hands="Agwu's Gages", --6
 	legs="Agwu's Slops", --7
 	feet="Carmine Greaves +1", --8
 	neck="Baetyl Pendant", --4
 	waist="Plat. Mog. Belt",
 	left_ear="Loquac. Earring", --2
-	right_ear="Etiolation Earring", --1
-	left_ring="Prolix Ring", --2
+	right_ear="Odnowa Earring +1",
+	left_ring="Gelatinous Ring +1",
 	right_ring="Kishar Ring", --4
-	back="Moonlight Cape",
+	back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}}, --10
 }
 
 -- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
@@ -518,7 +519,7 @@ sets.enmityspells = set_combine(sets.enmity, {
 sets.regen = {
 	head="Rune. Bandeau +3",
 	hands="Regal Gauntlets",
-	right_ear="Erilaz Earring +1",
+	right_ear="Erilaz Earring +2",
 }
 
 -- Enhancing Magic (Enhancing Magic Duration, Enhancing Magic Skill)
@@ -717,7 +718,7 @@ end
 
 
 
-FileVersion = '9.0.1'
+FileVersion = '9.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1329,9 +1330,11 @@ hud_abil06:bold(true)
 if ShowHUD == 'On' then
 	hud_bg_color:show()
 	hud_bg:show()
-	hud_tp_meter_bg1:show()
-	hud_tp_meter_bg2:show()
-	hud_tp_meter:show()
+	if ShowTPMeter == 'On' then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
 	hud_noti_bg:show()
 	hud_debuffs_bg:show()
 	hud_rune01_bg:show()
@@ -1992,12 +1995,14 @@ function self_command(command)
 				c= color.Dark
 			end
 		end
+		hud_noti:color(255,255,255)
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
 		hud_noti_bg:bg_alpha(150)
 		NotiCountdown = NotiDelay
 	elseif command == 'RuneFire' then
 		RuneElement = 'Ignis' --Fire
 		hud_noti_shdw:text(format36('«« Ignis: Fire > Ice »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Ignis: Fire > Ice »»'))
 		c= color.Fire
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2006,6 +2011,7 @@ function self_command(command)
 	elseif command == 'RuneBlizzard' or command =='RuneIce' then
 		RuneElement = 'Gelus' --Ice
 		hud_noti_shdw:text(format36('«« Gelus: Ice > Wind »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Gelus: Ice > Wind »»'))
 		c= color.Ice
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2014,6 +2020,7 @@ function self_command(command)
 	elseif command == 'RuneAero' or command =='RuneWind' then
 		RuneElement = 'Flabra' --Wind
 		hud_noti_shdw:text(format36('«« Flabra: Wind > Earth »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Flabra: Wind > Earth »»'))
 		c= color.Air
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2022,6 +2029,7 @@ function self_command(command)
 	elseif command == 'RuneStone' or command =='RuneEarth' then
 		RuneElement = 'Tellus' --Earth
 		hud_noti_shdw:text(format36('«« Tellus: Earth > Lghtn. »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Tellus: Earth > Lghtn. »»'))
 		c= color.Earth
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2030,6 +2038,7 @@ function self_command(command)
 	elseif command == 'RuneThunder' or command =='RuneLightning' then
 		RuneElement = 'Sulpor' --Lightning
 		hud_noti_shdw:text(format36('«« Sulpor: Lghtn. > Water »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Sulpor: Lghtn. > Water »»'))
 		c= color.Thunder
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2038,6 +2047,7 @@ function self_command(command)
 	elseif command == 'RuneWater' then
 		RuneElement = 'Unda' --Water
 		hud_noti_shdw:text(format36('«« Unda: Water > Fire »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Unda: Water > Fire »»'))
 		c= color.Water
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2046,6 +2056,7 @@ function self_command(command)
 	elseif command == 'RuneLight' then
 		RuneElement = 'Lux' --Light
 		hud_noti_shdw:text(format36('«« Lux: Light > Dark »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Lux: Light > Dark »»'))
 		c= color.Light
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2054,6 +2065,7 @@ function self_command(command)
 	elseif command == 'RuneDark' then
 		RuneElement = 'Tenebrae' --Dark
 		hud_noti_shdw:text(format36('«« Tenebrae: Dark > Light »»'))
+		hud_noti:color(255,255,255)
 		hud_noti:text(format36('«« Tenebrae: Dark > Light »»'))
 		c= color.Dark
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
@@ -2072,9 +2084,11 @@ function self_command(command)
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
-		hud_tp_meter_bg1:show()
-		hud_tp_meter_bg2:show()
-		hud_tp_meter:show()
+		if ShowTPMeter == 'On' then
+			hud_tp_meter_bg1:show()
+			hud_tp_meter_bg2:show()
+			hud_tp_meter:show()
+		end
 		hud_noti_bg:show()
 		hud_debuffs_bg:show()
 		hud_rune01_bg:show()
@@ -4178,7 +4192,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
-	elseif org:find('The effect of') and org:find('is about to wear off.')then
+	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
