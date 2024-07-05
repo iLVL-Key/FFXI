@@ -96,6 +96,9 @@ In general, each HUD has..
 
 <details>
 <summary>BLU</summary>
+ 
+Version 18.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
 
 Version 18.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
@@ -640,6 +643,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
+
 Version 7.0.3
 - Fixed an issue that prevented switching back to the correct gear set in the aftercast stage.
 
@@ -740,6 +746,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
 
 Version 14.0.2
 
@@ -973,6 +982,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
+
 Version 9.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
 
@@ -1133,6 +1145,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
 
 Version 14.0.2
 - Removed Super Jump from AutoSave. This was causing too many issues with receiving cures while in the air. Will still activate High Jump.
@@ -1351,6 +1366,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
+
 Version 12.0.2
 - Fixed an issue where the Avatar HP bar would occasionally extend across the screen for a brief moment when first cast.
 - Fixed a double activation of Avatar's Favor when activated through the AutoFavor option.
@@ -1525,6 +1543,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.1
+- Added the option to turn the mini TP Meter inside the HUD on or off.
 
 Version 8.0.2
 - Removed Super Jump from AutoSave. This was causing too many issues with receiving cures while in the air. Will still activate High Jump.
