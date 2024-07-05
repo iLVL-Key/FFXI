@@ -64,7 +64,7 @@ Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell
 HFTimer			=	'On'	--[On/Off]		Displays a timer for Hundred Fists in echo.
 ISTimer			=	'On'	--[On/Off]		Displays a timer for Inner Strength in echo.
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
-							--				(Town limits this to town gear only)
+							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoSave		=	'On'	--[On/Off]		Attempts to use Chakra, High Jump, then Perfect Counter, in that order, when your HP gets critically low. NOTE: High Jump will not activate while in Mode 5 (Tank).
@@ -72,9 +72,10 @@ AutoSave		=	'On'	--[On/Off]		Attempts to use Chakra, High Jump, then Perfect Cou
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	17		--	Space in pixels between each Line of the HUD
-ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
+FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
+ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --HUD Mode Names
 modeName.Mode1 = 'Multi-Attack'			--Standard set.
@@ -92,7 +93,7 @@ NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to
 NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -328,7 +329,7 @@ sets.modeone = {
 	head="Adhemar Bonnet +1",
 	body="Mpaca's Doublet",
 	hands="Mpaca's Gloves",
-	legs="Bhikku Hose +3",
+	legs="Mpaca's Hose",
 	feet="Mpaca's Boots",
 	neck="Mnk. Nodowa +2",
 	waist="Moonbow Belt +1",
@@ -676,7 +677,7 @@ end
 
 
 
-FileVersion = '7.0.3'
+FileVersion = '7.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1154,9 +1155,11 @@ hud_abil06:bold(true)
 if ShowHUD == 'On' then
 	hud_bg_color:show()
 	hud_bg:show()
-	hud_tp_meter_bg1:show()
-	hud_tp_meter_bg2:show()
-	hud_tp_meter:show()
+	if ShowTPMeter == 'On' then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
 	hud_noti_bg:show()
 	hud_debuffs_bg:show()
 	hud_abil01_bg:show()
@@ -1695,9 +1698,11 @@ function self_command(command)
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
-		hud_tp_meter_bg1:show()
-		hud_tp_meter_bg2:show()
-		hud_tp_meter:show()
+		if ShowTPMeter == 'On' then
+			hud_tp_meter_bg1:show()
+			hud_tp_meter_bg2:show()
+			hud_tp_meter:show()
+		end
 		hud_noti_bg:show()
 		hud_debuffs_bg:show()
 		hud_abil01_bg:show()
@@ -3349,7 +3354,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
-	elseif org:find('The effect of') and org:find('is about to wear off.')then
+	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
