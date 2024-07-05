@@ -102,18 +102,19 @@ CJTimer			=	'p'		--[p/e/Off]		Displays a timer for Cruel Joke in the selected ch
 ALTimer			=	'On'	--[On/Off]		Displays a timer for Azure Lore in echo.
 UWTimer			=	'On'	--[On/Off]		Displays a timer for Unbridled Wisdom in echo.
 BLUAlert		=	'Off'	--[On/Off]		Automatically loads and unloads the BLUAlert Windower addon on file load/unload.
-ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
+ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions.
 							--				(Town limits this to town gear only)
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
-OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill)
+OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	17		--	Space in pixels between each Line of the HUD
-ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
+FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
+ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --HUD Mode Names
 modeName.Mode1 = 'General'
@@ -161,7 +162,7 @@ WCBind			=	'^h'	--Sets the keyboard shortcut you would like to activate the Weap
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
-RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 
@@ -761,7 +762,7 @@ end
 
 
 
-FileVersion = '18.0.1'
+FileVersion = '18.1'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -1294,9 +1295,11 @@ hud_abil06:bold(true)
 if ShowHUD == 'On' then
 	hud_bg_color:show()
 	hud_bg:show()
-	hud_tp_meter_bg1:show()
-	hud_tp_meter_bg2:show()
-	hud_tp_meter:show()
+	if ShowTPMeter == 'On' then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
 	hud_noti_bg:show()
 	hud_debuffs_bg:show()
 	hud_weapons_shdw:show()
@@ -1910,9 +1913,11 @@ function self_command(command)
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
-		hud_tp_meter_bg1:show()
-		hud_tp_meter_bg2:show()
-		hud_tp_meter:show()
+		if ShowTPMeter == 'On' then
+			hud_tp_meter_bg1:show()
+			hud_tp_meter_bg2:show()
+			hud_tp_meter:show()
+		end
 		hud_noti_bg:show()
 		hud_debuffs_bg:show()
 		hud_abil01_bg:show()
@@ -3873,7 +3878,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
-	elseif org:find('The effect of') and org:find('is about to wear off.')then
+	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
