@@ -65,7 +65,7 @@ Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell
 MSTimer			=	'On'	--[On/Off]		Displays a timer for Mighty Strikes in echo.
 BRTimer			=	'On'	--[On/Off]		Displays a timer for Brazen Rush in echo.
 ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
-							--				(Town limits this to town gear only)
+							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoStance		=	'On'	--[On/Off]		Automatically activates and keeps Hasso/Seigan Stances active.
@@ -74,9 +74,10 @@ AutoSave		=	'On'	--[On/Off]		Attempts to use High Jump when your HP gets critica
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	17		--	Space in pixels between each Line of the HUD
-ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
+FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
+ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --HUD Mode Names
 modeName.Mode1 = 'Multi-Attack'			--Standard set.
@@ -93,7 +94,7 @@ NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to
 NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -129,7 +130,7 @@ AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be u
 CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
-RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas			=	'On'	--[On/Off]  Adds commas to damage numbers.
 
@@ -675,8 +676,9 @@ end
 
 
 
-FileVersion = '8.0.2'
+FileVersion = '8.1'
 
+-- Added the option to turn the mini TP Meter inside the HUD on or off.
 -------------------------------------------
 --             AREA MAPPING              --
 -------------------------------------------
@@ -1170,9 +1172,11 @@ hud_abil06:bold(true)
 if ShowHUD == 'On' then
 	hud_bg_color:show()
 	hud_bg:show()
-	hud_tp_meter_bg1:show()
-	hud_tp_meter_bg2:show()
-	hud_tp_meter:show()
+	if ShowTPMeter == 'On' then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
 	hud_noti_bg:show()
 	hud_debuffs_bg:show()
 	hud_abil01_bg:show()
@@ -1765,9 +1769,11 @@ function self_command(command)
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
-		hud_tp_meter_bg1:show()
-		hud_tp_meter_bg2:show()
-		hud_tp_meter:show()
+		if ShowTPMeter == 'On' then
+			hud_tp_meter_bg1:show()
+			hud_tp_meter_bg2:show()
+			hud_tp_meter:show()
+		end
 		hud_noti_bg:show()
 		hud_debuffs_bg:show()
 		hud_abil01_bg:show()
@@ -3471,7 +3477,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
-	elseif org:find('The effect of') and org:find('is about to wear off.')then
+	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
