@@ -984,6 +984,7 @@ Version 11.0
 
 Version 9.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
+- Fixed an issue with Notification text color for Rune selection while sneak and/or invisible is up.
 
 Version 9.0.1
 - Fixed an issue with turning Debuff Notifications off causing an error
