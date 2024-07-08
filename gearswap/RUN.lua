@@ -718,7 +718,7 @@ end
 
 
 
-FileVersion = '9.1'
+FileVersion = '9.1.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2698,6 +2698,9 @@ end)
 windower.register_event('gain buff', function(buff)
 	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds == 'On' then --Aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
+		AMTimer = pre_AMTimer
+		mythicNum = pre_mythicNum
+		primeNum = pre_primeNum
 	elseif (buff == 2 or buff == 19) and not buffactive['charm'] then --If we get slept,
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
