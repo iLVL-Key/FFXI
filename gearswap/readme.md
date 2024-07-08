@@ -90,7 +90,7 @@ In general, each HUD has..
 
 ## Issues
 - I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
-- TThe Rune timers in the RUN file are tracked via an internal timer. In Sortie, this timer continues to run while you are teleporting around, whereas the game pauses the timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
+- The Rune timers in the RUN file are tracked via an internal timer. In Sortie, this timer continues to run while you are teleporting around, whereas the game pauses the timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
 
 ## Changelog
 
