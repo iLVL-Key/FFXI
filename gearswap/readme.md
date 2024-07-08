@@ -982,6 +982,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.1.1
+- Fixed Aftermath not displaying timer or stat bonus numbers correctly.
+
 Version 9.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
 - Fixed an issue with Notification text color for Rune selection while sneak and/or invisible is up.
