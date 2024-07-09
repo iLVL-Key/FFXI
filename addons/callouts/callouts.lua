@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.10'
+_addon.version = '1.10.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -378,20 +378,20 @@ windower.register_event('incoming text',function(org)
 			chat('/%s BLUE Proc: Archery - Sidewinder, Blast Arrow, Arching Arrow, Empyreal Arrow%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('marksmanship') then
 			chat('/%s BLUE Proc: Marksmanship - Slugshot, Blast Shot, Heavy Shot, Detonator%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
-		elseif org:find('sword') then
-			chat('/%s BLUE Proc: Sword - Vorpal Blade, Swift Blade, Savage Blade%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('great sword') then
 			chat('/%s BLUE Proc: Great Sword - Spinning Slash, Ground Strike%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
-		elseif org:find('axe') then
-			chat('/%s BLUE Proc: Axe - Nistral Axe, Decimation%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
+		elseif org:find('sword') then
+			chat('/%s BLUE Proc: Sword - Vorpal Blade, Swift Blade, Savage Blade%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('great axe') then
 			chat('/%s BLUE Proc: Great Axe - Full Break, Steel Cyclone%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
+		elseif org:find('axe') then
+			chat('/%s BLUE Proc: Axe - Mistral Axe, Decimation%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('scythe') then
 			chat('/%s BLUE Proc: Scythe - Cross Reaper, Spiral Hell%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
-		elseif org:find('katana') then
-			chat('/%s BLUE Proc: Katana - Blade: Ten, Blade: Ku%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('great katana') then
 			chat('/%s BLUE Proc: Great Katana - Tachi: Gekko, Tachi: Kasha%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
+		elseif org:find('katana') then
+			chat('/%s BLUE Proc: Katana - Blade: Ten, Blade: Ku%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('hand') then
 			chat('/%s BLUE Proc: Hand-to-Hand - Raging Fists, Spinning Attack, Howling Fist, Dragon Kick, Asuran Fists%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('club') then
