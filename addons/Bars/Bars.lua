@@ -1141,6 +1141,10 @@ function checkForFocusTarget()
 
 			nearby = windower.ffxi.get_mob_by_name(v.name)
 
+			if hide_focus_target_when_target and target and nearby and target.id == nearby.id then
+				nearby = nil
+			end
+
 		end
 	end
 
@@ -1559,7 +1563,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(220,'[Bars] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Commands '..('[optional]'):color(53)..(' <required>'):color(2))
-		windower.add_to_chat(36,'   pos '..('[x] [y]'):color(53)..(' - Update position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
+		windower.add_to_chat(36,'   pos '..('[x y]'):color(53)..(' - Update position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   hp/mp/tp'..(' - Toggle HP/MP/TP bar display setting for current job. ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   width/w '..('[#]'):color(53)..(' - Update the bar width. ['):color(8)..(''..currWidth):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   marker/m '..(' - Toggle the Marker option. ['):color(8)..('%s':format(currMarker and 'ON' or 'OFF')):color(200)..(']'):color(8))
@@ -1568,7 +1572,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(36,'   '..(' - Valid targets: Names (ex: Oseem), IDs (ex: 17809550).'):color(8))
 		windower.add_to_chat(36,'   '..(' - Use quotes to surround names with spaces.'):color(8))
 		windower.add_to_chat(36,'   remove/r '..('<target>'):color(2)..(' - Remove a target from the Auto Focus Target list.'):color(8))
-		windower.add_to_chat(36,'   list/l'..(' - Show the list of Auto Focus targets.'):color(8))
+		windower.add_to_chat(36,'   list/l'..(' - Show the Auto Focus Target list.'):color(8))
 		windower.add_to_chat(36,'   size/s '..('[#]':color(53))..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   bold/b'..(' - Toggle the bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
 
