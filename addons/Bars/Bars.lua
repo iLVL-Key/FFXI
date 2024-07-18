@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '1.0'
+_addon.version = '1.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -470,6 +470,7 @@ local function setPosition()
 			end
 		else
 			pos_mp = player_stats_1
+			pos_tp = player_stats_2
 		end
 	else
 		if not show_bars[job].mp then
