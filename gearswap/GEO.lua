@@ -579,7 +579,7 @@ end
 
 
 
-FileVersion = '14.0.2'
+FileVersion = '14.0.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1670,7 +1670,7 @@ function choose_set()
 		if DTOverride == 'On' then
 			equip(set_combine(sets.rest, sets.dtoverride))
 		else
-			equip(set_combine(sets.refresh, sets.rest))
+			equip(set_combine(sets.idle, sets.rest))
 		end
 	elseif player.status == "Engaged" then
 		if LowHP == true then
