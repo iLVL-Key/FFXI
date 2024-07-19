@@ -412,8 +412,10 @@ Version 15.0
  
 <summary>GEO</summary>
 
-Version 14.0.2
+Version 14.0.3
+- Fixed equipping the Refresh (spell) set instead of Idle when resting.
 
+Version 14.0.2
 - Adjusted Entrust HUD display to track Entrust based on when the Colure Active buff wears off the Entrusted player instead of an adjustable timer option. There is still a timer a little longer than the max Entrust duration possible running as a backup.
 - Removed the EntrustDuration Option.
 - Fixed an issue where the Luopan HP bar would occasionally extend across the screen for a brief moment when first cast.
