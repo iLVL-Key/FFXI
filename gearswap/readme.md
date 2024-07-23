@@ -96,7 +96,10 @@ In general, each HUD has..
 
 <details>
 <summary>BLU</summary>
- 
+
+Version 18.1.1
+- Fixed a few issues with the aliases
+
 Version 18.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
 
@@ -645,6 +648,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.1.1
+- Fixed a few issues with the aliases
+
 Version 7.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
 
@@ -748,6 +754,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.1.1
+- Fixed a few issues with the aliases
 
 Version 14.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
@@ -984,6 +993,12 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.2.1
+- Fixed a few issues with the aliases
+
+Version 9.2
+- Added AutoStance option for sub SAM.
+
 Version 9.1.1
 - Fixed Aftermath not displaying timer or stat bonus numbers correctly.
 
@@ -1151,6 +1166,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.1.1
+- Fixed a few issues with the aliases
 
 Version 14.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
@@ -1549,6 +1567,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.1.1
+- Fixed a few issues with the aliases.
 
 Version 8.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
