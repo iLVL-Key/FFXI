@@ -17,7 +17,7 @@ Place both this file and the sounds folder inside the GearSwap data folder
 This file has 5 modes available to use and customize, though you do not need to use each one.
 
 To switch into each mode, create a macro for each one you are using with the following
-	/console Mode#
+	/console mode#
 With # being 1-5 depending on which ones you are using. See Pro Tips below for more macro suggestions.
 
 --------------------
@@ -102,8 +102,8 @@ CJTimer			=	'p'		--[p/e/Off]		Displays a timer for Cruel Joke in the selected ch
 ALTimer			=	'On'	--[On/Off]		Displays a timer for Azure Lore in echo.
 UWTimer			=	'On'	--[On/Off]		Displays a timer for Unbridled Wisdom in echo.
 BLUAlert		=	'Off'	--[On/Off]		Automatically loads and unloads the BLUAlert Windower addon on file load/unload.
-ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions.
-							--				(Town limits this to town gear only)
+ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
+							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
@@ -133,7 +133,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -2750,13 +2750,11 @@ windower.register_event('prerender', function()
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
 				end
 			end
-		else
-			if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
-				CurrentEquip = EquipMain..EquipSub
-				currentAfterMath = 'None'
-				hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
-				hud_weapons:text(formatWeapons(EquipMain..EquipSub))
-			end
+		elseif currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
+			CurrentEquip = EquipMain..EquipSub
+			currentAfterMath = 'None'
+			hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
+			hud_weapons:text(formatWeapons(EquipMain..EquipSub))
 		end
 	end
 
@@ -4008,6 +4006,9 @@ windower.register_event('action',function(act)
 		end
 	end
 end)
+
+--set the Weapons at load
+send_command('gs c WC')
 
 -------------------------------------------
 --             FILE UNLOAD               --
