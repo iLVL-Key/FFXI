@@ -677,7 +677,7 @@ end
 
 
 
-FileVersion = '7.1.1'
+FileVersion = '7.1.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
