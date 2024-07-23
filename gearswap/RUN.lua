@@ -125,6 +125,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
+AutoStance		=	'On'	--[On/Off]		Automatically activates and keeps Hasso/Seigan Stances active.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -175,6 +176,7 @@ DefaultRune		=	'Tenebrae'	--Starting Rune element for the Rune Activator functio
 ModeBind		=	'^g'		--Sets the keyboard shortcut you would like to cycle between Modes. CTRL+G (^g) is default.
 WCBind			=	'^h'		--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
 								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
+AutoStanceWindow=	60			--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold	=	1000		--Below this number is considered Low HP.
 DangerRepeat	=	10			--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer	=	1800		--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
@@ -718,7 +720,7 @@ end
 
 
 
-FileVersion = '9.1.1'
+FileVersion = '9.2.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -778,12 +780,14 @@ Rune2BGColor = '0 0 0'
 Rune3BGColor = '0 0 0'
 Mode = StartMode --sets the starting mode (selected in the Options)
 NotiLowMPToggle = 'Off' --start with the toggle off for the Low MP Notification so that it can trigger
+Stance = 'None' --Start off without Hasso/Seigan up, this will update when either is activated
 RRRCountdown = RRReminderTimer
 HUDposYLine1 = HUDposY
 Heartbeat = 0 --set to 0 just to start the Heartbeat running
 GreetingDelay = 6 --delay to display greeting and file version info
 Zoning = false --flips automatically to hide the HUD while zoning
 InCS = false --flips automatically to hide the HUD while in a cs
+StanceTimer = 0
 LowHP = false
 Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 announceAlive = false --simple flip when we raise to make sure the AliveDelay command and notification text is only done once
@@ -1396,6 +1400,7 @@ send_command('alias runedark gs c RuneDark')
 send_command('alias runelight gs c RuneLight')
 send_command('alias rune gs c Rune')
 send_command('alias mode gs c Mode') --creates the Mode alias
+send_command('alias wc gs c WC') --creates the Weapon Cycle alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
@@ -1443,6 +1448,36 @@ local function checkProcWeapons(mainSlot, subSlot)
 
 	return false
 
+end
+
+-- Are we using a two handed weapon?
+local function twoHanded()
+
+	local weapon_id = false
+
+	for _, item in pairs(items) do
+
+		if item.name == player.equipment.main then
+			weapon_id = item.id
+			break
+
+		end
+	end
+
+	if weapon_id then
+
+		local skill = items[weapon_id].skill
+
+		if skill == 4 or skill == 6 or skill == 7 or skill == 8 or skill == 10 or skill == 12 then
+			return true
+		else
+			return false
+		end
+
+	else
+		return false
+
+	end
 end
 
 --Color the appropriate Ability/spell recast
@@ -2671,8 +2706,29 @@ function aftercast(spell)
 		end
 	elseif spell.english == 'Odyllic Subterfuge' and OdyTimer == 'On' and not spell.interrupted then
 		send_command('input /echo [Odyllic Subterfuge] 30 seconds;wait 10;input /echo [Odyllic Subterfuge] 20 seconds;wait 10;input /echo [Odyllic Subterfuge] 10 seconds')
+	elseif spell.english == 'Hasso' and not spell.interrupted then
+		Stance = 'Hasso' --Set Stance to Hasso when we use it
+		StanceTimer = 300
+	elseif spell.english == 'Seigan' and not spell.interrupted then
+		Stance = 'Seigan' --Set Stance to Seigan when we use it
+		StanceTimer = 300
 	end
 	choose_set()
+	if AutoStance and twoHanded() and StanceTimer < AutoStanceWindow and player.sub_job == 'SAM' and not buffactive['amnesia'] and not spell.interrupted and not TownZones:contains(world.area) then
+		if Stance == 'Seigan' and Seigan.recast and Seigan.recast == 0 then
+			if spell.type == 'WeaponSkill' then
+				send_command('wait 3;input /ja Seigan <me>')
+			elseif spell.type == 'JobAbility' then
+				send_command('wait .5;input /ja Seigan <me>')
+			end
+		elseif Hasso.recast and Hasso.recast == 0 then
+			if spell.type == 'WeaponSkill' then
+				send_command('wait 3;input /ja Hasso <me>')
+			elseif spell.type == 'JobAbility' then
+				send_command('wait .5;input /ja Hasso <me>')
+			end
+		end
+	end
 	RuneCycleDisplay = false --since we've done another action, we can assume we're done using the RuneCycle notification
 end
 
@@ -2689,6 +2745,13 @@ windower.register_event('status change', function(status)
 		windower.send_command('gs c ShowHUD')
     end
 	choose_set() --run this any time your status changes (engage, disengage, rest)
+	if AutoStance and twoHanded() and StanceTimer < AutoStanceWindow and player.sub_job == 'SAM' and (status == 1 or status == 0) and not buffactive['amnesia'] and not TownZones:contains(world.area) then
+		if Stance == 'Seigan' and Seigan.recast and Seigan.recast == 0 then
+			send_command('input /ja Seigan <me>')
+		elseif Hasso.recast and Hasso.recast == 0 then
+			send_command('input /ja Hasso <me>')
+		end
+	end
 end)
 
 -------------------------------------------
@@ -3354,6 +3417,9 @@ windower.register_event('prerender', function()
 			hud_rune03_shdw:text(formatRunes(Rune3))
 			hud_rune03:text(formatRunes(Rune3))
 			hud_rune03_bg:bg_alpha(0)
+		end
+		if (buffactive['Hasso'] or buffactive['Seigan']) then
+			StanceTimer = StanceTimer - 1
 		end
 		if ReraiseReminder == 'On' then
 			if RRRCountdown > 0 then
@@ -4300,6 +4366,9 @@ windower.register_event('action',function(act)
 	end
 end)
 
+--set the Weapons at load
+send_command('gs c WC')
+
 -------------------------------------------
 --             FILE UNLOAD               --
 -------------------------------------------
@@ -4364,6 +4433,7 @@ function file_unload()
 	send_command('unalias runelight')
 	send_command('unalias rune')
 	send_command('unalias mode')
+	send_command('unalias wc')
 	send_command('unalias hud')
 	send_command('unbind '..ModeBind)
 	send_command('unbind '..WCBind)
