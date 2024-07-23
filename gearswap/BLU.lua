@@ -762,7 +762,7 @@ end
 
 
 
-FileVersion = '18.1.1'
+FileVersion = '18.1.2'
 
 -------------------------------------------
 --            SPELL MAPPING              --
