@@ -720,7 +720,7 @@ end
 
 
 
-FileVersion = '9.2.1'
+FileVersion = '9.2.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -4367,7 +4367,7 @@ windower.register_event('action',function(act)
 end)
 
 --set the Weapons at load
-send_command('gs c WC')
+send_command('wait 1;gs c WC')
 
 -------------------------------------------
 --             FILE UNLOAD               --
