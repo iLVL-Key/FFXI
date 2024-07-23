@@ -677,7 +677,7 @@ end
 
 
 
-FileVersion = '7.1'
+FileVersion = '7.1.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1195,8 +1195,8 @@ end
 -------------------------------------------
 
 send_command('alias mode gs c Mode') --creates the Mode alias
+send_command('alias wc gs c WC') --creates the Weapon Cycle alias
 send_command('alias hud gs c HUD') --creates the HUD alias
-send_command('alias dt gs c DT') --creates the DT Override alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
 
@@ -3492,8 +3492,8 @@ function file_unload()
 	hud_abil05:destroy()
 	hud_abil06:destroy()
 	send_command('unalias mode')
+	send_command('unalias wc')
 	send_command('unalias hud')
-	send_command('unalias dt')
 	send_command('unbind '..ModeBind)
 	send_command('unbind '..WCBind)
 
