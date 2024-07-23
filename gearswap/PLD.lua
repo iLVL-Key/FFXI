@@ -480,13 +480,17 @@ sets.enmityspells = set_combine(sets.enmity, {
 sets.enmityspellssird = set_combine(sets.enmity, {
 	ammo="Staunch Tathlum +1",		--11 SIRD
 	head="Souv. Schaller +1",		--20 SIRD
-	--body="Chev. Cuirass +3",		--20 SIRD
-	body="Rev. Surcoat +3",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
 	legs="Founder's Hose",			--30 SIRD
-	feet="Odyssean Greaves",		--20 SIRD
+	feet="Souveran Schuhs +1",
 	neck="Moonlight Necklace",		--15 SIRD
-	waist="Creed Baudrier",
-	back="Moonlight Cape",
+	waist="Plat. Mog. Belt",
+	left_ear="Knightly Earring",	--9 SIRD
+	right_ear="Odnowa Earring +1",
+	left_ring="Moonlight Ring",
+	right_ring="Defending Ring",
+	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
 })
 
 -- Healing (Cure Potency, HP+, Enmity)
@@ -773,7 +777,7 @@ end
 
 
 
-FileVersion = '14.1'
+FileVersion = '14.1.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1297,6 +1301,7 @@ end
 -------------------------------------------
 
 send_command('alias mode gs c Mode') --creates the Mode alias
+send_command('alias wc gs c WC') --creates the Weapon Cycle alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
@@ -3715,6 +3720,9 @@ windower.register_event('action',function(act)
 	end
 end)
 
+--set the Weapons at load
+send_command('gs c WC')
+
 -------------------------------------------
 --             FILE UNLOAD               --
 -------------------------------------------
@@ -3756,6 +3764,7 @@ function file_unload()
 	hud_abil05:destroy()
 	hud_abil06:destroy()
 	send_command('unalias mode')
+	send_command('unalias wc')
 	send_command('unalias hud')
 	send_command('unbind '..ModeBind)
 	send_command('unbind '..WCBind)
