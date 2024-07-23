@@ -762,7 +762,7 @@ end
 
 
 
-FileVersion = '18.1'
+FileVersion = '18.1.1'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -1316,11 +1316,13 @@ end
 --            CUSTOM ALIASES             --
 -------------------------------------------
 
-send_command('alias Mode1 gs c Mode1') --creates Mode 1 alias
-send_command('alias Mode2 gs c Mode2') --creates Mode 2 alias
-send_command('alias Mode3 gs c Mode3') --creates Mode 3 alias
-send_command('alias Mode4 gs c Mode4') --creates Mode 4 alias
-send_command('alias Mode5 gs c Mode5') --creates Mode 5 alias
+send_command('alias mode1 gs c Mode1') --creates Mode 1 alias
+send_command('alias mode2 gs c Mode2') --creates Mode 2 alias
+send_command('alias mode3 gs c Mode3') --creates Mode 3 alias
+send_command('alias mode4 gs c Mode4') --creates Mode 4 alias
+send_command('alias mode5 gs c Mode5') --creates Mode 5 alias
+send_command('alias dt gs c DT') --creates the DT Override alias
+send_command('alias wc gs c WC') --creates the Weapon Cycle alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
@@ -4052,11 +4054,13 @@ function file_unload()
 	hud_abil04:destroy()
 	hud_abil05:destroy()
 	hud_abil06:destroy()
-	send_command('unalias Mode1')
-	send_command('unalias Mode2')
-	send_command('unalias Mode3')
-	send_command('unalias Mode4')
-	send_command('unalias Mode5')
+	send_command('unalias mode1')
+	send_command('unalias mode2')
+	send_command('unalias mode3')
+	send_command('unalias mode4')
+	send_command('unalias mode5')
+	send_command('unalias dt')
+	send_command('unalias wc')
 	send_command('unalias hud')
 	send_command('unbind '..DTBind)
 	send_command('unbind '..WCBind)
