@@ -676,9 +676,8 @@ end
 
 
 
-FileVersion = '8.1'
+FileVersion = '8.1.1'
 
--- Added the option to turn the mini TP Meter inside the HUD on or off.
 -------------------------------------------
 --             AREA MAPPING              --
 -------------------------------------------
@@ -1212,8 +1211,8 @@ end
 -------------------------------------------
 
 send_command('alias mode gs c Mode') --creates the Mode alias
-send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('alias wc gs c WC') --creates the Weapon Cycle alias
+send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
 
@@ -3574,6 +3573,9 @@ windower.register_event('action',function(act)
 	end
 end)
 
+--set the Weapons at load
+send_command('gs c WC')
+
 -------------------------------------------
 --             FILE UNLOAD               --
 -------------------------------------------
@@ -3615,8 +3617,8 @@ function file_unload()
 	hud_abil05:destroy()
 	hud_abil06:destroy()
 	send_command('unalias mode')
-	send_command('unalias hud')
 	send_command('unalias wc')
+	send_command('unalias hud')
 	send_command('unbind '..ModeBind)
 	send_command('unbind '..WCBind)
 
