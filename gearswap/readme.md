@@ -97,6 +97,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.1.2
+- Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
+
 Version 18.1.1
 - Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
 - Fixed a few issues with the aliases.
@@ -649,6 +652,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.1.2
+- Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
+
 Version 7.1.1
 - Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
 - Fixed a few issues with the aliases.
@@ -756,6 +762,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.1.2
+- Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
 
 Version 14.1.1
 - Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
@@ -996,6 +1005,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.2.2
+- Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
+
 Version 9.2.1
 - Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
 - Fixed a few issues with the aliases.
@@ -1170,6 +1182,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.1.2
+- Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
 
 Version 14.1.1
 - Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
@@ -1572,6 +1587,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.1.2
+- Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
 
 Version 8.1.1
 - Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
