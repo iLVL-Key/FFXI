@@ -3451,6 +3451,9 @@ windower.register_event('action',function(act)
 	end
 end)
 
+--set the Weapons at load
+send_command('gs c WC')
+
 -------------------------------------------
 --             FILE UNLOAD               --
 -------------------------------------------
