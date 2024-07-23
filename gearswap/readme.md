@@ -98,7 +98,8 @@ In general, each HUD has..
 <summary>BLU</summary>
 
 Version 18.1.1
-- Fixed a few issues with the aliases
+- Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
+- Fixed a few issues with the aliases.
 
 Version 18.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
@@ -649,7 +650,8 @@ Version 11.0.0
 <summary>MNK</summary>
 
 Version 7.1.1
-- Fixed a few issues with the aliases
+- Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
+- Fixed a few issues with the aliases.
 
 Version 7.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
@@ -756,7 +758,8 @@ Version 3.0
 <summary>PLD</summary>
 
 Version 14.1.1
-- Fixed a few issues with the aliases
+- Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
+- Fixed a few issues with the aliases.
 
 Version 14.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
@@ -994,7 +997,8 @@ Version 11.0
 <summary>RUN</summary>
 
 Version 9.2.1
-- Fixed a few issues with the aliases
+- Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
+- Fixed a few issues with the aliases.
 
 Version 9.2
 - Added AutoStance option for sub SAM.
@@ -1168,7 +1172,8 @@ Version 6.0.0
 <summary>SAM</summary>
 
 Version 14.1.1
-- Fixed a few issues with the aliases
+- Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
+- Fixed a few issues with the aliases.
 
 Version 14.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
@@ -1569,6 +1574,7 @@ Version 8.0
 <summary>WAR</summary>
 
 Version 8.1.1
+- Adjusted the Weapon Cycle to load the first Main/Sub pair on file load.
 - Fixed a few issues with the aliases.
 
 Version 8.1
