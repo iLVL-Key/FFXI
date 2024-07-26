@@ -419,6 +419,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 14.1
+- Added support for the Impact spell via Twilight/Crepuscular Cloak.
+
 Version 14.0.3
 - Fixed equipping the Refresh (spell) set instead of Idle when resting.
 
