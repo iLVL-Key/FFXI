@@ -53,8 +53,8 @@ SubSCHPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
 BolTimer		=	'On'	--[On/Off]		Displays a timer for Bolster in echo.
 WCTimer			=	'On'	--[On/Off]		Displays a timer for Widened Compass in echo.
-ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions.
-							--				(Town limits this to town gear only)
+ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
+							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts. 
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
@@ -64,9 +64,9 @@ AutoEntrust		=	'On'	--[On/Off]		Automatically uses Entrust when you cast an Indi
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	17		--	Space in pixels between each Line of the HUD
-ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD
+FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
 
 --  General Notifications  --
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
@@ -78,7 +78,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
@@ -106,7 +106,7 @@ DTBind			=	'^d'	--Sets the keyboard shortcut you would like to activate the Dama
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
 DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
-RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
+RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 
@@ -235,7 +235,7 @@ function get_sets()
 -- Used when you do NOT have a Luopan bubble out.
 sets.idle = {
 	main="Idris",
-	sub="Ammurapi Shield",
+	sub="Genmei Shield",
 	range="Dunna",
 	head="Befouled Crown",
 	body="Azimuth Coat +3",
@@ -256,7 +256,7 @@ sets.idle = {
 -- Combines with Idle set, only necessary to set the slots with specific desired stats
 sets.luopan = set_combine(sets.idle, {
 	main="Idris",
-	sub="Ammurapi Shield",
+	sub="Genmei Shield",
 	range="Dunna",
 	head="Azimuth Hood +3",
 	hands="Geo. Mitaines +3",
@@ -380,7 +380,7 @@ sets.fastcast = {
 -- NOTE: You only need a combined skill of 900 between Geomancy skill and Handbell skill to cap your potency, anything over 900 is wasted)
 sets.geomancy = {
 	main="Idris",
-	sub="Ammurapi Shield",
+	sub="Genmei Shield",
 	range="Dunna",
 	head="Azimuth Hood +3",
 	body="Bagua Tunic",
@@ -496,6 +496,12 @@ sets.cursna = {
 	ring2="Haoma's Ring",
 }
 
+-- Impact (Twilight/Crepuscular Cloak)
+sets.impact = {
+	head=empty,
+	body="Twilight Cloak",
+}
+
 -- Holy Water (Holy Water+)
 sets.hwater = {
 	neck="Nicander's Necklace",
@@ -538,6 +544,7 @@ sets.lifecycle = {
 -- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
 sets.town = set_combine(sets.idle, {
 	main="Idris",
+	sub="Ammurapi Shield",
 })
 
 -- Adoulin Town Gear
@@ -579,7 +586,7 @@ end
 
 
 
-FileVersion = '14.0.3'
+FileVersion = '14.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1506,7 +1513,6 @@ function self_command(command)
 		hud_abil05_bg:show()
 		hud_abil06_bg:show()
 		hud_noti_shdw:show()
-		hud_noti_shdw:show()
 		hud_debuffs_shdw:show()
 		hud_indi_label_shdw:show()
 		hud_geo_label_shdw:show()
@@ -1545,7 +1551,6 @@ function self_command(command)
 		hud_abil04_bg:hide()
 		hud_abil05_bg:hide()
 		hud_abil06_bg:hide()
-		hud_noti_shdw:hide()
 		hud_noti_shdw:hide()
 		hud_debuffs_shdw:hide()
 		hud_indi_label_shdw:hide()
@@ -1898,6 +1903,8 @@ function precast(spell)
 		send_command('cancel 71')
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
 		equip(sets.Elemental)
+	elseif spell.english == 'Impact' then
+		equip(set_combine(sets.fastcast, sets.impact))
 	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 	end
@@ -1910,6 +1917,8 @@ end
 function midcast(spell)
 	if spell.type == 'Geomancy' then
 		equip(sets.geomancy)
+	elseif spell.english == 'Impact' then
+		equip(set_combine(sets.magicaccuracy, sets.impact))
 	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
 		equip(sets.elemental)
 	elseif spell.skill == 'Enfeebling Magic' then
@@ -3110,7 +3119,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
-	elseif org:find('The effect of') and org:find('is about to wear off.')then
+	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
 		end
