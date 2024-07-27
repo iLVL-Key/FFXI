@@ -1008,6 +1008,11 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.2.3
+- Fixed an issue where the background color of the Notifications area of the HUD would get stuck under certain conditions.
+- Fixed an issue where the Rune area of the HUD would reset the Runes to None even if an ability that would consume all Runes was interrupted.
+- Fixed the background color object for the Rune area of the HUD not lining up correctly.
+
 Version 9.2.2
 - Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
 
