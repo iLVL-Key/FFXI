@@ -720,7 +720,7 @@ end
 
 
 
-FileVersion = '9.2.2'
+FileVersion = '9.2.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -728,23 +728,23 @@ FileVersion = '9.2.2'
 
 AdoulinZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
-    }
+	}
 
 BastokZones = S{
 	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
-    }
+	}
 
 SandyZones = S{
 	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
-    }
+	}
 
 WindyZones = S{
 	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
-    }
+	}
 
 TownZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
-    }
+	}
 
 -------------------------------------------
 --              FILE LOAD                --
@@ -993,9 +993,9 @@ hud_debuffs_bg:bold(true)
 local hud_rune01_bg = texts.new('                        ')
 hud_rune01_bg:font("Consolas")
 hud_rune01_bg:size(FontSize)
-hud_rune01_bg:pad(-0.5)
+hud_rune01_bg:pad(-1)
 hud_rune01_bg:bg_alpha(0)
-hud_rune01_bg:pos(HUDposXColumn1,HUDposYLine3)
+hud_rune01_bg:pos(HUDposXColumn1+.5,HUDposYLine3)
 hud_rune01_bg:draggable(false)
 hud_rune01_bg:bold(true)
 
@@ -1003,9 +1003,9 @@ hud_rune01_bg:bold(true)
 local hud_rune02_bg = texts.new('                        ')
 hud_rune02_bg:font("Consolas")
 hud_rune02_bg:size(FontSize)
-hud_rune02_bg:pad(-0.5)
+hud_rune02_bg:pad(-1)
 hud_rune02_bg:bg_alpha(0)
-hud_rune02_bg:pos(HUDposXColumn3+.5,HUDposYLine3)
+hud_rune02_bg:pos(HUDposXColumn3+1,HUDposYLine3)
 hud_rune02_bg:draggable(false)
 hud_rune02_bg:bold(true)
 
@@ -1013,7 +1013,7 @@ hud_rune02_bg:bold(true)
 local hud_rune03_bg = texts.new('                        ')
 hud_rune03_bg:font("Consolas")
 hud_rune03_bg:size(FontSize)
-hud_rune03_bg:pad(-0.5)
+hud_rune03_bg:pad(-1)
 hud_rune03_bg:bg_alpha(0)
 hud_rune03_bg:pos(HUDposXColumn5+1,HUDposYLine3)
 hud_rune03_bg:draggable(false)
@@ -2396,6 +2396,7 @@ function choose_set()
 			end
 		end
 	end
+	hud_noti_bg:bg_alpha(150)
 end
 
 -------------------------------------------
@@ -2694,7 +2695,7 @@ function aftercast(spell)
 		Rune3Timer = 0
 		Rune1BGColor = Rune2BGColor
 		Rune2BGColor = Rune3BGColor
-	elseif spell.english == 'Rayke' or spell.english == 'Gambit' or spell.english == 'Lunge' and player.status == "Engaged" and not spell.interrupted then
+	elseif (spell.english == 'Rayke' or spell.english == 'Gambit' or spell.english == 'Lunge') and player.status == "Engaged" and not spell.interrupted then
 		Rune1Timer = 0
 		Rune2Timer = 0
 		Rune3Timer = 0
