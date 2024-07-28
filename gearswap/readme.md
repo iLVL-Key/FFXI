@@ -97,6 +97,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
+
 Version 18.1.2
 - Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
 
@@ -419,6 +422,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 14.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
+
 Version 14.1
 - Added support for the Impact spell via Twilight/Crepuscular Cloak.
 
@@ -655,6 +661,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
+
 Version 7.1.2
 - Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
 
@@ -765,6 +774,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
 Version 14.1.2
 - Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
@@ -1008,6 +1020,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.3
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
+
 Version 9.2.3
 - Fixed an issue where the background color of the Notifications area of the HUD would get stuck under certain conditions.
 - Fixed an issue where the Rune area of the HUD would reset the Runes to None even if an ability that would consume all Runes was interrupted.
@@ -1190,6 +1205,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
 Version 14.1.2
 - Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
@@ -1418,6 +1436,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
+
 Version 12.1
 - Added the option to turn the mini TP Meter inside the HUD on or off.
 
@@ -1595,6 +1616,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.2
+- Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
 Version 8.1.2
 - Fixed an issue with Weapon Cycle not equipping initial Main/Sub pairs correctly when switching from another job.
