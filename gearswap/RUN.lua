@@ -720,7 +720,7 @@ end
 
 
 
-FileVersion = '9.2.3'
+FileVersion = '9.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1602,30 +1602,38 @@ local function formatAbils(input,input_sh)
 
 		if input == ability then
 
-			-- Maximum length of output without brackets
-			local maxLength = 10
-
-			-- Determine length to fit the recast timer
-			local truncatedLength =  maxLength
-			if ab[ability].recast and ab[ability].recast > 0 then
-				if ab[ability].recast < 10 then
-					truncatedLength = maxLength - 2
-				elseif ab[ability].recast < 61 then
-					truncatedLength = maxLength - 3
-				end
-			end
+			local recast = ab[ability].recast or 0
 
 			-- Are we using the ability/spell name itself, or a shorthand supplied in the Options?
 			local startingString = input_sh == '' and input or input_sh
 
-			-- Truncate if too long
-			local truncatedString = string.sub(startingString, 1, truncatedLength)
+			-- Maximum length of output without brackets
+			local maxLength = 10
 
-			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			-- Function to format the output string
+			local function formatOutputString(baseString, truncateLength)
+				local truncatedString = string.sub(baseString, 1, truncateLength)
+				return truncatedString
+			end
 
 			-- Get our output before we apply the brackets below
-			local formattedString = ((ab[ability].recast and ab[ability].recast < 61 and ab[ability].recast > 0) and truncatedString..':'..ab[ability].recast or truncatedString)
+			local formattedString = ''
+			if recast > 3600 then
+				local hr = math.floor(recast / 3600)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
+			elseif recast > 600 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 4)..':'..min..'m'
+			elseif recast > 60 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..min..'m'
+			elseif recast > 9 then
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..recast
+			elseif recast > 0 then
+				formattedString = formatOutputString(startingString, maxLength - 2)..':'..recast
+			else
+				formattedString = string.sub(startingString, 1, maxLength)
+			end
 
 			-- Determine padding needed to center the output
 			local paddingTotalLength = maxLength - #formattedString
@@ -1633,6 +1641,9 @@ local function formatAbils(input,input_sh)
 			local leftPadding = string.rep(" ", leftPaddingLength)
 			local rightPaddingLength = paddingTotalLength - leftPaddingLength
 			local rightPadding = string.rep(" ", rightPaddingLength)				
+
+			-- Determine recast coloring for brackets
+			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
 			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
@@ -1947,6 +1958,7 @@ function self_command(command)
 		hud_noti_shdw:text('«« Radialens Has Worn Off »»')
 		hud_noti:text('«« Radialens Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif command == 'NotiLowMPToggle' then
 		NotiLowMPToggle = 'Off'
@@ -2396,7 +2408,7 @@ function choose_set()
 			end
 		end
 	end
-	hud_noti_bg:bg_alpha(150)
+	hud_noti_bg:bg_alpha(0)
 end
 
 -------------------------------------------
@@ -2452,6 +2464,7 @@ function precast(spell)
 			hud_noti_shdw:text('«« Not Enough TP »»')
 			hud_noti:text('«« Not Enough TP »»')
 			hud_noti:color(255,50,50)
+			hud_noti_bg:bg_alpha(0)
 			NotiCountdown = NotiDelay
 		elseif ((spell.skill == 'Marksmanship' or spell.skill == 'Archery') and spell.target.distance >= (spell.target.model_size + 23)) or ((spell.target.distance >= (spell.target.model_size + 3)) and not (spell.english == 'Starlight' or spell.english == 'Moonlight')) then
 			if AlertSounds == 'On' then
@@ -2460,6 +2473,7 @@ function precast(spell)
 			hud_noti_shdw:text('«« Too Far »»')
 			hud_noti:text('«« Too Far »»')
 			hud_noti:color(255,50,50)
+			hud_noti_bg:bg_alpha(0)
 			NotiCountdown = NotiDelay
 			cancel_spell()
 			return
@@ -2802,6 +2816,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Food Has Worn Off »»')
 		hud_noti:text('«« Food Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
@@ -2810,6 +2825,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Reraise Has Worn Off »»')
 		hud_noti:text('«« Reraise Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
 		if AlertSounds == 'On' then
@@ -2818,6 +2834,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Vorseal Has Worn Off »»')
 		hud_noti:text('«« Vorseal Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
@@ -2826,6 +2843,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Signet Has Worn Off »»')
 		hud_noti:text('«« Signet Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
@@ -2834,6 +2852,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Sanction Has Worn Off »»')
 		hud_noti:text('«« Sanction Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
@@ -2842,6 +2861,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Sigil Has Worn Off »»')
 		hud_noti:text('«« Sigil Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
@@ -2850,6 +2870,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Ionis Has Worn Off »»')
 		hud_noti:text('«« Ionis Has Worn Off »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 1 and Alive == true then --Weakness
 		if AlertSounds == 'On' then
@@ -2858,6 +2879,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti_shdw:text('«« Weakness Has Worn Off »»')
 		hud_noti:text('«« Weakness Has Worn Off »»')
 		hud_noti:color(75,255,75)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	elseif buff == 2 or buff == 19 or buff == 7 or buff == 10 or buff == 28 then --lose sleep, petrify, stun, or terror run choose_set since we changed gear for those
 		choose_set()
@@ -2887,6 +2909,7 @@ windower.register_event('tp change',function()
 		hud_noti_shdw:text('«« 3000 TP »»')
 		hud_noti:text('«« 3000 TP »»')
 		hud_noti:color(c.r,c.g,c.b)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 	end
 
@@ -3277,6 +3300,7 @@ windower.register_event('prerender', function()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		hud_noti_bg:bg_alpha(0)
 		NotiCountdown = NotiDelay
 		send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
 	end
@@ -3287,6 +3311,7 @@ windower.register_event('prerender', function()
 			hud_noti_shdw:text('Status: Dead X_x')
 			hud_noti:text('Status: Dead X_x')
 			hud_noti:color(255,50,50)
+			hud_noti_bg:bg_alpha(0)
 			NotiCountdown = -1
 			Alive = false
 			announceAlive = true
@@ -3302,6 +3327,7 @@ windower.register_event('prerender', function()
 			hud_noti_shdw:text('Status: Alive ^_^')
 			hud_noti:text('Status: Alive ^_^')
 			hud_noti:color(75,255,75)
+			hud_noti_bg:bg_alpha(0)
 			NotiCountdown = -1
 			announceAlive = false
 			send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
@@ -3433,6 +3459,7 @@ windower.register_event('prerender', function()
 					hud_noti_shdw:text('«« No Reraise »»')
 					hud_noti:text('«« No Reraise »»')
 					hud_noti:color(255,50,50)
+					hud_noti_bg:bg_alpha(0)
 					NotiCountdown = NotiDelay
 				end
 				RRRCountdown = RRReminderTimer --start the timer back up
@@ -3448,6 +3475,7 @@ windower.register_event('prerender', function()
 			hud_noti_shdw:text('«« LOW HP »»')
 			hud_noti:text('«« LOW HP »»')
 			hud_noti:color(255,50,50)
+			hud_noti_bg:bg_alpha(0)
 			flash('Noti')	
 			NotiCountdown = -1
 		end
@@ -4261,6 +4289,7 @@ windower.register_event('incoming text',function(org)
 			hud_noti_shdw:text('«« Trade Request »»')
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
+			hud_noti_bg:bg_alpha(0)
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
@@ -4270,10 +4299,12 @@ windower.register_event('incoming text',function(org)
 			hud_noti_shdw:text('«« Sneak Wearing »»')
 			hud_noti:text('«« Sneak Wearing »»')
 			hud_noti:color(255,100,100)
+			hud_noti_bg:bg_alpha(0)
 		elseif NotiInvis == 'On' and org:find('Invisible') then
 			hud_noti_shdw:text('«« Invisible Wearing »»')
 			hud_noti:text('«« Invisible Wearing »»')
 			hud_noti:color(255,100,100)
+			hud_noti_bg:bg_alpha(0)
 		end
 	elseif org:find('Lost key item') and org:find('Radialens') then
 		send_command('gs c Radialens')
@@ -4285,10 +4316,12 @@ windower.register_event('incoming text',function(org)
 			hud_noti_shdw:text('«« Party Invite »»')
 			hud_noti:text('«« Party Invite »»')
 			hud_noti:color(255,255,50)
+			hud_noti_bg:bg_alpha(0)
 		elseif NotiInvite == 'On' and org:find('alliance') then
 			hud_noti_shdw:text('«« Alliance Invite »»')
 			hud_noti:text('«« Alliance Invite »»')
 			hud_noti:color(255,255,50)
+			hud_noti_bg:bg_alpha(0)
 		end
 		NotiCountdown = 180
 	elseif org:find('Your visitant status will wear off in') then
@@ -4300,6 +4333,7 @@ windower.register_event('incoming text',function(org)
 				hud_noti_shdw:text('«« 15 Minutes Remaining »»')
 				hud_noti:text('«« 15 Minutes Remaining »»')
 				hud_noti:color(255,255,50)
+				hud_noti_bg:bg_alpha(0)
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
@@ -4309,6 +4343,7 @@ windower.register_event('incoming text',function(org)
 				hud_noti_shdw:text('«« 10 Minutes Remaining »»')
 				hud_noti:text('«« 10 Minutes Remaining »»')
 				hud_noti:color(255,255,50)
+				hud_noti_bg:bg_alpha(0)
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
@@ -4318,6 +4353,7 @@ windower.register_event('incoming text',function(org)
 				hud_noti_shdw:text('«« 5 Minutes Remaining »»')
 				hud_noti:text('«« 5 Minutes Remaining »»')
 				hud_noti:color(255,255,50)
+				hud_noti_bg:bg_alpha(0)
 			end
 		end
 		NotiCountdown = NotiDelay
@@ -4340,21 +4376,25 @@ windower.register_event('action',function(act)
 				hud_noti_shdw:text('«« '..weaponskills[act.param].english..' Missed »»')
 				hud_noti:text('«« '..weaponskills[act.param].english..' Missed »»')
 				hud_noti:color(0,255,255)
+				hud_noti_bg:bg_alpha(0)
 			--Weapon Skill gets blinked:
 			elseif act.targets[1].actions[1].message == 31 then
 				hud_noti_shdw:text('«« '..weaponskills[act.param].english..' Blinked »»')
 				hud_noti:text('«« '..weaponskills[act.param].english..' Blinked »»')
 				hud_noti:color(0,255,255)
+				hud_noti_bg:bg_alpha(0)
 			--Weapon Skill lands and creates a Skillchain:
 			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect == true then
 				hud_noti_shdw:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')')
 				hud_noti:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')')
 				hud_noti:color(0,255,255)
+				hud_noti_bg:bg_alpha(0)
 			--Weapon Skill lands but no Skillchain:
 			elseif act.targets[1].actions[1].message == 185 then
 				hud_noti_shdw:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 				hud_noti:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 				hud_noti:color(0,255,255)
+				hud_noti_bg:bg_alpha(0)
 			end
 			NotiCountdown = -1
 		--Lunge Magic Bursts:
@@ -4362,6 +4402,7 @@ windower.register_event('action',function(act)
 			hud_noti_shdw:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 			hud_noti:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 			hud_noti:color(0,255,255)
+			hud_noti_bg:bg_alpha(0)
 			NotiCountdown = -1
 		end
 	end
