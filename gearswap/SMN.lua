@@ -275,7 +275,7 @@ sets.idle = {
 	neck="Smn. Collar +2",
 	waist="Regal Belt",
 	left_ear="Lugalbanda Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
@@ -296,7 +296,7 @@ sets.avatar = set_combine(sets.idle, {
 	neck="Smn. Collar +2",
 	waist="Incarnation Sash",
 	left_ear="Lugalbanda Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
@@ -405,7 +405,7 @@ sets.bpdelay = {
 	neck="Incanter's Torque",		--Skill +10
 	waist="Kobo Obi",				--Skill +8
 	left_ear="Lodurr Earring",		--Skill +10
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",	--Skill +8
 	right_ring="Stikini Ring +1",	--Skill +8
 	back="Conveyance Cape",			--Skill +13
@@ -424,7 +424,7 @@ sets.bpragephysical = {
 	neck="Smn. Collar +2",
 	waist="Incarnation Sash",
 	left_ear="Lugalbanda Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Varar Ring +1",
 	right_ring="Varar Ring +1",
 	back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
@@ -443,7 +443,7 @@ sets.bpragemagical = {
 	neck="Smn. Collar +2",
 	waist="Regal Belt",
 	left_ear="Lugalbanda Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Varar Ring +1",
 	right_ring="Varar Ring +1",
 	back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
@@ -462,7 +462,7 @@ sets.bpragehybrid = {
 	neck="Smn. Collar +2",
 	waist="Regal Belt",
 	left_ear="Lugalbanda Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Varar Ring +1",
 	right_ring="Varar Ring +1",
 	back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
@@ -481,7 +481,7 @@ sets.bpwardbuff = {
 	neck="Incanter's Torque",
 	waist="Kobo Obi",
 	left_ear="Lodurr Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back="Conveyance Cape",
@@ -500,7 +500,7 @@ sets.bpwarddebuff = {
 	neck="Incanter's Torque",
 	waist="Kobo Obi",
 	left_ear="Lodurr Earring",
-	right_ear="Beck. Earring +1",
+	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
@@ -622,7 +622,7 @@ end
 
 
 
-FileVersion = '12.1'
+FileVersion = '12.2'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -630,11 +630,11 @@ FileVersion = '12.1'
 
 Avatars = S{
 	'Carbuncle','Cait Sith','Ifrit','Shiva','Garuda','Titan','Ramuh','Leviathan','Fenrir','Diabolos','Siren','Atomos','Alexander','Odin'
-    }
+	}
 
 Spirits = S{
 	'Light Spirit','Fire Spirit','Ice Spirit','Air Spirit','Earth Spirit','Thunder Spirit','Water Spirit','Dark Spirit'
-    }
+	}
 
 -------------------------------------------
 --          BLOOD PACT MAPPING           --
@@ -642,7 +642,7 @@ Spirits = S{
 
 BPRagePhysical = S{
 	'Punch','Rock Throw','Barracuda Dive','Claw','Welt','Axe Kick','Shock Strike','Camisado','Regal Scratch','Poison Nails','Moonlit Charge','Crescent Fang','Rock Buster','Roundhouse','Tail Whip','Double Punch','Megalith Throw','Double Slap','Eclipse Bite','Mountain Buster','Spinning Dive','Predator Claws','Rush','Chaotic Strike','Volt Strike','Hysteric Assault','Crag Throw','Blindside','Regal Gash'
-    }
+	}
 
 BPRageMagical = S{
 	'Inferno','Earthen Fury','Tidal Wave','Aerial Blast','Clarsach Call','Diamond Dust','Judgment Bolt','Searing Light','Howling Moon','Ruinous Omen','Fire II','Stone II','Water II','Aero II','Blizzard II','Thunder II','Thunderspark','Meteorite','Fire IV','Stone IV','Water IV','Aero IV','Blizzard IV','Thunder IV','Sonic Buffet','Nether Blast','Zantetsuken','Meteor Strike','Geocrush','Grand Fall','Wind Blade','Tornado II','Heavenly Strike','Thunderstorm','Level ? Holy','Holy Mist','Lunar Bay','Night Terror','Conflag Strike','Impact'
@@ -650,15 +650,15 @@ BPRageMagical = S{
 
 BPRageHybrid = S{
 	'Burning Strike','Flaming Crush'
-    }
+	}
 
 BPWardBuff = S{
 	'Altana\'s Favor','Healing Ruby','Raise II','Shining Ruby','Aerial Armor','Frost Armor','Reraise II','Rolling Thunder','Katabatic Blades','Whispering Wind','Crimson Howl','Lightning Armor','Chinook','Ecliptic Growl','Glittering Ruby','Earthen Ward','Spring Water','Hastega','Noctoshield','Ecliptic Howl','Dream Shroud','Healing Ruby II','Perfect Defense','Earthen Armor','Fleet Wind','Inferno Howl','Wind\'s Blessing','Soothing Ruby','Heavenward Howl','Pacifying Ruby','Hastega II','Soothing Current','Crystal Blessing'
-    }
+	}
 
 BPWardDebuff = S{
 	'Lunatic Voice','Somnolence','Lunar Cry','Mewing Lullaby','Nightmare','Lunar Roar','Slowga','Ultimate Terror','Sleepga','Bitter Elegy','Eerie Eye','Tidal Roar','Diamond Storm','Shock Squall','Pavor Nocturnus'
-    }
+	}
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -666,23 +666,23 @@ BPWardDebuff = S{
 
 AdoulinZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
-    }
+	}
 
 BastokZones = S{
 	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
-    }
+	}
 
 SandyZones = S{
 	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
-    }
+	}
 
 WindyZones = S{
 	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
-    }
+	}
 
 TownZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
-    }
+	}
 
 -------------------------------------------
 --              FILE LOAD                --
@@ -1148,8 +1148,8 @@ end
 --            CUSTOM ALIASES             --
 -------------------------------------------
 
-send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('alias dt gs c DT') --creates the DT Override and alias
+send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('alias siphon gs c Siphon') --creates the Elemental Siphon alias
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 
@@ -1275,18 +1275,7 @@ local function formatAbils(input,input_sh)
 
 		if input == ability then
 
-			-- Maximum length of output without brackets
-			local maxLength = 10
-
-			-- Determine length to fit the recast timer
-			local truncatedLength =  maxLength
-			if ab[ability].recast and ab[ability].recast > 0 then
-				if ab[ability].recast < 10 then
-					truncatedLength = maxLength - 2
-				elseif ab[ability].recast < 61 then
-					truncatedLength = maxLength - 3
-				end
-			end
+			local recast = ab[ability].recast or 0
 
 			-- Are we using the ability/spell name itself, or a shorthand supplied in the Options?
 			local startingString = input_sh == '' and input or input_sh
@@ -1297,14 +1286,33 @@ local function formatAbils(input,input_sh)
 				startingString = 'Filled'
 			end
 
-			-- Truncate if too long
-			local truncatedString = string.sub(startingString, 1, truncatedLength)
+			-- Maximum length of output without brackets
+			local maxLength = 10
 
-			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			-- Function to format the output string
+			local function formatOutputString(baseString, truncateLength)
+				local truncatedString = string.sub(baseString, 1, truncateLength)
+				return truncatedString
+			end
 
 			-- Get our output before we apply the brackets below
-			local formattedString = ((ab[ability].recast and ab[ability].recast < 61 and ab[ability].recast > 0) and truncatedString..':'..ab[ability].recast or truncatedString)
+			local formattedString = ''
+			if recast > 3600 then
+				local hr = math.floor(recast / 3600)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
+			elseif recast > 600 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 4)..':'..min..'m'
+			elseif recast > 60 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..min..'m'
+			elseif recast > 9 then
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..recast
+			elseif recast > 0 then
+				formattedString = formatOutputString(startingString, maxLength - 2)..':'..recast
+			else
+				formattedString = string.sub(startingString, 1, maxLength)
+			end
 
 			-- Determine padding needed to center the output
 			local paddingTotalLength = maxLength - #formattedString
@@ -1312,6 +1320,9 @@ local function formatAbils(input,input_sh)
 			local leftPadding = string.rep(" ", leftPaddingLength)
 			local rightPaddingLength = paddingTotalLength - leftPaddingLength
 			local rightPadding = string.rep(" ", rightPaddingLength)				
+
+			-- Determine recast coloring for brackets
+			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
 			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
