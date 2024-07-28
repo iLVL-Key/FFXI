@@ -777,7 +777,7 @@ end
 
 
 
-FileVersion = '14.1.2'
+FileVersion = '14.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -785,23 +785,23 @@ FileVersion = '14.1.2'
 
 AdoulinZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
-    }
+	}
 
 BastokZones = S{
 	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
-    }
+	}
 
 SandyZones = S{
 	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
-    }
+	}
 
 WindyZones = S{
 	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
-    }
+	}
 
 TownZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
-    }
+	}
 
 -------------------------------------------
 --              FILE LOAD                --
@@ -1493,30 +1493,38 @@ local function formatAbils(input,input_sh)
 
 		if input == ability then
 
-			-- Maximum length of output without brackets
-			local maxLength = 10
-
-			-- Determine length to fit the recast timer
-			local truncatedLength =  maxLength
-			if ab[ability].recast and ab[ability].recast > 0 then
-				if ab[ability].recast < 10 then
-					truncatedLength = maxLength - 2
-				elseif ab[ability].recast < 61 then
-					truncatedLength = maxLength - 3
-				end
-			end
+			local recast = ab[ability].recast or 0
 
 			-- Are we using the ability/spell name itself, or a shorthand supplied in the Options?
 			local startingString = input_sh == '' and input or input_sh
 
-			-- Truncate if too long
-			local truncatedString = string.sub(startingString, 1, truncatedLength)
+			-- Maximum length of output without brackets
+			local maxLength = 10
 
-			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			-- Function to format the output string
+			local function formatOutputString(baseString, truncateLength)
+				local truncatedString = string.sub(baseString, 1, truncateLength)
+				return truncatedString
+			end
 
 			-- Get our output before we apply the brackets below
-			local formattedString = ((ab[ability].recast and ab[ability].recast < 61 and ab[ability].recast > 0) and truncatedString..':'..ab[ability].recast or truncatedString)
+			local formattedString = ''
+			if recast > 3600 then
+				local hr = math.floor(recast / 3600)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
+			elseif recast > 600 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 4)..':'..min..'m'
+			elseif recast > 60 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..min..'m'
+			elseif recast > 9 then
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..recast
+			elseif recast > 0 then
+				formattedString = formatOutputString(startingString, maxLength - 2)..':'..recast
+			else
+				formattedString = string.sub(startingString, 1, maxLength)
+			end
 
 			-- Determine padding needed to center the output
 			local paddingTotalLength = maxLength - #formattedString
@@ -1524,6 +1532,9 @@ local function formatAbils(input,input_sh)
 			local leftPadding = string.rep(" ", leftPaddingLength)
 			local rightPaddingLength = paddingTotalLength - leftPaddingLength
 			local rightPadding = string.rep(" ", rightPaddingLength)				
+
+			-- Determine recast coloring for brackets
+			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
 			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
