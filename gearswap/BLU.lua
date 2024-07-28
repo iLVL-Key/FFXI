@@ -762,7 +762,7 @@ end
 
 
 
-FileVersion = '18.1.2'
+FileVersion = '18.2'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -770,39 +770,39 @@ FileVersion = '18.1.2'
 
 Physical = S{
 	'Asuran Claws','Battle Dance','Bludgeon','Bloodrake','Cannonball','Death Scissors','Dimensional Death','Disseverment','Empty Thrash','Foot Kick','Frenetic Rip','Goblin Rush','Glutinous Dart','Mandibular Bite','Paralyzing Triad','Pinecone Bomb','Power Attack','Quad. Continuum','Quadrastrike','Queasyshroom','Ram Charge','Saurian Slide','Screwdriver','Sinker Drill','Smite of Rage','Spinal Cleave','Thrashing Assault','Uppercut','Vertical Cleave','Whirl of Rage','Amorphic Spikes','Barbed Crescent','Claw Cyclone','Hysteric Barrage','Seedspray','Sickle Slash','Terror Touch','Vanity Dive','Body Slam','Delta Thrust','Grand Slam','Sprout Smack','Feather Storm','Benthic Typhoon','Helldive','Hydro Shot','Jet Stream','Wild Oats','Spiral Spin','Heavy Strike'
-    }
+	}
 
 Magical = S{
 	'Acrid Stream','Anvil Lightning','Crashing Thunder','Charged Whisker','Droning Whirlwind','Firespit','Foul Waters','Gates of Hades','Leafstorm','Molting Plumage','Nectarous Deluge','Polar Roar','Regurgitation','Rending Deluge','Scouring Spate','Searing Tempest','Silent Storm','Spectral Floe','Subduction','Tem. Upheaval','Thermal Pulse','Uproot','Water Bomb','Blazing Bound','Blinding Fulgor','Diffusion Ray','Ice Break','Magic Hammer','Rail Cannon','Retinal Glare'
-    }
+	}
 
 Earth = S{
 	'Embalming Earth','Entomb','Sandspin'
-    }
+	}
 
 Dark = S{
 	'Dark Orb', 'Death Ray', 'Evryone. Grudge', 'Eyes On Me', 'Palling Salvo', 'Tenebral Crush'
-    }
+	}
 
 MagicAccuracy = S{
 	'1000 Needles','Absolute Terror','Actinic Burst','Auroral Drape','Awful Eye','Bilgestorm',"Blank Gaze",'Blastbomb','Blistering Roar','Blitzstrahl','Chaotic Eye','Cimicine Discharge','Cold Wave','Corrosive Ooze','Cruel Joke','Demoralizing Roar','Dream Flower','Enervation','Feather Tickle','Filamented Hold','Frightful Roar','Frypan','Geist Wall','Head Butt','Hecatomb Wave','Infrasonics',"Jettatura",'Light of Penance','Lowing','Mind Blast','Mortal Ray','Reaving Wind','Sandspray','Sheep Song','Soporific','Sound Blast','Stinking Gas','Sub-zero Smash','Sudden Lunge','Sweeping Gouge','Tail slap','Tearing Gust','Temporal Shift','Thunderbolt','Tourbillion','Venom Shell','Voracious Trunk','Yawn'
-    }
+	}
 
 Breath = S{
 	'Bad Breath','Flying Hip Press','Final Sting','Frost Breath','Heat Breath','Magnetite Cloud','Poison Breath','Radiant Breath','Self Destruct','Thunder Breath','Vapor Spray','Wind Breath'
-    }
+	}
 
 Buff = S{
 	'Amplification','Barrier Tusk','Cocoon','Erratic Flutter',"Fantod",'Feather Barrier','Harden Shell','Memento Mori','Mighty Guard','Nat. Meditation','Orcish Counterstance','Plasma Charge','Pyric Bulwark','Reactor Cool','Refueling','Saline Coat','Warm-Up','Zephyr Mantle'
-    }
+	}
 
 BlueMagicSkill = S{
 	'Atra. Libations','Blood Drain','Blood Saber','Carcharian Verve','Diamondhide','Digest','Metallic Body','Magic Barrier','MP Drainkiss','Occultation','Osmosis'
-    }
+	}
 
 Healing = S{
 	'Exuviation','Healing Breeze','Magic Fruit','Plenilune Embrace','Pollen','Restoral','Wild Carrot'
-    }
+	}
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -810,23 +810,23 @@ Healing = S{
 
 AdoulinZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
-    }
+	}
 
 BastokZones = S{
 	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
-    }
+	}
 
 SandyZones = S{
 	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
-    }
+	}
 
 WindyZones = S{
 	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
-    }
+	}
 
 TownZones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
-    }
+	}
 
 -------------------------------------------
 --              FILE LOAD                --
@@ -1500,18 +1500,7 @@ local function formatAbils(input,input_sh)
 
 		if input == ability then
 
-			-- Maximum length of output without brackets
-			local maxLength = 10
-
-			-- Determine length to fit the recast timer
-			local truncatedLength =  maxLength
-			if ab[ability].recast and ab[ability].recast > 0 then
-				if ab[ability].recast < 10 then
-					truncatedLength = maxLength - 2
-				elseif ab[ability].recast < 61 then
-					truncatedLength = maxLength - 3
-				end
-			end
+			local recast = ab[ability].recast or 0
 
 			-- Are we using the ability/spell name itself, or a shorthand supplied in the Options?
 			local startingString = input_sh == '' and input or input_sh
@@ -1520,18 +1509,33 @@ local function formatAbils(input,input_sh)
 				startingString = ShadowCount..'~Shadows'
 			end
 
-			-- Truncate if too long
-			local truncatedString = string.sub(startingString, 1, truncatedLength)
+			-- Maximum length of output without brackets
+			local maxLength = 10
 
-			-- Determine recast coloring for brackets
-			local c = ((SpellSetCooldown == 0 or SpellSetCooldown == 1) and ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
-			-- Adjust for Unbridled Wisdom or Learning
-			if ability == 'Carcharian Verve' or ability == 'Mighty Guard' then
-				c = ((ab[ability] and ab[ability].recast == 0) and (UnbridledLearning.recast == 0 or buffactive['Unbridled Wisdom'])) and color.abil.active or color.abil.ready
+			-- Function to format the output string
+			local function formatOutputString(baseString, truncateLength)
+				local truncatedString = string.sub(baseString, 1, truncateLength)
+				return truncatedString
 			end
 
 			-- Get our output before we apply the brackets below
-			local formattedString = ((ab[ability].recast and ab[ability].recast < 61 and ab[ability].recast > 0) and truncatedString..':'..ab[ability].recast or truncatedString)
+			local formattedString = ''
+			if recast > 3600 then
+				local hr = math.floor(recast / 3600)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
+			elseif recast > 600 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 4)..':'..min..'m'
+			elseif recast > 60 then
+				local min = math.floor(recast / 60)
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..min..'m'
+			elseif recast > 9 then
+				formattedString = formatOutputString(startingString, maxLength - 3)..':'..recast
+			elseif recast > 0 then
+				formattedString = formatOutputString(startingString, maxLength - 2)..':'..recast
+			else
+				formattedString = string.sub(startingString, 1, maxLength)
+			end
 
 			-- Determine padding needed to center the output
 			local paddingTotalLength = maxLength - #formattedString
@@ -1539,6 +1543,13 @@ local function formatAbils(input,input_sh)
 			local leftPadding = string.rep(" ", leftPaddingLength)
 			local rightPaddingLength = paddingTotalLength - leftPaddingLength
 			local rightPadding = string.rep(" ", rightPaddingLength)				
+
+			-- Determine recast coloring for brackets
+			local c = ((SpellSetCooldown == 0 or SpellSetCooldown == 1) and recast == 0) and color.abil.active or color.abil.ready
+			-- Adjust for Unbridled Wisdom or Learning
+			if input == 'Carcharian Verve' or input == 'Mighty Guard' then
+				c = (recast == 0 and (UnbridledLearning.recast == 0 or buffactive['Unbridled Wisdom'])) and color.abil.active or color.abil.ready
+			end
 
 			-- Apply brackets with recast coloring
 			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
