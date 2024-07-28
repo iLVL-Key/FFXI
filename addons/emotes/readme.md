@@ -1,3 +1,6 @@
+# This Sh## Be Old
+This is one of the first couple addons I ever made. As such, it's kinda not so great. I'll be completely revamping this some time soon. As it is, all of the emotes are hard-coded inside the file. I plan to make it so that all of the built-in emotes can be edited in the settings file, as well as new emotes be added, including placeholders for things like {target} and {possessive} (possessive pronouns, ie "/em smacks {his] forehead with his palm.").
+
 # Emotes
 Expands upon the games built-in emotes.
 
