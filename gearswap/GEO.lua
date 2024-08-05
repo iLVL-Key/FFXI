@@ -242,7 +242,7 @@ sets.idle = {
 	hands="Bagua Mitaines +3",
 	legs="Volte Brais",
 	feet="Geo. Sandals +3",
-	neck="Twilight Torque",
+	neck="Loricate Torque +1",
 	waist="Carrier's Sash",
 	left_ear="Etiolation Earring",
 	right_ear="Ethereal Earring",
@@ -586,7 +586,7 @@ end
 
 
 
-FileVersion = '14.2'
+FileVersion = '14.2.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2583,6 +2583,7 @@ windower.register_event('prerender', function()
 
 	--Luopan HP checks
 	if pet.isvalid == true then
+		local pet = windower.ffxi.get_mob_by_target('pet')
 		if PetHPP ~= pet.hpp then
 			PetHPP = pet.hpp
 			local petHPMeter = ''
