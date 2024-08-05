@@ -622,7 +622,7 @@ end
 
 
 
-FileVersion = '12.2'
+FileVersion = '12.2.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -2779,6 +2779,7 @@ windower.register_event('prerender', function()
 
 	-- Avatar HP checks
 	if pet.isvalid == true then
+		local pet = windower.ffxi.get_mob_by_target('pet')
 		if PetHPP ~= pet.hpp then
 			PetHPP = pet.hpp
 			local petHPMeter = ""
