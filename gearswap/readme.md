@@ -422,6 +422,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 14.2.1
+- Fixed an issue where Gearswaps builtin pet.hpp is too slow to refresh. Switched to bypassing it and calling windower.ffxi.get_mob_by_target('pet').hpp directly.
+
 Version 14.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
@@ -774,6 +777,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.2.1
+- Fixed a double activation of Majesty when activated through the AutoMajesty option.
 
 Version 14.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
@@ -1435,6 +1441,9 @@ Version 9.0
 <details>
  
 <summary>SMN</summary>
+
+Version 12.2.1
+- Fixed an issue where Gearswaps builtin pet.hpp is too slow to refresh. Switched to bypassing it and calling windower.ffxi.get_mob_by_target('pet').hpp directly.
 
 Version 12.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
