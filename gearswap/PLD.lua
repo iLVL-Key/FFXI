@@ -777,7 +777,7 @@ end
 
 
 
-FileVersion = '14.2'
+FileVersion = '14.2.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2240,9 +2240,14 @@ function precast(spell)
 		send_command('cancel 37')
 	--if we're casting a cure or protect without Majesty up, we'll put it up before casting:
 	elseif AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not buffactive['Majesty'] and not buffactive['amnesia'] and Majesty.recast == 0 then
-		send_command('input /ja Majesty <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
-		cancel_spell()
-		return
+		if not double_majesty_fix then
+			double_majesty_fix = true --prevents this from running through here a second time after being cast again below
+			send_command('input /ja Majesty <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+			cancel_spell()
+			return
+		else
+			double_majesty_fix = false
+		end
 	elseif spell.english == "Flash" then
 		if windower.ffxi.get_spell_recasts()[112] < 120 then
 			if AutoDEmblem == 'On' and not buffactive['amnesia'] and DivineEmblem.recast == 0 then
