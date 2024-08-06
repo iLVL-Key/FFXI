@@ -8,6 +8,7 @@ NotePad for Vana'diel!
 - Mouse interface!
 - Type directly into VanaPad without using the games chatlog.
 - Save up to 10 notes, organized into tabs.
+- Wordwrap!
 - Save a custom title to a note if you may want to keep it around for a while.
 - Shrink down to just the bar when you don't need it.
 - Auto-fades when shrunk and not being used.
