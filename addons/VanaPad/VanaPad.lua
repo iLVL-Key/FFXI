@@ -456,7 +456,7 @@ end
 local function displayHelp()
 	windower.add_to_chat(8,('[VanaPad] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 	windower.add_to_chat(8,' ')
-	windower.add_to_chat(8,('Commands '):color(220)..(' //vanapad, //vp'):color(1)..('[optional]'):color(53)..(' <required>'):color(2))
+	windower.add_to_chat(8,('Commands '):color(220)..(' //vanapad, //vp'):color(1))
 	windower.add_to_chat(8,('   show/hide '):color(36)..(' - Show/hide the VanaPad window.'):color(8))
 	windower.add_to_chat(8,('   edit/e '):color(36)..(' - Edit the current note.'):color(8))
 	windower.add_to_chat(8,('   title/t '):color(36)..(' - Add a custom title to the current note.'):color(8))
