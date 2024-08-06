@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '1.0.1'
+_addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -45,35 +45,42 @@ defaults = {
 		bars_vertical_spacing = {target_to_focus_target = -40, target_to_player_stats = 40, between_player_stats = 23},
 		focus_target_max_distance = 50,
 		hide_focus_target_when_target = true,
+		show_action_status_indicators = true,
 		show_bar_markers = true,
 		show_bars = {
-			brd = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			blm = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			blu = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			bst = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			cor = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			dnc = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			drg = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			drk = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			geo = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			mnk = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			nin = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			pld = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			pup = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			rdm = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			rng = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			run = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			sam = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			sch = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			smn = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			thf = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			war = {hp = true, mp = true, tp = true, vertical_offset = 0},
-			whm = {hp = true, mp = true, tp = true, vertical_offset = 0},
+			brd = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			blm = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			blu = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			bst = {hp = true, mp = true, pet = true, tp = true, vertical_offset = 0},
+			cor = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			dnc = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			drg = {hp = true, mp = true, pet = true, tp = true, vertical_offset = 0},
+			drk = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			geo = {hp = true, mp = true, pet = true, tp = true, vertical_offset = 0},
+			mnk = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			nin = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			pld = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			pup = {hp = true, mp = true, pet = true, tp = true, vertical_offset = 0},
+			rdm = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			rng = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			run = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			sam = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			sch = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			smn = {hp = true, mp = true, pet = true, tp = true, vertical_offset = 0},
+			thf = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			war = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
+			whm = {hp = true, mp = true, pet = false, tp = true, vertical_offset = 0},
 		},
 		show_max_hp_mp_on_bar = true,
 		show_self_when_target = true,
+		show_self_action = true,
 		show_target_action = true,
-		show_target_action_status_indicators = true,
+		show_target_index = false,
+		self_action_pos = {
+			x = 10,
+			y = 80,
+		},
+		self_action_text_size_difference = 0,
 		target_action_text_size_difference = 3,
 		target_text_size_difference = 4,
 		text_vertical_offset = -8,
@@ -99,6 +106,13 @@ defaults = {
 		},
 		mp = {
 			bar = {r = 189, g = 192, b = 122},
+			quarter_1 = {r = 255, g = 77, b = 77},
+			quarter_2 = {r = 255, g = 139, b = 56},
+			quarter_3 = {r = 230, g = 255, b = 117},
+			quarter_4 = {r = 255, g = 255, b = 255},
+		},
+		pet = {
+			bar = {r = 200, g = 75, b = 255},
 			quarter_1 = {r = 255, g = 77, b = 77},
 			quarter_2 = {r = 255, g = 139, b = 56},
 			quarter_3 = {r = 230, g = 255, b = 117},
@@ -135,9 +149,12 @@ local hide_focus_target_when_target = settings.options.hide_focus_target_when_ta
 local show_bar_markers = settings.options.show_bar_markers
 local show_bars = settings.options.show_bars
 local show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
+local show_self_action = settings.options.show_self_action
 local show_self_when_target = settings.options.show_self_when_target
 local show_target_action = settings.options.show_target_action
-local show_target_action_status_indicators = settings.options.show_target_action_status_indicators
+local show_action_status_indicators = settings.options.show_action_status_indicators
+local show_target_index = settings.options.show_target_index
+local self_action_text_size_difference = settings.options.self_action_text_size_difference
 local target_action_text_size_difference = settings.options.target_action_text_size_difference
 local target_text_size_difference = settings.options.target_text_size_difference
 local text_vertical_offset = settings.options.text_vertical_offset
@@ -208,6 +225,13 @@ bars_bg_tp:pad(-4)
 bars_bg_tp:bg_alpha(bg_alpha)
 bars_bg_tp:draggable(false)
 
+-- Create the Pet BACKGROUND text object
+local bars_bg_pet = texts.new()
+bars_bg_pet:font(font)
+bars_bg_pet:pad(-4)
+bars_bg_pet:bg_alpha(bg_alpha)
+bars_bg_pet:draggable(false)
+
 --METERS
 
 -- Create the Focus Target METER text object
@@ -247,6 +271,14 @@ bars_meter_tp:pad(-5)
 bars_meter_tp:bg_alpha(bg_alpha)
 bars_meter_tp:draggable(false)
 
+-- Create the Player Status Pet METER text object
+local bars_meter_pet = texts.new()
+bars_meter_pet:font(font)
+bars_meter_pet:pad(-5)
+bars_meter_pet:bg_alpha(bg_alpha)
+bars_meter_pet:bg_color(color.pet.bar.r,color.pet.bar.g,color.pet.bar.b)
+bars_meter_pet:draggable(false)
+
 --MARKERS
 
 -- Create the HP MARKER text object
@@ -264,6 +296,13 @@ bars_marker_tp:bg_alpha(0)
 bars_marker_tp:draggable(false)
 
 --TEXT SHADOW
+
+-- Create the Self Action TEXT SHADOW text object
+local bars_text_shdw_self_action = texts.new()
+bars_text_shdw_self_action:font(font)
+bars_text_shdw_self_action:color(0,0,0)
+bars_text_shdw_self_action:bg_alpha(0)
+bars_text_shdw_self_action:draggable(false)
 
 -- Create the Focus Target TEXT SHADOW text object
 local bars_text_shdw_focus_target = texts.new()
@@ -314,7 +353,21 @@ bars_text_shdw_tp:color(0,0,0)
 bars_text_shdw_tp:bg_alpha(0)
 bars_text_shdw_tp:draggable(false)
 
+-- Create the Player Status Pet TEXT SHADOW text object
+local bars_text_shdw_pet = texts.new()
+bars_text_shdw_pet:font(font)
+bars_text_shdw_pet:color(0,0,0)
+bars_text_shdw_pet:bg_alpha(0)
+bars_text_shdw_pet:draggable(false)
+
 --TEXT
+
+-- Create the Self Action TEXT text object
+local bars_text_self_action = texts.new()
+bars_text_self_action:font(font)
+bars_text_self_action:color(text_color.r,text_color.g,text_color.b)
+bars_text_self_action:bg_alpha(0)
+bars_text_self_action:draggable(false)
 
 -- Create the Focus Target TEXT text object
 local bars_text_focus_target = texts.new()
@@ -365,19 +418,29 @@ bars_text_tp:color(text_color.r,text_color.g,text_color.b)
 bars_text_tp:bg_alpha(0)
 bars_text_tp:draggable(false)
 
+-- Create the Player Status Pet TEXT text object
+local bars_text_pet = texts.new()
+bars_text_pet:font(font)
+bars_text_pet:color(text_color.r,text_color.g,text_color.b)
+bars_text_pet:bg_alpha(0)
+bars_text_pet:draggable(false)
+
 windower.register_event('unload', function()
 	bars_bg_focus_target:destroy()
 	bars_bg_target:destroy()
 	bars_bg_hp:destroy()
 	bars_bg_mp:destroy()
 	bars_bg_tp:destroy()
+	bars_bg_pet:destroy()
 	bars_meter_focus_target:destroy()
 	bars_meter_target:destroy()
 	bars_meter_hp:destroy()
 	bars_meter_mp:destroy()
 	bars_meter_tp:destroy()
+	bars_meter_pet:destroy()
 	bars_marker_hp:destroy()
 	bars_marker_tp:destroy()
+	bars_text_shdw_self_action:destroy()
 	bars_text_shdw_focus_target:destroy()
 	bars_text_shdw_focus_target_action:destroy()
 	bars_text_shdw_target:destroy()
@@ -385,6 +448,8 @@ windower.register_event('unload', function()
 	bars_text_shdw_hp:destroy()
 	bars_text_shdw_mp:destroy()
 	bars_text_shdw_tp:destroy()
+	bars_text_shdw_pet:destroy()
+	bars_text_self_action:destroy()
 	bars_text_focus_target:destroy()
 	bars_text_focus_target_action:destroy()
 	bars_text_target:destroy()
@@ -392,6 +457,7 @@ windower.register_event('unload', function()
 	bars_text_hp:destroy()
 	bars_text_mp:destroy()
 	bars_text_tp:destroy()
+	bars_text_pet:destroy()
 end)
 
 local function setBold()
@@ -400,6 +466,7 @@ local function setBold()
 
 	bars_marker_hp:bold(bold)
 	bars_marker_tp:bold(bold)
+	bars_text_shdw_self_action:bold(bold)
 	bars_text_shdw_focus_target:bold(bold)
 	bars_text_shdw_focus_target_action:bold(bold)
 	bars_text_shdw_target:bold(bold)
@@ -407,6 +474,8 @@ local function setBold()
 	bars_text_shdw_hp:bold(bold)
 	bars_text_shdw_mp:bold(bold)
 	bars_text_shdw_tp:bold(bold)
+	bars_text_shdw_pet:bold(bold)
+	bars_text_self_action:bold(bold)
 	bars_text_focus_target:bold(bold)
 	bars_text_focus_target_action:bold(bold)
 	bars_text_target:bold(bold)
@@ -414,6 +483,7 @@ local function setBold()
 	bars_text_hp:bold(bold)
 	bars_text_mp:bold(bold)
 	bars_text_tp:bold(bold)
+	bars_text_pet:bold(bold)
 end
 setBold()
 
@@ -426,13 +496,16 @@ local function setSize()
 	bars_bg_hp:size(size)
 	bars_bg_mp:size(size)
 	bars_bg_tp:size(size)
+	bars_bg_pet:size(size)
 	bars_meter_focus_target:size(size)
 	bars_meter_target:size(size)
 	bars_meter_hp:size(size)
 	bars_meter_mp:size(size)
 	bars_meter_tp:size(size)
+	bars_meter_pet:size(size)
 	bars_marker_hp:size(size)
 	bars_marker_tp:size(size)
+	bars_text_shdw_self_action:size(size+self_action_text_size_difference)
 	bars_text_shdw_focus_target:size(size)
 	bars_text_shdw_focus_target_action:size(size)
 	bars_text_shdw_target:size(size+target_text_size_difference)
@@ -440,6 +513,8 @@ local function setSize()
 	bars_text_shdw_hp:size(size)
 	bars_text_shdw_mp:size(size)
 	bars_text_shdw_tp:size(size)
+	bars_text_shdw_pet:size(size)
+	bars_text_self_action:size(size+self_action_text_size_difference)
 	bars_text_focus_target:size(size)
 	bars_text_focus_target_action:size(size)
 	bars_text_target:size(size+target_text_size_difference)
@@ -447,35 +522,50 @@ local function setSize()
 	bars_text_hp:size(size)
 	bars_text_mp:size(size)
 	bars_text_tp:size(size)
+	bars_text_pet:size(size)
 end
 setSize()
 
 local function setPosition()
 
+	local pos_self_action = {x = settings.options.self_action_pos.x, y = settings.options.self_action_pos.y}
 	local pos_target = {x = settings.pos.x, y = settings.pos.y + show_bars[job].vertical_offset}
 	local pos_focus_target = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_focus_target}
 	local player_stats_1 = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_player_stats}
 	local player_stats_2 = {x = pos_target.x, y = player_stats_1.y + bars_vertical_spacing.between_player_stats}
 	local player_stats_3 = {x = pos_target.x, y = player_stats_2.y + bars_vertical_spacing.between_player_stats}
+	local player_stats_4 = {x = pos_target.x, y = player_stats_3.y + bars_vertical_spacing.between_player_stats}
 
 	local pos_hp = player_stats_1
 	local pos_mp = player_stats_2
 	local pos_tp = player_stats_3
+	local pos_pet = player_stats_4
 
 	-- Order the HP/MP/TP bars based on which are displayed
 	if not show_bars[job].hp then
 		if not show_bars[job].mp then
-			if show_bars[job].tp then
+			if not show_bars[job].tp then
+				pos_pet = player_stats_1
+			else
 				pos_tp = player_stats_1
+				pos_pet = player_stats_2
 			end
 		else
 			pos_mp = player_stats_1
 			pos_tp = player_stats_2
+			pos_pet = player_stats_3
 		end
 	else
 		if not show_bars[job].mp then
-			if show_bars[job].tp then
+			if not show_bars[job].tp then
+				pos_pet = player_stats_2
+			else
 				pos_tp = player_stats_2
+				pos_pet = player_stats_3
+			end
+		else
+			if not show_bars[job].tp then
+				pos_pet = player_stats_3
 			end
 		end
 	end
@@ -485,13 +575,16 @@ local function setPosition()
 	bars_bg_hp:pos(pos_hp.x,pos_hp.y+8)
 	bars_bg_mp:pos(pos_mp.x,pos_mp.y+8)
 	bars_bg_tp:pos(pos_tp.x,pos_tp.y+8)
+	bars_bg_pet:pos(pos_pet.x,pos_pet.y+8)
 	bars_meter_focus_target:pos(pos_focus_target.x+1,pos_focus_target.y+9)
 	bars_meter_target:pos(pos_target.x+1,pos_target.y+9)
 	bars_meter_hp:pos(pos_hp.x+1,pos_hp.y+9)
 	bars_meter_mp:pos(pos_mp.x+1,pos_mp.y+9)
 	bars_meter_tp:pos(pos_tp.x+1,pos_tp.y+9)
+	bars_meter_pet:pos(pos_pet.x+1,pos_pet.y+9)
 	bars_marker_hp:pos(pos_hp.x,pos_hp.y+7)
 	bars_marker_tp:pos(pos_tp.x,pos_tp.y+7)
+	bars_text_shdw_self_action:pos(pos_self_action.x+1.5,pos_self_action.y+1.5)
 	bars_text_shdw_focus_target:pos(pos_focus_target.x+1.5,pos_focus_target.y+text_vertical_offset+1.5)
 	bars_text_shdw_focus_target_action:pos(pos_focus_target.x+1.5,pos_focus_target.y+1.5+13)
 	bars_text_shdw_target:pos(pos_target.x+1.5,pos_target.y+text_vertical_offset+1.5-5) -- -5 to compensate the +2 to size for the target text
@@ -499,6 +592,8 @@ local function setPosition()
 	bars_text_shdw_hp:pos(pos_hp.x+1.5,pos_hp.y+text_vertical_offset+1.5)
 	bars_text_shdw_mp:pos(pos_mp.x+1.5,pos_mp.y+text_vertical_offset+1.5)
 	bars_text_shdw_tp:pos(pos_tp.x+1.5,pos_tp.y+text_vertical_offset+1.5)
+	bars_text_shdw_pet:pos(pos_pet.x+1.5,pos_pet.y+text_vertical_offset+1.5)
+	bars_text_self_action:pos(pos_self_action.x,pos_self_action.y)
 	bars_text_focus_target:pos(pos_focus_target.x,pos_focus_target.y+text_vertical_offset)
 	bars_text_focus_target_action:pos(pos_focus_target.x,pos_focus_target.y+13)
 	bars_text_target:pos(pos_target.x,pos_target.y+text_vertical_offset-5) -- -5 to compensate the +2 to size for the target text
@@ -506,6 +601,7 @@ local function setPosition()
 	bars_text_hp:pos(pos_hp.x,pos_hp.y+text_vertical_offset)
 	bars_text_mp:pos(pos_mp.x,pos_mp.y+text_vertical_offset)
 	bars_text_tp:pos(pos_tp.x,pos_tp.y+text_vertical_offset)
+	bars_text_pet:pos(pos_pet.x,pos_pet.y+text_vertical_offset)
 
 end
 
@@ -553,11 +649,12 @@ local function setWidth()
 
 	bars_bg_focus_target:text(bars_bg_str_ft)
 	bars_bg_target:text(bars_bg_str)
-	bars_marker_hp:text(show_bar_markers and bars_bg_str_hp or bars_bg_str)
 	bars_bg_hp:text(bars_bg_str)
 	bars_bg_mp:text(bars_bg_str)
-	bars_marker_tp:text(show_bar_markers and bars_bg_str_tp or bars_bg_str)
 	bars_bg_tp:text(bars_bg_str)
+	bars_bg_pet:text(bars_bg_str)
+	bars_marker_hp:text(show_bar_markers and bars_bg_str_hp or bars_bg_str)
+	bars_marker_tp:text(show_bar_markers and bars_bg_str_tp or bars_bg_str)
 
 end
 
@@ -568,6 +665,7 @@ local function hideBars()
 	bars_bg_hp:hide()
 	bars_bg_mp:hide()
 	bars_bg_tp:hide()
+	bars_bg_pet:hide()
 	bars_meter_focus_target:hide()
 	bars_meter_target:hide()
 	bars_meter_hp:hide()
@@ -575,6 +673,7 @@ local function hideBars()
 	bars_meter_tp:hide()
 	bars_marker_hp:hide()
 	bars_marker_tp:hide()
+	bars_text_shdw_self_action:hide()
 	bars_text_shdw_focus_target:hide()
 	bars_text_shdw_focus_target_action:hide()
 	bars_text_shdw_target:hide()
@@ -582,6 +681,8 @@ local function hideBars()
 	bars_text_shdw_hp:hide()
 	bars_text_shdw_mp:hide()
 	bars_text_shdw_tp:hide()
+	bars_text_shdw_pet:hide()
+	bars_text_self_action:hide()
 	bars_text_focus_target:hide()
 	bars_text_focus_target_action:hide()
 	bars_text_target:hide()
@@ -589,6 +690,7 @@ local function hideBars()
 	bars_text_hp:hide()
 	bars_text_mp:hide()
 	bars_text_tp:hide()
+	bars_text_pet:hide()
 
 end
 
@@ -623,6 +725,13 @@ local function showBars()
 		end
 		bars_text_shdw_tp:show()
 		bars_text_tp:show()
+	end
+
+	if show_bars[job].pet then
+		bars_bg_pet:show()
+		bars_meter_pet:show()
+		bars_text_shdw_pet:show()
+		bars_text_pet:show()
 	end
 
 end
@@ -665,13 +774,6 @@ end
 function clearActionsTable()
 
 	current_actions = {}
-
-end
-
--- Get the action for a specific actor_id from the current_actions table
-function getCurrentActions(actor_id)
-
-	return current_actions[actor_id] or false
 
 end
 
@@ -776,6 +878,7 @@ function convertToSave(target)
 
 	target = string.lower(target) --convert target to all lowercase
 	target = string.gsub(target, " ", "_") --convert spaces to underscores
+	target = string.gsub(target, "'", "__apos__") --convert apostrophes to __apos__
 	return target
 
 end
@@ -783,6 +886,7 @@ end
 -- Convert auto focus targets to display them properly
 function convertToDisplay(target)
 
+	target = string.gsub(target, "__apos__", "'") --convert __apos__ back to apostrophe
 	target = capitalize(target) -- capitalize names
 	target = string.gsub(target, "_", " ") --convert underscores to spaces
 	return target
@@ -828,6 +932,34 @@ function removeFromAutoFocusTargetList(target)
 	end
 end
 
+local function updateSelfAction()
+
+	local player = windower.ffxi.get_player()
+	local ct = text_color
+	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
+	local self_action = current_actions[player.id] and current_actions[player.id].action or ''
+	local text_self_action = ' '..self_status..self_action
+
+	if self_status ~= '' then
+		if not inCS then
+
+			bars_text_shdw_self_action:show()
+			bars_text_self_action:show()
+
+		end
+
+		bars_text_shdw_self_action:text(text_self_action:text_strip_format()) --strip out the custom coloring of the spells
+		bars_text_self_action:text(text_self_action)
+
+	else
+
+		bars_text_shdw_self_action:hide()
+		bars_text_self_action:hide()
+
+	end
+
+end
+
 local function updateFocusTarget()
 
 	if not focus_target then
@@ -851,9 +983,9 @@ local function updateFocusTarget()
 	local ct = text_color
 	focus_target_hpp = string.format("%3s", focus_target_hpp)
 	local text = focus_target_hpp..'% '..focus_target_name
-	local focus_target_status = show_target_action_status_indicators and focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].status or ''
+	local focus_target_status = show_action_status_indicators and focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].status or ''
 	local focus_target_action = focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].action or ''
-	local text_focus_target_action = '      '..focus_target_status..focus_target_action
+	local text_focus_target_action = show_target_action and '      '..focus_target_status..focus_target_action or ''
 
 	if not inCS then
 
@@ -863,7 +995,7 @@ local function updateFocusTarget()
 		else
 			bars_meter_focus_target:show()
 		end
-				
+
 		bars_bg_focus_target:show()
 		bars_text_shdw_focus_target:show()
 		bars_text_shdw_focus_target_action:show()
@@ -886,8 +1018,9 @@ end
 local function updateTarget()
 
 	local player = windower.ffxi.get_player()
-	local target = windower.ffxi.get_mob_by_target('st') or windower.ffxi.get_mob_by_target('t')
+	local target = windower.ffxi.get_mob_by_target('st', 't')
 	local target_name = target and target.name or ''
+	local target_index = target and target.index or ''
 	local target_hpp = target and target.hpp or 0
 	local target_meter = ''
 	local spaces = target_hpp and math.floor(bar_width * (target_hpp / 100)) or 0
@@ -897,10 +1030,10 @@ local function updateTarget()
 	local cm = target and targetColor(target) or color.target.pc_other
 	local ct = text_color
 	target_hpp = string.format("%3s", target_hpp)
-	local text = target_hpp..'% '..target_name
-	local target_status = show_target_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status or ''
+	local text = target_hpp..'% '..target_name..(show_target_index and ' ('..target_index..')' or '')
+	local target_status = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status or ''
 	local target_action = target and current_actions[target.id] and current_actions[target.id].action or ''
-	local text_target_action = '      '..target_status..target_action
+	local text_target_action = show_target_action and '      '..target_status..target_action or ''
 
 	if target and not (show_self_when_target == false and target.id == player.id) then
 		if not inCS then
@@ -911,7 +1044,7 @@ local function updateTarget()
 			else
 				bars_meter_target:show()
 			end
-					
+
 			bars_bg_target:show()
 			bars_text_shdw_target:show()
 			bars_text_shdw_target_action:show()
@@ -1094,6 +1227,52 @@ local function updateTP()
 
 end
 
+--Update the Pet BAR
+local function updatePet()
+
+	local pet = windower.ffxi.get_mob_by_target('pet')
+	local hpp = pet and pet.hpp or 0
+	local pet_meter = ''
+	local spaces = math.floor(bar_width * (hpp / 100))
+	local c = color.hp
+
+	local pet_name = pet and 'Pet' or 'No Pet'
+	if job == 'bst' then pet_name = pet and pet.name or 'No Pet' end
+	if job == 'drg' then pet_name = pet and pet.name or 'No Wyvern' end
+	if job == 'geo' then pet_name = pet and 'Luopan' or 'No Luopan' end
+	if job == 'pup' then pet_name = pet and pet.name or 'No Automaton' end
+	if job == 'smn' then pet_name = pet and pet.name or 'No Avatar' end
+
+	-- fix the pad issue when 0
+	if spaces == 0 then
+		bars_meter_pet:bg_alpha(0)
+	else
+		bars_meter_pet:bg_alpha(bg_alpha)
+		while string.len(pet_meter) < spaces do
+			pet_meter = pet_meter..' '
+		end
+	end
+
+	-- set the color for the bar based on hp percentage
+	if hpp >= 75 then
+		c = text_color
+	elseif hpp >= 50 then
+		c = color.hp.quarter_3
+	elseif hpp >= 25 then
+		c = color.hp.quarter_2
+	elseif hpp >= 0 then
+		c = color.hp.quarter_1
+	end
+
+	local text = pet_name..(pet and ': \\cs('..c.r..','..c.g..','..c.b..')'..hpp..'%\\cr' or '')
+	local text_shdw = pet_name..(pet and ': '..hpp..'%' or '')
+
+	bars_meter_pet:text(pet_meter)
+	bars_text_shdw_pet:text(text_shdw)
+	bars_text_pet:text(text)
+
+end
+
 -- List the contents of the auto_focus_target_list
 function listAutoFocusTargets()
 	local sortedTargets = {}
@@ -1240,12 +1419,20 @@ end)
 
 windower.register_event('prerender', function()
 
-	local target = windower.ffxi.get_mob_by_target('st') or windower.ffxi.get_mob_by_target('t')
+	if windower.ffxi.get_info().logged_in and show_self_action then
+		updateSelfAction()
+	end
+
+	local target = windower.ffxi.get_mob_by_target('st', 't')
 	if target then
 		updateTarget()
 	end
 
 	checkForFocusTarget()
+
+	if show_bars[job].pet then
+		updatePet()
+	end
 
 	-- Hide while zoning
 	local pos = windower.ffxi.get_position()
@@ -1262,10 +1449,7 @@ end)
 
 windower.register_event('action', function (act)
 
-	if not show_target_action then
-		return
-	end
-
+	local player = windower.ffxi.get_player()
 	local actor = windower.ffxi.get_mob_by_id(act.actor_id)
 	local action_id = act.targets[1].actions[1].param
 	local action_target = windower.ffxi.get_mob_by_id(act.targets[1].id)
@@ -1278,7 +1462,7 @@ windower.register_event('action', function (act)
 
 		local target_action_status_indicator = '\\cs(255,050,050)×\\cr'
 		updateActionStatus(act.actor_id,target_action_status_indicator)
-		coroutine.sleep(2)
+		coroutine.sleep(2.5)
 		removeFromActionsTable(act.actor_id)
 		return
 
@@ -1287,6 +1471,7 @@ windower.register_event('action', function (act)
 	-- Begin weapon skill(7), TP move(7), or spell(8), or item(9)
 	if action_id and (act.category == 7 or act.category == 8 or act.category == 9) then
 
+		local target_action = ''
 		local target_action_status_indicator = '\\cs(245,164,066)≈\\cr'
 
 		-- Weapon skill or TP move
@@ -1295,7 +1480,7 @@ windower.register_event('action', function (act)
 			local ct = targetColor(action_target)
 			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs('..ct.r..','..ct.g..','..ct.b..')'..action_target.name..'\\cr' or ''
 
-			if isPlayer(actor.id) then
+			if actor and isPlayer(actor.id) then
 				action_name = ' '..res.weapon_skills[action_id].name
 			elseif act.targets[1].actions[1].param == nil then
 				return
@@ -1324,7 +1509,10 @@ windower.register_event('action', function (act)
 		end
 
 		target_action = action_name..action_target_name
-		addToActionsTable(act.actor_id,target_action,target_action_status_indicator)
+
+		if (show_self_action and player.id == act.actor_id) or show_target_action then
+			addToActionsTable(act.actor_id,target_action,target_action_status_indicator)
+		end
 
 	-- Finish weapon skill(3), spell(4), item(5), or TP move(11)
 	elseif act.category == 3 or act.category == 4 or act.category == 5 or act.category == 11 then
@@ -1334,11 +1522,15 @@ windower.register_event('action', function (act)
 
 		-- Items can be spammed fast and gets weird if the delay is too long
 		if act.category == 5 then
+
 			coroutine.sleep(1)
 			removeFromActionsTable(act.actor_id)
-		elseif target_action ~= '' then
-			coroutine.sleep(2)
+
+		elseif act.param ~= nil then
+
+			coroutine.sleep(2.5)
 			removeFromActionsTable(act.actor_id)
+
 		end
 
 	end
@@ -1442,6 +1634,16 @@ windower.register_event('addon command',function(addcmd, ...)
 		showBars()
 		windower.add_to_chat(220,'[Bars] '..('TP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(settings.options.show_bars[job].tp and 'ON' or 'OFF')):color(200))
 
+	-- Toggle the Pet bar display setting for the current job
+	elseif addcmd == 'pet' then
+
+		settings.options.show_bars[job].pet = not settings.options.show_bars[job].pet
+		settings:save('all')
+		hideBars()
+		setPosition()
+		showBars()
+		windower.add_to_chat(220,'[Bars] '..('Pet bar display for '..uppercase(job)..':'):color(36)..(' %s':format(settings.options.show_bars[job].pet and 'ON' or 'OFF')):color(200))
+
 	-- Update the vertical offset for the current job
 	elseif addcmd == 'offset' or addcmd == 'o' then
 		local offset = {...}
@@ -1510,6 +1712,15 @@ windower.register_event('addon command',function(addcmd, ...)
 		setWidth()
 		showBars()
 
+	-- Toggle the index setting
+	elseif addcmd == 'index' or addcmd == 'i' then
+
+		settings.options.show_target_index = not settings.options.show_target_index
+		show_target_index = settings.options.show_target_index
+		settings:save('all')
+		windower.add_to_chat(220,'[Bars] '..('Index:'):color(36)..(' %s':format(settings.options.show_target_index and 'ON' or 'OFF')):color(200))
+		updateTarget()
+
 	-- Toggle the bold setting
 	elseif addcmd == 'bold' or addcmd == 'b' then
 
@@ -1554,8 +1765,10 @@ windower.register_event('addon command',function(addcmd, ...)
 		local currHP = settings.options.show_bars[job].hp
 		local currMP = settings.options.show_bars[job].mp
 		local currTP = settings.options.show_bars[job].tp
+		local currPet = settings.options.show_bars[job].pet
 		local currWidth = settings.options.bar_width
 		local currMarker = settings.options.show_bar_markers
+		local currIndex = settings.options.show_target_index
 		local currJob = uppercase(job)
 		local currOffset = settings.options.show_bars[job].vertical_offset
 		local currSize = settings.text.size
@@ -1565,9 +1778,11 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(220,' ')
 		windower.add_to_chat(220,' Commands '..('[optional]'):color(53)..(' <required>'):color(2))
 		windower.add_to_chat(36,'   pos '..('[x y]'):color(53)..(' - Update position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
-		windower.add_to_chat(36,'   hp/mp/tp'..(' - Toggle HP/MP/TP bar display setting for current job. ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		windower.add_to_chat(36,'   hp/mp/tp/pet'..(' - Toggle HP/MP/TP/Pet bar display setting for current job.'):color(8))
+		windower.add_to_chat(36,'   '..(' ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(' Pet: '):color(8)..('%s':format(currPet and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   width/w '..('[#]'):color(53)..(' - Update the bar width. ['):color(8)..(''..currWidth):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   marker/m '..(' - Toggle the Marker option. ['):color(8)..('%s':format(currMarker and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		windower.add_to_chat(36,'   index/i '..(' - Toggle the Index option. ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   offset/o '..('[#]'):color(53)..(' - Update the vertical offset for the current job. ['..currJob..' - '):color(8)..(''..currOffset):color(200)..(']'):color(8))
 		windower.add_to_chat(36,'   add/a '..('<target>'):color(2)..(' - Add a target to the Auto Focus Target list.'):color(8))
 		windower.add_to_chat(36,'   '..(' - Valid targets: Names (ex: Oseem), IDs (ex: 17809550).'):color(8))
