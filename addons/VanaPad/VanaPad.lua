@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaPad'
-_addon.version = '1.0 BETA-1'
+_addon.version = '1.0 BETA-2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanapad','vp'}
 
@@ -329,7 +329,9 @@ end
 -- Create the VanaPad text object
 local formattedDisplay = updateBox("none")
 local VanaPad = texts.new(formattedDisplay, settings)
-VanaPad:show()
+if settings.visible then
+	VanaPad:show()
+end
 
 --Set initial state of the text box using settings from the options
 local function initialize()
@@ -456,7 +458,7 @@ end
 local function displayHelp()
 	windower.add_to_chat(8,('[VanaPad] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
 	windower.add_to_chat(8,' ')
-	windower.add_to_chat(8,('Commands '):color(220)..(' //vanapad, //vp'):color(1))
+	windower.add_to_chat(8,('Commands '):color(220)..(' //vanapad, //vp '):color(1))
 	windower.add_to_chat(8,('   show/hide '):color(36)..(' - Show/hide the VanaPad window.'):color(8))
 	windower.add_to_chat(8,('   edit/e '):color(36)..(' - Edit the current note.'):color(8))
 	windower.add_to_chat(8,('   title/t '):color(36)..(' - Add a custom title to the current note.'):color(8))
@@ -680,11 +682,8 @@ local function onMouseClick(type, mouseX, mouseY)
 				VanaPad:text(updateBox(currentNote))
 			end
 		elseif click == "big_x" then
-			if entering_note then
-				disableEditMode()
-			end
-			VanaPad:hide()
-			windower.add_to_chat(8,('[VanaPad] '):color(220)..('Now hidden. Type '):color(8)..('//vanapad show'):color(1)..(' to display again'):color(8))
+			double_click_fix_hide = true
+			windower.send_command('wait .1;vanapad double_click_fix_hide')
 		elseif click ~= "none" and click ~= "bar" then
 			currentNote = click
 			VanaPad:text(updateBox(currentNote))
@@ -722,8 +721,12 @@ windower.register_event('addon command',function(addcmd, ...)
 		editNote(text)
 	elseif addcmd == "show" then
 		VanaPad:show()
+		settings.visible = true
+		settings:save('all')
 	elseif addcmd == "hide" then
 		VanaPad:hide()
+		settings.visible = false
+		settings:save('all')
 	elseif addcmd == "title" or addcmd == "t" then
 		local text = table.concat({...}, " ")
 		updateTitle(text)
@@ -741,6 +744,17 @@ windower.register_event('addon command',function(addcmd, ...)
 		if double_click_fix_help then
 			displayHelp()
 			double_click_fix_help = false
+		end
+	elseif addcmd == "double_click_fix_hide" then
+		if double_click_fix_hide then
+			if entering_note then
+				disableEditMode()
+			end
+			VanaPad:hide()
+			windower.add_to_chat(8,('[VanaPad] '):color(220)..('Now hidden. Type '):color(8)..('//vanapad show'):color(1)..(' to display again'):color(8))
+			double_click_fix_hide = false
+			settings.visible = false
+			settings:save('all')
 		end
 	elseif addcmd == "double_click_fix_pin_true" then
 		double_click_fix_pin = true
