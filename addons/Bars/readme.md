@@ -1,5 +1,5 @@
 # Bars
-Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Actions for Targets.  
+Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Actions for Targets, Focus Targets, and Player.  
 
 ![Bars_target_actions](https://github.com/user-attachments/assets/c6d239db-4483-4272-8cbb-068706223b6a)  
 (The blue bar in this gif is the current target, which also shows the action the target is currently performing)
