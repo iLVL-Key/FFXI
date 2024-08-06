@@ -39,3 +39,14 @@ All commands must be preceded with `//bars`
  - **list/l** - Show the Auto Focus Target list.
  - **size/s [#]** - Update the size.
  - **bold/b** - Toggle the bold setting.
+
+## Changelog
+
+Version 1.1
+- Added Pet bar showing the name of the pet and their HPP. Defaults to displayed only for pet jobs, but can be turn on or off individually per job the same as HP/MP/TP.
+- Added option to show your own action and action status. Default position puts this near the top of the screen, under the buff bar, but it has it's own pos in the settings file.
+- Added option to show a targets index number.
+- Fixed an issue where saving a name that included an apostrophe to the Auto Focus Target list would break the addon.
+
+Version 1.0
+- First version
