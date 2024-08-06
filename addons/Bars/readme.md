@@ -4,7 +4,7 @@ Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Action
 ![Bars_target_actions](https://github.com/user-attachments/assets/c6d239db-4483-4272-8cbb-068706223b6a)  
 (The blue bar in this gif is the current target, which also shows the action the target is currently performing)
 ## Features
-- Player Stats (HP/MP/TP) can be turned on/off individually per job (ie SAM shows only TP, while PLD shows HP, MP, and TP)
+- Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM shows only TP, while PLD shows HP, MP, and TP)
   - Bars automatically align to the top, but vertical offset can be adjusted per job if you prefer them aligned to the bottom.
 - Target bars colored based on type (NPC, Party member, mob claimed by someone else, etc.)
 - Target Actions
@@ -18,6 +18,8 @@ Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Action
   - Displays the Focus Targets actions as well.
   - Automatically hides the Focus Target when it is targeted.
   - [COMING SOON] Can temporarily override the Focus Target.
+- Display the Index number for targets.
+  - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Markers on the TP bar for 1k/2k, and on the HP bar for yellow HP.
 - Features can be turned on/off or adjusted via settings file or in-game commands
 
@@ -25,9 +27,10 @@ Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Action
 All commands must be preceded with `//bars`
 `[optional] <required>`
  - **pos [x y]** - Update position
- - **hp/mp/tp** - Toggle HP/MP/TP bar display setting for current job.
+ - **hp/mp/tp/pet** - Toggle HP/MP/TP/Pet bar display setting for current job.
  - **width/w** - Update the bar width.
  - **marker/m** - Toggle the Marker option.
+ - **index/i** - Toggle the Index option.
  - **offset/o** - Update the vertical offset for the current job.
  - **add/a <target>** - Add a target to the Auto Focus Target list.
    - Valid targets: Names (ex: Oseem), IDs (ex: 17809550).
