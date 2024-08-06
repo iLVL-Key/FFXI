@@ -54,18 +54,7 @@ local defaults = {
 		right = false,
 		bottom = false
 	},
-	notes = {
-		note0 = "",
-		note1 = "",
-		note2 = "",
-		note3 = "",
-		note4 = "",
-		note5 = "",
-		note6 = "",
-		note7 = "",
-		note8 = "",
-		note9 = "",
-	},
+	notes = {},
 	visible = true,
 	options = {
 		window_width = 40,
@@ -95,16 +84,16 @@ local option = settings.options
 local c = {}
 c.little_x = color.text_header
 c.edit = color.text_header
-c.zero = note.zero and color.btn_note_full or color.btn_note_empty
-c.one = note.one and color.btn_note_full or color.btn_note_empty
-c.two = note.two and color.btn_note_full or color.btn_note_empty
-c.three = note.three and color.btn_note_full or color.btn_note_empty
-c.four = note.four and color.btn_note_full or color.btn_note_empty
-c.five = note.five and color.btn_note_full or color.btn_note_empty
-c.six = note.six and color.btn_note_full or color.btn_note_empty
-c.seven = note.seven and color.btn_note_full or color.btn_note_empty
-c.eight = note.eight and color.btn_note_full or color.btn_note_empty
-c.nine = note.nine and color.btn_note_full or color.btn_note_empty
+c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
+c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
+c.note2 = note.note2 and color.btn_note_full or color.btn_note_empty
+c.note3 = note.note3 and color.btn_note_full or color.btn_note_empty
+c.note4 = note.note4 and color.btn_note_full or color.btn_note_empty
+c.note5 = note.note5 and color.btn_note_full or color.btn_note_empty
+c.note6 = note.note6 and color.btn_note_full or color.btn_note_empty
+c.note7 = note.note7 and color.btn_note_full or color.btn_note_empty
+c.note8 = note.note8 and color.btn_note_full or color.btn_note_empty
+c.note9 = note.note9 and color.btn_note_full or color.btn_note_empty
 c.help = color.text_header
 c.underscore = color.text_header
 c.pin = color.text_header
@@ -114,16 +103,16 @@ c.content = color.text_note
 local hoveringOver = {
     little_x = false,
     edit = false,
-    zero = false,
-    one = false,
-    two = false,
-    three = false,
-    four = false,
-    five = false,
-    six = false,
-    seven = false,
-    eight = false,
-    nine = false,
+    note0 = false,
+    note1 = false,
+    note2 = false,
+    note3 = false,
+    note4 = false,
+    note5 = false,
+    note6 = false,
+    note7 = false,
+    note8 = false,
+    note9 = false,
     help = false,
     underscore = false,
     pin = false,
@@ -135,16 +124,16 @@ local title = addon_name
 local currentNote = "none"
 local titleOverride = nil
 local newTitle = {
-    zero = "Note 0",
-    one = "Note 1",
-    two = "Note 2",
-    three = "Note 3",
-    four = "Note 4",
-    five = "Note 5",
-    six = "Note 6",
-    seven = "Note 7",
-    eight = "Note 8",
-    nine = "Note 9"
+    note0 = "Note 0",
+    note1 = "Note 1",
+    note2 = "Note 2",
+    note3 = "Note 3",
+    note4 = "Note 4",
+    note5 = "Note 5",
+    note6 = "Note 6",
+    note7 = "Note 7",
+    note8 = "Note 8",
+    note9 = "Note 9"
 }
 local Heartbeat = 0
 local Fade = false
@@ -204,16 +193,16 @@ local function updateBox(displayNote)
 
 	local cx = c.little_x
 	local ce = c.edit
-	local c0 = currentNote == "zero" and color.btn_note_current or c.zero
-	local c1 = currentNote == "one" and color.btn_note_current or c.one
-	local c2 = currentNote == "two" and color.btn_note_current or c.two
-	local c3 = currentNote == "three" and color.btn_note_current or c.three
-	local c4 = currentNote == "four" and color.btn_note_current or c.four
-	local c5 = currentNote == "five" and color.btn_note_current or c.five
-	local c6 = currentNote == "six" and color.btn_note_current or c.six
-	local c7 = currentNote == "seven" and color.btn_note_current or c.seven
-	local c8 = currentNote == "eight" and color.btn_note_current or c.eight
-	local c9 = currentNote == "nine" and color.btn_note_current or c.nine
+	local c0 = currentNote == "note0" and color.btn_note_current or c.note0
+	local c1 = currentNote == "note1" and color.btn_note_current or c.note1
+	local c2 = currentNote == "note2" and color.btn_note_current or c.note2
+	local c3 = currentNote == "note3" and color.btn_note_current or c.note3
+	local c4 = currentNote == "note4" and color.btn_note_current or c.note4
+	local c5 = currentNote == "note5" and color.btn_note_current or c.note5
+	local c6 = currentNote == "note6" and color.btn_note_current or c.note6
+	local c7 = currentNote == "note7" and color.btn_note_current or c.note7
+	local c8 = currentNote == "note8" and color.btn_note_current or c.note8
+	local c9 = currentNote == "note9" and color.btn_note_current or c.note9
 	local ch = c.help
 	local cu = c.underscore
 	local cp = c.pin
@@ -481,16 +470,16 @@ local function getMouseOnCharacter(mouseX, mouseY)
 	local hoverPositions = {
 		{char = "little_x", offset = 19},
 		{char = "edit", offset = 17},
-		{char = "zero", offset = 15},
-		{char = "one", offset = 14},
-		{char = "two", offset = 13},
-		{char = "three", offset = 12},
-		{char = "four", offset = 11},
-		{char = "five", offset = 10},
-		{char = "six", offset = 9},
-		{char = "seven", offset = 8},
-		{char = "eight", offset = 7},
-		{char = "nine", offset = 6},
+		{char = "note0", offset = 15},
+		{char = "note1", offset = 14},
+		{char = "note2", offset = 13},
+		{char = "note3", offset = 12},
+		{char = "note4", offset = 11},
+		{char = "note5", offset = 10},
+		{char = "note6", offset = 9},
+		{char = "note7", offset = 8},
+		{char = "note8", offset = 7},
+		{char = "note9", offset = 6},
 		{char = "help", offset = 4},
 		{char = "underscore", offset = 3},
 		{char = "pin", offset = 2},
@@ -532,16 +521,16 @@ local function onMouseMove(type, mouseX, mouseY)
 			Fade = false
 			VanaPad:bg_alpha(option.fade_bg_max)
 			FadeNum = option.fade_bg_max
-			c.zero = note.zero and color.btn_note_full or color.btn_note_empty
-			c.one = note.one and color.btn_note_full or color.btn_note_empty
-			c.two = note.two and color.btn_note_full or color.btn_note_empty
-			c.three = note.three and color.btn_note_full or color.btn_note_empty
-			c.four = note.four and color.btn_note_full or color.btn_note_empty
-			c.five = note.five and color.btn_note_full or color.btn_note_empty
-			c.six = note.six and color.btn_note_full or color.btn_note_empty
-			c.seven = note.seven and color.btn_note_full or color.btn_note_empty
-			c.eight = note.eight and color.btn_note_full or color.btn_note_empty
-			c.nine = note.nine and color.btn_note_full or color.btn_note_empty
+			c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
+			c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
+			c.note2 = note.note2 and color.btn_note_full or color.btn_note_empty
+			c.note3 = note.note3 and color.btn_note_full or color.btn_note_empty
+			c.note4 = note.note4 and color.btn_note_full or color.btn_note_empty
+			c.note5 = note.note5 and color.btn_note_full or color.btn_note_empty
+			c.note6 = note.note6 and color.btn_note_full or color.btn_note_empty
+			c.note7 = note.note7 and color.btn_note_full or color.btn_note_empty
+			c.note8 = note.note8 and color.btn_note_full or color.btn_note_empty
+			c.note9 = note.note9 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
 	end
@@ -581,54 +570,54 @@ local function onMouseMove(type, mouseX, mouseY)
 			c.edit = color.text_header
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "zero" and hoveringOver.zero == true then
-			hoveringOver.zero = false
-			c.zero = note.zero and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note0" and hoveringOver.note0 == true then
+			hoveringOver.note0 = false
+			c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "one" and hoveringOver.one == true then
-			hoveringOver.one = false
-			c.one = note.one and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note1" and hoveringOver.note1 == true then
+			hoveringOver.note1 = false
+			c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "two" and hoveringOver.two == true then
-			hoveringOver.two = false
-			c.two = note.two and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note2" and hoveringOver.note2 == true then
+			hoveringOver.note2 = false
+			c.note2 = note.note2 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "three" and hoveringOver.three == true then
-			hoveringOver.three = false
-			c.three = note.three and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note3" and hoveringOver.note3 == true then
+			hoveringOver.note3 = false
+			c.note3 = note.note3 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "four" and hoveringOver.four == true then
-			hoveringOver.four = false
-			c.four = note.four and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note4" and hoveringOver.note4 == true then
+			hoveringOver.note4 = false
+			c.note4 = note.note4 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "five" and hoveringOver.five == true then
-			hoveringOver.five = false
-			c.five = note.five and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note5" and hoveringOver.note5 == true then
+			hoveringOver.note5 = false
+			c.note5 = note.note5 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "six" and hoveringOver.six == true then
-			hoveringOver.six = false
-			c.six = note.six and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note6" and hoveringOver.note6 == true then
+			hoveringOver.note6 = false
+			c.note6 = note.note6 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "seven" and hoveringOver.seven == true then
-			hoveringOver.seven = false
-			c.seven = note.seven and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note7" and hoveringOver.note7 == true then
+			hoveringOver.note7 = false
+			c.note7 = note.note7 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "eight" and hoveringOver.eight == true then
-			hoveringOver.eight = false
-			c.eight = note.eight and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note8" and hoveringOver.note8 == true then
+			hoveringOver.note8 = false
+			c.note8 = note.note8 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
-		if hover ~= "nine" and hoveringOver.nine == true then
-			hoveringOver.nine = false
-			c.nine = note.nine and color.btn_note_full or color.btn_note_empty
+		if hover ~= "note9" and hoveringOver.note9 == true then
+			hoveringOver.note9 = false
+			c.note9 = note.note9 and color.btn_note_full or color.btn_note_empty
 			VanaPad:text(updateBox(currentNote))
 		end
 		if hover ~= "help" and hoveringOver.help == true then
@@ -783,16 +772,16 @@ windower.register_event('prerender', function()
 		elseif FadeNum <= option.fade_bg_min then
 			FadeNum = option.fade_bg_min
 			VanaPad:bg_alpha(FadeNum)
-			c.zero = color.text_header
-			c.one = color.text_header
-			c.two = color.text_header
-			c.three = color.text_header
-			c.four = color.text_header
-			c.five = color.text_header
-			c.six = color.text_header
-			c.seven = color.text_header
-			c.eight = color.text_header
-			c.nine = color.text_header
+			c.note0 = color.text_header
+			c.note1 = color.text_header
+			c.note2 = color.text_header
+			c.note3 = color.text_header
+			c.note4 = color.text_header
+			c.note5 = color.text_header
+			c.note6 = color.text_header
+			c.note7 = color.text_header
+			c.note8 = color.text_header
+			c.note9 = color.text_header
 			VanaPad:text(updateBox(currentNote))
 		end
 	end
