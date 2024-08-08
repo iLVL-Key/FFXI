@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '1.1'
+_addon.version = '1.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -745,20 +745,23 @@ local function setJob()
 end
 
 -- Add an action to the current_actions table
-function addToActionsTable(actor_id, actor_action, action_status)
+function addToActionsTable(actor_id, actor_action, actor_action_shdw, action_status, action_status_shdw)
 
 	current_actions[actor_id] = {
 		action = actor_action,
+		action_shdw = actor_action_shdw,
 		status = action_status,
+		status_shdw = action_status_shdw,
 	}
 
 end
 
 -- Update the status of an action in the current_actions table
-function updateActionStatus(actor_id, action_status)
+function updateActionStatus(actor_id, action_status, action_status_shdw)
 
 	if current_actions[actor_id] then
 		current_actions[actor_id].status = action_status
+		current_actions[actor_id].status_shdw = action_status_shdw
 	end
 
 end
@@ -937,8 +940,11 @@ local function updateSelfAction()
 	local player = windower.ffxi.get_player()
 	local ct = text_color
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
+	local self_status_shdw = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status_shdw or ''
 	local self_action = current_actions[player.id] and current_actions[player.id].action or ''
+	local self_action_shdw = current_actions[player.id] and current_actions[player.id].action_shdw or ''
 	local text_self_action = ' '..self_status..self_action
+	local text_self_action_shdw = ' '..self_status_shdw..self_action_shdw
 
 	if self_status ~= '' then
 		if not inCS then
@@ -948,7 +954,7 @@ local function updateSelfAction()
 
 		end
 
-		bars_text_shdw_self_action:text(text_self_action:text_strip_format()) --strip out the custom coloring of the spells
+		bars_text_shdw_self_action:text(text_self_action_shdw)
 		bars_text_self_action:text(text_self_action)
 
 	else
@@ -984,8 +990,11 @@ local function updateFocusTarget()
 	focus_target_hpp = string.format("%3s", focus_target_hpp)
 	local text = focus_target_hpp..'% '..focus_target_name
 	local focus_target_status = show_action_status_indicators and focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].status or ''
+	local focus_target_status_shdw = show_action_status_indicators and focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].status_shdw or ''
 	local focus_target_action = focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].action or ''
+	local focus_target_action_shdw = focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].action_shdw or ''
 	local text_focus_target_action = show_target_action and '      '..focus_target_status..focus_target_action or ''
+	local text_focus_target_action_shdw = show_target_action and '      '..focus_target_status_shdw..focus_target_action_shdw or ''
 
 	if not inCS then
 
@@ -1007,7 +1016,7 @@ local function updateFocusTarget()
 	bars_meter_focus_target:text(focus_target_meter)
 	bars_meter_focus_target:bg_color(cm.r,cm.g,cm.b)
 	bars_text_shdw_focus_target:text(text)
-	bars_text_shdw_focus_target_action:text(text_focus_target_action:text_strip_format()) --strip out the custom coloring of the spells
+	bars_text_shdw_focus_target_action:text(text_focus_target_action_shdw)
 	bars_text_focus_target:text(text)
 	bars_text_focus_target_action:text(text_focus_target_action)
 	bars_text_focus_target:color(ct.r,ct.g,ct.b)
@@ -1032,8 +1041,11 @@ local function updateTarget()
 	target_hpp = string.format("%3s", target_hpp)
 	local text = target_hpp..'% '..target_name..(show_target_index and ' ('..target_index..')' or '')
 	local target_status = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status or ''
+	local target_status_shdw = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status_shdw or ''
 	local target_action = target and current_actions[target.id] and current_actions[target.id].action or ''
+	local target_action_shdw = target and current_actions[target.id] and current_actions[target.id].action_shdw or ''
 	local text_target_action = show_target_action and '      '..target_status..target_action or ''
+	local text_target_action_shdw = show_target_action and '      '..target_status_shdw..target_action_shdw or ''
 
 	if target and not (show_self_when_target == false and target.id == player.id) then
 		if not inCS then
@@ -1056,7 +1068,7 @@ local function updateTarget()
 		bars_meter_target:text(target_meter)
 		bars_meter_target:bg_color(cm.r,cm.g,cm.b)
 		bars_text_shdw_target:text(text)
-		bars_text_shdw_target_action:text(text_target_action:text_strip_format()) --strip out the custom coloring of the spells
+		bars_text_shdw_target_action:text(text_target_action_shdw)
 		bars_text_target:text(text)
 		bars_text_target_action:text(text_target_action)
 		bars_text_target:color(ct.r,ct.g,ct.b)
@@ -1073,6 +1085,11 @@ local function updateTarget()
 
 	end
 
+end
+
+--Format RGB values with leading zeros (prevents an issue with the shadow text not lining up correctly)
+local function format_rgb(value)
+    return string.format("%03d", value)
 end
 
 --Update the HP BAR
@@ -1119,7 +1136,11 @@ local function updateHP()
 		c = color.hp.quarter_1
 	end
 
-	local text = 'HP: \\cs('..c.r..','..c.g..','..c.b..')'..hp..'\\cr'..max_hp
+	local r = format_rgb(c.r)
+	local g = format_rgb(c.g)
+	local b = format_rgb(c.b)
+
+	local text = 'HP: \\cs('..r..','..g..','..b..')'..hp..'\\cr'..max_hp
 	local text_shdw = 'HP: '..hp..max_hp
 
 	bars_meter_hp:text(hp_meter)
@@ -1160,6 +1181,10 @@ local function updateMP()
 		c = color.mp.quarter_1
 	end
 
+	local r = format_rgb(c.r)
+	local g = format_rgb(c.g)
+	local b = format_rgb(c.b)
+
 	-- add the max mp to the right-side of the bar
 	local center_padding = ''
 	if show_max_hp_mp_on_bar then
@@ -1172,7 +1197,7 @@ local function updateMP()
 		max_mp = ''
 	end
 
-	local text = 'MP: \\cs('..c.r..','..c.g..','..c.b..')'..mp..'\\cr'..max_mp
+	local text = 'MP: \\cs('..r..','..g..','..b..')'..mp..'\\cr'..max_mp
 	local text_shdw = 'MP: '..mp..max_mp
 
 	bars_meter_mp:text(mp_meter)
@@ -1264,7 +1289,11 @@ local function updatePet()
 		c = color.hp.quarter_1
 	end
 
-	local text = pet_name..(pet and ': \\cs('..c.r..','..c.g..','..c.b..')'..hpp..'%\\cr' or '')
+	local r = format_rgb(c.r)
+	local g = format_rgb(c.g)
+	local b = format_rgb(c.b)
+
+	local text = pet_name..(pet and ': \\cs('..r..','..g..','..b..')'..hpp..'%\\cr' or '')
 	local text_shdw = pet_name..(pet and ': '..hpp..'%' or '')
 
 	bars_meter_pet:text(pet_meter)
@@ -1430,7 +1459,7 @@ windower.register_event('prerender', function()
 
 	checkForFocusTarget()
 
-	if show_bars[job].pet then
+	if windower.ffxi.get_info().logged_in and show_bars[job].pet then
 		updatePet()
 	end
 
@@ -1455,13 +1484,16 @@ windower.register_event('action', function (act)
 	local action_target = windower.ffxi.get_mob_by_id(act.targets[1].id)
 	local action_target_id = action_target and action_target.id or nil
 	local action_name = ''
+	local action_name_shdw = ''
 	local action_target_name = ''
+	local action_target_name_shdw = ''
 
 	-- Action failed/interrupted
 	if act.param == 28787 then
 
 		local target_action_status_indicator = '\\cs(255,050,050)×\\cr'
-		updateActionStatus(act.actor_id,target_action_status_indicator)
+		local target_action_status_indicator_shdw = '\\cs(000,000,000)×\\cr'
+		updateActionStatus(act.actor_id,target_action_status_indicator,target_action_status_indicator_shdw)
 		coroutine.sleep(2.5)
 		removeFromActionsTable(act.actor_id)
 		return
@@ -1472,20 +1504,29 @@ windower.register_event('action', function (act)
 	if action_id and (act.category == 7 or act.category == 8 or act.category == 9) then
 
 		local target_action = ''
+		local target_action_shdw = ''
 		local target_action_status_indicator = '\\cs(245,164,066)≈\\cr'
+		local target_action_status_indicator_shdw = '\\cs(000,000,000)≈\\cr'
 
 		-- Weapon skill or TP move
 		if act.category == 7 then
 
 			local ct = targetColor(action_target)
-			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs('..ct.r..','..ct.g..','..ct.b..')'..action_target.name..'\\cr' or ''
+			local r = format_rgb(ct.r)
+			local g = format_rgb(ct.g)
+			local b = format_rgb(ct.b)
+
+			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs('..r..','..g..','..b..')'..action_target.name..'\\cr' or ''
+			action_target_name_shdw = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs(000,000,000)'..action_target.name..'\\cr' or ''
 
 			if actor and isPlayer(actor.id) then
 				action_name = ' '..res.weapon_skills[action_id].name
+				action_name_shdw = ' \\cs(000,000,000)'..res.weapon_skills[action_id].name..'\\cr'
 			elseif act.targets[1].actions[1].param == nil then
 				return
 			else
 				action_name = res.monster_abilities[action_id] and ' '..res.monster_abilities[action_id].name or ' '..res.weapon_skills[action_id].name
+				action_name_shdw = res.monster_abilities[action_id] and ' \\cs(000,000,000)'..res.monster_abilities[action_id].name..'\\cr' or ' \\cs(000,000,000)'..res.weapon_skills[action_id].name..'\\cr'
 			end
 
 		-- Spell
@@ -1494,8 +1535,17 @@ windower.register_event('action', function (act)
 			local element = res.spells[action_id].element
 			local ca = element_colors[element]
 			local ct = targetColor(action_target)
-			action_name = ' \\cs('..ca.r..','..ca.g..','..ca.b..')'..res.spells[action_id].name..'\\cr'
-			action_target_name = action_target_id and ' → \\cs('..ct.r..','..ct.g..','..ct.b..')'..action_target.name..'\\cr' or ''
+			local ca_r = format_rgb(ca.r)
+			local ca_g = format_rgb(ca.g)
+			local ca_b = format_rgb(ca.b)
+			local ct_r = format_rgb(ct.r)
+			local ct_g = format_rgb(ct.g)
+			local ct_b = format_rgb(ct.b)
+
+			action_name = ' \\cs('..ca_r..','..ca_g..','..ca_b..')'..res.spells[action_id].name..'\\cr'
+			action_name_shdw = ' \\cs(000,000,000)'..res.spells[action_id].name..'\\cr'
+			action_target_name = action_target_id and ' → \\cs('..ct_r..','..ct_g..','..ct_b..')'..action_target.name..'\\cr' or ''
+			action_target_name_shdw = action_target_id and ' → \\cs(000,000,000)'..action_target.name..'\\cr' or ''
 
 		-- Item
 		elseif act.category == 9 then
@@ -1503,22 +1553,30 @@ windower.register_event('action', function (act)
 			local item_id = act.targets[1].actions[1].param
 			local item_name = res.items[item_id].name
 			local ct = targetColor(action_target)
+			local r = format_rgb(ct.r)
+			local g = format_rgb(ct.g)
+			local b = format_rgb(ct.b)
+
 			action_name = ' '..item_name
-			action_target_name = action_target_id and ' → \\cs('..ct.r..','..ct.g..','..ct.b..')'..windower.ffxi.get_mob_by_id(action_target_id).name..'\\cr' or ''
+			action_name_shdw = ' \\cs(000,000,000)'..item_name..'\\cr'
+			action_target_name = action_target_id and ' → \\cs('..r..','..g..','..b..')'..windower.ffxi.get_mob_by_id(action_target_id).name..'\\cr' or ''
+			action_target_name_shdw = action_target_id and ' → \\cs(000,000,000)'..windower.ffxi.get_mob_by_id(action_target_id).name..'\\cr' or ''
 
 		end
 
 		target_action = action_name..action_target_name
+		target_action_shdw = action_name_shdw..action_target_name_shdw
 
 		if (show_self_action and player.id == act.actor_id) or show_target_action then
-			addToActionsTable(act.actor_id,target_action,target_action_status_indicator)
+			addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status_indicator,target_action_status_indicator_shdw)
 		end
 
 	-- Finish weapon skill(3), spell(4), item(5), or TP move(11)
 	elseif act.category == 3 or act.category == 4 or act.category == 5 or act.category == 11 then
 
 		target_action_status_indicator = '\\cs(050,255,050)√\\cr'
-		updateActionStatus(act.actor_id,target_action_status_indicator)
+		target_action_status_indicator_shdw = '\\cs(000,000,000)√\\cr'
+		updateActionStatus(act.actor_id,target_action_status_indicator,target_action_status_indicator_shdw)
 
 		-- Items can be spammed fast and gets weird if the delay is too long
 		if act.category == 5 then
