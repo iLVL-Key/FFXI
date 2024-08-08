@@ -1445,6 +1445,10 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.2.3
+- Fixed an issue with the Avatar Status not displaying correctly in the HUD.
+- Fixed an issue with the Avatar Status not updating correctly in the HUD.
+
 Version 12.2.2
 - Fixed a minor error that occasionally displays when dismissing your Avatar.
 
