@@ -622,7 +622,7 @@ end
 
 
 
-FileVersion = '12.2.2'
+FileVersion = '12.2.3'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -719,6 +719,7 @@ DangerCountdown = 0
 NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
 EquipMain = ''
 PetHPP = -1
+PetStatus = -1
 currentAfterMath = ''
 currentMythicNum = 0
 currentPrimeNum = 0
@@ -2780,8 +2781,9 @@ windower.register_event('prerender', function()
 	-- Avatar HP checks
 	if pet.isvalid == true then
 		local pet = windower.ffxi.get_mob_by_target('pet')
-		if pet and PetHPP ~= pet.hpp then
+		if pet and (PetHPP ~= pet.hpp or PetStatus ~= pet.status) then
 			PetHPP = pet.hpp
+			PetStatus = pet.status
 			local petHPMeter = ""
 			local spaces = math.floor(72 * (pet.hpp / 100)) --HUD is 72 spaces wide
 			while string.len(petHPMeter) < spaces and string.len(petHPMeter) < 72 do
@@ -2799,8 +2801,8 @@ windower.register_event('prerender', function()
 			hud_bg_color:text(petHPMeter)
 			hud_bg_color:bg_color(c.r,c.g,c.b)
 			hud_bg_color:bg_alpha(100)
-			hud_avatar_shdw:text(pet.name..' - '..pet.hpp..'% ('..pet.status..')')
-			hud_avatar:text(pet.name..' - '..pet.hpp..'% ('..pet.status..')')
+			hud_avatar_shdw:text(pet.name..' - '..pet.hpp..'% ('..res.statuses[pet.status].en..')')
+			hud_avatar:text(pet.name..' - '..pet.hpp..'% ('..res.statuses[pet.status].en..')')
 		end
 	elseif PetHPP ~= -1 then
 		PetHPP = -1 --We use -1 to avoid an issue with Avatar being killed not triggering this
