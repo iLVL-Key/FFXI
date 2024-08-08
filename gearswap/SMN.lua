@@ -622,7 +622,7 @@ end
 
 
 
-FileVersion = '12.2.1'
+FileVersion = '12.2.2'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -2780,7 +2780,7 @@ windower.register_event('prerender', function()
 	-- Avatar HP checks
 	if pet.isvalid == true then
 		local pet = windower.ffxi.get_mob_by_target('pet')
-		if PetHPP ~= pet.hpp then
+		if pet and PetHPP ~= pet.hpp then
 			PetHPP = pet.hpp
 			local petHPMeter = ""
 			local spaces = math.floor(72 * (pet.hpp / 100)) --HUD is 72 spaces wide
