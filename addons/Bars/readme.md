@@ -42,6 +42,10 @@ All commands must be preceded with `//bars`
 
 ## Changelog
 
+Version 1.1.1
+- Fixed an issue where the text shadow occasionally does not line up correctly with its parent text.
+- Fixed an error with the Pet bar that displays when logging.
+
 Version 1.1
 - Added Pet bar showing the name of the pet and their HPP. Defaults to displayed only for pet jobs, but can be turn on or off individually per job the same as HP/MP/TP.
 - Added option to show your own action and action status. Default position puts this near the top of the screen, under the buff bar, but it has it's own pos in the settings file.
