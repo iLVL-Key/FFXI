@@ -677,7 +677,7 @@ end
 
 
 
-FileVersion = '7.2'
+FileVersion = '7.2.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2180,7 +2180,7 @@ function aftercast(spell)
 	elseif (spell.english == 'Chakra' or spell.english == 'Super Jump' or spell.english == 'High Jump') and not spell.interrupted and player.hp <= AutoSaveThreshold then
 		AutoSaveUsed = true
 	end
-	if spell.english ~= "boost" then
+	if player.equipment.waist ~= "Ask Sash" then
 		choose_set()
 	end
 end
