@@ -667,6 +667,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.2.1
+- Fixed the Boost/Ask Sash "MNK Meditate".
+
 Version 7.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
