@@ -91,10 +91,14 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 - `report` - Receive a score report via tell. (receive command via tell only)
 
 ### Current Known Issues
-- Lunge/Swipe are currently added to both Nukes and Magic Burst as-is. The message # given by using Lunge/Swipe is identical between it causing a Magic Burst or not. Need to figure out how to differentiate between the two.
-- In high lag situations (seen in Dynamis-Jeuno Divergance), occasionally a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an
+- In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an item without the tell to inform them of it. I have seen this myself a total of twice ever, but something to be aware of.
 
 ### Version History
+
+**4.0.2**
+- Added more "Utility" WSs to be excluded from WS boards.
+- Fixed separating Lunge/Swipe Magic Bursts and non Magic Bursts.
+- Fixed SMN BP "WSs" not being labeled correctly.
 
 **4.0.1**
 - Fixed the Points Board callout not pausing when Mog Kart mode is paused.
