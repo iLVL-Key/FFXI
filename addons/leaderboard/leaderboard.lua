@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '4.0.1'
+_addon.version = '4.0.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -2390,7 +2390,7 @@ windower.register_event('action',function(act)
 		data.target = act.targets[1].id
 		data.target_name = windower.ffxi.get_mob_by_id(data.target).name or '[REDACTED]'
 		data.damage = act.targets[1].actions[1].param
-		data.ws = weaponskills[act.param] and weaponskills[act.param].english or '[REDACTED]'
+		data.ws = act.category == 13 and jabils[act.param].english or weaponskills[act.param].english
 		data.spell = spells[act.param] and spells[act.param].english or '[REDACTED]'
 		data.jabils = jabils[act.param] and jabils[act.param].english or '[REDACTED]'
 
@@ -2400,7 +2400,7 @@ windower.register_event('action',function(act)
 		end
 
 		-- Exclude utility Weapon Skills
-		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' and (act.targets[1].actions[1].message == 185 or act.targets[1].actions[1].message == 188) then
+		if data.ws == 'Atonement' or data.ws == 'Flat Blade' or data.ws == 'Tachi: Hobaku' or data.ws == 'Tachi: Ageha' or data.ws == 'Shoulder Tackle' or data.ws == 'Leg Sweep' or data.ws == 'Smash Axe' or data.ws == 'Brainshaker' or data.ws == 'Myrkr' or data.ws == 'Starlight' or data.ws == 'Moonlight' or data.ws == 'Energy Drain' or data.ws == 'Shield Break' or data.ws == 'Armor Break' or data.ws == 'Weapon Break' or data.ws == 'Full Break' or data.ws == 'Shell Crusher' or data.ws == 'Spirit Taker' or data.ws == 'Shockwave' and (act.targets[1].actions[1].message == 185 or act.targets[1].actions[1].message == 188) then
 			return
 		end
 
@@ -2837,7 +2837,7 @@ windower.register_event('action',function(act)
 	end
 
 	-- Magic Burst lands
-	if ((act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110) or (act.category == 13 and act.targets[1].actions[1].message == 379)) and not live.paused then
+	if ((act.category == 4 and act.targets[1].actions[1].message == 252) or (act.category == 15 and act.targets[1].actions[1].message == 110 and act.targets[1].actions[1].unknown == 4) or (act.category == 13 and act.targets[1].actions[1].message == 379)) and not live.paused then
 
 		-----------------
 		-- MAGIC BURST --
