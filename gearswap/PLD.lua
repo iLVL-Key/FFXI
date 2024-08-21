@@ -2272,8 +2272,18 @@ function precast(spell)
 		MajestyTimer = 180
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
+		if player.tp <= TPThreshold and not spell.english == 'Spectral Jig' then
+			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
+		elseif not spell.english == 'Spectral Jig' then
+			equip(sets.fastcast)
+		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
+		if player.tp <= TPThreshold then
+			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
+		else
+			equip(sets.fastcast)
+		end
 	--if we're casting a cure or protect without Majesty up, we'll put it up before casting:
 	elseif AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not buffactive['Majesty'] and not buffactive['amnesia'] and Majesty.recast == 0 then
 		if not double_majesty_fix then
