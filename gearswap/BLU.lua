@@ -187,10 +187,10 @@ HUDrecast.Mode1.Abil06 =	"Reactor Cool"		HUDrecast.Mode1.Abil06_sh = "Reactor"
 --Mode 2
 HUDrecast.Mode2.Abil01 =	"Erratic Flutter"		HUDrecast.Mode2.Abil01_sh = "Erratic"
 HUDrecast.Mode2.Abil02 =	"Occultation"			HUDrecast.Mode2.Abil02_sh = "Occult"
-HUDrecast.Mode2.Abil03 =	"Cocoon"				HUDrecast.Mode2.Abil03_sh = "Cocoon"
+HUDrecast.Mode2.Abil03 =	"Cocoon"				HUDrecast.Mode2.Abil03_sh = ""
 HUDrecast.Mode2.Abil04 =	"Nature's Meditation"	HUDrecast.Mode2.Abil04_sh = "Nat Med"
-HUDrecast.Mode2.Abil05 =	"Berserk"				HUDrecast.Mode2.Abil05_sh = "Berserk"
-HUDrecast.Mode2.Abil06 =	"Aggressor"				HUDrecast.Mode2.Abil06_sh = "Aggres."
+HUDrecast.Mode2.Abil05 =	"Berserk"				HUDrecast.Mode2.Abil05_sh = ""
+HUDrecast.Mode2.Abil06 =	"Aggressor"				HUDrecast.Mode2.Abil06_sh = ""
 --Mode 3
 HUDrecast.Mode3.Abil01 =	"Erratic Flutter"	HUDrecast.Mode3.Abil01_sh = "Erratic"
 HUDrecast.Mode3.Abil02 =	"Battery Charge"	HUDrecast.Mode3.Abil02_sh = "Battery"
@@ -348,8 +348,7 @@ sets.Mode1.idle = {
 	hands={ name="Herculean Gloves", augments={'Enmity-4','"Avatar perpetuation cost" -2','"Refresh"+2','Accuracy+3 Attack+3',}},
 	legs="Carmine Cuisses +1",
 	feet={ name="Herculean Boots", augments={'Pet: "Regen"+2','VIT+1','"Refresh"+2','Mag. Acc.+10 "Mag.Atk.Bns."+10',}},
-	neck="Twilight Torque",
-	--neck="Loricate Torque",
+	neck="Loricate Torque +1",
 	waist="Flume Belt",
 	left_ear="Suppanomimi",
 	--left_ear="Hearty Earring",
@@ -535,6 +534,12 @@ sets.fastcast = {
 	left_ring="Prolix Ring", --2%
 	right_ring="Kishar Ring", --4%
 	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Damage taken-5%',}}, --10%
+}
+
+-- Snapshot
+-- For ranged attacks when you need to pull without aggroing via magic
+sets.snapshot = {
+
 }
 
 -- Physical Spells (STR, Accuracy, Attack)	(Macc only affects add'l effects landing, NOT the damage from the physical spell itself)
@@ -762,7 +767,7 @@ end
 
 
 
-FileVersion = '18.2'
+FileVersion = '18.3'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -2307,6 +2312,8 @@ function precast(spell)
 		send_command('cancel 71')
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
 		equip(sets.magical)
+	elseif spell.action_type == 'Ranged Attack' then
+		equip(sets.snapshot)
 	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 	end
@@ -2453,8 +2460,8 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		mythicNum = 0
-		primeNum = 0
+		-- mythicNum = 0
+		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
