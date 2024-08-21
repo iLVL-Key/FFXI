@@ -622,7 +622,7 @@ end
 
 
 
-FileVersion = '12.2.3'
+FileVersion = '12.2.4'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -2004,7 +2004,7 @@ function precast(spell)
 		if AutoFavor == 'On' and not buffactive['Avatar\'s Favor'] and not buffactive['amnesia'] and windower.ffxi.get_ability_recasts()[176] == 0 then
 			if not double_avatars_favor_fix then
 				double_avatars_favor_fix = true --prevents this from running through here a second time after being cast again below
-				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet '..spell.english..' '..spell.target.raw..'')
+				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw..'')
 				cancel_spell()
 				return
 			else
@@ -2025,7 +2025,7 @@ function precast(spell)
 		--if we're casting an avatar with one already out, we'll use Release before casting:
 		if pet.isvalid == true and AutoRelease == 'On' and windower.ffxi.get_ability_recasts()[172] == 0 then
 			cancel_spell()
-			send_command('input /pet "Release" <me>;wait 1;input /ma '..spell.english..' <me>')
+			send_command('input /pet "Release" <me>;wait 1;input /ma \"'..spell.english..'\" <me>')
 		end
 		equip(sets.summoning)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
@@ -2174,8 +2174,8 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		mythicNum = 0
-		primeNum = 0
+		-- mythicNum = 0
+		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
