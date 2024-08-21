@@ -561,6 +561,11 @@ sets.hachirin = set_combine(sets.magicws,sets.ws, {
 	waist="Hachirin-no-obi",
 })
 
+-- Snapshot
+sets.snapshot = {
+
+}
+
 -- Ygnas's Resolve +1
 -- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
 sets.ygnas = {
@@ -676,7 +681,7 @@ end
 
 
 
-FileVersion = '8.2'
+FileVersion = '8.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2232,6 +2237,8 @@ function precast(spell)
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
 		equip(sets.hwater)
+	elseif spell.action_type == 'Ranged Attack' then
+		equip(sets.snapshot)
 	end
 end
 
@@ -2344,8 +2351,8 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		mythicNum = 0
-		primeNum = 0
+		-- mythicNum = 0
+		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
