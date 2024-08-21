@@ -150,6 +150,7 @@ ModeBind		=	'^g'	--Sets the keyboard shortcut you would like to cycle between Mo
 WCBind			=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 AutoMajWindow	=	60		--Time in seconds left before Majesty wears off that AutoMajesty will activate after a cure/protect.
+TPThreshold		=	250		--Specific Main/Sub gear sets will only equip when TP is under this number.
 MaxHPThreshold	=	75		--If your HP% is above this number when you cure yourself, your Max HP gear set will activate.
 							--Once it is activated, going below this will deactivate it.
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
@@ -339,7 +340,6 @@ sets.tank = {
 	]]--
 }
 
-
 -- MAX HP (HP-focused tank gear, inherits any leftover slots from the Tank set above)
 -- NOTE: This set is only used when the "UseMaxHP" option is set to 'On'.
 sets.maxhp = set_combine(sets.tank, {
@@ -447,7 +447,19 @@ sets.fastcast = {
 	right_ear="Odnowa Earring +1",
 	left_ring="Moonlight Ring",
 	right_ring="Defending Ring",
-	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Fast Cast"+10','Mag. Evasion+15',}},
+	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Fast Cast"+10','Mag. Evasion+15',}}, --10
+}
+
+-- Fast Cast Main/Sub (only define main and sub slots in this set, will combine as necessary)
+-- NOTE: Only equips when TP is under the TPThreshold number, set in the Options section.
+sets.fastcast_mainsub = {
+	--main="Sakpata's Sword",
+}
+
+-- Snapshot
+-- For ranged attacks when you need to pull without aggroing via magic
+sets.snapshot = {
+
 }
 
 -- Enmity (full Enmity+ for spells/abilities)
@@ -551,7 +563,7 @@ sets.enlightsird = {
 
 -- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 sets.phalanx = {
-	head={ name="Odyssean Helm", augments={'STR+6','Mag. Acc.+20 "Mag.Atk.Bns."+20','Phalanx +3','Accuracy+4 Attack+4',}},
+	head={ name="Odyssean Helm", augments={'AGI+15','Accuracy+8','Phalanx +4','Accuracy+10 Attack+10','Mag. Acc.+20 "Mag.Atk.Bns."+20',}},
 	body="Odyssean Chestplate",
 	hands="Souv. Handsch. +1",
 	legs="Sakpata's Cuisses",
@@ -575,6 +587,12 @@ sets.phalanxsird = {
 	left_ring="Defending Ring",
 	right_ring="Stikini Ring +1",
 	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
+}
+
+-- Phalanx Main/Sub (only define main and sub slots in this set, will combine as necessary)
+-- NOTE: Only equips when TP is under the TPThreshold number, set in the Options section.
+sets.phalanx_mainsub = {
+	main="Sakpata's Sword",
 }
 
 -- Enhancing Magic (Enhancing Magic Duration, Enhancing Magic Skill)
@@ -605,6 +623,12 @@ sets.enhancingsird = {
 	left_ring="Moonlight Ring",
 	right_ring="Defending Ring",
 	back="Moonlight Cape",
+}
+
+-- Protect Main/Sub (only define main and sub slots in this set, will combine as necessary)
+-- NOTE: Only equips when TP is under the TPThreshold number, set in the Options section.
+sets.protect_mainsub = {
+	--sub="Srivatsa",
 }
 
 -- Raise (102%+ SIRD, Conserve MP)
@@ -777,7 +801,7 @@ end
 
 
 
-FileVersion = '14.2.1'
+FileVersion = '14.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1336,6 +1360,16 @@ local function addCommas(number)
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
     return formattedNumber
 end
+
+--Set the initial main/sub weapon pair
+local function setWeaponPair()
+	if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
+		pair = WeaponCyclePlusAbyssea[WeaponCycleIndex]
+	else --otherwise, use just the basic WeaponCycle table
+		pair = WeaponCycle[WeaponCycleIndex]
+	end
+end
+setWeaponPair()
 
 -- Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
 local function checkProcWeapons(mainSlot, subSlot)
@@ -2051,6 +2085,7 @@ function choose_set()
 		elseif Mode == 'DPS' then
 			equip(sets.dps)
 		end
+		equip({main=pair[1],sub=pair[2]})
 	elseif player.status == "Idle" then
 		if TownZones:contains(world.area) then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
@@ -2116,6 +2151,7 @@ function choose_set()
 				end
 			end
 		end
+		equip({main=pair[1],sub=pair[2]})
 	end
 end
 
@@ -2242,7 +2278,7 @@ function precast(spell)
 	elseif AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not buffactive['Majesty'] and not buffactive['amnesia'] and Majesty.recast == 0 then
 		if not double_majesty_fix then
 			double_majesty_fix = true --prevents this from running through here a second time after being cast again below
-			send_command('input /ja Majesty <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+			send_command('input /ja Majesty <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..'')
 			cancel_spell()
 			return
 		else
@@ -2260,7 +2296,11 @@ function precast(spell)
 					double_divine_emblem_fix = false
 				end
 			end
-			equip(sets.fastcast)
+			if player.tp <= TPThreshold then
+				equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
+			else
+				equip(sets.fastcast)
+			end
 		elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
 			if windower.ffxi.get_spell_recasts()[575] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,575) and spell.target.distance <= 9 then
 				send_command('input /ma "Jettatura" '..spell.target.raw..'')
@@ -2281,7 +2321,11 @@ function precast(spell)
 	elseif spell.english == "Sheep Song" then
 		if player.sub_job == 'BLU' then
 			if windower.ffxi.get_spell_recasts()[584] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,584) then
-				equip(sets.fastcast)
+				if player.tp <= TPThreshold then
+					equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
+				else
+					equip(sets.fastcast)
+				end
 			elseif windower.ffxi.get_spell_recasts()[605] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,605) then
 				send_command('input /ma "Geist Wall" '..spell.target.raw..'')
 				cancel_spell()
@@ -2304,8 +2348,14 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
+	elseif spell.action_type == 'Ranged Attack' then
+		equip(sets.snapshot)
 	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
-		equip(sets.fastcast)
+		if player.tp <= TPThreshold then
+			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
+		else
+			equip(sets.fastcast)
+		end
 	end
 end
 
@@ -2344,15 +2394,31 @@ function midcast(spell)
 		end
 	elseif spell.english == 'Phalanx' then
 		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
-			equip(sets.phalanxsird)
+			if player.tp <= TPThreshold then
+				equip(set_combine(sets.phalanxsird, sets.phalanx_mainsub))
+			else
+				equip(sets.phalanxsird)
+			end
 		else
-			equip(sets.phalanx)
+			if player.tp <= TPThreshold then
+				equip(set_combine(sets.phalanx, sets.phalanx_mainsub))
+			else
+				equip(sets.phalanx)
+			end
 		end
 	elseif spell.skill == "Enhancing Magic" then
 		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
-			equip(sets.enhancingsird)
+			if string.find(spell.english,'Protect') and player.tp <= TPThreshold then
+				equip(set_combine(sets.protect_mainsub, sets.enhancingsird))
+			else
+				equip(sets.enhancingsird)
+			end
 		else
-			equip(sets.enhancing)
+			if string.find(spell.english,'Protect') and player.tp <= TPThreshold then
+				equip(set_combine(sets.protect_mainsub, sets.enhancing))
+			else
+				equip(sets.enhancing)
+			end
 		end
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
@@ -2442,8 +2508,8 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		mythicNum = 0
-		primeNum = 0
+		-- mythicNum = 0
+		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
@@ -3718,19 +3784,17 @@ windower.register_event('action',function(act)
 				hud_noti:color(0,255,255)
 			end
 			NotiCountdown = -1
-		--Magic Bursts:
-		elseif (act.targets[1].actions[1].message == 252 or act.targets[1].actions[1].message == 265 or act.targets[1].actions[1].message == 274 or act.targets[1].actions[1].message == 379 or act.targets[1].actions[1].message == 650 or act.targets[1].actions[1].message == 749 or act.targets[1].actions[1].message == 751 or act.targets[1].actions[1].message == 753 or act.targets[1].actions[1].message == 803) and act.actor_id == player.id then
-			--Magic:
-			if act.category == 4 then
-				hud_noti_shdw:text('Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-				hud_noti:text('Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-				hud_noti:color(0,255,255)
-			--Lunges:
-			elseif act.category == 15 then
-				hud_noti_shdw:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-				hud_noti:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-				hud_noti:color(0,255,255)
-			end
+		--Magic Bursts (magic):
+		elseif (act.category == 4 and act.targets[1].actions[1].message == 252) and act.actor_id == player.id then
+			hud_noti_shdw:text('Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
+			hud_noti:text('Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
+			hud_noti:color(0,255,255)
+			NotiCountdown = -1
+		--Magic Busts (lunge/swipe):
+		elseif (act.category == 15 and act.targets[1].actions[1].message == 110 and act.targets[1].actions[1].unknown == 4) and act.actor_id == player.id then
+			hud_noti_shdw:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
+			hud_noti:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
+			hud_noti:color(0,255,255)
 			NotiCountdown = -1
 		end
 	end
