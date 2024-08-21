@@ -538,6 +538,16 @@ sets.hachirin = set_combine(sets.hybridws, {
 	waist="Hachirin-no-obi",
 })
 
+-- Snapshot
+sets.snapshot = {
+
+}
+
+-- Ranged Attack
+sets.ranged_attack = {
+
+}
+
 -- Ygnas's Resolve +1
 -- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
 sets.ygnas = {
@@ -638,7 +648,7 @@ end
 
 
 
-FileVersion = '14.2'
+FileVersion = '14.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2182,6 +2192,8 @@ function precast(spell)
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
 		equip(sets.hwater)
+	elseif spell.action_type == 'Ranged Attack' then
+		equip(sets.snapshot)
 	end
 end
 
@@ -2192,6 +2204,8 @@ end
 function midcast(spell)
 	if spell.type == 'Trust' then
 		equip(sets.unity)
+	elseif spell.action_type == 'Ranged Attack' then
+		equip(sets.ranged_attack)
 	end
 end
 
