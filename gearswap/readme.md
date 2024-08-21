@@ -99,6 +99,7 @@ In general, each HUD has..
 
 Verison 18.3
 - Added Snapshot set for ranged attacks.
+- Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
 
 Version 18.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
@@ -427,6 +428,7 @@ Version 15.0
 
 Version 14.2.3
 - Fixed an issue where AutoEntrust and AutoFullCircle would give an error under specific conditions.
+- Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
 
 Version 14.2.2
 - Fixed a minor error that occasionally displays when dismissing your Luopan.
@@ -1049,6 +1051,7 @@ Version 11.0
 Version 9.4
 - Added Snapshot set for ranged attacks.
 - Fixed Lunge/Swipe Magic Burst Notifications.
+- Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
 
 Version 9.3
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
@@ -1471,6 +1474,7 @@ Version 9.0
 
 Version 12.2.4
 - Fixed an issue where AutoRelease and AutoFavor would give an error under specific conditions.
+- Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
 
 Version 12.2.3
 - Fixed an issue with the Avatar Status not displaying correctly in the HUD.
