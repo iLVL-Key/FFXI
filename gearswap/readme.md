@@ -794,7 +794,7 @@ Version 14.3
 - Added "Main/Sub" sets for Fast Cast, Protect, and Phalanx. These are sets specifically for the main and sub slots and will only equip when TP is under a user-defined TP threshold.
 - Added Snapshot set for ranged attacks.
 - Added TPThreshold Option for the "Main/Sub" sets.
-- Fixed Stoneskin not using the Fast Cast set.
+- Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
 - Fixed an issue where AutoMajesty would give an error under specific conditions.
 - Fixed Lunge/Swipe Magic Burst Notifications.
 
