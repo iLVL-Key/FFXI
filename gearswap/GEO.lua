@@ -586,7 +586,7 @@ end
 
 
 
-FileVersion = '14.2.2'
+FileVersion = '14.2.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1879,7 +1879,7 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif string.find(spell.english,'Geo-') and LuopanActive == true and AutoFullCircle == 'On' and FullCircle.recast < 2 then
 		--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle instead
-		send_command('input /ja "Full Circle" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+		send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..'')
 		cancel_spell()
 		return
 	elseif string.find(spell.english,'Indi-') then
@@ -1898,7 +1898,7 @@ function precast(spell)
 				--now that AutoEntrust was activated above, we can Do The Thing
 				if not double_entrust_fix then
 					double_entrust_fix = true --prevents this from running through here a second time after being cast again below
-					send_command('input /ja "Entrust" <me>;wait 1;input /ma '..spell.english..' '..spell.target.raw..'')
+					send_command('input /ja "Entrust" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..'')
 					send_command('wait 5;gs c CancelUseEntrust')
 					cancel_spell()
 					return
