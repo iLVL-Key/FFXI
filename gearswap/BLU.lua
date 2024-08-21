@@ -2310,6 +2310,10 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
+		equip(sets.fastcast)
+	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
+		send_command('cancel 37')
+		equip(sets.fastcast)
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
 		equip(sets.magical)
 	elseif spell.action_type == 'Ranged Attack' then
