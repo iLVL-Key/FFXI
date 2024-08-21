@@ -2030,6 +2030,10 @@ function precast(spell)
 		equip(sets.summoning)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
+		equip(sets.fastcast)
+	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
+		send_command('cancel 37')
+		equip(sets.fastcast)
 	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 	end
