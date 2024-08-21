@@ -97,6 +97,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Verison 18.3
+- Added Snapshot set for ranged attacks.
+
 Version 18.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
@@ -421,6 +424,9 @@ Version 15.0
 <details>
  
 <summary>GEO</summary>
+
+Version 14.2.3
+- Fixed an issue where AutoEntrust and AutoFullCircle would give an error under specific conditions.
 
 Version 14.2.2
 - Fixed a minor error that occasionally displays when dismissing your Luopan.
@@ -784,6 +790,13 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 14.3
+- Added "Main/Sub" sets for Fast Cast, Protect, and Phalanx. These are sets specifically for the main and sub slots and will only equip when TP is under a user-defined TP threshold.
+- Added Snapshot set for ranged attacks.
+- Added TPThreshold Option for the "Main/Sub" sets.
+- Fixed an issue where AutoMajesty would give an error under specific conditions.
+- Fixed Lunge/Swipe Magic Burst Notifications.
+
 Version 14.2.1
 - Fixed a double activation of Majesty when activated through the AutoMajesty option.
 
@@ -1032,6 +1045,10 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.4
+- Added Snapshot set for ranged attacks.
+- Fixed Lunge/Swipe Magic Burst Notifications.
+
 Version 9.3
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
 
@@ -1217,6 +1234,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.3
+- Added Snapshot and Ranged Attack sets for ranged attacks.
 
 Version 14.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
@@ -1448,6 +1468,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.2.4
+- Fixed an issue where AutoRelease and AutoFavor would give an error under specific conditions.
+
 Version 12.2.3
 - Fixed an issue with the Avatar Status not displaying correctly in the HUD.
 - Fixed an issue with the Avatar Status not updating correctly in the HUD.
@@ -1638,6 +1661,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.3
+- Added Snapshot set for ranged attacks.
 
 Version 8.2
 - Adjusted the HUD Recast to now display recast timers above 60 seconds, mimicking the games built-in timers under the buff icons.
