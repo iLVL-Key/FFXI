@@ -486,6 +486,12 @@ sets.fastcast = {
 	back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Spell interruption rate down-10%',}}, --10
 }
 
+-- Snapshot
+-- For ranged attacks when you need to pull without aggroing via magic
+sets.snapshot = {
+
+}
+
 -- Spell Interruption Rate Down (Need 102% for actual 100% cap, don't forget about 10% from merits)
 -- NOTE: This set gets combined with (and overwrites) the next 5 sets (Healing through Enhancing) based on Mode and whether or not you are in combat
 sets.sird = {
@@ -720,7 +726,7 @@ end
 
 
 
-FileVersion = '9.3'
+FileVersion = '9.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2574,6 +2580,8 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
+	elseif spell.action_type == 'Ranged Attack' then
+		equip(sets.snapshot)
 	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
 		equip(sets.fastcast)
 	end
@@ -2806,9 +2814,9 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		AMTimer = pre_AMTimer
-		mythicNum = pre_mythicNum
-		primeNum = pre_primeNum
+		-- AMTimer = pre_AMTimer
+		-- mythicNum = pre_mythicNum
+		-- primeNum = pre_primeNum
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
@@ -4397,8 +4405,8 @@ windower.register_event('action',function(act)
 				hud_noti_bg:bg_alpha(0)
 			end
 			NotiCountdown = -1
-		--Lunge Magic Bursts:
-		elseif (act.category == 15 and act.targets[1].actions[1].message == 110) and act.actor_id == player.id then
+		--Lunge/Swipe Magic Bursts:
+		elseif (act.category == 15 and act.targets[1].actions[1].message == 110 and act.targets[1].actions[1].unknown == 4) and act.actor_id == player.id then
 			hud_noti_shdw:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 			hud_noti:text('Magic Burst! '..jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 			hud_noti:color(0,255,255)
