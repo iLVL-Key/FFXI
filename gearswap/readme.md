@@ -675,6 +675,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.2.2
+- Fixed DPS modes 2-4 not equipping Footwork and Impetus sets appropriately.
+
 Version 7.2.1
 - Fixed the Boost/Ask Sash "MNK Meditate".
 
