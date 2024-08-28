@@ -426,6 +426,9 @@ Version 15.0
  
 <summary>GEO</summary>
 
+Version 14.2.4
+- Adjusted how the AutoEntrust and AutoFullCircle work, making them much more consistant now.
+
 Version 14.2.3
 - Fixed an issue where AutoEntrust and AutoFullCircle would give an error under specific conditions.
 - Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
@@ -794,6 +797,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.3.1
+- Adjusted how the AutoDivineEmblem and AutoMajesty work, making them much more consistant now.
 
 Version 14.3
 - Added "Main/Sub" sets for Fast Cast, Protect, and Phalanx. These are sets specifically for the main and sub slots and will only equip when TP is under a user-defined TP threshold.
