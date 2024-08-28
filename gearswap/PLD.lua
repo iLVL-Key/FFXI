@@ -502,7 +502,7 @@ sets.enmityspellssird = set_combine(sets.enmity, {
 	right_ear="Odnowa Earring +1",
 	left_ring="Moonlight Ring",
 	right_ring="Defending Ring",
-	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
+	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','Enmity+10','Spell interruption rate down-10%',}},	--10 SIRD
 })
 
 -- Healing (Cure Potency, HP+, Enmity)
@@ -801,7 +801,7 @@ end
 
 
 
-FileVersion = '14.3'
+FileVersion = '14.3.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2027,6 +2027,10 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
+	elseif command == 'double_divine_emblem_fix' then
+		double_divine_emblem_fix = false
+	elseif command == 'double_majesty_fix' then
+		double_majesty_fix = false
 	end
 end
 
@@ -2288,22 +2292,18 @@ function precast(spell)
 	elseif AutoMajesty == 'On' and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not buffactive['Majesty'] and not buffactive['amnesia'] and Majesty.recast == 0 then
 		if not double_majesty_fix then
 			double_majesty_fix = true --prevents this from running through here a second time after being cast again below
-			send_command('input /ja Majesty <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..'')
 			cancel_spell()
+			send_command('input /ja Majesty <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_majesty_fix')
 			return
-		else
-			double_majesty_fix = false
 		end
 	elseif spell.english == "Flash" then
 		if windower.ffxi.get_spell_recasts()[112] < 120 then
 			if AutoDEmblem == 'On' and not buffactive['amnesia'] and DivineEmblem.recast == 0 then
 				if not double_divine_emblem_fix then
 					double_divine_emblem_fix = true --prevents this from running through here a second time after being cast again below
-					send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..'')
 					cancel_spell()
+					send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..';wait 1;gs c double_divine_emblem_fix')
 					return
-				else
-					double_divine_emblem_fix = false
 				end
 			end
 			if player.tp <= TPThreshold then
