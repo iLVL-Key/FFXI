@@ -677,7 +677,7 @@ end
 
 
 
-FileVersion = '7.2.1'
+FileVersion = '7.2.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1888,22 +1888,25 @@ function choose_set()
 		if LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(sets.ohshit)
 		else
-			if Mode == 'Mode1' then
+			local function setEquip(mode_set)
 				if buffactive['Footwork'] and buffactive['Impetus'] then
-					equip(set_combine(sets.modeone, sets.footwork, sets.impetus))
+					equip(set_combine(mode_set, sets.footwork, sets.impetus))
 				elseif buffactive['Footwork'] then
-					equip(set_combine(sets.modeone, sets.footwork))
+					equip(set_combine(mode_set, sets.footwork))
 				elseif buffactive['Impetus'] then
-					equip(set_combine(sets.modeone, sets.impetus))
+					equip(set_combine(mode_set, sets.impetus))
 				else
-					equip(sets.modeone)
+					equip(mode_set)
 				end
+			end
+			if Mode == 'Mode1' then
+				setEquip(sets.modeone)
 			elseif Mode == 'Mode2' then
-				equip(sets.modetwo)
+				setEquip(sets.modetwo)
 			elseif Mode == 'Mode3' then
-				equip(sets.modethree)
+				setEquip(sets.modethree)
 			elseif Mode == 'Mode4' then
-				equip(sets.modefour)
+				setEquip(sets.modefour)
 			elseif Mode == 'Mode5' then
 				equip(sets.modefive)
 			end
