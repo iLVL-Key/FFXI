@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '1.1'
+_addon.version = '1.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -168,6 +168,8 @@ end
 
 -- Run the lockstyle game command for the job/location combination
 local function setLockstyle()
+
+	if not windower.ffxi.get_info().logged_in then return end
 
 	local job = string.lower(windower.ffxi.get_player().main_job)
 	local lockstyle = settings.lockstyles
