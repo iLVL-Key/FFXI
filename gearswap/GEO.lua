@@ -244,8 +244,8 @@ sets.idle = {
 	feet="Geo. Sandals +3",
 	neck="Loricate Torque +1",
 	waist="Carrier's Sash",
-	left_ear="Etiolation Earring",
-	right_ear="Ethereal Earring",
+	left_ear="Eabani Earring",
+	right_ear="Azimuth Earring +1",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
@@ -586,7 +586,7 @@ end
 
 
 
-FileVersion = '14.2.3'
+FileVersion = '14.2.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1638,7 +1638,10 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
+	elseif command == 'double_full_circle_fix' then
+		double_full_circle_fix = false
 	elseif command == 'CancelUseEntrust' then --reset the label when we deactivate AutoEntrust
+		double_entrust_fix = false
 		if UseEntrust == true then
 			UseEntrust = false
 			if Entrust.recast == 0 then -- If we haven't used Entrust yet, reset the label too
@@ -1879,9 +1882,12 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif string.find(spell.english,'Geo-') and LuopanActive == true and AutoFullCircle == 'On' and FullCircle.recast < 2 then
 		--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle instead
-		send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..'')
-		cancel_spell()
-		return
+		if not double_full_circle_fix then
+			double_full_circle_fix = true --prevents this from running through here a second time after being cast again below
+			cancel_spell()
+			send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_full_circle_fix')
+			return
+		end
 	elseif string.find(spell.english,'Indi-') then
 		if AutoEntrust == 'On' and Entrust.recast == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
 			if UseEntrust == false then
@@ -1898,12 +1904,10 @@ function precast(spell)
 				--now that AutoEntrust was activated above, we can Do The Thing
 				if not double_entrust_fix then
 					double_entrust_fix = true --prevents this from running through here a second time after being cast again below
+					cancel_spell()
 					send_command('input /ja "Entrust" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..'')
 					send_command('wait 5;gs c CancelUseEntrust')
-					cancel_spell()
 					return
-				else
-					double_entrust_fix = false
 				end
 			end
 		elseif UseEntrust == true and spell.target.type == 'SELF' then
