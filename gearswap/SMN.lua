@@ -622,7 +622,7 @@ end
 
 
 
-FileVersion = '12.2.4'
+FileVersion = '12.2.5'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1768,6 +1768,10 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
+	elseif command == "double_avatars_favor_fix" then
+		double_avatars_favor_fix = false
+	elseif command == "double_release_fix" then
+		double_release_fix = false
 	end
 end
 
@@ -2004,11 +2008,9 @@ function precast(spell)
 		if AutoFavor == 'On' and not buffactive['Avatar\'s Favor'] and not buffactive['amnesia'] and windower.ffxi.get_ability_recasts()[176] == 0 then
 			if not double_avatars_favor_fix then
 				double_avatars_favor_fix = true --prevents this from running through here a second time after being cast again below
-				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw..'')
 				cancel_spell()
+				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_avatars_favor_fix')
 				return
-			else
-				double_avatars_favor_fix = false
 			end
 		else
 			equip(sets.bpdelay)
@@ -2024,8 +2026,11 @@ function precast(spell)
 	elseif (Avatars:contains(spell.english) or Spirits:contains(spell.english)) then
 		--if we're casting an avatar with one already out, we'll use Release before casting:
 		if pet.isvalid == true and AutoRelease == 'On' and windower.ffxi.get_ability_recasts()[172] == 0 then
-			cancel_spell()
-			send_command('input /pet "Release" <me>;wait 1;input /ma \"'..spell.english..'\" <me>')
+			if not double_release_fix then
+				double_release_fix = true
+				cancel_spell()
+				send_command('input /pet "Release" <me>;wait 1;input /ma \"'..spell.english..'\" <me>;wait 1;gs c double_release_fix')
+			end
 		end
 		equip(sets.summoning)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
