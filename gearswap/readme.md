@@ -38,14 +38,14 @@ In general, each HUD has..
 - Gear Mode. Files that have this feature will also change background color of the HUD based on which mode is currently active.
 - AftermathWeapon Notifications. Displays your currently equipped weapon(s) and Aftermath info (including potency and timers!) when appropriate, as well as a TP meter behind it.
 - Recasts. Display 6 CUSTOMIZABLE ability/spell recasts (GREEN is currently active, ORANGE is not active butnot ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
-- Some files show more specialized information such as SMN Avatars, GEO bubbles (with realtime potency numbers!), and RUN runes.  
+- Some files show more specialized information such as SMN Avatars,  bubbles (with realtime potency numbers!), and RUN runes.  
 
 #### BLU
 ![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)  
 (OLD HUD, new image Coming Soon™)
 
-#### GEO
-![GEO HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
+#### 
+![ HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
 (The green in the background is an HP bar for your luopan)  
 (OLD HUD, new image Coming Soon™)
 
@@ -89,7 +89,7 @@ In general, each HUD has..
 **A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
 
 ## Issues
-- I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
+- I have had one report of lag with the  file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
 - The Rune timers in the RUN file are tracked via an internal timer. In Sortie, this timer continues to run while you are teleporting around, whereas the game pauses the timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
 
 ## Changelog
@@ -425,6 +425,9 @@ Version 15.0
 <details>
  
 <summary>GEO</summary>
+
+Version 14.3
+- Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
 
 Version 14.2.4
 - Adjusted how the AutoEntrust and AutoFullCircle work, making them much more consistant now.
@@ -1480,6 +1483,9 @@ Version 9.0
 <details>
  
 <summary>SMN</summary>
+
+Version 12.3
+- Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
 
 Version 12.2.5
 - Adjusted how the AutoFavor and AutoRelease work, making them much more consistant now.
