@@ -64,6 +64,7 @@ AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoFavor		=	'On'	--[On/Off]		Automatically uses Favor when you summon an avatar.
 AutoRelease		=	'On'	--[On/Off]		Automatically uses Release when you summon an avatar with one already out.
+AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation charging.
 
 -- Avatar Macro Pages --
 HomePage		=	'1'		--[1-10]		This is your starting macro page with all your summoning macros on them.
@@ -622,7 +623,7 @@ end
 
 
 
-FileVersion = '12.2.5'
+FileVersion = '12.3'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1772,6 +1773,8 @@ function self_command(command)
 		double_avatars_favor_fix = false
 	elseif command == "double_release_fix" then
 		double_release_fix = false
+	elseif command == "double_sublimation_fix" then
+		double_sublimation_fix = false
 	end
 end
 
@@ -2116,6 +2119,17 @@ function aftercast(spell)
 		end
 	elseif not (spell.type == "BloodPactRage" or spell.type == "BloodPactWard" or spell.english == 'Astral Conduit') then
 		choose_set()
+	end
+	if AutoSubCharge and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete']) then
+		if not double_sublimation_fix then
+			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
+			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
+				send_command('wait 3;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			elseif spell.type == 'JobAbility' then
+				send_command('wait .5;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			end
+			return
+		end
 	end
 end
 
@@ -3258,8 +3272,9 @@ windower.register_event('action',function(act)
 			end
 			NotiCountdown = -1
 		--Blood Pact: Rages:
-		elseif act.category == 13 and act.actor_id == pet.id and not (BPWardBuff:contains(jobabilities[act.param].english) or (BPWardDebuff:contains(jobabilities[act.param].english))) then
-			--Blood Pact misses:
+	--elseif act.category == 13 and act.actor_id == pet.id and not (BPWardBuff:contains(jobabilities[act.param].english) or (BPWardDebuff:contains(jobabilities[act.param].english))) then
+	elseif act.category == 13 then
+		--Blood Pact misses:
 			if act.targets[1].actions[1].message == 324 then
 				hud_noti_shdw:text('«« '..jobabilities[act.param].english..' Missed »»')
 				hud_noti:text('«« '..jobabilities[act.param].english..' Missed »»')
@@ -3275,7 +3290,7 @@ windower.register_event('action',function(act)
 				hud_noti:text(jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')')
 				hud_noti:color(0,255,255)
 			--Blood Pact lands but no Skillchain:
-			else
+			elseif act.targets[1].actions[1].message == 317 then
 				hud_noti_shdw:text(jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 				hud_noti:text(jobabilities[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
 				hud_noti:color(0,255,255)
