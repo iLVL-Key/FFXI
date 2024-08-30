@@ -3146,6 +3146,18 @@ function sub_job_change(newSubjob, oldSubjob)
 		send_command('gs c ClearNotifications')
 	end
 
+	-- Reset HUD Abilities/Spells and Macro Page
+	if newSubjob == 'WHM' then
+		subjob = 'WHM'
+	elseif newSubjob == 'RDM' then
+		subjob = 'RDM'
+	elseif newSubjob == 'SCH' then
+		subjob = 'SCH'
+	else
+		subjob = 'OTH'
+	end
+	getHUDAbils()
+
 end
 
 -------------------------------------------
