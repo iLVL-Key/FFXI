@@ -1481,6 +1481,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.2.5
+- Adjusted how the AutoFavor and AutoRelease work, making them much more consistant now.
+
 Version 12.2.4
 - Fixed an issue where AutoRelease and AutoFavor would give an error under specific conditions.
 - Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
