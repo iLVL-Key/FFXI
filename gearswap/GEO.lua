@@ -60,6 +60,7 @@ UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy inst
 AutoFullCircle	=	'On'	--[On/Off]		Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
 AutoEntrust		=	'On'	--[On/Off]		Automatically uses Entrust when you cast an Indi- spell on a party member. The first cast onto
 							--				a party member will engage the AutoEntrust system, the second cast will execute as intended.
+AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation charging.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -586,7 +587,7 @@ end
 
 
 
-FileVersion = '14.2.4'
+FileVersion = '14.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1640,6 +1641,8 @@ function self_command(command)
 		hud_debuffs_bg:bg_alpha(0)
 	elseif command == 'double_full_circle_fix' then
 		double_full_circle_fix = false
+	elseif command == "double_sublimation_fix" then
+		double_sublimation_fix = false
 	elseif command == 'CancelUseEntrust' then --reset the label when we deactivate AutoEntrust
 		double_entrust_fix = false
 		if UseEntrust == true then
@@ -2198,6 +2201,17 @@ function aftercast(spell)
 		send_command('input /echo [Widened Compass] 1:00;wait 30;input /echo [Widened Compass] 0:30;wait 10;input /echo [Widened Compass] 0:20;wait 10;input /echo [Widened Compass] 0:10')
 	end
 	choose_set()
+	if AutoSubCharge and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete']) then
+		if not double_sublimation_fix then
+			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
+			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
+				send_command('wait 3;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			elseif spell.type == 'JobAbility' then
+				send_command('wait .5;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			end
+			return
+		end
+	end
 end
 
 -------------------------------------------
