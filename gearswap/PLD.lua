@@ -78,7 +78,7 @@ See the very bottom of this file for /BLU spell suggestions
 --]]
 
 --vIGNORE THESEv--
-sub = {} sub.BLU = {} sub.WAR = {} sub.OTH = {} color = {} color.Auto = {} color.Combat = {} color.Neutral = {} color.DPS = {} color.Light = {} color.Fire = {} color.Ice = {} color.Air = {} color.Earth = {} color.Thunder = {} color.Water = {} color.Dark = {} color.AM1 = {} color.AM2 = {} color.AM3 = {} color.abil = {} color.abil.ready = {} color.abil.active = {} color.abil.cooldown = {} color.abil.flash = {} color.abil.notfound = {}
+sub = {} sub.BLU = {} sub.WAR = {} sub.SCH = {} sub.OTH = {} color = {} color.Auto = {} color.Combat = {} color.Neutral = {} color.DPS = {} color.Light = {} color.Fire = {} color.Ice = {} color.Air = {} color.Earth = {} color.Thunder = {} color.Water = {} color.Dark = {} color.AM1 = {} color.AM2 = {} color.AM3 = {} color.abil = {} color.abil.ready = {} color.abil.active = {} color.abil.cooldown = {} color.abil.flash = {} color.abil.notfound = {}
 --^IGNORE THESE^--
 
 -------------------------------------------
@@ -88,6 +88,7 @@ sub = {} sub.BLU = {} sub.WAR = {} sub.OTH = {} color = {} color.Auto = {} color
 Book			=	'3'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
 SubBLUPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing BLU.
 SubWARPage		=	'3'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing WAR.
+SubSCHPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing SCH.
 Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
 InvTimer		=	'On'	--[On/Off]		Displays a timer for Invincible in echo.
 IntTimer		=	'On'	--[On/Off]		Displays a timer for Intervene in echo.
@@ -100,6 +101,7 @@ AutoDefender	=	'On'	--[On/Off]		Automatically activates and keeps Defender activ
 AutoDEmblem		=	'On'	--[On/Off]		Automatically activates Divine Emblem before a Flash when Divine Emblem is up.
 UseMaxHP		=	'On'	--[On/Off]		Equips your Max HP gear set when you cure yourself at or near full HP%.
 AutoSentinel	=	'On'	--[On/Off]		Attempts to activate Sentinel when your HP gets critically low.
+AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation charging.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -184,10 +186,17 @@ sub.WAR.Abil03 = "Defender"		sub.WAR.Abil03_sh = ""
 sub.WAR.Abil04 = "Palisade"		sub.WAR.Abil04_sh = ""
 sub.WAR.Abil05 = "Rampart"		sub.WAR.Abil05_sh = ""
 sub.WAR.Abil06 = "Sentinel"		sub.WAR.Abil06_sh = ""
+--PLD/SCH
+sub.SCH.Abil01 = "Crusade"		sub.SCH.Abil01_sh = ""
+sub.SCH.Abil02 = "Phalanx"		sub.SCH.Abil02_sh = ""
+sub.SCH.Abil03 = "Stoneskin"	sub.SCH.Abil03_sh = ""
+sub.SCH.Abil04 = "Palisade"		sub.SCH.Abil04_sh = ""
+sub.SCH.Abil05 = "Rampart"		sub.SCH.Abil05_sh = ""
+sub.SCH.Abil06 = "Sentinel"		sub.SCH.Abil06_sh = ""
 --PLD/other
 sub.OTH.Abil01 = "Crusade"		sub.OTH.Abil01_sh = ""
 sub.OTH.Abil02 = "Phalanx"		sub.OTH.Abil02_sh = ""
-sub.OTH.Abil03 = "Stoneskin"	sub.OTH.Abil03_sh = ""
+sub.OTH.Abil03 = "Enlight"		sub.OTH.Abil03_sh = ""
 sub.OTH.Abil04 = "Palisade"		sub.OTH.Abil04_sh = ""
 sub.OTH.Abil05 = "Rampart"		sub.OTH.Abil05_sh = ""
 sub.OTH.Abil06 = "Sentinel"		sub.OTH.Abil06_sh = ""
@@ -801,7 +810,7 @@ end
 
 
 
-FileVersion = '14.3.1'
+FileVersion = '14.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -901,6 +910,8 @@ if player.sub_job == 'BLU' then
 	subjob = 'BLU'
 elseif player.sub_job == 'WAR' then
 	subjob = 'WAR'
+elseif player.sub_job == 'SCH' then
+	subjob = 'SCH'
 end
 
 -- Sets the Chat Mode
@@ -916,11 +927,13 @@ if SubBLUPage ~= "Off" and player.sub_job == 'BLU' then
 	send_command('wait 2;input /macro set '..SubBLUPage..'')
 elseif SubWARPage ~= "Off" and player.sub_job == 'WAR' then
 	send_command('wait 2;input /macro set '..SubWARPage..'')
+elseif SubSCHPage ~= "Off" and player.sub_job == 'SCH' then
+	send_command('wait 2;input /macro set '..SubSCHPage..'')
 else
 	send_command('wait 2;input /macro set 1')
 end
 
-Invincible = {} Intervene = {} Aggressor = {} Berserk = {} Chivalry = {} Cocoon = {} Cover = {} Crusade = {} Defender = {} DivineEmblem = {} Enlight = {} Fealty = {} HolyCircle = {} Majesty = {} Palisade = {} Phalanx = {} Rampart = {} Refueling = {} Reprisal = {} Sentinel = {} Sepulcher = {} ShieldBash = {} Stoneskin = {} Warcry = {}
+Invincible = {} Intervene = {} Aggressor = {} Berserk = {} Chivalry = {} Cocoon = {} Cover = {} Crusade = {} DarkArts = {} Defender = {} DivineEmblem = {} Enlight = {} Fealty = {} HolyCircle = {} LightArts = {} Majesty = {} Palisade = {} Phalanx = {} Rampart = {} Refueling = {} Reprisal = {} Sentinel = {} Sepulcher = {} ShieldBash = {} Stoneskin = {} Sublimation = {} Warcry = {}
 
 --Start true so the HUD recasts don't flash on load
 Invincible.flashed = true
@@ -931,11 +944,13 @@ Chivalry.flashed = true
 Cocoon.flashed = true
 Cover.flashed = true
 Crusade.flashed = true
+DarkArts.flashed = true
 Defender.flashed = true
 DivineEmblem.flashed = true
 Enlight.flashed = true
 Fealty.flashed = true
 HolyCircle.flashed = true
+LightArts.flashed = true
 Majesty.flashed = true
 Palisade.flashed = true
 Phalanx.flashed = true
@@ -945,6 +960,7 @@ Sentinel.flashed = true
 Sepulcher.flashed = true
 ShieldBash.flashed = true
 Stoneskin.flashed = true
+Sublimation.flashed = true
 Warcry.flashed = true
 
 --Space out each line and column properly
@@ -1491,11 +1507,13 @@ local function getRecasts()
 	Cocoon.recast = (type(spell_data) == 'table' and table.contains(spell_data,547)) and math.floor(spell_recast[547] / 60) or nil
 	Cover.recast = ability_recast[76] and math.floor(ability_recast[76]) or nil
 	Crusade.recast = spell_recast[476] and math.floor(spell_recast[476] / 60) or nil
+	DarkArts.recast = ability_recast[232] and math.floor(ability_recast[232]) or nil
 	Defender.recast = ability_recast[3] and math.floor(ability_recast[3]) or nil
 	DivineEmblem.recast = ability_recast[80] and math.floor(ability_recast[80]) or nil
 	Enlight.recast = spell_recast[855] and math.floor(spell_recast[855] / 60) or nil
 	Fealty.recast = ability_recast[78] and math.floor(ability_recast[78]) or nil
 	HolyCircle.recast = ability_recast[74] and math.floor(ability_recast[74]) or nil
+	LightArts.recast = ability_recast[228] and math.floor(ability_recast[228]) or nil
 	Majesty.recast = ability_recast[150] and math.floor(ability_recast[150]) or nil
 	Palisade.recast = ability_recast[42] and math.floor(ability_recast[42]) or nil
 	Phalanx.recast = spell_recast[106] and math.floor(spell_recast[106] / 60) or nil
@@ -1506,6 +1524,7 @@ local function getRecasts()
 	Sepulcher.recast = ability_recast[41] and math.floor(ability_recast[41]) or nil
 	ShieldBash.recast = ability_recast[73] and math.floor(ability_recast[73]) or nil
 	Stoneskin.recast = stoneskin() and math.floor(spell_recast[54] / 60) or nil
+	Sublimation.recast = ability_recast[234] and math.floor(ability_recast[234]) or nil
 	Warcry.recast = ability_recast[2] and math.floor(ability_recast[2]) or nil
 
 end
@@ -1517,10 +1536,10 @@ local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Invincible", "Intervene", "Aggressor", "Berserk", "Chivalry", "Cocoon", "Cover", "Crusade", "Defender", "Divine Emblem", "Enlight", "Enlight II", "Fealty", "Holy Circle", "Majesty", "Palisade", "Phalanx", "Rampart", "Refueling", "Reprisal", "Sentinel", "Sepulcher", "Shield Bash", "Stoneskin", "Warcry"
+		"Invincible", "Intervene", "Aggressor", "Berserk", "Chivalry", "Cocoon", "Cover", "Crusade", "Dark Arts", "Defender", "Divine Emblem", "Enlight", "Enlight II", "Fealty", "Holy Circle", "Light Arts", "Majesty", "Palisade", "Phalanx", "Rampart", "Refueling", "Reprisal", "Sentinel", "Sepulcher", "Shield Bash", "Stoneskin", "Sublimation", "Warcry"
 	}
 
-	local ab = {} ab['Invincible'] = Invincible ab['Intervene'] = Intervene ab['Aggressor'] = Aggressor ab['Berserk'] = Berserk ab['Chivalry'] = Chivalry ab['Cocoon'] = Cocoon ab['Cover'] = Cover ab['Crusade'] = Crusade ab['Defender'] = Defender ab['Divine Emblem'] = DivineEmblem ab['Enlight'] = Enlight ab['Enlight II'] = Enlight ab['Fealty'] = Fealty ab['Holy Circle'] = HolyCircle ab['Majesty'] = Majesty ab['Palisade'] = Palisade ab['Phalanx'] = Phalanx ab['Rampart'] = Rampart ab['Refueling'] = Refueling ab['Reprisal'] = Reprisal ab['Sentinel'] = Sentinel ab['Sepulcher'] = Sepulcher ab['Shield Bash'] = ShieldBash ab['Stoneskin'] = Stoneskin ab['Warcry'] = Warcry
+	local ab = {} ab['Invincible'] = Invincible ab['Intervene'] = Intervene ab['Aggressor'] = Aggressor ab['Berserk'] = Berserk ab['Chivalry'] = Chivalry ab['Cocoon'] = Cocoon ab['Cover'] = Cover ab['Crusade'] = Crusade ab['Dark Arts'] = DarkArts ab['Defender'] = Defender ab['Divine Emblem'] = DivineEmblem ab['Enlight'] = Enlight ab['Enlight II'] = Enlight ab['Fealty'] = Fealty ab['Holy Circle'] = HolyCircle ab['Light Arts'] = LightArts ab['Majesty'] = Majesty ab['Palisade'] = Palisade ab['Phalanx'] = Phalanx ab['Rampart'] = Rampart ab['Refueling'] = Refueling ab['Reprisal'] = Reprisal ab['Sentinel'] = Sentinel ab['Sepulcher'] = Sepulcher ab['Shield Bash'] = ShieldBash ab['Stoneskin'] = Stoneskin ab['Sublimation'] = Sublimation ab['Warcry'] = Warcry
 
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -1531,6 +1550,12 @@ local function formatAbils(input,input_sh)
 
 			-- Are we using the ability/spell name itself, or a shorthand supplied in the Options?
 			local startingString = input_sh == '' and input or input_sh
+			-- Adjust for Sublimation
+			if input == 'Sublimation' and buffactive['Sublimation: Activated'] then
+				startingString = 'Charging'
+			elseif input == 'Sublimation' and buffactive['Sublimation: Complete'] then
+				startingString = 'Filled'
+			end
 
 			-- Maximum length of output without brackets
 			local maxLength = 10
@@ -2031,6 +2056,8 @@ function self_command(command)
 		double_divine_emblem_fix = false
 	elseif command == 'double_majesty_fix' then
 		double_majesty_fix = false
+	elseif command == "double_sublimation_fix" then
+		double_sublimation_fix = false
 	end
 end
 
@@ -2464,6 +2491,17 @@ function aftercast(spell)
 		send_command('wait 3; input /ja Majesty <me>')
 	end
 	choose_set()
+	if AutoSubCharge and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete']) then
+		if not double_sublimation_fix then
+			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
+			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
+				send_command('wait 3;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			elseif spell.type == 'JobAbility' then
+				send_command('wait .5;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			end
+			return
+		end
+	end
 end
 
 -------------------------------------------
@@ -3360,6 +3398,24 @@ windower.register_event('prerender', function()
 			textColor('Crusade','notfound')
 		end
 
+		if DarkArts.recast then
+			if buffactive['Dark Arts'] then
+				textColor('Dark Arts','active')
+				DarkArts.flashed = false
+			elseif DarkArts.recast > 0 then
+				textColor('Dark Arts','cooldown')
+				DarkArts.flashed = false
+			else
+				textColor('Dark Arts','ready')
+				if not DarkArts.flashed then
+					flash('Dark Arts')
+				end
+				DarkArts.flashed = true
+			end
+		else
+			textColor('Dark Arts','notfound')
+		end
+
 		if Defender.recast then
 			if buffactive['Defender'] then
 				textColor('Defender','active')
@@ -3448,6 +3504,24 @@ windower.register_event('prerender', function()
 			end
 		else
 			textColor('Holy Circle','notfound')
+		end
+
+		if LightArts.recast then
+			if buffactive['Light Arts'] then
+				textColor('Light Arts','active')
+				LightArts.flashed = false
+			elseif LightArts.recast > 0 then
+				textColor('Light Arts','cooldown')
+				LightArts.flashed = false
+			else
+				textColor('Light Arts','ready')
+				if not LightArts.flashed then
+					flash('Light Arts')
+				end
+				LightArts.flashed = true
+			end
+		else
+			textColor('Light Arts','notfound')
 		end
 
 		if Majesty.recast then
@@ -3624,6 +3698,24 @@ windower.register_event('prerender', function()
 			textColor('Stoneskin','notfound')
 		end
 
+		if Sublimation.recast then
+			if buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] then
+				textColor('Sublimation','active')
+				Sublimation.flashed = false
+			elseif Sublimation.recast > 0 then
+				textColor('Sublimation','cooldown')
+				Sublimation.flashed = false
+			else
+				textColor('Sublimation','ready')
+				if not Sublimation.flashed then
+					flash('Sublimation')
+				end
+				Sublimation.flashed = true
+			end
+		else
+			textColor('Sublimation','notfound')
+		end
+
 		if Warcry.recast then
 			if buffactive['Warcry'] then
 				textColor('Warcry','active')
@@ -3677,6 +3769,11 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'WAR'
 		if SubWARPage ~= "Off" then
 			send_command('wait 2;input /macro set '..SubWARPage..'')
+		end
+	elseif newSubjob == 'SCH' then
+		subjob = 'SCH'
+		if SubSCHPage ~= "Off" then
+			send_command('wait 2;input /macro set '..SubSCHPage..'')
 		end
 	else
 		subjob = 'OTH'
