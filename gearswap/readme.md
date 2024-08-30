@@ -801,6 +801,11 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 14.4
+- Added SubSCHPage option.
+- Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
+- Added support for sub SCH abilities into the HUD recast.
+
 Version 14.3.1
 - Adjusted how the AutoDivineEmblem and AutoMajesty work, making them much more consistant now.
 
