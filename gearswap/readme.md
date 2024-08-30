@@ -1486,6 +1486,7 @@ Version 9.0
 
 Version 12.3
 - Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
+- Fixed HUD recast not updating on subjob change.
 
 Version 12.2.5
 - Adjusted how the AutoFavor and AutoRelease work, making them much more consistant now.
