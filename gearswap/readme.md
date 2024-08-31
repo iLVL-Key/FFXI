@@ -689,7 +689,10 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
-Version 7.2
+Version 7.4
+- Added a long overdue set for Fast Cast.
+
+Version 7.3
 - Added sets for sub DNC Steps, Waltzes, Animated Flourish, and Violent Flourish
 
 Version 7.2.2
@@ -1267,6 +1270,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 14.5
+- Added a long overdue set for Fast Cast.
+
 Version 14.4
 - Added sets for sub DNC Steps, Waltzes, Animated Flourish, and Violent Flourish
 
@@ -1704,6 +1710,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.5
+- Added a long overdue set for Fast Cast.
 
 Version 8.4
 - Added sets for sub DNC Steps, Waltzes, Animated Flourish, and Violent Flourish
