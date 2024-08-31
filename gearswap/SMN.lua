@@ -623,7 +623,7 @@ end
 
 
 
-FileVersion = '12.3'
+FileVersion = '12.3.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -2042,7 +2042,7 @@ function precast(spell)
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
 		equip(sets.fastcast)
-	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not (spell.english == 'Assault' or spell.english == 'Retreat' or spell.english == 'Release' or spell.english == 'Avatar\'s Favor' or spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		equip(sets.fastcast)
 	end
 end
