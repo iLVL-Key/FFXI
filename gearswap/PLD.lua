@@ -810,7 +810,7 @@ end
 
 
 
-FileVersion = '14.4'
+FileVersion = '14.4.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2387,7 +2387,7 @@ function precast(spell)
 		end
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
-	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
 		if player.tp <= TPThreshold then
 			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 		else
