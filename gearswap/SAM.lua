@@ -538,6 +538,11 @@ sets.hachirin = set_combine(sets.hybridws, {
 	waist="Hachirin-no-obi",
 })
 
+-- Fast Cast (cap is 80%)
+sets.fastcast = {
+
+}
+
 -- Snapshot
 sets.snapshot = {
 
@@ -668,7 +673,7 @@ end
 
 
 
-FileVersion = '14.4'
+FileVersion = '14.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2208,9 +2213,9 @@ function precast(spell)
 		equip(sets.bladebash)
 	elseif spell.english == 'Sengikori' and Sengikori.recast < 2 then
 		equip(sets.sengikori)
-	elseif spell.english == 'Quickstep' or string.find(spell.english,'Step') then
+	elseif spell.type == 'Step' then
 		equip(sets.steps)
-	elseif string.find(spell.english,'Waltz') then
+	elseif spell.type == 'Waltz' then
 		equip(sets.waltzes)
 	elseif spell.english == 'Animated Flourish' then
 		equip(sets.animated_flourish)
@@ -2222,6 +2227,8 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
+	elseif not spell.action_type == 'Item' then
+		equip(sets.fastcast)
 	end
 end
 
