@@ -3072,7 +3072,7 @@ function precast(spell)
 				equip(set_combine(sets.fastcast_song, sets[main_sub], {range=instrument}))
 			end
 		end
-	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
 		equip(sets.fastcast_other)
 	end
 end
