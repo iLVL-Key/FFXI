@@ -726,7 +726,7 @@ end
 
 
 
-FileVersion = '9.4'
+FileVersion = '9.4.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2586,7 +2586,7 @@ function precast(spell)
 		end
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
-	elseif not (string.find(spell.english,' Ring') or spell.english == 'Forbidden Key' or spell.english == 'Pickaxe' or spell.english == 'Sickle' or spell.english == 'Hatchet') then
+	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
 		equip(sets.fastcast)
 	end
 end
