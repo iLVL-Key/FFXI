@@ -423,6 +423,14 @@ Version 15.0
 - Lots of code cleanup.
 </details>
 <details>
+
+<summary>BRD</summary>
+
+Version 1.0 BETA-1
+- First Version.
+
+</details>
+<details>
  
 <summary>GEO</summary>
 
@@ -680,6 +688,9 @@ Version 11.0.0
 <details>
  
 <summary>MNK</summary>
+
+Version 7.2
+- Added sets for sub DNC Steps, Waltzes, Animated Flourish, and Violent Flourish
 
 Version 7.2.2
 - Fixed DPS modes 2-4 not equipping Footwork and Impetus sets appropriately.
@@ -1256,6 +1267,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 14.4
+- Added sets for sub DNC Steps, Waltzes, Animated Flourish, and Violent Flourish
+
 Version 14.3
 - Added Snapshot and Ranged Attack sets for ranged attacks.
 
@@ -1690,6 +1704,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.4
+- Added sets for sub DNC Steps, Waltzes, Animated Flourish, and Violent Flourish
 
 Version 8.3
 - Added Snapshot set for ranged attacks.
