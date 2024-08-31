@@ -626,6 +626,26 @@ sets.hundredfists = {
 	legs="Hes. Hose",
 }
 
+-- Steps
+sets.steps = {
+
+}
+
+-- Waltzes
+sets.waltzes = {
+
+}
+
+-- Animated Flourish
+sets.animated_flourish = {
+
+}
+
+-- Violent Flourish
+sets.violent_flourish = {
+
+}
+
 -- Holy Water (Holy Water+)
 sets.hwater = {
 	neck="Nicander's Necklace",
@@ -677,7 +697,7 @@ end
 
 
 
-FileVersion = '7.2.2'
+FileVersion = '7.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2150,6 +2170,14 @@ function precast(spell)
 		equip(sets.formlessstrikes)
 	elseif spell.english == 'Perfect Counter' and PerfectCounter.recast < 2 then
 		equip(sets.perfectcounter)
+	elseif spell.english == 'Quickstep' or string.find(spell.english,'Step') then
+		equip(sets.steps)
+	elseif string.find(spell.english,'Waltz') then
+		equip(sets.waltzes)
+	elseif spell.english == 'Animated Flourish' then
+		equip(sets.animated_flourish)
+	elseif spell.english == 'Violent Flourish' then
+		equip(sets.violent_flourish)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
