@@ -97,6 +97,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.3.1
+- Adjusted how the Fast Cast set gets called.
+
 Verison 18.3
 - Added Snapshot set for ranged attacks.
 - Fixed Stoneskin and Sneak not using the Fast Cast set under specific conditions.
@@ -433,6 +436,9 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.3.1
+- Adjusted how the Fast Cast set gets called.
 
 Version 14.3
 - Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
@@ -815,6 +821,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 14.4.1
+- Adjusted how the Fast Cast set gets called.
+
 Version 14.4
 - Added SubSCHPage option.
 - Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
@@ -1078,6 +1087,9 @@ Version 11.0
 <details>
  
 <summary>RUN</summary>
+
+Version 9.4.1
+- Adjusted how the Fast Cast set gets called.
 
 Version 9.4
 - Added Snapshot set for ranged attacks.
@@ -1508,6 +1520,9 @@ Version 9.0
 <details>
  
 <summary>SMN</summary>
+
+Version 12.3.1
+- Adjusted how the Fast Cast set gets called.
 
 Version 12.3
 - Added AutoSubCharge option. Automatically attempts to keep Sublimation charging.
