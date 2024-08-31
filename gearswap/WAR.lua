@@ -561,6 +561,11 @@ sets.hachirin = set_combine(sets.magicws,sets.ws, {
 	waist="Hachirin-no-obi",
 })
 
+-- Fast Cast (cap is 80%)
+sets.fastcast = {
+
+}
+
 -- Snapshot
 sets.snapshot = {
 
@@ -701,7 +706,7 @@ end
 
 
 
-FileVersion = '8.4'
+FileVersion = '8.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2253,9 +2258,9 @@ function precast(spell)
 		equip(sets.bloodrage)
 	elseif spell.english == 'Warrior\'s Charge' and WarriorsCharge.recast < 2 then
 		equip(sets.charge)
-	elseif spell.english == 'Quickstep' or string.find(spell.english,'Step') then
+	elseif spell.type == 'Step' then
 		equip(sets.steps)
-	elseif string.find(spell.english,'Waltz') then
+	elseif spell.type == 'Waltz' then
 		equip(sets.waltzes)
 	elseif spell.english == 'Animated Flourish' then
 		equip(sets.animated_flourish)
@@ -2267,6 +2272,8 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
+	elseif not spell.action_type == 'Item' then
+		equip(sets.fastcast)
 	end
 end
 
