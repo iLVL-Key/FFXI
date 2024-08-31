@@ -558,6 +558,11 @@ sets["Maru Kala"] = set_combine(sets.ws, {
 
 })
 
+-- Fast Cast (cap is 80%)
+sets.fastcast = {
+
+}
+
 -- Ygnas's Resolve +1
 -- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
 sets.ygnas = {
@@ -697,7 +702,7 @@ end
 
 
 
-FileVersion = '7.3'
+FileVersion = '7.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2170,9 +2175,9 @@ function precast(spell)
 		equip(sets.formlessstrikes)
 	elseif spell.english == 'Perfect Counter' and PerfectCounter.recast < 2 then
 		equip(sets.perfectcounter)
-	elseif spell.english == 'Quickstep' or string.find(spell.english,'Step') then
+	elseif spell.type == 'Step' then
 		equip(sets.steps)
-	elseif string.find(spell.english,'Waltz') then
+	elseif spell.type == 'Waltz' then
 		equip(sets.waltzes)
 	elseif spell.english == 'Animated Flourish' then
 		equip(sets.animated_flourish)
@@ -2182,6 +2187,8 @@ function precast(spell)
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
 		equip(sets.hwater)
+	elseif not spell.action_type == 'Item' then
+		equip(sets.fastcast)
 	end
 end
 
@@ -2272,8 +2279,8 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
-		mythicNum = 0
-		primeNum = 0
+		-- mythicNum = 0
+		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
