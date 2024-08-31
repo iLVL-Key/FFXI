@@ -2187,7 +2187,7 @@ function precast(spell)
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
 		equip(sets.hwater)
-	elseif not spell.action_type == 'Item' then
+	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
 		equip(sets.fastcast)
 	end
 end
