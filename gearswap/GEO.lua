@@ -587,7 +587,7 @@ end
 
 
 
-FileVersion = '14.3.1'
+FileVersion = '14.3.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1927,7 +1927,7 @@ function precast(spell)
 		equip(sets.Elemental)
 	elseif spell.english == 'Impact' then
 		equip(set_combine(sets.fastcast, sets.impact))
-	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
+	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		equip(sets.fastcast)
 	end
 end
