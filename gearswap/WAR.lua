@@ -706,7 +706,7 @@ end
 
 
 
-FileVersion = '8.5'
+FileVersion = '8.5.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2272,7 +2272,7 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
-	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
+	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		equip(sets.fastcast)
 	end
 end
