@@ -821,7 +821,7 @@ end
 
 
 
-FileVersion = '1.0 BETA-1'
+FileVersion = '1.0 BETA-2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2328,7 +2328,7 @@ end
 
 --Create the song list to be displayed on the screen for tracking
 function getCurrentSongList()
-	local formatted_list = ""
+	local formatted_list = "[SONG LIST       //songs]\n"
 
 	--Retrieve the party list
 	local party = windower.ffxi.get_party()
@@ -3072,7 +3072,7 @@ function precast(spell)
 				equip(set_combine(sets.fastcast_song, sets[main_sub], {range=instrument}))
 			end
 		end
-	elseif not spell.action_type == 'Item' or spell.action_type == 'Ability' then
+	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		equip(sets.fastcast_other)
 	end
 end
