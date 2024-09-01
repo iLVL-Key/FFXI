@@ -97,6 +97,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.3.2
+- Fixed an error in the Fast Cast update.
+
 Version 18.3.1
 - Adjusted how the Fast Cast set gets called.
 
@@ -429,6 +432,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0 BETA-2
+- Adjusted the on-screen Song List display.
+- Fixed an error in the Fast Cast update.
+
 Version 1.0 BETA-1
 - First Version.
 
@@ -436,6 +443,9 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.3.2
+- Fixed an error in the Fast Cast update.
 
 Version 14.3.1
 - Adjusted how the Fast Cast set gets called.
@@ -695,6 +705,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.4.1
+- Fixed an error in the Fast Cast update.
+
 Version 7.4
 - Added a long overdue set for Fast Cast.
 
@@ -820,6 +833,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.4.2
+- Fixed an error in the Fast Cast update.
 
 Version 14.4.1
 - Adjusted how the Fast Cast set gets called.
@@ -1088,6 +1104,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.4.2
+- Fixed an error in the Fast Cast update.
+
 Version 9.4.1
 - Adjusted how the Fast Cast set gets called.
 
@@ -1281,6 +1300,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.5.1
+- Fixed an error in the Fast Cast update.
 
 Version 14.5
 - Added a long overdue set for Fast Cast.
@@ -1725,6 +1747,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.5.1
+- Fixed an error in the Fast Cast update.
 
 Version 8.5
 - Added a long overdue set for Fast Cast.
