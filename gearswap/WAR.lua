@@ -706,7 +706,7 @@ end
 
 
 
-FileVersion = '8.5.1'
+FileVersion = '8.5.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2029,43 +2029,43 @@ function choose_set()
 		end
 		if AdoulinZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.adoulin, sets.idle))
+				equip(set_combine(sets[Mode].twohand, sets.idle, sets.adoulin))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.adoulin, sets.idle))
+				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.adoulin))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.adoulin, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.adoulin))
 			end
 		elseif BastokZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.bastok, sets.idle))
+				equip(set_combine(sets[Mode].twohand, sets.idle, sets.bastok))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.bastok, sets.idle))
+				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.bastok))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.bastok, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.bastok))
 			end
 		elseif SandyZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.sandoria, sets.idle))
+				equip(set_combine(sets[Mode].twohand, sets.idle, sets.sandoria))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.sandoria, sets.idle))
+				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.sandoria))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.sandoria, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.sandoria))
 			end
 		elseif WindyZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.windurst, sets.idle))
+				equip(set_combine(sets[Mode].twohand, sets.idle, sets.windurst))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.windurst, sets.idle))
+				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.windurst))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.windurst, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.windurst))
 			end
 		elseif TownZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.town, sets.idle))
+				equip(set_combine(sets[Mode].twohand, sets.idle, sets.town))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.town, sets.idle))
+				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.town))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.town, sets.idle))
+				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.town))
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
