@@ -702,7 +702,7 @@ end
 
 
 
-FileVersion = '7.4.1'
+FileVersion = '7.4.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1968,63 +1968,63 @@ function choose_set()
 		end
 		if AdoulinZones:contains(world.area) then
 			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.adoulin, sets.idle))
+				equip(set_combine(sets.modeone, sets.idle, sets.adoulin))
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.adoulin, sets.idle))
+				equip(set_combine(sets.modetwo, sets.idle, sets.adoulin))
 			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.adoulin, sets.idle))
+				equip(set_combine(sets.modethree, sets.idle, sets.adoulin))
 			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.adoulin, sets.idle))
+				equip(set_combine(sets.modefour, sets.idle, sets.adoulin))
 			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.adoulin, sets.idle))
+				equip(set_combine(sets.modefive, sets.idle, sets.adoulin))
 			end
 		elseif BastokZones:contains(world.area) then
 			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.bastok, sets.idle))
+				equip(set_combine(sets.modeone, sets.idle, sets.bastok))
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.bastok, sets.idle))
+				equip(set_combine(sets.modetwo, sets.idle, sets.bastok))
 			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.bastok, sets.idle))
+				equip(set_combine(sets.modethree, sets.idle, sets.bastok))
 			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.bastok, sets.idle))
+				equip(set_combine(sets.modefour, sets.idle, sets.bastok))
 			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.bastok, sets.idle))
+				equip(set_combine(sets.modefive, sets.idle, sets.bastok))
 			end
 		elseif SandyZones:contains(world.area) then
 			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.sandoria, sets.idle))
+				equip(set_combine(sets.modeone, sets.idle, sets.sandoria))
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.sandoria, sets.idle))
+				equip(set_combine(sets.modetwo, sets.idle, sets.sandoria))
 			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.sandoria, sets.idle))
+				equip(set_combine(sets.modethree, sets.idle, sets.sandoria))
 			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.sandoria, sets.idle))
+				equip(set_combine(sets.modefour, sets.idle, sets.sandoria))
 			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.sandoria, sets.idle))
+				equip(set_combine(sets.modefive, sets.idle, sets.sandoria))
 			end
 		elseif WindyZones:contains(world.area) then
 			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.windurst, sets.idle))
+				equip(set_combine(sets.modeone, sets.idle, sets.windurst))
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.windurst, sets.idle))
+				equip(set_combine(sets.modetwo, sets.idle, sets.windurst))
 			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.windurst, sets.idle))
+				equip(set_combine(sets.modethree, sets.idle, sets.windurst))
 			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.windurst, sets.idle))
+				equip(set_combine(sets.modefour, sets.idle, sets.windurst))
 			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.windurst, sets.idle))
+				equip(set_combine(sets.modefive, sets.idle, sets.windurst))
 			end
 		elseif TownZones:contains(world.area) then
 			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.town, sets.idle))
+				equip(set_combine(sets.modeone, sets.idle, sets.town))
 			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.town, sets.idle))
+				equip(set_combine(sets.modetwo, sets.idle, sets.town))
 			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.town, sets.idle))
+				equip(set_combine(sets.modethree, sets.idle, sets.town))
 			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.town, sets.idle))
+				equip(set_combine(sets.modefour, sets.idle, sets.town))
 			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.town, sets.idle))
+				equip(set_combine(sets.modefive, sets.idle, sets.town))
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
