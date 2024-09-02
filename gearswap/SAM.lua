@@ -673,7 +673,7 @@ end
 
 
 
-FileVersion = '14.5.1'
+FileVersion = '14.5.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1938,33 +1938,33 @@ function choose_set()
 		end
 		if AdoulinZones:contains(world.area) then
 			if Stance == 'Seigan' then
-				equip(set_combine(sets.seigan, sets.adoulin, sets.idle))
+				equip(set_combine(sets.seigan, sets.idle, sets.adoulin))
 			else
-				equip(set_combine(sets.hasso[Mode], sets.adoulin, sets.idle))
+				equip(set_combine(sets.hasso[Mode], sets.idle, sets.adoulin))
 			end
 		elseif BastokZones:contains(world.area) then
 			if Stance == 'Seigan' then
-				equip(set_combine(sets.seigan, sets.bastok, sets.idle))
+				equip(set_combine(sets.seigan, sets.idle, sets.bastok))
 			else
-				equip(set_combine(sets.hasso[Mode], sets.bastok, sets.idle))
+				equip(set_combine(sets.hasso[Mode], sets.idle, sets.bastok))
 			end
 		elseif SandyZones:contains(world.area) then
 			if Stance == 'Seigan' then
-				equip(set_combine(sets.seigan, sets.sandoria, sets.idle))
+				equip(set_combine(sets.seigan, sets.idle, sets.sandoria))
 			else
-				equip(set_combine(sets.hasso[Mode], sets.sandoria, sets.idle))
+				equip(set_combine(sets.hasso[Mode], sets.idle, sets.sandoria))
 			end
 		elseif WindyZones:contains(world.area) then
 			if Stance == 'Seigan' then
-				equip(set_combine(sets.seigan, sets.windurst, sets.idle))
+				equip(set_combine(sets.seigan, sets.idle, sets.windurst))
 			else
-				equip(set_combine(sets.hasso[Mode], sets.windurst, sets.idle))
+				equip(set_combine(sets.hasso[Mode], sets.idle, sets.windurst))
 			end
 		elseif TownZones:contains(world.area) then
 			if Stance == 'Seigan' then
-				equip(set_combine(sets.seigan, sets.town, sets.idle))
+				equip(set_combine(sets.seigan sets.idle, sets.town,))
 			else
-				equip(set_combine(sets.hasso[Mode], sets.town, sets.idle))
+				equip(set_combine(sets.hasso[Mode], sets.idle, sets.town))
 			end
 		elseif LowHP == true then --no matter what Stance we're in, if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.ohshit))
