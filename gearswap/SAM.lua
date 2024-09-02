@@ -1962,7 +1962,7 @@ function choose_set()
 			end
 		elseif TownZones:contains(world.area) then
 			if Stance == 'Seigan' then
-				equip(set_combine(sets.seigan sets.idle, sets.town,))
+				equip(set_combine(sets.seigan, sets.idle, sets.town))
 			else
 				equip(set_combine(sets.hasso[Mode], sets.idle, sets.town))
 			end
