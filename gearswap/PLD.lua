@@ -810,7 +810,7 @@ end
 
 
 
-FileVersion = '14.4.2'
+FileVersion = '14.4.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2491,7 +2491,7 @@ function aftercast(spell)
 		send_command('wait 3; input /ja Majesty <me>')
 	end
 	choose_set()
-	if AutoSubCharge and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
 			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
