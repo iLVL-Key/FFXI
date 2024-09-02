@@ -432,6 +432,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0 BETA-3
+- Fix AutoSubCharge trying to activate on any subjob.
+
 Version 1.0 BETA-2
 - Adjusted the on-screen Song List display.
 - Fixed an error in the Fast Cast update.
@@ -443,6 +446,9 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+--Version 14.3.3
+-- Fix AutoSubCharge trying to activate on any subjob.
 
 Version 14.3.2
 - Fixed an error in the Fast Cast update.
@@ -833,6 +839,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+--Version 14.4.3
+-- Fix AutoSubCharge trying to activate on any subjob.
 
 Version 14.4.2
 - Fixed an error in the Fast Cast update.
@@ -1542,6 +1551,9 @@ Version 9.0
 <details>
  
 <summary>SMN</summary>
+
+--Version 12.3.2
+-- Fix AutoSubCharge trying to activate on any subjob.
 
 Version 12.3.1
 - Adjusted how the Fast Cast set gets called.
