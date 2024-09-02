@@ -711,6 +711,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.4.2
+- Fixed equip priority of the "town" type sets. They now correctly take priority while in town zones.
+
 Version 7.4.1
 - Fixed an error in the Fast Cast update.
 
@@ -1310,6 +1313,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 14.5.2
+- Fixed equip priority of the "town" type sets. They now correctly take priority while in town zones.
+
 Version 14.5.1
 - Fixed an error in the Fast Cast update.
 
@@ -1759,6 +1765,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.5.2
+- Fixed equip priority of the "town" type sets. They now correctly take priority while in town zones.
 
 Version 8.5.1
 - Fixed an error in the Fast Cast update.
