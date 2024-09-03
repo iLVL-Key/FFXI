@@ -810,7 +810,7 @@ end
 
 
 
-FileVersion = '14.4.3'
+FileVersion = '14.4.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2509,14 +2509,21 @@ end
 -------------------------------------------
 
 windower.register_event('status change', function(status)
-    if status == 4 and InCS == false and ShowHUD == 'On' then --In a cutscene: Hide the HUD
+	if status == 4 and InCS == false and ShowHUD == 'On' then --In a cutscene: Hide the HUD
 		InCS = true
 		windower.send_command('gs c HideHUD')
-    elseif status ~= 4 and InCS == true and ShowHUD == 'On' then --Out of cutscene: Show the HUD
+	elseif status ~= 4 and InCS == true and ShowHUD == 'On' then --Out of cutscene: Show the HUD
 		InCS = false
 		windower.send_command('gs c ShowHUD')
-    end
+	end
 	choose_set()
+	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+		if not double_sublimation_fix then
+			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
+			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			return
+		end
+	end
 end)
 
 -------------------------------------------
