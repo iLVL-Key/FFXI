@@ -432,6 +432,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0 BETA-4
+- Adjusted AutoSubCharge to also activate after a status change back to idle.
+
 Version 1.0 BETA-3
 - Fix AutoSubCharge trying to activate on any subjob.
 
@@ -447,8 +450,8 @@ Version 1.0 BETA-1
  
 <summary>GEO</summary>
 
---Version 14.3.3
--- Fix AutoSubCharge trying to activate on any subjob.
+Version 14.3.3
+- Fix AutoSubCharge trying to activate on any subjob.
 
 Version 14.3.2
 - Fixed an error in the Fast Cast update.
@@ -843,8 +846,11 @@ Version 3.0
  
 <summary>PLD</summary>
 
---Version 14.4.3
--- Fix AutoSubCharge trying to activate on any subjob.
+Version 14.4.4
+- Adjusted AutoSubCharge to also activate after a status change back to idle.
+
+Version 14.4.3
+- Fix AutoSubCharge trying to activate on any subjob.
 
 Version 14.4.2
 - Fixed an error in the Fast Cast update.
@@ -1558,8 +1564,11 @@ Version 9.0
  
 <summary>SMN</summary>
 
---Version 12.3.2
--- Fix AutoSubCharge trying to activate on any subjob.
+Version 12.3.3
+- Adjusted AutoSubCharge to also activate after a status change back to idle.
+
+Version 12.3.2
+- Fix AutoSubCharge trying to activate on any subjob.
 
 Version 12.3.1
 - Adjusted how the Fast Cast set gets called.
