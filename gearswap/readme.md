@@ -37,7 +37,7 @@ In general, each HUD has..
 - Debuff Notifications. A number of the more common/important debuffs (ie Paralyze, Amnesia, Silence) are displayed in their own slots side-by-side, whereas the debuffs that fully debilitate you (ie Charm, Terror, Sleep) take priority and are displayed on top of those others.
 - Gear Mode. Files that have this feature will also change background color of the HUD based on which mode is currently active.
 - AftermathWeapon Notifications. Displays your currently equipped weapon(s) and Aftermath info (including potency and timers!) when appropriate, as well as a TP meter behind it.
-- Recasts. Display 6 CUSTOMIZABLE ability/spell recasts (GREEN is currently active, ORANGE is not active butnot ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
+- Recasts. Display 6 CUSTOMIZABLE ability/spell recasts (GREEN is currently active, ORANGE is not active but not ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
 - Some files show more specialized information such as SMN Avatars,  bubbles (with realtime potency numbers!), and RUN runes.  
 
 #### BLU
