@@ -846,6 +846,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 14.4.5
+- Adjusted the Main/Sub Fast Cast sets to not be equipped when any Aftermath is active.
+
 Version 14.4.4
 - Adjusted AutoSubCharge to also activate after a status change back to idle.
 
