@@ -810,7 +810,7 @@ end
 
 
 
-FileVersion = '14.4.4'
+FileVersion = '14.4.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2303,14 +2303,14 @@ function precast(spell)
 		MajestyTimer = 180
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
-		if player.tp <= TPThreshold and not spell.english == 'Spectral Jig' then
+		if player.tp <= TPThreshold and not (spell.english == 'Spectral Jig' or buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 		elseif not spell.english == 'Spectral Jig' then
 			equip(sets.fastcast)
 		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
-		if player.tp <= TPThreshold then
+		if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 		else
 			equip(sets.fastcast)
@@ -2333,7 +2333,7 @@ function precast(spell)
 					return
 				end
 			end
-			if player.tp <= TPThreshold then
+			if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 				equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 			else
 				equip(sets.fastcast)
@@ -2358,7 +2358,7 @@ function precast(spell)
 	elseif spell.english == "Sheep Song" then
 		if player.sub_job == 'BLU' then
 			if windower.ffxi.get_spell_recasts()[584] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,584) then
-				if player.tp <= TPThreshold then
+				if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 					equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 				else
 					equip(sets.fastcast)
@@ -2388,7 +2388,7 @@ function precast(spell)
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
-		if player.tp <= TPThreshold then
+		if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 		else
 			equip(sets.fastcast)
@@ -2431,13 +2431,13 @@ function midcast(spell)
 		end
 	elseif spell.english == 'Phalanx' then
 		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
-			if player.tp <= TPThreshold then
+			if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 				equip(set_combine(sets.phalanxsird, sets.phalanx_mainsub))
 			else
 				equip(sets.phalanxsird)
 			end
 		else
-			if player.tp <= TPThreshold then
+			if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 				equip(set_combine(sets.phalanx, sets.phalanx_mainsub))
 			else
 				equip(sets.phalanx)
@@ -2445,13 +2445,13 @@ function midcast(spell)
 		end
 	elseif spell.skill == "Enhancing Magic" then
 		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
-			if string.find(spell.english,'Protect') and player.tp <= TPThreshold then
+			if string.find(spell.english,'Protect') and player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 				equip(set_combine(sets.protect_mainsub, sets.enhancingsird))
 			else
 				equip(sets.enhancingsird)
 			end
 		else
-			if string.find(spell.english,'Protect') and player.tp <= TPThreshold then
+			if string.find(spell.english,'Protect') and player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 				equip(set_combine(sets.protect_mainsub, sets.enhancing))
 			else
 				equip(sets.enhancing)
