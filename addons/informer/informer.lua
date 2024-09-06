@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '3.2'
+_addon.version = '3.2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -132,6 +132,7 @@ local informer_main = texts.new('${current_string}', settings)
 
 local last_item_used = nil
 local master_level = nil
+local layout = ''
 
 function firstLoadMessage()
 	windower.add_to_chat(220,'[informer] '..('First load detected.'):color(8))
@@ -162,6 +163,84 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 	end
 end)
 
+-- Count the number of given item and return the number and the color
+local function countItem(item_id)
+	local items = windower.ffxi.get_items()
+	local inventory = items.inventory
+	local containers = {items.inventory, items.case, items.sack, items.satchel}
+	local invNum = 0
+	local otherNum = 0
+	local use_colors = settings.display.colors
+	local invColor = settings.colors.none
+	local otherColor = settings.colors.none
+
+	-- Find the item and get the count
+	for i, item in ipairs(inventory) do
+		if item.id == item_id then
+			invNum = invNum + item.count
+			--break
+		end
+	end
+
+	-- Iterate through each container
+	for _, container in ipairs(containers) do
+		-- Find the item and add to the count if found
+		for _, item in ipairs(container) do
+			if item.id == item_id then
+				otherNum = otherNum + item.count
+			end
+		end
+	end
+
+	-- Determine the color based on the count / stack
+	if use_colors and invNum == 0 then
+		invColor = settings.colors.bad
+	elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
+		invColor = settings.colors.warning
+	end
+	invNum = string.format("%2s", invNum)
+
+	if use_colors and otherNum == 0 then
+		otherColor = settings.colors.bad
+	elseif use_colors and (otherNum / res.items[item_id].stack) <= .26 then
+		otherColor = settings.colors.warning
+	end
+	otherNum = string.format("%-2s", otherNum)
+
+	return invNum, invColor, otherNum, otherColor
+
+end
+
+-- Find the id of an item based on its name
+local function getIdFromName(item_name)
+	for _, item in pairs(res.items) do
+		if item.name == item_name then
+			return item.id --match found
+		end
+	end
+	return false --no match found
+end
+
+-- Replace ${track:Item Name}
+local function updateTrackItems()
+	local player = windower.ffxi.get_player()
+	local input = settings.layout[string.lower(player.main_job)]
+	local output = input:gsub("%${track:(.-)}", function(match)
+		local itemName = match:match("(.-)$")
+		if itemName then
+			local itemId = getIdFromName(itemName)
+			local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
+			if itemId then
+				-- Match was found via getIdFromName, return the number (via countItem) and color it
+				return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
+			else
+				return '\\cs('..settings.colors.bad..')NO MATCH\\cr' --no match
+			end
+		end
+	end)
+	layout = output
+end
+
 function updateInformerMain()
 
 	local use_colors = settings.display.colors
@@ -178,7 +257,7 @@ function updateInformerMain()
 	local player_job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
 	local mlvl = master_level or '--'
 	local speed = windower.ffxi.get_mob_by_target('me') and math.floor(100 * (windower.ffxi.get_mob_by_target('me').movement_speed / 5 - 1) + .1)
-	local formatted_speed = speed and (speed >= 0 and '+' or '-')..speed..'%'
+	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
 
 	local gil = windower.ffxi.get_items().gil
 		gil = addCommas(gil)
@@ -320,89 +399,13 @@ function updateInformerMain()
 		direction = "--"
 	end
 
-	-- Count the number of given item and return the number and the color
-	local function countItem(item_id)
-		local items = windower.ffxi.get_items()
-		local inventory = items.inventory
-		local containers = {items.inventory, items.case, items.sack, items.satchel}
-		local invNum = 0
-		local otherNum = 0
-		local invColor = settings.colors.none
-		local otherColor = settings.colors.none
-
-		-- Find the item and get the count
-		for i, item in ipairs(inventory) do
-			if item.id == item_id then
-				invNum = invNum + item.count
-				--break
-			end
-		end
-
-		-- Iterate through each container
-		for _, container in ipairs(containers) do
-			-- Find the item and add to the count if found
-			for _, item in ipairs(container) do
-				if item.id == item_id then
-					otherNum = otherNum + item.count
-				end
-			end
-		end
-
-		-- Determine the color based on the count / stack
-		if use_colors and invNum == 0 then
-			invColor = settings.colors.bad
-		elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
-			invColor = settings.colors.warning
-		end
-		invNum = string.format("%2s", invNum)
-
-		if use_colors and otherNum == 0 then
-			otherColor = settings.colors.bad
-		elseif use_colors and (otherNum / res.items[item_id].stack) <= .26 then
-			otherColor = settings.colors.warning
-		end
-		otherNum = string.format("%-2s", otherNum)
-
-		return invNum, invColor, otherNum, otherColor
-
-	end
-
-	-- Find the id of an item based on its name
-	local function getIdFromName(item_name)
-		for _, item in pairs(res.items) do
-			if item.name == item_name then
-				return item.id --match found
-			end
-		end
-		return false --no match found
-	end
-
-	-- Replace ${track:Item Name}
-	local function replaceTrackItems(input)
-		local output = input:gsub("%${track:(.-)}", function(match)
-			local itemName = match:match("(.-)$")
-			if itemName then
-				local itemId = getIdFromName(itemName)
-				local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
-				if itemId then
-					-- Match was found via getIdFromName, return the number (via countItem) and color it
-					return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
-				else
-					return '\\cs('..settings.colors.bad..')NO MATCH\\cr' --no match
-				end
-			end
-		end)
-		return output
-	end
-
 	-- Replace placeholders
 	local function replacePlaceholders(str, replacements)
 		return str:gsub("%${(.-)}", replacements)
 	end
 
 	-- Rebuild the text string to be displayed in the bar
-	local layout = settings.layout[string.lower(player.main_job)]
-	local text = replaceTrackItems(layout)
+	local text = layout
 	text = replacePlaceholders(text, {
 		job = player_job,
 		gil = gil,
@@ -567,14 +570,18 @@ end)
 
 -- Load
 windower.register_event('load', function()
-	if windower.ffxi.get_info().logged_in and settings.first_load then
-		firstLoadMessage()
+	if windower.ffxi.get_info().logged_in then
+		updateTrackItems()
+		if settings.first_load then
+			firstLoadMessage()
+		end
 	end
 end)
 
 -- Login
 windower.register_event('login', function()
 	food_loading = true --prevents food clearing immediately on login
+	updateTrackItems()
 	showInformerMain()
 	coroutine.sleep(5)
 	if settings.first_load then
@@ -587,6 +594,19 @@ end)
 windower.register_event('logout', function()
 	hideInformerMain()
 	last_item_used = nil --delete the last item used when we switch characters
+end)
+
+-- Item movement
+windower.register_event('add item', function(bag,index,id,count)
+	updateTrackItems()
+end)
+windower.register_event('remove item', function(bag,index,id,count)
+	updateTrackItems()
+end)
+
+-- Job Change
+windower.register_event('job change', function(bag,index,id,count)
+	updateTrackItems()
 end)
 
 -- Unrecognized command
