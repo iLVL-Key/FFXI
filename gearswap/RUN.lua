@@ -647,6 +647,11 @@ sets.swipe = set_combine(sets.enmity, {
 	back="Moonlight Cape",
 })
 
+-- Pflug (Enhances Pflug gear)
+sets.pflug = set_combine(sets.enmity, {
+
+})
+
 -- Embolden (Enhances Embolden gear)
 sets.embolden = set_combine(sets.enmity, {
 	back="Evasionist's Cape",
@@ -726,7 +731,7 @@ end
 
 
 
-FileVersion = '9.4.2'
+FileVersion = '9.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2516,6 +2521,8 @@ function precast(spell)
 		equip(sets.swipe)
 	elseif spell.english == 'Lunge' and Lunge.recast < 2 then
 		equip(sets.swipe)
+	elseif spell.english == 'Pflug' and Pflug.recast < 2 then
+		equip(sets.pflug)
 	elseif spell.english == 'Embolden' and Embolden.recast < 2 then
 		equip(sets.embolden)
 	elseif spell.english == 'Vivacious Pulse' and VivaciousPulse.recast < 2 then
