@@ -31,9 +31,20 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Markers on the TP bar for 1k/2k, and on the HP bar for yellow HP.
 - Features can be turned on/off or adjusted via settings file or in-game commands.
 
+## How To Setup
+- Load the addon with `//lua load bars`. The addon will be displayed with the default bars shown for your current job.
+- Type `//bars pos` and it will tell you the current position of the addon. You can then use `//bars pos # #` (where # represents an x and y position of your choosing) to move the base position of the addon around to where you would like it. Note that the position is where the Target bar is located, the other bars are then adjusted based on that.
+- Once you have the base position settled, you can add or remove any of the "player stat" bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are on.
+  - If you want to entirely turn off all of the "player stat" bars for all jobs, it will be faster and easier to do that inside the settings file under `options > show_bars` and set all bars to false (you can ignore the offsets). Be sure to save the settings file then reload the addon.
+- If you have a different number of bars shown for different jobs and would like them aligned to the bottom (for example, sitting on top of your chat log), you can adjust the offset for each job using `//bars offset #` (where # represents how many pixels the addon will be adjusted up or down for that specific job).
+#### Extra
+- You can type `//bars help` at any time to display the list of in game commands the addon supports. See **Commands** below.
+- Explore the settings file to see the full list of options that are available to tweak. See **Options** below.
+
 ## Commands
 All commands must be preceded with `//bars`
 `[optional] <required>`
+ - **help** - Display this list in game.
  - **pos [x y]** - Update position.
  - **hp/mp/tp/pet** - Toggle HP/MP/TP/Pet bar display setting for current job.
  - **width/w** - Update the bar width.
@@ -48,6 +59,35 @@ All commands must be preceded with `//bars`
  - **list/l** - Show the Auto Focus Target list.
  - **size/s [#]** - Update the size.
  - **bold/b** - Toggle the bold setting.
+
+## Options
+Open the `/bars/data/settings.xml` file to adjust these settings.
+ - **bar_width** - Adjust the width of the bars (the Auto Focus Target bar will always be half of this number).
+ - **bars_vertical_spacing** - The vertical spacing between each bars section.
+ - **clear_action_delay** - The delay in seconds after an action completes that it will be cleared from the screen (supports decimals ie 4.5).
+ - **focus_target_max_distance** - The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed.
+ - **hide_focus_target_when_target** - Hides the Auto Focus Target bar when the subject of it has been targeted (prevents a target being on both at the same time).
+ - **max_action_length** - The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space.
+ - **max_name_length** - The maximum number of characters of a targets name displayed (target action line only). Target names longer than this number will be truncated to help save space.
+ - **remove_tachi_blade_from_ws_name** - Removes "Tachi: " and "Blade: " from weapon skill names to help save (ex. Tachi: Yukikaze --> Yukikaze).
+ - **self_action_text_size_difference** - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Self Actions.
+ - **short_skillchain_names** - Uses shortened names for skillchains (4 characters long) to help save space.
+ - **show_fancy_rolls** - Show a fancified version of COR rolls (if show_lucky_roll_info is turned on).
+ - **show_action_status_indicators** - Shows icons depicting when a spell/ability is casting, completed, or interrupted.
+ - **show_bar_markers** - Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP.
+ - **show_bars** - Select which "player stats" bars are displayed for each job.
+ - **show_commas_on_numbers** - Adds commas to numbers for easier readability.
+ - **show_max_hp_mp_on_bars** - Shows the current maximum HP and MP on their respective bars.
+ - **show_roll_lucky_info** - Shows the lucky and lucky numbers for COR rolls.
+ - **show_self_action** - Shows the Self Action bar.
+ - **show_self_when_target** - Shows the Target bar when you target yourself.
+ - **show_target_action** - Shows the actions of the current Target.
+ - **show_target_action_result** - Shows the results of the action done by the current Target (damage, buffs, resists, etc.).
+ - **show_target_distance** - Shows the distance to the current Target.
+ - **show_target_index** - Shows the index number of the current Target.
+ - **target_action_text_size_difference** - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target actions.
+ - **target_text_size_difference** - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target.
+ - **text_vertical_offset** - The vertical offset in pixels between a bar and its text (this is what sets the text above a bar by default).
 
 ## Changelog
 
