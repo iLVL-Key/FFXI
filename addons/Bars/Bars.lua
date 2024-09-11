@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '2.0'
+_addon.version = '2.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -164,6 +164,7 @@ local hide_focus_target_when_target = settings.options.hide_focus_target_when_ta
 local max_action_length = settings.options.max_action_length
 local max_name_length = settings.options.max_name_length
 local remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
+local self_action_text_size_difference = settings.options.self_action_text_size_difference
 local short_skillchain_names = settings.options.short_skillchain_names
 local show_bar_markers = settings.options.show_bar_markers
 local show_bars = settings.options.show_bars
@@ -178,10 +179,10 @@ local show_target_action_result = settings.options.show_target_action_result
 local show_target_distance = settings.options.show_target_distance
 local show_action_status_indicators = settings.options.show_action_status_indicators
 local show_target_index = settings.options.show_target_index
-local self_action_text_size_difference = settings.options.self_action_text_size_difference
 local target_action_text_size_difference = settings.options.target_action_text_size_difference
 local target_text_size_difference = settings.options.target_text_size_difference
 local text_vertical_offset = settings.options.text_vertical_offset
+
 local color = settings.colors
 local text_color = {r = settings.text.red, g = settings.text.green, b = settings.text.blue}
 local font = settings.text.font
@@ -2060,73 +2061,78 @@ windower.register_event('action', function (act)
 				local r_tot = act.targets[1].actions[1].param--roll total
 				local c = text_color
 
-				if show_fancy_rolls then
+				if show_roll_lucky_info then
+					if show_fancy_rolls then
 
-					local r_1 = (r_tot == 1 and '[' or ' ')..'1'..(r_tot == 1 and ']' or (r_tot == 2 and '' or ' '))
-					local r_2 = (r_tot == 2 and '[' or '')..'2'..(r_tot == 2 and ']' or (r_tot == 3 and '' or ' '))
-					local r_3 = (r_tot == 3 and '[' or '')..'3'..(r_tot == 3 and ']' or (r_tot == 4 and '' or ' '))
-					local r_4 = (r_tot == 4 and '[' or '')..'4'..(r_tot == 4 and ']' or (r_tot == 5 and '' or ' '))
-					local r_5 = (r_tot == 5 and '[' or '')..'5'..(r_tot == 5 and ']' or (r_tot == 6 and '' or ' '))
-					local r_6 = (r_tot == 6 and '[' or '')..'6'..(r_tot == 6 and ']' or (r_tot == 7 and '' or ' '))
-					local r_7 = (r_tot == 7 and '[' or '')..'7'..(r_tot == 7 and ']' or (r_tot == 8 and '' or ' '))
-					local r_8 = (r_tot == 8 and '[' or '')..'8'..(r_tot == 8 and ']' or (r_tot == 9 and '' or ' '))
-					local r_9 = (r_tot == 9 and '[' or '')..'9'..(r_tot == 9 and ']' or (r_tot == 10 and '' or ' '))
-					local r_10 = (r_tot == 10 and '[' or '')..'10'..(r_tot == 10 and ']' or (r_tot == 11 and '' or ' '))
-					local r_11 = (r_tot == 11 and '[' or '')..'11'..(r_tot == 11 and ']' or ' ')
+						local r_1 = (r_tot == 1 and '[' or ' ')..'1'..(r_tot == 1 and ']' or (r_tot == 2 and '' or ' '))
+						local r_2 = (r_tot == 2 and '[' or '')..'2'..(r_tot == 2 and ']' or (r_tot == 3 and '' or ' '))
+						local r_3 = (r_tot == 3 and '[' or '')..'3'..(r_tot == 3 and ']' or (r_tot == 4 and '' or ' '))
+						local r_4 = (r_tot == 4 and '[' or '')..'4'..(r_tot == 4 and ']' or (r_tot == 5 and '' or ' '))
+						local r_5 = (r_tot == 5 and '[' or '')..'5'..(r_tot == 5 and ']' or (r_tot == 6 and '' or ' '))
+						local r_6 = (r_tot == 6 and '[' or '')..'6'..(r_tot == 6 and ']' or (r_tot == 7 and '' or ' '))
+						local r_7 = (r_tot == 7 and '[' or '')..'7'..(r_tot == 7 and ']' or (r_tot == 8 and '' or ' '))
+						local r_8 = (r_tot == 8 and '[' or '')..'8'..(r_tot == 8 and ']' or (r_tot == 9 and '' or ' '))
+						local r_9 = (r_tot == 9 and '[' or '')..'9'..(r_tot == 9 and ']' or (r_tot == 10 and '' or ' '))
+						local r_10 = (r_tot == 10 and '[' or '')..'10'..(r_tot == 10 and ']' or (r_tot == 11 and '' or ' '))
+						local r_11 = (r_tot == 11 and '[' or '')..'11'..(r_tot == 11 and ']' or ' ')
 
-					local r_c1 = text_color
-					local r_c2 = (rolls[r_id].lucky == '2' and color.rolls.lucky or (rolls[r_id].unlucky == '2' and color.rolls.unlucky or text_color))
-					local r_c3 = (rolls[r_id].lucky == '3' and color.rolls.lucky or (rolls[r_id].unlucky == '3' and color.rolls.unlucky or text_color))
-					local r_c4 = (rolls[r_id].lucky == '4' and color.rolls.lucky or (rolls[r_id].unlucky == '4' and color.rolls.unlucky or text_color))
-					local r_c5 = (rolls[r_id].lucky == '5' and color.rolls.lucky or (rolls[r_id].unlucky == '5' and color.rolls.unlucky or text_color))
-					local r_c6 = (rolls[r_id].lucky == '6' and color.rolls.lucky or (rolls[r_id].unlucky == '6' and color.rolls.unlucky or text_color))
-					local r_c7 = (rolls[r_id].lucky == '7' and color.rolls.lucky or (rolls[r_id].unlucky == '7' and color.rolls.unlucky or text_color))
-					local r_c8 = (rolls[r_id].lucky == '8' and color.rolls.lucky or (rolls[r_id].unlucky == '8' and color.rolls.unlucky or text_color))
-					local r_c9 = (rolls[r_id].lucky == '9' and color.rolls.lucky or (rolls[r_id].unlucky == '9' and color.rolls.unlucky or text_color))
-					local r_c10 = (rolls[r_id].lucky == '10' and color.rolls.lucky or (rolls[r_id].unlucky == '10' and color.rolls.unlucky or text_color))
-					local r_c11 = color.rolls.eleven
+						local r_c1 = text_color
+						local r_c2 = (rolls[r_id].lucky == '2' and color.rolls.lucky or (rolls[r_id].unlucky == '2' and color.rolls.unlucky or text_color))
+						local r_c3 = (rolls[r_id].lucky == '3' and color.rolls.lucky or (rolls[r_id].unlucky == '3' and color.rolls.unlucky or text_color))
+						local r_c4 = (rolls[r_id].lucky == '4' and color.rolls.lucky or (rolls[r_id].unlucky == '4' and color.rolls.unlucky or text_color))
+						local r_c5 = (rolls[r_id].lucky == '5' and color.rolls.lucky or (rolls[r_id].unlucky == '5' and color.rolls.unlucky or text_color))
+						local r_c6 = (rolls[r_id].lucky == '6' and color.rolls.lucky or (rolls[r_id].unlucky == '6' and color.rolls.unlucky or text_color))
+						local r_c7 = (rolls[r_id].lucky == '7' and color.rolls.lucky or (rolls[r_id].unlucky == '7' and color.rolls.unlucky or text_color))
+						local r_c8 = (rolls[r_id].lucky == '8' and color.rolls.lucky or (rolls[r_id].unlucky == '8' and color.rolls.unlucky or text_color))
+						local r_c9 = (rolls[r_id].lucky == '9' and color.rolls.lucky or (rolls[r_id].unlucky == '9' and color.rolls.unlucky or text_color))
+						local r_c10 = (rolls[r_id].lucky == '10' and color.rolls.lucky or (rolls[r_id].unlucky == '10' and color.rolls.unlucky or text_color))
+						local r_c11 = color.rolls.eleven
 
-					local r_1_t = '\\cs('..formatRGB(r_c1.r)..','..formatRGB(r_c1.g)..','..formatRGB(r_c1.b)..')'..r_1..'\\cr'
-					local r_1_t_shdw = '\\cs(000,000,000)'..r_1..'\\cr'
-					local r_2_t = '\\cs('..formatRGB(r_c2.r)..','..formatRGB(r_c2.g)..','..formatRGB(r_c2.b)..')'..r_2..'\\cr'
-					local r_2_t_shdw = '\\cs(000,000,000)'..r_2..'\\cr'
-					local r_3_t = '\\cs('..formatRGB(r_c3.r)..','..formatRGB(r_c3.g)..','..formatRGB(r_c3.b)..')'..r_3..'\\cr'
-					local r_3_t_shdw = '\\cs(000,000,000)'..r_3..'\\cr'
-					local r_4_t = '\\cs('..formatRGB(r_c4.r)..','..formatRGB(r_c4.g)..','..formatRGB(r_c4.b)..')'..r_4..'\\cr'
-					local r_4_t_shdw = '\\cs(000,000,000)'..r_4..'\\cr'
-					local r_5_t = '\\cs('..formatRGB(r_c5.r)..','..formatRGB(r_c5.g)..','..formatRGB(r_c5.b)..')'..r_5..'\\cr'
-					local r_5_t_shdw = '\\cs(000,000,000)'..r_5..'\\cr'
-					local r_6_t = '\\cs('..formatRGB(r_c6.r)..','..formatRGB(r_c6.g)..','..formatRGB(r_c6.b)..')'..r_6..'\\cr'
-					local r_6_t_shdw = '\\cs(000,000,000)'..r_6..'\\cr'
-					local r_7_t = '\\cs('..formatRGB(r_c7.r)..','..formatRGB(r_c7.g)..','..formatRGB(r_c7.b)..')'..r_7..'\\cr'
-					local r_7_t_shdw = '\\cs(000,000,000)'..r_7..'\\cr'
-					local r_8_t = '\\cs('..formatRGB(r_c8.r)..','..formatRGB(r_c8.g)..','..formatRGB(r_c8.b)..')'..r_8..'\\cr'
-					local r_8_t_shdw = '\\cs(000,000,000)'..r_8..'\\cr'
-					local r_9_t = '\\cs('..formatRGB(r_c9.r)..','..formatRGB(r_c9.g)..','..formatRGB(r_c9.b)..')'..r_9..'\\cr'
-					local r_9_t_shdw = '\\cs(000,000,000)'..r_9..'\\cr'
-					local r_10_t =  '\\cs('..formatRGB(r_c10.r)..','..formatRGB(r_c10.g)..','..formatRGB(r_c10.b)..')'..r_10..'\\cr'
-					local r_10_t_shdw = '\\cs(000,000,000)'..r_10..'\\cr'
-					local r_11_t = '\\cs('..formatRGB(r_c11.r)..','..formatRGB(r_c11.g)..','..formatRGB(r_c11.b)..')'..r_11..'\\cr'
-					local r_11_t_shdw = '\\cs(000,000,000)'..r_11..'\\cr'
+						local r_1_t = '\\cs('..formatRGB(r_c1.r)..','..formatRGB(r_c1.g)..','..formatRGB(r_c1.b)..')'..r_1..'\\cr'
+						local r_1_t_shdw = '\\cs(000,000,000)'..r_1..'\\cr'
+						local r_2_t = '\\cs('..formatRGB(r_c2.r)..','..formatRGB(r_c2.g)..','..formatRGB(r_c2.b)..')'..r_2..'\\cr'
+						local r_2_t_shdw = '\\cs(000,000,000)'..r_2..'\\cr'
+						local r_3_t = '\\cs('..formatRGB(r_c3.r)..','..formatRGB(r_c3.g)..','..formatRGB(r_c3.b)..')'..r_3..'\\cr'
+						local r_3_t_shdw = '\\cs(000,000,000)'..r_3..'\\cr'
+						local r_4_t = '\\cs('..formatRGB(r_c4.r)..','..formatRGB(r_c4.g)..','..formatRGB(r_c4.b)..')'..r_4..'\\cr'
+						local r_4_t_shdw = '\\cs(000,000,000)'..r_4..'\\cr'
+						local r_5_t = '\\cs('..formatRGB(r_c5.r)..','..formatRGB(r_c5.g)..','..formatRGB(r_c5.b)..')'..r_5..'\\cr'
+						local r_5_t_shdw = '\\cs(000,000,000)'..r_5..'\\cr'
+						local r_6_t = '\\cs('..formatRGB(r_c6.r)..','..formatRGB(r_c6.g)..','..formatRGB(r_c6.b)..')'..r_6..'\\cr'
+						local r_6_t_shdw = '\\cs(000,000,000)'..r_6..'\\cr'
+						local r_7_t = '\\cs('..formatRGB(r_c7.r)..','..formatRGB(r_c7.g)..','..formatRGB(r_c7.b)..')'..r_7..'\\cr'
+						local r_7_t_shdw = '\\cs(000,000,000)'..r_7..'\\cr'
+						local r_8_t = '\\cs('..formatRGB(r_c8.r)..','..formatRGB(r_c8.g)..','..formatRGB(r_c8.b)..')'..r_8..'\\cr'
+						local r_8_t_shdw = '\\cs(000,000,000)'..r_8..'\\cr'
+						local r_9_t = '\\cs('..formatRGB(r_c9.r)..','..formatRGB(r_c9.g)..','..formatRGB(r_c9.b)..')'..r_9..'\\cr'
+						local r_9_t_shdw = '\\cs(000,000,000)'..r_9..'\\cr'
+						local r_10_t =  '\\cs('..formatRGB(r_c10.r)..','..formatRGB(r_c10.g)..','..formatRGB(r_c10.b)..')'..r_10..'\\cr'
+						local r_10_t_shdw = '\\cs(000,000,000)'..r_10..'\\cr'
+						local r_11_t = '\\cs('..formatRGB(r_c11.r)..','..formatRGB(r_c11.g)..','..formatRGB(r_c11.b)..')'..r_11..'\\cr'
+						local r_11_t_shdw = '\\cs(000,000,000)'..r_11..'\\cr'
 
-					target_action_result = ' ('..r_1_t..r_2_t..r_3_t..r_4_t..r_5_t..r_6_t..r_7_t..r_8_t..r_9_t..r_10_t..r_11_t..')'
-					target_action_result_shdw = ' ('..r_1_t_shdw..r_2_t_shdw..r_3_t_shdw..r_4_t_shdw..r_5_t_shdw..r_6_t_shdw..r_7_t_shdw..r_8_t_shdw..r_9_t_shdw..r_10_t_shdw..r_11_t_shdw..')'
-				else
+						target_action_result = ' ('..r_1_t..r_2_t..r_3_t..r_4_t..r_5_t..r_6_t..r_7_t..r_8_t..r_9_t..r_10_t..r_11_t..')'
+						target_action_result_shdw = ' ('..r_1_t_shdw..r_2_t_shdw..r_3_t_shdw..r_4_t_shdw..r_5_t_shdw..r_6_t_shdw..r_7_t_shdw..r_8_t_shdw..r_9_t_shdw..r_10_t_shdw..r_11_t_shdw..')'
+					else
 
-					if r_tot == tonumber(rolls[r_id].lucky) then
-						c = color.rolls.lucky
-					elseif r_tot == tonumber(rolls[r_id].unlucky) then
-						c = color.rolls.unlucky
-					elseif r_tot == 11 then
-						c = color.rolls.eleven
+						if r_tot == tonumber(rolls[r_id].lucky) then
+							c = color.rolls.lucky
+						elseif r_tot == tonumber(rolls[r_id].unlucky) then
+							c = color.rolls.unlucky
+						elseif r_tot == 11 then
+							c = color.rolls.eleven
+						end
+
+						local r = formatRGB(c.r)
+						local g = formatRGB(c.g)
+						local b = formatRGB(c.b)
+
+						target_action_result = ' \\cs('..r..','..g..','..b..')(L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr'
+						target_action_result_shdw = ' \\cs(000,000,000)(L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr'
 					end
-
-					local r = formatRGB(c.r)
-					local g = formatRGB(c.g)
-					local b = formatRGB(c.b)
-
-					target_action_result = ' \\cs('..r..','..g..','..b..')(L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr'
-					target_action_result_shdw = ' \\cs(000,000,000)(L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr'
+				else
+					target_action_result = ' (Total: '..r_tot..')'
+					target_action_result_shdw = ' (Total: '..r_tot..')'
 				end
 
 			elseif act.targets[1].actions[1].message == 426 then
