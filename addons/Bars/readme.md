@@ -91,6 +91,13 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.1
+- Added highlighting of a COR rolls current total roll in the action result for "fancy rolls".
+- Added action results for item usage.
+
+Version 2.0.1
+- Fixed the show_roll_lucky_info option not working.
+
 Version 2.0
 - Overhauled the action tracking system. Now gives each action happening a tracking index number so that actions can overlap/replace eachother and reset the display timing for each player/mob when a new action starts. This allows actions to be displayed on-screen longer without worrying about a new action being removed early from the previous action.
 - Overhauled the text shadows. They now line up correctly when parts of the action line are colored.
