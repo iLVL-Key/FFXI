@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '2.0.1'
+_addon.version = '2.0.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -146,9 +146,10 @@ defaults = {
 			none = {r = 255, g = 255, b = 255},
 		},
 		rolls = {
-			lucky = {r = 50, g = 255, b = 50},
-			unlucky = {r = 255, g = 50, b = 50},
 			eleven = {r = 255, g = 255, b = 50},
+			lucky = {r = 50, g = 255, b = 50},
+			total = {r = 135, g = 206, b = 250},
+			unlucky = {r = 255, g = 50, b = 50},
 		},
 	},
 }
@@ -2076,16 +2077,16 @@ windower.register_event('action', function (act)
 						local r_10 = (r_tot == 10 and '[' or '')..'10'..(r_tot == 10 and ']' or (r_tot == 11 and '' or ' '))
 						local r_11 = (r_tot == 11 and '[' or '')..'11'..(r_tot == 11 and ']' or ' ')
 
-						local r_c1 = text_color
-						local r_c2 = (rolls[r_id].lucky == '2' and color.rolls.lucky or (rolls[r_id].unlucky == '2' and color.rolls.unlucky or text_color))
-						local r_c3 = (rolls[r_id].lucky == '3' and color.rolls.lucky or (rolls[r_id].unlucky == '3' and color.rolls.unlucky or text_color))
-						local r_c4 = (rolls[r_id].lucky == '4' and color.rolls.lucky or (rolls[r_id].unlucky == '4' and color.rolls.unlucky or text_color))
-						local r_c5 = (rolls[r_id].lucky == '5' and color.rolls.lucky or (rolls[r_id].unlucky == '5' and color.rolls.unlucky or text_color))
-						local r_c6 = (rolls[r_id].lucky == '6' and color.rolls.lucky or (rolls[r_id].unlucky == '6' and color.rolls.unlucky or text_color))
-						local r_c7 = (rolls[r_id].lucky == '7' and color.rolls.lucky or (rolls[r_id].unlucky == '7' and color.rolls.unlucky or text_color))
-						local r_c8 = (rolls[r_id].lucky == '8' and color.rolls.lucky or (rolls[r_id].unlucky == '8' and color.rolls.unlucky or text_color))
-						local r_c9 = (rolls[r_id].lucky == '9' and color.rolls.lucky or (rolls[r_id].unlucky == '9' and color.rolls.unlucky or text_color))
-						local r_c10 = (rolls[r_id].lucky == '10' and color.rolls.lucky or (rolls[r_id].unlucky == '10' and color.rolls.unlucky or text_color))
+						local r_c1 = r_tot == '1' and color.rolls.total or text_color
+						local r_c2 = (rolls[r_id].lucky == '2' and color.rolls.lucky or (rolls[r_id].unlucky == '2' and color.rolls.unlucky or (r_tot == 2 and color.rolls.total or text_color)))
+						local r_c3 = (rolls[r_id].lucky == '3' and color.rolls.lucky or (rolls[r_id].unlucky == '3' and color.rolls.unlucky or (r_tot == 3 and color.rolls.total or text_color)))
+						local r_c4 = (rolls[r_id].lucky == '4' and color.rolls.lucky or (rolls[r_id].unlucky == '4' and color.rolls.unlucky or (r_tot == 4 and color.rolls.total or text_color)))
+						local r_c5 = (rolls[r_id].lucky == '5' and color.rolls.lucky or (rolls[r_id].unlucky == '5' and color.rolls.unlucky or (r_tot == 5 and color.rolls.total or text_color)))
+						local r_c6 = (rolls[r_id].lucky == '6' and color.rolls.lucky or (rolls[r_id].unlucky == '6' and color.rolls.unlucky or (r_tot == 6 and color.rolls.total or text_color)))
+						local r_c7 = (rolls[r_id].lucky == '7' and color.rolls.lucky or (rolls[r_id].unlucky == '7' and color.rolls.unlucky or (r_tot == 7 and color.rolls.total or text_color)))
+						local r_c8 = (rolls[r_id].lucky == '8' and color.rolls.lucky or (rolls[r_id].unlucky == '8' and color.rolls.unlucky or (r_tot == 8 and color.rolls.total or text_color)))
+						local r_c9 = (rolls[r_id].lucky == '9' and color.rolls.lucky or (rolls[r_id].unlucky == '9' and color.rolls.unlucky or (r_tot == 9 and color.rolls.total or text_color)))
+						local r_c10 = (rolls[r_id].lucky == '10' and color.rolls.lucky or (rolls[r_id].unlucky == '10' and color.rolls.unlucky or (r_tot == 10 and color.rolls.total or text_color)))
 						local r_c11 = color.rolls.eleven
 
 						local r_1_t = '\\cs('..formatRGB(r_c1.r)..','..formatRGB(r_c1.g)..','..formatRGB(r_c1.b)..')'..r_1..'\\cr'
@@ -2263,6 +2264,16 @@ windower.register_event('action', function (act)
 			elseif act.targets[1].actions[1].message == 341 or act.targets[1].actions[1].message == 342 then
 				target_action_result = ' ('..res.buffs[act.targets[1].actions[1].param].name..')'
 				target_action_result_shdw = ' ('..res.buffs[act.targets[1].actions[1].param].name..')'
+			end
+
+		--Items
+		elseif act.category == 5 then
+			if act.targets[1].actions[1].message == 375 or act.targets[1].actions[1].message == 378 then
+				target_action_result = ' ('..res.buffs[act.targets[1].actions[1].param].name..')'
+				target_action_result_shdw = ' ('..res.buffs[act.targets[1].actions[1].param].name..')'
+			elseif act.targets[1].actions[1].message == 376 or act.targets[1].actions[1].message == 377 then
+				target_action_result = ' ('..res.items[act.targets[1].actions[1].param].name..')'
+				target_action_result_shdw = ' ('..res.items[act.targets[1].actions[1].param].name..')'
 			end
 
 		--Monsters
