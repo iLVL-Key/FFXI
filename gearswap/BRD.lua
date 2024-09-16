@@ -173,6 +173,7 @@ inst.threnody		= "Gjallarhorn"
 inst.virelai		= "Gjallarhorn"
 
 --  General Notifications  --
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
@@ -182,8 +183,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -256,9 +256,9 @@ sub.RDM.Abil06 = "Clarion Call"			sub.RDM.Abil06_sh = "Clarion"
 sub.SCH.Abil01 = "Nightingale"			sub.SCH.Abil01_sh = "Nightngale"
 sub.SCH.Abil02 = "Troubadour"			sub.SCH.Abil02_sh = ""
 sub.SCH.Abil03 = "Marcato"				sub.SCH.Abil03_sh = ""
-sub.SCH.Abil04 = "Tenuto"				sub.SCH.Abil04_sh = ""
-sub.SCH.Abil05 = "Soul Voice"			sub.SCH.Abil05_sh = ""
-sub.SCH.Abil06 = "Clarion Call"			sub.SCH.Abil06_sh = "Clarion"
+sub.SCH.Abil04 = "Soul Voice"			sub.SCH.Abil04_sh = ""
+sub.SCH.Abil05 = "Clarion Call"			sub.SCH.Abil05_sh = "Clarion"
+sub.SCH.Abil06 = "Sublimation"			sub.SCH.Abil06_sh = "Sublmation"
 --BRD/WHM
 sub.WHM.Abil01 = "Nightingale"			sub.WHM.Abil01_sh = "Nightngale"
 sub.WHM.Abil02 = "Troubadour"			sub.WHM.Abil02_sh = ""
@@ -445,7 +445,7 @@ sets.idle = {
 	body="Nyame Mail",
 	hands="Nyame Gauntlets",
 	legs="Nyame Flanchard",
-	feet="Fili Cothurnes +2",
+	feet="Fili Cothurnes +3",
 	neck="Warder's Charm +1",
 	waist="Carrier's Sash",
 	left_ear="Eabani Earring",
@@ -554,7 +554,7 @@ sets.fastcast_song = {
 	body="Inyanga Jubbah +2",
 	hands="Leyline Gloves",
 	legs="Volte Brais",
-	feet="Fili Cothurnes +2",
+	feet="Fili Cothurnes +3",
 	neck="Baetyl Pendant",
 	waist="Embla Sash",
 	left_ear="Etiolation Earring",
@@ -611,7 +611,7 @@ sets.etude = set_combine(sets.buff_song, {
 
 -- Madrigals
 sets.madrigal = set_combine(sets.buff_song, {
-	feet="Fili Cothurnes +2",
+	feet="Fili Cothurnes +3",
 	back={ name="Intarabus's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
 
@@ -642,13 +642,13 @@ sets.paeon = set_combine(sets.buff_song, {
 
 -- Preludes
 sets.prelude = set_combine(sets.buff_song, {
-	feet="Fili Cothurnes +2",
+	feet="Fili Cothurnes +3",
 	back={ name="Intarabus's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
 
 -- Scherzos
 sets.scherzo = set_combine(sets.buff_song, {
-	feet="Fili Cothurnes +2",
+	feet="Fili Cothurnes +3",
 })
 
 -- Non-Song Buffs (Conserve MP)
@@ -821,7 +821,7 @@ end
 
 
 
-FileVersion = '1.0 BETA-4'
+FileVersion = '1.0 BETA-5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -899,6 +899,7 @@ currentAMTimer = 0
 TP_Window_Open = false
 current_songs = {}
 song_duration = nil
+dummy_song = false
 max_songs = 2
 
 --create a new table that combines both the WeaponCycle/DualWieldCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
@@ -994,7 +995,7 @@ song_list:font('Consolas')
 song_list:size(SongsFontSize)
 song_list:bg_alpha(170)
 song_list:pos(SongposX,SongposY)
-song_list:draggable(false)
+song_list:draggable(true)
 
 -- Create the HUD BG Color text object
 local hud_bg_color = texts.new(hud_bg_str..'\n'..hud_bg_str..'\n'..hud_bg_str..'\n'..hud_bg_str)
@@ -2086,21 +2087,23 @@ function getNumberOfSongs(player)
 end
 
 function getLowestSongDuration(player)
-	--Check if the player exists in the current_songs table
+	-- Check if the player exists in the current_songs table
 	if current_songs[player] then
 		local lowest_duration = nil
-		--Iterate through the player's songs to find the one with the lowest duration
-		for _, duration in pairs(current_songs[player]) do
+		-- Iterate through the player's songs to find the one with the lowest duration
+		for _, song_data in pairs(current_songs[player]) do
+			local duration = song_data.duration
 			if lowest_duration == nil or duration < lowest_duration then
 				lowest_duration = duration
 			end
 		end
 		return lowest_duration
 	else
-		--If the player doesn't exist in the table, return nil (indicating no songs)
+		-- If the player doesn't exist in the table, return nil (indicating no songs)
 		return nil
 	end
 end
+
 
 function getSongDuration(spell)
 
@@ -2293,7 +2296,13 @@ function getSongDuration(spell)
 		total_duration = total_duration + 40
 	end
 
-	return total_duration
+	--Are we using a dummy instrument and not one for full strength songs?
+	local is_dummy_song = false
+	if player.equipment.range == "Daurdabla" or player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
+		is_dummy_song = true
+	end
+
+	return total_duration, is_dummy_song
 end
 
 function getMaxSongs()
@@ -2312,9 +2321,7 @@ function getMaxSongs()
 			elseif itemMatch(22306,'range') then --stage 4
 				max_songs = max_songs + 1
 			end
-		elseif player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" then
-			max_songs = max_songs + 1
-		elseif player.equipment.range == "Terpander" then
+		elseif player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
 			max_songs = max_songs + 1
 		end
 	end
@@ -2330,11 +2337,11 @@ end
 function getCurrentSongList()
 	local formatted_list = "[SONG LIST       //songs]\n"
 
-	--Retrieve the party list
+	-- Retrieve the party list
 	local party = windower.ffxi.get_party()
 	local party_order = {}
 
-	--Store party members' names based on their position
+	-- Store party members' names based on their position
 	for i = 0, 5 do
 		local position = 'p' .. i
 		if party[position] and party[position].name then
@@ -2342,21 +2349,21 @@ function getCurrentSongList()
 		end
 	end
 
-	--Iterate over the party_order to ensure the correct order
+	-- Iterate over the party_order to ensure the correct order
 	for _, player_name in ipairs(party_order) do
 		if current_songs[player_name] then
 			formatted_list = formatted_list.."--\\cs(50,255,50)"..player_name.."\\cr--\n"
-		
+
 			local song_list = {}
-			for song_name, duration in pairs(current_songs[player_name]) do
-				table.insert(song_list, {name = song_name, duration = duration})
+			for song_name, song_data in pairs(current_songs[player_name]) do
+				table.insert(song_list, {name = song_name, duration = song_data.duration, dummy = song_data.dummy})
 			end
-		
-			--Sort the song list by duration in descending order (longest first)
+
+			-- Sort the song list by duration in descending order (longest first)
 			table.sort(song_list, function(a, b)
 				return a.duration > b.duration
 			end)
-		
+
 			-- Append each song and its duration to the formatted list
 			for _, song in ipairs(song_list) do
 				local c = color.song.very_long
@@ -2371,13 +2378,16 @@ function getCurrentSongList()
 				end
 				local minutes = math.floor(song.duration / 60)
 				local seconds = song.duration % 60
-				formatted_list = formatted_list.."·"..song.name..": \\cs("..c.r..","..c.g..","..c.b..")"..string.format("%d:%02d", minutes, seconds).."\\cr\n"
+				local cb = color.song.critical
+				local bullet = song.dummy and "\\cs("..cb.r..","..cb.g..","..cb.b..")♫\\cr" or "·"
+				formatted_list = formatted_list..bullet..song.name..": \\cs("..c.r..","..c.g..","..c.b..")"..string.format("%d:%02d", minutes, seconds).."\\cr\n"
 			end
 		end
 	end
 
 	return formatted_list
 end
+
 
 function resetCurrentSongs(player)
 	if player then
@@ -2720,6 +2730,26 @@ function self_command(command)
 		double_pianissimo_fix = false
 	elseif command == "double_sublimation_fix" then
 		double_sublimation_fix = false
+	elseif command == 'test' then
+		local function print_table_structure(tbl, indent)
+			-- If no indentation is provided, set it to an empty string
+			indent = indent or ""
+		
+			-- Iterate through the table
+			for key, value in pairs(tbl) do
+				local value_type = type(value)
+				
+				-- For tables, print the key and recursively call the function
+				if value_type == "table" then
+					print(indent .. tostring(key) .. ": (table)")
+					print_table_structure(value, indent .. "  ")
+				else
+					-- Print the key, value, and its type in parentheses
+					print(indent .. tostring(key) .. ": " .. tostring(value) .. " (" .. value_type .. ")")
+				end
+			end
+		end
+		print_table_structure(current_songs)
 	end
 end
 
@@ -3203,7 +3233,7 @@ function aftercast(spell)
 		send_command('input /echo [Clarion Call] 3:00;wait 30;input /echo [Clarion Call] 2:30;wait 30;input /echo [Clarion Call] 2:00;wait 30;input /echo [Clarion Call] 1:30;wait 30;input /echo [Clarion Call] 1:00;wait 30;input /echo [Clarion Call] 0:30;wait 10;input /echo [Clarion Call] 0:20;wait 10;input /echo [Clarion Call] 0:10')
 	end
 	if not spell.interrupted then
-		song_duration = getSongDuration(spell.english)
+		song_duration, dummy_song = getSongDuration(spell.english)
 		max_songs = getMaxSongs()
 	end
 	choose_set()
@@ -3804,7 +3834,7 @@ windower.register_event('prerender', function()
 	end
 
 	--MP checks
-	if NotiLowMP =='On' and subJobWithMP() and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
+	if NotiLowMP =='On' and subJobWithMP() and player and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off (done below)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
@@ -3942,18 +3972,21 @@ windower.register_event('prerender', function()
 
 		--On screen song list updates
 		for player_name, songs in pairs(current_songs) do
-			for song_name, duration in pairs(songs) do
-				songs[song_name] = duration - 1
-				--remove the song if its duration falls to 0 or below
-				if songs[song_name] <= 0 then
+			for song_name, song_data in pairs(songs) do
+				-- Decrease the song duration by 1
+				song_data.duration = song_data.duration - 1
+
+				-- Remove the song if its duration falls to 0 or below
+				if song_data.duration <= 0 then
 					songs[song_name] = nil
 				end
 			end
-			--remove the player from the table if they have no more songs
+			-- Remove the player from the table if they have no more songs
 			if next(songs) == nil then
 				current_songs[player_name] = nil
 			end
 		end
+		--If a player dies, reset their songs
 		for i = 0, 5 do
 			local party_slot = 'p'..i
 			local party_member = windower.ffxi.get_party()[party_slot]
@@ -4361,55 +4394,61 @@ windower.register_event('action',function(act)
 	local actor_name = windower.ffxi.get_mob_by_id(act.actor_id) and windower.ffxi.get_mob_by_id(act.actor_id).name or nil
 	local get_mob_by_id = windower.ffxi.get_mob_by_id
 
-	--if actor_name == my_name and act.category == 4 and (act.param and spells[act.param] and spells[act.param].type == "BardSong") and get_mob_by_id(act.targets[1].id).in_party then --index field '?'
-	if actor_name == my_name and act.category == 4 then --index field '?'
-		if (act.param and spells[act.param] and spells[act.param].type == "BardSong") then --index field '?'
-			if act.targets[1].id and get_mob_by_id(act.targets[1].id).in_party then --index field '?'
-
+	if actor_name == my_name and act.category == 4 then
+		if (act.param and spells[act.param] and spells[act.param].type == "BardSong") then
+			if act.targets[1].id and get_mob_by_id(act.targets[1].id).in_party then
 
 				for i = 1, act.target_count do
 					local target_id = act.targets[i].id
 					local target_name = get_mob_by_id(target_id).name
 					local song_name = spells[act.param].en
-					
+
 					-- Initialize the player's song list if it doesn't exist
 					if current_songs[target_name] == nil then
 						current_songs[target_name] = {}
 					end
-					
+
 					local player_songs = current_songs[target_name]
 					local song_count = 0
 					for _ in pairs(player_songs) do song_count = song_count + 1 end
-					
+
 					if song_count < max_songs then
 						-- If the player has fewer songs than max_songs, add or update the song
-						player_songs[song_name] = song_duration
+						player_songs[song_name] = {
+							duration = song_duration,
+							dummy = dummy_song,
+						}
 					else
 						-- If the player has max_songs or more, check if the song exists
 						if player_songs[song_name] then
 							-- Update the existing song duration
-							player_songs[song_name] = song_duration
+							player_songs[song_name] = {
+								duration = song_duration,
+								dummy = dummy_song,
+							}
 						else
 							-- Find the song with the lowest duration
 							local lowest_duration = nil
 							local lowest_song_name = nil
-							
-							for s_name, duration in pairs(player_songs) do
-								if not lowest_duration or duration < lowest_duration then
-									lowest_duration = duration
+
+							for s_name, song_data in pairs(player_songs) do
+								if not lowest_duration or song_data.duration < lowest_duration then
+									lowest_duration = song_data.duration
 									lowest_song_name = s_name
 								end
 							end
-							
-							-- Replace the lowest duration song with with the new song
+
+							-- Replace the lowest duration song with the new song
 							if lowest_song_name then
 								player_songs[lowest_song_name] = nil
-								player_songs[song_name] = song_duration
+								player_songs[song_name] = {
+									duration = song_duration,
+									dummy = dummy_song,
+								}
 							end
 						end
 					end
 				end
-
 
 			end
 		end
