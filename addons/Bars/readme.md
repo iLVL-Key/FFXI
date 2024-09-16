@@ -91,6 +91,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.1.1
+- Added a few more instances of error handling.
+- Cleaned up some redundant text coloring.
+
 Version 2.1
 - Added highlighting of a COR rolls current total roll in the action result for "fancy rolls".
 - Added action results for item usage.
