@@ -7,6 +7,10 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 
 ![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
 ↑The Target, Self Action, and TP visible in action.
+
+![Bars_PLD](https://github.com/user-attachments/assets/30a01c7e-fcff-48fd-a1d5-fe528452f682)  
+↑The Target and Self Action bars visible and in action.
+
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
   - Bars automatically align to the top, but vertical offset can be adjusted per job if you prefer them aligned to the bottom.
