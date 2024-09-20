@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '2.2'
+_addon.version = '2.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2510,6 +2510,9 @@ windower.register_event('action', function (act)
 			elseif act.targets[1].actions[1].message == 188 then
 				target_action_result = ' (Miss)'
 				target_action_result_shdw = ' (Miss)'
+			elseif act.targets[1].actions[1].message == 189 then
+				target_action_result = ' (No effect)'
+				target_action_result_shdw = ' (No effect)'
 			end
 
 		--Pets
