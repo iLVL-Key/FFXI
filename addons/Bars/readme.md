@@ -3,7 +3,7 @@ Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Action
 Can display anwhere from all bars at once, to all the way down to just the target bar.
 
 ![Bars_all_bars_shown](https://github.com/user-attachments/assets/814bd9bc-55bd-4330-bf86-8ae463878f78)  
-↑All bars visible at the same time.
+↑All* bars visible at the same time. (*Sub-Target bar not displayed but is to the right of the Focus bar)
 
 ![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
 ↑The Target, Self Action, and TP visible in action.
@@ -29,6 +29,9 @@ Can display anwhere from all bars at once, to all the way down to just the targe
     - Can track by name or ID.
   - Displays the Focus Targets actions as well.
   - Automatically hides the Focus Target when it is targeted.
+- Focus Target Override.
+  - Designate the current target as a Focus Target taking priority over the Auto Focus Target list.
+  - Focus will persist until subject moves out of range, dies, or is disabled manually.
 - Display the Index number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Display distance to target.
@@ -60,6 +63,9 @@ All commands must be preceded with `//bars`
    - Valid targets: Names (ex: Oseem), IDs (ex: 17809550).
    - Use quotes to surround names with spaces.
  - **remove/r <target>** - Remove a target from the Auto Focus Target list.
+ - **focus/f** - Temporarily override the Auto Focus Target with the current cursor target.
+   - Type again to remove the override.
+   - Automatically removed when target moves out of range.
  - **list/l** - Show the Auto Focus Target list.
  - **size/s [#]** - Update the size.
  - **bold/b** - Toggle the bold setting.
@@ -68,7 +74,9 @@ All commands must be preceded with `//bars`
 Open the `/bars/data/settings.xml` file to adjust these settings.
  - **bar_width** - Adjust the width of the bars (the Auto Focus Target bar will always be half of this number).
  - **bars_vertical_spacing** - The vertical spacing between each bars section.
+ - **char_width_multiplier** - Font size is multiplied by this number to calculate character width in pixels. Affects only the horizontal position of the Sub-Target bar.
  - **clear_action_delay** - The delay in seconds after an action completes that it will be cleared from the screen (supports decimals ie 4.5).
+ - **condense_target_and_subtarget_bars** - Display sub-targets in the Target bar instead of their own separate Sub-Target bar.
  - **focus_target_max_distance** - The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed.
  - **hide_focus_target_when_target** - Hides the Auto Focus Target bar when the subject of it has been targeted (prevents a target being on both at the same time).
  - **max_action_length** - The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space.
@@ -94,6 +102,13 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
  - **text_vertical_offset** - The vertical offset in pixels between a bar and its text (this is what sets the text above a bar by default).
 
 ## Changelog
+
+Version 2.2
+- Added Focus Target Override. You can now use `//bars focus` (or `f` for short) to override the Auto Focus Target with whatever you have targeted. Override will be removed when subject moves out of range, dies (if its a mob), or is removed via `//bars focus` again.
+- Added Sub-Target bar. Displayed as a half-length bar to the right of the Focus Target bar. New options to accompany this are `condense_target_and_subtarget_bars` and `char_width_multiplier` (to adjust horizontal spacing if needed).
+- Adjusted COR total default color for Fancy Rolls.
+- Adjusted player character (other) target default color.
+- Fixed COR roll total of 1 not being colored correctly for Fancy Rolls.
 
 Version 2.1.1
 - Added a few more instances of error handling.
