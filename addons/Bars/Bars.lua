@@ -25,13 +25,14 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '2.1'
+_addon.version = '2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
 config = require('config')
 texts = require('texts')
 res = require('resources')
+packets = require('packets')
 require 'chat'
 
 defaults = {
@@ -43,7 +44,9 @@ defaults = {
 	options = {
 		bar_width = 100,
 		bars_vertical_spacing = {target_to_focus_target = -40, target_to_player_stats = 45, between_player_stats = 23},
+		char_width_multiplier = 0.63,
 		clear_action_delay = 4.5,
+		condense_target_and_subtarget_bars = false,
 		focus_target_max_distance = 50,
 		hide_focus_target_when_target = true,
 		max_action_length = 17,
@@ -81,8 +84,8 @@ defaults = {
 		show_commas_on_numbers = true,
 		show_max_hp_mp_on_bar = true,
 		show_roll_lucky_info = true,
-		show_self_when_target = false,
 		show_self_action = true,
+		show_self_when_target = false,
 		show_target_action = true,
 		show_target_action_result = true,
 		show_target_distance = true,
@@ -99,7 +102,7 @@ defaults = {
 			monster_claimed_other = {r = 211, g = 107, b = 211},
 			npc = {r = 140, g = 227, b = 132},
 			pc_alliance = {r = 158, g = 226, b = 255},
-			pc_other = {r = 230, g = 230, b = 230},
+			pc_other = {r = 255, g = 255, b = 255},
 			pc_party = {r = 158, g = 226, b = 255},
 			pc_self = {r = 66, g = 135, b = 245},
 		},
@@ -148,7 +151,7 @@ defaults = {
 		rolls = {
 			eleven = {r = 255, g = 255, b = 50},
 			lucky = {r = 50, g = 255, b = 50},
-			total = {r = 135, g = 206, b = 250},
+			total = {r = 30, g = 144, b = 255},
 			unlucky = {r = 255, g = 50, b = 50},
 		},
 	},
@@ -158,7 +161,9 @@ settings = config.load(defaults)
 
 local bar_width = settings.options.bar_width
 local bars_vertical_spacing = settings.options.bars_vertical_spacing
+local char_width_multiplier = settings.options.char_width_multiplier
 local clear_action_delay = settings.options.clear_action_delay
+local condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
 local auto_focus_target_list = settings.auto_focus_target_list
 local focus_target_max_distance = settings.options.focus_target_max_distance
 local hide_focus_target_when_target = settings.options.hide_focus_target_when_target
@@ -206,8 +211,9 @@ local zoning = false
 local job = ''
 local current_actions = {}
 local focus_target = nil
+local focus_target_override = nil
 local bars_bg_str = ''
-local bars_bg_str_ft = ''
+local bars_bg_str_ft_st = ''
 local bars_bg_str_hp = ''
 local bars_bg_str_tp = ''
 local index = 0
@@ -220,6 +226,13 @@ bars_bg_focus_target:font(font)
 bars_bg_focus_target:pad(-4)
 bars_bg_focus_target:bg_alpha(bg_alpha)
 bars_bg_focus_target:draggable(false)
+
+--Create the Sub-Target BACKGROUND text object
+local bars_bg_sub_target = texts.new()
+bars_bg_sub_target:font(font)
+bars_bg_sub_target:pad(-4)
+bars_bg_sub_target:bg_alpha(bg_alpha)
+bars_bg_sub_target:draggable(false)
 
 --Create the Target BACKGROUND text object
 local bars_bg_target = texts.new()
@@ -271,6 +284,13 @@ bars_meter_focus_target:font(font)
 bars_meter_focus_target:pad(-5)
 bars_meter_focus_target:bg_alpha(bg_alpha)
 bars_meter_focus_target:draggable(false)
+
+--Create the Sub-Target METER text object
+local bars_meter_sub_target = texts.new()
+bars_meter_sub_target:font(font)
+bars_meter_sub_target:pad(-5)
+bars_meter_sub_target:bg_alpha(bg_alpha)
+bars_meter_sub_target:draggable(false)
 
 --Create the Target METER text object
 local bars_meter_target = texts.new()
@@ -349,6 +369,20 @@ bars_text_shdw_focus_target_action:color(0,0,0)
 bars_text_shdw_focus_target_action:bg_alpha(0)
 bars_text_shdw_focus_target_action:draggable(false)
 
+--Create the Sub-Target TEXT SHADOW text object
+local bars_text_shdw_sub_target = texts.new()
+bars_text_shdw_sub_target:font(font)
+bars_text_shdw_sub_target:color(0,0,0)
+bars_text_shdw_sub_target:bg_alpha(0)
+bars_text_shdw_sub_target:draggable(false)
+
+--Create the Sub-Target Action TEXT SHADOW text object
+local bars_text_shdw_sub_target_action = texts.new()
+bars_text_shdw_sub_target_action:font(font)
+bars_text_shdw_sub_target_action:color(0,0,0)
+bars_text_shdw_sub_target_action:bg_alpha(0)
+bars_text_shdw_sub_target_action:draggable(false)
+
 --Create the Target TEXT SHADOW text object
 local bars_text_shdw_target = texts.new()
 bars_text_shdw_target:font(font)
@@ -414,6 +448,20 @@ bars_text_focus_target_action:color(text_color.r,text_color.g,text_color.b)
 bars_text_focus_target_action:bg_alpha(0)
 bars_text_focus_target_action:draggable(false)
 
+--Create the Sub-Target TEXT text object
+local bars_text_sub_target = texts.new()
+bars_text_sub_target:font(font)
+bars_text_sub_target:color(text_color.r,text_color.g,text_color.b)
+bars_text_sub_target:bg_alpha(0)
+bars_text_sub_target:draggable(false)
+
+--Create the Sub-Target Action TEXT text object
+local bars_text_sub_target_action = texts.new()
+bars_text_sub_target_action:font(font)
+bars_text_sub_target_action:color(text_color.r,text_color.g,text_color.b)
+bars_text_sub_target_action:bg_alpha(0)
+bars_text_sub_target_action:draggable(false)
+
 --Create the Target TEXT text object
 local bars_text_target = texts.new()
 bars_text_target:font(font)
@@ -467,6 +515,7 @@ bars_text_pet:draggable(false)
 windower.register_event('unload', function()
 
 	bars_bg_focus_target:destroy()
+	bars_bg_sub_target:destroy()
 	bars_bg_target:destroy()
 	bars_bg_self_action:destroy()
 	bars_bg_hp:destroy()
@@ -474,6 +523,7 @@ windower.register_event('unload', function()
 	bars_bg_tp:destroy()
 	bars_bg_pet:destroy()
 	bars_meter_focus_target:destroy()
+	bars_meter_sub_target:destroy()
 	bars_meter_target:destroy()
 	bars_meter_self_action:destroy()
 	bars_meter_hp:destroy()
@@ -484,6 +534,8 @@ windower.register_event('unload', function()
 	bars_marker_tp:destroy()
 	bars_text_shdw_focus_target:destroy()
 	bars_text_shdw_focus_target_action:destroy()
+	bars_text_shdw_sub_target:destroy()
+	bars_text_shdw_sub_target_action:destroy()
 	bars_text_shdw_target:destroy()
 	bars_text_shdw_target_action:destroy()
 	bars_text_shdw_self_action:destroy()
@@ -493,6 +545,8 @@ windower.register_event('unload', function()
 	bars_text_shdw_pet:destroy()
 	bars_text_focus_target:destroy()
 	bars_text_focus_target_action:destroy()
+	bars_text_sub_target:destroy()
+	bars_text_sub_target_action:destroy()
 	bars_text_target:destroy()
 	bars_text_target_action:destroy()
 	bars_text_self_action:destroy()
@@ -512,6 +566,8 @@ local function setBold()
 	bars_marker_tp:bold(bold)
 	bars_text_shdw_focus_target:bold(bold)
 	bars_text_shdw_focus_target_action:bold(bold)
+	bars_text_shdw_sub_target:bold(bold)
+	bars_text_shdw_sub_target_action:bold(bold)
 	bars_text_shdw_target:bold(bold)
 	bars_text_shdw_target_action:bold(bold)
 	bars_text_shdw_self_action:bold(bold)
@@ -521,6 +577,8 @@ local function setBold()
 	bars_text_shdw_pet:bold(bold)
 	bars_text_focus_target:bold(bold)
 	bars_text_focus_target_action:bold(bold)
+	bars_text_sub_target:bold(bold)
+	bars_text_sub_target_action:bold(bold)
 	bars_text_target:bold(bold)
 	bars_text_target_action:bold(bold)
 	bars_text_self_action:bold(bold)
@@ -537,6 +595,7 @@ local function setSize()
 	local size = settings.text.size
 
 	bars_bg_focus_target:size(size)
+	bars_bg_sub_target:size(size)
 	bars_bg_target:size(size)
 	bars_bg_self_action:size(size)
 	bars_bg_hp:size(size)
@@ -544,6 +603,7 @@ local function setSize()
 	bars_bg_tp:size(size)
 	bars_bg_pet:size(size)
 	bars_meter_focus_target:size(size)
+	bars_meter_sub_target:size(size)
 	bars_meter_target:size(size)
 	bars_meter_self_action:size(size)
 	bars_meter_hp:size(size)
@@ -554,6 +614,8 @@ local function setSize()
 	bars_marker_tp:size(size)
 	bars_text_shdw_focus_target:size(size)
 	bars_text_shdw_focus_target_action:size(size)
+	bars_text_shdw_sub_target:size(size)
+	bars_text_shdw_sub_target_action:size(size)
 	bars_text_shdw_target:size(size+target_text_size_difference)
 	bars_text_shdw_target_action:size(size+target_action_text_size_difference)
 	bars_text_shdw_self_action:size(size+self_action_text_size_difference)
@@ -563,6 +625,8 @@ local function setSize()
 	bars_text_shdw_pet:size(size)
 	bars_text_focus_target:size(size)
 	bars_text_focus_target_action:size(size)
+	bars_text_sub_target:size(size)
+	bars_text_sub_target_action:size(size)
 	bars_text_target:size(size+target_text_size_difference)
 	bars_text_target_action:size(size+target_action_text_size_difference)
 	bars_text_self_action:size(size+self_action_text_size_difference)
@@ -577,7 +641,10 @@ end
 local function setPosition()
 
 	local pos_target = {x = settings.pos.x, y = settings.pos.y + show_bars[job].vertical_offset}
+	local st_x_pos_adjustment = math.floor(bar_width / 2) * (settings.text.size * char_width_multiplier)
+
 	local pos_focus_target = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_focus_target}
+	local pos_sub_target = {x = pos_target.x + st_x_pos_adjustment, y = pos_target.y + bars_vertical_spacing.target_to_focus_target}
 	local player_stats_1 = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_player_stats}
 	local player_stats_2 = {x = pos_target.x, y = player_stats_1.y + bars_vertical_spacing.between_player_stats}
 	local player_stats_3 = {x = pos_target.x, y = player_stats_2.y + bars_vertical_spacing.between_player_stats}
@@ -671,6 +738,7 @@ local function setPosition()
 	end
 
 	bars_bg_focus_target:pos(pos_focus_target.x,pos_focus_target.y+8)
+	bars_bg_sub_target:pos(pos_sub_target.x,pos_sub_target.y+8)
 	bars_bg_target:pos(pos_target.x,pos_target.y+8)
 	bars_bg_self_action:pos(pos_self.x,pos_self.y+8)
 	bars_bg_hp:pos(pos_hp.x,pos_hp.y+8)
@@ -678,6 +746,7 @@ local function setPosition()
 	bars_bg_tp:pos(pos_tp.x,pos_tp.y+8)
 	bars_bg_pet:pos(pos_pet.x,pos_pet.y+8)
 	bars_meter_focus_target:pos(pos_focus_target.x+1,pos_focus_target.y+9)
+	bars_meter_sub_target:pos(pos_sub_target.x+1,pos_sub_target.y+9)
 	bars_meter_target:pos(pos_target.x+1,pos_target.y+9)
 	bars_meter_self_action:pos(pos_self.x+1,pos_self.y+9)
 	bars_meter_hp:pos(pos_hp.x+1,pos_hp.y+9)
@@ -688,6 +757,8 @@ local function setPosition()
 	bars_marker_tp:pos(pos_tp.x,pos_tp.y+7)
 	bars_text_shdw_focus_target:pos(pos_focus_target.x+1.5,pos_focus_target.y+text_vertical_offset+1.5)
 	bars_text_shdw_focus_target_action:pos(pos_focus_target.x+1.5,pos_focus_target.y+1.5+13)
+	bars_text_shdw_sub_target:pos(pos_sub_target.x+1.5,pos_sub_target.y+text_vertical_offset+1.5)
+	bars_text_shdw_sub_target_action:pos(pos_sub_target.x+1.5,pos_sub_target.y+1.5+13)
 	bars_text_shdw_target:pos(pos_target.x+1.5,pos_target.y+text_vertical_offset+1.5-target_text_size_difference)
 	bars_text_shdw_target_action:pos(pos_target.x+1.5,pos_target.y+1.5+13)
 	bars_text_shdw_self_action:pos(pos_self.x+1.5,pos_self.y+text_vertical_offset+1.5-self_action_text_size_difference)
@@ -697,6 +768,8 @@ local function setPosition()
 	bars_text_shdw_pet:pos(pos_pet.x+1.5,pos_pet.y+text_vertical_offset+1.5)
 	bars_text_focus_target:pos(pos_focus_target.x,pos_focus_target.y+text_vertical_offset)
 	bars_text_focus_target_action:pos(pos_focus_target.x,pos_focus_target.y+13)
+	bars_text_sub_target:pos(pos_sub_target.x,pos_sub_target.y+text_vertical_offset)
+	bars_text_sub_target_action:pos(pos_sub_target.x,pos_sub_target.y+13)
 	bars_text_target:pos(pos_target.x,pos_target.y+text_vertical_offset-target_text_size_difference)
 	bars_text_target_action:pos(pos_target.x,pos_target.y+13)
 	bars_text_self_action:pos(pos_self.x,pos_self.y+text_vertical_offset-self_action_text_size_difference)
@@ -713,7 +786,7 @@ local function setWidth()
 	bar_width = settings.options.bar_width
 	show_bar_markers = settings.options.show_bar_markers
 	bars_bg_str = ''
-	bars_bg_str_ft = ''
+	bars_bg_str_ft_st = ''
 	bars_bg_str_hp = ''
 	bars_bg_str_tp = ''
 
@@ -723,8 +796,8 @@ local function setWidth()
 	end
 
 	--Sets the width for the focus target bg element
-	while string.len(bars_bg_str_ft) < math.floor(bar_width / 2) do
-		bars_bg_str_ft = bars_bg_str_ft..' '
+	while string.len(bars_bg_str_ft_st) < math.floor(bar_width / 2) do
+		bars_bg_str_ft_st = bars_bg_str_ft_st..' '
 	end
 
 	--Sets the width and yellow HP marker for the HP bar BG
@@ -750,7 +823,8 @@ local function setWidth()
 		end
 	end
 
-	bars_bg_focus_target:text(bars_bg_str_ft)
+	bars_bg_focus_target:text(bars_bg_str_ft_st)
+	bars_bg_sub_target:text(bars_bg_str_ft_st)
 	bars_bg_target:text(bars_bg_str)
 	bars_bg_self_action:text(bars_bg_str)
 	bars_bg_hp:text(bars_bg_str)
@@ -766,6 +840,7 @@ end
 local function hideBars()
 
 	bars_bg_focus_target:hide()
+	bars_bg_sub_target:hide()
 	bars_bg_target:hide()
 	bars_bg_self_action:hide()
 	bars_bg_hp:hide()
@@ -773,6 +848,7 @@ local function hideBars()
 	bars_bg_tp:hide()
 	bars_bg_pet:hide()
 	bars_meter_focus_target:hide()
+	bars_meter_sub_target:hide()
 	bars_meter_target:hide()
 	bars_meter_self_action:hide()
 	bars_meter_hp:hide()
@@ -782,6 +858,8 @@ local function hideBars()
 	bars_marker_tp:hide()
 	bars_text_shdw_focus_target:hide()
 	bars_text_shdw_focus_target_action:hide()
+	bars_text_shdw_sub_target:hide()
+	bars_text_shdw_sub_target_action:hide()
 	bars_text_shdw_target:hide()
 	bars_text_shdw_target_action:hide()
 	bars_text_shdw_self_action:hide()
@@ -791,6 +869,8 @@ local function hideBars()
 	bars_text_shdw_pet:hide()
 	bars_text_focus_target:hide()
 	bars_text_focus_target_action:hide()
+	bars_text_sub_target:hide()
+	bars_text_sub_target_action:hide()
 	bars_text_target:hide()
 	bars_text_target_action:hide()
 	bars_text_self_action:hide()
@@ -1048,7 +1128,7 @@ local function truncateAction(action)
 
 	local num = max_action_length
 
-	-- Remove "Tachi: " or "Blade: " if present at the start
+	--Remove "Tachi: " or "Blade: " if present at the start
 	if remove_tachi_blade_from_ws_name then
 		if string.sub(action, 1, 7) == "Tachi: " then
 			action = string.sub(action, 8)
@@ -1153,7 +1233,7 @@ end
 --Update the Focus Target bar
 local function updateFocusTarget()
 
-	if not focus_target then
+	if not (focus_target_override or focus_target) then
 		bars_bg_focus_target:hide()
 		bars_meter_focus_target:hide()
 		bars_text_shdw_focus_target:hide()
@@ -1163,51 +1243,83 @@ local function updateFocusTarget()
 		return
 	end
 
-	local focus_target_name = focus_target and focus_target.name or ''
-	local focus_target_hpp = focus_target and focus_target.hpp or 0
-	local focus_target_meter = ''
-	local spaces = focus_target_hpp and math.floor((bar_width / 2) * (focus_target_hpp / 100)) or 0
+	local target = windower.ffxi.get_mob_by_target('t') or nil
+	local ft = focus_target_override and focus_target_override or focus_target
+
+	local ft_name = ft and ' '..ft.name or ''
+	local ft_index = ft and show_target_index and ' ('..ft.index..')' or ''
+	local ft_distance = ft and show_target_distance and ' '..(string.format("%5.2f", math.floor(ft.distance:sqrt()*100)/100)) or ''
+	local ft_hpp = ft and ft.hpp or 0
+	local ft_meter = ''
+	local spaces = ft_hpp and math.floor((bar_width / 2) * (ft_hpp / 100)) or 0
 	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and focus_target_hpp ~= 0 then
+	if spaces == 0 and ft_hpp ~= 0 then
 		spaces = 1
 	end
-	while string.len(focus_target_meter) < spaces do
-		focus_target_meter = focus_target_meter..' '
+	while string.len(ft_meter) < spaces do
+		ft_meter = ft_meter..' '
 	end
-	local cm = focus_target and targetColor(focus_target) or color.target.pc_other
+	local cm = ft and targetColor(ft) or color.target.pc_other
 	local ct = text_color
-	focus_target_hpp = string.format("%3s", focus_target_hpp)
-	local text = focus_target_hpp..'% '..focus_target_name
-	local focus_target_status = show_action_status_indicators and focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].status or ''
-	local focus_target_status_shdw = show_action_status_indicators and focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].status_shdw or ''
-	local focus_target_action = focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].action or ''
-	local focus_target_action_shdw = focus_target and current_actions[focus_target.id] and current_actions[focus_target.id].action_shdw or ''
-	local text_focus_target_action = show_target_action and ' '..focus_target_status..focus_target_action or ''
-	local text_focus_target_action_shdw = show_target_action and ' '..focus_target_status_shdw..focus_target_action_shdw or ''
+	ft_hpp = string.format("%3s", ft_hpp)..'%'
+	local text = ft_hpp..ft_distance..ft_name..ft_index
+	local ft_status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
+	local ft_status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
+	local ft_action = ft and current_actions[ft.id] and current_actions[ft.id].action or ''
+	local ft_action_shdw = ft and current_actions[ft.id] and current_actions[ft.id].action_shdw or ''
+	local text_ft_action = show_target_action and ' '..ft_status..ft_action or ''
+	local text_ft_action_shdw = show_target_action and ' '..ft_status_shdw..ft_action_shdw or ''
 
 	if not inCS then
 
-		--Fix the pad issue when 0
-		if spaces == 0 then
-			bars_meter_focus_target:hide()
-		else
-			bars_meter_focus_target:show()
-		end
+		if focus_target_override and hide_focus_target_when_target and target then
+			if target.id == focus_target_override.id then
+				bars_bg_focus_target:hide()
+				bars_meter_focus_target:hide()
+				bars_text_shdw_focus_target:hide()
+				bars_text_shdw_focus_target_action:hide()
+				bars_text_focus_target:hide()
+				bars_text_focus_target_action:hide()
+			else
+				
+				--Fix the pad issue when 0
+				if spaces == 0 then
+					bars_meter_focus_target:hide()
+				else
+					bars_meter_focus_target:show()
+				end
 
-		bars_bg_focus_target:show()
-		bars_text_shdw_focus_target:show()
-		bars_text_shdw_focus_target_action:show()
-		bars_text_focus_target:show()
-		bars_text_focus_target_action:show()
+				bars_bg_focus_target:show()
+				--bars_meter_focus_target:show()
+				bars_text_shdw_focus_target:show()
+				bars_text_shdw_focus_target_action:show()
+				bars_text_focus_target:show()
+				bars_text_focus_target_action:show()
+			end
+		else
+
+			--Fix the pad issue when 0
+			if spaces == 0 then
+				bars_meter_focus_target:hide()
+			else
+				bars_meter_focus_target:show()
+			end
+
+			bars_bg_focus_target:show()
+			bars_text_shdw_focus_target:show()
+			bars_text_shdw_focus_target_action:show()
+			bars_text_focus_target:show()
+			bars_text_focus_target_action:show()
+		end
 
 	end
 
-	bars_meter_focus_target:text(focus_target_meter)
+	bars_meter_focus_target:text(ft_meter)
 	bars_meter_focus_target:bg_color(cm.r,cm.g,cm.b)
 	bars_text_shdw_focus_target:text(text)
-	bars_text_shdw_focus_target_action:text(text_focus_target_action_shdw)
+	bars_text_shdw_focus_target_action:text(text_ft_action_shdw)
 	bars_text_focus_target:text(text)
-	bars_text_focus_target_action:text(text_focus_target_action)
+	bars_text_focus_target_action:text(text_ft_action)
 	bars_text_focus_target:color(ct.r,ct.g,ct.b)
 	bars_text_focus_target_action:color(ct.r,ct.g,ct.b)
 
@@ -1217,7 +1329,8 @@ end
 local function updateTarget()
 
 	local player = windower.ffxi.get_player()
-	local target = windower.ffxi.get_mob_by_target('st', 't')
+	local target = condense_target_and_subtarget_bars and windower.ffxi.get_mob_by_target('st', 't') or windower.ffxi.get_mob_by_target('t')
+
 	local target_name = target and ' '..target.name or ''
 	local target_index = target and show_target_index and ' ('..target.index..')' or ''
 	local target_distance = target and show_target_distance and ' '..(string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
@@ -1282,6 +1395,75 @@ local function updateTarget()
 
 	end
 end
+
+--Update the Sub-Target bar
+local function updateSubTarget()
+
+	local player = windower.ffxi.get_player()
+	local st = windower.ffxi.get_mob_by_target('st')
+	local st_name = st and ' '..st.name or ''
+	local st_index = st and show_target_index and ' ('..st.index..')' or ''
+	local st_distance = st and show_target_distance and ' '..(string.format("%5.2f", math.floor(st.distance:sqrt()*100)/100)) or ''
+	local st_hpp = st and st.hpp or 0
+	local st_meter = ''
+	local spaces = st_hpp and math.floor((bar_width / 2) * (st_hpp / 100)) or 0
+	--fix for the math flooring this to 0 when its not exactly 0
+	if spaces == 0 and st_hpp ~= 0 then
+		spaces = 1
+	end
+	while string.len(st_meter) < spaces do
+		st_meter = st_meter..' '
+	end
+	local cm = st and targetColor(st) or color.target.pc_other
+	local ct = text_color
+	st_hpp = string.format("%3s", st_hpp)..'%'
+	local text = st_hpp..st_distance..st_name..st_index
+	local st_status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
+	local st_status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
+	local st_action = st and current_actions[st.id] and current_actions[st.id].action or ''
+	local st_action_shdw = st and current_actions[st.id] and current_actions[st.id].action_shdw or ''
+	local text_st_action = show_target_action and ' '..st_status..st_action or ''
+	local text_st_action_shdw = show_target_action and ' '..st_status_shdw..st_action_shdw or ''
+
+	if st and not (show_self_when_target == false and st.id == player.id) then
+		if not inCS then
+
+			--Fix the pad issue when 0
+			if spaces == 0 then
+				bars_meter_sub_target:hide()
+			else
+				bars_meter_sub_target:show()
+			end
+
+			bars_bg_sub_target:show()
+			bars_text_shdw_sub_target:show()
+			bars_text_shdw_sub_target_action:show()
+			bars_text_sub_target:show()
+			bars_text_sub_target_action:show()
+
+		end
+
+		bars_meter_sub_target:text(st_meter)
+		bars_meter_sub_target:bg_color(cm.r,cm.g,cm.b)
+		bars_text_shdw_sub_target:text(text)
+		bars_text_shdw_sub_target_action:text(text_st_action_shdw)
+		bars_text_sub_target:text(text)
+		bars_text_sub_target_action:text(text_st_action)
+		bars_text_sub_target:color(ct.r,ct.g,ct.b)
+		bars_text_sub_target_action:color(ct.r,ct.g,ct.b)
+
+	else
+
+		bars_bg_sub_target:hide()
+		bars_meter_sub_target:hide()
+		bars_text_shdw_sub_target:hide()
+		bars_text_shdw_sub_target_action:hide()
+		bars_text_sub_target:hide()
+		bars_text_sub_target_action:hide()
+
+	end
+end
+
 
 --Update the Self Action text
 local function updateSelfAction()
@@ -1667,7 +1849,7 @@ local function listAutoFocusTargets()
 
 end
 
--- Check for matching focus targets
+--Check for matching focus targets
 local function checkForFocusTarget()
 
 	local target = windower.ffxi.get_mob_by_target('t') or nil
@@ -1704,7 +1886,32 @@ local function checkForFocusTarget()
 		focus_target = nearby
 	end
 
-	updateFocusTarget()
+end
+
+--Check if focus target override is still nearby
+local function checkForFocusTargetOverride()
+
+	local target = windower.ffxi.get_mob_by_target('t') or nil
+	local nearby = false
+
+	--Loop through all the mobs in memory (nearby)
+	for i,v in pairs(windower.ffxi.get_mob_array()) do
+
+		local distance = math.floor(v.distance:sqrt() * 100) / 100
+
+		--Does the id of the focus target override match to any mob id nearby
+		if focus_target_override.id == v.id and v.valid_target and distance <= tonumber(focus_target_max_distance) then
+
+			nearby = true
+
+		end
+	end
+
+	--Remove the Focus Target Override if they are no longer nearby
+	if not nearby then
+		windower.add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
+		focus_target_override = nil
+	end
 
 end
 
@@ -1719,6 +1926,9 @@ end)
 --Target Changing
 windower.register_event('target change', function()
 	updateTarget()
+	if not condense_target_and_subtarget_bars then
+		updateSubTarget()
+	end
 end)
 
 --HP Changing
@@ -1757,6 +1967,7 @@ local function initialize()
 	setPosition()
 	showBars()
 	updateTarget()
+	updateSubTarget()
 	updateHPBar()
 	updateMPBar()
 	updateTPBar()
@@ -1786,7 +1997,7 @@ windower.register_event('status change', function(status)
 		inCS = true
 		hideBars()
 
-		--Out of cutscene: Show the bars
+	--Out of cutscene: Show the bars
 	elseif status ~= 4 and inCS then
 		inCS = false
 		showBars()
@@ -1800,12 +2011,34 @@ windower.register_event('prerender', function()
 		updateSelfAction()
 	end
 
-	local target = windower.ffxi.get_mob_by_target('st', 't')
-	if target then
-		updateTarget()
+	local target = windower.ffxi.get_mob_by_target('t')
+	local sub_target = windower.ffxi.get_mob_by_target('st')
+	if condense_target_and_subtarget_bars then
+		if target or sub_target then
+			updateTarget()
+		end
+	else
+		if target then
+			updateTarget()
+		end
+		if sub_target then
+			updateSubTarget()
+		else
+			bars_bg_sub_target:hide()
+			bars_meter_sub_target:hide()
+			bars_text_shdw_sub_target:hide()
+			bars_text_shdw_sub_target_action:hide()
+			bars_text_sub_target:hide()
+			bars_text_sub_target_action:hide()
+		end
 	end
 
-	checkForFocusTarget()
+	if focus_target_override then
+		checkForFocusTargetOverride()
+	else
+		checkForFocusTarget()
+	end
+	updateFocusTarget()
 
 	if windower.ffxi.get_info().logged_in and show_bars[job].pet then
 		updatePetBar()
@@ -1876,25 +2109,20 @@ windower.register_event('action', function (act)
 		--Weapon skill or TP move
 		if act.category == 7 then
 
-			local ct = targetColor(action_target)
-			local r = formatRGB(ct.r)
-			local g = formatRGB(ct.g)
-			local b = formatRGB(ct.b)
+			local c = targetColor(action_target)
+			local r = formatRGB(c.r)
+			local g = formatRGB(c.g)
+			local b = formatRGB(c.b)
 
 			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
 			action_target_name_shdw = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
 
 			if actor then
 
-				local tc = text_color
-				local r = formatRGB(tc.r)
-				local g = formatRGB(tc.g)
-				local b = formatRGB(tc.b)
-
 				--Players
 				if isPlayer(actor.id) then
-					action_name = res.weapon_skills[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(res.weapon_skills[action_id].name) or ' \\cs('..r..','..g..','..b..')[REDACTED]'..'\\cr'
-					action_name_shdw = res.weapon_skills[action_id] and ' \\cs(000,000,000)'..truncateAction(res.weapon_skills[action_id].name)..'\\cr' or ' \\cs(000,000,000)[REDACTED]\\cr'
+					action_name = res.weapon_skills[action_id] and ' '..truncateAction(res.weapon_skills[action_id].name) or ' [REDACTED]'..''
+					action_name_shdw = res.weapon_skills[action_id] and ' '..truncateAction(res.weapon_skills[action_id].name) or ' [REDACTED]'
 
 				--Certain NMs regular melee attacks are actually TP moves
 				elseif act.targets[1].actions[1].param == nil then
@@ -1902,13 +2130,13 @@ windower.register_event('action', function (act)
 
 				--Pets (& Synergy Furnaces)
 				elseif windower.ffxi.get_mob_by_id(actor.id) and windower.ffxi.get_mob_by_id(actor.id).spawn_type == 2 then
-					action_name = res.job_abilities[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(res.job_abilities[action_id].name)..'\\cr' or ' \\cs('..r..','..g..','..b..')'..truncateAction(res.monster_abilities[action_id].name)..'\\cr'
-					action_name_shdw = res.job_abilities[action_id] and ' \\cs(000,000,000)'..truncateAction(res.job_abilities[action_id].name)..'\\cr' or ' \\cs(000,000,000)'..truncateAction(res.monster_abilities[action_id].name)..'\\cr'
+					action_name = res.job_abilities[action_id] and ' '..truncateAction(res.job_abilities[action_id].name) or (res.monster_abilities[action_id] and ' '..truncateAction(res.monster_abilities[action_id].name) or ' [REDACTED]')
+					action_name_shdw = res.job_abilities[action_id] and ' '..truncateAction(res.job_abilities[action_id].name) or (res.monster_abilities[action_id] and ' '..truncateAction(res.monster_abilities[action_id].name) or ' [REDACTED]')
 
 				--Monsters (some use player WSs)
 				else
-					action_name = res.monster_abilities[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(res.monster_abilities[action_id].name)..'\\cr' or ' \\cs('..r..','..g..','..b..')'..truncateAction(res.weapon_skills[action_id].name)..'\\cr'
-					action_name_shdw = res.monster_abilities[action_id] and ' \\cs(000,000,000)'..truncateAction(res.monster_abilities[action_id].name)..'\\cr' or ' \\cs(000,000,000)'..truncateAction(res.weapon_skills[action_id].name)..'\\cr'
+					action_name = res.monster_abilities[action_id] and ' '..truncateAction(res.monster_abilities[action_id].name) or (res.weapon_skills[action_id] and ' '..truncateAction(res.weapon_skills[action_id].name) or ' [REDACTED]')
+					action_name_shdw = res.monster_abilities[action_id] and ' '..truncateAction(res.monster_abilities[action_id].name) or (res.weapon_skills[action_id] and ' '..truncateAction(res.weapon_skills[action_id].name) or ' [REDACTED]')
 
 				end
 			end
@@ -1916,18 +2144,18 @@ windower.register_event('action', function (act)
 		--Spell
 		elseif act.category == 8 then
 
-			local element = res.spells[action_id].element
+			local element = res.spells[action_id] and res.spells[action_id].element or 15 --15 is 'no element/none'
 			local ca = element_colors[element]
-			local ct = targetColor(action_target)
 			local ca_r = formatRGB(ca.r)
 			local ca_g = formatRGB(ca.g)
 			local ca_b = formatRGB(ca.b)
+			local ct = targetColor(action_target)
 			local ct_r = formatRGB(ct.r)
 			local ct_g = formatRGB(ct.g)
 			local ct_b = formatRGB(ct.b)
 
-			action_name = ' \\cs('..ca_r..','..ca_g..','..ca_b..')'..truncateAction(res.spells[action_id].name)..'\\cr'
-			action_name_shdw = ' \\cs(000,000,000)'..truncateAction(res.spells[action_id].name)..'\\cr'
+			action_name = res.spells[action_id] and ' \\cs('..ca_r..','..ca_g..','..ca_b..')'..truncateAction(res.spells[action_id].name)..'\\cr' or ' [REDACTED]'
+			action_name_shdw = res.spells[action_id] and ' \\cs(000,000,000)'..truncateAction(res.spells[action_id].name)..'\\cr' or ' [REDACTED]'
 			action_target_name = action_target_id and ' → \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncateName(action_target.name)..'\\cr' or ''
 			action_target_name_shdw = action_target_id and ' → \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
 			cast_time = res.spells[action_id].cast_time
@@ -1936,18 +2164,14 @@ windower.register_event('action', function (act)
 		elseif act.category == 9 then
 
 			local item_id = act.targets[1].actions[1].param
-			local item_name = res.items[item_id].name
-			local tc = text_color
-			local tc_r = formatRGB(tc.r)
-			local tc_g = formatRGB(tc.g)
-			local tc_b = formatRGB(tc.b)
-			local ct = targetColor(action_target)
-			local r = formatRGB(ct.r)
-			local g = formatRGB(ct.g)
-			local b = formatRGB(ct.b)
+			local item_name = res.items[item_id] and res.items[item_id].name or '[REDACTED]'
+			local c = targetColor(action_target)
+			local r = formatRGB(c.r)
+			local g = formatRGB(c.g)
+			local b = formatRGB(c.b)
 
-			action_name = ' \\cs('..tc_r..','..tc_g..','..tc_b..')'..truncateAction(item_name)..'\\cr'
-			action_name_shdw = ' \\cs(000,000,000)'..truncateAction(item_name)..'\\cr'
+			action_name = ' '..truncateAction(item_name)
+			action_name_shdw = ' '..truncateAction(item_name)
 			action_target_name = action_target_id and ' → \\cs('..r..','..g..','..b..')'..truncateName(windower.ffxi.get_mob_by_id(action_target_id).name)..'\\cr' or ''
 			action_target_name_shdw = action_target_id and ' → \\cs(000,000,000)'..truncateName(windower.ffxi.get_mob_by_id(action_target_id).name)..'\\cr' or ''
 			cast_time = res.items[item_id].cast_time
@@ -1975,7 +2199,7 @@ windower.register_event('action', function (act)
 		end
 
 	--Job abilities or Monster tp moves(11)
-	elseif (act.category == 3 and act.targets[1].actions[1].message == 110) or act.category == 6 or act.category == 14 or act.category == 15 or (act.category == 11 and not act.targets[1].actions[1].message == 1 --[[and act.targets[1].actions[1].message == 101]]) then
+	elseif (act.category == 3 and act.targets[1].actions[1].message == 110) or act.category == 6 or act.category == 14 or act.category == 15 or (act.category == 11 and not act.targets[1].actions[1].message == 1) then
 
 		local target_action = ''
 		local target_action_shdw = ''
@@ -1991,17 +2215,13 @@ windower.register_event('action', function (act)
 			abil_name = res.job_abilities[abil_id] and res.job_abilities[abil_id].name or '[REDACTED]'
 		end
 
-		local tc = text_color
-		local tc_r = formatRGB(tc.r)
-		local tc_g = formatRGB(tc.g)
-		local tc_b = formatRGB(tc.b)
-		local ct = targetColor(action_target)
-		local r = formatRGB(ct.r)
-		local g = formatRGB(ct.g)
-		local b = formatRGB(ct.b)
+		local c = targetColor(action_target)
+		local r = formatRGB(c.r)
+		local g = formatRGB(c.g)
+		local b = formatRGB(c.b)
 
-		action_name = ' \\cs('..tc_r..','..tc_g..','..tc_b..')'..truncateAction(abil_name)..'\\cr'
-		action_name_shdw = ' \\cs(000,000,000)'..truncateAction(abil_name)..'\\cr'
+		action_name = ' '..truncateAction(abil_name)
+		action_name_shdw = ' '..truncateAction(abil_name)
 		action_target_name = action_target_id and ' → \\cs('..r..','..g..','..b..')'..truncateName(windower.ffxi.get_mob_by_id(action_target_id).name)..'\\cr' or ''
 		action_target_name_shdw = action_target_id and ' → \\cs(000,000,000)'..truncateName(windower.ffxi.get_mob_by_id(action_target_id).name)..'\\cr' or ''
 
@@ -2077,7 +2297,7 @@ windower.register_event('action', function (act)
 						local r_10 = (r_tot == 10 and '[' or '')..'10'..(r_tot == 10 and ']' or (r_tot == 11 and '' or ' '))
 						local r_11 = (r_tot == 11 and '[' or '')..'11'..(r_tot == 11 and ']' or ' ')
 
-						local r_c1 = r_tot == '1' and color.rolls.total or text_color
+						local r_c1 = r_tot == 1 and color.rolls.total or text_color
 						local r_c2 = (rolls[r_id].lucky == '2' and color.rolls.lucky or (rolls[r_id].unlucky == '2' and color.rolls.unlucky or (r_tot == 2 and color.rolls.total or text_color)))
 						local r_c3 = (rolls[r_id].lucky == '3' and color.rolls.lucky or (rolls[r_id].unlucky == '3' and color.rolls.unlucky or (r_tot == 3 and color.rolls.total or text_color)))
 						local r_c4 = (rolls[r_id].lucky == '4' and color.rolls.lucky or (rolls[r_id].unlucky == '4' and color.rolls.unlucky or (r_tot == 4 and color.rolls.total or text_color)))
@@ -2294,10 +2514,6 @@ windower.register_event('action', function (act)
 
 		--Pets
 		elseif act.category == 13 then
-			--If the pet is ours, switch the act.actor id to match the players so it shows up in the self bar
-			-- if windower.ffxi.get_mob_by_id(act.actor_id).index == windower.ffxi.get_mob_by_id(player.id).pet_index then
-			-- 	act.actor_id = player.id
-			-- end
 			--Missed
 			if act.targets[1].actions[1].message == 324 then
 				target_action_result = ' (Missed)'
@@ -2483,7 +2699,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		else
 			--Take the provided string parameter and turn it into a number
 			new_offset = tonumber(offset[1])
-					
+
 			--Save the new setting, update the offset, then alert the user
 			if new_offset == nil then
 				displayUnregnizedCommand()
@@ -2503,7 +2719,7 @@ windower.register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'size' or addcmd == 's' then
 		local size = {...}
 		local new_size = nil
-		
+
 		--If there are no parameters then output the current size and remind how to update
 		if #size < 1 then
 			windower.add_to_chat(8,('[Bars] '):color(220)..('Size:'):color(36)..(' '..settings.text.size):color(200))
@@ -2591,6 +2807,24 @@ windower.register_event('addon command',function(addcmd, ...)
 
 		listAutoFocusTargets()
 
+	--Focus Target Override
+	elseif addcmd == 'focus' or addcmd == 'f' then
+
+		--Remove the current Focus Target Override
+		if focus_target_override then
+			windower.add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
+			focus_target_override = nil
+		--Create a new Focus Target Override
+		else
+			local target = windower.ffxi.get_mob_by_target('t')
+			if target then
+				focus_target_override = target
+				windower.add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Added: '):color(36)..(focus_target_override.name):color(1)..(' (removed when out of range)'):color(8))
+			else
+				windower.add_to_chat(8,('[Bars] '):color(220)..('Please select a target with your cursor and try again.'):color(8))
+			end
+		end
+
 	--Display help text
 	elseif addcmd == 'help' then
 
@@ -2623,6 +2857,9 @@ windower.register_event('addon command',function(addcmd, ...)
 		windower.add_to_chat(8,'   '..(' - Valid targets: Names (ex: Oseem), IDs (ex: 17809550).'):color(8))
 		windower.add_to_chat(8,'   '..(' - Use quotes to surround names with spaces.'):color(8))
 		windower.add_to_chat(8,('   remove/r '):color(36)..('<target>'):color(2)..(' - Remove a target from the Auto Focus Target list.'):color(8))
+		windower.add_to_chat(8,('   focus/f '):color(36)..(' - Temporarily override the Auto Focus Target with the current cursor target.'):color(8))
+		windower.add_to_chat(8,'   '..(' - Type again to remove the override.'):color(8))
+		windower.add_to_chat(8,'   '..(' - Automatically removed when target moves out of range.'):color(8))
 		windower.add_to_chat(8,('   list/l'):color(36)..(' - Show the Auto Focus Target list.'):color(8))
 		windower.add_to_chat(8,('   size/s '):color(36)..('[#]':color(53))..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
 		windower.add_to_chat(8,('   bold/b'):color(36)..(' - Toggle the bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
