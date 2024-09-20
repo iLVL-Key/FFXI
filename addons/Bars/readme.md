@@ -103,6 +103,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.2.1
+- Added missing 'No effect' message for monster abilities.
+
 Version 2.2
 - Added Focus Target Override. You can now use `//bars focus` (or `f` for short) to override the Auto Focus Target with whatever you have targeted. Override will be removed when subject moves out of range, dies (if its a mob), or is removed via `//bars focus` again.
 - Added Sub-Target bar. Displayed as a half-length bar to the right of the Focus Target bar. New options to accompany this are `condense_target_and_subtarget_bars` and `char_width_multiplier` (to adjust horizontal spacing if needed).
