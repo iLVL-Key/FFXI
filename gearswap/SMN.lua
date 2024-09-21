@@ -623,7 +623,7 @@ end
 
 
 
-FileVersion = '12.3.3'
+FileVersion = '12.3.4'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -2120,7 +2120,7 @@ function aftercast(spell)
 	elseif not (spell.type == "BloodPactRage" or spell.type == "BloodPactWard" or spell.english == 'Astral Conduit') then
 		choose_set()
 	end
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
 			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
@@ -2156,7 +2156,7 @@ windower.register_event('status change', function(status)
 		windower.send_command('gs c ShowHUD')
     end
 	choose_set() --run this any time your status changes (engage, disengage, rest)
-	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
 			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
