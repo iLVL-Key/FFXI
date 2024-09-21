@@ -44,7 +44,7 @@ In general, each HUD has..
 ![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)  
 (OLD HUD, new image Coming Soon™)
 
-#### 
+#### GEO
 ![ HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
 (The green in the background is an HP bar for your luopan)  
 (OLD HUD, new image Coming Soon™)
@@ -89,7 +89,8 @@ In general, each HUD has..
 **A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
 
 ## Issues
-- I have had one report of lag with the  file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
+- Loading one of these files after having certain lua files made by some other folks loaded will cause some things to not function correctly (for example, you have your normal WAR lua file loaded, then type `//gs load whateveryounamedoneofthesefiles` to test it out). These issues seem to be mostly with using keyboard shortcuts (for example, Weapon Cycler not working correctly when hitting the kb shortcut to cycle). Renaming the file so that gearswap will load directly into it /without/ first loading into the other file (simply `WAR.lua`, for example) then typing `lua r gearswap` should fix the issue. I'm not sure what the other files are doing or not doing that causes issues.
+- I have had one report of lag with the GEO file inside Odyssey (unknown if other files may be affected as well) but I am unable to reproduce that issue.
 - The Rune timers in the RUN file are tracked via an internal timer. In Sortie, this timer continues to run while you are teleporting around, whereas the game pauses the timer for them. This creates a slight mismatch in the timers if you let the Runes fall off naturally. Only a minor issue really, especially if you're using them, switching them around, or just in the habit of keeping them updated. You may never even notice it.
 
 ## Changelog
@@ -449,6 +450,9 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.3.5
+- Fixed an issue where being sub SCH when sub jobs are restricted will produce an error.
 
 Version 14.3.3
 - Fix AutoSubCharge trying to activate on any subjob.
@@ -845,6 +849,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.4.6
+- Fixed an issue where being sub SCH when sub jobs are restricted will produce an error.
 
 Version 14.4.5
 - Adjusted the Main/Sub Fast Cast sets to not be equipped when any Aftermath is active.
@@ -1569,6 +1576,9 @@ Version 9.0
 <details>
  
 <summary>SMN</summary>
+
+Version 12.3.4
+- Fixed an issue where being sub SCH when sub jobs are restricted will produce an error.
 
 Version 12.3.3
 - Adjusted AutoSubCharge to also activate after a status change back to idle.
