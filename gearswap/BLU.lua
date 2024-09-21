@@ -106,6 +106,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
+AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation charging.
 OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
 
 -- Heads Up Display --
@@ -124,6 +125,7 @@ modeName.Mode4 = 'Support'
 modeName.Mode5 = 'Tank'
 
 --  General Notifications  --
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
@@ -133,8 +135,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -172,7 +173,7 @@ AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 
 -- Controls what is displayed in the HUD Recast section.
 -- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
---		Abilities: Azure Lore, Unbridled Wisdom, Aggressor, Berserk, Burst Affinity, Chain Affinity, Contradance, Convergence, Defender, Diffusion, Divine Seal, Efflux, Elemental Seal, Flourishes I, Flourishes II, High Jump, Jigs, Jump, Sambas, Steps, Super Jump, Unbridled Learning, Warcry
+--		Abilities: Azure Lore, Unbridled Wisdom, Aggressor, Berserk, Burst Affinity, Chain Affinity, Contradance, Convergence, Convert, Dark Arts, Defender, Diffusion, Divine Seal, Efflux, Elemental Seal, Flourishes I, Flourishes II, High Jump, Jigs, Jump, Light Arts, Sambas, Steps, Sublimation, Super Jump, Unbridled Learning, Warcry
 --		Spells: Amplification, Animating Wail, Barrier Tusk, Battery Charge, Carcharian Verve, Cocoon, Diamondhide, Erratic Flutter, Feather Barrier, Magic Barrier, Memento Mori, Mighty Guard, Nature's Meditation, Occultation, Orcish Counterstance, Plasma Charge, Reactor Cool, Refueling, Regeneration, Saline Coat, Triumphant Roar
 -- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise
 -- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
@@ -327,8 +328,9 @@ WeaponCycle = {
 -- These are the Main/Sub combos that get added to the Weapon Cycle while in Abyssea for Procs. Add more pairs on new lines as needed
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 AbysseaProcCycle = {
-	{"Excalipoor II", "Blurred Shield +1"},
-	{"Chocobo Wand", "Blurred Shield +1"},
+	{"Qutrub Knife", "Genmei Shield"},
+	{"Excalipoor II", "Genmei Shield"},
+	{"Heartstopper +1", "Genmei Shield"},
 	{"Hapy Staff", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
 }
@@ -767,7 +769,7 @@ end
 
 
 
-FileVersion = '18.3.2'
+FileVersion = '18.4'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -914,7 +916,7 @@ if BLUAlert == 'On' then
 	send_command('lua load blualert')
 end
 
-AzureLore = {} UnbridledWisdom = {} Aggressor = {} Berserk = {} BurstAffinity = {} ChainAffinity = {} Contradance = {} Convergence = {} Defender = {} Diffusion = {} DivineSeal = {} Efflux = {} ElementalSeal = {} FlourishesI = {} FlourishesII = {} HighJump = {} Jigs = {} Jump = {} Sambas = {} Steps = {} SuperJump = {} UnbridledLearning = {} Warcry = {} Amplification = {} AnimatingWail = {} BarrierTusk = {} BatteryCharge = {} CarcharianVerve = {} Cocoon = {} Diamondhide = {} ErraticFlutter = {} FeatherBarrier = {} MagicBarrier = {} MementoMori = {} MightyGuard = {} NaturesMeditation = {} Occultation = {} OrcishCounterstance = {} PlasmaCharge = {} ReactorCool = {} Refueling = {} Regeneration = {} SalineCoat = {} TriumphantRoar = {} 
+AzureLore = {} UnbridledWisdom = {} Aggressor = {} Berserk = {} BurstAffinity = {} ChainAffinity = {} Contradance = {} Convergence = {} Convert = {} DarkArts = {} Defender = {} Diffusion = {} DivineSeal = {} Efflux = {} ElementalSeal = {} FlourishesI = {} FlourishesII = {} HighJump = {} Jigs = {} Jump = {} LightArts = {} Sambas = {} Steps = {} Sublimation = {} SuperJump = {} UnbridledLearning = {} Warcry = {} Amplification = {} AnimatingWail = {} BarrierTusk = {} BatteryCharge = {} CarcharianVerve = {} Cocoon = {} Diamondhide = {} ErraticFlutter = {} FeatherBarrier = {} MagicBarrier = {} MementoMori = {} MightyGuard = {} NaturesMeditation = {} Occultation = {} OrcishCounterstance = {} PlasmaCharge = {} ReactorCool = {} Refueling = {} Regeneration = {} SalineCoat = {} TriumphantRoar = {} 
 
 --Start true so the HUD recasts don't flash on load
 AzureLore.flashed = true
@@ -925,6 +927,8 @@ BurstAffinity.flashed = true
 ChainAffinity.flashed = true
 Contradance.flashed = true
 Convergence.flashed = true
+Convert.flashed = true
+DarkArts.flashed = true
 Defender.flashed = true
 Diffusion.flashed = true
 DivineSeal.flashed = true
@@ -935,8 +939,10 @@ FlourishesII.flashed = true
 HighJump.flashed = true
 Jigs.flashed = true
 Jump.flashed = true
+LightArts.flashed = true
 Sambas.flashed = true
 Steps.flashed = true
+Sublimation.flashed = true
 SuperJump.flashed = true
 UnbridledLearning.flashed = true
 Warcry.flashed = true
@@ -1444,6 +1450,8 @@ local function getRecasts()
 	ChainAffinity.recast = ability_recast[181] and math.floor(ability_recast[181]) or nil
 	Contradance.recast = ability_recast[229] and math.floor(ability_recast[229]) or nil
 	Convergence.recast = ability_recast[183] and math.floor(ability_recast[183]) or nil
+	Convert.recast = ability_recast[49] and math.floor(ability_recast[49]) or nil
+	DarkArts.recast = ability_recast[232] and math.floor(ability_recast[232]) or nil
 	Defender.recast = ability_recast[3] and math.floor(ability_recast[3]) or nil
 	Diffusion.recast = ability_recast[184] and math.floor(ability_recast[184]) or nil
 	DivineSeal.recast = ability_recast[26] and math.floor(ability_recast[26]) or nil
@@ -1454,8 +1462,10 @@ local function getRecasts()
 	HighJump.recast = ability_recast[159] and math.floor(ability_recast[159]) or nil
 	Jigs.recast = ability_recast[218] and math.floor(ability_recast[218]) or nil
 	Jump.recast = ability_recast[158] and math.floor(ability_recast[158]) or nil
+	LightArts.recast = ability_recast[228] and math.floor(ability_recast[228]) or nil
 	Sambas.recast = ability_recast[216] and math.floor(ability_recast[216]) or nil
 	Steps.recast = ability_recast[220] and math.floor(ability_recast[220]) or nil
+	Sublimation.recast = ability_recast[234] and math.floor(ability_recast[234]) or nil
 	SuperJump.recast = ability_recast[160] and math.floor(ability_recast[160]) or nil
 	UnbridledLearning.recast = ability_recast[81] and math.floor(ability_recast[81]) or nil
 	Warcry.recast = ability_recast[2] and math.floor(ability_recast[2]) or nil
@@ -1495,10 +1505,10 @@ local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Azure Lore", "Unbridled Wisdom", "Aggressor", "Berserk", "Burst Affinity", "Chain Affinity", "Contradance", "Convergence", "Defender", "Diffusion", "Divine Seal", "Efflux", "Elemental Seal", "Flourishes I", "Flourishes II", "High Jump", "Jigs", "Jump", "Sambas", "Steps", "Super Jump", "Unbridled Learning", "Warcry", "Amplification", "Animating Wail", "Barrier Tusk", "Battery Charge", "Carcharian Verve", "Cocoon", "Diamondhide", "Erratic Flutter", "Feather Barrier", "Magic Barrier", "Memento Mori", "Mighty Guard", "Nature's Meditation", "Occultation", "Orcish Counterstance", "Plasma Charge", "Reactor Cool", "Refueling", "Regeneration", "Saline Coat", "Triumphant Roar"
+		"Azure Lore", "Unbridled Wisdom", "Aggressor", "Berserk", "Burst Affinity", "Chain Affinity", "Contradance", "Convergence", "Convert", "Dark Arts", "Defender", "Diffusion", "Divine Seal", "Efflux", "Elemental Seal", "Flourishes I", "Flourishes II", "High Jump", "Jigs", "Jump", "Light Arts", "Sambas", "Steps", "Sublimation", "Super Jump", "Unbridled Learning", "Warcry", "Amplification", "Animating Wail", "Barrier Tusk", "Battery Charge", "Carcharian Verve", "Cocoon", "Diamondhide", "Erratic Flutter", "Feather Barrier", "Magic Barrier", "Memento Mori", "Mighty Guard", "Nature's Meditation", "Occultation", "Orcish Counterstance", "Plasma Charge", "Reactor Cool", "Refueling", "Regeneration", "Saline Coat", "Triumphant Roar"
 	}
 
-	local ab = {} ab['Azure Lore'] = AzureLore ab['Unbridled Wisdom'] = UnbridledWisdom ab['Aggressor'] = Aggressor ab['Berserk'] = Berserk ab['Burst Affinity'] = BurstAffinity ab['Chain Affinity'] = ChainAffinity ab['Contradance'] = Contradance ab['Convergence'] = Convergence ab['Defender'] = Defender ab['Diffusion'] = Diffusion ab['Divine Seal'] = DivineSeal ab['Efflux'] = Efflux ab['Elemental Seal'] = ElementalSeal ab['Flourishes I'] = FlourishesI ab['Flourishes II'] = FlourishesII ab['High Jump'] = HighJump ab['Jigs'] = Jigs ab['Jump'] = Jump ab['Sambas'] = Sambas ab['Steps'] = Steps ab['Super Jump'] = SuperJump ab['Unbridled Learning'] = UnbridledLearning ab['Warcry'] = Warcry ab['Amplification'] = Amplification ab['Animating Wail'] = AnimatingWail ab['Barrier Tusk'] = BarrierTusk ab['Battery Charge'] = BatteryCharge ab['Carcharian Verve'] = CarcharianVerve ab['Cocoon'] = Cocoon ab['Diamondhide'] = Diamondhide ab['Erratic Flutter'] = ErraticFlutter ab['Feather Barrier'] = FeatherBarrier ab['Magic Barrier'] = MagicBarrier ab['Memento Mori'] = MementoMori ab['Mighty Guard'] = MightyGuard ab['Nature\'s Meditation'] = NaturesMeditation ab['Occultation'] = Occultation ab['Orcish Counterstance'] = OrcishCounterstance ab['Plasma Charge'] = PlasmaCharge ab['Reactor Cool'] = ReactorCool ab['Refueling'] = Refueling ab['Regeneration'] = Regeneration ab['Saline Coat'] = SalineCoat ab['Triumphant Roar'] = TriumphantRoar
+	local ab = {} ab['Azure Lore'] = AzureLore ab['Unbridled Wisdom'] = UnbridledWisdom ab['Aggressor'] = Aggressor ab['Berserk'] = Berserk ab['Burst Affinity'] = BurstAffinity ab['Chain Affinity'] = ChainAffinity ab['Contradance'] = Contradance ab['Convergence'] = Convergence ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Defender'] = Defender ab['Diffusion'] = Diffusion ab['Divine Seal'] = DivineSeal ab['Efflux'] = Efflux ab['Elemental Seal'] = ElementalSeal ab['Flourishes I'] = FlourishesI ab['Flourishes II'] = FlourishesII ab['High Jump'] = HighJump ab['Jigs'] = Jigs ab['Jump'] = Jump ab['Light Arts'] = LightArts ab['Sambas'] = Sambas ab['Steps'] = Steps ab['Sublimation'] = Sublimation ab['Super Jump'] = SuperJump ab['Unbridled Learning'] = UnbridledLearning ab['Warcry'] = Warcry ab['Amplification'] = Amplification ab['Animating Wail'] = AnimatingWail ab['Barrier Tusk'] = BarrierTusk ab['Battery Charge'] = BatteryCharge ab['Carcharian Verve'] = CarcharianVerve ab['Cocoon'] = Cocoon ab['Diamondhide'] = Diamondhide ab['Erratic Flutter'] = ErraticFlutter ab['Feather Barrier'] = FeatherBarrier ab['Magic Barrier'] = MagicBarrier ab['Memento Mori'] = MementoMori ab['Mighty Guard'] = MightyGuard ab['Nature\'s Meditation'] = NaturesMeditation ab['Occultation'] = Occultation ab['Orcish Counterstance'] = OrcishCounterstance ab['Plasma Charge'] = PlasmaCharge ab['Reactor Cool'] = ReactorCool ab['Refueling'] = Refueling ab['Regeneration'] = Regeneration ab['Saline Coat'] = SalineCoat ab['Triumphant Roar'] = TriumphantRoar
 
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -1512,6 +1522,12 @@ local function formatAbils(input,input_sh)
 			-- Adjust for Occultation
 			if input == 'Occultation' and buffactive['Blink'] then
 				startingString = ShadowCount..'~Shadows'
+			end
+			-- Adjust for Sublimation
+			if input == 'Sublimation' and buffactive['Sublimation: Activated'] then
+				startingString = 'Charging'
+			elseif input == 'Sublimation' and buffactive['Sublimation: Complete'] then
+				startingString = 'Filled'
 			end
 
 			-- Maximum length of output without brackets
@@ -2412,6 +2428,17 @@ function aftercast(spell)
 		send_command('input /echo [Unbridled Wisdom] 60 seconds;wait 31;input /echo [Unbridled Wisdom] 30 seconds;wait 20;input /echo [Unbridled Wisdom] 10 seconds')
 	end
 	choose_set()
+	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+		if not double_sublimation_fix then
+			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
+			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
+				send_command('wait 3;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			elseif spell.type == 'JobAbility' then
+				send_command('wait .5;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			end
+			return
+		end
+	end
 end
 
 -------------------------------------------
@@ -2427,6 +2454,13 @@ windower.register_event('status change', function(status)
 		windower.send_command('gs c ShowHUD')
     end
 	choose_set() --run this any time your status changes (engage, disengage, rest)
+	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+		if not double_sublimation_fix then
+			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
+			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
+			return
+		end
+	end
 end)
 
 -------------------------------------------
@@ -2954,7 +2988,7 @@ windower.register_event('prerender', function()
 	end
 
 	--MP checks
-	if NotiLowMP =='On' and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
+	if NotiLowMP =='On' and player and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off (done below)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
@@ -3235,6 +3269,39 @@ windower.register_event('prerender', function()
 			textColor('Convergence','notfound')
 		end
 
+		if Convert.recast then
+			if Convert.recast > 0 then
+				textColor('Convert','cooldown')
+				Convert.flashed = false
+			else
+				textColor('Convert','ready')
+				if not Convert.flashed then
+					flash('Convert')
+				end
+				Convert.flashed = true
+			end
+		else
+			textColor('Convert','notfound')
+		end
+
+		if DarkArts.recast then
+			if buffactive['Dark Arts'] then
+				textColor('Dark Arts','active')
+				DarkArts.flashed = false
+			elseif DarkArts.recast > 0 then
+				textColor('Dark Arts','cooldown')
+				DarkArts.flashed = false
+			else
+				textColor('Dark Arts','ready')
+				if not DarkArts.flashed then
+					flash('Dark Arts')
+				end
+				DarkArts.flashed = true
+			end
+		else
+			textColor('Dark Arts','notfound')
+		end
+
 		if Defender.recast then
 			if buffactive['Defender'] then
 				textColor('Defender','active')
@@ -3400,6 +3467,24 @@ windower.register_event('prerender', function()
 			textColor('Jump','notfound')
 		end
 
+		if LightArts.recast then
+			if buffactive['Light Arts'] then
+				textColor('Light Arts','active')
+				LightArts.flashed = false
+			elseif LightArts.recast > 0 then
+				textColor('Light Arts','cooldown')
+				LightArts.flashed = false
+			else
+				textColor('Light Arts','ready')
+				if not LightArts.flashed then
+					flash('Light Arts')
+				end
+				LightArts.flashed = true
+			end
+		else
+			textColor('Light Arts','notfound')
+		end
+
 		if Sambas.recast then
 			if Sambas.recast > 0 then
 				textColor('Sambas','cooldown')
@@ -3428,6 +3513,24 @@ windower.register_event('prerender', function()
 			end
 		else
 			textColor('Steps','notfound')
+		end
+
+		if Sublimation.recast then
+			if buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] then
+				textColor('Sublimation','active')
+				Sublimation.flashed = false
+			elseif Sublimation.recast > 0 then
+				textColor('Sublimation','cooldown')
+				Sublimation.flashed = false
+			else
+				textColor('Sublimation','ready')
+				if not Sublimation.flashed then
+					flash('Sublimation')
+				end
+				Sublimation.flashed = true
+			end
+		else
+			textColor('Sublimation','notfound')
 		end
 
 		if SuperJump.recast then
