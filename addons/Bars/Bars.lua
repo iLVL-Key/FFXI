@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '2.2.1'
+_addon.version = '2.2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1908,7 +1908,9 @@ local function checkForFocusTargetOverride()
 	end
 
 	--Remove the Focus Target Override if they are no longer nearby
-	if not nearby then
+	if nearby then
+		focus_target_override = windower.ffxi.get_mob_by_id(focus_target_override.id)
+	else
 		windower.add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
 		focus_target_override = nil
 	end
@@ -2640,6 +2642,7 @@ windower.register_event('addon command',function(addcmd, ...)
 				windower.add_to_chat(8,('[Bars] '):color(220)..('Width:'):color(36)..(' '..settings.options.bar_width):color(200))
 				hideBars()
 				setWidth()
+				setPosition()
 				updateHPBar()
 				updateMPBar()
 				updateTPBar()
