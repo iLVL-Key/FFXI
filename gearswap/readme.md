@@ -98,6 +98,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.4
+- Added support for sub SCH.
+
 Version 18.3.2
 - Fixed an error in the Fast Cast update.
 
