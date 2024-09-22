@@ -458,7 +458,7 @@ sets.ws = {
 }
 
 -- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
--- NOTE: This is a special set for weapon skill accuracy. When in the Hasso Accuracy mode (mode 2), weapon skills will use this set.
+-- NOTE: This is a special set for weapon skill accuracy. When in the Hasso Accuracy mode (mode 3), weapon skills will use this set.
 sets.accws = set_combine(sets.ws, {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
