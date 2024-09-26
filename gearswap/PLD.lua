@@ -112,6 +112,7 @@ ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
 ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --  General Notifications  --
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
@@ -121,8 +122,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -810,7 +810,7 @@ end
 
 
 
-FileVersion = '14.4.6'
+FileVersion = '14.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2737,6 +2737,19 @@ windower.register_event('prerender', function()
 
 	--Aftermath checks
 	if SwitchingWeapons == 0 then
+		local function colorWeaponsText(AM)
+			if ShowTPMeter ~= 'On' then
+				local c = {r = 255, g = 255, b = 255}
+				if AM == 1 then
+					c = color.AM1
+				elseif AM == 2 then
+					c = color.AM2
+				elseif AM == 3 then
+					c = color.AM3
+				end
+				hud_weapons:color(c.r,c.g,c.b)
+			end
+		end
 		if player.equipment.main == 'Caliburnus' or player.equipment.main == 'Helheim' then
 			if buffactive['Aftermath: Lv.1'] then
 				if currentAfterMath ~= 'PrimeAM1' or primeNum ~= currentPrimeNum or currentAMTimer ~= AMTimer then
@@ -2746,6 +2759,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'PrimeAM2' or currentAMTimer ~= AMTimer then
@@ -2754,6 +2768,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'PrimeAM3' or currentAMTimer ~= AMTimer then
@@ -2762,6 +2777,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -2769,6 +2785,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Excalibur' or player.equipment.main == 'Ragnarok' then
@@ -2784,6 +2801,7 @@ windower.register_event('prerender', function()
 						hud_weapons_shdw:text(formatWeapons('AM: (Acc. +15/Crit Rate +10%) '..am_time))
 						hud_weapons:text(formatWeapons('AM: (Acc. +15/Crit Rate +10%) '..am_time))
 					end
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -2791,6 +2809,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Almace' or player.equipment.main == 'Caladbolg' then
@@ -2801,6 +2820,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (30% Triple Dmg) '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (30% Triple Dmg) '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'EmpyreanAM2' or currentAMTimer ~= AMTimer then
@@ -2809,6 +2829,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (40% Triple Dmg) '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (40% Triple Dmg) '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'EmpyreanAM3' or currentAMTimer ~= AMTimer then
@@ -2817,6 +2838,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (50% Triple Dmg) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (50% Triple Dmg) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -2824,6 +2846,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Burtgang' then
@@ -2835,6 +2858,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (Accuracy +'..mythicNum..') '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (Accuracy +'..mythicNum..') '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'MythicAM2' or currentAMTimer ~= AMTimer then
@@ -2843,6 +2867,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (Attack +'..mythicNum..') '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (Attack +'..mythicNum..') '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'MythicAM3' or currentAMTimer ~= AMTimer then
@@ -2851,6 +2876,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (Occ. Att. 2-3x) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (Occ. Att. 2-3x) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -2858,6 +2884,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Sequence' then
@@ -2868,6 +2895,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (4-Step Ultimate SC) '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (4-Step Ultimate SC) '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'AeonicAM2' or currentAMTimer ~= AMTimer then
@@ -2876,6 +2904,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (3-Step Ultimate SC) '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (3-Step Ultimate SC) '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'AeonicAM3' or currentAMTimer ~= AMTimer then
@@ -2884,6 +2913,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (2-Step Ultimate SC) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (2-Step Ultimate SC) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -2891,6 +2921,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -2903,6 +2934,7 @@ windower.register_event('prerender', function()
 				hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 				hud_weapons:text(formatWeapons(EquipMain..EquipSub))
 			end
+			colorWeaponsText()
 		end
 	end
 
@@ -3103,7 +3135,7 @@ windower.register_event('prerender', function()
 	end
 
 	--MP checks
-	if NotiLowMP =='On' and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
+	if NotiLowMP =='On' and player and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
