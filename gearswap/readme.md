@@ -98,6 +98,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.5
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
+
 Version 18.4
 - Added support for sub SCH.
 
@@ -721,6 +724,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.5
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
+
 Version 7.4.2
 - Fixed equip priority of the "town" type sets. They now correctly take priority while in town zones.
 
@@ -852,6 +858,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.5
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
 Version 14.4.6
 - Fixed an issue where being sub SCH when sub jobs are restricted will produce an error.
@@ -1135,6 +1144,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.6
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
+
 Version 9.5.1
 - Remembered why I didn't add a Pflug set.
 
@@ -1337,6 +1349,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.6
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
 Version 14.5.2
 - Fixed equip priority of the "town" type sets. They now correctly take priority while in town zones.
@@ -1583,6 +1598,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.4
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
+
 Version 12.3.4
 - Fixed an issue where being sub SCH when sub jobs are restricted will produce an error.
 
@@ -1796,6 +1814,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.6
+- Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
 Version 8.5.2
 - Fixed equip priority of the "town" type sets. They now correctly take priority while in town zones.
