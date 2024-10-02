@@ -1350,6 +1350,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 14.7
+- Adjusted precast so that using a Soboro Sukehiro will not equip a WS set.
+
 Version 14.6
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
