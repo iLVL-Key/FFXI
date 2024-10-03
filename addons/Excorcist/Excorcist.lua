@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Excorcist'
-_addon.version = '1.0'
+_addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'excorcist'}
 
@@ -115,7 +115,7 @@ local function useHolyWater()
 		windower.send_command('input /item "Holy Water" <me>')
 	end
 	coroutine.sleep(settings.wait)
-	if HWcount ~= 0 and Doom then
+	if Doom then
 		useHolyWater()
 	end
 end
