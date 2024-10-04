@@ -103,6 +103,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.2.2
+- Fixed Focus Target bar not updating when Override is used (`//bars f` command).
+- Fixed Sub-Target x offset not updating when bar width is updated via in-game command.
+
 Version 2.2.1
 - Added missing 'No effect' message for monster abilities.
 
