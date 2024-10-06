@@ -70,6 +70,7 @@ LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
 ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
 
 --  General Notifications  --
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
@@ -79,8 +80,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -587,7 +587,7 @@ end
 
 
 
-FileVersion = '14.3.5'
+FileVersion = '14.3.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1891,6 +1891,7 @@ function precast(spell)
 			send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_full_circle_fix')
 			return
 		end
+		equip(sets.fastcast)
 	elseif string.find(spell.english,'Indi-') then
 		if AutoEntrust == 'On' and Entrust.recast == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
 			if UseEntrust == false then
@@ -1917,9 +1918,12 @@ function precast(spell)
 			--if we cast an Indi- spell on ourselves we reset UseEntrust back to false, this allows us to cancel the use of AutoEntrust and go through the double-check above again for next time
 			send_command('gs c CancelUseEntrust')
 		end
+		equip(sets.fastcast)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
-		equip(sets.fastcast)
+		if spell.english ~= 'Spectral Jig' then
+			equip(sets.fastcast)
+		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
 		equip(sets.fastcast)
@@ -2563,7 +2567,7 @@ windower.register_event('prerender', function()
 	end
 
 	--MP checks
-	if NotiLowMP =='On' and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
+	if NotiLowMP =='On' and player and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off (done below)
 		if AlertSounds == 'On' then
 			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
@@ -2724,8 +2728,8 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			flash('Noti')
 			NotiCountdown = -1
