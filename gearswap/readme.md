@@ -457,6 +457,9 @@ Version 1.0 BETA-1
  
 <summary>GEO</summary>
 
+Version 14.3.6
+- Fixed missing call to equip fastcast set for Indi- and Geo- spells.
+
 Version 14.3.5
 - Fixed an issue where being sub SCH when sub jobs are restricted will produce an error.
 
