@@ -439,11 +439,6 @@ Version 15.0
 
 <summary>BRD</summary>
 
-Version 1.0 BETA-6
-- Adjusted the Song List display. Bullet in front of each song is now larger and colored to indicate which type of song (default colors match the XIView color scheme for song icons). Party Member names are now centered, and colored based on their lowest current song duration. Song durations are now right-aligned.
-- Added Enmity set and PaeonEnmity option to use Paeons for hate generation.
-- Fixed precast so that if Nightingale is up it will equip the proper specific song buff gear instead of the base buff_song set.
-
 Version 1.0 BETA-5
 - Adjusted Song List to display a musical notee as the bullet to indicate a dummy song.
 
