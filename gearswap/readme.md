@@ -439,6 +439,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0 BETA-5
+- Adjusted Song List to display a musical notee as the bullet to indicate a dummy song.
+
 Version 1.0 BETA-4
 - Adjusted AutoSubCharge to also activate after a status change back to idle.
 
