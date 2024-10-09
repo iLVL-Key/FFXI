@@ -726,7 +726,7 @@ end
 
 
 
-FileVersion = '9.6'
+FileVersion = '9.6.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2409,7 +2409,7 @@ function choose_set()
 				equip(set_combine(sets.ohshit, sets.movementspeed))
 			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == true) or Mode == 'Combat-Parry' or Mode == 'Combat-DT' then -- if we're idle but ARE in combat (ex: kiting, mob is aggressive) we equip the tank/idle sets
 				equip(set_combine(sets.tankdt, sets.movementspeed))
-			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == false) or Mode == 'Neutral' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh and movement speed sets
+			elseif ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player.in_combat == false) or Mode == 'Neutral' or Mode == 'DPS' then --if we're idle and NOT in combat (ex: buffing up before a fight, mob is not aggressive yet) we equip the refresh and movement speed sets
 				equip(set_combine(sets.refresh, sets.movementspeed))
 			end
 		end
@@ -2534,7 +2534,9 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
-		equip(sets.fastcast)
+		if spell.english ~= 'Spectral Jig' then
+			equip(sets.fastcast)
+		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
 		equip(sets.fastcast)
@@ -2812,6 +2814,10 @@ windower.register_event('gain buff', function(buff)
 		send_command('gs c ClearNotifications')
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
+	elseif buff == 157 then --SJ Restricted
+		Rune1Timer = 0
+		Rune2Timer = 0
+		Rune3Timer = 0
 	end
 end)
 
@@ -3510,8 +3516,8 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			hud_noti_bg:bg_alpha(0)
 			flash('Noti')	
