@@ -1147,6 +1147,10 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Verison 9.6.1
+- Adjusted Runes to clear when gaining "SJ Restricted" buff.
+- Fixed movementspeed/refresh sets not equipping when idle in DPS Mode.
+
 Version 9.6
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
