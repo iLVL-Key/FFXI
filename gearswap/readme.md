@@ -98,6 +98,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.6
+- Added rule for Enfeebling Magic to use the Magic Accuracy set.
+
 Version 18.5
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
