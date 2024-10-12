@@ -600,8 +600,7 @@ sets.breath = set_combine(sets.magical, {
 
 -- Magic Accuracy (Magic Accuracy, Blue Magic Skill)
 sets.magicaccuracy = {
-	--ammo="Pemphredo Tathlum",
-	ammo="Mavi Tathlum",
+	ammo="Pemphredo Tathlum",
 	head="Hashishin Kavuk +3",
 	body="Hashishin Mintan +3",
 	hands="Hashi. Bazu. +3",
@@ -610,7 +609,7 @@ sets.magicaccuracy = {
 	neck="Mirage Stole +2",
 	waist="Acuity Belt +1",
 	left_ear="Njordr Earring",
-	right_ear="Regal Earring",
+	right_ear="Hashi. Earring +1",
 	left_ring="Stikini Ring +1",
 	right_ring="Metamor. Ring +1",
 	back="Aurist's Cape +1",
@@ -769,7 +768,7 @@ end
 
 
 
-FileVersion = '18.5'
+FileVersion = '18.6'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -2326,7 +2325,9 @@ function precast(spell)
 		equip(sets.hwater)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
-		equip(sets.fastcast)
+		if spell.english ~= 'Spectral Jig' then
+			equip(sets.fastcast)
+		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
 		equip(sets.fastcast)
@@ -2393,6 +2394,8 @@ function midcast(spell)
 		end
 	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
 		equip(sets.magical)
+	elseif spell.skill == 'Enfeebling Magic' then
+		equip(sets.magicaccuracy)
 	elseif spell.english == 'Cursna' then
 		equip(sets.cursna)
 	elseif string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
@@ -3127,8 +3130,8 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			flash('Noti')
 			NotiCountdown = -1
