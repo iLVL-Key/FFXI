@@ -15,13 +15,13 @@ Tracks battle information and groups it together in different "boards".
 
 ### Features
 - 4 different tracking modes:
-  - **Silent:** Tracks in the background, no party chat call outs. Default.
-  - **Lite:** Limited party chat call outs.
-  - **Party:** Full party chat call outs. Great for linkshell events.
+  - **Silent:** Default mode. Tracks in the background, no party chat call outs.
+  - **Lite:** Limited party chat call outs. Great for alliance events.
+  - **Party:** Full party chat call outs. Great for small party events.
   - **Mog Kart:** Inspired by Mario Kart, this mode includes "items" that players (trusts too!) can receive and use to affect other players points.
     - All items can have their attributes changed in the settings file.
     - Trusts will also play Mario Kart along with you and your party members (IT'S AI! ...not really)!
-    - Note: Uses tells to send players their items as well as receive the command to use them
+    - Note: Uses tells to send players their items as well as receive the command to use them.
 - Tracks 11 different boards.
 - On-Screen Display for tracking boards in realtime.
 - Rival system. Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
@@ -31,7 +31,7 @@ Tracks battle information and groups it together in different "boards".
   - Flood delay per player so that individuals can't spam commands and lock others out.
 - Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
 - Tracks every players scores individually. Allows any player in the group to get a report with only their own scores for each board.
-- Tracks the number of "9's" a player has hit.
+- Tracks the number of "nines" a player has hit.
 - Duplicate scores are ordered by who hit the number first.
 - All major settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
 
@@ -91,7 +91,7 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 - `report` - Receive a score report via tell. (receive command via tell only)
 
 ### Current Known Issues
-- In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an item without the tell to inform them of it. I have seen this myself a total of twice ever, but something to be aware of.
+- In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of.
 
 ### Version History
 
