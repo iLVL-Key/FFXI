@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.10.1'
+_addon.version = '1.10.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -355,7 +355,7 @@ windower.register_event('incoming text',function(org)
 			chat('/%s Water%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		end
 
-	elseif org:find('The fiend appears vulnerable to') and org:find('weapon skills') and callout.abyssea then
+	elseif org:find('The fiend appears vulnerable to') and org:find('weapon skills') and callout.abyssea and string.find(res.zones[windower.ffxi.get_info().zone].en,'Abyssea') then
 		if org:find('lightning') then
 			chat('/%s RED Proc: Lightning - Raiden Thrust(PLM)%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		elseif org:find('fire') then
@@ -400,6 +400,8 @@ windower.register_event('incoming text',function(org)
 			chat('/%s BLUE Proc: Staff - Heavy Swing, Shell Crusher, Full Swing, Spirit Taker, Retribution%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		end
 
+	elseif org:find('rage is beginning to boil over.') and callout.ambuscade then
+		chat('/%s Rage is boiling over!%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 	end
 end)
 
@@ -516,52 +518,52 @@ windower.register_event('addon command', function(addcmd)
 			chatmode = 'echo'
 		end
 		windower.add_to_chat(220,'[Callouts] '..('Chat mode is now set to '):color(8)..(chatmode == 'party' and 'Party' or 'Echo'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'abyssea' or addcmd == 'aby' then
 		callout.abyssea = not callout.abyssea
 		windower.add_to_chat(220,'[Callouts] '..('Abyssea callout is now set to '):color(8)..(callout.abyssea and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'ambuscade' or addcmd == 'ambu' then
 		callout.ambuscade = not callout.ambuscade
 		windower.add_to_chat(220,'[Callouts] '..('Ambuscade callout is now set to '):color(8)..(callout.ambuscade and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'charm' then
 		callout.charm = not callout.charm
 		windower.add_to_chat(220,'[Callouts] '..('Charm callout is now set to '):color(8)..(callout.charm and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'dynamis' or addcmd == 'dyna' or addcmd == 'dyn' then
 		callout.dynamis = not callout.dynamis
 		windower.add_to_chat(220,'[Callouts] '..('Dynamis callout is now set to '):color(8)..(callout.dynamis and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'odyssey' or addcmd == 'ody' then
 		callout.odyssey = not callout.odyssey
 		windower.add_to_chat(220,'[Callouts] '..('Odyssey callout is now set to '):color(8)..(callout.odyssey and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'omen' then
 		callout.omen = not callout.omen
 		windower.add_to_chat(220,'[Callouts] '..('Omen callout is now set to '):color(8)..(callout.omen and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'ou' then
 		callout.ou = not callout.ou
 		windower.add_to_chat(220,'[Callouts] '..('Ou callout is now set to '):color(8)..(callout.ou and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'sortie' then
 		callout.sortie = not callout.sortie
 		windower.add_to_chat(220,'[Callouts] '..('Sortie callout is now set to '):color(8)..(callout.sortie and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'vagary' or addcmd == 'vag' then
 		callout.vagary = not callout.vagary
 		windower.add_to_chat(220,'[Callouts] '..('Vagary callout is now set to '):color(8)..(callout.vagary and 'ON' or 'OFF'):color(200)..('.'):color(8))
-		settings:save()
+		settings:save('all')
 
 	elseif addcmd == 'list' or addcmd == 'lists' then
 		windower.add_to_chat(220,'[Callouts] '..('Current callouts:'):color(200))
