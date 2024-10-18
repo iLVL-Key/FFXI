@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaPad'
-_addon.version = '1.0 BETA-2'
+_addon.version = '1.0 BETA-3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanapad','vp'}
 
@@ -188,6 +188,11 @@ local key_map = {
 	}
 }
 
+--Format RGB values with leading zeros (helps prevent an issue with text shifting when changing colors)
+local function formatRGB(value)
+	return string.format("%03d", value)
+end
+
 -- Update the VanaPad text box
 local function updateBox(displayNote)
 
@@ -291,7 +296,7 @@ local function updateBox(displayNote)
 	else
 		title = titleOverride and titleOverride or (entering_note and "Edit Mode" or (note[displayNote] and note[displayNote].title or newTitle[displayNote]))
 		local wrappedContent = wordWrap(note[displayNote] and note[displayNote].content or "")
-		content = note[displayNote] and "\\cs("..cc.r..","..cc.g..","..cc.b..")"..table.concat(wrappedContent, "\n").."\\cr" or (entering_note and "\\cs(255,050,050)|\\cr" or emptyNote)
+		content = note[displayNote] and "\\cs("..formatRGB(cc.r)..","..formatRGB(cc.g)..","..formatRGB(cc.b)..")"..table.concat(wrappedContent, "\n").."\\cr" or (entering_note and "\\cs(255,050,050)|\\cr" or emptyNote)
 	end
 
 	local totalLength = option.window_width
@@ -303,22 +308,22 @@ local function updateBox(displayNote)
 	local pin = settings.flags.draggable and "○" or "•"
 
 	--buttons
-	local bx = entering_note and currentNote ~= "none" and note[currentNote] and "\\cs("..cx.r..","..cx.g..","..cx.b..")×\\cr" or " "
-	local be = currentNote ~= "none" and "\\cs("..ce.r..","..ce.g..","..ce.b..")±\\cr" or " "
-	local b0 = "\\cs("..c0.r..","..c0.g..","..c0.b..")0\\cr"
-	local b1 = "\\cs("..c1.r..","..c1.g..","..c1.b..")1\\cr"
-	local b2 = "\\cs("..c2.r..","..c2.g..","..c2.b..")2\\cr"
-	local b3 = "\\cs("..c3.r..","..c3.g..","..c3.b..")3\\cr"
-	local b4 = "\\cs("..c4.r..","..c4.g..","..c4.b..")4\\cr"
-	local b5 = "\\cs("..c5.r..","..c5.g..","..c5.b..")5\\cr"
-	local b6 = "\\cs("..c6.r..","..c6.g..","..c6.b..")6\\cr"
-	local b7 = "\\cs("..c7.r..","..c7.g..","..c7.b..")7\\cr"
-	local b8 = "\\cs("..c8.r..","..c8.g..","..c8.b..")8\\cr"
-	local b9 = "\\cs("..c9.r..","..c9.g..","..c9.b..")9\\cr"
-	local bh = "\\cs("..ch.r..","..ch.g..","..ch.b..")?\\cr"
-	local bu = "\\cs("..cu.r..","..cu.g..","..cu.b..")_\\cr"
-	local bp = "\\cs("..cp.r..","..cp.g..","..cp.b..")"..pin.."\\cr"
-	local bX = "\\cs("..cX.r..","..cX.g..","..cX.b..")X\\cr"
+	local bx = entering_note and currentNote ~= "none" and note[currentNote] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr" or " "
+	local be = currentNote ~= "none" and "\\cs("..formatRGB(ce.r)..","..formatRGB(ce.g)..","..formatRGB(ce.b)..")±\\cr" or " "
+	local b0 = "\\cs("..formatRGB(c0.r)..","..formatRGB(c0.g)..","..formatRGB(c0.b)..")0\\cr"
+	local b1 = "\\cs("..formatRGB(c1.r)..","..formatRGB(c1.g)..","..formatRGB(c1.b)..")1\\cr"
+	local b2 = "\\cs("..formatRGB(c2.r)..","..formatRGB(c2.g)..","..formatRGB(c2.b)..")2\\cr"
+	local b3 = "\\cs("..formatRGB(c3.r)..","..formatRGB(c3.g)..","..formatRGB(c3.b)..")3\\cr"
+	local b4 = "\\cs("..formatRGB(c4.r)..","..formatRGB(c4.g)..","..formatRGB(c4.b)..")4\\cr"
+	local b5 = "\\cs("..formatRGB(c5.r)..","..formatRGB(c5.g)..","..formatRGB(c5.b)..")5\\cr"
+	local b6 = "\\cs("..formatRGB(c6.r)..","..formatRGB(c6.g)..","..formatRGB(c6.b)..")6\\cr"
+	local b7 = "\\cs("..formatRGB(c7.r)..","..formatRGB(c7.g)..","..formatRGB(c7.b)..")7\\cr"
+	local b8 = "\\cs("..formatRGB(c8.r)..","..formatRGB(c8.g)..","..formatRGB(c8.b)..")8\\cr"
+	local b9 = "\\cs("..formatRGB(c9.r)..","..formatRGB(c9.g)..","..formatRGB(c9.b)..")9\\cr"
+	local bh = "\\cs("..formatRGB(ch.r)..","..formatRGB(ch.g)..","..formatRGB(ch.b)..")?\\cr"
+	local bu = "\\cs("..formatRGB(cu.r)..","..formatRGB(cu.g)..","..formatRGB(cu.b)..")_\\cr"
+	local bp = "\\cs("..formatRGB(cp.r)..","..formatRGB(cp.g)..","..formatRGB(cp.b)..")"..pin.."\\cr"
+	local bX = "\\cs("..formatRGB(cX.r)..","..formatRGB(cX.g)..","..formatRGB(cX.b)..")X\\cr"
 
 --VanaPad v1.0             x ± 0123456789 ?_•X
 --○•
