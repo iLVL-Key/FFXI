@@ -21,7 +21,7 @@ NotePad for Vana'diel!
 
 ## Version History
 Version 1.0 BETA-3
-- Fix text shifting when changing colors (you can see it doing it with the edit button in the eaxmple gif).
+- Fix text shifting when changing colors (you can see it doing it with the edit button in the example gif).
 
 Version 1.0 BETA-2
 - Fix Windower double-click bug on the hide button
