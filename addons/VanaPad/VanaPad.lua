@@ -308,8 +308,8 @@ local function updateBox(displayNote)
 	local pin = settings.flags.draggable and "○" or "•"
 
 	--buttons
-	local bx = entering_note and currentNote ~= "none" and note[currentNote] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr" or " "
-	local be = currentNote ~= "none" and "\\cs("..formatRGB(ce.r)..","..formatRGB(ce.g)..","..formatRGB(ce.b)..")±\\cr" or " "
+	local bx = entering_note and currentNote ~= "none" and note[currentNote] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr" or "\\cs(255,255,255) \\cr"
+	local be = currentNote ~= "none" and "\\cs("..formatRGB(ce.r)..","..formatRGB(ce.g)..","..formatRGB(ce.b)..")±\\cr" or "\\cs(255,255,255) \\cr"
 	local b0 = "\\cs("..formatRGB(c0.r)..","..formatRGB(c0.g)..","..formatRGB(c0.b)..")0\\cr"
 	local b1 = "\\cs("..formatRGB(c1.r)..","..formatRGB(c1.g)..","..formatRGB(c1.b)..")1\\cr"
 	local b2 = "\\cs("..formatRGB(c2.r)..","..formatRGB(c2.g)..","..formatRGB(c2.b)..")2\\cr"
