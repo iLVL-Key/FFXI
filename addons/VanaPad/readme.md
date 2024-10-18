@@ -18,3 +18,14 @@ NotePad for Vana'diel!
 - show/hide - Show/hide the VanaPad window
 - edit/e - Edit the current note
 - title/t - Add a custom title to the current note.
+
+## Version History
+Version 1.0 BETA-3
+- Fix text shifting when changing colors (you can see it doing it with the edit button in the eaxmple gif).
+
+Version 1.0 BETA-2
+- Fix Windower double-click bug on the hide button
+- Fix un-hiding after zone when hidden.
+
+Version 1.0 BETA-1
+- First version
