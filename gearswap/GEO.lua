@@ -238,7 +238,7 @@ sets.idle = {
 	main="Idris",
 	sub="Genmei Shield",
 	range="Dunna",
-	head="Befouled Crown",
+	head="Volte Beret",
 	body="Azimuth Coat +3",
 	hands="Bagua Mitaines +3",
 	legs="Volte Brais",
@@ -365,7 +365,7 @@ sets.fastcast = {
 	sub="Chanter's Shield", --3%
 	head="Amalric Coif +1", --11%
 	body="Agwu's Robe", --8%
-	hands="Leyline Gloves", --5+1
+	hands="Agwu's Gages", --6%
 	legs="Geomancy Pants +3", --15%
 	feet="Amalric Nails +1", --6%
 	neck="Baetyl Pendant", --4%
@@ -587,7 +587,7 @@ end
 
 
 
-FileVersion = '14.3.6'
+FileVersion = '14.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -657,6 +657,7 @@ PetHPP = 0
 LuopanDelay = false --used to create a short delay between casting a luopan and checking if it still exists, pet.isvalid does a weird on/off/on thing when a luopan is cast which messes with checking if certain buffs are still active on the lupoan
 EntrustCountdown = 0
 EntrustTarget = nil
+party_count = party and party.count or 1
 
 -- Sets the inital subjob
 local subjob = 'OTH'
@@ -1235,7 +1236,7 @@ local function getRecasts()
 	local ability_recast = windower.ffxi.get_ability_recasts()
 
 	Bolster.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	WidenedCompass.recast = ability_recast[254] and math.floor(ability_recast[254]) or nil
+	WidenedCompass.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	BlazeofGlory.recast = ability_recast[247] and math.floor(ability_recast[247]) or nil
 	CollimatedFervor.recast = ability_recast[245] and math.floor(ability_recast[245]) or nil
 	ConcentricPulse.recast = ability_recast[250] and math.floor(ability_recast[250]) or nil
@@ -2749,6 +2750,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--Recast color updates
