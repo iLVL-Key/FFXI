@@ -331,22 +331,20 @@ sets.tank = {
 	left_ring="Moonlight Ring",		--5 DT
 	right_ring="Gelatinous Ring +1",
 	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
-	--[[
 	
-	ammo="Staunch Tathlum +1",
-	head="Sakpata's Helm",
-	body="Sakpata's Plate",
-	hands="Sakpata's Gauntlets",
-	legs="Sakpata's Cuisses",
-	feet="Sakpata's Leggings",
-	neck="Moonlight Necklace",
-	waist="Asklepian Belt",
-	left_ear="Eabani Earring",
-	right_ear="Chev. Earring +1",
-	left_ring="Shadow Ring",
-	right_ring="Apeile Ring +1",
-	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
-	]]--
+	-- ammo="Staunch Tathlum +1",
+	-- head="Sakpata's Helm",
+	-- body="Sakpata's Plate",
+	-- hands="Sakpata's Gauntlets",
+	-- legs="Sakpata's Cuisses",
+	-- feet="Sakpata's Leggings",
+	-- neck="Moonlight Necklace",
+	-- waist="Asklepian Belt",
+	-- left_ear="Eabani Earring",
+	-- right_ear="Chev. Earring +1",
+	-- left_ring="Shadow Ring",
+	-- right_ring="Apeile Ring +1",
+	-- back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
 }
 
 -- MAX HP (HP-focused tank gear, inherits any leftover slots from the Tank set above)
@@ -810,7 +808,7 @@ end
 
 
 
-FileVersion = '14.5'
+FileVersion = '14.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1500,7 +1498,7 @@ local function getRecasts()
 	end
 
 	Invincible.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	Intervene.recast = ability_recast[255] and math.floor(ability_recast[255]) or nil
+	Intervene.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	Aggressor.recast = ability_recast[4] and math.floor(ability_recast[4]) or nil
 	Berserk.recast = ability_recast[1] and math.floor(ability_recast[1]) or nil
 	Chivalry.recast = ability_recast[79] and math.floor(ability_recast[79]) or nil
@@ -2305,7 +2303,7 @@ function precast(spell)
 		send_command('cancel 71')
 		if player.tp <= TPThreshold and not (spell.english == 'Spectral Jig' or buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 			equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
-		elseif not spell.english == 'Spectral Jig' then
+		elseif spell.english ~= 'Spectral Jig' then
 			equip(sets.fastcast)
 		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
@@ -2324,7 +2322,7 @@ function precast(spell)
 			return
 		end
 	elseif spell.english == "Flash" then
-		if windower.ffxi.get_spell_recasts()[112] < 120 then
+		if windower.ffxi.get_spell_recasts()[112] and windower.ffxi.get_spell_recasts()[112] < 120 then
 			if AutoDEmblem == 'On' and not buffactive['amnesia'] and DivineEmblem.recast == 0 then
 				if not double_divine_emblem_fix then
 					double_divine_emblem_fix = true --prevents this from running through here a second time after being cast again below
@@ -2339,17 +2337,17 @@ function precast(spell)
 				equip(sets.fastcast)
 			end
 		elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
-			if windower.ffxi.get_spell_recasts()[575] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,575) and spell.target.distance <= 9 then
+			if windower.ffxi.get_spell_recasts()[575] and windower.ffxi.get_spell_recasts()[575] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,575) and spell.target.distance <= 9 then
 				send_command('input /ma "Jettatura" '..spell.target.raw..'')
 				cancel_spell()
 				return
-			elseif windower.ffxi.get_spell_recasts()[592] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,592) and spell.target.distance <= 14 then
+			elseif windower.ffxi.get_spell_recasts()[592] and windower.ffxi.get_spell_recasts()[592] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,592) and spell.target.distance <= 14 then
 				send_command('input /ma "Blank Gaze" '..spell.target.raw..'')
 				cancel_spell()
 				return
 			end
 		elseif player.sub_job == 'WAR' and player.sub_job_level ~= 0 then
-			if windower.ffxi.get_ability_recasts()[5] < 2 and spell.target.distance <= 17.8 and not buffactive['amnesia'] then
+			if windower.ffxi.get_ability_recasts()[5] and windower.ffxi.get_ability_recasts()[5] < 2 and spell.target.distance <= 17.8 and not buffactive['amnesia'] then
 				send_command('input /ja "Provoke" '..spell.target.raw..'')
 				cancel_spell()
 				return
@@ -2357,30 +2355,30 @@ function precast(spell)
 		end
 	elseif spell.english == "Sheep Song" then
 		if player.sub_job == 'BLU' then
-			if windower.ffxi.get_spell_recasts()[584] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,584) then
+			if windower.ffxi.get_spell_recasts()[584] and windower.ffxi.get_spell_recasts()[584] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,584) then
 				if player.tp <= TPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath']) then
 					equip(set_combine(sets.fastcast, sets.fastcast_mainsub))
 				else
 					equip(sets.fastcast)
 				end
-			elseif windower.ffxi.get_spell_recasts()[605] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,605) then
+			elseif windower.ffxi.get_spell_recasts()[605] and windower.ffxi.get_spell_recasts()[605] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,605) then
 				send_command('input /ma "Geist Wall" '..spell.target.raw..'')
 				cancel_spell()
 				return
-			elseif windower.ffxi.get_spell_recasts()[537] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,537) then
+			elseif windower.ffxi.get_spell_recasts()[537] and windower.ffxi.get_spell_recasts()[537] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,537) then
 				send_command('input /ma "Stinking Gas" '..spell.target.raw..'')
 				cancel_spell()
 				return
-			elseif windower.ffxi.get_spell_recasts()[598] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,598) then
+			elseif windower.ffxi.get_spell_recasts()[598] and windower.ffxi.get_spell_recasts()[598] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,598) then
 				send_command('input /ma "Soporific" '..spell.target.raw..'')
 				cancel_spell()
 				return
-			elseif windower.ffxi.get_spell_recasts()[572] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,572) then
+			elseif windower.ffxi.get_spell_recasts()[572] and windower.ffxi.get_spell_recasts()[572] < 120 and table.contains(windower.ffxi.get_sjob_data().spells,572) then
 				send_command('input /ma "Sound Blast" <me>')
 				cancel_spell()
 				return
 			end
-		elseif player.sub_job == 'RUN' and windower.ffxi.get_spell_recasts()[840] < 120 then
+		elseif player.sub_job == 'RUN' and windower.ffxi.get_spell_recasts()[840] and windower.ffxi.get_spell_recasts()[840] < 120 then
 			send_command('input /ma "Foil" <me>')
 			cancel_spell()
 			return
@@ -3240,8 +3238,8 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			flash('Noti')
 			NotiCountdown = -1
@@ -3295,6 +3293,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--Recast color updates
