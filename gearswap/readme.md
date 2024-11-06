@@ -98,6 +98,10 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.7
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
+
 Version 18.6
 - Added rule for Enfeebling Magic to use the Magic Accuracy set.
 
@@ -463,6 +467,10 @@ Version 1.0 BETA-1
  
 <summary>GEO</summary>
 
+Version 14.4
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
+
 Version 14.3.6
 - Fixed missing call to equip fastcast set for Indi- and Geo- spells.
 
@@ -733,6 +741,10 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.6
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
+
 Version 7.5
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
@@ -867,6 +879,10 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.6
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
 
 Version 14.5
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
@@ -1153,6 +1169,10 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.7
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
+
 Verison 9.6.1
 - Adjusted Runes to clear when gaining "SJ Restricted" buff.
 - Fixed movementspeed/refresh sets not equipping when idle in DPS Mode.
@@ -1362,6 +1382,10 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 14.8
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
 
 Version 14.7
 - Adjusted precast so that using a Soboro Sukehiro will not equip a WS set.
@@ -1614,6 +1638,10 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.5
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
+
 Version 12.4
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
 
@@ -1830,6 +1858,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 8.7
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue with SP2 recast
 
 Version 8.6
 - Adjusted HUD Weapons text to color based on the current Aftermath level when the HUD TP Meter is turned off.
