@@ -106,7 +106,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only).
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
-AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation charging.
+AutoSubCharge	=	'Off'	--[On/Off]		Automatically attempts to keep Sublimation charging.
 OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
 
 -- Heads Up Display --
@@ -322,6 +322,7 @@ WeaponCycle = {
 	{"Tizona", "Thibron"},
 	{"Naegling", "Thibron"},
 	{"Maxentius", "Thibron"},
+	{"Maxentius", "Bunzi's Rod"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -768,7 +769,7 @@ end
 
 
 
-FileVersion = '18.6'
+FileVersion = '18.7'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -1442,7 +1443,7 @@ local function getRecasts()
 	local ability_recast = windower.ffxi.get_ability_recasts()
 
 	AzureLore.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	UnbridledWisdom.recast = ability_recast[254] and math.floor(ability_recast[254]) or nil
+	UnbridledWisdom.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	Aggressor.recast = ability_recast[4] and math.floor(ability_recast[4]) or nil
 	Berserk.recast = ability_recast[1] and math.floor(ability_recast[1]) or nil
 	BurstAffinity.recast = ability_recast[182] and math.floor(ability_recast[182]) or nil
@@ -3154,6 +3155,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--Recast color updates
