@@ -716,7 +716,7 @@ end
 
 
 
-FileVersion = '8.6'
+FileVersion = '8.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1423,7 +1423,7 @@ local function getRecasts()
 	local ability_recast = windower.ffxi.get_ability_recasts()
 
 	MightyStrikes.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	BrazenRush.recast = ability_recast[254] and math.floor(ability_recast[254]) or nil
+	BrazenRush.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	Aggressor.recast = ability_recast[4] and math.floor(ability_recast[4]) or nil
 	Berserk.recast = ability_recast[1] and math.floor(ability_recast[1]) or nil
 	BloodRage.recast = ability_recast[11] and math.floor(ability_recast[11]) or nil
@@ -3038,8 +3038,8 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			flash('Noti')
 			NotiCountdown = -1
@@ -3062,6 +3062,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--Recast color updates
