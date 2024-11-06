@@ -726,7 +726,7 @@ end
 
 
 
-FileVersion = '9.6.1'
+FileVersion = '9.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1549,7 +1549,7 @@ local function getRecasts()
 	local spell_data = windower.ffxi.get_sjob_data().spells
 
 	ElementalSforzo.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	OdyllicSubterfuge.recast = ability_recast[255] and math.floor(ability_recast[255]) or nil
+	OdyllicSubterfuge.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	Aggressor.recast = ability_recast[4] and math.floor(ability_recast[4]) or nil
 	ArcaneCircle.recast = ability_recast[86] and math.floor(ability_recast[86]) or nil
 	Battuta.recast = ability_recast[120] and math.floor(ability_recast[120]) or nil
@@ -3571,6 +3571,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--Recast color updates
