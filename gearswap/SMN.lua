@@ -623,7 +623,7 @@ end
 
 
 
-FileVersion = '12.4'
+FileVersion = '12.5'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1245,7 +1245,7 @@ local function getRecasts()
 	local ability_recast = windower.ffxi.get_ability_recasts()
 
 	AstralFlow.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	AstralConduit.recast = ability_recast[254] and math.floor(ability_recast[254]) or nil
+	AstralConduit.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	Apogee.recast = ability_recast[108] and math.floor(ability_recast[108]) or nil
 	AvatarsFavor.recast = ability_recast[176] and math.floor(ability_recast[176]) or nil
 	BloodPactRage.recast = ability_recast[173] and math.floor(ability_recast[173]) or nil
@@ -2916,8 +2916,8 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			flash('Noti')
 			NotiCountdown = -1
@@ -2937,6 +2937,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--Recast color updates
