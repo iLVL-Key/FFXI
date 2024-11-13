@@ -14,7 +14,7 @@ ex:	/addons/GearSwap/data/sounds/
 
 To activate Damage Taken Override, use any of these three options:
 1. A macro with the following
-	/console DT
+	/console dt
 2. An alias command
 	//dt
 3. A keybind shortcut
@@ -25,7 +25,7 @@ To activate Damage Taken Override, use any of these three options:
 
 To use the Auto Elemental Siphon function, use either of these two option:
 1. A macro with the following
-	/console Siphon
+	/console siphon
 2. An alias command
 	//siphon
 
