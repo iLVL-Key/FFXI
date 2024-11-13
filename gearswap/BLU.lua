@@ -24,7 +24,7 @@ With # being 1-5 depending on which ones you are using. See Pro Tips below for m
 
 To activate Damage Taken Override, use any of these three options:
 1. A macro
-	/console DT
+	/console dt
 2. An alias command
 	//dt
 3. A keybind shortcut
@@ -35,7 +35,7 @@ To activate Damage Taken Override, use any of these three options:
 
 To activate the Weapon Cycle, use any of these three options:
 1. A macro
-	/console WC
+	/console wc
 2. An alias command
 	//wc
 3. A keybind shortcut
