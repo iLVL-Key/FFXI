@@ -25,7 +25,7 @@ To switch between gear modes, use any of these three options:
 
 To activate the Weapon Cycle, use any of these three options:
 1. A macro
-	/console WC
+	/console wc
 2. An alias command
 	//wc
 3. A keybind shortcut
