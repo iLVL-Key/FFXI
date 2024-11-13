@@ -14,7 +14,7 @@ ex:	/addons/GearSwap/data/sounds/
 
 To activate Damage Taken Override, use any of these three options:
 1. A macro
-	/console DT
+	/console dt
 2. An alias command
 	//dt
 3. A keybind shortcut
