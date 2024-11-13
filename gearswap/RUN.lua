@@ -25,7 +25,7 @@ To switch between gear modes, use any of these three options:
 
 To activate the Weapon Cycle, use any of these three options:
 1. A macro with the following
-	/console WC
+	/console wc
 2. An alias command
 	//wc
 3. A keybind shortcut
@@ -44,11 +44,11 @@ and Blank Gaze, in that order, as recast timers and distance allow (or if you ar
 
 To use the Rune Activator function, use any of these options to first select an element:
 1. A macro
-	/console RuneCycle
+	/console runecycle
 	(this will cycle through the different elements)
 	or
-	/console RuneEarth
-	/console RuneWater
+	/console runeearth
+	/console runewater
 	etc.
 2. An alias command
 	//runecycle
@@ -60,7 +60,7 @@ To use the Rune Activator function, use any of these options to first select an 
 	(these can also be shortened to //rcycle, //rearth, etc., as well as using earth or stone, wind or aero, etc.)
 After an element is selected, use any of these options to activate a Rune of that element:
 1. A macro
-	/console Rune
+	/console rune
 2. A alias command
 	//rune
 
