@@ -1383,8 +1383,8 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
-Version 14.9
-- Overhauled the way Weapon Skills are handled. Removed the Capped TP and Attack Cap WS sets. Will now look for a "sets[Weapon Skill Name].high_buff" set when above the Attack Cap Threshold. This allows for setting specific gear per WS instead of a single set that overlays on top of any given WS set.
+Version 15.0
+- Overhauled the way Weapon Skills are handled. Dramatically simplified WS code. Removed the Capped TP and Attack Cap WS sets. Will now look for a "sets[Weapon Skill Name].high_buff" set when above the Attack Cap Threshold. This allows for setting specific gear per WS instead of a single set that overlays on top of any given WS set.
 - Added Chocobo Circuit to the list of Town Zones.
 - Adjusted a lot of set names to be easier to read using snake_case.
 - Adjusted Notifications to clear after joining a party.
