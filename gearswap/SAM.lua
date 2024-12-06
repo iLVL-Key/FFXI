@@ -807,14 +807,6 @@ TownZones = S{
 	}
 
 -------------------------------------------
---           HYBRID WS MAPPING           --
--------------------------------------------
-
-HybridWS = S{
-	'Flaming Arrow','Tachi: Goten','Tachi: Kagero','Tachi: Jinpu','Tachi: Koki'
-	}
-
--------------------------------------------
 --              FILE LOAD                --
 -------------------------------------------
 
@@ -2172,7 +2164,6 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, or we're using the Soboro, we don't want to use a WS set
 		elseif (checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea')) or player.equipment.main == "Soboro Sukehiro" then
 			return
-
 		else
 			local base_set = sets.weapon_skill
 			local ws = spell.english
