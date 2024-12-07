@@ -1866,6 +1866,13 @@ Version 8.0
  
 <summary>WAR</summary>
 
+Version 9.0
+- Overhauled the way Weapon Skills are handled. Dramatically simplified WS code. Removed the Capped TP and Attack Cap WS sets. Will now use, in order: `ws_accuracy` if in High Accuracy Mode (Mode3) > `sets["Weapon Skill Name"].high_buff` if above the Attack Cap Threshold and the set exists > `sets["Weapon Skill Name"]` if the set exists > `weapons_skill`. The `.high_buff` sets allow for setting specific gear per WS instead of a single Capped Attack set that overlays on top of any given WS set. Will layer `hachirin_no_obi` and `ygnass_resolve_1` sets on top of the base set used as necessary.
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using camelcase.
+- Adjusted Notifications to clear after joining a party.
+- Various code cleanup.
+
 Version 8.7
 - Adjusted Notifications to clear after joining a party.
 - Fixed an issue with SP2 recast
