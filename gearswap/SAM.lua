@@ -471,8 +471,8 @@ sets.weapon_skill = {
 	feet="Nyame Sollerets",
 	neck="Sam. Nodowa +2",
 	waist="Sailfi Belt +1",
-	left_ear="Moonshade Earring",
-	right_ear="Thrud Earring",
+	left_ear="Thrud Earring",
+	right_ear="Moonshade Earring",
 	left_ring="Cornelia's Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
@@ -508,7 +508,7 @@ sets["Tachi: Jinpu"] = set_combine(sets.weapon_skill, {
 	hands="Nyame Gauntlets",
 	neck="Fotia Gorget",
 	waist="Orpheus's Sash",
-	right_ear="Schere Earring",
+	left_ear="Schere Earring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
 
@@ -525,7 +525,7 @@ sets["Tachi: Kagero"] = set_combine(sets.weapon_skill, {
 	hands="Nyame Gauntlets",
 	neck="Fotia Gorget",
 	waist="Orpheus's Sash",
-	right_ear="Schere Earring",
+	left_ear="Schere Earring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
 
@@ -542,7 +542,7 @@ sets["Tachi: Koki"] = set_combine(sets.weapon_skill, {
 	hands="Nyame Gauntlets",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	right_ear="Schere Earring",
+	left_ear="Schere Earring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
 
