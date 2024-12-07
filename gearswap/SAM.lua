@@ -480,11 +480,11 @@ sets.weapon_skill = {
 
 -- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
 -- NOTE: This is a special set for weapon skill accuracy. When in the Hasso Accuracy mode (mode 3), weapon skills will use this set.
-sets.ws_accuracy = set_combine(sets.weapon_skill, {
+sets.ws_accuracy = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	right_ring="Karieyh Ring +1",
-})
+}
 
 -- Tachi: Ageha (Magic Accuracy)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
@@ -2169,18 +2169,17 @@ function precast(spell)
 			local base_set = sets.weapon_skill
 			local ws = spell.english
 			local ws_set = sets[ws]
-			if Mode == 'Mode3' then
-				base_set = 'ws_accuracy'
-			elseif player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
+			if player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
 				base_set = sets[ws].high_buff
 			elseif ws_set then
 				base_set = sets[ws]
 			end
 			local hachirin_no_obi = useHachirinNoObi(ws) and sets.hachirin_no_obi or nil
 			local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
+			local ws_accuracy = Mode == 'Mode3' and sets.ws_accuracy or nil
 			local sekkanoki = buffactive['Sekkanoki'] and sets.sekkanoki or nil
 			local meikyo_shisui = buffactive['Meikyo Shisui'] and sets.meikyo_shisui or nil
-			equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, sekkanoki, meikyo_shisui))
+			equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy, sekkanoki, meikyo_shisui))
 		end
 		if player.equipment.main == "Dojikiri Yasutsuna" and spell.english == "Tachi: Shoha" then
 			pre_AMTimer = 180
