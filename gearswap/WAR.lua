@@ -39,6 +39,27 @@ Hide or show the HUD at any time by typing
 
 --------------------
 
+To create a new set for a Weapon Skill that is not already listed, simply copy any other named
+Weapon Skill set and change the name to the desired Weapon Skill. For example, you can create
+a Flat Blade set by copying the entire Savage Blade set and changing the set name as such:
+
+from
+	sets["Savage Blade"]
+to
+	sets["Flat Blade"]
+
+Additionally, you can create a new "High Buff" Weapon Skill set (for when you are over the
+AttackCapThreshold set in the Advanced Options) by adding ".high_buff" to the end of the set name as such:
+
+from
+	sets["Flat Blade"]
+to
+	sets["Flat Blade"].high_buff
+
+NOTE: A High Buff set will only work if there is already a normal set for that specific Weapon Skill.
+
+--------------------
+
 IMPORTANT:
 When you load this file for the first time, your HUD may not be in a good position, or may be too large.
 If the HUD is not in a good position, go to the Heads Up Display options below and adjust the HUDposX and HUDposY
@@ -95,7 +116,7 @@ NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to
 NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -127,8 +148,8 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
-CappedTPThreshhold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
-AttackCapThreshhold	=	6000	--Using a WS with while your attack is above this number will layer in the Attack Cap WS set
+AttackCapThreshold	=	5000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
+								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
@@ -347,7 +368,7 @@ function get_sets()
 
 -- Mode 1 (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
-sets.Mode1.singlewield = {
+sets.Mode1.single_wield = {
 	ammo="Coiste Bodhar",
 	head="Sakpata's Helm",
 	--head="Boii Mask +3",
@@ -368,7 +389,7 @@ sets.Mode1.singlewield = {
 
 -- Mode 1 Two-Handed (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
-sets.Mode1.twohand = set_combine(sets.Mode1, {
+sets.Mode1.two_handed = set_combine(sets.Mode1, {
 	ammo="Yetshila +1",
 	head="Sakpata's Helm",
 	body="Sakpata's Plate",
@@ -386,22 +407,22 @@ sets.Mode1.twohand = set_combine(sets.Mode1, {
 
 -- Mode 1 Dual Wield (Multi-Attack) (Example: A focus on Dual Wield, Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
-sets.Mode1.dualwield = set_combine(sets.Mode1, {
+sets.Mode1.dual_wield = set_combine(sets.Mode1, {
 
 })
 
 -- Mode 2 (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
-sets.Mode2.singlewield = set_combine(sets.Mode1, {
+sets.Mode2.single_wield = set_combine(sets.Mode1, {
 
 })
 
 -- Mode 2 Two-Handed (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
-sets.Mode2.twohand = set_combine(sets.Mode1.twohand, {
+sets.Mode2.two_handed = set_combine(sets.Mode1.two_handed, {
 
 })
 
 -- Mode 2 Dual Wield (Multi-Attack W/ DT) (Example: A focus on Dual Wield, Multi-Attack and Store TP, with enough DT to survive higher end content)
-sets.Mode2.dualwield = set_combine(sets.Mode1.dualwield, {
+sets.Mode2.dual_wield = set_combine(sets.Mode1.dual_wield, {
 
 })
 
@@ -420,12 +441,12 @@ sets.Mode4 = set_combine(sets.Mode1, {
 sets.idle = {
 	feet="Hermes' Sandals",
 	neck="Rep. Plat. Medal",
-	left_ring="Karieyh Ring +1",
+	right_ring="Karieyh Ring +1",
 }
 
 -- Oh Shit
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
-sets.ohshit = {
+sets.oh_shit = {
 	neck="Warder's Charm +1",
 	left_ring="Defending Ring",
 	right_ring="Shadow Ring",
@@ -433,7 +454,7 @@ sets.ohshit = {
 }
 
 -- Weapon Skill - Basic (STR, TP Bonus, Multi-hit, Crit, Attack)
-sets.ws = {
+sets.weapon_skill = {
 	ammo="Knobkierrie",
 	head="Nyame Helm",
 	body="Nyame Mail",
@@ -444,83 +465,22 @@ sets.ws = {
 	waist="Sailfi Belt +1",
 	left_ear="Moonshade Earring",
 	right_ear="Thrud Earring",
-	left_ring="Karieyh Ring +1",
-	right_ring="Cornelia's Ring",
+	left_ring="Cornelia's Ring",
+	right_ring="Karieyh Ring +1",
 	back={ name="Cichol's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
 -- NOTE: This is a special set for weapon skill accuracy. When in Accuracy mode (mode 3), weapon skills will use this set.
-sets.accws = set_combine(sets.ws, {
+sets.ws_accuracy = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	left_ring="Karieyh Ring +1",
-	right_ring="Cornelia's Ring",
-})
-
--- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Multi-hit)
--- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
-sets.cappedtpws = {
-	left_ear="Lugra Earring +1",
+	left_ring="Cornelia's Ring",
+	right_ring="Karieyh Ring +1",
 }
 
--- Weapon Skill - Attack Cap (Physical Damage Limit)
-sets.attackcapws = {
-	head="Sakpata's Helm",
-	body="Sakpata's Plate",
-	hands="Sakpata's Gauntlets",
-	legs="Sakpata's Cuisses",
-	feet="Sakpata's Leggings",
-}
-
--- Weapon Skill - Magic (Magic Attack Bonus)
-sets.magicws = set_combine(sets.ws, {
-	head="Nyame Helm",
-	body="Nyame Mail",
-	hands="Nyame Gauntlets",
-	legs="Nyame Flanchard",
-	feet="Nyame Sollerets",
-})
-
--- Ukko's Fury (STR, TP Bonus, Multi-hit, Crit, Attack)
-sets["Ukko's Fury"] = set_combine(sets.ws, {
-	ammo="Yetshila +1",
-	head="Boii Mask +3",
-	body="Sakpata's Plate",
-	hands="Sakpata's Gauntlets",
-	legs="Boii Cuisses +3",
-	feet="Boii Calligae +3",
-	right_ear="Boii Earring +2",
-})
-
--- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
-sets["Upheaval"] = set_combine(sets.ws, {
-	body="Sakpata's Plate",
-	hands="Sakpata's Gauntlets",
-	legs="Boii Cuisses +3",
-	left_ring="Niqmaddu Ring",
-})
-
--- Savage Blade (STR, MND, Fencer, TP Bonus)
-sets["Savage Blade"] = set_combine(sets.ws, {
-	head="Agoge Mask +3",
-	body="Sakpata's Plate",
-	legs="Boii Cuisses +3",
-	left_ring="Regal Ring",
-})
-
--- Fimbulvetr (STR, VIT)
-sets["Fimbulvetr"] = set_combine(sets.ws, {
-
-})
-
--- Disaster (STR, VIT)
-sets["Disaster"] = set_combine(sets.ws, {
-
-})
-
--- Armor Break (STR, VIT)
-sets["Armor Break"] = set_combine(sets.ws, {
+-- Armor Break (Magic Accuracy)
+sets["Armor Break"] = set_combine(sets.weapon_skill, {
 	head="Boii Mask +3",
 	body="Boii Lorica +3",
 	hands="Boii Mufflers +3",
@@ -530,39 +490,203 @@ sets["Armor Break"] = set_combine(sets.ws, {
 	waist="Eschan Stone",
 })
 
+-- Disaster (STR, VIT)
+sets["Disaster"] = set_combine(sets.weapon_skill, {
+
+})
+
+-- Disaster - High Buff (STR, VIT, PDL)
+sets["Disaster"].high_buff = set_combine(sets.weapon_skill, {
+
+})
+
+-- Fimbulvetr (STR, VIT)
+sets["Fimbulvetr"] = set_combine(sets.weapon_skill, {
+
+})
+
+-- Fimbulvetr - High Buff (STR, VIT, PDL)
+sets["Fimbulvetr"].high_buff = set_combine(sets.weapon_skill, {
+
+})
+
 -- Impulse Drive (STR, Crit (w/ Shining One))
-sets["Impulse Drive"] = set_combine(sets.ws, {
+sets["Impulse Drive"] = set_combine(sets.weapon_skill, {
 	ammo="Yetshila +1",
 	head="Boii Mask +3",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
 	feet="Boii Calligae +3",
-	left_ring="Hetairoi Ring",
+	right_ear="Boii Earring +2",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Impulse Drive - High Buff (STR, Crit (w/ Shining One), PDL)
+sets["Impulse Drive"].high_buff = set_combine(sets.weapon_skill, {
+	ammo="Yetshila +1",
+	head="Boii Mask +3",
+	body="Sakpata's Plate",
+	hands="Boii Mufflers +3",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	right_ear="Boii Earring +2",
+	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
 })
 
 -- Judgment (STR, MND, Fencer, TP Bonus)
-sets["Judgment"] = set_combine(sets.ws, {
+sets["Judgment"] = set_combine(sets.weapon_skill, {
+	
+	head="Agoge Mask +3",
+	body="Nyame Mail",
+	right_ring="Regal Ring",
+})
+
+-- Judgment - High Buff (STR, MND, Fencer, TP Bonus, PDL)
+sets["Judgment"].high_buff = set_combine(sets.weapon_skill, {
 	head="Agoge Mask +3",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
+	right_ring="Sroda Ring",
+})
+
+-- Resolution (STR, TP Bonus)
+sets["Resolution"] = set_combine(sets.weapon_skill, {
+	head="Boii Mask +3",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Sakpata's Leggings",
+	neck="Fotia Gorget",
+	waist="Fotia Belt",
+	left_ear="Schere Earring",
+	right_ear="Moonshade Earring",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Resolution - High Buff (STR, TP Bonus, PDL)
+sets["Resolution"].high_buff = set_combine(sets.weapon_skill, {
+	head="Boii Mask +3",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Sakpata's Leggings",
+	neck="Fotia Gorget",
+	waist="Fotia Belt",
+	left_ear="Schere Earring",
+	right_ear="Moonshade Earring",
+	left_ring="Sroda Ring",
+	right_ring="Niqmaddu Ring",
 })
 
 -- Sanguine Blade (Dark Elemental Magic Attack Bonus)
-sets["Sanguine Blade"] = set_combine(sets.magicws, {
+sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
 	head="Pixie Hairpin +1",
+	hands="Nyame Gauntlets",
 	left_ring="Archon Ring",
 })
 
--- Hachirin-no-obi
-sets.hachirin = set_combine(sets.magicws,sets.ws, {
-	waist="Hachirin-no-obi",
+-- Savage Blade (STR, MND, Fencer, TP Bonus)
+sets["Savage Blade"] = set_combine(sets.weapon_skill, {
+	head="Agoge Mask +3",
+	left_ring="Regal Ring",
 })
 
+-- Savage Blade - High Buff (STR, MND, Fencer, TP Bonus, PDL)
+sets["Savage Blade"].high_buff = set_combine(sets.weapon_skill, {
+	head="Agoge Mask +3",
+	body="Sakpata's Plate",
+	legs="Boii Cuisses +3",
+	left_ring="Sroda Ring",
+})
+
+-- Stardiver (STR, MND, Fencer, TP Bonus)
+sets["Stardiver"] = set_combine(sets.weapon_skill, {
+	ammo="Yetshila +1",
+	head="Boii Mask +3",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	neck="Fotia Gorget",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Boii Earring +3",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Stardiver - High Buff (STR, MND, Fencer, TP Bonus, PDL)
+sets["Stardiver"].high_buff = set_combine(sets.weapon_skill, {
+	ammo="Yetshila +1",
+	head="Boii Mask +3",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	neck="Fotia Gorget",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Boii Earring +3",
+	left_ring="Sroda Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Ukko's Fury (STR, TP Bonus, Multi-hit, Crit, Attack)
+sets["Ukko's Fury"] = set_combine(sets.weapon_skill, {
+	ammo="Yetshila +1",
+	head="Boii Mask +3",
+	body="Sakpata's Plate",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	left_ear="Schere Earring",
+	right_ear="Boii Earring +2",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Ukko's Fury - High Buff (STR, TP Bonus, Multi-hit, Crit, Attack, PDL)
+sets["Ukko's Fury"].high_buff = set_combine(sets.weapon_skill, {
+	ammo="Yetshila +1",
+	head="Boii Mask +3",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	feet="Boii Calligae +3",
+	left_ear="Schere Earring",
+	right_ear="Boii Earring +2",
+	left_ring="Sroda Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
+sets["Upheaval"] = set_combine(sets.weapon_skill, {
+	head="Agoge Mask +3",
+	legs="Boii Cuisses +3",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Upheaval - High Buff (VIT, TP Bonus, Multi-hit, Crit, Attack, PDL)
+sets["Upheaval"].high_buff = set_combine(sets.weapon_skill, {
+	head="Sakpata's Helm",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Boii Cuisses +3",
+	left_ring="Sroda Ring",
+	right_ring="Niqmaddu Ring",
+})
+
+-- Hachirin-no-obi
+sets.hachirin_no_obi = {
+	--waist="Hachirin-no-obi",
+}
+
 -- Fast Cast (cap is 80%)
-sets.fastcast = {
+sets.fast_cast = {
 	ammo="Sapience Orb",
 	head="Sakpata's Helm",
 	body="Odyss. Chestplate",
@@ -583,7 +707,7 @@ sets.snapshot = {
 
 -- Ygnas's Resolve +1
 -- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
-sets.ygnas = {
+sets.ygnass_resolve_1 = {
 	--neck="Ygnas's Resolve +1",
 }
 
@@ -631,17 +755,17 @@ sets.retaliation = {
 }
 
 -- Blood Rage
-sets.bloodrage = {
+sets.blood_rage = {
 	body="Boii Lorica +3",
 }
 
 -- Warrior's Charge
-sets.charge = {
+sets.warriors_charge = {
 	legs="Agoge Cuisses +1",
 }
 
 -- Mighty Strikes
-sets.mightystrikes = {
+sets.mighty_strikes = {
 	hands="Agoge Mufflers +1"
 }
 
@@ -666,7 +790,7 @@ sets.violent_flourish = {
 }
 
 -- Holy Water (Holy Water+)
-sets.hwater = {
+sets.holy_water = {
 	neck="Nicander's Necklace",
 	ring1="Blenmot's Ring +1",
 	ring2="Blenmot's Ring +1",
@@ -716,7 +840,7 @@ end
 
 
 
-FileVersion = '8.7'
+FileVersion = '9.0'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -739,7 +863,7 @@ WindyZones = S{
 	}
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
 	}
 
 -------------------------------------------
@@ -800,6 +924,16 @@ primeNum = 0
 AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
+
+local play_sound = windower.play_sound
+local addon_path = windower.addon_path
+local Notification_Good = addon_path..'data/sounds/NotiGood.wav'
+local Notification_Bad = addon_path..'data/sounds/NotiBad.wav'
+local Notification_Danger = addon_path..'data/sounds/Danger.wav'
+local Notification_Cancel = addon_path..'data/sounds/Cancel.wav'
+local Notification_Aftermath_On = addon_path..'data/sounds/AftermathOn.wav'
+local Notification_Aftermath_Off = addon_path..'data/sounds/AftermathOff.wav'
+local Notification_3000TP = addon_path..'data/sounds/3000TP.wav'
 
 --create a new table that combines both the WeaponCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
 local WeaponCyclePlusAbyssea = {}
@@ -1719,6 +1853,16 @@ local function primeAMUpdate(tp)
 	end
 
 end
+		
+local function useHachirinNoObi(ws)
+
+	if ((spell.english == "Burning Blade" or spell.english == "Red Lotus Blade") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or ((spell.english == "Frostbite" or spell.english == "Freezebite") and (world.day_element == "Ice" or world.weather_element == "Ice") and not (world.day_element == "Fire" and world.weather_intensity == 1)) or ((spell.english == "Shining Blade" or spell.english == "Seraph Blade") and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+		return true
+	else
+		return false
+	end
+
+end
 
 -------------------------------------------
 --            SELF COMMANDS              --
@@ -1802,7 +1946,7 @@ function self_command(command)
 		send_command('wait 4;gs c RadialensCheck')
 	elseif command == 'RadialensCheck' and string.find(world.area,'Escha') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Radialens Has Worn Off »»')
 		hud_noti:text('«« Radialens Has Worn Off »»')
@@ -1997,14 +2141,14 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if LowHP == true then --if we have low HP we equip the Oh Shit gear set
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		else
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(sets[Mode].twohand)
+				equip(sets[Mode].two_handed)
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(sets[Mode].dualwield)
+				equip(sets[Mode].dual_wield)
 			else
-				equip(sets[Mode].singlewield)
+				equip(sets[Mode].single_wield)
 			end
 		end
 	elseif player.status == "Idle" then 
@@ -2039,53 +2183,53 @@ function choose_set()
 		end
 		if AdoulinZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.idle, sets.adoulin))
+				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.adoulin))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.adoulin))
+				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.adoulin))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.adoulin))
+				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.adoulin))
 			end
 		elseif BastokZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.idle, sets.bastok))
+				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.bastok))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.bastok))
+				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.bastok))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.bastok))
+				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.bastok))
 			end
 		elseif SandyZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.idle, sets.sandoria))
+				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.sandoria))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.sandoria))
+				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.sandoria))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.sandoria))
+				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.sandoria))
 			end
 		elseif WindyZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.idle, sets.windurst))
+				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.windurst))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.windurst))
+				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.windurst))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.windurst))
+				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.windurst))
 			end
 		elseif TownZones:contains(world.area) then
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.idle, sets.town))
+				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.town))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.idle, sets.town))
+				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.town))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.idle, sets.town))
+				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.town))
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
-			equip(set_combine(sets.idle, sets.ohshit))
+			equip(set_combine(sets.idle, sets.oh_shit))
 		else
 			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].twohand, sets.idle))
+				equip(set_combine(sets[Mode].two_handed, sets.idle))
 			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dualwield, sets.idle))
+				equip(set_combine(sets[Mode].dual_wield, sets.idle))
 			else
-				equip(set_combine(sets[Mode].singlewield, sets.idle))
+				equip(set_combine(sets[Mode].single_wield, sets.idle))
 			end
 		end
 	end
@@ -2098,32 +2242,32 @@ end
 function precast(spell)
 	if buffactive['terror'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['petrification'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['sleep'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['stun'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['amnesia'] and (spell.type == 'WeaponSkill' or spell.type == 'JobAbility') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['silence'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
 			send_command('input /item "Echo Drop" <me>')
@@ -2133,13 +2277,13 @@ function precast(spell)
 		flash('Debuffs')
 	elseif buffactive['mute'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Not Enough TP »»')
 			hud_noti:text('«« Not Enough TP »»')
@@ -2147,7 +2291,7 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 		elseif ((spell.skill == 'Marksmanship' or spell.skill == 'Archery') and spell.target.distance >= (spell.target.model_size + 23)) or ((spell.target.distance >= (spell.target.model_size + 3)) and not (spell.english == 'Starlight' or spell.english == 'Moonlight')) then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Too Far »»')
 			hud_noti:text('«« Too Far »»')
@@ -2158,74 +2302,19 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		elseif MagicWS:contains(spell.english) then
-			if ((spell.english == "Burning Blade" or spell.english == "Red Lotus Blade") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or ((spell.english == "Frostbite" or spell.english == "Freezebite") and (world.day_element == "Ice" or world.weather_element == "Ice") and not (world.day_element == "Fire" and world.weather_intensity == 1)) or ((spell.english == "Shining Blade" or spell.english == "Seraph Blade") and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
-				if buffactive['Reive Mark'] then
-					equip(set_combine(sets.hachirin, sets.ygnas))
-				else
-					equip(sets.hachirin)
-				end
-			elseif buffactive['Reive Mark'] then
-				equip(set_combine(sets.magicws, sets.ygnas))
-			else
-				equip(sets.magicws)
-			end
-		elseif Mode == 'Mode3' then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.accws, sets.ygnas))
-			else
-				equip(sets.accws)
-			end
-		elseif player.tp >= CappedTPThreshhold then
-			if player.attack >= AttackCapThreshhold then
-				if sets[spell.english] then
-					if buffactive['Reive Mark'] then
-						equip(set_combine(sets[spell.english], sets.attackcapws, sets.cappedtpws, sets.ygnas))
-					else
-						equip(set_combine(sets[spell.english], sets.attackcapws, sets.cappedtpwss))
-					end
-				elseif buffactive['Reive Mark'] then
-					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpws, sets.ygnas))
-				else
-					equip(set_combine(sets.ws, sets.attackcapws, sets.cappedtpwss))
-				end
-			else
-				if sets[spell.english] then
-					if buffactive['Reive Mark'] then
-						equip(set_combine(sets[spell.english], sets.cappedtpws, sets.ygnas))
-					else
-						equip(set_combine(sets[spell.english], sets.cappedtpwss))
-					end
-				elseif buffactive['Reive Mark'] then
-					equip(set_combine(sets.ws, sets.cappedtpws, sets.ygnas))
-				else
-					equip(set_combine(sets.ws, sets.cappedtpwss))
-				end
-			end
-		elseif player.attack >= AttackCapThreshhold then
-			if sets[spell.english] then
-				if buffactive['Reive Mark'] then
-					equip(set_combine(sets[spell.english], sets.attackcapws, sets.ygnas))
-				else
-					equip(set_combine(sets[spell.english], sets.attackcapwss))
-				end
-			elseif buffactive['Reive Mark'] then
-				equip(set_combine(sets.ws, sets.attackcapws, sets.ygnas))
-			else
-				equip(set_combine(sets.ws, sets.attackcapwss))
-			end
 		else
-			if sets[spell.english] then
-				if buffactive['Reive Mark'] then
-					equip(set_combine(sets[spell.english], sets.ygnas))
-				else
-					equip(sets[spell.english])
-				end
-			elseif buffactive['Reive Mark'] then
-				equip(set_combine(sets.ws, sets.ygnas))
-			else
-				equip(sets.ws)
+			local base_set = sets.weapon_skill
+			local ws = spell.english
+			local ws_set = sets[ws]
+			if player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
+				base_set = sets[ws].high_buff
+			elseif ws_set then
+				base_set = sets[ws]
 			end
+			local hachirin_no_obi = useHachirinNoObi(ws) and sets.hachirin_no_obi or nil
+			local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
+			local ws_accuracy = Mode == 'Mode3' and sets.ws_accuracy or nil
+			equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
 		end
 		if player.equipment.main == "Chango" and spell.english == "Upheaval" then
 			pre_AMTimer = 181
@@ -2247,7 +2336,7 @@ function precast(spell)
 			primeAMUpdate(player_tp)
 		end
 	elseif spell.english == 'Mighty Strikes' and MightyStrikes.recast < 2 then
-		equip(sets.mightystrikes)
+		equip(sets.mighty_strikes)
 	elseif spell.english == 'Provoke' and windower.ffxi.get_ability_recasts()[5] < 2 then
 		equip(sets.provoke)
 	elseif spell.english == 'Tomahawk' and Tomahawk.recast < 2 then
@@ -2265,9 +2354,9 @@ function precast(spell)
 	elseif spell.english == 'Retaliation' and Retaliation.recast < 2 then
 		equip(sets.retaliation)
 	elseif spell.english == 'Blood Rage' and BloodRage.recast < 2 then
-		equip(sets.bloodrage)
+		equip(sets.blood_rage)
 	elseif spell.english == 'Warrior\'s Charge' and WarriorsCharge.recast < 2 then
-		equip(sets.charge)
+		equip(sets.warriors_charge)
 	elseif spell.type == 'Step' then
 		equip(sets.steps)
 	elseif spell.type == 'Waltz' then
@@ -2279,11 +2368,11 @@ function precast(spell)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
-		equip(sets.hwater)
+		equip(sets.holy_water)
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
-		equip(sets.fastcast)
+		equip(sets.fast_cast)
 	end
 end
 
@@ -2365,26 +2454,26 @@ end)
 
 windower.register_event('gain buff', function(buff)
 	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds == 'On' then --Aftermath
-		windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
+		play_sound(Notification_Aftermath_On)
 		AMTimer = pre_AMTimer
 		mythicNum = pre_mythicNum
 		primeNum = pre_primeNum
 	elseif (buff == 2 or buff == 19) then --If we get slept,
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		elseif not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 100 and player.status == "Engaged" then --then as long as we're not already DOT'd, have more than 100 HP, and are engaged,
-			equip(set_combine({neck="Vim Torque"}, sets.ohshit)) --equip the Vim Torque to wake us up
+			equip(set_combine({neck="Vim Torque"}, sets.oh_shit)) --equip the Vim Torque to wake us up
 		else
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		end
 	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Oh Shit set
-		equip(sets.ohshit)
+		equip(sets.oh_shit)
 	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 	elseif buff == 17 then --Charm
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
@@ -2395,12 +2484,12 @@ end)
 
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
-		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
+		play_sound(Notification_Aftermath_Off)
 		-- mythicNum = 0
 		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Food Has Worn Off »»')
 		hud_noti:text('«« Food Has Worn Off »»')
@@ -2408,7 +2497,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Reraise Has Worn Off »»')
 		hud_noti:text('«« Reraise Has Worn Off »»')
@@ -2416,7 +2505,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Vorseal Has Worn Off »»')
 		hud_noti:text('«« Vorseal Has Worn Off »»')
@@ -2424,7 +2513,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Signet Has Worn Off »»')
 		hud_noti:text('«« Signet Has Worn Off »»')
@@ -2432,7 +2521,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sanction Has Worn Off »»')
 		hud_noti:text('«« Sanction Has Worn Off »»')
@@ -2440,7 +2529,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sigil Has Worn Off »»')
 		hud_noti:text('«« Sigil Has Worn Off »»')
@@ -2448,7 +2537,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Ionis Has Worn Off »»')
 		hud_noti:text('«« Ionis Has Worn Off »»')
@@ -2456,7 +2545,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 1 and Alive == true then --Weakness
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		hud_noti_shdw:text('«« Weakness Has Worn Off »»')
 		hud_noti:text('«« Weakness Has Worn Off »»')
@@ -2484,7 +2573,7 @@ end
 windower.register_event('tp change',function()
 	if player.tp == 3000 and Noti3000TP == 'On' then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
+			play_sound(Notification_3000TP)
 		end
 		local c = color.AM3
 		hud_noti_shdw:text('«« 3000 TP »»')
@@ -3021,7 +3110,7 @@ windower.register_event('prerender', function()
 			else
 				if not buffactive['Reraise'] and Alive == true then --if we are dead no need to remind us about reraise
 					if AlertSounds == 'On' then
-						windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+						play_sound(Notification_Bad)
 					end
 					hud_noti_shdw:text('«« No Reraise »»')
 					hud_noti:text('«« No Reraise »»')
@@ -3046,7 +3135,7 @@ windower.register_event('prerender', function()
 		end
 		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
-			windower.play_sound(windower.addon_path..'data/sounds/Danger.wav')
+			play_sound(Notification_Danger)
 		end
 		if NotiCountdown > 0 then
 			NotiCountdown = NotiCountdown - 1
@@ -3570,7 +3659,7 @@ end
 windower.register_event('incoming text',function(org)
 	if org:find('wishes to trade with you') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiTrade == 'On' then
 			hud_noti_shdw:text('«« Trade Request »»')
@@ -3579,7 +3668,7 @@ windower.register_event('incoming text',function(org)
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		if NotiSneak == 'On' and org:find('Sneak') then
 			hud_noti_shdw:text('«« Sneak Wearing »»')
@@ -3594,7 +3683,7 @@ windower.register_event('incoming text',function(org)
 		send_command('gs c Radialens')
 	elseif org:find('invites you to') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiInvite == 'On' and org:find('party') and not org:find('alliance') then
 			hud_noti_shdw:text('«« Party Invite »»')
@@ -3609,7 +3698,7 @@ windower.register_event('incoming text',function(org)
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 15 Minutes Remaining »»')
@@ -3618,7 +3707,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 10 Minutes Remaining »»')
@@ -3627,7 +3716,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 5 Minutes Remaining »»')
