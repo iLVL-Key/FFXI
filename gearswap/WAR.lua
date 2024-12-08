@@ -148,7 +148,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
-AttackCapThreshold	=	5000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
+AttackCapThreshold	=	4500	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
@@ -1856,7 +1856,7 @@ end
 		
 local function useHachirinNoObi(ws)
 
-	if ((spell.english == "Burning Blade" or spell.english == "Red Lotus Blade") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or ((spell.english == "Frostbite" or spell.english == "Freezebite") and (world.day_element == "Ice" or world.weather_element == "Ice") and not (world.day_element == "Fire" and world.weather_intensity == 1)) or ((spell.english == "Shining Blade" or spell.english == "Seraph Blade") and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
+	if ((ws == "Burning Blade" or ws == "Red Lotus Blade") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or ((ws == "Frostbite" or ws == "Freezebite") and (world.day_element == "Ice" or world.weather_element == "Ice") and not (world.day_element == "Fire" and world.weather_intensity == 1)) or ((ws == "Shining Blade" or ws == "Seraph Blade") and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
 		return true
 	else
 		return false
