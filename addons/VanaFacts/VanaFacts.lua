@@ -950,7 +950,7 @@ defaults.flags.draggable = true
 
 defaults.options = {}
 defaults.options.after_zone_fade_delay = 3
-defaults.options.char_width_multiplier = 0.63
+defaults.options.char_width_multiplier = 0.59
 defaults.options.fade_multiplier = 2
 
 settings = config.load(defaults)
