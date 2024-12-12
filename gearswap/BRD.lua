@@ -34,14 +34,14 @@ This file supports both "Dummy song" techniques:
 
 Regarding weapon slots and keeping TP:
 	When engaged, weapons will be equipped based on your current Weapon Cycle selection. Weapons will also not be switched out for songs when engaged. This allows you to keep your TP when desired, as well as utilize the weapon slots for songs/spells when disengaged.
-	TLDR;	Idle: full gear swapping, will lose TP if weapons used in gear sets.
+	TLDR;	Idle: full gear swapping, may lose TP.
 			Engaged: Weapon slots ignored in gear sets, will keep TP.
 
 --------------------
 
 To activate Damage Taken Override, use any of these three options:
 1. A macro
-	/console DT
+	/console dt
 2. An alias command
 	//dt
 3. A keybind shortcut
@@ -63,7 +63,7 @@ To switch between Potency/Dummy instrument modes, use any of these three options
 
 To activate the Weapon Cycle, use any of these three options:
 1. A macro with the following
-	/console WC
+	/console wc
 2. An alias command
 	//wc
 3. A keybind shortcut
@@ -91,10 +91,6 @@ Suggested placement is center screen, just above your chat log.
 
 --]]
 
---vIGNORE THESEv--
-sub = {} sub.DNC = {} sub.NIN = {} sub.RDM = {} sub.SCH = {} sub.WHM = {} sub.OTH = {} color = {} color.Mode1 = {} color.Mode2 = {} color.Light = {} color.Fire = {} color.Ice = {} color.Air = {} color.Earth = {} color.Thunder = {} color.Water = {} color.Dark = {} color.AM1 = {} color.AM2 = {} color.AM3 = {} color.abil = {} color.abil.ready = {} color.abil.active = {} color.abil.cooldown = {} color.abil.flash = {} color.abil.notfound = {} color.member = {} color.member.in_range = {} color.member.out_of_range = {} color.member.not_found = {} color.song = {} color.song.long = {} color.song.very_long = {} color.song.regular = {} color.song.low = {} color.song.critical = {} color.song.none = {} sets.fastcast = {} sets.lullaby = {} sets.buff = {} modeName = {} inst = {}
---^IGNORE THESE^--
-
 -------------------------------------------
 --                OPTIONS                --
 -------------------------------------------
@@ -114,77 +110,80 @@ AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoPianissimo	=	'On'	--[On/Off]		Automatically uses Pianissimo when you cast a song on a party member.
 AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation charging.
-SongsFontSize	=	9		--				Adjust the font size of the Songs List.
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
 HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-SongposX		=	200		--	X position for the Song list. 0 is left of the window, increasing this number will move it to the right.
-SongposY		=	200		--	Y position for the Song list. 0 is top of the window, increasing this number will move it downward.
+SongposX		=	400		--	X position for the Song list. 0 is left of the window, increasing this number will move it to the right.
+SongposY		=	300		--	Y position for the Song list. 0 is top of the window, increasing this number will move it downward.
 FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
 ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
-ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
-PTMemNearDist	=	9		--	Maximum distance for a party member to be highlighted as "nearby".
+ShowTPMeter		=	'Off'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
+PTMemNearDist	=	10		--	Maximum distance for a party member to be highlighted as "nearby".
+SongsFontSize	=	9		--	Adjust the font size of the Songs List.
 
+modeName = {
 --HUD Mode Names
-modeName.Mode1 = 'Potency'	--Use Full Potency Instrument.
-modeName.Mode2 = 'Dummy'	--Use "Extra Song" Instrument.
-
+	Mode1 = 'Potency',	--Use Full Potency Instrument.
+	Mode2 = 'Dummy',	--Use "Extra Song" Instrument.
+}
 -- Instruments --
 
+inst = {
 --"Partial Dummy Songs" - Using the Potency/Dummy Modes to trigger the extra songs
-inst.dummy			= "Daurdabla"
+	dummy	= "Daurdabla",
 
 --"All Dummy Songs" - Using specific songs to trigger the extra songs
 --Note: You only need to set these to your "extra song" instrument if you use this technique,
 --otherwise set these to whichever normal instrument you would like to use for these songs.
-inst.aubade			= "Gjallarhorn"
-inst.capriccio		= "Gjallarhorn"
-inst.fantasia		= "Gjallarhorn"
-inst.gavotte		= "Daurdabla"
-inst.operetta		= "Gjallarhorn"
-inst.pastoral		= "Gjallarhorn"
-inst.round			= "Gjallarhorn"
+	aubade		= "Daurdabla",
+	capriccio	= "Daurdabla",
+	fantasia	= "Daurdabla",
+	gavotte		= "Daurdabla",
+	operetta	= "Daurdabla",
+	pastoral	= "Daurdabla",
+	round		= "Daurdabla",
 
 --Potency Songs
-inst.ballad			= "Gjallarhorn"
-inst.carol			= "Gjallarhorn"
-inst.dirge			= "Gjallarhorn"
-inst.elegy			= "Gjallarhorn"
-inst.etude			= "Gjallarhorn"
-inst.lullaby		= "Gjallarhorn"
-inst.finale			= "Gjallarhorn"
-inst.horde_lullaby_II	= "Daurdabla" --"Blurred Harp +1"
-inst.hymnus			= "Gjallarhorn"
-inst.madrigal		= "Gjallarhorn"
-inst.mambo			= "Gjallarhorn"
-inst.march			= "Gjallarhorn" --Excluding Honor March
-inst.mazurka		= "Marsyas"
-inst.minne			= "Gjallarhorn"
-inst.minuet			= "Gjallarhorn"
-inst.nocturne		= "Gjallarhorn"
-inst.paeon			= "Gjallarhorn"
-inst.prelude		= "Gjallarhorn"
-inst.requiem		= "Gjallarhorn"
-inst.scherzo		= "Gjallarhorn"
-inst.sirvente		= "Gjallarhorn"
-inst.threnody		= "Gjallarhorn"
-inst.virelai		= "Gjallarhorn"
+	ballad			= "Gjallarhorn",
+	carol			= "Gjallarhorn",
+	dirge			= "Gjallarhorn",
+	elegy			= "Gjallarhorn",
+	etude			= "Gjallarhorn",
+	finale			= "Gjallarhorn",
+	horde_lullaby_II= "Blurred Harp +1",--Horde Lullaby II only
+	hymnus			= "Gjallarhorn",
+	lullaby			= "Gjallarhorn",	--All other lullabies
+	madrigal		= "Gjallarhorn",
+	mambo			= "Gjallarhorn",
+	march			= "Gjallarhorn",	--Excludes Honor March
+	mazurka			= "Marsyas",
+	minne			= "Gjallarhorn",
+	minuet			= "Gjallarhorn",
+	nocturne		= "Gjallarhorn",
+	paeon			= "Gjallarhorn",
+	prelude			= "Gjallarhorn",
+	requiem			= "Gjallarhorn",
+	scherzo			= "Gjallarhorn",
+	sirvente		= "Gjallarhorn",
+	threnody		= "Gjallarhorn",
+	virelai			= "Gjallarhorn",
+}
 
 --  General Notifications  --
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
-Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
-NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
-NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
-NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
-NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
-NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
-NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
-NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
-NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
+ReraiseReminder	=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+Noti3000TP		=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
+NotiTrade		=	'On'	--[On/Off]	Displays a notification when someone trades you.
+NotiInvite		=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
+NotiSneak		=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
+NotiInvis		=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
+NotiReraise		=	'On'	--[On/Off]	Displays a notification when reraise wears off.
+NotiFood		=	'On'	--[On/Off]	Displays a notification when food wears off.
+NotiLowMP		=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
+NotiLowHP		=	'On'	--[On/Off]	Displays a notification when HP is low.
+NotiDamage		=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiTime		=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
 NotiDoom			=	'On'	--[On/Off]	Displays a notification when you are doomed.
@@ -215,7 +214,7 @@ ModeBind		=	'^g'	--Sets the keyboard shortcut you would like to cycle between Mo
 WCBind			=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
-DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
+DangerRepeat	=	5		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
@@ -231,178 +230,131 @@ AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 -- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise
 -- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
 
---BRD/DNC
-sub.DNC.Abil01 = "Nightingale"			sub.DNC.Abil01_sh = "Nightngale"
-sub.DNC.Abil02 = "Troubadour"			sub.DNC.Abil02_sh = ""
-sub.DNC.Abil03 = "Marcato"				sub.DNC.Abil03_sh = ""
-sub.DNC.Abil04 = "Tenuto"				sub.DNC.Abil04_sh = ""
-sub.DNC.Abil05 = "Soul Voice"			sub.DNC.Abil05_sh = ""
-sub.DNC.Abil06 = "Clarion Call"			sub.DNC.Abil06_sh = "Clarion"
---BRD/NIN
-sub.NIN.Abil01 = "Nightingale"			sub.NIN.Abil01_sh = "Nightngale"
-sub.NIN.Abil02 = "Troubadour"			sub.NIN.Abil02_sh = ""
-sub.NIN.Abil03 = "Marcato"				sub.NIN.Abil03_sh = ""
-sub.NIN.Abil04 = "Tenuto"				sub.NIN.Abil04_sh = ""
-sub.NIN.Abil05 = "Soul Voice"			sub.NIN.Abil05_sh = ""
-sub.NIN.Abil06 = "Clarion Call"			sub.NIN.Abil06_sh = "Clarion"
---BRD/RDM
-sub.RDM.Abil01 = "Nightingale"			sub.RDM.Abil01_sh = "Nightngale"
-sub.RDM.Abil02 = "Troubadour"			sub.RDM.Abil02_sh = ""
-sub.RDM.Abil03 = "Marcato"				sub.RDM.Abil03_sh = ""
-sub.RDM.Abil04 = "Tenuto"				sub.RDM.Abil04_sh = ""
-sub.RDM.Abil05 = "Soul Voice"			sub.RDM.Abil05_sh = ""
-sub.RDM.Abil06 = "Clarion Call"			sub.RDM.Abil06_sh = "Clarion"
---BRD/SCH
-sub.SCH.Abil01 = "Nightingale"			sub.SCH.Abil01_sh = "Nightngale"
-sub.SCH.Abil02 = "Troubadour"			sub.SCH.Abil02_sh = ""
-sub.SCH.Abil03 = "Marcato"				sub.SCH.Abil03_sh = ""
-sub.SCH.Abil04 = "Soul Voice"			sub.SCH.Abil04_sh = ""
-sub.SCH.Abil05 = "Clarion Call"			sub.SCH.Abil05_sh = "Clarion"
-sub.SCH.Abil06 = "Sublimation"			sub.SCH.Abil06_sh = "Sublmation"
---BRD/WHM
-sub.WHM.Abil01 = "Nightingale"			sub.WHM.Abil01_sh = "Nightngale"
-sub.WHM.Abil02 = "Troubadour"			sub.WHM.Abil02_sh = ""
-sub.WHM.Abil03 = "Marcato"				sub.WHM.Abil03_sh = ""
-sub.WHM.Abil04 = "Tenuto"				sub.WHM.Abil04_sh = ""
-sub.WHM.Abil05 = "Soul Voice"			sub.WHM.Abil05_sh = ""
-sub.WHM.Abil06 = "Clarion Call"			sub.WHM.Abil06_sh = "Clarion"
---BRD/other
-sub.OTH.Abil01 = "Nightingale"			sub.OTH.Abil01_sh = "Nightngale"
-sub.OTH.Abil02 = "Troubadour"			sub.OTH.Abil02_sh = ""
-sub.OTH.Abil03 = "Marcato"				sub.OTH.Abil03_sh = ""
-sub.OTH.Abil04 = "Tenuto"				sub.OTH.Abil04_sh = ""
-sub.OTH.Abil05 = "Soul Voice"			sub.OTH.Abil05_sh = ""
-sub.OTH.Abil06 = "Clarion Call"			sub.OTH.Abil06_sh = "Clarion"
+sub = {
+	--BRD/DNC
+	DNC = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+	--BRD/NIN
+	NIN = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+	--BRD/RDM
+	RDM = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+	--BRD/SCH
+	SCH = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Soul Voice",		Abil04_sh = "",
+		Abil05 = "Clarion Call",	Abil05_sh = "Clarion",
+		Abil06 = "Sublimation",		Abil06_sh = "Sublmation"
+	},
+	--BRD/WHM
+	WHM = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto", 			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+	--BRD/OTH (other)
+	OTH = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	}
+}
 
 -------------------------------------------
 --             COLOR VALUES              --
 -------------------------------------------
 
---MODES
+color = {
+	-- MODES --
+	Mode1	= {r = 125, g = 200, b = 255},  -- Full Potency Instrument
+	Mode2	= {r = 255, g = 255, b = 125},  -- "Extra Song" Instrument
 
---Mode 1 (Full Potency Instrument)
-color.Mode1.r = 125
-color.Mode1.g = 200
-color.Mode1.b = 255
---Mode 2 ("Extra Song" Instrument)
-color.Mode2.r = 255
-color.Mode2.g = 255
-color.Mode2.b = 125
+	-- AFTERMATH --
+	AM1	= {r = 0, g = 127, b = 255},
+	AM2	= {r = 75, g = 255, b = 75},
+	AM3	= {r = 255, g = 255, b = 50},
 
---AFTERMATH
+	-- ELEMENTS --
+	Light	= {r = 255, g = 248, b = 220},
+	Fire	= {r = 255, g = 0, b = 0},
+	Ice		= {r = 135, g = 206, b = 250},
+	Air		= {r = 50, g = 205, b = 50},
+	Earth	= {r = 250, g = 130, b = 40},
+	Thunder	= {r = 186, g = 85, b = 211},
+	Water	= {r = 30, g = 144, b = 255},
+	Dark	= {r = 200, g = 30, b = 80},
 
---Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
---Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
---Level 3
-color.AM3.r = 255
-color.AM3.g = 255
-color.AM3.b = 50
+	-- SONG LIST --
+	song_list = {
 
---Element Colors
+		-- Bullet
+		Paeon		= {r = 0, g = 102, b = 204},
+		Ballad		= {r = 0, g = 154, b = 0},
+		Minne		= {r = 207, g = 205, b = 0},
+		Minuet		= {r = 207, g = 51, b = 49},
+		Madrigal	= {r = 154, g = 51, b = 207},
+		Mazurka		= {r = 241, g = 222, b = 70},
+		Prelude		= {r = 185, g = 244, b = 190},
+		Mambo		= {r = 0, g = 205, b = 0},
+		Dummy		= {r = 162, g = 164, b = 206},
+		March		= {r = 0, g = 154, b = 205},
+		Etude		= {r = 154, g = 132, b = 102},
+		Carol		= {r = 155, g = 102, b = 0},
+		Sirvente	= {r = 255, g = 102, b = 99},
+		Dirge		= {r = 101, g = 154, b = 155},
+		Scherzo		= {r = 155, g = 205, b = 207},
+		Aria		= {r = 90, g = 90, b = 90},
 
-color.Light.r = 255
-color.Light.g = 248
-color.Light.b = 220
-color.Fire.r = 255
-color.Fire.g = 0
-color.Fire.b = 0
-color.Ice.r = 135
-color.Ice.g = 206
-color.Ice.b = 250
-color.Air.r = 50
-color.Air.g = 205
-color.Air.b = 50
-color.Earth.r = 250
-color.Earth.g = 130
-color.Earth.b = 40
-color.Thunder.r = 186
-color.Thunder.g = 85
-color.Thunder.b = 211
-color.Water.r = 30
-color.Water.g = 144
-color.Water.b = 255
-color.Dark.r = 200
-color.Dark.g = 30
-color.Dark.b = 80
+		-- Song Name
+		soul_voice	= {r = 255, g = 223, b = 0},
+		normal		= {r = 255, g = 255, b = 255},
 
---HUD Party Members
+		-- Duration
+		very_long	= {r = 200, g = 100, b = 255},	-- Over 10 minutes
+		long		= {r = 100, g = 200, b = 255},	-- Over 5 minutes
+		regular		= {r = 150, g = 255, b = 150},	-- Under 5 minutes
+		low			= {r = 255, g = 165, b = 0},	-- Under 1 minute
+		critical	= {r = 255, g = 50, b = 50},	-- Under 30 seconds
+		none		= {r = 255, g = 255, b = 255}	-- No songs
+	},
 
---Member is in range for Songs
-color.member.in_range.r = 50
-color.member.in_range.g = 255
-color.member.in_range.b = 50
---Member is out of range for songs
-color.member.out_of_range.r = 255
-color.member.out_of_range.g = 50
-color.member.out_of_range.b = 50
---Member not found
-color.member.not_found.r = 125
-color.member.not_found.g = 125
-color.member.not_found.b = 125
-
---HUD RECAST
-
---Ready to use
-color.abil.ready.r = 255
-color.abil.ready.g = 50
-color.abil.ready.b = 50
---Currently active
-color.abil.active.r = 75
-color.abil.active.g = 255
-color.abil.active.b = 75
---On cooldown
-color.abil.cooldown.r = 255
-color.abil.cooldown.g = 165
-color.abil.cooldown.b = 0
---Flash (now ready)
-color.abil.flash.r = 255
-color.abil.flash.g = 255
-color.abil.flash.b = 125
---Not Found
-color.abil.notfound.r = 125
-color.abil.notfound.g = 125
-color.abil.notfound.b = 125
-
---Songs
-
---Over 10 minutes
-color.song.very_long.r = 200
-color.song.very_long.g = 100
-color.song.very_long.b = 255
-
---Over 5 minutes
-color.song.long.r = 100
-color.song.long.g = 200
-color.song.long.b = 255
-
---Under 5 minutes
-color.song.regular.r = 150
-color.song.regular.g = 255
-color.song.regular.b = 150
-
---Under 1 minute
-color.song.low.r = 255
-color.song.low.g = 165
-color.song.low.b = 0
-
---Under 30 seconds
-color.song.critical.r = 255
-color.song.critical.g = 50
-color.song.critical.b = 50
-
---No songs
-color.song.none.r = 255
-color.song.none.g = 255
-color.song.none.b = 255
-
-
-
+	-- HUD RECAST --
+	abil = {
+		ready		= {r = 255, g = 50, b = 50},	-- Ready to use
+		active		= {r = 75, g = 255, b = 75},	-- Currently active
+		cooldown	= {r = 255, g = 165, b = 0},	-- On cooldown
+		flash		= {r = 255, g = 255, b = 125},	-- Flash (now ready)
+		notfound	= {r = 125, g = 125, b = 125}	-- Not Found
+	}
+}
+  
 -------------------------------------------
 --                WEAPONS                --
 -------------------------------------------
@@ -457,7 +409,7 @@ sets.idle = {
 
 -- DT Override (Damage Taken-, Magic Evasion)
 -- Will override all other gear sets but still inherit unused slots from them
-sets.dtoverride = {
+sets.dt_override = {
 
 }
 
@@ -549,7 +501,7 @@ sets["Rudra's Storm"] = set_combine(sets.weapon_skill, {
 })
 
 -- Songs Fast Cast (cap is 80%)
-sets.fastcast_song = {
+sets.fast_cast_song = {
 	head="Fili Calot +3",
 	body="Inyanga Jubbah +2",
 	hands="Leyline Gloves",
@@ -565,8 +517,8 @@ sets.fastcast_song = {
 }
 
 -- Non-Song Fast Cast (cap is 80%)
-sets.fastcast_other = set_combine(sets.fastcast_song, {
-
+sets.fast_cast_other = set_combine(sets.fast_cast_song, {
+	head="Bunzi's Hat",
 })
 
 -- Song Buffs
@@ -581,14 +533,14 @@ sets.buff_song = {
 }
 
 -- Song Buffs - Main/Sub Dual Wield
--- NOTE: Only set Main and Sub slots here
+-- NOTE: Only set Main and Sub slots here. Will only be equipped if NiTro is up or you are NOT engaged.
 sets.buff_song_dual_wield =  {
 	main="Carnwenhan",
 	sub="Kali",
 }
 
 -- Song Buffs - Main/Sub Single Wield
--- NOTE: Only set Main and Sub slots here
+-- NOTE: Only set Main and Sub slots here. Will only be equipped if NiTro is up or you are NOT engaged.
 sets.buff_song_single_wield = {
 	main="Carnwenhan",
 	sub="Genmei Shield",
@@ -657,9 +609,8 @@ sets.buff_other = {
 }
 
 -- Song Debuffs
+-- NOTE: Do not set your main/sub here, set them in the sets below
 sets.debuff_song = {
-	main="Carnwenhan",
-	sub="Ammurapi Shield",
 	head="Brioso Roundlet +3",
 	body="Fili Hongreline +3",
 	hands="Fili Manchettes +3",
@@ -674,6 +625,20 @@ sets.debuff_song = {
 	back={ name="Intarabus's Cape", augments={'CHR+20','Mag. Acc+20 /Mag. Dmg.+20','Mag. Acc.+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
 }
 
+-- Song Debuffs - Main/Sub Dual Wield
+-- NOTE: Only set Main and Sub slots here. Will only be equipped if NiTro is up or you are NOT engaged.
+sets.debuff_song_dual_wield =  {
+	main="Carnwenhan",
+	sub="Kali",
+}
+
+-- Song Debuffs - Main/Sub Single Wield
+-- NOTE: Only set Main and Sub slots here. Will only be equipped if NiTro is up or you are NOT engaged.
+sets.debuff_song_single_wield = {
+	main="Carnwenhan",
+	sub="Genmei Shield",
+}
+
 -- Threnodies
 sets.threnody = set_combine(sets.debuff_song, {
 	body="Mou. Manteel +1",
@@ -685,10 +650,25 @@ sets.lullaby = set_combine(sets.debuff_song, {
 })
 
 -- Horde Lullaby II (String skill tiers: 6'=486, 7'=567)
+-- NOTE: Do not set your main/sub here, set them in the sets below
 sets.horde_lullaby_II = set_combine(sets.debuff_song, {
 	body="Brioso Justau. +3",
+	feet="Bihu Slippers +3",
+	waist="Harfner's Sash",
 	left_ear="Gersemi Earring",
 })
+
+-- Horde Lullaby II - Main/Sub Dual Wield (In case you want to equip Kali with the String skill augment to hit a Horde Lullaby II tier, leave the set empty otherwise)
+-- NOTE: Only set Main and Sub slots here. Will only be equipped if NiTro is up or you are NOT engaged.
+sets.horde_lullaby_II_dual_wield =  {
+
+}
+
+-- Horde Lullaby II - Main/Sub Single Wield (In case you want to equip Kali with the String skill augment to hit a Horde Lullaby II tier, leave the set empty otherwise)
+-- NOTE: Only set Main and Sub slots here. Will only be equipped if NiTro is up or you are NOT engaged.
+sets.horde_lullaby_II_single_wield = {
+
+}
 
 -- Non-Song Magic Accuracy
 sets.magic_accuracy = {
@@ -821,7 +801,17 @@ end
 
 
 
-FileVersion = '1.0 BETA-5'
+FileVersion = '1.0'
+
+--Version 1.0
+--Added Chocobo Circuit to the list of Town Zones.
+--Adjusted the Song List display. Bullet in front of each song is now larger and colored to indicate which type of song (default colors match the XIView color scheme for song icons). Party Member names are now centered, and colored based on their lowest current song duration. Song durations are now right-aligned.
+--Adjusted HUD to now show party members in a different zone.
+--Adjusted formatting of a number of things in the Options section.
+--Adjusted Notifications to clear after joining a party.
+--Fixed precast so that if Nightingale is up it will equip the proper specific song buff gear instead of the base buff_song set.
+--Fixed an issue with SP Ability 2 recast.
+--Various code cleanup.
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -844,7 +834,7 @@ WindyZones = S{
 	}
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
 	}
 
 -------------------------------------------
@@ -900,7 +890,21 @@ TP_Window_Open = false
 current_songs = {}
 song_duration = nil
 dummy_song = false
+soul_voice_song = false
 max_songs = 2
+jp_gift_bonus_duration = 0
+num_lost_songs = 0
+missing_song_block = false
+
+local play_sound = windower.play_sound
+local addon_path = windower.addon_path
+local Notification_Good = addon_path..'data/sounds/NotiGood.wav'
+local Notification_Bad = addon_path..'data/sounds/NotiBad.wav'
+local Notification_Danger = addon_path..'data/sounds/Danger.wav'
+local Notification_Cancel = addon_path..'data/sounds/Cancel.wav'
+local Notification_Aftermath_On = addon_path..'data/sounds/AftermathOn.wav'
+local Notification_Aftermath_Off = addon_path..'data/sounds/AftermathOff.wav'
+local Notification_3000TP = addon_path..'data/sounds/3000TP.wav'
 
 --create a new table that combines both the WeaponCycle/DualWieldCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
 local WeaponCyclePlusAbyssea = {}
@@ -1709,7 +1713,7 @@ local function getRecasts()
 	local ability_recast = windower.ffxi.get_ability_recasts()
 
 	SoulVoice.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
-	ClarionCall.recast = ability_recast[254] and math.floor(ability_recast[254]) or nil
+	ClarionCall.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
 	Convert.recast = ability_recast[49] and math.floor(ability_recast[49]) or nil
 	DarkArts.recast = ability_recast[232] and math.floor(ability_recast[232]) or nil
 	DivineSeal.recast = ability_recast[26] and math.floor(ability_recast[26]) or nil
@@ -1808,6 +1812,21 @@ end
 -- Format PT Member names to fit into their allotted 12 spaces
 local function formatName(input)
 
+	local function getNumberOfSongs(player)
+		--Check if the player exists in the current_songs table
+		if current_songs[player] then
+			local song_count = 0
+			--Count the number of songs the player has
+			for _ in pairs(current_songs[player]) do
+				song_count = song_count + 1
+			end
+			return song_count
+		else
+			--If the player doesn't exist in the table, return 0
+			return 0
+		end
+	end
+	
 	-- Maximum length of output without parenthesis
 	local maxLength = 10
 
@@ -1848,9 +1867,27 @@ local function formatName(input)
 
 end
 
-local function colorName(input)
+local function getNameColor(input)
 
-	local lowestDuration = input and getLowestSongDuration(input.name) or nil
+	local function getLowestSongDuration(player)
+		-- Check if the player exists in the current_songs table
+		if current_songs[player] then
+			local lowest_duration = nil
+			-- Iterate through the player's songs to find the one with the lowest duration
+			for _, song_data in pairs(current_songs[player]) do
+				local duration = song_data.duration
+				if lowest_duration == nil or duration < lowest_duration then
+					lowest_duration = duration
+				end
+			end
+			return lowest_duration
+		else
+			-- If the player doesn't exist in the table, return nil (indicating no songs)
+			return nil
+		end
+	end
+	
+	local lowestDuration = input and getLowestSongDuration(input) or nil
 	local color = "none"
 
 	if lowestDuration then
@@ -2060,7 +2097,7 @@ local function primeAMUpdate(tp)
 
 end
 
-function itemMatch(input,slot)
+local function itemMatch(input,slot)
 	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
 	for _, location in ipairs(locations) do
 		local weapon_id = windower.ffxi.get_items()[location][windower.ffxi.get_items().equipment[slot]].id
@@ -2071,49 +2108,21 @@ function itemMatch(input,slot)
 	return false --no match found
 end
 
-function getNumberOfSongs(player)
-	--Check if the player exists in the current_songs table
-	if current_songs[player] then
-		local song_count = 0
-		--Count the number of songs the player has
-		for _ in pairs(current_songs[player]) do
-			song_count = song_count + 1
-		end
-		return song_count
-	else
-		--If the player doesn't exist in the table, return 0
-		return 0
+local function getJPGiftBonusDuration()
+	local player = windower.ffxi.get_player()
+	if player and player.job_points.brd.jp_spent >= 1200 then
+		jp_gift_bonus_duration = .05
 	end
 end
+getJPGiftBonusDuration()
 
-function getLowestSongDuration(player)
-	-- Check if the player exists in the current_songs table
-	if current_songs[player] then
-		local lowest_duration = nil
-		-- Iterate through the player's songs to find the one with the lowest duration
-		for _, song_data in pairs(current_songs[player]) do
-			local duration = song_data.duration
-			if lowest_duration == nil or duration < lowest_duration then
-				lowest_duration = duration
-			end
-		end
-		return lowest_duration
-	else
-		-- If the player doesn't exist in the table, return nil (indicating no songs)
-		return nil
-	end
-end
-
-
-function getSongDuration(spell)
+local function getSongDuration(spell)
 
 	song_duration = nil
 	local multiplier = 1
 
-	--We make the assumption that if you are 99, then you are mastered and have the 1200 JP +5% song duration bonus
-	if player.main_job_level == 99 then
-		multiplier = multiplier + .05
-	end
+	--1200 job point gift duration nonus
+	multiplier = multiplier + jp_gift_bonus_duration
 
 	--weapons
 	if player.equipment.main == "Legato Dagger" or player.equipment.sub == "Legato Dagger" then
@@ -2296,16 +2305,23 @@ function getSongDuration(spell)
 		total_duration = total_duration + 40
 	end
 
-	--Are we using a dummy instrument and not one for full strength songs?
+	return total_duration
+end
+
+--Are we using a dummy instrument and not one for full strength songs?
+local function isDummySong()
+
 	local is_dummy_song = false
+
 	if player.equipment.range == "Daurdabla" or player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
 		is_dummy_song = true
 	end
 
-	return total_duration, is_dummy_song
+	return is_dummy_song
+
 end
 
-function getMaxSongs()
+local function getMaxSongs()
 	max_songs = 2
 
 	if player.equipment.range == inst.dummy then
@@ -2334,14 +2350,14 @@ function getMaxSongs()
 end
 
 --Create the song list to be displayed on the screen for tracking
-function getCurrentSongList()
-	local formatted_list = "[SONG LIST       //songs]\n"
+local function getCurrentSongList()
+	local formatted_list = "[SONG LIST         //songs]\n" --longest song name is 18 characters, plus formatting makes 27 char width
 
 	-- Retrieve the party list
 	local party = windower.ffxi.get_party()
 	local party_order = {}
 
-	-- Store party members' names based on their position
+	--Store party members' names based on their position
 	for i = 0, 5 do
 		local position = 'p' .. i
 		if party[position] and party[position].name then
@@ -2349,38 +2365,95 @@ function getCurrentSongList()
 		end
 	end
 
-	-- Iterate over the party_order to ensure the correct order
+	--Iterate over the party_order to ensure the correct order in the Song List
 	for _, player_name in ipairs(party_order) do
 		if current_songs[player_name] then
-			formatted_list = formatted_list.."--\\cs(50,255,50)"..player_name.."\\cr--\n"
+			
+			--Format RGB values with leading zeros (helps prevent an issue with the text not lining up correctly after color is added)
+			local function formatRGB(value)
+				return string.format("%03d", value)
+			end
+
+			local cn = color.song_list[getNameColor(player_name)] or color.song.none
+			local l_padding = math.floor((27 - #player_name) / 2)
+			local r_padding = 27 - #player_name - l_padding
+			local l_spaces = ""
+			local r_spaces = ""
+			while string.len(l_spaces) < l_padding do
+				l_spaces = l_spaces..'-'
+			end
+			while string.len(r_spaces) < r_padding do
+				r_spaces = r_spaces..'-'
+			end
+			formatted_list = formatted_list..l_spaces.."\\cs("..formatRGB(cn.r)..","..formatRGB(cn.g)..","..formatRGB(cn.b)..")"..player_name.."\\cr"..r_spaces.."\n"
 
 			local song_list = {}
 			for song_name, song_data in pairs(current_songs[player_name]) do
-				table.insert(song_list, {name = song_name, duration = song_data.duration, dummy = song_data.dummy})
+				table.insert(song_list, {name = song_name, duration = song_data.duration, dummy = song_data.dummy, soul_voice = song_data.soul_voice})
 			end
 
-			-- Sort the song list by duration in descending order (longest first)
+			--Sort the song list by duration in descending order (longest first)
 			table.sort(song_list, function(a, b)
 				return a.duration > b.duration
 			end)
 
-			-- Append each song and its duration to the formatted list
+			--Append each song and its duration to the formatted list
 			for _, song in ipairs(song_list) do
-				local c = color.song.very_long
+				local cd = color.song_list.very_long
 				if song.duration <= 60 then
-					c = color.song.critical
+					cd = color.song_list.critical
 				elseif song.duration <= 120 then
-					c = color.song.low
+					cd = color.song_list.low
 				elseif song.duration <= 300 then
-					c = color.song.regular
+					cd = color.song_list.regular
 				elseif song.duration <= 600 then
-					c = color.song.long
+					cd = color.song_list.long
 				end
+				local cn = song.soul_voice and color.song_list.soul_voice or color.song_list.normal
 				local minutes = math.floor(song.duration / 60)
 				local seconds = song.duration % 60
-				local cb = color.song.critical
-				local bullet = song.dummy and "\\cs("..cb.r..","..cb.g..","..cb.b..")♫\\cr" or "·"
-				formatted_list = formatted_list..bullet..song.name..": \\cs("..c.r..","..c.g..","..c.b..")"..string.format("%d:%02d", minutes, seconds).."\\cr\n"
+				local cb = color.song_list.none
+				if string.find(song.name, "Paeon") then
+					cb = color.song_list.Paeon
+				elseif string.find(song.name, "Ballad") then
+					cb = color.song_list.Ballad
+				elseif string.find(song.name, "Minne") then
+					cb = color.song_list.Minne
+				elseif string.find(song.name, "Minuet") then
+					cb = color.song_list.Minuet
+				elseif string.find(song.name, "Madrigal") then
+					cb = color.song_list.Madrigal
+				elseif string.find(song.name, "Mazurka") then
+					cb = color.song_list.Mazurka
+				elseif string.find(song.name, "Prelude") then
+					cb = color.song_list.Prelude
+				elseif string.find(song.name, "Mambo") then
+					cb = color.song_list.Mambo
+				elseif string.find(song.name, "Aubade") or string.find(song.name, "Pastoral") or string.find(song.name, "Fantasia") or string.find(song.name, "Operetta") or string.find(song.name, "Capriccio") or string.find(song.name, "Round") or string.find(song.name, "Gavotte") then
+					cb = color.song_list.Dummy
+				elseif string.find(song.name, "March") then
+					cb = color.song_list.March
+				elseif string.find(song.name, "Etude") then
+					cb = color.song_list.Etude
+				elseif string.find(song.name, "Carol") then
+					cb = color.song_list.Carol
+				elseif string.find(song.name, "Sirvente") then
+					cb = color.song_list.Sirvente
+				elseif string.find(song.name, "Dirge") then
+					cb = color.song_list.Dirge
+				elseif string.find(song.name, "Scherzo") then
+					cb = color.song_list.Scherzo
+				elseif string.find(song.name, "Aria") then
+					cb = color.song_list.Aria
+				end
+				local bullet = "\\cs("..formatRGB(cb.r)..","..formatRGB(cb.g)..","..formatRGB(cb.b)..")"..(song.dummy and "♫" or "●").." \\cr"
+				local song_name = "\\cs("..formatRGB(cn.r)..","..formatRGB(cn.g)..","..formatRGB(cn.b)..")"..song.name.."\\cr"
+				local padding = 27 - (#song.name + (minutes >= 10 and 2 or 1) + 7)
+				local spaces = ""
+				while string.len(spaces) < padding do
+					spaces = spaces..' '
+				end
+				formatted_list = formatted_list..bullet..song_name..":"..spaces.." \\cs("..formatRGB(cd.r)..","..formatRGB(cd.g)..","..formatRGB(cd.b)..")"..string.format("%d:%02d", minutes, seconds).."\\cr\n"
 			end
 		end
 	end
@@ -2388,13 +2461,204 @@ function getCurrentSongList()
 	return formatted_list
 end
 
-
-function resetCurrentSongs(player)
+--Reset the current_songs list (full clear)
+local function resetCurrentSongs(player)
 	if player then
 		current_songs[player] = nil
 	else
 		current_songs = {}
 	end
+end
+
+--Remove any songs that are no longer on the player (us)
+function checkPlayerForLostSongs()
+
+	local song_types = { "Paeon", "Ballad", "Minne", "Minuet", "Madrigal", "Prelude", "Aubade", "Pastoral", 
+						"Fantasia", "Operetta", "Capriccio", "Round", "Gavotte", "March" }
+
+	--Check if player has buffactive and current_songs
+	if party[1] and party[1].buffactive then
+		local player_name = party[1].name
+		local buffactive = party[1].buffactive
+
+		--Check if player has songs in current_songs
+		if current_songs[player_name] then
+			local player_songs = current_songs[player_name]
+
+			--Loop through the defined song types
+			for _, song_type in ipairs(song_types) do
+
+				--Count occurrences of a specific song type in buffactive
+				local function countBuffsOfTypeInBuffactive(buffactive, song_type)
+					local lower_song_type = string.lower(song_type)
+					return buffactive[lower_song_type] or 0
+				end
+
+				--Count occurrences of a specific song type in current_songs
+				local function getSongsOfType(songs, song_type)
+					local matching_songs = {}
+					for song_name, song_data in pairs(songs) do
+						if string.find(song_name, song_type) and song_data.duration >= 5 then
+							table.insert(matching_songs, { name = song_name, duration = song_data.duration })
+						end
+					end
+					return matching_songs
+				end
+
+				local buff_count = countBuffsOfTypeInBuffactive(buffactive, song_type)
+				local matching_songs = getSongsOfType(player_songs, song_type)
+
+				--Compare number of songs we think we have with number of songs we actually have
+				if #matching_songs > buff_count then
+					--Sort the matching songs by duration in descending order (to remove the highest duration first)
+					--If we have multiple of the same song type up, there is no way to know which specific song was dispelled,
+					--so we just make the assumption we lost the highest duration one. For example, the game simply tells us
+					--we have 2 "Minuet" buffs on, and if we lose one we don't know which, we just now have 1 "Minuet" buff on.
+					table.sort(matching_songs, function(a, b) return a.duration > b.duration end)
+
+					--Tally up number of lost songs
+					num_lost_songs = num_lost_songs + (#matching_songs - buff_count)
+
+					--Remove extra songs
+					-- for j = 1, (#matching_songs - buff_count) do
+					-- 	local song_to_remove = matching_songs[j].name
+					-- 	player_songs[song_to_remove] = nil
+					-- end
+
+				end
+			end
+
+			--If no songs are left on the player, remove the player from current_songs
+			if next(player_songs) == nil then
+				current_songs[player_name] = nil
+			end
+		end
+	end
+end
+
+--Remove any songs that are no longer on party members (excludes player/us)
+function checkPartyForLostSongs()
+	--List of song types to care about
+	local song_types = { "Paeon", "Ballad", "Minne", "Minuet", "Madrigal", "Prelude", "Aubade", "Pastoral", "Fantasia", 
+						"Operetta", "Capriccio", "Round", "Gavotte", "March" }
+
+	--Loop through players 2 to 6 in the party
+	for i = 2, 6 do
+		if party[i] and party[i].name and party[i].buff_details then
+			local player_name = party[i].name
+			local buff_details = party[i].buff_details
+
+			--Check if player has songs in current_songs
+			if current_songs[player_name] then
+				local player_songs = current_songs[player_name]
+
+				--Loop through defined song types
+				for _, song_type in ipairs(song_types) do
+
+					--Count occurrences of a specific song type in buff_details
+					local function countBuffsOfType(buff_details, song_type)
+						local count = 0
+						for _, buff in pairs(buff_details) do
+							if string.find(buff.name, song_type) then
+								count = count + 1
+							end
+						end
+						return count
+					end
+
+					--Count occurrences of a specific song type in current_songs
+					local function getSongsOfType(songs, song_type)
+						local matching_songs = {}
+						for song_name, song_data in pairs(songs) do
+							if string.find(song_name, song_type) and song_data.duration >= 5 then
+								table.insert(matching_songs, { name = song_name, duration = song_data.duration })
+							end
+						end
+						return matching_songs
+					end
+
+					local buff_count = countBuffsOfType(buff_details, song_type)
+					local matching_songs = getSongsOfType(player_songs, song_type)
+
+					--Compare the number of songs we think this player has with the number of songs they actually have
+					if #matching_songs > buff_count then
+						--Sort the matching songs by duration in descending order (to remove the highest duration first)
+						--If we have multiple of the same song type up, there is no way to know which specific song was dispelled,
+						--so we just make the assumption we lost the highest duration one. For example, the game simply tells us
+						--we have 2 "Minuet" buffs on, and if we lose one we don't know which, we just now have 1 "Minuet" buff on.
+						table.sort(matching_songs, function(a, b) return a.duration > b.duration end)
+
+						--Tally up number of lost songs
+						num_lost_songs = num_lost_songs + (#matching_songs - buff_count)
+
+						--Remove extra songs
+						-- for j = 1, (#matching_songs - buff_count) do
+						-- 	local song_to_remove = matching_songs[j].name
+						-- 	player_songs[song_to_remove] = nil
+						-- end
+
+					end
+				end
+
+				--If no songs are left on the player, remove the player from current_songs
+				if next(player_songs) == nil then
+					current_songs[player_name] = nil
+				end
+			end
+		end
+	end
+end
+
+--Set gear based on song and a few other factors
+local function setSongGear(song,instrument)
+	local set_name = "buff_song"
+	local main_sub = hasDualWield() and "buff_song_dual_wield" or "buff_song_single_wield"
+
+	if player.equipment.range == inst.dummy or (instrument and instrument == inst.dummy) then
+		--doing a dummy song, don't use buff_song set so the durations are much lower making them easier to overwrite
+		set_name = player.status == "Engaged" and "melee" or "idle"
+	elseif string.find(song,'Ballad') then
+		set_name = "ballad"
+	elseif string.find(song,'Carol') then
+		set_name = "carol"
+	elseif string.find(song,'Etude') then
+		set_name = "etude"
+	elseif string.find(song,'Madrigal') then
+		set_name = "madrigal"
+	elseif string.find(song,'Mambo') then
+		set_name = "mambo"
+	elseif string.find(song,'March') then
+		set_name = "march"
+	elseif string.find(song,'Minne') then
+		set_name = "minne"
+	elseif string.find(song,'Minuet') then
+		set_name = "minuet"
+	elseif string.find(song,'Paeon') then
+		set_name =  "paeon"
+	elseif string.find(song,'Prelude') then
+		set_name = "prelude"
+	elseif string.find(song,'Horde Lullaby II') then
+		set_name = "horde_lullaby_II"
+		main_sub = hasDualWield() and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
+	else
+		main_sub = hasDualWield() and "debuff_song_dual_wield" or "debuff_song_single_wield"
+		if string.find(song,'Lullaby') then
+			set_name = "foe_lullaby"
+		elseif string.find(song,'Requiem') or string.find(song,'Elegy') or string.find(song,'Nocturne') or string.find(song,'Finale') or string.find(song,'Virelai') then
+			set_name = "debuff_song"
+		elseif string.find(song,'Threnody') then
+			set_name = "threnody"
+		end
+	end
+
+	if instrument then --If we're sent an instrument then we have nitro up, therefore use buff main/sub
+		equip(set_combine(sets[set_name], sets[main_sub], {range=instrument}))
+	elseif player.status == "Engaged" then
+		equip(set_combine(sets[set_name], {main=pair[1],sub=pair[2]}))
+	else
+		equip(set_combine(sets[set_name], sets[main_sub]))
+	end
+
 end
 
 -------------------------------------------
@@ -2501,7 +2765,7 @@ function self_command(command)
 		send_command('wait 4;gs c RadialensCheck')
 	elseif command == 'RadialensCheck' and string.find(world.area,'Escha') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Radialens Has Worn Off »»')
 		hud_noti:text('«« Radialens Has Worn Off »»')
@@ -2520,11 +2784,11 @@ function self_command(command)
 	elseif command == 'Songs' and ShowSongs == 'Off' then
 		ShowSongs = 'On'
 		windower.send_command('gs c ShowSongs')
-		windower.add_to_chat(220,('Songs List display: '):color(36)..('ON'):color(200))
+		windower.add_to_chat(220,('[Songs List] Display: '):color(36)..('ON'):color(200))
 	elseif command == 'Songs' and ShowSongs == 'On' then
 		ShowSongs = 'Off'
 		windower.send_command('gs c HideSongs')
-		windower.add_to_chat(220,('Songs List display: '):color(36)..('OFF'):color(200))
+		windower.add_to_chat(220,('[Songs List] Display: '):color(36)..('OFF'):color(200))
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
@@ -2730,26 +2994,8 @@ function self_command(command)
 		double_pianissimo_fix = false
 	elseif command == "double_sublimation_fix" then
 		double_sublimation_fix = false
-	elseif command == 'test' then
-		local function print_table_structure(tbl, indent)
-			-- If no indentation is provided, set it to an empty string
-			indent = indent or ""
-		
-			-- Iterate through the table
-			for key, value in pairs(tbl) do
-				local value_type = type(value)
-				
-				-- For tables, print the key and recursively call the function
-				if value_type == "table" then
-					print(indent .. tostring(key) .. ": (table)")
-					print_table_structure(value, indent .. "  ")
-				else
-					-- Print the key, value, and its type in parentheses
-					print(indent .. tostring(key) .. ": " .. tostring(value) .. " (" .. value_type .. ")")
-				end
-			end
-		end
-		print_table_structure(current_songs)
+	elseif command == "missing_song_block_false" then
+		missing_song_block = false
 	end
 end
 
@@ -2785,7 +3031,7 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if DTOverride == 'On' then
-			equip(set_combine(sets.rest, sets.dtoverride))
+			equip(set_combine(sets.rest, sets.dt_override))
 		else
 			equip(set_combine(sets.idle, sets.rest))
 		end
@@ -2816,7 +3062,7 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if DTOverride == 'On' then
-			equip(set_combine(sets.melee, sets.dtoverride))
+			equip(set_combine(sets.melee, sets.dt_override))
 		else
 			equip(sets.melee)
 		end
@@ -2880,7 +3126,7 @@ function choose_set()
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
 				equip(set_combine(sets.idle, sets.oh_shit))
 			elseif DTOverride == "On" then
-				equip(set_combine(sets.idle, sets.dtoverride))
+				equip(set_combine(sets.idle, sets.dt_override))
 			else
 				equip(sets.idle)
 			end
@@ -2895,32 +3141,32 @@ end
 function precast(spell)
 	if buffactive['terror'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['petrification'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['sleep'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['stun'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['amnesia'] and (spell.type == 'WeaponSkill' or spell.type == 'JobAbility') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['silence'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
 			send_command('input /item "Echo Drop" <me>')
@@ -2930,13 +3176,13 @@ function precast(spell)
 		flash('Debuffs')
 	elseif buffactive['mute'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Not Enough TP »»')
 			hud_noti:text('«« Not Enough TP »»')
@@ -2944,7 +3190,7 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 		elseif ((spell.skill == 'Marksmanship' or spell.skill == 'Archery') and spell.target.distance >= (spell.target.model_size + 23)) or ((spell.target.distance >= (spell.target.model_size + 3)) and not (spell.english == 'Starlight' or spell.english == 'Moonlight')) then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Too Far »»')
 			hud_noti:text('«« Too Far »»')
@@ -2994,10 +3240,12 @@ function precast(spell)
 		equip(sets.holy_water)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
-		equip(sets.fastcast)
+		if spell.english ~= 'Spectral Jig' then
+			equip(sets.fast_cast_other)
+		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
-		equip(sets.fastcast)
+		equip(sets.fast_cast_other)
 	elseif spell.type == 'BardSong' then
 		if AutoPianissimo == 'On' and spell.target.ispartymember == true and spell.target.type ~= 'SELF' and not (buffactive['amnesia'] or buffactive['Pianissimo'] or string.find(spell.english,'Lullaby')) then --exempt lullabies so we can put charmed players to sleep
 			if not double_pianissimo_fix then
@@ -3008,6 +3256,7 @@ function precast(spell)
 			end
 		end
 		local instrument
+		local main_sub = hasDualWield() and "buff_song_dual_wield" or "buff_song_single_wield"
 		if spell.english == "Honor March" then
 			instrument = "Marsyas"
 		elseif spell.english == "Aria of Passion" then
@@ -3024,18 +3273,10 @@ function precast(spell)
 			instrument = inst.carol
 		elseif string.find(spell.english,'Dirge') then
 			instrument = inst.dirge
-		elseif string.find(spell.english,'Elegy') then
-			instrument = inst.elegy
 		elseif string.find(spell.english,'Etude') then
 			instrument = inst.etude
 		elseif string.find(spell.english,'Fantasia') then
 			instrument = inst.fantasia
-		elseif string.find(spell.english,'Finale') then
-			instrument = inst.finale
-		elseif string.find(spell.english,'Horde Lullaby II') then
-			instrument = inst.horde_lullaby_II
-		elseif string.find(spell.english,'Lullaby') then
-			instrument = inst.lullaby
 		elseif string.find(spell.english,'Gavotte') then
 			instrument = inst.gavotte
 		elseif string.find(spell.english,'Hymnus') then
@@ -3052,8 +3293,6 @@ function precast(spell)
 			instrument = inst.minne
 		elseif string.find(spell.english,'Minuet') then
 			instrument = inst.minuet
-		elseif string.find(spell.english,'Nocturne') then
-			instrument = inst.nocturne
 		elseif string.find(spell.english,'Operetta') then
 			instrument = inst.operetta
 		elseif string.find(spell.english,'Paeon') then
@@ -3062,48 +3301,44 @@ function precast(spell)
 			instrument = inst.pastoral
 		elseif string.find(spell.english,'Prelude') then
 			instrument = inst.prelude
-		elseif string.find(spell.english,'Requiem') then
-			instrument = inst.requiem
 		elseif string.find(spell.english,'Round') then
 			instrument = inst.round
 		elseif string.find(spell.english,'Scherzo') then
 			instrument = inst.scherzo
 		elseif string.find(spell.english,'Sirvente') then
 			instrument = inst.sirvente
-		elseif string.find(spell.english,'Threnody') then
-			instrument = inst.threnody
-		elseif string.find(spell.english,'Virelai') then
-			instrument = inst.virelai
-		end
-		local main_sub = "buff_song_single_wield"
-		if hasDualWield() then
-			main_sub = "buff_song_dual_wield"
+		elseif string.find(spell.english,'Horde Lullaby II') then
+			instrument = inst.horde_lullaby_II
+			main_sub = hasDualWield() and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
+		else
+			main_sub = hasDualWield() and "debuff_song_dual_wield" or "debuff_song_single_wield"
+			if string.find(spell.english,'Elegy') then
+				instrument = inst.elegy
+			elseif string.find(spell.english,'Finale') then
+				instrument = inst.finale
+			elseif string.find(spell.english,'Lullaby') then
+				instrument = inst.lullaby
+			elseif string.find(spell.english,'Nocturne') then
+				instrument = inst.nocturne
+			elseif string.find(spell.english,'Requiem') then
+				instrument = inst.requiem
+			elseif string.find(spell.english,'Threnody') then
+				instrument = inst.threnody
+			elseif string.find(spell.english,'Virelai') then
+				instrument = inst.virelai
+			end
 		end
 		if buffactive['Nightingale'] then
-			local set_name = "buff_song"
-			if string.find(spell.english,'Horde Lullaby II') then
-				set_name = "horde_lullaby_II"
-			elseif string.find(spell.english,'Lullaby') then
-				set_name = "foe_lullaby"
-			elseif string.find(spell.english,'Requiem') or string.find(spell.english,'Elegy') or string.find(spell.english,'Nocturne') or string.find(spell.english,'Finale') then
-				set_name = "debuff_song"
-			elseif string.find(spell.english,'Threnody') then
-				set_name = "threnody"
-			end
-			if player.status == "Engaged" then
-				equip(set_combine(sets[set_name], {main=pair[1],sub=pair[2],range=instrument}))
-			else
-				equip(set_combine(sets[set_name], sets[main_sub], {range=instrument}))
-			end
+			setSongGear(spell.english,instrument)
 		else
 			if player.status == "Engaged" then
-				equip(set_combine(sets.fastcast_song, {main=pair[1],sub=pair[2],range=instrument}))
+				equip(set_combine(sets.fast_cast_song, {main=pair[1],sub=pair[2],range=instrument}))
 			else
-				equip(set_combine(sets.fastcast_song, sets[main_sub], {range=instrument}))
+				equip(set_combine(sets.fast_cast_song, sets[main_sub], {range=instrument}))
 			end
 		end
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
-		equip(sets.fastcast_other)
+		equip(sets.fast_cast_other)
 	end
 end
 
@@ -3113,81 +3348,7 @@ end
 
 function midcast(spell)
 	if spell.type == 'BardSong' then
-		local main_sub = "buff_song_single_wield"
-		if hasDualWield() then
-			main_sub = "buff_song_dual_wield"
-		end
-		if spell.english == 'Honor March' then
-			if player.status == "Engaged" then
-				equip(set_combine(sets.march, {main=pair[1],sub=pair[2],range="Marsyas"}))
-			else
-				equip(set_combine(sets.march, sets[main_sub], {range="Marsyas"}))
-			end
-		elseif spell.english == "Aria of Passion" then
-			if player.status == "Engaged" then
-				equip(set_combine(sets.buff_song, {main=pair[1],sub=pair[2],range="Loughnashade"}))
-			else
-				equip(set_combine(sets.buff_song, sets[main_sub], {range="Loughnashade"}))
-			end
-		elseif string.find(spell.english,'Aubade') or string.find(spell.english,'Capriccio') or string.find(spell.english,'Fantasia') or string.find(spell.english,'Gavotte') or string.find(spell.english,'Operetta') or string.find(spell.english,'Pastoral') or string.find(spell.english,'Round') then
-			local instrument
-			if string.find(spell.english,'Aubade') then
-				instrument = inst.aubade
-			elseif string.find(spell.english,'Capriccio') then
-				instrument = inst.capriccio
-			elseif string.find(spell.english,'Fantasia') then
-				instrument = inst.fantasia
-			elseif string.find(spell.english,'Gavotte') then
-				instrument = inst.gavotte
-			elseif string.find(spell.english,'Operetta') then
-				instrument = inst.operetta
-			elseif string.find(spell.english,'Pastoral') then
-				instrument = inst.pastoral
-			elseif string.find(spell.english,'Round') then
-				instrument = inst.round
-			end
-			if player.status == "Engaged" then
-				equip(set_combine(sets.melee, {main=pair[1],sub=pair[2]}, {range=instrument}))
-			else
-				equip(set_combine(sets.idle, {range=instrument}))
-			end
-		else
-			local set_name = "buff_song"
-			if string.find(spell.english,'Horde Lullaby II') then
-				set_name = "horde_lullaby_II"
-			elseif string.find(spell.english,'Lullaby') then
-				set_name = "foe_lullaby"
-			elseif string.find(spell.english,'Requiem') or string.find(spell.english,'Elegy') or string.find(spell.english,'Nocturne') or string.find(spell.english,'Finale') then
-				set_name = "debuff_song"
-			elseif string.find(spell.english,'Threnody') then
-				set_name = "threnody"
-			elseif string.find(spell.english,'Ballad') then
-				set_name = "ballad"
-			elseif string.find(spell.english,'Carol') then
-				set_name = "carol"
-			elseif string.find(spell.english,'Etude') then
-				set_name = "etude"
-			elseif string.find(spell.english,'Madrigal') then
-				set_name = "madrigal"
-			elseif string.find(spell.english,'Mambo') then
-				set_name = "mambo"
-			elseif string.find(spell.english,'March') then
-				set_name = "march"
-			elseif string.find(spell.english,'Minne') then
-				set_name = "minne"
-			elseif string.find(spell.english,'Minuet') then
-				set_name = "minuet"
-			elseif string.find(spell.english,'Paeon') then
-				set_name = "paeon"
-			elseif string.find(spell.english,'Prelude') then
-				set_name = "prelude"
-			end
-			if player.status == "Engaged" then
-				equip(set_combine(sets[set_name], {main=pair[1],sub=pair[2]}))
-			else
-				equip(set_combine(sets[set_name], sets[main_sub]))
-			end
-		end
+		setSongGear(spell.english)
 	elseif spell.skill == 'Enfeebling Magic' then
 		if player.status == "Engaged" then
 			equip(set_combine(sets.enfeeble, {main=pair[1],sub=pair[2]}))
@@ -3232,12 +3393,16 @@ function aftercast(spell)
 	elseif spell.english == 'Clarion Call' and CCTimer == 'On' and not spell.interrupted then
 		send_command('input /echo [Clarion Call] 3:00;wait 30;input /echo [Clarion Call] 2:30;wait 30;input /echo [Clarion Call] 2:00;wait 30;input /echo [Clarion Call] 1:30;wait 30;input /echo [Clarion Call] 1:00;wait 30;input /echo [Clarion Call] 0:30;wait 10;input /echo [Clarion Call] 0:20;wait 10;input /echo [Clarion Call] 0:10')
 	end
-	if not spell.interrupted then
-		song_duration, dummy_song = getSongDuration(spell.english)
+	if spell.type == 'BardSong' and not spell.interrupted then
+		song_duration = getSongDuration(spell.english)
+		dummy_song = isDummySong()
+		soul_voice_song = buffactive['Soul Voice'] and true or false
 		max_songs = getMaxSongs()
+		missing_song_block = true
+		send_command('wait 5;gs c missing_song_block_false')
 	end
 	choose_set()
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
 			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
@@ -3273,7 +3438,7 @@ windower.register_event('status change', function(status)
 		end
 	end
 	choose_set() --run this any time your status changes (engage, disengage, rest)
-	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
+	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible']) then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
 			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
@@ -3288,7 +3453,7 @@ end)
 
 windower.register_event('gain buff', function(buff)
 	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds == 'On' then --Aftermath
-		windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
+		play_sound(Notification_Aftermath_On)
 		AMTimer = pre_AMTimer
 		mythicNum = pre_mythicNum
 		primeNum = pre_primeNum
@@ -3302,7 +3467,7 @@ windower.register_event('gain buff', function(buff)
 	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 	elseif buff == 17 and AlertSounds == 'On' then --Charm
-		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		play_sound(Notification_Cancel)
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
 	elseif buff == 252 then --Mounted
@@ -3312,12 +3477,12 @@ end)
 
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
-		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
+		play_sound(Notification_Aftermath_Off)
 		-- mythicNum = 0
 		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Food Has Worn Off »»')
 		hud_noti:text('«« Food Has Worn Off »»')
@@ -3325,7 +3490,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Reraise Has Worn Off »»')
 		hud_noti:text('«« Reraise Has Worn Off »»')
@@ -3333,7 +3498,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Vorseal Has Worn Off »»')
 		hud_noti:text('«« Vorseal Has Worn Off »»')
@@ -3341,7 +3506,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Signet Has Worn Off »»')
 		hud_noti:text('«« Signet Has Worn Off »»')
@@ -3349,7 +3514,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sanction Has Worn Off »»')
 		hud_noti:text('«« Sanction Has Worn Off »»')
@@ -3357,7 +3522,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sigil Has Worn Off »»')
 		hud_noti:text('«« Sigil Has Worn Off »»')
@@ -3365,7 +3530,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Ionis Has Worn Off »»')
 		hud_noti:text('«« Ionis Has Worn Off »»')
@@ -3373,7 +3538,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 1 and Alive == true then --Weakness
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		hud_noti_shdw:text('«« Weakness Has Worn Off »»')
 		hud_noti:text('«« Weakness Has Worn Off »»')
@@ -3401,7 +3566,7 @@ end
 windower.register_event('tp change',function()
 	if player.tp == 3000 and Noti3000TP == 'On' then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
+			play_sound(Notification_3000TP)
 		end
 		hud_noti_shdw:text('«« 3000 TP »»')
 		hud_noti:text('«« 3000 TP »»')
@@ -3496,6 +3661,19 @@ windower.register_event('prerender', function()
 
 	--Aftermath checks
 	if SwitchingWeapons == 0 then
+		local function colorWeaponsText(AM)
+			if ShowTPMeter ~= 'On' then
+				local c = {r = 255, g = 255, b = 255}
+				if AM == 1 then
+					c = color.AM1
+				elseif AM == 2 then
+					c = color.AM2
+				elseif AM == 3 then
+					c = color.AM3
+				end
+				hud_weapons:color(c.r,c.g,c.b)
+			end
+		end
 		if player.equipment.main == 'Mpu Gandring' then
 			if buffactive['Aftermath: Lv.1'] then
 				if currentAfterMath ~= 'PrimeAM1' or primeNum ~= currentPrimeNum or currentAMTimer ~= AMTimer then
@@ -3505,6 +3683,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'PrimeAM2' or currentAMTimer ~= AMTimer then
@@ -3513,6 +3692,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'PrimeAM3' or currentAMTimer ~= AMTimer then
@@ -3521,6 +3701,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (Phys Dmg Lmt +'..primeNum..'%) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -3528,6 +3709,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Mandau' then
@@ -3538,6 +3720,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM: (Crit +5%/Crit DMG +5%) '..am_time))
 					hud_weapons:text(formatWeapons('AM: (Crit +5%/Crit DMG +5%) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -3545,6 +3728,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Twashtar' then
@@ -3555,6 +3739,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (30% Triple Dmg) '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (30% Triple Dmg) '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'EmpyreanAM2' or currentAMTimer ~= AMTimer then
@@ -3563,6 +3748,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (40% Triple Dmg) '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (40% Triple Dmg) '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'EmpyreanAM3' or currentAMTimer ~= AMTimer then
@@ -3571,6 +3757,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (50% Triple Dmg) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (50% Triple Dmg) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -3578,6 +3765,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Carnwenhan' then
@@ -3589,6 +3777,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (Magic Acc. +'..mythicNum..') '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (Magic Acc. +'..mythicNum..') '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'MythicAM2' or currentAMTimer ~= AMTimer then
@@ -3597,6 +3786,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (Accuracy +'..mythicNum..') '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (Accuracy +'..mythicNum..') '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'MythicAM3' or currentAMTimer ~= AMTimer then
@@ -3605,6 +3795,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (Occ. Att. 2-3x) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (Occ. Att. 2-3x) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -3612,6 +3803,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif player.equipment.main == 'Aeneas' then
@@ -3622,6 +3814,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM1: (4-Step Ultimate SC) '..am_time))
 					hud_weapons:text(formatWeapons('AM1: (4-Step Ultimate SC) '..am_time))
+					colorWeaponsText(1)
 				end
 			elseif buffactive['Aftermath: Lv.2'] then
 				if currentAfterMath ~= 'AeonicAM2' or currentAMTimer ~= AMTimer then
@@ -3630,6 +3823,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM2: (3-Step Ultimate SC) '..am_time))
 					hud_weapons:text(formatWeapons('AM2: (3-Step Ultimate SC) '..am_time))
+					colorWeaponsText(2)
 				end
 			elseif buffactive['Aftermath: Lv.3'] then
 				if currentAfterMath ~= 'AeonicAM3' or currentAMTimer ~= AMTimer then
@@ -3638,6 +3832,7 @@ windower.register_event('prerender', function()
 					local am_time = formatAMTime(currentAMTimer)
 					hud_weapons_shdw:text(formatWeapons('AM3: (2-Step Ultimate SC) '..am_time))
 					hud_weapons:text(formatWeapons('AM3: (2-Step Ultimate SC) '..am_time))
+					colorWeaponsText(3)
 				end
 			else
 				if currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -3645,6 +3840,7 @@ windower.register_event('prerender', function()
 					currentAfterMath = 'None'
 					hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 					hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+					colorWeaponsText()
 				end
 			end
 		elseif currentAfterMath ~= 'None' or CurrentEquip ~= EquipMain..EquipSub then
@@ -3652,6 +3848,7 @@ windower.register_event('prerender', function()
 			currentAfterMath = 'None'
 			hud_weapons_shdw:text(formatWeapons(EquipMain..EquipSub))
 			hud_weapons:text(formatWeapons(EquipMain..EquipSub))
+			colorWeaponsText()
 		end
 		if CurrentInstrument ~= EquipRange then
 			CurrentInstrument = EquipRange
@@ -3837,7 +4034,7 @@ windower.register_event('prerender', function()
 	if NotiLowMP =='On' and subJobWithMP() and player and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off (done below)
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
@@ -3883,7 +4080,8 @@ windower.register_event('prerender', function()
 
 	--Party distance checks
 	local function distance(pt_member)
-		return (pt_member and pt_member.mob and (math.floor(pt_member.mob.distance:sqrt() * 100) / 100) <= PTMemNearDist) and 50 or 0
+		local distance = pt_member and pt_member.mob and (math.floor(pt_member.mob.distance:sqrt() * 100) / 100) or 100
+		return pt_member and pt_member.mob and (distance <= PTMemNearDist - 1) and 50 or (distance <= PTMemNearDist) and 20 or 0
 	end
 	hud_ptmember02_bg:bg_alpha(party[2] and distance(party[2]) or 0)
 	hud_ptmember03_bg:bg_alpha(party[3] and distance(party[3]) or 0)
@@ -3917,7 +4115,7 @@ windower.register_event('prerender', function()
 			end
 		end
 		if player.equipment.range == nil then
-			EquipRange = 'loading...'
+			EquipRange = 'Instruments loading...'
 		else
 			EquipRange = player.equipment.range
 		end
@@ -3927,7 +4125,7 @@ windower.register_event('prerender', function()
 			else
 				if not buffactive['Reraise'] and Alive == true then --if we are dead no need to remind us about reraise
 					if AlertSounds == 'On' then
-						windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+						play_sound(Notification_Bad)
 					end
 					hud_noti_shdw:text('«« No Reraise »»')
 					hud_noti:text('«« No Reraise »»')
@@ -3944,15 +4142,15 @@ windower.register_event('prerender', function()
 			flash('Debuffs')
 		end
 		if NotiLowHP == 'On' and LowHP == true and Alive == true then
-			hud_noti_shdw:text('«« LOW HP »»')
-			hud_noti:text('«« LOW HP »»')
+			hud_noti_shdw:text('«« Low HP »»')
+			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
 			flash('Noti')
 			NotiCountdown = -1
 		end
 		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
-			windower.play_sound(windower.addon_path..'data/sounds/Danger.wav')
+			play_sound(Notification_Danger)
 		end
 		if NotiCountdown > 0 then
 			NotiCountdown = NotiCountdown - 1
@@ -3968,6 +4166,12 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+		end
+		if party and party_count == 1 and party_count ~= party.count then
+			party_count = party.count
+			send_command('gs c ClearNotifications')
+		elseif party and party_count ~= 1 and party.count == 1 then
+			party_count = 1
 		end
 
 		--On screen song list updates
@@ -3998,37 +4202,43 @@ windower.register_event('prerender', function()
 		song_list:text(getCurrentSongList())
 
 		--PT Member updates
-
-		local cn
+		local c_not_found = {r = 125, g = 125, b = 125}
+		local c = c_not_found
+		local get_party = windower.ffxi.get_party
 		hud_ptmember01_shdw:text(formatName(player):text_strip_format())
 		hud_ptmember01:text(formatName(player))
-		cn = color.song[colorName(player)]
-		hud_ptmember01:color(cn.r,cn.g,cn.b)
+		c = color.song_list[getNameColor(player.name)]
+		hud_ptmember01:color(c.r,c.g,c.b)
 
-		hud_ptmember02_shdw:text(formatName(party[2] and party[2].mob or nil):text_strip_format())
-		hud_ptmember02:text(formatName(party[2] and party[2].mob or nil))
-		cn = party[2] and party[2].mob and color.song[colorName(party[2].mob)] or color.member.not_found
-		hud_ptmember02:color(cn.r,cn.g,cn.b)
+		local p1 = get_party().p1
+		hud_ptmember02_shdw:text(formatName(p1 or nil):text_strip_format())
+		hud_ptmember02:text(formatName(p1 or nil))
+		c = p1 and p1.mob and p1.mob.name and color.song_list[getNameColor(p1.mob.name)] or c_not_found
+		hud_ptmember02:color(c.r,c.g,c.b)
 
-		hud_ptmember03_shdw:text(formatName(party[3] and party[3].mob or nil):text_strip_format())
-		hud_ptmember03:text(formatName(party[3] and party[3].mob or nil))
-		cn = party[3] and party[3].mob and color.song[colorName(party[3].mob)] or color.member.not_found
-		hud_ptmember03:color(cn.r,cn.g,cn.b)
+		local p2 = get_party().p2
+		hud_ptmember03_shdw:text(formatName(p2 or nil):text_strip_format())
+		hud_ptmember03:text(formatName(p2 or nil))
+		c = p2 and p2.mob and p2.mob.name and color.song_list[getNameColor(p2.mob.name)] or c_not_found
+		hud_ptmember03:color(c.r,c.g,c.b)
 
-		hud_ptmember04_shdw:text(formatName(party[4] and party[4].mob or nil):text_strip_format())
-		hud_ptmember04:text(formatName(party[4] and party[4].mob or nil))
-		cn = party[4] and party[4].mob and color.song[colorName(party[4].mob)] or color.member.not_found
-		hud_ptmember04:color(cn.r,cn.g,cn.b)
+		local p3 = get_party().p3
+		hud_ptmember04_shdw:text(formatName(p3 or nil):text_strip_format())
+		hud_ptmember04:text(formatName(p3 or nil))
+		c = p3 and p3.mob and p3.mob.name and color.song_list[getNameColor(p3.mob.name)] or c_not_found
+		hud_ptmember04:color(c.r,c.g,c.b)
 
-		hud_ptmember05_shdw:text(formatName(party[5] and party[5].mob or nil):text_strip_format())
-		hud_ptmember05:text(formatName(party[5] and party[5].mob or nil))
-		cn = party[5] and party[5].mob and color.song[colorName(party[5].mob)] or color.member.not_found
-		hud_ptmember05:color(cn.r,cn.g,cn.b)
+		local p4 = get_party().p4
+		hud_ptmember05_shdw:text(formatName(p4 or nil):text_strip_format())
+		hud_ptmember05:text(formatName(p4 or nil))
+		c = p4 and p4.mob and p4.mob.name and color.song_list[getNameColor(p4.mob.name)] or c_not_found
+		hud_ptmember05:color(c.r,c.g,c.b)
 
-		hud_ptmember06_shdw:text(formatName(party[6] and party[6].mob or nil):text_strip_format())
-		hud_ptmember06:text(formatName(party[6] and party[6].mob or nil))
-		cn = party[6] and party[6].mob and color.song[colorName(party[6].mob)] or color.member.not_found
-		hud_ptmember06:color(cn.r,cn.g,cn.b)
+		local p5 = get_party().p5
+		hud_ptmember06_shdw:text(formatName(p5 or nil):text_strip_format())
+		hud_ptmember06:text(formatName(p5 or nil))
+		c = p5 and p5.mob and p5.mob.name and color.song_list[getNameColor(p5.mob.name)] or c_not_found
+		hud_ptmember06:color(c.r,c.g,c.b)
 
 		--Recast color updates
 
@@ -4245,6 +4455,11 @@ windower.register_event('prerender', function()
 			textColor('Troubadour','notfound')
 		end
 
+		if num_lost_songs > 0 then
+			windower.add_to_chat(220,('[Song List] '):color(39)..(greeting().."Possible "..num_lost_songs..(" missing %s."):format(num_lost_songs == 1 and "song" or "songs")):color(220))
+			num_lost_songs = 0
+		end
+
 	end
 end)
 
@@ -4259,6 +4474,7 @@ windower.register_event('zone change',function()
 	send_command('gs c ClearNotifications') --clear any notifications on zone
 	send_command('gs c ClearDebuffs') --clear any debuffs on zone
 	resetCurrentSongs() --clear current_songs list on zone
+	getJPGiftBonusDuration() --update in case we just recently spent more JPs
 end)
 
 -------------------------------------------
@@ -4313,7 +4529,7 @@ end
 windower.register_event('incoming text',function(org)
 	if org:find('wishes to trade with you') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiTrade == 'On' then
 			hud_noti_shdw:text('«« Trade Request »»')
@@ -4322,7 +4538,7 @@ windower.register_event('incoming text',function(org)
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		if NotiSneak == 'On' and org:find('Sneak') then
 			hud_noti_shdw:text('«« Sneak Wearing »»')
@@ -4337,7 +4553,7 @@ windower.register_event('incoming text',function(org)
 		send_command('gs c Radialens')
 	elseif org:find('invites you to') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiInvite == 'On' and org:find('party') and not org:find('alliance') then
 			hud_noti_shdw:text('«« Party Invite »»')
@@ -4352,7 +4568,7 @@ windower.register_event('incoming text',function(org)
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 15 Minutes Remaining »»')
@@ -4361,7 +4577,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 10 Minutes Remaining »»')
@@ -4370,7 +4586,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 5 Minutes Remaining »»')
@@ -4384,11 +4600,11 @@ windower.register_event('incoming text',function(org)
 	end
 end)
 
-windower.register_event('action',function(act)
-
 -------------------------------------------
 --             SONG TRACKING             --
 -------------------------------------------
+
+windower.register_event('action',function(act)
 
 	local my_name = windower.ffxi.get_player().name
 	local actor_name = windower.ffxi.get_mob_by_id(act.actor_id) and windower.ffxi.get_mob_by_id(act.actor_id).name or nil
@@ -4417,6 +4633,7 @@ windower.register_event('action',function(act)
 						player_songs[song_name] = {
 							duration = song_duration,
 							dummy = dummy_song,
+							soul_voice = soul_voice_song,
 						}
 					else
 						-- If the player has max_songs or more, check if the song exists
@@ -4425,6 +4642,7 @@ windower.register_event('action',function(act)
 							player_songs[song_name] = {
 								duration = song_duration,
 								dummy = dummy_song,
+								soul_voice = soul_voice_song,
 							}
 						else
 							-- Find the song with the lowest duration
@@ -4444,6 +4662,7 @@ windower.register_event('action',function(act)
 								player_songs[song_name] = {
 									duration = song_duration,
 									dummy = dummy_song,
+									soul_voice = soul_voice_song,
 								}
 							end
 						end
