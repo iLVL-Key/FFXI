@@ -444,6 +444,16 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted the Song List display. Bullet in front of each song is now larger and colored to indicate which type of song (default colors match the XIView color scheme for song icons). Party Member names are now centered, and colored based on their lowest current song duration. Song durations are now right-aligned.
+- Adjusted HUD to now show party members even if they are in a different zone.
+- Adjusted formatting of a number of things in the Options section.
+- Adjusted Notifications to clear after joining a party.
+- Fixed precast so that if Nightingale is up it will equip the proper specific song buff gear instead of the base buff_song set.
+- Fixed an issue with SP Ability 2 recast.
+- Various code cleanup.
+
 Version 1.0 BETA-5
 - Adjusted Song List to display a musical notee as the bullet to indicate a dummy song.
 
