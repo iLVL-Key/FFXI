@@ -96,6 +96,13 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.8
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using snake_case.
+- Adjusted Notifications to clear after joining a party.
+- Fixed an issue where no gear set would equip while idle or engaged with no Mode set yet (defaults to Mode1 when None).
+- Various code cleanup.
+
 Version 18.7
 - Adjusted Notifications to clear after joining a party.
 - Fixed an issue with SP2 recast
@@ -475,6 +482,12 @@ Version 1.0 BETA-1
  
 <summary>GEO</summary>
 
+Version 14.5
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using snake_case.
+- Adjusted Notifications to clear after joining a party.
+- Various code cleanup.
+
 Version 14.4
 - Adjusted Notifications to clear after joining a party.
 - Fixed an issue with SP2 recast
@@ -749,6 +762,12 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.7
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using snake_case.
+- Adjusted Notifications to clear after joining a party.
+- Various code cleanup.
+
 Version 7.6
 - Adjusted Notifications to clear after joining a party.
 - Fixed an issue with SP2 recast
@@ -887,6 +906,12 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.7
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using snake_case.
+- Adjusted Notifications to clear after joining a party.
+- Various code cleanup.
 
 Version 14.6
 - Adjusted Notifications to clear after joining a party.
@@ -1176,6 +1201,12 @@ Version 11.0
 <details>
  
 <summary>RUN</summary>
+
+Version 9.8
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using snake_case.
+- Adjusted Notifications to clear after joining a party.
+- Various code cleanup.
 
 Version 9.7
 - Adjusted Notifications to clear after joining a party.
@@ -1653,6 +1684,12 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.6
+- Added Chocobo Circuit to the list of Town Zones.
+- Adjusted a lot of set names to be easier to read using snake_case.
+- Adjusted Notifications to clear after joining a party.
+- Various code cleanup.
+
 Version 12.5
 - Adjusted Notifications to clear after joining a party.
 - Fixed an issue with SP2 recast
@@ -1877,7 +1914,7 @@ Version 8.0
 Version 9.0
 - Overhauled the way Weapon Skills are handled. Dramatically simplified WS code. Removed the Capped TP and Attack Cap WS sets. Will now use, in order: `ws_accuracy` if in High Accuracy Mode (Mode3) > `sets["Weapon Skill Name"].high_buff` if above the Attack Cap Threshold and the set exists > `sets["Weapon Skill Name"]` if the set exists > `weapons_skill`. The `.high_buff` sets allow for setting specific gear per WS instead of a single Capped Attack set that overlays on top of any given WS set. Will layer `hachirin_no_obi` and `ygnass_resolve_1` sets on top of the base set used as necessary.
 - Added Chocobo Circuit to the list of Town Zones.
-- Adjusted a lot of set names to be easier to read using camelcase.
+- Adjusted a lot of set names to be easier to read using snake_case.
 - Adjusted Notifications to clear after joining a party.
 - Various code cleanup.
 
