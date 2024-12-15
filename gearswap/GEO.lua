@@ -80,7 +80,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -106,7 +106,7 @@ ShowHUD			=	'On'	--[On/Off]  Initial state of the HUD. Use `//hud` to show/hide 
 DTBind			=	'^d'	--Sets the keyboard shortcut you would like to activate the Damage Taken Override. CTRL+D (^d) is default.
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
-DangerRepeat	=	10		--Maximum number of times the Danger Sound will repeat, once per second.
+DangerRepeat	=	5		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
@@ -255,7 +255,7 @@ sets.idle = {
 -- Luopan (Pet Damage Taken-, Pet Regen)
 -- Used when you DO have a Luopan bubble out.
 -- Combines with Idle set, only necessary to set the slots with specific desired stats
-sets.luopan = set_combine(sets.idle, {
+sets.luopan_out = set_combine(sets.idle, {
 	main="Idris",
 	sub="Genmei Shield",
 	range="Dunna",
@@ -269,7 +269,7 @@ sets.luopan = set_combine(sets.idle, {
 
 -- DT Override (Damage Taken-, Magic Evasion)
 -- Will override all other gear sets but still inherit unused slots from them
-sets.dtoverride = {
+sets.dt_override = {
 	head="Azimuth Hood +3",
 	body="Nyame Mail",
 	hands="Azimuth Gloves +3",
@@ -279,7 +279,7 @@ sets.dtoverride = {
 
 -- Oh Shit
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
-sets.ohshit = {
+sets.oh_shit = {
 	head="Azimuth Hood +3",
 	body="Nyame Mail",
 	hands="Azimuth Gloves +3",
@@ -296,7 +296,7 @@ sets.rest = {
 }
 
 -- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack)
-sets.dps = {
+sets.melee = {
 	head="Azimuth Hood +3",
 	body="Azimuth Coat +3",
 	hands="Azimuth Gloves +3",
@@ -312,7 +312,7 @@ sets.dps = {
 }
 
 -- Weapon Skill - Basic (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
-sets.ws = {
+sets.weapon_skill = {
 	head="Nyame Helm",
 	body="Nyame Mail",
 	hands="Nyame Gauntlets",
@@ -328,24 +328,24 @@ sets.ws = {
 }
 
 -- Exudation (combines with Weapon Skill set above)
-sets["Exudation"] = set_combine(sets.ws, {
+sets["Exudation"] = set_combine(sets.weapon_skill, {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 })
 
 -- Black Halo (combines with Weapon Skill set above)
-sets["Black Halo"] = set_combine(sets.ws, {
+sets["Black Halo"] = set_combine(sets.weapon_skill, {
 
 })
 
 -- Hexa Strike (combines with Weapon Skill set above)
-sets["Hexa Strike"] = set_combine(sets.ws, {
+sets["Hexa Strike"] = set_combine(sets.weapon_skill, {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 })
 
 -- Cataclysm (combines with Weapon Skill set above)
-sets["Cataclysm"] = set_combine(sets.ws, {
+sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	head="Pixie Hairpin +1",
 	body="Azimuth Coat +3",
 	hands="Azimuth Gloves +3",
@@ -361,7 +361,7 @@ sets["Cataclysm"] = set_combine(sets.ws, {
 })
 
 -- Fast Cast (cap is 80%)
-sets.fastcast = {
+sets.fast_cast = {
 	sub="Chanter's Shield", --3%
 	head="Amalric Coif +1", --11%
 	body="Agwu's Robe", --8%
@@ -413,7 +413,7 @@ sets.elemental = {
 }
 
 -- Magic Accuracy (Magic Accuracy)
-sets.magicaccuracy = {
+sets.magic_accuracy = {
 	main="Bunzi's Rod",
 	sub="Ammurapi Shield",
 	head="Azimuth Hood +3",
@@ -462,7 +462,7 @@ sets.healing = {
 
 -- Aspir/Drain (Aspir/Drain, Dark Magic Skill)
 -- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
-sets.aspirdrain = set_combine(sets.magicaccuracy, {
+sets.aspir_drain = set_combine(sets.magic_accuracy, {
 	head="Bagua Galero +3",
 	feet="Agwu's Pigaches",
 	neck="Erra Pendant",
@@ -472,7 +472,7 @@ sets.aspirdrain = set_combine(sets.magicaccuracy, {
 
 -- Enfeeble (Enfeebling Magic Skill)
 -- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
-sets.enfeeble = set_combine(sets.magicaccuracy, {
+sets.enfeeble = set_combine(sets.magic_accuracy, {
 	main="Idris",
 	sub="Ammurapi Shield",
 	right_ring="Kishar Ring",
@@ -504,7 +504,7 @@ sets.impact = {
 }
 
 -- Holy Water (Holy Water+)
-sets.hwater = {
+sets.holy_water = {
 	neck="Nicander's Necklace",
 	ring1="Blenmot's Ring +1",
 	ring2="Blenmot's Ring +1",
@@ -516,28 +516,28 @@ sets.bolster = {
 }
 
 -- Full Circle (Enhances Curative Recantation gear)
-sets.fullcircle = {
+sets.full_circle = {
 	head="Azimuth Hood +3",
 	hands="Bagua Mitaines +3",
 }
 
 -- Radial Arcana (Enhances Radial Arcana gear)
-sets.radialarcana = {
+sets.radial_arcana = {
 	feet="Bagua Sandals +3",
 }
 
 -- Mending Halation (Enhances Mending Halation gear)
-sets.mendinghalation = {
+sets.mending_halation = {
 	legs="Bagua Pants +3",
 }
 
 -- Collimated Fervor (Enhances Privemal Zeal gear)
-sets.collimatedfervor = {
+sets.collimated_fervor = {
 	head="Bagua Galero +3",
 }
 
 -- Life Cycle (Enhances Life Cycle gear)
-sets.lifecycle = {
+sets.life_cycle = {
 	body="Geomancy Tunic +3",
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Pet: "Regen"+10','Pet: "Regen"+5',}},
 }
@@ -587,7 +587,7 @@ end
 
 
 
-FileVersion = '14.4'
+FileVersion = '14.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -610,7 +610,7 @@ WindyZones = S{
 	}
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
 	}
 
 -------------------------------------------
@@ -658,6 +658,14 @@ LuopanDelay = false --used to create a short delay between casting a luopan and 
 EntrustCountdown = 0
 EntrustTarget = nil
 party_count = party and party.count or 1
+
+local play_sound = windower.play_sound
+local addon_path = windower.addon_path
+local Notification_Good = addon_path..'data/sounds/NotiGood.wav'
+local Notification_Bad = addon_path..'data/sounds/NotiBad.wav'
+local Notification_Danger = addon_path..'data/sounds/Danger.wav'
+local Notification_Cancel = addon_path..'data/sounds/Cancel.wav'
+local Notification_3000TP = addon_path..'data/sounds/3000TP.wav'
 
 -- Sets the inital subjob
 local subjob = 'OTH'
@@ -1498,7 +1506,7 @@ function self_command(command)
 		send_command('wait 4;gs c RadialensCheck')
 	elseif command == 'RadialensCheck' and string.find(world.area,'Escha') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Radialens Has Worn Off »»')
 		hud_noti:text('«« Radialens Has Worn Off »»')
@@ -1691,7 +1699,7 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if DTOverride == 'On' then
-			equip(set_combine(sets.rest, sets.dtoverride))
+			equip(set_combine(sets.rest, sets.dt_override))
 		else
 			equip(set_combine(sets.idle, sets.rest))
 		end
@@ -1722,12 +1730,12 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if DTOverride == 'On' then
-			equip(set_combine(sets.dps, sets.dtoverride))
+			equip(set_combine(sets.melee, sets.dt_override))
 		else
-			equip(sets.dps)
+			equip(sets.melee)
 		end
 		if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		end
 	elseif player.status == "Idle" then
 		if TownZones:contains(world.area) then
@@ -1783,17 +1791,17 @@ function choose_set()
 			equip(set_combine(sets.idle, sets.town))
 		elseif LuopanActive == true then
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
-				equip(set_combine(sets.luopan, sets.ohshit))
+				equip(set_combine(sets.luopan_out, sets.oh_shit))
 			elseif DTOverride == "On" then
-				equip(set_combine(sets.luopan, sets.dtoverride))
+				equip(set_combine(sets.luopan_out, sets.dt_override))
 			else
-				equip(sets.luopan)
+				equip(sets.luopan_out)
 			end
 		else
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
-				equip(set_combine(sets.idle, sets.ohshit))
+				equip(set_combine(sets.idle, sets.oh_shit))
 			elseif DTOverride == "On" then
-				equip(set_combine(sets.idle, sets.dtoverride))
+				equip(set_combine(sets.idle, sets.dt_override))
 			else
 				equip(sets.idle)
 			end
@@ -1808,32 +1816,32 @@ end
 function precast(spell)
 	if buffactive['terror'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['petrification'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['sleep'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['stun'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['amnesia'] and (spell.type == 'WeaponSkill' or spell.type == 'JobAbility') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['silence'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
 			send_command('input /item "Echo Drop" <me>')
@@ -1843,13 +1851,13 @@ function precast(spell)
 		flash('Debuffs')
 	elseif buffactive['mute'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Not Enough TP »»')
 			hud_noti:text('«« Not Enough TP »»')
@@ -1857,7 +1865,7 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 		elseif ((spell.skill == 'Marksmanship' or spell.skill == 'Archery') and spell.target.distance >= (spell.target.model_size + 23)) or ((spell.target.distance >= (spell.target.model_size + 3)) and not (spell.english == 'Starlight' or spell.english == 'Moonlight')) then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Too Far »»')
 			hud_noti:text('«« Too Far »»')
@@ -1868,22 +1876,22 @@ function precast(spell)
 		elseif sets[spell.english] then
 			equip(sets[spell.english])
 		else
-			equip(sets.ws)
+			equip(sets.weapon_skill)
 		end
 	elseif spell.english == 'Bolster' and Bolster.recast < 2 then
 		equip(sets.bolster)
 	elseif spell.english == 'Full Circle' and FullCircle.recast < 2 then
-		equip(sets.fullcircle)
+		equip(sets.full_circle)
 	elseif spell.english == 'Radial Arcana' and RadialArcana.recast < 2 then
-		equip(sets.radialarcana)
+		equip(sets.radial_arcana)
 	elseif spell.english == 'Mending Halation' and MendingHalation.recast < 2 then
-		equip(sets.mendinghalation)
+		equip(sets.mending_halation)
 	elseif spell.english == 'Collimated Fervor' and CollimatedFervor.recast < 2 then
-		equip(sets.collimatedfervor)
+		equip(sets.collimated_fervor)
 	elseif spell.english == 'Life Cycle' and LifeCycle.recast < 2 then
-		equip(sets.lifecycle)
+		equip(sets.life_cycle)
 	elseif spell.english == 'Holy Water' then
-		equip(sets.hwater)
+		equip(sets.holy_water)
 	elseif string.find(spell.english,'Geo-') and LuopanActive == true and AutoFullCircle == 'On' and FullCircle.recast < 2 then
 		--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle instead
 		if not double_full_circle_fix then
@@ -1892,7 +1900,7 @@ function precast(spell)
 			send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_full_circle_fix')
 			return
 		end
-		equip(sets.fastcast)
+		equip(sets.fast_cast)
 	elseif string.find(spell.english,'Indi-') then
 		if AutoEntrust == 'On' and Entrust.recast == 0 and spell.target.ispartymember == true and spell.target.type ~= 'SELF' then
 			if UseEntrust == false then
@@ -1919,21 +1927,21 @@ function precast(spell)
 			--if we cast an Indi- spell on ourselves we reset UseEntrust back to false, this allows us to cancel the use of AutoEntrust and go through the double-check above again for next time
 			send_command('gs c CancelUseEntrust')
 		end
-		equip(sets.fastcast)
+		equip(sets.fast_cast)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 		if spell.english ~= 'Spectral Jig' then
-			equip(sets.fastcast)
+			equip(sets.fast_cast)
 		end
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
-		equip(sets.fastcast)
+		equip(sets.fast_cast)
 	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
 		equip(sets.Elemental)
 	elseif spell.english == 'Impact' then
-		equip(set_combine(sets.fastcast, sets.impact))
+		equip(set_combine(sets.fast_cast, sets.impact))
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
-		equip(sets.fastcast)
+		equip(sets.fast_cast)
 	end
 end
 
@@ -1945,7 +1953,7 @@ function midcast(spell)
 	if spell.type == 'Geomancy' then
 		equip(sets.geomancy)
 	elseif spell.english == 'Impact' then
-		equip(set_combine(sets.magicaccuracy, sets.impact))
+		equip(set_combine(sets.magic_accuracy, sets.impact))
 	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
 		equip(sets.elemental)
 	elseif spell.skill == 'Enfeebling Magic' then
@@ -1957,9 +1965,9 @@ function midcast(spell)
 	elseif string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
 		equip(set_combine(sets.buff, sets.healing))
 	elseif string.find(spell.english,'Aspir') or string.find(spell.english,'Drain') then
-		equip(sets.aspirdrain)
+		equip(sets.aspir_drain)
 	elseif string.find(spell.english,'Absorb') then
-		equip(sets.magicaccuracy)
+		equip(sets.magic_accuracy)
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
 	end
@@ -2265,13 +2273,13 @@ windower.register_event('gain buff', function(buff)
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --If we get slept, remove stoneskin if its up
 			send_command('cancel 37')
 		end
-		equip(sets.ohshit)
+		equip(sets.oh_shit)
 	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Oh Shit set
-		equip(sets.ohshit)
+		equip(sets.oh_shit)
 	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 	elseif buff == 17 and AlertSounds == 'On' then --Charm
-		windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+		play_sound(Notification_Cancel)
 	elseif buff == 612 then --Colure Active
 		hud_indi_spell_shdw:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(IndiTotal and IndiTotal or '')..(IndiSuffix and IndiSuffix or '')))
 		hud_indi_spell:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(IndiTotal and IndiTotal or '')..(IndiSuffix and IndiSuffix or '')))
@@ -2286,7 +2294,7 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Food Has Worn Off »»')
 		hud_noti:text('«« Food Has Worn Off »»')
@@ -2294,7 +2302,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Reraise Has Worn Off »»')
 		hud_noti:text('«« Reraise Has Worn Off »»')
@@ -2302,7 +2310,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Vorseal Has Worn Off »»')
 		hud_noti:text('«« Vorseal Has Worn Off »»')
@@ -2310,7 +2318,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Signet Has Worn Off »»')
 		hud_noti:text('«« Signet Has Worn Off »»')
@@ -2318,7 +2326,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sanction Has Worn Off »»')
 		hud_noti:text('«« Sanction Has Worn Off »»')
@@ -2326,7 +2334,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sigil Has Worn Off »»')
 		hud_noti:text('«« Sigil Has Worn Off »»')
@@ -2334,7 +2342,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Ionis Has Worn Off »»')
 		hud_noti:text('«« Ionis Has Worn Off »»')
@@ -2342,7 +2350,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 1 and Alive == true then --Weakness
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		hud_noti_shdw:text('«« Weakness Has Worn Off »»')
 		hud_noti:text('«« Weakness Has Worn Off »»')
@@ -2368,7 +2376,7 @@ end)
 windower.register_event('tp change',function()
 	if player.tp == 3000 and Noti3000TP == 'On' then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
+			play_sound(Notification_3000TP)
 		end
 		hud_noti_shdw:text('«« 3000 TP »»')
 		hud_noti:text('«« 3000 TP »»')
@@ -2571,7 +2579,7 @@ windower.register_event('prerender', function()
 	if NotiLowMP =='On' and player and player.mpp <= 20 and NotiLowMPToggle == 'Off' then
 		NotiLowMPToggle = 'On' --turn the toggle on so this can't be triggered again until its toggled off (done below)
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
@@ -2706,7 +2714,7 @@ windower.register_event('prerender', function()
 			else
 				if not buffactive['Reraise'] and Alive == true then --if we are dead no need to remind us about reraise
 					if AlertSounds == 'On' then
-						windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+						play_sound(Notification_Bad)
 					end
 					hud_noti_shdw:text('«« No Reraise »»')
 					hud_noti:text('«« No Reraise »»')
@@ -2737,7 +2745,7 @@ windower.register_event('prerender', function()
 		end
 		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
-			windower.play_sound(windower.addon_path..'data/sounds/Danger.wav')
+			play_sound(Notification_Danger)
 		end
 		if NotiCountdown > 0 then
 			NotiCountdown = NotiCountdown - 1
@@ -3164,7 +3172,7 @@ windower.register_event('incoming text',function(org)
 		DematerializeActive = false
 	elseif org:find('wishes to trade with you') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiTrade == 'On' then
 			hud_noti_shdw:text('«« Trade Request »»')
@@ -3173,7 +3181,7 @@ windower.register_event('incoming text',function(org)
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		if NotiSneak == 'On' and org:find('Sneak') then
 			hud_noti_shdw:text('«« Sneak Wearing »»')
@@ -3188,7 +3196,7 @@ windower.register_event('incoming text',function(org)
 		send_command('gs c Radialens')
 	elseif org:find('invites you to') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiInvite == 'On' and org:find('party') and not org:find('alliance') then
 			hud_noti_shdw:text('«« Party Invite »»')
@@ -3203,7 +3211,7 @@ windower.register_event('incoming text',function(org)
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 15 Minutes Remaining »»')
@@ -3212,7 +3220,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 10 Minutes Remaining »»')
@@ -3221,7 +3229,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 5 Minutes Remaining »»')
