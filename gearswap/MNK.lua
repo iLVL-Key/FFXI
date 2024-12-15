@@ -94,7 +94,7 @@ NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to
 NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -126,7 +126,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
 CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
-DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
+DangerRepeat		=	5		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas			=	'On'	--[On/Off]  Adds commas to damage numbers.
@@ -144,19 +144,19 @@ AddCommas			=	'On'	--[On/Off]  Adds commas to damage numbers.
 --DPS MODES (Modes 1, 2, 3, and 4)
 
 --MNK/WAR
-sub.WAR.dps.Abil01 = "Focus"		sub.WAR.dps.Abil01_sh = ""
-sub.WAR.dps.Abil02 = "Impetus"		sub.WAR.dps.Abil02_sh = ""
-sub.WAR.dps.Abil03 = "Footwork"		sub.WAR.dps.Abil03_sh = ""
-sub.WAR.dps.Abil04 = "Aggressor"	sub.WAR.dps.Abil04_sh = ""
-sub.WAR.dps.Abil05 = "Berserk"		sub.WAR.dps.Abil05_sh = ""
-sub.WAR.dps.Abil06 = "Warcry"		sub.WAR.dps.Abil06_sh = ""
+sub.WAR.dps.Abil01 = "Focus"			sub.WAR.dps.Abil01_sh = ""
+sub.WAR.dps.Abil02 = "Impetus"			sub.WAR.dps.Abil02_sh = ""
+sub.WAR.dps.Abil03 = "Footwork"			sub.WAR.dps.Abil03_sh = ""
+sub.WAR.dps.Abil04 = "Aggressor"		sub.WAR.dps.Abil04_sh = ""
+sub.WAR.dps.Abil05 = "Berserk"			sub.WAR.dps.Abil05_sh = ""
+sub.WAR.dps.Abil06 = "Warcry"			sub.WAR.dps.Abil06_sh = ""
 --MNK/DRG
-sub.DRG.dps.Abil01 = "Focus"		sub.DRG.dps.Abil01_sh = ""
-sub.DRG.dps.Abil02 = "Impetus"		sub.DRG.dps.Abil02_sh = ""
-sub.DRG.dps.Abil03 = "Footwork"		sub.DRG.dps.Abil03_sh = ""
-sub.DRG.dps.Abil04 = "High Jump"	sub.DRG.dps.Abil04_sh = ""
-sub.DRG.dps.Abil05 = "Super Jump"	sub.DRG.dps.Abil05_sh = ""
-sub.DRG.dps.Abil06 = "Chakra"		sub.DRG.dps.Abil06_sh = ""
+sub.DRG.dps.Abil01 = "Focus"			sub.DRG.dps.Abil01_sh = ""
+sub.DRG.dps.Abil02 = "Impetus"			sub.DRG.dps.Abil02_sh = ""
+sub.DRG.dps.Abil03 = "Footwork"			sub.DRG.dps.Abil03_sh = ""
+sub.DRG.dps.Abil04 = "High Jump"		sub.DRG.dps.Abil04_sh = ""
+sub.DRG.dps.Abil05 = "Super Jump"		sub.DRG.dps.Abil05_sh = ""
+sub.DRG.dps.Abil06 = "Chakra"			sub.DRG.dps.Abil06_sh = ""
 --MNK/DNC
 sub.DNC.dps.Abil01 = "Focus"			sub.DNC.dps.Abil01_sh = ""
 sub.DNC.dps.Abil02 = "Dodge"			sub.DNC.dps.Abil02_sh = ""
@@ -324,7 +324,7 @@ function get_sets()
 
 -- Mode 1 (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
-sets.modeone = {
+sets.Mode1 = {
 	ammo="Coiste Bodhar",
 	head="Adhemar Bonnet +1",
 	body="Mpaca's Doublet",
@@ -341,7 +341,7 @@ sets.modeone = {
 }
 
 -- Mode 2 (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
-sets.modetwo = set_combine(sets.modeone, {
+sets.Mode2 = set_combine(sets.Mode1, {
 	ammo="Coiste Bodhar",
 	head="Ken. Jinpachi +1",
 	body="Mpaca's Doublet",
@@ -359,7 +359,7 @@ sets.modetwo = set_combine(sets.modeone, {
 
 -- Mode 3 (Accuracy) (Example: A focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Store TP, and Attack)
 -- NOTE: This is a special mode for accuracy. When in this mode, weapon skills will default to the Accuracy Weapon Skill set.
-sets.modethree = set_combine(sets.modeone, {
+sets.Mode3 = set_combine(sets.Mode1, {
 	ammo="Coiste Bodhar",
 	head="Bhikku Crown +3",
 	body="Tatena. Harama. +1",
@@ -377,7 +377,7 @@ sets.modethree = set_combine(sets.modeone, {
 
 -- Mode 4 (Subtle Blow) (Example: A focus on Subtle blow, with a mix of Multi-Attack, Store TP, DEX, Accuracy, and Attack)
 -- NOTE: SB and SBII both cap at +50% each, with an overall cap of 75%. MNK gets Subtle Blow +35 from Job Traits. Thus, SB +15 and SBII +25 in gear will cap total Subtle Blow.
-sets.modefour = set_combine(sets.modeone, {
+sets.Mode4 = set_combine(sets.Mode1, {
 	head="Bhikku Crown +3",		--SB +14
 	waist="Moonbow Belt +1",	--SBII +15
 	left_ear="Schere Earring",	--SB +3
@@ -387,7 +387,7 @@ sets.modefour = set_combine(sets.modeone, {
 
 -- Mode 5 (Tank) (Example: A focus on DT-, Counter, Killer effects, HP+, then filling in the rest with Multi-Attack, Store TP, and Attack)
 -- NOTE: Counter caps at 80%. Job Trait: 22, Merit: 5 (27 total base + Spharai: 14 = 41)
-sets.modefive = set_combine(sets.modeone, {
+sets.Mode5 = set_combine(sets.Mode1, {
 	ammo="Amar Cluster",			--Counter +2
 	head="Bhikku Crown +3",
 	body="Mpaca's Doublet",			--Counter +10
@@ -413,7 +413,7 @@ sets.idle = {
 
 -- Oh Shit
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
-sets.ohshit = {
+sets.oh_shit = {
 	neck="Warder's Charm +1",
 	left_ring="Defending Ring",
 	right_ring="Shadow Ring",
@@ -421,7 +421,7 @@ sets.ohshit = {
 }
 
 -- Weapon Skill - Basic (STR, DEX, Multi-hit, Crit, Attack)
-sets.ws = {
+sets.weapon_skill = {
 	ammo="Coiste Bodhar",
 	head="Anch. Crown +3",
 	body="Mpaca's Doublet",
@@ -439,7 +439,7 @@ sets.ws = {
 
 -- Weapon Skill - Accuracy (WS Accuracy, Accuracy)
 -- NOTE: This is a special set for weapon skill accuracy. When in the Accuracy mode (mode 2), weapon skills will use this set.
-sets.accws = set_combine(sets.ws, {
+sets.ws_accuracy = set_combine(sets.weapon_skill, {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	left_ring="Karieyh Ring +1",
@@ -448,13 +448,13 @@ sets.accws = set_combine(sets.ws, {
 
 -- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
 -- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
-sets.cappedtpws = set_combine(sets.ws, {
+sets.ws_capped_tp = set_combine(sets.weapon_skill, {
 	head="Nyame Helm",
 	right_ear="Sherida Earring",
 })
 
 -- Tornado Kick (Kick Attacks, TP Bonus, STR, VIT )
-sets["Tornado Kick"] = set_combine(sets.ws, {
+sets["Tornado Kick"] = set_combine(sets.weapon_skill, {
 	head="Mpaca's Cap",
 	body="Nyame Mail",
 	hands="Nyame Gauntlets",
@@ -470,7 +470,7 @@ sets["Tornado Kick"] = set_combine(sets.ws, {
 })
 
 -- Final Heaven (VIT, STR, WSD)
-sets["Final Heaven"] = set_combine(sets.ws, {
+sets["Final Heaven"] = set_combine(sets.weapon_skill, {
 	ammo="Knobkierrie",
 	head="Nyame Helm",
 	body="Nyame Mail",
@@ -487,7 +487,7 @@ sets["Final Heaven"] = set_combine(sets.ws, {
 })
 
 -- Ascetic's Fury (VIT, STR, crit+)
-sets["Ascetic's Fury"] = set_combine(sets.ws, {
+sets["Ascetic's Fury"] = set_combine(sets.weapon_skill, {
 	ammo="Crepuscular Pebble",
 	head="Adhemar Bonnet +1",
 	body="Bhikku Cyclas +3",
@@ -504,7 +504,7 @@ sets["Ascetic's Fury"] = set_combine(sets.ws, {
 })
 
 -- Victory Smite (STR, crit+)
-sets["Victory Smite"] = set_combine(sets.ws, {
+sets["Victory Smite"] = set_combine(sets.weapon_skill, {
 	ammo="Coiste Bodhar",
 	head="Mpaca's Cap",
 	body="Bhikku Cyclas +3",
@@ -521,7 +521,7 @@ sets["Victory Smite"] = set_combine(sets.ws, {
 })
 
 -- Shijin Spiral (DEX, STR)
-sets["Shijin Spiral"] = set_combine(sets.ws, {
+sets["Shijin Spiral"] = set_combine(sets.weapon_skill, {
 	ammo="Coiste Bodhar",
 	head="Mpaca's Cap",
 	body="Bhikku Cyclas +3",
@@ -538,7 +538,7 @@ sets["Shijin Spiral"] = set_combine(sets.ws, {
 })
 
 -- Cataclysm (Dark Elem. MAB, INT, Magic Damage, WSD)
-sets["Cataclysm"] = set_combine(sets.ws, {
+sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	ammo="Ghastly Tathlum +1",
 	head="Pixie Hairpin +1",
 	body="Nyame Mail",
@@ -554,12 +554,12 @@ sets["Cataclysm"] = set_combine(sets.ws, {
 })
 
 -- Maru Kala
-sets["Maru Kala"] = set_combine(sets.ws, {
+sets["Maru Kala"] = set_combine(sets.weapon_skill, {
 
 })
 
 -- Fast Cast (cap is 80%)
-sets.fastcast = {
+sets.fast_cast = {
 	ammo="Sapience Orb",
 	hands="Leyline Gloves",
 	neck="Baetyl Pendant",
@@ -571,7 +571,7 @@ sets.fastcast = {
 
 -- Ygnas's Resolve +1
 -- NOTE: Will combine with the appropriate Weapon Skill set while participating in a Reive
-sets.ygnas = {
+sets.ygnass_resolve_1 = {
 	--neck="Ygnas's Resolve +1",
 }
 
@@ -598,7 +598,7 @@ sets.chakra = {
 }
 
 -- Chi Blast
-sets.chiblast = {
+sets.chi_blast = {
 	head="Hes. Crown",
 }
 
@@ -618,12 +618,12 @@ sets.mantra = {
 }
 
 -- Formless Strikes
-sets.formlessstrikes = {
+sets.formless_strikes = {
 	body="Hes. Cyclas",
 }
 
 -- Perfect Counter
-sets.perfectcounter = {
+sets.perfect_counter = {
 	head="Bhikku Crown +3",
 }
 
@@ -633,7 +633,7 @@ sets.impetus = {
 }
 
 -- Hundred Fists
-sets.hundredfists = {
+sets.hundred_fists = {
 	legs="Hes. Hose",
 }
 
@@ -658,7 +658,7 @@ sets.violent_flourish = {
 }
 
 -- Holy Water (Holy Water+)
-sets.hwater = {
+sets.holy_water = {
 	neck="Nicander's Necklace",
 	ring1="Blenmot's Ring +1",
 	ring2="Blenmot's Ring +1",
@@ -708,7 +708,7 @@ end
 
 
 
-FileVersion = '7.6'
+FileVersion = '7.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -731,7 +731,7 @@ WindyZones = S{
 	}
 
 TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia'
+	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
 	}
 
 -------------------------------------------
@@ -779,6 +779,16 @@ primeNum = 0
 AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
+
+local play_sound = windower.play_sound
+local addon_path = windower.addon_path
+local Notification_Good = addon_path..'data/sounds/NotiGood.wav'
+local Notification_Bad = addon_path..'data/sounds/NotiBad.wav'
+local Notification_Danger = addon_path..'data/sounds/Danger.wav'
+local Notification_Cancel = addon_path..'data/sounds/Cancel.wav'
+local Notification_Aftermath_On = addon_path..'data/sounds/AftermathOn.wav'
+local Notification_Aftermath_Off = addon_path..'data/sounds/AftermathOff.wav'
+local Notification_3000TP = addon_path..'data/sounds/3000TP.wav'
 
 --create a new table that combines both the WeaponCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
 local WeaponCyclePlusAbyssea = {}
@@ -1722,7 +1732,7 @@ function self_command(command)
 		send_command('wait 4;gs c RadialensCheck')
 	elseif command == 'RadialensCheck' and string.find(world.area,'Escha') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Radialens Has Worn Off »»')
 		hud_noti:text('«« Radialens Has Worn Off »»')
@@ -1917,7 +1927,7 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if LowHP == true then --if we have low HP we equip the Oh Shit gear set
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		else
 			local function setEquip(mode_set)
 				if buffactive['Footwork'] and buffactive['Impetus'] then
@@ -1930,17 +1940,7 @@ function choose_set()
 					equip(mode_set)
 				end
 			end
-			if Mode == 'Mode1' then
-				setEquip(sets.modeone)
-			elseif Mode == 'Mode2' then
-				setEquip(sets.modetwo)
-			elseif Mode == 'Mode3' then
-				setEquip(sets.modethree)
-			elseif Mode == 'Mode4' then
-				setEquip(sets.modefour)
-			elseif Mode == 'Mode5' then
-				equip(sets.modefive)
-			end
+			setEquip(sets[Mode])
 		end
 	elseif player.status == "Idle" then
 		if TownZones:contains(world.area) then
@@ -1973,79 +1973,19 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if AdoulinZones:contains(world.area) then
-			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.idle, sets.adoulin))
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.idle, sets.adoulin))
-			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.idle, sets.adoulin))
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle, sets.adoulin))
-			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.idle, sets.adoulin))
-			end
+			equip(set_combine(sets[Mode], sets.idle, sets.adoulin))
 		elseif BastokZones:contains(world.area) then
-			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.idle, sets.bastok))
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.idle, sets.bastok))
-			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.idle, sets.bastok))
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle, sets.bastok))
-			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.idle, sets.bastok))
-			end
+			equip(set_combine(sets[Mode], sets.idle, sets.bastok))
 		elseif SandyZones:contains(world.area) then
-			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.idle, sets.sandoria))
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.idle, sets.sandoria))
-			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.idle, sets.sandoria))
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle, sets.sandoria))
-			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.idle, sets.sandoria))
-			end
+			equip(set_combine(sets[Mode], sets.idle, sets.sandoria))
 		elseif WindyZones:contains(world.area) then
-			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.idle, sets.windurst))
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.idle, sets.windurst))
-			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.idle, sets.windurst))
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle, sets.windurst))
-			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.idle, sets.windurst))
-			end
+			equip(set_combine(sets[Mode], sets.idle, sets.windurst))
 		elseif TownZones:contains(world.area) then
-			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.idle, sets.town))
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.idle, sets.town))
-			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.idle, sets.town))
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle, sets.town))
-			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.idle, sets.town))
-			end
+			equip(set_combine(sets[Mode], sets.idle, sets.town))
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
-			equip(set_combine(sets.idle, sets.ohshit))
+			equip(set_combine(sets.idle, sets.oh_shit))
 		else
-			if Mode == 'Mode1' then
-				equip(set_combine(sets.modeone, sets.idle))
-			elseif Mode == 'Mode2' then
-				equip(set_combine(sets.modetwo, sets.idle))
-			elseif Mode == 'Mode3' then
-				equip(set_combine(sets.modethree, sets.idle))
-			elseif Mode == 'Mode4' then
-				equip(set_combine(sets.modefour, sets.idle))
-			elseif Mode == 'Mode5' then
-				equip(set_combine(sets.modefive, sets.idle))
-			end
+			equip(set_combine(sets[Mode], sets.idle))
 		end
 	end
 end
@@ -2057,32 +1997,32 @@ end
 function precast(spell)
 	if buffactive['terror'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['petrification'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['sleep'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['stun'] then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['amnesia'] and (spell.type == 'WeaponSkill' or spell.type == 'JobAbility') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif buffactive['silence'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
 			send_command('input /item "Echo Drop" <me>')
@@ -2092,13 +2032,13 @@ function precast(spell)
 		flash('Debuffs')
 	elseif buffactive['mute'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 		flash('Debuffs')
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Not Enough TP »»')
 			hud_noti:text('«« Not Enough TP »»')
@@ -2106,7 +2046,7 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 		elseif ((spell.skill == 'Marksmanship' or spell.skill == 'Archery') and spell.target.distance >= (spell.target.model_size + 23)) or ((spell.target.distance >= (spell.target.model_size + 3)) and not (spell.english == 'Starlight' or spell.english == 'Moonlight')) then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Too Far »»')
 			hud_noti:text('«« Too Far »»')
@@ -2119,27 +2059,27 @@ function precast(spell)
 			return
 		elseif Mode == 'Mode3' then
 			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.accws, sets.ygnas))
+				equip(set_combine(sets.ws_accuracy, sets.ygnass_resolve_1))
 			else
-				equip(sets.accws)
+				equip(sets.ws_accuracy)
 			end
 		elseif player.tp >= CappedTPThreshold then
 			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.cappedtpws, sets.ygnas))
+				equip(set_combine(sets.ws_capped_tp, sets.ygnass_resolve_1))
 			else
-				equip(sets.cappedtpws)
+				equip(sets.ws_capped_tp)
 			end
 		else
 			if sets[spell.english] then
 				if buffactive['Reive Mark'] then
-					equip(set_combine(sets[spell.english], sets.ygnas))
+					equip(set_combine(sets[spell.english], sets.ygnass_resolve_1))
 				else
 					equip(sets[spell.english])
 				end
 			elseif buffactive['Reive Mark'] then
-				equip(set_combine(sets.ws, sets.ygnas))
+				equip(set_combine(sets.weapon_skill, sets.ygnass_resolve_1))
 			else
-				equip(sets.ws)
+				equip(sets.weapon_skill)
 			end
 		end
 		if player.equipment.main == "Godhands" and spell.english == "Shijin Spiral" then
@@ -2162,7 +2102,7 @@ function precast(spell)
 			primeAMUpdate(player_tp)
 		end
 	elseif spell.english == 'Hundred Fists' and HundredFists.recast < 2 then
-		equip(sets.hundredfists)
+		equip(sets.hundred_fists)
 	elseif spell.english == 'Boost' and Boost.recast < 2 then
 		equip(sets.boost)
 	elseif spell.english == 'Focus' and Focus.recast < 2 then
@@ -2172,15 +2112,15 @@ function precast(spell)
 	elseif spell.english == 'Chakra' and Chakra.recast < 2 then
 		equip(sets.chakra)
 	elseif spell.english == 'Chi Blast' and ChiBlast.recast < 2 then
-		equip(sets.chiblast)
+		equip(sets.chi_blast)
 	elseif spell.english == 'Counterstance' and Counterstance.recast < 2 then
 		equip(sets.counterstance)
 	elseif spell.english == 'Mantra' and Mantra.recast < 2 then
 		equip(sets.mantra)
 	elseif spell.english == 'Formless Strikes' and FormlessStrikes.recast < 2 then
-		equip(sets.formlessstrikes)
+		equip(sets.formless_strikes)
 	elseif spell.english == 'Perfect Counter' and PerfectCounter.recast < 2 then
-		equip(sets.perfectcounter)
+		equip(sets.perfect_counter)
 	elseif spell.type == 'Step' then
 		equip(sets.steps)
 	elseif spell.type == 'Waltz' then
@@ -2192,9 +2132,9 @@ function precast(spell)
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 	elseif spell.english == 'Holy Water' then
-		equip(sets.hwater)
+		equip(sets.holy_water)
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
-		equip(sets.fastcast)
+		equip(sets.fast_cast)
 	end
 end
 
@@ -2250,26 +2190,26 @@ end)
 
 windower.register_event('gain buff', function(buff)
 	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds == 'On' then --Aftermath
-		windower.play_sound(windower.addon_path..'data/sounds/AftermathOn.wav')
+		play_sound(Notification_Aftermath_On)
 		AMTimer = pre_AMTimer
 		mythicNum = pre_mythicNum
 		primeNum = pre_primeNum
 	elseif (buff == 2 or buff == 19) then --If we get slept,
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		elseif not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 100 and player.status == "Engaged" then --then as long as we're not already DOT'd, have more than 100 HP, and are engaged,
-			equip(set_combine({head="Frenzy Sallet"}, sets.ohshit)) --equip the Frenzy Sallet to wake us up
+			equip(set_combine({head="Frenzy Sallet"}, sets.oh_shit)) --equip the Frenzy Sallet to wake us up
 		else
-			equip(sets.ohshit)
+			equip(sets.oh_shit)
 		end
 	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Oh Shit set
-		equip(sets.ohshit)
+		equip(sets.oh_shit)
 	elseif buff == 15 then --Doom
 		DangerCountdown = DangerRepeat --Start the Danger Sound going
 	elseif buff == 17 then --Charm
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/Cancel.wav')
+			play_sound(Notification_Cancel)
 		end
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
@@ -2284,12 +2224,12 @@ end)
 
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
-		windower.play_sound(windower.addon_path..'data/sounds/AftermathOff.wav')
+		play_sound(Notification_Aftermath_Off)
 		-- mythicNum = 0
 		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Food Has Worn Off »»')
 		hud_noti:text('«« Food Has Worn Off »»')
@@ -2297,7 +2237,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 113 and NotiReraise == 'On' and Alive == true then --reraise wears off
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Reraise Has Worn Off »»')
 		hud_noti:text('«« Reraise Has Worn Off »»')
@@ -2305,7 +2245,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Vorseal Has Worn Off »»')
 		hud_noti:text('«« Vorseal Has Worn Off »»')
@@ -2313,7 +2253,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 253 then --Signet
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Signet Has Worn Off »»')
 		hud_noti:text('«« Signet Has Worn Off »»')
@@ -2321,7 +2261,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 256 then --Sanction
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sanction Has Worn Off »»')
 		hud_noti:text('«« Sanction Has Worn Off »»')
@@ -2329,7 +2269,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 268 then --Sigil
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sigil Has Worn Off »»')
 		hud_noti:text('«« Sigil Has Worn Off »»')
@@ -2337,7 +2277,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 512 then --Ionis
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Ionis Has Worn Off »»')
 		hud_noti:text('«« Ionis Has Worn Off »»')
@@ -2345,7 +2285,7 @@ windower.register_event('lose buff', function(buff)
 		NotiCountdown = NotiDelay
 	elseif buff == 1 and Alive == true then --Weakness
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		hud_noti_shdw:text('«« Weakness Has Worn Off »»')
 		hud_noti:text('«« Weakness Has Worn Off »»')
@@ -2373,7 +2313,7 @@ end
 windower.register_event('tp change',function()
 	if player.tp == 3000 and Noti3000TP == 'On' then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/3000TP.wav')
+			play_sound(Notification_3000TP)
 		end
 		local c = color.AM3
 		hud_noti_shdw:text('«« 3000 TP »»')
@@ -2895,7 +2835,7 @@ windower.register_event('prerender', function()
 			else
 				if not buffactive['Reraise'] and Alive == true then --if we are dead no need to remind us about reraise
 					if AlertSounds == 'On' then
-						windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+						play_sound(Notification_Bad)
 					end
 					hud_noti_shdw:text('«« No Reraise »»')
 					hud_noti:text('«« No Reraise »»')
@@ -2920,7 +2860,7 @@ windower.register_event('prerender', function()
 		end
 		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
-			windower.play_sound(windower.addon_path..'data/sounds/Danger.wav')
+			play_sound(Notification_Danger)
 		end
 		if NotiCountdown > 0 then
 			NotiCountdown = NotiCountdown - 1
@@ -3439,7 +3379,7 @@ end
 windower.register_event('incoming text',function(org)
 	if org:find('wishes to trade with you') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiTrade == 'On' then
 			hud_noti_shdw:text('«« Trade Request »»')
@@ -3448,7 +3388,7 @@ windower.register_event('incoming text',function(org)
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+			play_sound(Notification_Bad)
 		end
 		if NotiSneak == 'On' and org:find('Sneak') then
 			hud_noti_shdw:text('«« Sneak Wearing »»')
@@ -3463,7 +3403,7 @@ windower.register_event('incoming text',function(org)
 		send_command('gs c Radialens')
 	elseif org:find('invites you to') then
 		if AlertSounds == 'On' then
-			windower.play_sound(windower.addon_path..'data/sounds/NotiGood.wav')
+			play_sound(Notification_Good)
 		end
 		if NotiInvite == 'On' and org:find('party') and not org:find('alliance') then
 			hud_noti_shdw:text('«« Party Invite »»')
@@ -3478,7 +3418,7 @@ windower.register_event('incoming text',function(org)
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 15 Minutes Remaining »»')
@@ -3487,7 +3427,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 10 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 10 Minutes Remaining »»')
@@ -3496,7 +3436,7 @@ windower.register_event('incoming text',function(org)
 			end
 		elseif org:find(' 5 ') then
 			if AlertSounds == 'On' then
-				windower.play_sound(windower.addon_path..'data/sounds/NotiBad.wav')
+				play_sound(Notification_Bad)
 			end
 			if NotiTime == 'On' then
 				hud_noti_shdw:text('«« 5 Minutes Remaining »»')
