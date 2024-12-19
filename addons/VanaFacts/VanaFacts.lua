@@ -949,7 +949,7 @@ defaults.flags.bold = false
 defaults.flags.draggable = true
 
 defaults.options = {}
-defaults.options.after_zone_fade_delay = 3
+defaults.options.after_zone_fade_delay = 4
 defaults.options.char_width_multiplier = 0.59
 defaults.options.fade_multiplier = 2
 defaults.options.random_number_buffer = 50
