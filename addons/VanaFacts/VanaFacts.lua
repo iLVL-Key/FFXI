@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaFacts'
-_addon.version = '1.0'
+_addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanafacts','vf'}
 
@@ -952,6 +952,9 @@ defaults.options = {}
 defaults.options.after_zone_fade_delay = 3
 defaults.options.char_width_multiplier = 0.59
 defaults.options.fade_multiplier = 2
+defaults.options.random_number_buffer = 50
+
+local recent_facts = T{}
 
 settings = config.load(defaults)
 
@@ -973,13 +976,21 @@ local FadeNum = settings.text.alpha
 local function showFact()
 
 	local function getRandomFact()
-
-		local randomIndex = math.random(1, #settings.facts)
+        local randomIndex
+        repeat
+            randomIndex = math.random(1, #settings.facts)
+        until not recent_facts:contains(randomIndex)
+		
+        --Add the new randomIndex to recent_facts
+        table.insert(recent_facts, randomIndex)
+		
+        --Ensure recent_facts does not exceed the buffer limit
+        if #recent_facts > settings.options.random_number_buffer then
+            table.remove(recent_facts, 1)
+        end
 
 		return settings.facts[randomIndex]
-
 	end
-
 	local fact = getRandomFact()
 	local fact_total_char = #fact
 	local fact_char_width = settings.text.size * settings.options.char_width_multiplier
