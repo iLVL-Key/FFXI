@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaFacts'
-_addon.version = '1.1'
+_addon.version = '1.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanafacts','vf'}
 
@@ -36,7 +36,7 @@ texts = require('texts')
 --Sources--
 
 Timeline lore:
-Credit to Elmer the Point for translation from various guides
+Credit to Elmer the Pointy for translation from various guides
 https://ffxi.allakhazam.com/wiki/Bastok_Timeline
 https://ffxi.allakhazam.com/wiki/San_d'Oria_Timeline
 https://ffxi.allakhazam.com/wiki/Windurst_Timeline
@@ -1039,4 +1039,11 @@ windower.register_event('prerender', function()
 		end
 	end
 
+end)
+
+windower.register_event('addon command',function(addcmd)
+	windower.add_to_chat(220,'[VanaFacts] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
+	windower.add_to_chat(36,' ')
+	windower.add_to_chat(36,' This addon has no commands, but you can change a few things in the settings file.')
+	windower.add_to_chat(36,' Have a great day!')
 end)
