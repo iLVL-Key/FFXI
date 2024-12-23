@@ -9,6 +9,9 @@ Display one of over 800 "facts" about Vana'diel and FFXI in general during zonin
 - None!
 
 ## Version History
+Version 1.2
+- Added addon command section to let the user know there are no addon commands.
+
 Version 1.1
 - Added random_number_buffer option. Keeps track of the last x number of facts picked to reduce possibility of duplicates.
 - Adjusted the after_zone_fade_delay default value from 3 to 4 seconds.
