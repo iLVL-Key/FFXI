@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.10.2'
+_addon.version = '1.10.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -49,6 +49,7 @@ defaults.callouts.vagary = true
 settings = config.load(defaults)
 
 local chat = windower.chat.input
+local add_to_chat = windower.add_to_chat
 local callout = settings.callouts
 local chatmode = settings.chatmode
 local Heartbeat = 0
@@ -107,6 +108,14 @@ windower.register_event('action',function(act)
 			elseif monster_ability.en == 'Brazen Rush' then
 				chat('/%s Brazen Rush%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 			end
+
+		elseif actor == 'Dullahan Axegrinder' and callout.ambuscade then
+			if monster_ability == nil then
+				return
+			elseif monster_ability.en == 'Nether Castigation' then
+				chat('/%s Rage is over%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
+			end
+
 		end
 	end
 
@@ -503,13 +512,13 @@ end
 windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
-		windower.add_to_chat(220,'[Callouts] '..('Version '):color(8)..(_addon.version):color(220)..(', by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
-		windower.add_to_chat(220,' ')
-		windower.add_to_chat(220,' Commands'..(' (prefixed with'):color(8)..(' //callouts'):color(1)..(' or'):color(8)..(' //co'):color(1)..('):'):color(8))
-		windower.add_to_chat(36,'   chatmode/chat/mode'..(' - Switch between Echo and Party chat modes. (Current setting:'):color(8)..((' %s'):format(chatmode == 'party' and 'Party' or 'Echo')):color(200)..(')'):color(8))
-		windower.add_to_chat(8,('   abyssea/ambuscade/charm/dynamis/odyssey/omen/ou/sortie/vagary'):color(36)..(' - Turn individual callouts on or off.'):color(8))
-		windower.add_to_chat(8,'      NOTE: Ou is separate from Omen')
-		windower.add_to_chat(8,('   list'):color(36)..(' - List the current callouts and their ON/OFF state.'):color(8))
+		add_to_chat(8,('[Callouts] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
+		add_to_chat(8,(' Command '):color(36)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(36,' chatmode/chat/mode'..(' - Switch between Echo and Party chat modes. ['):color(8)..(('%s'):format(chatmode == 'party' and 'Party' or 'Echo')):color(200)..(']'):color(8))
+		add_to_chat(8,(' abyssea/ambuscade/charm/dynamis/odyssey/omen/ou/sortie/vagary'):color(36)..(' - Turn individual callouts on or off.'):color(8))
+		add_to_chat(8,'    NOTE: Ou is separate from Omen')
+		add_to_chat(8,(' list/l'):color(36)..(' - List the current callouts and their ON/OFF state.'):color(8))
 
 	elseif addcmd == 'chatmode' or addcmd == 'chat' or addcmd == 'mode' then
 		if chatmode == 'echo' then
@@ -517,72 +526,68 @@ windower.register_event('addon command', function(addcmd)
 		else
 			chatmode = 'echo'
 		end
-		windower.add_to_chat(220,'[Callouts] '..('Chat mode is now set to '):color(8)..(chatmode == 'party' and 'Party' or 'Echo'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Chat mode is now set to '):color(8)..(chatmode == 'party' and 'Party' or 'Echo'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'abyssea' or addcmd == 'aby' then
 		callout.abyssea = not callout.abyssea
-		windower.add_to_chat(220,'[Callouts] '..('Abyssea callout is now set to '):color(8)..(callout.abyssea and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Abyssea callout is now set to '):color(8)..(callout.abyssea and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'ambuscade' or addcmd == 'ambu' then
 		callout.ambuscade = not callout.ambuscade
-		windower.add_to_chat(220,'[Callouts] '..('Ambuscade callout is now set to '):color(8)..(callout.ambuscade and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Ambuscade callout is now set to '):color(8)..(callout.ambuscade and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'charm' then
 		callout.charm = not callout.charm
-		windower.add_to_chat(220,'[Callouts] '..('Charm callout is now set to '):color(8)..(callout.charm and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Charm callout is now set to '):color(8)..(callout.charm and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'dynamis' or addcmd == 'dyna' or addcmd == 'dyn' then
 		callout.dynamis = not callout.dynamis
-		windower.add_to_chat(220,'[Callouts] '..('Dynamis callout is now set to '):color(8)..(callout.dynamis and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Dynamis callout is now set to '):color(8)..(callout.dynamis and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'odyssey' or addcmd == 'ody' then
 		callout.odyssey = not callout.odyssey
-		windower.add_to_chat(220,'[Callouts] '..('Odyssey callout is now set to '):color(8)..(callout.odyssey and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Odyssey callout is now set to '):color(8)..(callout.odyssey and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'omen' then
 		callout.omen = not callout.omen
-		windower.add_to_chat(220,'[Callouts] '..('Omen callout is now set to '):color(8)..(callout.omen and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Omen callout is now set to '):color(8)..(callout.omen and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'ou' then
 		callout.ou = not callout.ou
-		windower.add_to_chat(220,'[Callouts] '..('Ou callout is now set to '):color(8)..(callout.ou and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Ou callout is now set to '):color(8)..(callout.ou and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'sortie' then
 		callout.sortie = not callout.sortie
-		windower.add_to_chat(220,'[Callouts] '..('Sortie callout is now set to '):color(8)..(callout.sortie and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Sortie callout is now set to '):color(8)..(callout.sortie and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'vagary' or addcmd == 'vag' then
 		callout.vagary = not callout.vagary
-		windower.add_to_chat(220,'[Callouts] '..('Vagary callout is now set to '):color(8)..(callout.vagary and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(220,'[Callouts] '..('Vagary callout is now set to '):color(8)..(callout.vagary and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
-	elseif addcmd == 'list' or addcmd == 'lists' then
-		windower.add_to_chat(220,'[Callouts] '..('Current callouts:'):color(200))
-		windower.add_to_chat(8,('   Abyssea:'):color(36)..(' %s':format(callout.abyssea and 'ON' or 'OFF')):color(200)..(' - Red and Blue Procs'):color(8))
-		windower.add_to_chat(8,('   Ambuscade:'):color(36)..(' %s':format(callout.ambuscade and 'ON' or 'OFF')):color(200)..(' - Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset'):color(8))
-		windower.add_to_chat(8,('   Charm:'):color(36)..(' %s':format(callout.charm and 'ON' or 'OFF')):color(200)..(' - Party/Alliance members who get charmed'):color(8))
-		windower.add_to_chat(8,('   Dynamis:'):color(36)..(' %s':format(callout.dynamis and 'ON' or 'OFF')):color(200)..(' - Halphas hate reset'):color(8))
-		windower.add_to_chat(8,('   Odyssey:'):color(36)..(' %s':format(callout.odyssey and 'ON' or 'OFF')):color(200)..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters'):color(8))
-		windower.add_to_chat(8,('   Omen:'):color(36)..(' %s':format(callout.omen and 'ON' or 'OFF')):color(200)..(' - Scales, Pain Sync, Target'):color(8))
-		windower.add_to_chat(8,('   Ou:'):color(36)..(' %s':format(callout.ou and 'ON' or 'OFF')):color(200)..(' - Upcoming abilities'):color(8))
-		windower.add_to_chat(8,('   Sortie:'):color(36)..(' %s':format(callout.sortie and 'ON' or 'OFF')):color(200)..(' - Elements/weaknesses, hate resets'):color(8))
-		windower.add_to_chat(8,('   Vagary:'):color(36)..(' %s':format(callout.vagary and 'ON' or 'OFF')):color(200)..(' - Perfidien/Plouton pop, weaknesses'):color(8))
-
-	elseif addcmd == 'reload' then
-		windower.send_command('lua r callouts')
-		return
+	elseif addcmd == 'list' or addcmd == 'lists' or addcmd == 'l' then
+		add_to_chat(220,'[Callouts] '..('Current callouts:'):color(8))
+		add_to_chat(8,(' Abyssea:'):color(36)..(' %s':format(callout.abyssea and 'ON' or 'OFF')):color(200)..(' - Red and Blue Procs'):color(8))
+		add_to_chat(8,(' Ambuscade:'):color(36)..(' %s':format(callout.ambuscade and 'ON' or 'OFF')):color(200)..(' - Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset'):color(8))
+		add_to_chat(8,(' Charm:'):color(36)..(' %s':format(callout.charm and 'ON' or 'OFF')):color(200)..(' - Party/Alliance members who get charmed'):color(8))
+		add_to_chat(8,(' Dynamis:'):color(36)..(' %s':format(callout.dynamis and 'ON' or 'OFF')):color(200)..(' - Halphas hate reset'):color(8))
+		add_to_chat(8,(' Odyssey:'):color(36)..(' %s':format(callout.odyssey and 'ON' or 'OFF')):color(200)..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters'):color(8))
+		add_to_chat(8,(' Omen:'):color(36)..(' %s':format(callout.omen and 'ON' or 'OFF')):color(200)..(' - Scales, Pain Sync, Target'):color(8))
+		add_to_chat(8,(' Ou:'):color(36)..(' %s':format(callout.ou and 'ON' or 'OFF')):color(200)..(' - Upcoming abilities'):color(8))
+		add_to_chat(8,(' Sortie:'):color(36)..(' %s':format(callout.sortie and 'ON' or 'OFF')):color(200)..(' - Elements/weaknesses, hate resets'):color(8))
+		add_to_chat(8,(' Vagary:'):color(36)..(' %s':format(callout.vagary and 'ON' or 'OFF')):color(200)..(' - Perfidien/Plouton pop, weaknesses'):color(8))
 
 	else
-		windower.add_to_chat(8,('[Callouts] '):color(220)..('Unknown command. Type \'//co help\' for list of commands.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Unknown command. Type \'//co help\' for list of commands.'):color(8))
 
 	end
 end)
