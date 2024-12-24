@@ -14,6 +14,6 @@ All commands must be preceded with either `//vanity` or `//van`
  - blm/blu/brd/etc <combat/town> [#] - Display/update which Equipment Set # is used (1-200, 0 to disable)
  - set/s - Manually set lockstyle based on job and zone.
  - list/l - List all non-disabled lockstyles for the current character.
- - disable/d [#/On/Off] - Display/update After Disable Delay (1-20).
- - job/j [#/On/Off] - Display/update After Job Change Delay (1-20).
- - zone/z [#/On/Off] - Display/update After Zone Delay (1-20).
+ - disable/d [#] - Display/update After Disable Delay (1-20, 0 to disable).
+ - job/j [#] - Display/update After Job Change Delay (1-20, 0 to disable).
+ - zone/z [#] - Display/update After Zone Delay (1-20, 0 to disable).
