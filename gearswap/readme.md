@@ -451,6 +451,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0.1
+- Fixed an issue with the max number of songs not calculating correctly under certain circumstances.
+
 Version 1.0
 - Added Chocobo Circuit to the list of Town Zones.
 - Adjusted the Song List display. Bullet in front of each song is now larger and colored to indicate which type of song (default colors match the XIView color scheme for song icons). Party Member names are now centered, and colored based on their lowest current song duration. Song durations are now right-aligned.
