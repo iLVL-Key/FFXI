@@ -801,7 +801,7 @@ end
 
 
 
-FileVersion = '1.0'
+FileVersion = '1.0.1'
 
 --Version 1.0
 --Added Chocobo Circuit to the list of Town Zones.
@@ -2324,22 +2324,20 @@ end
 local function getMaxSongs()
 	max_songs = 2
 
-	if player.equipment.range == inst.dummy then
-		if player.equipment.range == "Daurdabla" then
-			if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
-				max_songs = max_songs + 2
-			else
-				max_songs = max_songs + 1
-			end
-		elseif player.equipment.range == "Loughnashade" then
-			if itemMatch(22307,'range') then --stage 5
-				max_songs = max_songs + 2
-			elseif itemMatch(22306,'range') then --stage 4
-				max_songs = max_songs + 1
-			end
-		elseif player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
+	if player.equipment.range == "Daurdabla" then
+		if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
+			max_songs = max_songs + 2
+		else
 			max_songs = max_songs + 1
 		end
+	elseif player.equipment.range == "Loughnashade" then
+		if itemMatch(22307,'range') then --stage 5
+			max_songs = max_songs + 2
+		elseif itemMatch(22306,'range') then --stage 4
+			max_songs = max_songs + 1
+		end
+	elseif player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
+		max_songs = max_songs + 1
 	end
 
 	if buffactive['Clarion Call'] then
