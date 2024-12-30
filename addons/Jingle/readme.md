@@ -12,16 +12,18 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
  - Will play any .wav file you save to the /data/sounds folder.
   
 ## Commands ##
+All commands must be preceded with `//jingle`  
 `[optional] <required>`
- - add/a \<target> \[sound_file_name] - Add a target with an optional sound file.
+ - **add/a** \<target> \[sound_file_name] - Add a target with an optional sound file.
    - Valid targets: Names (ex: Oseem), IDs (ex: 17809550), Hex IDs (ex: 08E).
    - Use quotes to surround an NPC/mob name that contains spaces.
    - Do not include the extension in the sound file name.
- - remove/r \<target> - Remove a target.
- - list/l - Show the list of targets and sounds associated.
- - distance/d <#1-50> - Set the detection distance.
- - test/t \<sound_file_name> - Test a sound file. Do not include the extension.
+ - **remove/r** \<target> - Remove a target.
+ - **list/l** - Show the list of targets and sounds associated.
+ - **distance/d** <#1-50> - Set the detection distance.
+ - **test/t** \<sound_file_name> - Test a sound file. Do not include the extension.
    - New sounds added to the /data/sounds folder must be .wav format.
+ - **help** - Display a list of commands and addon info.
 
 ## Sortie targets ##
 Copy the following into your settings file (inside the targets) for all the Sortie targets. The top 8 sets of numbers are the IDs for the 4 exit bitzers in the basement, for some reason using the name for the as a target does not work correctly, and there are multiple sets.
