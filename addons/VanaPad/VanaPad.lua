@@ -1,4 +1,4 @@
---Copyright (c) 2024, Key
+--Copyright (c) 2025, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaPad'
-_addon.version = '1.0 BETA-3'
+_addon.version = '1.0 BETA-4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanapad','vp'}
 
@@ -80,6 +80,9 @@ settings = config.load(defaults)
 local color = settings.options.colors
 local note = settings.notes
 local option = settings.options
+
+local add_to_chat = windower.add_to_chat
+local send_command = windower.send_command
 
 local c = {}
 c.little_x = color.text_header
@@ -363,7 +366,7 @@ end
 function enableEditMode()
 	entering_note = true
 	double_click_fix_edit = true
-	windower.add_to_chat(8,('[VanaPad] '):color(220)..('Edit Mode enabled. Type directly into Vanapad.'):color(8)..(' ESC Key'):color(1)..(' to exit.'):color(8))
+	add_to_chat(8,('[VanaPad] '):color(220)..('Edit Mode enabled. Type directly into Vanapad.'):color(8)..(' ESC Key'):color(1)..(' to exit.'):color(8))
 	VanaPad:bg_alpha(255)
 	local bgc = color.bg_edit
 	VanaPad:bg_color(bgc.r,bgc.g,bgc.b)
@@ -374,7 +377,7 @@ end
 function disableEditMode()
 	entering_note = false
 	double_click_fix_edit = false
-	windower.add_to_chat(8,('[VanaPad] '):color(220)..('Edit Mode disabled. Normal keyboard function resumed.'):color(8))
+	add_to_chat(8,('[VanaPad] '):color(220)..('Edit Mode disabled. Normal keyboard function resumed.'):color(8))
 	if note[currentNote] and note[currentNote].content == "" then
 		deleteNote(currentNote)
 	end
@@ -461,12 +464,13 @@ function updateTitle(title)
 end
 
 local function displayHelp()
-	windower.add_to_chat(8,('[VanaPad] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
-	windower.add_to_chat(8,' ')
-	windower.add_to_chat(8,('Commands '):color(220)..(' //vanapad, //vp '):color(1))
-	windower.add_to_chat(8,('   show/hide '):color(36)..(' - Show/hide the VanaPad window.'):color(8))
-	windower.add_to_chat(8,('   edit/e '):color(36)..(' - Edit the current note.'):color(8))
-	windower.add_to_chat(8,('   title/t '):color(36)..(' - Add a custom title to the current note.'):color(8))
+	local prefix = "//vanapad, //vp"
+	add_to_chat(8,('[VanaPad] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
+	add_to_chat(8,' ')
+	add_to_chat(8,(' Command '):color(36)..(' - Description'):color(8))
+	add_to_chat(8,(' show/hide '):color(36)..(' - Show/hide the VanaPad window.'):color(8))
+	add_to_chat(8,(' edit/e '):color(36)..(' - Edit the current note.'):color(8))
+	add_to_chat(8,(' title/t '):color(36)..(' - Add a custom title to the current note.'):color(8))
 end
 
 -- Return which button the mouse is hovering over
@@ -662,13 +666,13 @@ local function onMouseClick(type, mouseX, mouseY)
 			deleteNote(currentNote)
 		elseif click == "edit" then
 			if entering_note then
-				windower.send_command('wait .1;vanapad double_click_fix_edit_false')
+				send_command('wait .1;vanapad double_click_fix_edit_false')
 			else
-				windower.send_command('wait .1;vanapad double_click_fix_edit_true')
+				send_command('wait .1;vanapad double_click_fix_edit_true')
 			end
 		elseif click == "help" then
 			double_click_fix_help = true
-			windower.send_command('wait .1;vanapad double_click_fix_help')
+			send_command('wait .1;vanapad double_click_fix_help')
 		elseif click == "underscore" then
 			if entering_note then
 				disableEditMode()
@@ -676,19 +680,19 @@ local function onMouseClick(type, mouseX, mouseY)
 			shrinkPad()
 		elseif click == "pin" then
 			if double_click_fix_pin then
-				windower.send_command('wait .1;vanapad double_click_fix_pin_false')
+				send_command('wait .1;vanapad double_click_fix_pin_false')
 				settings.flags.draggable = false
 				settings:save('all')
 				VanaPad:text(updateBox(currentNote))
 			else
-				windower.send_command('wait .1;vanapad double_click_fix_pin_true')
+				send_command('wait .1;vanapad double_click_fix_pin_true')
 				settings.flags.draggable = true
 				settings:save('all')
 				VanaPad:text(updateBox(currentNote))
 			end
 		elseif click == "big_x" then
 			double_click_fix_hide = true
-			windower.send_command('wait .1;vanapad double_click_fix_hide')
+			send_command('wait .1;vanapad double_click_fix_hide')
 		elseif click ~= "none" and click ~= "bar" then
 			currentNote = click
 			VanaPad:text(updateBox(currentNote))
@@ -756,7 +760,7 @@ windower.register_event('addon command',function(addcmd, ...)
 				disableEditMode()
 			end
 			VanaPad:hide()
-			windower.add_to_chat(8,('[VanaPad] '):color(220)..('Now hidden. Type '):color(8)..('//vanapad show'):color(1)..(' to display again'):color(8))
+			add_to_chat(8,('[VanaPad] '):color(220)..('Now hidden. Type '):color(8)..('//vanapad show'):color(1)..(' to display again'):color(8))
 			double_click_fix_hide = false
 			settings.visible = false
 			settings:save('all')
