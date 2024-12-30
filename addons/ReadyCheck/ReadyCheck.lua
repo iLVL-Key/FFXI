@@ -1,5 +1,5 @@
 --[[
-Copyright © 2023, Key
+Copyright © 2025, Key
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'ReadyCheck'
-_addon.version = '1.2'
+_addon.version = '1.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'readycheck','rc'}
 
@@ -84,22 +84,26 @@ defaults.colors.unknown.b = 200
 
 settings = config.load(defaults)
 
+local say = windower.chat.input
+local get_mob_by_target = windower.ffxi.get_mob_by_target
+local get_party = windower.ffxi.get_party
+local add_to_chat = windower.add_to_chat
+
 ready = {}
 notReady = {}
 
 local self_name
-if windower.ffxi.get_mob_by_target('me') then
-	self_name = windower.ffxi.get_mob_by_target('me').name
+if get_mob_by_target('me') then
+	self_name = get_mob_by_target('me').name
 end
 windower.register_event('login', function()
 	coroutine.sleep(3)
-	self_name = windower.ffxi.get_mob_by_target('me').name
+	self_name = get_mob_by_target('me').name
 end)
 
 local ally_pos = {
 	'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
 }
-local say = windower.chat.input
 local timer = 120 -- This timer is hard-coded so that all players running ReadyCheck have their timers synced
 local timer_countdown = -1 -- A settings of -1 for this means there is no ready check active
 local hideDelay = 5
@@ -138,7 +142,7 @@ function updateBox()
 
 	-- First row (the +1 is to compensate for a quirk with the timing being displayed)
 	local first_row = ('---READY CHECK%s'):format(timer_countdown >= 0 and ':'..timer_countdown+1 or '')
-	-- Keep it the same widtch
+	-- Keep it the same width
 	while string.len(first_row) < 21 do
 		first_row = first_row..'-'
 	end
@@ -149,10 +153,10 @@ function updateBox()
 
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
-		local member = windower.ffxi.get_party()[pos]
+		local member = get_party()[pos]
 
 		-- If there is a party member in that position, add them to the list in the RC box
-		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not (get_mob_by_target(pos) and get_mob_by_target(pos).is_npc) then
 			local name = member.name
 
 			-- They are ready, highlight their name
@@ -231,10 +235,10 @@ function bgGreen()
 
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
-		local member = windower.ffxi.get_party()[pos]
+		local member = get_party()[pos]
 
 		-- If there is a party member in that position, add to the totalNames table
-		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not (get_mob_by_target(pos) and get_mob_by_target(pos).is_npc) then
 			local name = member.name
 			table.insert(totalNames, member.name)
 
@@ -267,10 +271,10 @@ function checkAllReady()
 	
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
-		local member = windower.ffxi.get_party()[pos]
+		local member = get_party()[pos]
 
 		-- Set to false and break out of the loop at the first member that it not ready
-		if member and not ready[member.name] and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not ready[member.name] and not (get_mob_by_target(pos) and get_mob_by_target(pos).is_npc) then
 			allMembersReady = false
 			break
 
@@ -305,10 +309,10 @@ function displayNotAllReady()
 	
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
-		local member = windower.ffxi.get_party()[pos]
+		local member = get_party()[pos]
 
 		-- If there is a party member in that position...
-		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not (get_mob_by_target(pos) and get_mob_by_target(pos).is_npc) then
 			local name = member.name
 
 			-- ... and they are not ready...
@@ -331,10 +335,10 @@ function sayNotAllReady()
 	
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
-		local member = windower.ffxi.get_party()[pos]
+		local member = get_party()[pos]
 
 		-- If there is a party member in that position...
-		if member and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not (get_mob_by_target(pos) and get_mob_by_target(pos).is_npc) then
 			local name = member.name
 
 			-- ... and they are not ready...
@@ -371,10 +375,10 @@ function areYouSolo()
 	
 	-- Loop through all party/alliance positions
 	for _, pos in ipairs(ally_pos) do
-		local member = windower.ffxi.get_party()[pos]
+		local member = get_party()[pos]
 
 		-- Set to false and break out of the loop at the first position that contains another member
-		if member and not (member.name == self_name) and not (windower.ffxi.get_mob_by_target(pos) and windower.ffxi.get_mob_by_target(pos).is_npc) then
+		if member and not (member.name == self_name) and not (get_mob_by_target(pos) and get_mob_by_target(pos).is_npc) then
 			solo = false
 			break
 		end
@@ -453,10 +457,13 @@ end)
 windower.register_event('addon command',function(addcmd)
 
 	if addcmd == 'help' then
-		windower.add_to_chat(220,'[ReadyCheck] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
-		windower.add_to_chat(36,'//readycheck or //rc'..(' - Start/Stop a Ready Check'):color(8))
-		windower.add_to_chat(36,'   cancel'..(' - Cancel a Ready Check'):color(8))
-		windower.add_to_chat(36,'   hide'..(' - Hide the current Ready Check window'):color(8))
+		local prefix = "//readycheck, //rc"
+		add_to_chat(8,('[ReadyCheck] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' Command '):color(36)..(' - Description'):color(8))
+		add_to_chat(8,(' //readycheck or //rc (w/ no command)'):color(36)..(' - Start/Stop a Ready Check.'):color(8))
+		add_to_chat(8,(' cancel'):color(36)..(' - Cancel a Ready Check you started.'):color(8))
+		add_to_chat(8,(' hide'):color(36)..(' - Hide the current Ready Check window.'):color(8))
 
 	elseif addcmd == 'hide' then
 		hidebox()
@@ -466,7 +473,7 @@ windower.register_event('addon command',function(addcmd)
 
 	elseif addcmd == 'cancel' then
 		if someoneElseIsAlreadyRunningAReadyCheck then
-			windower.add_to_chat(220,'[ReadyCheck] '..('You cannot cancel a Ready Check started by another member.'):color(8)..'')
+			add_to_chat(8,('[ReadyCheck] '):color(220)..('You cannot cancel a Ready Check started by another member.'):color(8))
 
 		else
 			say('/p [RC] Ready Check cancelled.')
@@ -476,13 +483,13 @@ windower.register_event('addon command',function(addcmd)
 		end
 
 	elseif someoneElseIsAlreadyRunningAReadyCheck then
-		windower.add_to_chat(220,'[ReadyCheck] '..('Another member has already started a Ready Check.'):color(8)..'')
+		add_to_chat(8,('[ReadyCheck] '):color(220)..('Another member has already started a Ready Check.'):color(8))
 
 	else
 		-- Start a ready check
 		if timer_countdown == -1 then
 			if areYouSolo() then
-				windower.add_to_chat(220,'[ReadyCheck] '..('You cannot start a Ready Check when you are solo.'):color(8)..'')
+				add_to_chat(8,('[ReadyCheck] '):color(220)..('You cannot start a Ready Check when you are solo.'):color(8))
 				return
 			end
 			say('/p [RC] Ready Check!   / = ready   x = not ready   <call'..settings.call_num..'>')
