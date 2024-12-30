@@ -22,6 +22,9 @@ All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)
  - `help` - Display a list of commands and addon info.
 
 ## Version History
+Version 1.0 BETA-4
+- Adjusted Help text.
+
 Version 1.0 BETA-3
 - Fix text shifting when changing colors (you can see it doing it with the edit button in the example gif).
 
