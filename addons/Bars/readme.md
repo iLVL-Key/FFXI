@@ -49,7 +49,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Explore the settings file to see the full list of options that are available to tweak. See **Options** below.
 
 ## Commands
-All commands must be preceded with `//bars`
+All commands must be preceded with `//bars` (ex: `//bars pos`)  
 `[optional] <required>`
  - `help` - Display this list in game.
  - `pos [x y]` - Update position.
