@@ -1,4 +1,4 @@
---Copyright (c) 2024, Key
+--Copyright (c) 2025, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,12 +25,13 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaFacts'
-_addon.version = '1.2'
+_addon.version = '1.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanafacts','vf'}
 
 config = require('config')
 texts = require('texts')
+require 'chat'
 
 --[[
 --Sources--
@@ -94,7 +95,7 @@ defaults.facts = {
 	"378 CE - On the orders of Windurst, Galleon and Bulletoran Elvaan invade Ronfaure, but are pushed back by the San d'Orians.",
 	"379 CE - The young Arefeauron Tavnazia, of the Bulletoran tribe, joins forces with d'Oraguille.",
 	"380 CE - The San'Orian Elvaan retake control of Zulkheim from the Bulletoran and Fauchevelle tribes, who are controlled by Windurst.",
-	"381 CE - Lanfeaur of the San d'Orian tribe meets with the Quadav King and form an alliance against Windurst.",
+	"381 CE - Lanfeaur of the San d'Orian tribe meets with the Quadav King and forms an alliance against Windurst.",
 	"382 CE - The San d'Orian tribe and the Quadav ambush the Windurst army in Jugner Forest and Pashhow Marshlands, driving them back.",
 	"382 CE - The allied forces of Elvaan and Quadav defeat Warlock Warlord Atogi-Nokutogi and the second Elvaan Subjugation Force.",
 	"383 CE - Arefeauron of Tavnazia meets with the mountain-dwelling Chatiffe tribe, convincing them to ally with the San d'Orian tribe.",
@@ -970,12 +971,20 @@ VanaFacts:size(settings.text.size)
 VanaFacts:draggable(settings.flags.draggable)
 
 local Zoning = false
-local Fade = false
-local FadeNum = settings.text.alpha
+local fading = false
+local fade_num = settings.text.alpha
+local last_fact = 0
 
-local function showFact()
+local add_to_chat = windower.add_to_chat
+
+local function showFact(repeat_fact)
 
 	local function getRandomFact()
+
+		if repeat_fact then
+			return settings.facts[last_fact]
+		end
+
         local randomIndex
         repeat
             randomIndex = math.random(1, #settings.facts)
@@ -989,6 +998,7 @@ local function showFact()
             table.remove(recent_facts, 1)
         end
 
+		last_fact = randomIndex
 		return settings.facts[randomIndex]
 	end
 	local fact = getRandomFact()
@@ -1012,38 +1022,51 @@ windower.register_event('prerender', function()
 	local logged_in = windower.ffxi.get_info().logged_in
 
 	--Zoning: Show a fact
-	if pos == "(?-?)" and logged_in and not Zoning then
-		Zoning = true
+	if pos == "(?-?)" and logged_in and not zoning then
+		zoning = true
 			showFact()
 
 	--Unzone: wait a delay then trigger the fade
-	elseif pos ~= "(?-?)" and Zoning then
-		Zoning = false
+	elseif pos ~= "(?-?)" and zoning then
+		zoning = false
 		coroutine.schedule(function()
-			Fade = true
+			fading = true
 		end, settings.options.after_zone_fade_delay)
 	end
 
 	--Fade away
-	if Fade then
-		if FadeNum > settings.options.fade_multiplier then
-			FadeNum = FadeNum - settings.options.fade_multiplier
-			VanaFacts:alpha(FadeNum)
-			VanaFacts:bg_alpha(FadeNum)
+	if fading then
+		if fade_num > settings.options.fade_multiplier then
+			fade_num = fade_num - settings.options.fade_multiplier
+			VanaFacts:alpha(fade_num)
+			VanaFacts:bg_alpha(fade_num)
 		else
 			hideFact()
-			Fade = false
-			FadeNum = settings.text.alpha
-			VanaFacts:alpha(FadeNum)
-			VanaFacts:bg_alpha(FadeNum)
+			fading = false
+			fade_num = settings.text.alpha
+			VanaFacts:alpha(fade_num)
+			VanaFacts:bg_alpha(fade_num)
 		end
 	end
 
 end)
 
 windower.register_event('addon command',function(addcmd)
-	windower.add_to_chat(220,'[VanaFacts] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
-	windower.add_to_chat(36,' ')
-	windower.add_to_chat(36,' This addon has no commands, but you can change a few things in the settings file.')
-	windower.add_to_chat(36,' Have a great day!')
+	if addcmd == 'repeat' or addcmd == 'r' then
+		if last_fact == 0 then
+			add_to_chat(8,('[VanaFacts] '):color(220)..('No facts have been displayed yet.'):color(8))
+		else
+			local repeat_fact = true
+			showFact(repeat_fact)
+			coroutine.schedule(function()
+				fading = true
+			end, settings.options.after_zone_fade_delay+1)
+		end
+	else
+		local prefix = "//vanafacts, //vf"
+		add_to_chat(8,('[VanaFacts] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
+		add_to_chat(8,(' Command'):color(36)..(' - Description'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' repeat/r'):color(36)..(' - Repeat the last Fact displayed.'):color(8))
+	end
 end)
