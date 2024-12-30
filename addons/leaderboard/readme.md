@@ -51,9 +51,10 @@ Tracks battle information and groups it together in different "boards".
 (Cure and Nuke Leaderboards account for aoe's)
 
 ### Addon Commands
-All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb show mb`)
+All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`)  
+`[optional] <required>`
 
-#### Basic Commands `[optional] <required>`
+#### Basic
 - `pause/p` - Pause/unpause tracking.
 - `c/d/hs/k/ls/m/mb/n/p/sc/v/w` - Print board to party chat.
 - `mode/kart/silent/lite/party` - Display/change the current Mode.
@@ -64,7 +65,7 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `taunt [text]` - Send your rival a tell with which boards you have them beat on.  
   - Including `[text]` updates the taunt text. Must include a `%s` where the boards will go.
 
-#### Advanced Commands `[optional] <required>`
+#### Advanced
 - `call [c/d/hs/k/ls/m/mb/n/sc/w]` - Display/change the Party/Lite mode party call settings.
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
@@ -77,7 +78,7 @@ All commands must be prefixed with either `//leaderboard` or `//lb` (ex: `//lb s
 - `partycommand/partycmd` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
 
-#### Kart Mode Commands  `[optional] <required>`
+#### Kart Mode
 - `itemtimer` - Update the interval timer between Item Boxes.
 - `boardtimer` - Update the timer between Points Board chat callout (0 = off).
 - `randomitem` - Give a random player a random item.
