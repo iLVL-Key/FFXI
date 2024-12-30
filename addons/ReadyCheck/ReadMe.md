@@ -20,6 +20,19 @@ Initiate a basic automated Ready Check
    - Activates even if started by another member
   
 ## Commands ##
- - `//readycheck` or `//rc` (with no additional commands) - Start/Stop a Ready Check
-   - `cancel` - Cancel the current Ready Check
-   - `hide` - Hide the current Ready Check window
+All commands must be preceded with either `//vanafacts` or `//vf` (ex: `//rc cancel`)  
+- `//readycheck` or `//rc` (with no command) - Start/Stop a Ready Check.
+- `cancel` - Cancel a Ready Check you started.
+- `hide` - Hide the current Ready Check window.
+
+## Version History
+**1.3**
+- Adjusted the "ready" messages that are looked for (added `o/`, `O/`, and `0/`).
+- Adjusted Help text
+
+**1.2**
+- Adjusted the "ready" messages that are looked for (added `o`, `O`, and `0`).
+
+**1.1**
+- Adjusted the "ready" messages that are looked for (added `ready` and `o/`).
+- Adjusted the chat modes that are checked for "ready" message. Now will accept message from any chat mode not just party.
