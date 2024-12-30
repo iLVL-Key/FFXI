@@ -1,4 +1,4 @@
---Copyright (c) 2024, Key
+--Copyright (c) 2025, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '1.2'
+_addon.version = '1.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle'}
 
@@ -37,6 +37,10 @@ defaults.targets = {} --the main list of targets we're searching for
 defaults.distance = 50 --determines distance the target needs to be within before being "detected" (Note: Hard max is 50)
 
 settings = config.load(defaults)
+
+local add_to_chat = windower.add_to_chat
+local play_sound = windower.play_sound
+local addon_path = windower.addon_path
 
 local played = T{}
 
@@ -110,7 +114,7 @@ function addTarget(target, soundfile)
 	settings.targets[convertToSave(target)] = person
 	settings:save('all')
 	
-	windower.add_to_chat(220,'[Jingle] '..('Added: '):color(36)..(capitalize(target)..' ('..soundfile..')'):color(1))
+	add_to_chat(220,'[Jingle] '..('Added: '):color(36)..(capitalize(target)..' ('..soundfile..')'):color(1))
 
 end
 
@@ -120,12 +124,12 @@ function removeName(target)
 
 	if settings.targets[savedTarget] then
 		settings.targets[savedTarget] = nil
-		windower.add_to_chat(220,'[Jingle] '..('Removed: '):color(36)..(capitalize(target)):color(1))
+		add_to_chat(220,'[Jingle] '..('Removed: '):color(36)..(capitalize(target)):color(1))
 		settings:save('all')
 
 	else
-		windower.add_to_chat(220,'[Jingle] '..(capitalize(target)):color(1)..(' was not found.'):color(39))
-		windower.add_to_chat(220,'[Jingle] '..('Type '):color(8)..('//jingle list'):color(1)..(' to see stored targets.'):color(8))
+		add_to_chat(220,'[Jingle] '..(capitalize(target)):color(1)..(' was not found.'):color(39))
+		add_to_chat(220,'[Jingle] '..('Type '):color(8)..('//jingle list'):color(1)..(' to see stored targets.'):color(8))
 
 	end
 end
@@ -134,7 +138,7 @@ end
 function listTargets()
 	local sortedTargets = {}
 
-	windower.add_to_chat(220,'[Jingle] '..('Targets: '):color(8))
+	add_to_chat(220,'[Jingle] '..('Targets: '):color(8))
 
 	-- Copy targets and sort them alphabetically
 	for target, sound in pairs(settings.targets) do
@@ -144,13 +148,13 @@ function listTargets()
 
 	-- Check if sortedTargets is empty
 	if next(sortedTargets) == nil then
-		windower.add_to_chat(1,(' - '):color(8)..'[Empty]')
+		add_to_chat(1,(' - '):color(8)..'[Empty]')
 	end
 
 	-- Add sorted targets to chat
 	for _, target in ipairs(sortedTargets) do
 		local sound = settings.targets[target]
-		windower.add_to_chat(1,(' - '):color(8)..convertToDisplay(target)..' ('..sound.soundfile..')')
+		add_to_chat(1,(' - '):color(8)..convertToDisplay(target)..' ('..sound.soundfile..')')
 	end
 
 end
@@ -168,9 +172,9 @@ function checkForTarget()
 
 			if not played:contains(v.name) then -- sound for this target has not been played yet
 				local soundFile = settings.targets[convertToSave(v.name)].soundfile
-				windower.play_sound(windower.addon_path..'data/sounds/'..soundFile..'.wav')
+				play_sound(addon_path..'data/sounds/'..soundFile..'.wav')
 				
-				windower.add_to_chat(220,'[Jingle] '..(v.name):color(1)..(' is nearby.'):color(8))
+				add_to_chat(220,'[Jingle] '..(v.name):color(1)..(' is nearby.'):color(8))
 				
 				table.insert(played, v.name) -- add target to the played list
 
@@ -182,9 +186,9 @@ function checkForTarget()
 
 			if not played:contains(v.id) then -- sound for this id has not been played yet
 				local soundFile = settings.targets[convertToSave(v.id)].soundfile
-				windower.play_sound(windower.addon_path..'data/sounds/'..soundFile..'.wav')
+				play_sound(addon_path..'data/sounds/'..soundFile..'.wav')
 
-				windower.add_to_chat(220,'[Jingle] '..(v.name):color(1)..(' is nearby.'):color(8))
+				add_to_chat(220,'[Jingle] '..(v.name):color(1)..(' is nearby.'):color(8))
 
 				table.insert(played, v.id) -- add id to the played list
 
@@ -196,9 +200,9 @@ function checkForTarget()
 
 			if not played:contains(convertToHexId(v.index)) then -- sound for this index has not been played yet
 				local soundFile = settings.targets[convertToHexId(v.index)].soundfile
-				windower.play_sound(windower.addon_path..'data/sounds/'..soundFile..'.wav')
+				play_sound(addon_path..'data/sounds/'..soundFile..'.wav')
 
-				windower.add_to_chat(220,'[Jingle] '..(v.name..'('..convertToDisplay(convertToHexId(v.index))..')'):color(1)..(' is nearby.'):color(8))
+				add_to_chat(220,'[Jingle] '..(v.name..'('..convertToDisplay(convertToHexId(v.index))..')'):color(1)..(' is nearby.'):color(8))
 
 				table.insert(played, convertToHexId(v.index)) -- add index to the played list
 
@@ -219,22 +223,26 @@ windower.register_event('addon command',function(addcmd, ...)
 	local arg2 = args[2] --sound file name
 
 	if addcmd == 'help' then
-		windower.add_to_chat(220,'[Jingle] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
-		windower.add_to_chat(220,' ')
-		windower.add_to_chat(220,' Commands '..('[optional]'):color(53)..(' <required>'):color(2))
-		windower.add_to_chat(36,'   add/a '..('<target>'):color(2)..(' [sound_file_name]'):color(53)..(' - Add a target with an optional sound file.'):color(8))
-		windower.add_to_chat(36,'   '..(' - Valid targets: Names (ex: Oseem), IDs (ex: 17809550), Hex IDs (ex: 08E).'):color(8))
-		windower.add_to_chat(36,'   '..(' - Use quotes to surround an NPC/mob name that contains spaces.'):color(8))
-		windower.add_to_chat(36,'   '..(' - Do not include the extension in the sound file name.'):color(8))
-		windower.add_to_chat(36,'   remove/r '..('<target>'):color(2)..(' - Remove a target.'):color(8))
-		windower.add_to_chat(36,'   list/l'..(' - Show the list of targets and sounds associated.'):color(8))
-		windower.add_to_chat(36,'   distance/d '..('<#1-50>'):color(2)..(' - Set the detection distance.'):color(8))
-		windower.add_to_chat(36,'   test/t '..('<sound_file_name>'):color(2)..(' - Test a sound file. Do not include the extension.'):color(8))
-		windower.add_to_chat(36,'   '..(' - New sounds added to the /data/sounds folder must be .wav format.'):color(8))
+
+		local currDist = settings.distance
+
+		local prefix = "//jingle"
+		add_to_chat(8,('[Jingle] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
+		add_to_chat(8,(' Command '):color(36)..('<required>'):color(2)..(' [optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' add/a '):color(36)..('<target>'):color(2)..(' [sound_file_name]'):color(53)..(' - Add a target with an optional sound file.'):color(8))
+		add_to_chat(8,('   - Valid targets: Names (ex: Oseem), IDs (ex: 17809550), Hex IDs (ex: 08E).'):color(8))
+		add_to_chat(8,('   - Use quotes to surround an NPC/mob name that contains spaces.'):color(8))
+		add_to_chat(8,('   - Do not include the extension in the sound file name.'):color(8))
+		add_to_chat(8,(' remove/r '):color(36)..('<target>'):color(2)..(' - Remove a target.'):color(8))
+		add_to_chat(8,(' list/l'):color(36)..(' - Show the list of targets and sounds associated.'):color(8))
+		add_to_chat(8,(' distance/d '):color(36)..('<#1-50>'):color(2)..(' - Set the detection distance. ['):color(8)..(''..currDist):color(200)..(']'):color(8))
+		add_to_chat(8,(' test/t '):color(36)..('<sound_file_name>'):color(2)..(' - Test a sound file. Do not include the extension.'):color(8))
+		add_to_chat(8,('   - New sounds added to the /data/sounds folder must be .wav format.'):color(8))
 
 	elseif addcmd == 'add' or addcmd == 'a' then
 		if arg1 == nil then
-			windower.add_to_chat(220,'[Jingle] '..('Please specify a target to be added (name, id, or hexid).'):color(39))
+			add_to_chat(220,'[Jingle] '..('Please specify a target to be added (name, id, or hexid).'):color(39))
 			return
 		end
 
@@ -249,7 +257,7 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == 'remove' or addcmd == 'rem' or addcmd == 'rmv' or addcmd == 'r' then
 		if arg1 == nil then
-			windower.add_to_chat(220,'[Jingle] '..('Please specify a target to be removed.'):color(39))
+			add_to_chat(220,'[Jingle] '..('Please specify a target to be removed.'):color(39))
 			return
 		end
 
@@ -261,38 +269,35 @@ windower.register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == 'test' or addcmd == 't' then
 		if arg1 == nil then
-			windower.add_to_chat(220,'[Jingle] '..('Please specify a sound file name to be tested. Do not include the file extension.'):color(39))
-			windower.add_to_chat(220,'[Jingle] '..('Example: '):color(8)..(' //jingle test default'):color(1))
+			add_to_chat(220,'[Jingle] '..('Please specify a sound file name to be tested. Do not include the file extension.'):color(39))
+			add_to_chat(220,'[Jingle] '..('Example: '):color(8)..(' //jingle test default'):color(1))
 			return
 		end
 		
 		local soundFile = arg1
-		windower.play_sound(windower.addon_path..'data/sounds/'..soundFile..'.wav')
-		windower.add_to_chat(220,'[Jingle] '..('Testing file: '):color(8)..('addons/Jingle/data/sounds/'..soundFile..'.wav'):color(1))
-		windower.add_to_chat(220,'[Jingle] '..('If you do not hear the sound:'):color(8))
-		windower.add_to_chat(220,'[Jingle] '..('Make sure the file is in the correct folder is in the .wav format.'):color(8))
+		play_sound(addon_path..'data/sounds/'..soundFile..'.wav')
+		add_to_chat(220,'[Jingle] '..('Testing file: '):color(8)..('addons/Jingle/data/sounds/'..soundFile..'.wav'):color(1))
+		add_to_chat(220,'[Jingle] '..('If you do not hear the sound:'):color(8))
+		add_to_chat(220,'[Jingle] '..('Make sure the file is in the correct folder is in the .wav format.'):color(8))
 
 	elseif addcmd == 'distance' or addcmd == 'dist' or addcmd == 'd' then
 		local distance = tonumber(arg1)
 
 		if distance == nil then
-			windower.add_to_chat(220,'[Jingle] '..('Detection distance:'):color(36)..(' '..settings.distance):color(200))
+			add_to_chat(220,'[Jingle] '..('Detection distance:'):color(36)..(' '..settings.distance):color(200))
 
 		elseif distance ~= nil and (distance >= 1 and distance <= 50) then
 			settings.distance = distance
 			settings:save('all')
-			windower.add_to_chat(220,'[Jingle] '..('Detection distance:'):color(36)..(' '..settings.distance):color(200))
+			add_to_chat(220,'[Jingle] '..('Detection distance:'):color(36)..(' '..settings.distance):color(200))
 
 		else
-			windower.add_to_chat(220,'[Jingle] '..('Detection distance must be a number between 1 and 50.'):color(39))
+			add_to_chat(220,'[Jingle] '..('Detection distance must be a number between 1 and 50.'):color(39))
 
 		end
 
-	elseif addcmd == 'reload' then
-		windower.send_command('lua r jingle')
-
 	else
-		windower.add_to_chat(220,'[Jingle] '..('Unrecognized command. Type'):color(39)..(' //jingle help'):color(1)..(' if you need help.'):color(39))
+		add_to_chat(220,'[Jingle] '..('Unrecognized command. Type'):color(39)..(' //jingle help'):color(1)..(' if you need help.'):color(39))
 
 	end
 end)
