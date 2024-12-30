@@ -1,4 +1,4 @@
---Copyright (c) 2022, Key
+--Copyright (c) 2025, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '3.2.2'
+_addon.version = '4.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -41,7 +41,7 @@ defaults.first_load = true
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${earth_time_12} ${earth_time_24} ${food} ${gil} ${inventory} ${job} ${mlvl} ${pos} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${earth_time_12} ${earth_time_24} ${food} ${gil} ${inventory} ${job} ${mlvl} ${name} ${pos} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
 defaults.layout.ac_help = '(NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.default = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
@@ -130,9 +130,27 @@ settings = config.load(defaults)
 
 local informer_main = texts.new('${current_string}', settings)
 
+local use_colors = settings.display.colors
 local last_item_used = nil
 local master_level = nil
+local loading_inv = false
+local login_loading = false
+local loading_check = false
 local layout = ''
+local zone_name = ''
+local game_day = ''
+local game_time = ''
+local earth_time_raw = os.time()
+local earth_time_12 = ''
+local earth_time_24 = ''
+local weather = ''
+local inventory = ''
+local food = "No Food"
+local reraise = 'No Reraise'
+local name = ''
+local job = ''
+local tp = ''
+local gil = '0'
 
 function firstLoadMessage()
 	windower.add_to_chat(220,'[informer] '..('First load detected.'):color(8))
@@ -155,74 +173,96 @@ function hideInformerMain()
 	informer_main:hide()
 end
 
+-- Master Level info
 windower.register_event('incoming chunk', function(id, original, modified, injected, blocked)
 	if injected or blocked then return end
+	local packet = packets.parse('incoming', original)
 	if id == 0x061 then
-		local packet = packets.parse('incoming', original)
 		master_level = packet['Master Level']
+	elseif id == 0x01D then
+		loading_inv = packet['Flag'] == 0 and true or false
 	end
 end)
 
--- Count the number of given item and return the number and the color
-local function countItem(item_id)
-	local items = windower.ffxi.get_items()
-	local inventory = items.inventory
-	local containers = {items.inventory, items.case, items.sack, items.satchel}
-	local invNum = 0
-	local otherNum = 0
-	local use_colors = settings.display.colors
-	local invColor = settings.colors.none
-	local otherColor = settings.colors.none
+-- Check if we have food active
+function foodActive()
+	local buffs = windower.ffxi.get_player().buffs
 
-	-- Find the item and get the count
-	for i, item in ipairs(inventory) do
-		if item.id == item_id then
-			invNum = invNum + item.count
-			--break
+	for _, buffId in ipairs(buffs) do
+		if buffId == 251 then
+			return true
 		end
 	end
 
-	-- Iterate through each container
-	for _, container in ipairs(containers) do
-		-- Find the item and add to the count if found
-		for _, item in ipairs(container) do
-			if item.id == item_id then
-				otherNum = otherNum + item.count
-			end
-		end
-	end
+	return false
 
-	-- Determine the color based on the count / stack
-	if use_colors and invNum == 0 then
-		invColor = settings.colors.bad
-	elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
-		invColor = settings.colors.warning
-	end
-	invNum = string.format("%2s", invNum)
-
-	if use_colors and otherNum == 0 then
-		otherColor = settings.colors.bad
-	elseif use_colors and (otherNum / res.items[item_id].stack) <= .26 then
-		otherColor = settings.colors.warning
-	end
-	otherNum = string.format("%-2s", otherNum)
-
-	return invNum, invColor, otherNum, otherColor
-
-end
-
--- Find the id of an item based on its name
-local function getIdFromName(item_name)
-	for _, item in pairs(res.items) do
-		if item.name == item_name then
-			return item.id --match found
-		end
-	end
-	return false --no match found
 end
 
 -- Replace ${track:Item Name}
-local function updateTrackItems()
+local function updateTrackItems(loading)
+
+	-- Count the number of given item and return the number and the color
+	local function countItem(item_id)
+
+		if loading then
+			return " ?",settings.colors.none,"? ",settings.colors.none
+		end
+
+		local items = windower.ffxi.get_items()
+		local inventory = items.inventory
+		local containers = {items.inventory, items.case, items.sack, items.satchel}
+		local invNum = 0
+		local otherNum = 0
+		local invColor = settings.colors.none
+		local otherColor = settings.colors.none
+
+		-- Find the item and get the count
+		for i, item in ipairs(inventory) do
+			if item.id == item_id then
+				invNum = invNum + item.count
+				--break
+			end
+		end
+
+		-- Iterate through each container
+		for _, container in ipairs(containers) do
+			-- Find the item and add to the count if found
+			for _, item in ipairs(container) do
+				if item.id == item_id then
+					otherNum = otherNum + item.count
+				end
+			end
+		end
+
+		-- Determine the color based on the count / stack
+		if use_colors and invNum == 0 then
+			invColor = settings.colors.bad
+		elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
+			invColor = settings.colors.warning
+		end
+		invNum = string.format("%2s", invNum)
+
+		if use_colors and otherNum == 0 then
+			otherColor = settings.colors.bad
+		elseif use_colors and (otherNum / res.items[item_id].stack) <= .26 then
+			otherColor = settings.colors.warning
+		end
+		otherNum = string.format("%-2s", otherNum)
+
+		return invNum, invColor, otherNum, otherColor
+
+	end
+
+	-- Find the id of an item based on its name
+	local function getIdFromName(item_name)
+		for _, item in pairs(res.items) do
+			if item.name == item_name then
+				return item.id --match found
+			end
+		end
+		return false --no match found
+	end
+
 	local player = windower.ffxi.get_player()
 	local input = settings.layout[string.lower(player.main_job)]
 	local output = input:gsub("%${track:(.-)}", function(match)
@@ -241,163 +281,243 @@ local function updateTrackItems()
 	layout = output
 end
 
-function updateInformerMain()
-
-	local use_colors = settings.display.colors
-	local target_width = settings.display.min_width.target
-	local target_hpp_width = settings.display.min_width.target_hpp
-	local food_width = settings.display.min_width.food
+-- Update Zone
+local function updateZone()
+	local zone = res.zones[windower.ffxi.get_info().zone].name
 	local zone_width = settings.display.min_width.zone
-	local weather_width = settings.display.min_width.weather
-	local gil_width = settings.display.min_width.gil
+	zone_name = string.format("%-"..zone_width.."s", zone)
+end
+
+-- Update Game Day
+local function updateGameDay()
 	local day_width = settings.display.min_width.day
-	local tp_width = settings.display.min_width.tp
+	local day = string.format("%-"..day_width.."s", res.days[windower.ffxi.get_info().day].name)
+	local game_day_color = settings.colors.none
+	if use_colors then
+		game_day_color = settings.colors[string.lower(res.elements[res.days[windower.ffxi.get_info().day].element].name)]
+	end
+	game_day = '\\cs('..game_day_color..')'..day..'\\cr'
+end
 
-	local player = windower.ffxi.get_player()
-	local player_job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
-	local mlvl = master_level or '--'
-	local speed = windower.ffxi.get_mob_by_target('me') and math.floor(100 * (windower.ffxi.get_mob_by_target('me').movement_speed / 5 - 1) + .1)
-	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
-
-	local gil = windower.ffxi.get_items().gil
-		gil = addCommas(gil)
-		gil = string.format("%-"..gil_width.."s", gil)
-
-	local bag = windower.ffxi.get_bag_info(0)
+-- Update Game Time
+local function updateGameTime()
 	local game = windower.ffxi.get_info()
-	local pos = windower.ffxi.get_position()
-	local zone_name = res.zones[windower.ffxi.get_info().zone].name
-		zone_name = string.format("%-"..zone_width.."s", zone_name)
+	local game_time_hour = math.floor(game.time/60)
+	local game_time_minute = game.time - (math.floor(game.time/60)*60)
+	game_time_minute = string.format("%02d", game_time_minute)
+	local game_time_color = settings.colors.none
+	if use_colors and game_time_hour >= 6 and game_time_hour < 7 then --dawn
+		game_time_color = settings.colors.dusk_dawn
+	elseif use_colors and game_time_hour >= 7 and game_time_hour < 17 then --daytime
+		game_time_color = settings.colors.day			
+	elseif use_colors and game_time_hour >= 17 and game_time_hour < 18 then --dusk
+		game_time_color = settings.colors.dusk_dawn			
+	elseif use_colors and ((game_time_hour >= 18 and game_time_hour < 24) or (game_time_hour >= 0 and game_time_hour < 7)) then --nighttime
+		game_time_color = settings.colors.night
+	end
+	game_time_hour = string.format("%02d", game_time_hour)
+	local formatted_time = game_time_hour..':'..game_time_minute
+	game_time = '\\cs('..game_time_color..')'..formatted_time..'\\cr'
+end
 
-	local party = windower.ffxi.get_party()
-	local tp = (party and party.p0) and (party.p0.tp or 0) or 0
-	local tp_color = settings.colors.none
-		if use_colors and tp >= 1000 then
-			tp_color = settings.colors.good
-		end
-		tp = string.format("%-"..tp_width.."s", tp)
+-- Update Earth Time
+local function updateEarthTime()
+	earth_time_raw = os.time()
+	earth_time_12 = os.date('%I:%M:%S %p', earth_time_raw)
+	earth_time_24 = os.date('%H:%M:%S', earth_time_raw)
+end
 
-	local target = windower.ffxi.get_mob_by_target('st') or windower.ffxi.get_mob_by_target('t')
-	local target_name = target and target.name or 'No Target'
-		target_name = string.format("%-"..target_width.."s", target_name)
-	local target_hpp = target and target.hpp..'% ' or '---- '
-		target_hpp = string.format("%"..target_hpp_width.."s", target_hpp)
-	local target_w_hpp = target_hpp..target_name
-	local target_color = settings.colors.none
-		if use_colors and target and target.id == player.id then
-			target_color = settings.colors.self
-		elseif use_colors and target and isInParty(target.id) then
-			target_color = settings.colors.party
-		elseif use_colors and target and isInAlliance(target.id) then
-			target_color = settings.colors.alliance
-		elseif use_colors and target and target.is_npc then
-			if target.spawn_type == 16 then
-				if target.claim_id == 0 then
-					target_color = settings.colors.monster_passive
-				elseif isInParty(target.claim_id) then
-					target_color = settings.colors.monster_claimed_party
-				elseif isInAlliance(target.claim_id) then
-					target_color = settings.colors.monster_claimed_alliance
-				else
-					target_color = settings.colors.monster_claimed_other
-				end
-			else
-				target_color = settings.colors.npc
-			end
-		end
+-- Update Weather
+local function updateWeather()
+	local weather_width = settings.display.min_width.weather
+	local formatted_weather = string.format("%-"..weather_width.."s", res.weather[windower.ffxi.get_info().weather].name)
+	local weather_color = settings.colors.none
+	if use_colors then
+		weather_color = settings.colors[string.lower(res.elements[res.weather[windower.ffxi.get_info().weather].element].name)]
+	end
+	weather = '\\cs('..weather_color..')'..formatted_weather..'\\cr'
+end
 
-	local inventory = bag.count..'/'..bag.max
-		inventory = string.format("%5s", inventory)
+-- Update Inventory
+local function updateInventory(loading)
 	local inventory_color = settings.colors.none
+	local inv = ''
+
+	if loading then
+		inv = ' ?/?'
+	else
+		local bag = windower.ffxi.get_bag_info(0)
+		inv = bag.count..'/'..bag.max
 		if use_colors and bag.count == bag.max then
 			inventory_color = settings.colors.bad
 		elseif use_colors and bag.max - bag.count <= 10 then
 			inventory_color = settings.colors.warning
 		end
+	end
 
-	local food = "No Food"
-		if food_loading then
-			food = "Loading..."
-		elseif settings.food[string.lower(player.name)] then
-			food = settings.food[string.lower(player.name)]
-		elseif foodActive() then
-			food = "Unknown Food"
-		end
-		food = string.format("%-"..food_width.."s", food)
+	local formatted_inventory = string.format("%5s", inv)
+
+	inventory = '\\cs('..inventory_color..')'..formatted_inventory..'\\cr'
+end
+
+-- Update Food
+local function updateFood()
+	local player = windower.ffxi.get_player()
+	local food_width = settings.display.min_width.food
+	local formatted_food = "No Food"
+	if char_loading then
+		formatted_food = "Loading..."
+	elseif settings.food[string.lower(player.name)] then
+		formatted_food = settings.food[string.lower(player.name)]
+	elseif foodActive() then
+		formatted_food = "Unknown Food"
+	end
+	formatted_food = string.format("%-"..food_width.."s", formatted_food)
 	local food_color = settings.colors.none
-		if use_colors then
-			food_color = foodActive() and settings.colors.good or settings.colors.bad
-		end
+	if use_colors then
+		food_color = foodActive() and settings.colors.good or settings.colors.bad
+	end
+	food = '\\cs('..food_color..')'..formatted_food..'\\cr'
+end
 
-	local game_time_hour = math.floor(game.time/60)
-	local game_time_minute = game.time - (math.floor(game.time/60)*60)
-		game_time_minute = string.format("%02d", game_time_minute)
-	local time_color = settings.colors.none
-		if use_colors and game_time_hour >= 6 and game_time_hour < 7 then --dawn
-			time_color = settings.colors.dusk_dawn
-		elseif use_colors and game_time_hour >= 7 and game_time_hour < 17 then --daytime
-			time_color = settings.colors.day			
-		elseif use_colors and game_time_hour >= 17 and game_time_hour < 18 then --dusk
-			time_color = settings.colors.dusk_dawn			
-		elseif use_colors and (game_time_hour >= 18 and game_time_hour < 24) or (game_time_hour >= 0 and game_time_hour < 7) then --nighttime
-			time_color = settings.colors.night
-		end
-		game_time_hour = string.format("%02d", game_time_hour)
-	local game_time = game_time_hour..':'..game_time_minute
+-- Update Reraise
+local function updateReraise()
 
-	local earth_time_raw = os.time()
-	local earth_time_12 = os.date('%I:%M:%S %p', earth_time_raw)
-	local earth_time_24 = os.date('%H:%M:%S', earth_time_raw)
+	-- Check if we have reraise active
+	local function reraiseActive()
+		local buffs = windower.ffxi.get_player().buffs
 
-	local game_day = res.days[windower.ffxi.get_info().day].name
-		game_day = string.format("%-"..day_width.."s", game_day)
-	local day_color = settings.colors.none
-		if use_colors then
-			day_color = settings.colors[string.lower(res.elements[res.days[windower.ffxi.get_info().day].element].name)]
-		end
-
-	local weather = res.weather[windower.ffxi.get_info().weather].name
-		weather = string.format("%-"..weather_width.."s", weather)
-	local weather_color = settings.colors.none
-		if use_colors then
-			weather_color = settings.colors[string.lower(res.elements[res.weather[windower.ffxi.get_info().weather].element].name)]
-		end
-
-	local rr = 'No Reraise'
-	local rr_color = settings.colors.none
-		if reraiseActive() then
-			rr = 'Reraise On'
-			if use_colors then
-				rr_color = settings.colors.good
+		for _, buffId in ipairs(buffs) do
+			if buffId == 113 then
+				return true
 			end
-		elseif use_colors then
-			rr_color = settings.colors.bad
 		end
+		return false
+	end
 
-	if windower.ffxi.get_mob_by_target('me') == nil then
-		facing = 10
+	local reraise_color = settings.colors.none
+	local rr = "No Reraise"
+	if reraiseActive() then
+		rr = "Reraise On"
+		if use_colors then
+			reraise_color = settings.colors.good
+		end
 	else
-		facing = windower.ffxi.get_mob_by_target('me').facing
+		if use_colors then
+			reraise_color = settings.colors.bad
+		end
 	end
-	if facing >= (math.pi*.625)*-1 and facing < (math.pi*.375)*-1 then
-		direction = "N "
-	elseif facing >= (math.pi*.375)*-1 and facing < (math.pi*.125)*-1 then
-		direction = "NE"
-	elseif (facing >= (math.pi*.125)*-1 and facing < math.pi*.125) or facing == 0 then
-		direction = "E "
-	elseif facing >= math.pi*.125 and facing < math.pi*.375 then
-		direction = "SE"
-	elseif facing >= math.pi*.375 and facing < math.pi*.625 then
-		direction = "S "
-	elseif facing >= math.pi*.625 and facing < math.pi*.875 then
-		direction = "SW"
-	elseif (facing >= math.pi*.875 and facing <= math.pi) or (facing >= (math.pi)*-1 and facing < (math.pi*.875)*-1) then
-		direction = "W "
-	elseif facing >= (math.pi*.875)*-1 and facing < (math.pi*.625)*-1 then
-		direction = "NW"
+	reraise = '\\cs('..reraise_color..')'..rr..'\\cr'
+
+end
+
+-- Update Player Name
+local function updatePlayerName()
+	name = windower.ffxi.get_player().name
+end
+
+-- Update Player Job
+local function updatePlayerJob()
+	local player = windower.ffxi.get_player()
+	job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
+end
+
+-- Update TP
+local function updateTP(player_tp)
+	local tp_width = settings.display.min_width.tp
+	local player = windower.ffxi.get_player()
+	player_tp = player and player.vitals.tp or 0
+	local tp_color = settings.colors.none
+	if use_colors and player_tp >= 1000 then
+		tp_color = settings.colors.good
+	end
+	player_tp = string.format("%-"..tp_width.."s", player_tp)
+	tp = '\\cs('..tp_color..')'..player_tp..'\\cr'
+end
+
+-- Update Gil
+local function updateGil(player_tp)
+	local gil_width = settings.display.min_width.gil
+	local player_gil = windower.ffxi.get_items().gil
+	player_gil = addCommas(player_gil)
+	gil = string.format("%-"..gil_width.."s", player_gil)
+end
+
+-- Get Direction
+local function getDirection()
+	local player = windower.ffxi.get_mob_by_target('me')
+	local facing = player and player.facing or 10
+	local pi = math.pi
+	local directions = {
+		{min = -pi * 0.625, max = -pi * 0.375, dir = "N "},
+		{min = -pi * 0.375, max = -pi * 0.125, dir = "NE"},
+		{min = -pi * 0.125, max = pi * 0.125, dir = "E "},
+		{min = pi * 0.125, max = pi * 0.375, dir = "SE"},
+		{min = pi * 0.375, max = pi * 0.625, dir = "S "},
+		{min = pi * 0.625, max = pi * 0.875, dir = "SW"},
+		{min = pi * 0.875, max = pi, dir = "W "},
+		{min = -pi, max = -pi * 0.875, dir = "W "},
+		{min = -pi * 0.875, max = -pi * 0.625, dir = "NW"}
+	}
+	local direction = "--"
+	for _, entry in ipairs(directions) do
+		if facing >= entry.min and facing < entry.max then
+			direction = entry.dir
+			break
+		end
+	end
+	return direction
+end
+
+-- Get Target
+local function getTarget(name_type)
+	local player = windower.ffxi.get_player()
+	local target_width = settings.display.min_width.target
+	local target = windower.ffxi.get_mob_by_target('st') or windower.ffxi.get_mob_by_target('t')
+	local target_name = target and target.name or 'No Target'
+	target_name = string.format("%-"..target_width.."s", target_name)
+	local target_color = settings.colors.none
+	if use_colors and target and target.id == player.id then
+		target_color = settings.colors.self
+	elseif use_colors and target and isInParty(target.id) then
+		target_color = settings.colors.party
+	elseif use_colors and target and isInAlliance(target.id) then
+		target_color = settings.colors.alliance
+	elseif use_colors and target and target.is_npc then
+		if target.spawn_type == 16 then
+			if target.claim_id == 0 then
+				target_color = settings.colors.monster_passive
+			elseif isInParty(target.claim_id) then
+				target_color = settings.colors.monster_claimed_party
+			elseif isInAlliance(target.claim_id) then
+				target_color = settings.colors.monster_claimed_alliance
+			else
+				target_color = settings.colors.monster_claimed_other
+			end
+		else
+			target_color = settings.colors.npc
+		end
+	end
+	if name_type == "w_hpp" then
+		local target_hpp_width = settings.display.min_width.target_hpp
+		local target_hpp = target and target.hpp..'% ' or '---- '
+		target_hpp = string.format("%"..target_hpp_width.."s", target_hpp)
+		local target_w_hpp = target_hpp..target_name
+		target_w_hpp = '\\cs('..target_color..')'..target_w_hpp..'\\cr'
+		return target_w_hpp
 	else
-		direction = "--"
+		target_name = '\\cs('..target_color..')'..target_name..'\\cr'
+		return target_name
 	end
+end
+
+function updateInformerMain()
+
+	local mlvl = master_level or '--'
+	local speed = windower.ffxi.get_mob_by_target('me') and math.floor(100 * (windower.ffxi.get_mob_by_target('me').movement_speed / 5 - 1) + .1)
+	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
+
+	local pos = windower.ffxi.get_position()
 
 	-- Replace placeholders
 	local function replacePlaceholders(str, replacements)
@@ -407,23 +527,24 @@ function updateInformerMain()
 	-- Rebuild the text string to be displayed in the bar
 	local text = layout
 	text = replacePlaceholders(text, {
-		job = player_job,
+		name = name,
+		job = job,
 		gil = gil,
 		zone = zone_name,
 		pos = pos,
-		direction = direction,
-		day = '\\cs('..day_color..')'..game_day..'\\cr',
-		time = '\\cs('..time_color..')'..game_time..'\\cr',
+		direction = getDirection(),
+		day = game_day,
+		time = game_time,
 		earth_time_12 = earth_time_12,
 		earth_time_24 = earth_time_24,
-		weather = '\\cs('..weather_color..')'..weather..'\\cr',
-		inventory = '\\cs('..inventory_color..')'..inventory..'\\cr',
-		food = '\\cs('..food_color..')'..food..'\\cr',
-		target = '\\cs('..target_color..')'..target_name..'\\cr',
-		target_w_hpp = '\\cs('..target_color..')'..target_w_hpp..'\\cr',
-		tp = '\\cs('..tp_color..')'..tp..'\\cr',
+		weather = weather,
+		inventory = inventory,
+		food = food,
+		target = getTarget(),
+		target_w_hpp = getTarget("w_hpp"),
+		tp = tp,
 		mlvl = mlvl,
-		reraise = '\\cs('..rr_color..')'..rr..'\\cr',
+		reraise = reraise,
 		speed = formatted_speed,
 	})
 
@@ -461,34 +582,6 @@ function addCommas(number)
 
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
     return formattedNumber
-end
-
--- Check if we have food active
-function foodActive()
-	local buffs = windower.ffxi.get_player().buffs
-
-	for _, buffId in ipairs(buffs) do
-		if buffId == 251 then
-			return true
-		end
-	end
-
-	return false
-
-end
-
--- Check if we have reraise active
-function reraiseActive()
-	local buffs = windower.ffxi.get_player().buffs
-
-	for _, buffId in ipairs(buffs) do
-		if buffId == 113 then
-			return true
-		end
-	end
-
-	return false
-
 end
 
 -- Is this player in our party
@@ -544,6 +637,13 @@ windower.register_event('gain buff', function(buff)
 
 		settings:save('all')
 		last_item_used = nil --delete the last item used after we gain the food buff
+		updateFood()
+
+	elseif buff == 113 then -- Reraise
+		updateReraise()
+
+	elseif buff == 157 then -- SJ Restriction
+		updatePlayerJob()
 
 	end
 end)
@@ -552,18 +652,39 @@ end)
 windower.register_event('lose buff', function(buff)
 	local player = windower.ffxi.get_player()
 
-	if buff == 251 and not food_loading then -- Food
+	if buff == 251 and not char_loading then -- Food
 		settings.food[string.lower(player.name)] = nil
 		settings:save('all')
+		updateFood()
+
+	elseif buff == 113 then -- Reraise
+		updateReraise()
 
 	end
 end)
 
--- Main call to update the Informer bar
 windower.register_event('prerender', function()
 
-	if windower.ffxi.get_player() ~= nil then
+	-- Main call to update the Informer bar
+	if windower.ffxi.get_info().logged_in then
+	-- if windower.ffxi.get_player() ~= nil then
 		updateInformerMain()
+		if not char_loading then
+			if not loading_inv then
+				if login_loading then
+					login_loading = false
+				end
+				updateTrackItems()
+				updateInventory()
+			end
+		end
+	end
+
+	-- Once per second...
+	if os.time() > earth_time_raw then
+		earth_time_raw = os.time()
+		updateEarthTime()
+		updateGil()
 	end
 
 end)
@@ -572,6 +693,16 @@ end)
 windower.register_event('load', function()
 	if windower.ffxi.get_info().logged_in then
 		updateTrackItems()
+		updateZone()
+		updateGameDay()
+		updateGameTime()
+		updateWeather()
+		updateInventory()
+		updateFood()
+		updateReraise()
+		updatePlayerName()
+		updatePlayerJob()
+		updateTP()
 		if settings.first_load then
 			firstLoadMessage()
 		end
@@ -580,14 +711,27 @@ end)
 
 -- Login
 windower.register_event('login', function()
-	food_loading = true --prevents food clearing immediately on login
+	char_loading = true --prevents food clearing immediately on login
+	login_loading = true --prevents frame lag while loading inventory from a login
 	updateTrackItems()
+	updateZone()
+	updateGameDay()
+	updateGameTime()
+	updateWeather()
+	updateFood()
+	updateReraise()
+	updatePlayerName()
+	updatePlayerJob()
+	updateTP()
 	showInformerMain()
 	coroutine.sleep(5)
 	if settings.first_load then
 		firstLoadMessage()
 	end
-	food_loading = false
+	char_loading = false
+	updateInventory()
+	updateFood()
+	updatePlayerJob()
 end)
 
 -- Logout
@@ -598,15 +742,44 @@ end)
 
 -- Item movement
 windower.register_event('add item', function(bag,index,id,count)
-	updateTrackItems()
+	updateTrackItems(login_loading)
+	updateInventory(login_loading)
 end)
 windower.register_event('remove item', function(bag,index,id,count)
 	updateTrackItems()
+	updateInventory()
 end)
 
 -- Job Change
-windower.register_event('job change', function(bag,index,id,count)
+windower.register_event('job change', function()
 	updateTrackItems()
+	updatePlayerJob()
+end)
+
+-- Zone Change
+windower.register_event('zone change', function()
+	updateZone()
+	updatePlayerJob()
+end)
+
+-- Time Change
+windower.register_event('time change', function()
+	updateGameTime()
+end)
+
+-- Day Change
+windower.register_event('day change', function()
+	updateGameDay()
+end)
+
+-- Weather Change
+windower.register_event('weather change', function()
+	updateWeather()
+end)
+
+-- TP Change
+windower.register_event('tp change', function(new_tp)
+	updateTP(new_tp)
 end)
 
 -- Unrecognized command
@@ -692,6 +865,17 @@ windower.register_event('addon command',function(addcmd, ...)
 	-- Turn colors on or off
 	elseif addcmd == 'color' or addcmd == 'colors' then
 		settings.display.colors = not settings.display.colors
+		use_colors = settings.display.colors
+
+		--Update the Things that use color
+		updateTrackItems()
+		updateGameDay()
+		updateGameTime()
+		updateWeather()
+		updateInventory()
+		updateFood()
+		updateReraise()
+		updateTP()
 
 		-- Save the new setting, update the colors setting, then alert the user
 		settings:save('all')
@@ -708,20 +892,17 @@ windower.register_event('addon command',function(addcmd, ...)
 		local currInv = settings.display.inventory
 		local currFood = settings.display.food
 
-		windower.add_to_chat(220,'[Informer] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
-		windower.add_to_chat(220,' ')
-		windower.add_to_chat(220,' Commands ')
-		windower.add_to_chat(36,'   pos [x y]'..(' - Update position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
-		windower.add_to_chat(36,'   lock/unlock'..(' - Update position via drag. ['):color(8)..(settings.flags.draggable and ('Unlocked'):color(200)..(' (draggable)'):color(8) or ('Locked'):color(200))..(']'):color(8))
-		windower.add_to_chat(36,'   size [#]'..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
-		windower.add_to_chat(36,'   bold'..(' - Update bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		windower.add_to_chat(36,'   color'..(' - Update color setting. ['):color(8)..('%s':format(currColor and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		windower.add_to_chat(220,' ')
+		local prefix = "//informer, //info"
+		windower.add_to_chat(8,('[Informer] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
+		windower.add_to_chat(8,' ')
+		windower.add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
+		windower.add_to_chat(8,(' pos '):color(36)..('[x y]'):color(53)..(' - Update position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
+		windower.add_to_chat(8,(' lock/unlock'):color(36)..(' - Update position via drag. ['):color(8)..(settings.flags.draggable and ('Unlocked'):color(200)..(' (draggable)'):color(8) or ('Locked'):color(200))..(']'):color(8))
+		windower.add_to_chat(8,(' size '):color(36)..('[#]'):color(53)..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
+		windower.add_to_chat(8,(' bold'):color(36)..(' - Update bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		windower.add_to_chat(8,(' color'):color(36)..(' - Update color setting. ['):color(8)..('%s':format(currColor and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,' You can change the layout per job in /data/settings.xml')
-
-	elseif addcmd == 'reload' then
-		windower.send_command('lua r informer')
-		return
 
 	else
 		displayUnregnizedCommand()
