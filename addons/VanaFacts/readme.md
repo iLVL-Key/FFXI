@@ -10,7 +10,7 @@ All commands must be preceded with either `//vanafacts` or `//vf` (ex: `//vf rep
  - `repeat/r` - Repeat the last Fact displayed.
  - `help` - Display a list of commands and addon info.
 
-## Version History
+## Changelog
 Version 1.3
 - Added repeat/r command - Repeats the last Fact displayed.
 - Adjusted Help text.
