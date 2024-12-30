@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'ReadyCheck'
-_addon.version = '1.2.1'
+_addon.version = '1.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'readycheck','rc'}
 
@@ -395,7 +395,7 @@ end
 windower.register_event('chat message', function(message, sender, mode)
 
 	-- Add name to the Ready List when they slash off (limited to while a ready check is running and party chat only)
-	if( message:match("^[/|\\oO0]") or message:match("^ready") or message:match("^o/")) and timer_countdown > 0 then
+	if( message:match("^[/|\\oO0]") or message:match("^ready") or message:match("^o/") or message:match("^O/") or message:match("^0/")) and timer_countdown > 0 then
 		addToReadyList(sender)
 		
 	-- Add name to the Not Ready List when they x off (limited to while a ready check is running and party chat only)
@@ -443,7 +443,7 @@ windower.register_event('outgoing text', function(original)
 	local message = original:gsub("/p ", "") -- Remove /p if it exists
 
 	-- Ready
-	if (message:match("^[/|\\oO0]") or message:match("^ready") or message:match("^o/")) and timer_countdown > 0 then
+	if (message:match("^[/|\\oO0]") or message:match("^ready") or message:match("^o/") or message:match("^O/") or message:match("^0/")) and timer_countdown > 0 then
 		addToReadyList(self_name)
 
 	--Not ready
