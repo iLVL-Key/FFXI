@@ -37,11 +37,11 @@ Displays a bar with information (much like InfoBar!)
   - Warning when tracked items are low
 
 ## Commands
-All commands must be preceded with `//informer` or `//info`  
+All commands must be preceded with `//informer` or `//info` (ex: `//info color`)  
 `[optional] <required>`
-- **pos [x y]** - Update position.
-- **lock/unlock** - Update position via drag.
-- **size [#]** - Update font size.
-- **bold** - Update bold setting.
-- **color** - Update color setting.
- - **help** - Display a list of commands and addon info.
+- `pos [x y]` - Update position.
+- `lock/unlock` - Update position via drag.
+- `size [#]` - Update font size.
+- `bold` - Update bold setting.
+- `color` - Update color setting.
+- `help` - Display a list of commands and addon info.
