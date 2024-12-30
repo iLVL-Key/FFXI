@@ -69,6 +69,7 @@ All commands must be preceded with `//bars`
  - **list/l** - Show the Auto Focus Target list.
  - **size/s [#]** - Update the size.
  - **bold/b** - Toggle the bold setting.
+ - **help** - Display a list of commands and addon info.
 
 ## Options
 Open the `/bars/data/settings.xml` file to adjust these settings.
