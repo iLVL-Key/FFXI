@@ -6,9 +6,14 @@ Display one of over 800 "facts" about Vana'diel and FFXI in general during zonin
 
 
 ## Commands
-- None!
+All commands must be preceded with either `//vanafacts` or `//vf`  
+ - repeat/r - Repeat the last Fact displayed.
+ - help - Display a list of commands and addon info.
 
 ## Version History
+Version 1.3
+- Added repeat/r command - Repeats the last Fact displayed.
+
 Version 1.2
 - Added addon command section to let the user know there are no addon commands.
 
