@@ -5,7 +5,7 @@ A collaborative "whiteboard" for you and your party.
 
 ![bp_box](https://github.com/iLVL-Key/FFXI/assets/101156258/7d7a5a02-d4c6-4a7f-94c8-5d429641961b)
 
-Up to 5 lines are available to use. It is controlled by special commands detected through the chat log, and is not visible when all lines are empty. Anyone running Battle Plan that sees these commands in their chat log will be updated. This means that you can keep a group of players all on the same page!  
+Up to **5** lines are available to use. It is controlled by special commands detected through the chat log, and is not visible when all lines are empty. Anyone running Battle Plan that sees these commands in their chat log will be updated. This means that you can keep a group of players all on the same page!  
 
 For example, you can use it in Odyssey to list out the 3 NMs you're planning on doing and keep track of who is what job on each so that there's no overlap. Or in Sortie to have the path your group is taking laid out ahead of time.
 
@@ -15,25 +15,27 @@ Additionally, you can prep what you send out to everyone ahead of time by using 
 
 ### Commands
 There are two types of commands: `Addon` and `Party`  
+All commands must be prefixed with `//battleplan` or `//bp` (ex: `//bp tutorial`)  
+`[optional] <required>`
 
-#### Addon `[optional] <required>`
+#### Addon
 These commands are used to update *YOUR* BP box. Other people's BP boxes will remain the same. All Addon commands must be prefixed with either `//battleplan` or `//bp` (ex: `//bp clear`)
-- **<#> [text here]** - Update line # of *YOUR* BP box (blank to clear).
+- `<#> [text here]` - Update line # of *YOUR* BP box (blank to clear).
   - <#> must be a number 1-5. Ex. `//bp 3 Hello from iLVL of Valefor!`
-- **send** - Send your current BP box to the chat log to update other players.
-- **show/hide** - Displays the BP box if there is content to diplay. (saved to settings file)
-- **clear** - Clear *YOUR* BP box.
-- **pos [\<x> \<y>]** - Update the position of the BP box. (saved to settings file)
-- **lock/unlock** - Drag the BP box. (saved to settings file)
-- **size [#]** - Update the font size of the BP box Default. (saved to settings file)
-- **bold** - Update the bold setting. (saved to settings file)
-- **tutorial** - Run a short tutorial to give you the basics.
+- `send` - Send your current BP box to the chat log to update other players.
+- `show/hide` - Displays the BP box if there is content to diplay. (saved to settings file)
+- `clear` - Clear *YOUR* BP box.
+- `pos [\<x> \<y>]` - Update the position of the BP box. (saved to settings file)
+- `lock/unlock` - Drag the BP box. (saved to settings file)
+- `size [#]` - Update the font size of the BP box Default. (saved to settings file)
+- `bold` - Update the bold setting. (saved to settings file)
+- `tutorial` - Run a short tutorial to give you the basics.
 
-#### PARTY `[optional] <required>`
+#### PARTY
 These commands are used to update *EVERYONE'S* BP box. They are used directly in your party chat so that they are seen by the other members in your party/alliance. This is so that Battle Plan running on their own screens will be updated.
-- **!bp<#>** - Update line # of *EVERYONE'S* BP box (blank to clear).
+- `!bp<#>` - Update line # of *EVERYONE'S* BP box (blank to clear).
   - <#> must be a number 1-5. Ex. `!bp3 Pickle Surprise!`
-- **!bpclear** - Clear *EVERYONE'S* BP box
+- `!bpclear` - Clear *EVERYONE'S* BP box
 
 Everything after the !bp# will be captured and displayed on that line. It is also smart enough to recognize different !bp# on the same line and act accordingly. This means that typing  
 `!bp2 This is line 2 !bp1 This is line 1 !bp3 This is line 3`  
