@@ -45,3 +45,26 @@ All commands must be preceded with `//informer` or `//info` (ex: `//info color`)
 - `bold` - Update bold setting.
 - `color` - Update color setting.
 - `help` - Display a list of commands and addon info.
+
+## Changelog
+Version 4.0
+- Overhauled overall addon efficiency, *especially* Item Tracking.
+- Fix update job on SJ Restriction.
+
+Version 3.2
+- Added Earth Time placeholders (12HR and 24HR formats).
+- Added Movement Speed placeholder.
+
+Version 3.1
+- Added Reraise placeholder.
+
+Version 3.0
+- Added the ability to customize the layouts (and per job now) via placeholders.
+- Added the ability to track literally any item in the game without needing the items id number.
+
+Version 2.0
+- Added ability to turn specific sections on or off.
+- Removed reliance on the Text plugin.
+
+Version 1.0
+- Original version
