@@ -15,14 +15,14 @@ Tracks battle information and groups it together in different "boards".
 
 ### Features
 - 4 different tracking modes:
-  - **Silent:** Default mode. Tracks in the background, no party chat call outs.
-  - **Lite:** Limited party chat call outs. Great for alliance events.
+  - **Silent:** Default mode. Tracks in the background, *no party chat call outs*.
+  - **Raid:** Limited party chat call outs. Great for alliance events.
   - **Party:** Full party chat call outs. Great for small party events.
   - **Mog Kart:** Inspired by Mario Kart, this mode includes "items" that players (trusts too!) can receive and use to affect other players points.
     - All items can have their attributes changed in the settings file.
     - Trusts will also play Mario Kart along with you and your party members (IT'S AI! ...not really)!
     - Note: Uses tells to send players their items as well as receive the command to use them.
-- Tracks 11 different boards.
+- Tracks **18** different boards.
 - On-Screen Display for tracking boards in realtime.
 - Rival system. Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
 - Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
@@ -32,23 +32,29 @@ Tracks battle information and groups it together in different "boards".
 - Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
 - Tracks every players scores individually. Allows any player in the group to get a report with only their own scores for each board.
 - Tracks the number of "nines" a player has hit.
-- Duplicate scores are ordered by who hit the number first.
+- Duplicate scores are ordered by who hit the score first.
 - All major settings can be changed via commands in-game, no need to modify the settings file (although you still can of course).
 
 ### Currently Tracked Boards
-- `c/cure` - Running total of cures.
-- `d/death` - Running total of deaths.
-- `hs/highscore` - Highest individual WS damage.
-- `k/kill` - Running total of kills.
-- `ls/lowscore` - Lowest individual WS damage.
-- `m/murder` - Running total of murders.
-- `mb/magicburst` - Highest individual MB damage.
-- `n/nuke` - Running total of nukes.
-- `sc/skillchain` - Highest individual SC damage.
-- `v/victim` - Running total of victims.
-- `w/whiffs` - Running total of whiffs.
+- **buff/b** - Running total of buffs landed/removed.
+- **cure/c** - Running total of cures.
+- **death/d** - Running total of deaths.
+- **debuff/db** - Running total of debuffs landed/removed.
+- **highscore/hs** - Highest individual WS damage.
+- **kill/k** - Running total of kills.
+- **lowscore/ls** - Lowest individual WS damage.
+- **magicburst/mb** - Highest individual MB damage.
+- **melee/ml** - Running total of melee damage.
+- **murder/m** - Running total of murders.
+- **nuke/nk** - Running total of nukes.
+- **point/p** - Running total of points.
+- **ranged/ra** - Running total of ranged attacks.
+- **skillchain/sc** - Highest individual SC damage.
+- **totaldamage/td** - Running total of overall damage.
+- **victim/v** - Running total of victims.
+- **weaponskill/ws** - Running total of weapon skills.
+- **whiff/w** - Running total of whiffs.
 
-(Cure and Nuke Leaderboards account for aoe's)
 
 ### Addon Commands
 All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`)  
@@ -56,17 +62,17 @@ All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`
 
 #### Basic
 - `pause/p` - Pause/unpause tracking.
-- `c/d/hs/k/ls/m/mb/n/p/sc/v/w` - Print board to party chat.
-- `mode/kart/silent/lite/party` - Display/change the current Mode.
-- `reset <all/i/c/d/hs/k/ls/m/mb/n/p/sc/v/w>` - Reset specified data.
-- `show/hide [#/c/d/hs/k/ls/m/mb/n/p/sc/v/w]` - Display board on screen (# = how many lines).
+- `b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/w` - Print board to party chat.
+- `mode/kart/raid/party/silent` - Display/change the current Mode.
+- `reset <all/i/b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/w>` - Reset specified data.
+- `show/hide [#/b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/w]` - Display board on screen (# = how many lines to display).
 - `boards` - List the different boards that are tracked.
 - `rival [name]` - Display/Set the specified player as your Rival. Repeat with name to remove.
 - `taunt [text]` - Send your rival a tell with which boards you have them beat on.  
   - Including `[text]` updates the taunt text. Must include a `%s` where the boards will go.
 
 #### Advanced
-- `call [c/d/hs/k/ls/m/mb/n/sc/w]` - Display/change the Party/Lite mode party call settings.
+- `call [b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/w]` - Display/change the Party/Lite mode party call settings.
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
 - `report <name>` - Send the specified player their score report via tell.
@@ -75,7 +81,7 @@ All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`
 - `bold` - Enable/disable the bold setting for the on-screen display.
 - `comma` - Change the Comma setting.
 - `size [#]` - Update the font size for the on-screen display.
-- `partycommand/partycmd` - Change the Party Command setting.
+- `partycommand/pcmd` - Change the Party Command setting.
 - `flood [#]` - Display/change the current Flood Delay setting.
 
 #### Kart Mode
@@ -87,7 +93,7 @@ All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`
 
 ### Party Commands
 Intended to be used by the party. The host must have Party or Lite Mode running and have Party Commands enabled.  
-- `lb c/d/hs/k/ls/m/mb/n/sc/v/w` - Print board to party chat. (receive command via party chat or tell)
+- `lb b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/` - Print board to party chat. (receive command via party chat or tell)
 - `optout` - Add your name to the Optout list. (receive command via tell only)
 - `report` - Receive a score report via tell. (receive command via tell only)
 
@@ -95,6 +101,17 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 - In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of.
 
 ### Version History
+**5.0**
+- Added 5 new boards: Total Damage, Total Weapon Skill, Ranged Attack, Buff, and Debuff.
+- Added sub-command 'all' to commands that print the boards to chat. This will display all places that exist on the specified board.
+- Added default_osd_board option. Defines the initial board shown in the On-Screen Display upon loading the addon.
+- Adjusted Lite Mode to now be called Raid Mode.
+- Adjusted the On-Screen Display formatting. The display itself is now a few characters wider, to accomodate larger scores (and some percentages shown) from the new boards. Scores are now right-aligned. Names will now automatically truncate instead of stretching the display if names and scores overlap.
+- Adjusted board formatting when printed to chat. Longer player names will now be truncated to 8 characters. Will help alleviate issues where the last bit of a board posted to chat gets cut off due to names or scores being too long.
+- Adjusted a few of the party callout threshholds.
+- Adjusted the boards that the Rivals feature tracks. Removed Low WS and Magic Bursts, added Total WS and Total DMG.
+- Adjusted the default initial board shown in the On-Screen Display to the Total Damage Board.
+- Adjusted default party callout settings. All "running total" type damage boards are set to off with Total Damage set to on in their place. Death and Whiff boards are now set to off as well.
 
 **4.0.2**
 - Added more "Utility" WSs to be excluded from WS boards.
