@@ -15,11 +15,11 @@ NotePad for Vana'diel!
 - Pin the VanaPad bar in place using the button, or unpin it to move it around
 
 ## Commands
-All commands must be preceded with `//vanapad` or `//vp`  
-- **show/hide** - Show/hide the VanaPad window
-- **edit/e** - Edit the current note
-- **title/t** - Add a custom title to the current note.
- - **help** - Display a list of commands and addon info.
+All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)  
+- `show/hide` - Show/hide the VanaPad window
+- `edit/e` - Edit the current note
+- `title/t` - Add a custom title to the current note.
+ - `help` - Display a list of commands and addon info.
 
 ## Version History
 Version 1.0 BETA-3
