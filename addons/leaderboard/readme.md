@@ -23,11 +23,11 @@ Tracks battle information and groups it together in different "boards".
     - Trusts will also play Mario Kart along with you and your party members (IT'S AI! ...not really)!
     - Note: Uses tells to send players their items as well as receive the command to use them.
 - Tracks **18** different boards.
-- On-Screen Display for tracking boards in realtime.
+- On-Screen Display for tracking boards in real-time.
 - Rival system. Set another player as your Rival and get notifications when either of you beat the others scores (visible only to you).
 - Optout list. Characters on this list will not be tracked and all current data for them will be deleted.
 - Chat Buffer system. Holds new outgoing messages in a buffer table before sending out to chat to prevent errors with multiple chat messages at the same time.
-- Party commands. Party members can use party chat and/or tells to issue certain commands while in Party or Lite Modes.
+- Party commands. Party members can use party chat and/or tells to issue certain commands while in Party or Raid Mode.
   - Flood delay per player so that individuals can't spam commands and lock others out.
 - Automatic data recovery. If you crash or disconnect, all scores are saved and it picks back up right where it left off.
 - Tracks every players scores individually. Allows any player in the group to get a report with only their own scores for each board.
