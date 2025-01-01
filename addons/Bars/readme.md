@@ -2,14 +2,17 @@
 Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Actions for Targets, Focus Targets, and Player.  
 Can display anwhere from all bars at once, to all the way down to just the target bar.
 
-![Bars_all_bars_shown](https://github.com/user-attachments/assets/814bd9bc-55bd-4330-bf86-8ae463878f78)  
-↑All* bars visible at the same time. (*Sub-Target bar not displayed but is to the right of the Focus bar)
+![Screen_Test](https://github.com/user-attachments/assets/7929f77d-224e-4528-8124-70fbfc37b411)  
+↑All bars visible at the same time. The Screen Test pops up when using any command that adjusts the look of the Bars.
+
+![Volt_strike](https://github.com/user-attachments/assets/0b8223ca-2912-4f6f-9db6-95172b6301a2)  
+↑Ramuh laying the smack down on a fearsome Sylvestre. Here the HP, MP, and TP bars are disabled.
 
 ![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
-↑The Target, Self Action, and TP visible in action.
+↑The Target, Self Action, and TP visible in action (old v2.0 look).
 
 ![Bars_PLD](https://github.com/user-attachments/assets/30a01c7e-fcff-48fd-a1d5-fe528452f682)  
-↑The Target and Self Action bars visible and in action.
+↑The Target and Self Action bars visible and in action (old v2.0 look).
 
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
