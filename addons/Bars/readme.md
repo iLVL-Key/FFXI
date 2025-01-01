@@ -53,7 +53,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ## Commands
 All commands must be preceded with `//bars` (ex: `//bars pos`)  
 `[optional] <required>`
- - `pos/p [x y]` - Update overall position.
+ - `pos/p [x y]` - Update overall Position.
  - `hp/mp/tp/pet` - Toggle HP/MP/TP/Pet bar display setting for current job.
  - `width/w` - Update the bar Width.
  - `distance/d`  - Toggle the Distance option.
