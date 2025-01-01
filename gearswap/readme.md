@@ -41,8 +41,8 @@ In general, each HUD has..
 - Some files show more specialized information such as SMN Avatars,  bubbles (with realtime potency numbers!), and RUN runes.  
 
 #### BLU
-![BLUE HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/dc72907f-bdb6-468e-8520-821dba589211)  
-(OLD HUD, new image Coming Soon™)
+![BLU_HUD](https://github.com/user-attachments/assets/c9a7a9f2-5035-4927-826d-ef149ba3cd08)  
+(Setting spells with AzureSets addon integration)
 
 #### GEO
 ![ HUD](https://github.com/iLVL-Key/FFXI/assets/101156258/d556c734-0361-4bd2-8aed-5a22f2c23a42)  
