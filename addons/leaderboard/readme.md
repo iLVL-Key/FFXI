@@ -1,8 +1,8 @@
 # Leaderboard
 Tracks battle information and groups it together in different "boards".  
 
-![lb_high_ws_onscreen2](https://github.com/iLVL-Key/FFXI/assets/101156258/878a3198-0089-4318-8317-c5134fee8002)  
-↑ The on-screen display showing the High WS Board.
+![Leaderboard_Total_Damage_Board](https://github.com/user-attachments/assets/95770d3c-944b-45dd-8461-da4ee90fbaf4)  
+↑ The on-screen display showing the Total Damage Board, your own character is hilighted in green while your Rival is hilighted in red.
 
 ![Leaderboard addon picture of high ws party chat callout](https://github.com/iLVL-Key/FFXI/assets/101156258/4890ef71-08cd-49dd-9819-feccde31e760)  
 ↑ Party chat callout for the High WS.
