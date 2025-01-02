@@ -72,6 +72,7 @@ All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`
   - Including `[text]` updates the taunt text. Must include a `%s` where the boards will go.
 
 #### Advanced
+- `all` - Display all boards one after the other. Repeat to stop.
 - `call [b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/w]` - Display/change the Party/Lite mode party call settings.
 - `lock/unlock` - Drag the On-Screen Display.
 - `optout [add/remove <name>]` - Display/update the Optout list.
