@@ -8,11 +8,11 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ![Volt_strike](https://github.com/user-attachments/assets/0b8223ca-2912-4f6f-9db6-95172b6301a2)  
 ↑Ramuh laying the smack down on a fearsome Sylvestre. Here the HP, MP, and TP bars are disabled.
 
+![Bars_BLU](https://github.com/user-attachments/assets/c3c99ca5-4ec6-48e8-aceb-bee383615e0b)  
+↑The Target and Self Action bars visible and in action.
+
 ![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
 ↑The Target, Self Action, and TP visible in action (old v2.0 look).
-
-![Bars_PLD](https://github.com/user-attachments/assets/30a01c7e-fcff-48fd-a1d5-fe528452f682)  
-↑The Target and Self Action bars visible and in action (old v2.0 look).
 
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
