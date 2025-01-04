@@ -46,7 +46,7 @@ Tracks battle information and groups it together in different "boards".
 - **magicburst/mb** - Highest individual MB damage.
 - **melee/ml** - Running total of melee damage.
 - **murder/m** - Running total of murders.
-- **nuke/nk** - Running total of nukes.
+- **nuke/n** - Running total of nukes.
 - **point/p** - Running total of points.
 - **ranged/ra** - Running total of ranged attacks.
 - **skillchain/sc** - Highest individual SC damage.
