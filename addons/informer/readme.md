@@ -9,6 +9,7 @@ Displays a bar with information (much like InfoBar!)
 - Uses a layout (per job) that you can customize however you'd like using placeholders:
   - **${day}** - Current Vana'diel day
   - **${direction}** - Current direction your character is facing
+  - **${distance}** - Distance to current target/sub-target
   - **${earth_time_12}** - Current Earth time (12HR format)
   - **${earth_time_24}** - Current Earth time (24HR format)
   - **${food}** - Current food you have (tracked per character)
