@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '4.0'
+_addon.version = '4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -516,6 +516,8 @@ function updateInformerMain()
 	local mlvl = master_level or '--'
 	local speed = windower.ffxi.get_mob_by_target('me') and math.floor(100 * (windower.ffxi.get_mob_by_target('me').movement_speed / 5 - 1) + .1)
 	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
+	local target = windower.ffxi.get_mob_by_target('st','t')
+	local target_distance = target and (string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
 
 	local pos = windower.ffxi.get_position()
 
@@ -546,6 +548,7 @@ function updateInformerMain()
 		mlvl = mlvl,
 		reraise = reraise,
 		speed = formatted_speed,
+		distance = target_distance,
 	})
 
 	-- Update the bar with the rebuilt text string
@@ -667,7 +670,6 @@ windower.register_event('prerender', function()
 
 	-- Main call to update the Informer bar
 	if windower.ffxi.get_info().logged_in then
-	-- if windower.ffxi.get_player() ~= nil then
 		updateInformerMain()
 		if not char_loading then
 			if not loading_inv then
