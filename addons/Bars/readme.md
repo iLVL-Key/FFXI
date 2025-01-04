@@ -9,7 +9,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ↑Ramuh laying the smack down on a fearsome Sylvestre. Here the HP, MP, and TP bars are disabled.
 
 ![Bars_BLU](https://github.com/user-attachments/assets/c3c99ca5-4ec6-48e8-aceb-bee383615e0b)  
-↑The Target and Self Action bars visible and in action.
+↑The Target and Self Action bars visible and in action showing how many targets were hit and the total of all damage done.
 
 ![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
 ↑The Target, Self Action, and TP visible in action (old v2.0 look).
