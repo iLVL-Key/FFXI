@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.0'
+_addon.version = '3.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2542,6 +2542,7 @@ windower.register_event('action', function (act)
 		local amount_total = 0
 		local cure_total = false
 		local last_buff_id = false
+		local damage = false
 		if show_result_totals and target_count > 1 then
 			for i = 1, target_count do
 				local msg = act.targets[i].actions[1].message
@@ -2556,7 +2557,7 @@ windower.register_event('action', function (act)
 					cure_total = cure_total and cure_total + act.targets[i].actions[1].param or act.targets[i].actions[1].param
 				--Everything else that is NOT: Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 				elseif not (msg == 282 
-				or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 
+				or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 
 				or msg == 85 or msg == 284 or msg == 655 or msg == 656 
 				or msg == 653 or msg == 654 
 				or msg == 30 
@@ -2565,10 +2566,13 @@ windower.register_event('action', function (act)
 				or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658) then
 					landed = landed + 1
 					amount_total = amount_total + act.targets[i].actions[1].param
+					if msg == 196 or msg == 264 or msg == 265 then
+						damage = true
+					end
 				end
 			end
 		end
-		local info = {landed = landed, cure_total = cure_total, amount_total = amount_total, last_buff_id = last_buff_id}
+		local info = {landed = landed, cure_total = cure_total, amount_total = amount_total, last_buff_id = last_buff_id, damage = damage}
 		return info
 	end
 
@@ -2727,23 +2731,29 @@ windower.register_event('action', function (act)
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local last_buff_id = info.last_buff_id
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
 					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
 						target_action_result = ' ('..count..'Evaded)'
 						target_action_result_shdw = ' ('..count..'Evaded)'
 					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
@@ -2792,34 +2802,40 @@ windower.register_event('action', function (act)
 			elseif msg == 103 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Plain Damage
 			elseif msg == 110 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local last_buff_id = info.last_buff_id
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
 					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
 						target_action_result = ' ('..count..'Evaded)'
 						target_action_result_shdw = ' ('..count..'Evaded)'
 					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
@@ -2853,7 +2869,7 @@ windower.register_event('action', function (act)
 				target_action_result = ' (Cover)'
 				target_action_result_shdw = ' (Cover)'
 			--Buff/Debuff
-			elseif msg == 100 or msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
+			elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then --removed 100
 				local landed = calculateInfo(act).landed
 				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
@@ -2994,14 +3010,14 @@ windower.register_event('action', function (act)
 			elseif msg == 451 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Regains TP
 			elseif msg == 452 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--No Foot Rise
@@ -3020,7 +3036,7 @@ windower.register_event('action', function (act)
 			if msg == 110 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Buff/Debuff
@@ -3031,23 +3047,29 @@ windower.register_event('action', function (act)
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local last_buff_id = info.last_buff_id
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
 					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
 						target_action_result = ' ('..count..'Evaded)'
 						target_action_result_shdw = ' ('..count..'Evaded)'
 					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
@@ -3171,23 +3193,29 @@ windower.register_event('action', function (act)
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local last_buff_id = info.last_buff_id
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
 					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
 						target_action_result = ' ('..count..'Evaded)'
 						target_action_result_shdw = ' ('..count..'Evaded)'
 					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
@@ -3220,7 +3248,7 @@ windower.register_event('action', function (act)
 			elseif msg == 224 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			end
@@ -3256,7 +3284,7 @@ windower.register_event('action', function (act)
 				local info = calculateInfo(act)
 				local amount_total = info.amount_total
 				local cure_total = info.cure_total
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				if cure_total then
 					cure_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(cure_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..cure_total..'\\cr)'
@@ -3274,28 +3302,28 @@ windower.register_event('action', function (act)
 			elseif msg == 252 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (Magic Burst! \\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Drain
 			elseif msg == 227 or msg == 274 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Aspir
 			elseif msg == 228 or msg == 275 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Absorb-TP
 			elseif msg == 454 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Buff/Debuff
@@ -3306,23 +3334,29 @@ windower.register_event('action', function (act)
 				target_action_result = ' ('..((msg == 268 or msg == 271) and 'Magic Burst! ' or '')..count..buff_name..')'
 				target_action_result_shdw = ' ('..((msg == 268 or msg == 271) and 'Magic Burst! ' or '')..count..buff_name..')'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local last_buff_id = info.last_buff_id
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
 					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
 						target_action_result = ' ('..count..'Evaded)'
 						target_action_result_shdw = ' ('..count..'Evaded)'
 					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
@@ -3374,7 +3408,7 @@ windower.register_event('action', function (act)
 			if msg == 24 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--MP
@@ -3387,7 +3421,7 @@ windower.register_event('action', function (act)
 			elseif msg == 26 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP/MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP/MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Buff/Debuff
@@ -3443,7 +3477,7 @@ windower.register_event('action', function (act)
 			elseif msg == 379 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (Magic Burst! \\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Plain Damage
@@ -3459,7 +3493,7 @@ windower.register_event('action', function (act)
 				local info = calculateInfo(act)
 				local amount_total = info.amount_total
 				local cure_total = info.cure_total
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				if cure_total then
 					cure_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(cure_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..cure_total..'\\cr)'
@@ -3482,23 +3516,29 @@ windower.register_event('action', function (act)
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..''..buff_name..'\\cr)'
 				target_action_result_shdw = ' ('..count..'\\cs(000,000,000'..buff_name..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local last_buff_id = info.last_buff_id
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
 					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
 						target_action_result = ' ('..count..'Evaded)'
 						target_action_result_shdw = ' ('..count..'Evaded)'
 					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
@@ -3543,7 +3583,7 @@ windower.register_event('action', function (act)
 			elseif msg == 802 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = (count ~= '' and ' ' or '')..count
+				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			end
@@ -3621,27 +3661,33 @@ windower.register_event('action', function (act)
 		elseif msg == 187 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-			count = (count ~= '' and ' ' or '')..count
+			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 		--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 			local info = calculateInfo(act)
 			local landed = info.landed
 			local last_buff_id = info.last_buff_id
 			local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+			local damage = info.damage
 			if buff_name then
 				--redo count to show how many landed out of the total target_count
 				count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
+				elseif damage then
+					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+					count = count == '' and '' or ' '..count
+					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			else
 				--Evaded
 				if msg == 282 then
 					target_action_result = ' ('..count..'Evaded)'
 					target_action_result_shdw = ' ('..count..'Evaded)'
 				--No Effect
-				elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 then
+				elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
 					target_action_result = ' ('..count..'No Effect)'
 					target_action_result_shdw = ' ('..count..'No Effect)'
 				--Resisted
@@ -3674,21 +3720,21 @@ windower.register_event('action', function (act)
 		elseif msg == 225 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-			count = (count ~= '' and ' ' or '')..count
+			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 		--Absorb-TP
 		elseif msg == 226 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-			count = (count ~= '' and ' ' or '')..count
+			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 		--Absorbed
 		elseif msg == 238 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-			count = (count ~= '' and ' ' or '')..count
+			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 		--Stat Boost
