@@ -48,6 +48,9 @@ All commands must be preceded with `//informer` or `//info` (ex: `//info color`)
 - `help` - Display a list of commands and addon info.
 
 ## Changelog
+Version 4.1
+- Added Distance placeholder (thanks Asura.Toralin!)
+
 Version 4.0
 - Overhauled overall addon efficiency, *especially* Item Tracking.
 - Fix update job on SJ Restriction.
