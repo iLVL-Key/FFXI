@@ -122,6 +122,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.0.1
+- Fixed an issue where if the target of an AoE damage spell/ability resisted the spell, but the reast of the targets took damage, action results would show all as having resisted.
+- Fixed missing "fails to take effect" message.
+
 Version 3.0
 - Added action results for many, many things.
 - Added "Screen Test" for updating position, width, offset, size, and bold commands.
