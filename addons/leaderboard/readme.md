@@ -104,7 +104,8 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 ### Version History
 **5.0**
 - Added 5 new boards: Total Damage, Total Weapon Skill, Ranged Attack, Buff, and Debuff.
-- Added sub-command 'all' to commands that print the boards to chat. This will display all places that exist on the specified board.
+- Added command `all`. Will display all boards one after the other. Repeat command to stop.
+- Added sub-command `all` to commands that print the boards to chat. This will display all places that exist on the specified board.
 - Added default_osd_board option. Defines the initial board shown in the On-Screen Display upon loading the addon.
 - Adjusted Lite Mode to now be called Raid Mode.
 - Adjusted the On-Screen Display formatting. The display itself is now a few characters wider, to accomodate larger scores (and some percentages shown) from the new boards. Scores are now right-aligned. Names will now automatically truncate instead of stretching the display if names and scores overlap.
