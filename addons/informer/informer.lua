@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '4.1'
+_addon.version = '4.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -41,7 +41,7 @@ defaults.first_load = true
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${earth_time_12} ${earth_time_24} ${food} ${gil} ${inventory} ${job} ${mlvl} ${name} ${pos} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${weather} ${zone}'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_time_12} ${earth_time_24} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${track:Item Name} ${weather} ${zone}'
 defaults.layout.ac_help = '(NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.default = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
@@ -151,6 +151,8 @@ local name = ''
 local job = ''
 local tp = ''
 local gil = '0'
+local moon_phase = ''
+local moon_percent = '0'
 
 function firstLoadMessage()
 	windower.add_to_chat(220,'[informer] '..('First load detected.'):color(8))
@@ -511,6 +513,12 @@ local function getTarget(name_type)
 	end
 end
 
+local function updateMoon()
+	local moon = windower.ffxi.get_info()
+	moon_percent = tostring(moon.moon)
+	moon_phase = res.moon_phases[moon.moon_phase].en
+end
+
 function updateInformerMain()
 
 	local mlvl = master_level or '--'
@@ -549,6 +557,8 @@ function updateInformerMain()
 		reraise = reraise,
 		speed = formatted_speed,
 		distance = target_distance,
+		moon_percent = moon_percent,
+		moon_phase = moon_phase,
 	})
 
 	-- Update the bar with the rebuilt text string
@@ -687,6 +697,7 @@ windower.register_event('prerender', function()
 		earth_time_raw = os.time()
 		updateEarthTime()
 		updateGil()
+		updateMoon()
 	end
 
 end)
@@ -705,6 +716,7 @@ windower.register_event('load', function()
 		updatePlayerName()
 		updatePlayerJob()
 		updateTP()
+		updateMoon()
 		if settings.first_load then
 			firstLoadMessage()
 		end
@@ -725,6 +737,7 @@ windower.register_event('login', function()
 	updatePlayerName()
 	updatePlayerJob()
 	updateTP()
+	updateMoon()
 	showInformerMain()
 	coroutine.sleep(5)
 	if settings.first_load then
