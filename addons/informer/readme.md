@@ -17,6 +17,9 @@ Displays a bar with information (much like InfoBar!)
   - **${inventory}** - Current number of items in your main inventory / total main inventory slots
   - **${job}** - Current job/sub you are on
   - **${mlvl}** - Current jobs master level (NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)
+  - **${moon_percent}** - Current moon phase by percent
+  - **${moon_phase}** - Current moon phase by name
+  - **${name}** - Current characters name
   - **${pos}** - Current map position
   - **${reraise}** - Current reraise status
   - **${speed}** - Current movement speed
@@ -48,6 +51,9 @@ All commands must be preceded with `//informer` or `//info` (ex: `//info color`)
 - `help` - Display a list of commands and addon info.
 
 ## Changelog
+Version 4.2
+- Added Moon Phase Name and Moon Phase Percent placeholders (thanks Asura.Jhoo!)
+
 Version 4.1
 - Added Distance placeholder (thanks Asura.Toralin!)
 
