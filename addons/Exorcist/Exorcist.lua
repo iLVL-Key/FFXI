@@ -93,9 +93,9 @@ local function updateBox()
 
 	if Doom then
 		if HWcount > 0 then
-			Exorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n      '..formattedNum..' Holy Water'..(HWcount > 1 and 's' or '')..' remaining')
+			Exorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to exorcize the demons...\n      '..formattedNum..' Holy Water'..(HWcount > 1 and 's' or '')..' remaining')
 		else
-			Exorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n        \\cs(255,75,75)Out of Holy Waters!!\\cr')
+			Exorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to exorcize the demons...\n        \\cs(255,75,75)Out of Holy Waters!!\\cr')
 		end
 	end
 
