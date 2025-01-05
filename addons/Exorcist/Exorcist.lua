@@ -9,7 +9,7 @@
 --    * Redistributions in binary form must reproduce the above copyright
 --      notice, this list of conditions and the following disclaimer in the
 --      documentation and/or other materials provided with the distribution.
---    * Neither the name of Excorcist nor the
+--    * Neither the name of Exorcist nor the
 --      names of its contributors may be used to endorse or promote products
 --      derived from this software without specific prior written permission.
 
@@ -24,13 +24,14 @@
 --(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-_addon.name = 'Excorcist'
+_addon.name = 'Exorcist'
 _addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.commands = {'excorcist'}
+_addon.commands = {'exorcist'}
 
 config = require('config')
 texts = require('texts')
+require 'chat'
 
 defaults = {}
 
@@ -57,14 +58,14 @@ settings = config.load(defaults)
 local HWcount
 local Doom = false
 
--- Create the Excorcist text object
-local Excorcist_box = texts.new()
-Excorcist_box:font(settings.text.font)
-Excorcist_box:size(settings.text.size)
-Excorcist_box:bg_alpha(settings.text.bg_alpha)
-Excorcist_box:pos(settings.pos.x,settings.pos.y)
-Excorcist_box:bold(settings.flags.bold)
-Excorcist_box:draggable(settings.flags.draggable)
+-- Create the Exorcist text object
+local Exorcist_box = texts.new()
+Exorcist_box:font(settings.text.font)
+Exorcist_box:size(settings.text.size)
+Exorcist_box:bg_alpha(settings.text.bg_alpha)
+Exorcist_box:pos(settings.pos.x,settings.pos.y)
+Exorcist_box:bold(settings.flags.bold)
+Exorcist_box:draggable(settings.flags.draggable)
 
 
 -- Count the number of Holy Waters and return the number
@@ -92,23 +93,23 @@ local function updateBox()
 
 	if Doom then
 		if HWcount > 0 then
-			Excorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n      '..formattedNum..' Holy Water'..(HWcount > 1 and 's' or '')..' remaining')
+			Exorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n      '..formattedNum..' Holy Water'..(HWcount > 1 and 's' or '')..' remaining')
 		else
-			Excorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n        \\cs(255,75,75)Out of Holy Waters!!\\cr')
+			Exorcist_box:text('          ~YOU ARE DOOMED~\nAttempting to excorcize the demons..\n        \\cs(255,75,75)Out of Holy Waters!!\\cr')
 		end
 	end
 
 end
 
 
---Main function the gets repeated until Doom wears off
+--Main function that gets repeated until Doom wears off
 local function useHolyWater()
 
 	HWcount = countHW()
 
 	if settings.show_box then
 		updateBox()
-		Excorcist_box:show()
+		Exorcist_box:show()
 	end
 
 	if HWcount ~= 0 and Doom then
@@ -143,7 +144,7 @@ windower.register_event('lose buff', function(buff)
 
 	if buff == 15 then --Doom
 
-		Excorcist_box:hide()
+		Exorcist_box:hide()
 
 		if Doom then
 
@@ -159,7 +160,8 @@ windower.register_event('lose buff', function(buff)
 end)
 
 windower.register_event('addon command',function(addcmd)
-	windower.add_to_chat(220,'[Excorcist] '..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key (Keylesta@Valefor)'):color(220))
+	windower.add_to_chat(8,('[Exorcist] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
+	windower.add_to_chat(36,' ')
 	windower.add_to_chat(36,'   This addon has no commands, but you can change a few things in the settings file.')
 	windower.add_to_chat(36,'   PRO TIP: Make sure your gearswap file has a rule and gear set for using Holy Waters.')
 	windower.add_to_chat(36,'   Have a great day!')
