@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.0.1'
+_addon.version = '3.0.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -775,12 +775,12 @@ local function setPosition()
 	local player_stats_3 = {x = pos_target.x, y = player_stats_2.y + bars_vertical_spacing.between_player_stats}
 	local player_stats_4 = {x = pos_target.x, y = player_stats_3.y + bars_vertical_spacing.between_player_stats}
 	local player_stats_5 = {x = pos_target.x, y = player_stats_4.y + bars_vertical_spacing.between_player_stats}
+	local pos_self = player_stats_1
 
-	--Adjust position for self-action if displayed
+	--Adjust base position for player stats if self-action is displayed
 	local base_stat = player_stats_1
 	if show_self_action then
-		pos_self = base_stat
-		base_stat = {x = base_stat.x, y = base_stat.y + bars_vertical_spacing.between_player_stats}
+		base_stat = player_stats_2
 	end
 
 	--Assign positions
@@ -1700,11 +1700,13 @@ local function completeSelfMeter()
 
 	local self_meter = ''
 
-	while string.len(self_meter) < bar_width do
-		self_meter = self_meter..' '
+	if show_self_action then
+		while string.len(self_meter) < bar_width do
+			self_meter = self_meter..' '
+		end
+		bars_meter_self_action:text(self_meter)
+		bars_meter_self_action:show()
 	end
-	bars_meter_self_action:text(self_meter)
-	bars_meter_self_action:show()
 
 end
 
