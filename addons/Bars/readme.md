@@ -122,6 +122,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.0.3
+- Fixed Enspell II's capitalizing incorrectly as "Enspell Ii".
+
 Version 3.0.2
 - Fixed an issue where setting show_self_action to false would give an error on load (thanks Github user asilva54!).
 - Fixed an issue where setting show_self_action to false would still show the self action bar completing when the player action completes.
