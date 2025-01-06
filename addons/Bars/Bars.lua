@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.0.2'
+_addon.version = '3.0.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1194,9 +1194,14 @@ end
 --Capitalize letters accordingly
 local function capitalize(str)
 
-	return string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
+	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
 		return string.upper(firstLetter) .. string.lower(rest)
 	end)
+
+	-- Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
+	str = string.gsub(str, " Ii$", " II")
+
+	return str
 
 end
 
