@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.0.3'
+_addon.version = '3.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -129,6 +129,7 @@ defaults = {
 		show_target_action = true,
 		show_target_action_result = true,
 		show_target_distance = true,
+		show_target_hex = false,
 		show_target_index = false,
 		target_action_text_size_difference = 1,
 		target_text_size_difference = 4,
@@ -257,6 +258,7 @@ local show_st_when_target = settings.options.show_st_when_target
 local show_target_action = settings.options.show_target_action
 local show_target_action_result = settings.options.show_target_action_result
 local show_target_distance = settings.options.show_target_distance
+local show_target_hex = settings.options.show_target_hex
 local show_target_index = settings.options.show_target_index
 local target_action_text_size_difference = settings.options.target_action_text_size_difference
 local target_text_size_difference = settings.options.target_text_size_difference
@@ -1440,7 +1442,7 @@ local function updateFocusTarget()
 	local ft_name = ft and ' '..ft.name or ''
 	local dyna_job = ft and show_dyna_jobs and dynaJob(ft.name) or false
 	local ft_dyna_job = ft and dyna_job and ' '..dyna_job or ''
-	local ft_index = ft and show_target_index and ' ('..ft.index..')' or ''
+	local ft_index = ft and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
 	local ft_distance = ft and show_target_distance and ' '..(string.format("%5.2f", math.floor(ft.distance:sqrt()*100)/100)) or ''
 	local ft_hpp = ft and ft.hpp or 0
 	local ft_meter = ''
@@ -1526,7 +1528,7 @@ local function updateTarget()
 	local target_name = target and ' '..target.name or ''
 	local dyna_job = target and show_dyna_jobs and dynaJob(target.name) or false
 	local target_dyna_job = target and dyna_job and ' '..dyna_job or ''
-	local target_index = target and show_target_index and ' ('..target.index..')' or ''
+	local target_index = target and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", target.index) or target.index)..')' or ''
 	local target_distance = target and show_target_distance and ' '..(string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
 	local target_hpp = target and target.hpp or 0
 	local target_meter = ''
@@ -1600,7 +1602,7 @@ local function updateSubTarget()
 	local st_name = st and ' '..st.name or ''
 	local dyna_job = st and show_dyna_jobs and dynaJob(st.name) or false
 	local st_dyna_job = st and dyna_job and ' '..dyna_job or ''
-	local st_index = st and show_target_index and ' ('..st.index..')' or ''
+	local st_index = st and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
 	local st_distance = st and show_target_distance and ' '..(string.format("%5.2f", math.floor(st.distance:sqrt()*100)/100)) or ''
 	local st_hpp = st and st.hpp or 0
 	local st_meter = ''
@@ -3957,11 +3959,24 @@ windower.register_event('addon command',function(addcmd, ...)
 		setWidth()
 		showBars()
 
+	--Toggle the hex setting
+	elseif addcmd == 'hex' or addcmd == 'h' then
+
+		settings.options.show_target_hex = not settings.options.show_target_hex
+		show_target_hex = settings.options.show_target_hex
+		settings.options.show_target_index = false
+		show_target_index = false
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Hex:'):color(36)..(' %s':format(settings.options.show_target_hex and 'ON' or 'OFF')):color(200))
+		updateTarget()
+
 	--Toggle the index setting
 	elseif addcmd == 'index' or addcmd == 'i' then
 
 		settings.options.show_target_index = not settings.options.show_target_index
 		show_target_index = settings.options.show_target_index
+		settings.options.show_target_hex = false
+		show_target_hex = false
 		settings:save('all')
 		add_to_chat(8,('[Bars] '):color(220)..('Index:'):color(36)..(' %s':format(settings.options.show_target_index and 'ON' or 'OFF')):color(200))
 		updateTarget()
@@ -4023,6 +4038,7 @@ windower.register_event('addon command',function(addcmd, ...)
 		local currWidth = settings.options.bar_width
 		local currDistance = settings.options.show_target_distance
 		local currMarker = settings.options.show_bar_markers
+		local currHex = settings.options.show_target_hex
 		local currIndex = settings.options.show_target_index
 		local currJob = uppercase(job)
 		local currOffset = show_bars[job].vertical_offset
@@ -4040,7 +4056,8 @@ windower.register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' width/w '):color(36)..('[#]'):color(53)..(' - Update the bar Width. ['):color(8)..(''..currWidth):color(200)..(']'):color(8))
 		add_to_chat(8,(' distance/d '):color(36)..(' - Toggle the target Distance option. ['):color(8)..('%s':format(currDistance and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' marker/m '):color(36)..(' - Toggle the HP/TP Marker option. ['):color(8)..('%s':format(currMarker and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index option. ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' hex/h '):color(36)..(' - Toggle the target Hex option (overrides Index). ['):color(8)..('%s':format(currHex and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index option (overrides Hex). ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' offset/o '):color(36)..('[#]'):color(53)..(' - Update the vertical Offset for the current job. ['..currJob..': '):color(8)..(''..currOffset):color(200)..(']'):color(8))
 		add_to_chat(8,(' add/a '):color(36)..('[target]'):color(53)..(' - Add a target to the Auto Focus Target list.'):color(8))
 		add_to_chat(8,('   - Valid targets: Names, IDs, <t>, or current highlighted target.'):color(8))
