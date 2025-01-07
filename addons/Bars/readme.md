@@ -61,7 +61,8 @@ All commands must be preceded with `//bars` (ex: `//bars pos`)
  - `width/w` - Update the bar Width.
  - `distance/d`  - Toggle the Distance option.
  - `marker/m` - Toggle the HP/TP Marker option.
- - `index/i` - Toggle the Index option.
+ - `hex/h` - Toggle the target Hex option (overrides Index).
+ - `index/i` - Toggle the target Index option (overrides Hex).
  - `offset/o` - Update the vertical Offset for the current job.
  - `add/a <target>` - Add a target to the Auto Focus Target list.
    - Valid targets: Names, IDs, <t>, or current highlighted target.
@@ -106,10 +107,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
  - `show_roll_lucky_info` - Shows the lucky and lucky numbers for COR rolls.
  - `show_self_action` - Shows the Self Action bar.
  - `show_self_when_target` - Shows the Target bar when you target yourself.
- - `show_target_action` - Shows the actions of the current Target.
- - `show_target_action_result` - Shows the results of the action done by the current Target (damage, buffs, resists, etc.).
- - `show_target_distance` - Shows the distance to the current Target.
- - `show_target_index` - Shows the index number of the current Target.
+ - `show_target_action` - Shows the actions of the current target.
+ - `show_target_action_result` - Shows the results of the action done by the current target (damage, buffs, resists, etc.).
+ - `show_target_distance` - Shows the distance to the current target.
+ - `show_target_hex` - Shows the hex number of the current target.
+ - `show_target_index` - Shows the index number of the current target.
  - `target_action_text_size_difference` - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target actions.
  - `target_text_size_difference` - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target.
  - `text_vertical_offset` - The vertical offset in pixels between a bar and its text (this is what sets the text above a bar by default).
@@ -121,9 +123,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
    - `vertical_offset ` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
 
 ## Changelog
+Version 3.1
+- Added show_target_hex option. Shows the hex number of the current target. The Hex and Index options will override each other (only one or the other displayed at one time).
 
 Version 3.0.3
-- Fixed Enspell II's capitalizing incorrectly as "Enspell Ii".
+- Fixed Enspell II's capitalizing incorrectly as "Enspell Ii" when showing the result of casting the spell.
 
 Version 3.0.2
 - Fixed an issue where setting show_self_action to false would give an error on load (thanks Github user asilva54!).
