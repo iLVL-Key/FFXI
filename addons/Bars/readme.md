@@ -36,7 +36,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Focus Target Override.
   - Designate the current target as a Focus Target taking priority over the Auto Focus Target list.
   - Focus will persist until subject moves out of range, dies, or is disabled manually.
-- Display the Index number for targets.
+- Display the Index or Hex number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Display distance to target.
 - Display Dynamis-Divergence mob jobs.
