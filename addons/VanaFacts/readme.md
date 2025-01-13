@@ -11,6 +11,10 @@ All commands must be preceded with either `//vanafacts` or `//vf` (ex: `//vf rep
  - `help` - Display a list of commands and addon info.
 
 ## Changelog
+Version 1.4
+- Adjusted how the text is centered on screen. Is now accurately centered.
+- Removed the char_width_multiplier option as it is no longer needed.
+
 Version 1.3
 - Added repeat/r command - Repeats the last Fact displayed.
 - Adjusted Help text.
