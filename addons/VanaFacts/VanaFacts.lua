@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaFacts'
-_addon.version = '1.3'
+_addon.version = '1.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanafacts','vf'}
 
@@ -496,7 +496,7 @@ defaults.facts = {
 	"Kazham is a fishing village founded some four hundred years ago on the northern tip of Elshimo Island.",
 	"Mithra form nearly half of Kazham's population and support the village by hunting and fishing.",
 	"Kazham is self-governed, and all matters are judged by councils headed by Chieftainness Jakoh Wahcondalo.",
-	"Flame Spouts in Ifrit's Cauldron require either waiting 3 Vana'diel hoursan or an Ice Cluster to pass.",
+	"Flame Spouts in Ifrit's Cauldron require either waiting 3 Vana'diel hours or an Ice Cluster to pass.",
 	"The tropical Yhoator Jungle covers most of the Elshimo Uplands and is teeming with the ruthless Tonberries.",
 	"The Ranguemont Pass has long been considered the only road through the \"Northern Wall.\"",
 	"Rodellieux, Vichuel, and Sheia Pohrichamaha will sell items from Fauregandi when their country is in control of the region.",
@@ -933,6 +933,10 @@ defaults.facts = {
 	"The Vermin Killer Job Trait will gain you a small amount of intimidation, damage taken and damage dealt bonus against Vermin.",
 	"The Beastmen Killer Job Trait is only available to a single NPC, Rongelouts N Distaud.",
 	"Similar Job Traits gained from both Main and Sub Job will not stack with eachother, only the higher tier will take effect.",
+	"Don't forget to spend your Sparks and Accolades before the Conquest reset on Sunday!",
+	"Save all your macros and settings on the Character Select screen to save yourself the headache of having to rewrite them later.",
+	"Did you remember to get your Moglophone, Mystical Canteen, or Ra'Kaznar Plate today?",
+	"The `/blockaid on` command prevents players from outside of your alliance from acting upon you.",
 	-- "",
 }
 
@@ -951,7 +955,6 @@ defaults.flags.draggable = true
 
 defaults.options = {}
 defaults.options.after_zone_fade_delay = 4
-defaults.options.char_width_multiplier = 0.59
 defaults.options.fade_multiplier = 2
 defaults.options.random_number_buffer = 50
 
@@ -1002,14 +1005,19 @@ local function showFact(repeat_fact)
 		return settings.facts[randomIndex]
 	end
 	local fact = getRandomFact()
-	local fact_total_char = #fact
-	local fact_char_width = settings.text.size * settings.options.char_width_multiplier
-	local x = settings.pos.x - ((fact_char_width * fact_total_char) / 2)
+	local x = settings.pos.x
 	local y = settings.pos.y
 	VanaFacts:text(fact)
 	VanaFacts:pos(x,y)
 	VanaFacts:show()
-
+	VanaFacts:alpha(0)
+	coroutine.schedule(function()
+		local fact_width = VanaFacts:extents()
+		local x = settings.pos.x - (fact_width / 2)
+		local y = settings.pos.y
+		VanaFacts:pos(x,y)
+		VanaFacts:alpha(settings.text.alpha)
+	end, 0.1)
 end
 
 local function hideFact()
