@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '4.2'
+_addon.version = '5.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -38,35 +38,38 @@ res = require('resources')
 defaults = {}
 
 defaults.first_load = true
+local default_layout = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_time_12} ${earth_time_24} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${track:Item Name} ${weather} ${zone}'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${track:Item Name} ${weather} ${zone}'
 defaults.layout.ac_help = '(NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
-defaults.layout.default = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
-defaults.layout.brd = defaults.layout.default
-defaults.layout.blm = defaults.layout.default
-defaults.layout.blu = defaults.layout.default
-defaults.layout.bst = defaults.layout.default..' | PF Theta: ${track:Pet Food Theta}'
-defaults.layout.cor = defaults.layout.default..' | Cards: ${track:Trump Card} | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
-defaults.layout.dnc = defaults.layout.default
-defaults.layout.drg = defaults.layout.default..' | Angons: ${track:Angon}'
-defaults.layout.drk = defaults.layout.default
-defaults.layout.geo = defaults.layout.default
-defaults.layout.mnk = defaults.layout.default
-defaults.layout.nin = defaults.layout.default..' | Shihei: ${track:Shihei}'
-defaults.layout.pld = defaults.layout.default..' | Remedies: ${track:Remedy} | H.Waters: ${track:Holy Water}'
-defaults.layout.pup = defaults.layout.default..' | Oils: ${track:Automat. Oil +3}'
-defaults.layout.rdm = defaults.layout.default
-defaults.layout.rng = defaults.layout.default..' | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
-defaults.layout.run = defaults.layout.default
-defaults.layout.sam = defaults.layout.default
-defaults.layout.sch = defaults.layout.default
-defaults.layout.smn = defaults.layout.default
-defaults.layout.thf = defaults.layout.default
-defaults.layout.war = defaults.layout.default
-defaults.layout.whm = defaults.layout.default
+defaults.layout.main = {}
+defaults.layout.main.brd = default_layout
+defaults.layout.main.blm = default_layout
+defaults.layout.main.blu = default_layout
+defaults.layout.main.bst = default_layout..' | PF Theta: ${track:Pet Food Theta}'
+defaults.layout.main.cor = default_layout..' | Cards: ${track:Trump Card} | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
+defaults.layout.main.dnc = default_layout
+defaults.layout.main.drg = default_layout..' | Angons: ${track:Angon}'
+defaults.layout.main.drk = default_layout
+defaults.layout.main.geo = default_layout
+defaults.layout.main.mnk = default_layout
+defaults.layout.main.nin = default_layout..' | Shihei: ${track:Shihei}'
+defaults.layout.main.pld = default_layout..' | Remedies: ${track:Remedy} | H.Waters: ${track:Holy Water}'
+defaults.layout.main.pup = default_layout..' | Oils: ${track:Automat. Oil +3}'
+defaults.layout.main.rdm = default_layout
+defaults.layout.main.rng = default_layout..' | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
+defaults.layout.main.run = default_layout
+defaults.layout.main.sam = default_layout
+defaults.layout.main.sch = default_layout
+defaults.layout.main.smn = default_layout
+defaults.layout.main.thf = default_layout
+defaults.layout.main.war = default_layout
+defaults.layout.main.whm = default_layout
+defaults.layout.sub1 = '${pos} | ${zone} | ${region} | ${direction}'
+defaults.layout.sub2 = '${day} | ${time} | ${weather}'
 
 defaults.pos = T{}
 defaults.pos.x = 0
@@ -111,38 +114,92 @@ defaults.colors.day = '255, 255, 0'
 defaults.colors.dusk_dawn = '170, 170, 0'
 defaults.colors.night = '171, 171, 171'
 
-defaults.display = {}
-defaults.display.colors = true
-defaults.display.min_width = {}
-defaults.display.min_width.aa_help = 'Minimum widths control how wide these sections are, creating a more static overall width for the bar, and preventing other sections after them from moving around. Set to 0 to turn off'
-defaults.display.min_width.target = 21
-defaults.display.min_width.target_hpp = 5
-defaults.display.min_width.food = 16
-defaults.display.min_width.zone = 0
-defaults.display.min_width.weather = 0
-defaults.display.min_width.gil = 0
-defaults.display.min_width.day = 0
-defaults.display.min_width.tp = 4
+defaults.options = {}
+defaults.options.colors = true
+defaults.options.earth_date_format = '%m/%d/%Y'
+defaults.options.earth_day_format = '%A'
+defaults.options.earth_time_format = '%I:%M:%S %p'
+defaults.options.min_width = {}
+defaults.options.min_width.aa_help = 'Minimum widths control how wide these sections are, creating a more static overall width for the bar, and preventing other sections after them from moving around. Set to 0 to turn off'
+defaults.options.min_width.target = 21
+defaults.options.min_width.target_hpp = 5
+defaults.options.min_width.food = 16
+defaults.options.min_width.zone = 0
+defaults.options.min_width.weather = 0
+defaults.options.min_width.gil = 0
+defaults.options.min_width.day = 0
+defaults.options.min_width.tp = 4
+
+defaults.options.sub1 = {}
+defaults.options.sub1.alpha = 255
+defaults.options.sub1.bg_alpha = 255
+defaults.options.sub1.centered = true
+defaults.options.sub1.hide_when_no_map = true
+defaults.options.sub1.pos_x = math.floor(windower.get_windower_settings().ui_x_res / 2)
+defaults.options.sub1.pos_y = 300
+defaults.options.sub1.size = 11
+defaults.options.sub1.visible = true
+
+defaults.options.sub2 = {}
+defaults.options.sub2.alpha = 255
+defaults.options.sub2.bg_alpha = 255
+defaults.options.sub2.centered = true
+defaults.options.sub2.hide_when_no_map = true
+defaults.options.sub2.pos_x = math.floor(windower.get_windower_settings().ui_x_res / 2)
+defaults.options.sub2.pos_y = 400
+defaults.options.sub2.size = 11
+defaults.options.sub2.visible = true
 
 defaults.food = {}
 
 settings = config.load(defaults)
 
-local informer_main = texts.new('${current_string}', settings)
+local use_colors = settings.options.colors
+local options = settings.options
 
-local use_colors = settings.display.colors
+local informer_main = texts.new('${current_string}', settings)
+local informer_sub1 = texts.new('${current_string}')
+informer_sub1:alpha(options.sub1.alpha)
+informer_sub1:bg_alpha(options.sub1.bg_alpha)
+informer_sub1:draggable(false)
+informer_sub1:font(settings.text.font)
+informer_sub1:pos(options.sub1.pos_x, options.sub1.pos_y)
+informer_sub1:size(options.sub1.size)
+local sub1_visible = false
+if options.sub1.visible then
+	informer_sub1:show()
+	sub1_visible = true
+end
+local informer_sub2 = texts.new('${current_string}')
+informer_sub2:alpha(options.sub2.alpha)
+informer_sub2:bg_alpha(options.sub2.bg_alpha)
+informer_sub2:draggable(false)
+informer_sub2:font(settings.text.font)
+informer_sub2:pos(options.sub2.pos_x, options.sub2.pos_y)
+informer_sub2:size(options.sub2.size)
+local sub2_visible = false
+if options.sub2.visible then
+	informer_sub2:show()
+	sub2_visible = true
+end
+
 local last_item_used = nil
 local master_level = nil
 local loading_inv = false
 local login_loading = false
 local loading_check = false
-local layout = ''
+local zoning = true
+local layout_main = ''
+local layout_sub1 = ''
+local layout_sub2 = ''
 local zone_name = ''
+local region_name = ''
 local game_day = ''
 local game_time = ''
 local earth_time_raw = os.time()
-local earth_time_12 = ''
-local earth_time_24 = ''
+local earth_time = ''
+local earth_date = ''
+local earth_day = ''
 local weather = ''
 local inventory = ''
 local food = "No Food"
@@ -155,11 +212,11 @@ local moon_phase = ''
 local moon_percent = '0'
 
 function firstLoadMessage()
-	windower.add_to_chat(220,'[informer] '..('First load detected.'):color(8))
+	windower.add_to_chat(220,'[Informer] '..('First load detected.'):color(8))
 	coroutine.sleep(1)
 	windower.add_to_chat(8,'   Welcome to '..('Informer '):color(220)..('Ver. '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
 	coroutine.sleep(1)
-	windower.add_to_chat(8,'   Layouts are saved per job. Change the layouts at:')
+	windower.add_to_chat(8,'   Layouts for the Main bar are saved per job. Change the layouts at:')
 	windower.add_to_chat(1,'   addons/Informer/data/settings.xml')
 	coroutine.sleep(1)
 	windower.add_to_chat(8,'   Type'..(' //informer help'):color(1)..(' for a list of command options.'):color(8))
@@ -167,12 +224,24 @@ function firstLoadMessage()
 	settings:save('all')
 end
 
-function showInformerMain()
+function showInformerBars()
 	informer_main:show()
+	if options.sub1.visible and not options.sub1.hide_when_no_map then
+		informer_sub1:show()
+		sub1_visible = true
+	end
+	if options.sub2.visible and not options.sub2.hide_when_no_map then
+		informer_sub2:show()
+		sub2_visible = true
+	end
 end
 
-function hideInformerMain()
+function hideInformerBars()
 	informer_main:hide()
+	informer_sub1:hide()
+	sub1_visible = false
+	informer_sub2:hide()
+	sub2_visible = false
 end
 
 -- Master Level info
@@ -266,33 +335,118 @@ local function updateTrackItems(loading)
 	end
 
 	local player = windower.ffxi.get_player()
-	local input = settings.layout[string.lower(player.main_job)]
-	local output = input:gsub("%${track:(.-)}", function(match)
-		local itemName = match:match("(.-)$")
-		if itemName then
-			local itemId = getIdFromName(itemName)
-			local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
-			if itemId then
-				-- Match was found via getIdFromName, return the number (via countItem) and color it
-				return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
-			else
-				return '\\cs('..settings.colors.bad..')NO MATCH\\cr' --no match
+
+	local function processTrackedItems(input_layout)
+		return input_layout:gsub("%${track:(.-)}", function(match)
+			local itemName = match:match("(.-)$")
+			if itemName then
+				local itemId = getIdFromName(itemName)
+				if itemId then
+					local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
+					return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
+				else
+					return '\\cs('..settings.colors.bad..')NO MATCH\\cr'
+				end
 			end
-		end
-	end)
-	layout = output
+		end)
+	end
+
+	layout_main = processTrackedItems(settings.layout.main[string.lower(player.main_job)])
+	layout_sub1 = processTrackedItems(settings.layout.sub1)
+	layout_sub2 = processTrackedItems(settings.layout.sub2)
+
 end
 
 -- Update Zone
 local function updateZone()
-	local zone = res.zones[windower.ffxi.get_info().zone].name
-	local zone_width = settings.display.min_width.zone
+	local zone_id = windower.ffxi.get_info().zone
+	local zone = res.zones[zone_id].name
+	local zone_width = options.min_width.zone
 	zone_name = string.format("%-"..zone_width.."s", zone)
+
+	local region_map = {
+		[0] = {230,231,232,233},
+		[1] = {234,235,236,237},
+		[2] = {238,239,240,241,242},
+		[3] = {243,244,245,246},
+		[4] = {100,101,139,140,141,142,167,190},
+		[5] = {102,103,108,193,196,248},
+		[6] = {1,2,104,105,149,150,195},
+		[7] = {106,107,143,144,172,173,191},
+		[8] = {109,110,147,148,197},
+		[9] = {115,116,145,146,169,170,192,194},
+		[10] = {3,4,117,118,198,213,249},
+		[11] = {7,8,119,120,151,152,200},
+		[12] = {9,10,111,166,203,204,206},
+		[13] = {5,6,112,161,162,165},
+		[14] = {126,127,157,158,179,184},
+		[15] = {121,122,153,154,202,251},
+		[16] = {114,125,168,208,209,247},
+		[17] = {113,128,174,201,212,128},
+		[18] = {123,176,250,252},
+		[19] = {124,159,160,163,205,207,211},
+		[20] = {130,177,178,180,181},
+		[21] = {39,40,41,42,134,135,185,186,187,188,294,295,296,297},
+		[22] = {11,12,13},
+		[23] = {26},
+		[24] = {24,25,27,28,29,30,31,32},
+		[25] = {14,16,17,18,19,20,21,22,23},
+		[26] = {33,34,35,36},
+		[27] = {37,38},
+		[28] = {58,59},
+		[29] = {48,50,52,71},
+		[30] = {65,66,67,68,51},
+		[31] = {61,62,63,64},
+		[32] = {53,54,55,56,57,60,69,78,79},
+		[33] = {72,73,74,75,76,77},
+		[34] = {80,81,86},
+		[35] = {82,84,175},
+		[36] = {87,88,89,93},
+		[37] = {83,90,91,171},
+		[38] = {94,95,96,129},
+		[39] = {97,98,164},
+		[40] = {136},
+		[41] = {137},
+		[42] = {85},
+		[43] = {92},
+		[44] = {99},
+		[45] = {155,138,156},
+		[46] = {15,45,132,215,216,217,218,253,254,255},
+		[47] = {182,222,279,298},
+		[48] = {43,44,183,287},
+		[49] = {256,257,258,283,284},
+		[50] = {280},
+		[51] = {259,260,261,262,263,265,266,267,268,269,270,271,272,273,281,264,282},
+		[52] = {133,189,274,276,277,275},
+		[53] = {288,289},
+		[54] = {291,292,293},
+	}
+
+	region_name = false
+	for region_key, zone_list in pairs(region_map) do
+		for _, z in ipairs(zone_list) do
+			if z == zone_id then
+				region_name = res.regions[region_key].name
+			end
+		end
+	end
+	if not region_name then
+		if zone_id == 46 or zone_id == 47 or zone_id == 58 or zone_id == 59 
+		or zone_id == 220 or zone_id == 221 or zone_id == 227 or zone_id == 228 then
+			region_name = "International Waters"
+		elseif zone_id == 223 or zone_id == 224 or zone_id == 225 or zone_id == 226 then
+			region_name = "International Airspace"
+		end
+	end
+	if not region_name then
+		region_name = "Unknown Region"
+	end
+
 end
 
 -- Update Game Day
 local function updateGameDay()
-	local day_width = settings.display.min_width.day
+	local day_width = options.min_width.day
 	local day = string.format("%-"..day_width.."s", res.days[windower.ffxi.get_info().day].name)
 	local game_day_color = settings.colors.none
 	if use_colors then
@@ -323,15 +477,15 @@ local function updateGameTime()
 end
 
 -- Update Earth Time
-local function updateEarthTime()
-	earth_time_raw = os.time()
-	earth_time_12 = os.date('%I:%M:%S %p', earth_time_raw)
-	earth_time_24 = os.date('%H:%M:%S', earth_time_raw)
+local function updateEarthData()
+	earth_date = os.date(options.earth_date_format)
+	earth_day = os.date(options.earth_day_format)
+	earth_time = os.date(options.earth_time_format)
 end
 
 -- Update Weather
 local function updateWeather()
-	local weather_width = settings.display.min_width.weather
+	local weather_width = options.min_width.weather
 	local formatted_weather = string.format("%-"..weather_width.."s", res.weather[windower.ffxi.get_info().weather].name)
 	local weather_color = settings.colors.none
 	if use_colors then
@@ -365,7 +519,7 @@ end
 -- Update Food
 local function updateFood()
 	local player = windower.ffxi.get_player()
-	local food_width = settings.display.min_width.food
+	local food_width = options.min_width.food
 	local formatted_food = "No Food"
 	if char_loading then
 		formatted_food = "Loading..."
@@ -426,7 +580,7 @@ end
 
 -- Update TP
 local function updateTP(player_tp)
-	local tp_width = settings.display.min_width.tp
+	local tp_width = options.min_width.tp
 	local player = windower.ffxi.get_player()
 	player_tp = player and player.vitals.tp or 0
 	local tp_color = settings.colors.none
@@ -439,7 +593,7 @@ end
 
 -- Update Gil
 local function updateGil(player_tp)
-	local gil_width = settings.display.min_width.gil
+	local gil_width = options.min_width.gil
 	local player_gil = windower.ffxi.get_items().gil
 	player_gil = addCommas(player_gil)
 	gil = string.format("%-"..gil_width.."s", player_gil)
@@ -474,7 +628,7 @@ end
 -- Get Target
 local function getTarget(name_type)
 	local player = windower.ffxi.get_player()
-	local target_width = settings.display.min_width.target
+	local target_width = options.min_width.target
 	local target = windower.ffxi.get_mob_by_target('st') or windower.ffxi.get_mob_by_target('t')
 	local target_name = target and target.name or 'No Target'
 	target_name = string.format("%-"..target_width.."s", target_name)
@@ -501,7 +655,7 @@ local function getTarget(name_type)
 		end
 	end
 	if name_type == "w_hpp" then
-		local target_hpp_width = settings.display.min_width.target_hpp
+		local target_hpp_width = options.min_width.target_hpp
 		local target_hpp = target and target.hpp..'% ' or '---- '
 		target_hpp = string.format("%"..target_hpp_width.."s", target_hpp)
 		local target_w_hpp = target_hpp..target_name
@@ -535,18 +689,19 @@ function updateInformerMain()
 	end
 
 	-- Rebuild the text string to be displayed in the bar
-	local text = layout
-	text = replacePlaceholders(text, {
+	local placeholders = {
 		name = name,
 		job = job,
 		gil = gil,
 		zone = zone_name,
+		region = region_name,
 		pos = pos,
 		direction = getDirection(),
 		day = game_day,
 		time = game_time,
-		earth_time_12 = earth_time_12,
-		earth_time_24 = earth_time_24,
+		earth_date = earth_date,
+		earth_day = earth_day,
+		earth_time = earth_time,
 		weather = weather,
 		inventory = inventory,
 		food = food,
@@ -559,16 +714,56 @@ function updateInformerMain()
 		distance = target_distance,
 		moon_percent = moon_percent,
 		moon_phase = moon_phase,
-	})
+	}
+	local text = replacePlaceholders(layout_main, placeholders)
+	local text_sub1 = replacePlaceholders(layout_sub1, placeholders)
+	local text_sub2 = replacePlaceholders(layout_sub2, placeholders)
 
-	-- Update the bar with the rebuilt text string
-	informer_main.current_string = ' '..text..' ' --the spaces add a touch of padding at the begining and end
+	-- Update the bars with the rebuilt text strings (the spaces add a touch of padding at the begining and end)
+	informer_main.current_string = ' '..text..' '
+	informer_sub1.current_string = ' '..text_sub1..' '
+	informer_sub2.current_string = ' '..text_sub2..' '
+
+	--Update the position for centering if enabled for the 2 Sub Bars
+	if options.sub1.centered then
+		local width = informer_sub1:extents()
+		local x = math.floor(options.sub1.pos_x - (width / 2))
+		informer_sub1:pos(x, options.sub1.pos_y)
+	end
+	if options.sub2.centered then
+		local width = informer_sub2:extents()
+		local x = math.floor(options.sub2.pos_x - (width / 2))
+		informer_sub2:pos(x, options.sub2.pos_y)
+	end
+
+	local sub_map_id, map_x, map_y = windower.ffxi.get_map_data()
+	
+	if options.sub1.hide_when_no_map then
+		if map_x == 0 and map_y == 0 and sub1_visible then
+			sub1_visible = false
+			informer_sub1:hide()
+		elseif map_x ~= nil and map_y ~= nil and map_x ~= 0 and map_y ~= 0 and settings.options.sub1.visible and not sub1_visible then
+			sub1_visible = true
+			informer_sub1:show()
+		end
+	end
+	if options.sub2.hide_when_no_map then
+		if map_x == 0 and map_y == 0 and sub2_visible then
+			sub2_visible = false
+			informer_sub2:hide()
+		elseif map_x ~= nil and map_y ~= nil and map_x ~= 0 and map_y ~= 0 and settings.options.sub2.visible and not sub2_visible then
+			sub2_visible = true
+			informer_sub2:show()
+		end
+	end
 
 	-- Hide while zoning
-	if pos == "(?-?)" then
-		hideInformerMain()
-	elseif pos ~= "(?-?)" then
-		showInformerMain()
+	if pos == "(?-?)" and not zoning then
+		zoning = true
+		hideInformerBars()
+	elseif pos ~= "(?-?)" and zoning then
+		zoning = false
+		showInformerBars()
 	end
 
 end
@@ -695,7 +890,7 @@ windower.register_event('prerender', function()
 	-- Once per second...
 	if os.time() > earth_time_raw then
 		earth_time_raw = os.time()
-		updateEarthTime()
+		updateEarthData()
 		updateGil()
 		updateMoon()
 	end
@@ -705,6 +900,7 @@ end)
 -- Load
 windower.register_event('load', function()
 	if windower.ffxi.get_info().logged_in then
+		updateEarthData()
 		updateTrackItems()
 		updateZone()
 		updateGameDay()
@@ -727,6 +923,7 @@ end)
 windower.register_event('login', function()
 	char_loading = true --prevents food clearing immediately on login
 	login_loading = true --prevents frame lag while loading inventory from a login
+	updateEarthData()
 	updateTrackItems()
 	updateZone()
 	updateGameDay()
@@ -738,7 +935,7 @@ windower.register_event('login', function()
 	updatePlayerJob()
 	updateTP()
 	updateMoon()
-	showInformerMain()
+	showInformerBars()
 	coroutine.sleep(5)
 	if settings.first_load then
 		firstLoadMessage()
@@ -751,7 +948,7 @@ end)
 
 -- Logout
 windower.register_event('logout', function()
-	hideInformerMain()
+	hideInformerBars()
 	last_item_used = nil --delete the last item used when we switch characters
 end)
 
@@ -804,26 +1001,14 @@ end
 
 windower.register_event('addon command',function(addcmd, ...)
 
-	-- Update the bar position
-	if addcmd == 'pos' or addcmd == 'position' or addcmd == 'move' or addcmd == 'lock' or addcmd == 'unlock' then
+	-- Update the Main bar position
+	if addcmd == 'pos' or addcmd == 'posmain' or addcmd == 'mainpos' then
 		local pos = {...}
 
-		-- Lock by turning drag off
-		if addcmd == 'lock' or (addcmd ~= 'unlock' and pos[1] == 'lock') then
-			settings.flags.draggable = false
-			settings:save('all')
-			windower.add_to_chat(220,'[Informer] '..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y..' - Locked'):color(200))
-		
-		-- Unlock by turning drag on
-		elseif addcmd == 'unlock' or pos[1] == 'unlock' then
-			settings.flags.draggable = true
-			settings:save('all')
-			windower.add_to_chat(220,'[Informer] '..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y..' - Unlocked'):color(200)..(' (draggable)'):color(8))
-		
 		-- If there are not enough parameters then output the current position and remind how to update
-		elseif #pos < 2 then
-			windower.add_to_chat(220,'[Informer] '..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200)..' %s':format(settings.flags.draggable and ('- Unlocked'):color(200)..(' (draggable)'):color(8) or ('- Locked'):color(200)))
-			windower.add_to_chat(220,'[Informer] '..('Update'):color(8)..'%s':format(settings.flags.draggable and (' by dragging'):color(8) or (' with'):color(8)..(' //informer pos unlock'):color(1))..(' or adding X and Y coordinates (ex.'):color(8)..(' //informer pos 100 200'):color(1)..(')'):color(8))
+		if #pos < 2 then
+			windower.add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
+			windower.add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer mainpos 100 200'):color(1)..(')'):color(8))
 
 		-- X and Y coordinates are provided
 		else
@@ -839,7 +1024,63 @@ windower.register_event('addon command',function(addcmd, ...)
 			else
 				settings:save('all')
 				texts.pos(informer_main, settings.pos.x, settings.pos.y)
-				windower.add_to_chat(220,'[Informer] '..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200)..' %s':format(settings.flags.draggable and ('- Unlocked'):color(200)..(' (draggable)'):color(8) or ('- Locked'):color(200)))
+				windower.add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
+
+			end
+		end
+
+	-- Update the Sub1 bar position
+	elseif addcmd == 'possub1' or addcmd == 'sub1pos' then
+		local pos = {...}
+
+		-- If there are not enough parameters then output the current position and remind how to update
+		if #pos < 2 then
+			windower.add_to_chat(220,'[Informer] '..('Sub1 Bar Position: '):color(36)..(options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+			windower.add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub1pos 100 200'):color(1)..(')'):color(8))
+
+		-- X and Y coordinates are provided
+		else
+			-- Take the provided string parameters and turn them into numbers
+			options.sub1.pos_x = tonumber(pos[1])
+			options.sub1.pos_y = tonumber(pos[2])
+
+			-- Position must be numbers
+			if options.sub1.pos_x == nil or options.sub1.pos_y == nil then
+				displayUnregnizedCommand()
+
+			-- Save the new setting, update the position, then alert the user
+			else
+				settings:save('all')
+				texts.pos(informer_sub1, options.sub1.pos_x, options.sub1.pos_y)
+				windower.add_to_chat(220,'[Informer] '..('Sub1 Bar Position:'):color(36)..(' '..options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+
+			end
+		end
+
+	-- Update the Sub2 bar position
+	elseif addcmd == 'possub2' or addcmd == 'sub2pos' then
+		local pos = {...}
+
+		-- If there are not enough parameters then output the current position and remind how to update
+		if #pos < 2 then
+			windower.add_to_chat(220,'[Informer] '..('Sub2 Bar Position: '):color(36)..(options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+			windower.add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub2pos 100 200'):color(1)..(')'):color(8))
+
+		-- X and Y coordinates are provided
+		else
+			-- Take the provided string parameters and turn them into numbers
+			options.sub2.pos_x = tonumber(pos[1])
+			options.sub2.pos_y = tonumber(pos[2])
+
+			-- Position must be numbers
+			if options.sub2.pos_x == nil or options.sub2.pos_y == nil then
+				displayUnregnizedCommand()
+
+			-- Save the new setting, update the position, then alert the user
+			else
+				settings:save('all')
+				texts.pos(informer_sub2, options.sub2.pos_x, options.sub2.pos_y)
+				windower.add_to_chat(220,'[Informer] '..('Sub2 Bar Position:'):color(36)..(' '..options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
 
 			end
 		end
@@ -864,6 +1105,8 @@ windower.register_event('addon command',function(addcmd, ...)
 			else
 				settings:save('all')
 				texts.size(informer_main, settings.text.size)
+				texts.size(informer_sub1, settings.text.size)
+				texts.size(informer_sub2, settings.text.size)
 				windower.add_to_chat(220,'[Informer] '..('Font Size:'):color(36)..(' '..settings.text.size):color(200))
 			end
 		end
@@ -875,12 +1118,14 @@ windower.register_event('addon command',function(addcmd, ...)
 		-- Save the new setting, update the bold setting, then alert the user
 		settings:save('all')
 		texts.bold(informer_main, settings.flags.bold)
+		texts.bold(informer_sub1, settings.flags.bold)
+		texts.bold(informer_sub2, settings.flags.bold)
 		windower.add_to_chat(220,'[Informer] '..('Bold:'):color(36)..(' %s':format(settings.flags.bold and 'ON' or 'OFF')):color(200))
 
 	-- Turn colors on or off
 	elseif addcmd == 'color' or addcmd == 'colors' then
-		settings.display.colors = not settings.display.colors
-		use_colors = settings.display.colors
+		options.colors = not options.colors
+		use_colors = options.colors
 
 		--Update the Things that use color
 		updateTrackItems()
@@ -894,30 +1139,33 @@ windower.register_event('addon command',function(addcmd, ...)
 
 		-- Save the new setting, update the colors setting, then alert the user
 		settings:save('all')
-		windower.add_to_chat(220,'[Informer] '..('Colors:'):color(36)..(' %s':format(settings.display.colors and 'ON' or 'OFF')):color(200))
+		windower.add_to_chat(220,'[Informer] '..('Colors:'):color(36)..(' %s':format(options.colors and 'ON' or 'OFF')):color(200))
 
 	elseif addcmd == 'help' then
-		local currPos = settings.pos
+		local currMainPos = settings.pos
+		local currSub1Pos = {x = options.sub1.pos_x, y = options.sub1.pos_y}
+		local currSub2Pos = {x = options.sub2.pos_x, y = options.sub2.pos_y}
 		local currSize = settings.text.size
 		local currBold = settings.flags.bold
-		local currColor = settings.display.colors
-		local currJob = settings.display.job
-		local currLoc = settings.display.location
-		local currDay = settings.display.day
-		local currInv = settings.display.inventory
-		local currFood = settings.display.food
+		local currColor = options.colors
+		local currJob = options.job
+		local currLoc = options.location
+		local currDay = options.day
+		local currInv = options.inventory
+		local currFood = options.food
 
 		local prefix = "//informer, //info"
 		windower.add_to_chat(8,('[Informer] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		windower.add_to_chat(8,' ')
 		windower.add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' pos '):color(36)..('[x y]'):color(53)..(' - Update position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' lock/unlock'):color(36)..(' - Update position via drag. ['):color(8)..(settings.flags.draggable and ('Unlocked'):color(200)..(' (draggable)'):color(8) or ('Locked'):color(200))..(']'):color(8))
+		windower.add_to_chat(8,(' mainpos '):color(36)..('[x y]'):color(53)..(' - Update Main Bar Position. ['):color(8)..(currMainPos.x..' '..currMainPos.y):color(200)..(']'):color(8))
+		windower.add_to_chat(8,(' sub1pos '):color(36)..('[x y]'):color(53)..(' - Update Sub1 Bar Position. ['):color(8)..(currSub1Pos.x..' '..currSub1Pos.y):color(200)..(']'):color(8))
+		windower.add_to_chat(8,(' sub2pos '):color(36)..('[x y]'):color(53)..(' - Update Sub2 Bar Position. ['):color(8)..(currSub2Pos.x..' '..currSub2Pos.y):color(200)..(']'):color(8))
 		windower.add_to_chat(8,(' size '):color(36)..('[#]'):color(53)..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
 		windower.add_to_chat(8,(' bold'):color(36)..(' - Update bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		windower.add_to_chat(8,(' color'):color(36)..(' - Update color setting. ['):color(8)..('%s':format(currColor and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,' You can change the layout per job in /data/settings.xml')
+		windower.add_to_chat(8,' Change the bar layouts in /data/settings.xml')
 
 	else
 		displayUnregnizedCommand()
