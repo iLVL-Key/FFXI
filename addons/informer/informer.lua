@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.0'
+_addon.version = '5.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -156,8 +156,23 @@ settings = config.load(defaults)
 
 local use_colors = settings.options.colors
 local options = settings.options
+local colors = settings.colors
+local food = settings.food
+local flags = settings.flags
+
+local get_info = windower.ffxi.get_info
+local add_to_chat = windower.add_to_chat
+local get_map_data = windower.ffxi.get_map_data
+local register_event = windower.register_event
+local get_player = windower.ffxi.get_player
+local get_items = windower.ffxi.get_items
+local get_bag_info = windower.ffxi.get_bag_info
+local get_mob_by_target = windower.ffxi.get_mob_by_target
+local get_position = windower.ffxi.get_position
+local get_mob_by_id = windower.ffxi.get_mob_by_id
 
 local informer_main = texts.new('${current_string}', settings)
+
 local informer_sub1 = texts.new('${current_string}')
 informer_sub1:alpha(options.sub1.alpha)
 informer_sub1:bg_alpha(options.sub1.bg_alpha)
@@ -166,10 +181,7 @@ informer_sub1:font(settings.text.font)
 informer_sub1:pos(options.sub1.pos_x, options.sub1.pos_y)
 informer_sub1:size(options.sub1.size)
 local sub1_visible = false
-if options.sub1.visible then
-	informer_sub1:show()
-	sub1_visible = true
-end
+
 local informer_sub2 = texts.new('${current_string}')
 informer_sub2:alpha(options.sub2.alpha)
 informer_sub2:bg_alpha(options.sub2.bg_alpha)
@@ -178,10 +190,6 @@ informer_sub2:font(settings.text.font)
 informer_sub2:pos(options.sub2.pos_x, options.sub2.pos_y)
 informer_sub2:size(options.sub2.size)
 local sub2_visible = false
-if options.sub2.visible then
-	informer_sub2:show()
-	sub2_visible = true
-end
 
 local last_item_used = nil
 local master_level = nil
@@ -212,25 +220,27 @@ local moon_phase = ''
 local moon_percent = '0'
 
 function firstLoadMessage()
-	windower.add_to_chat(220,'[Informer] '..('First load detected.'):color(8))
+	add_to_chat(220,'[Informer] '..('First load detected.'):color(8))
 	coroutine.sleep(1)
-	windower.add_to_chat(8,'   Welcome to '..('Informer '):color(220)..('Ver. '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
+	add_to_chat(8,'   Welcome to '..('Informer '):color(220)..('Ver. '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
 	coroutine.sleep(1)
-	windower.add_to_chat(8,'   Layouts for the Main bar are saved per job. Change the layouts at:')
-	windower.add_to_chat(1,'   addons/Informer/data/settings.xml')
+	add_to_chat(8,'   Layouts for the Main bar are saved per job. Change the layouts at:')
+	add_to_chat(1,'   addons/Informer/data/settings.xml')
 	coroutine.sleep(1)
-	windower.add_to_chat(8,'   Type'..(' //informer help'):color(1)..(' for a list of command options.'):color(8))
+	add_to_chat(8,'   Type'..(' //informer help'):color(1)..(' for a list of command options.'):color(8))
 	settings.first_load = false
 	settings:save('all')
 end
 
 function showInformerBars()
 	informer_main:show()
-	if options.sub1.visible and not options.sub1.hide_when_no_map then
+	local sub_map_id, map_x, map_y = get_map_data()
+	local in_mh = get_info().mog_house
+	if options.sub1.visible and not (options.sub1.hide_when_no_map and ((map_x == 0 and map_y == 0) or in_mh)) then
 		informer_sub1:show()
 		sub1_visible = true
 	end
-	if options.sub2.visible and not options.sub2.hide_when_no_map then
+	if options.sub2.visible and not (options.sub2.hide_when_no_map and ((map_x == 0 and map_y == 0) or in_mh)) then
 		informer_sub2:show()
 		sub2_visible = true
 	end
@@ -245,7 +255,7 @@ function hideInformerBars()
 end
 
 -- Master Level info
-windower.register_event('incoming chunk', function(id, original, modified, injected, blocked)
+register_event('incoming chunk', function(id, original, modified, injected, blocked)
 	if injected or blocked then return end
 	local packet = packets.parse('incoming', original)
 	if id == 0x061 then
@@ -257,7 +267,7 @@ end)
 
 -- Check if we have food active
 function foodActive()
-	local buffs = windower.ffxi.get_player().buffs
+	local buffs = get_player().buffs
 
 	for _, buffId in ipairs(buffs) do
 		if buffId == 251 then
@@ -276,16 +286,16 @@ local function updateTrackItems(loading)
 	local function countItem(item_id)
 
 		if loading then
-			return " ?",settings.colors.none,"? ",settings.colors.none
+			return " ?",colors.none,"? ",colors.none
 		end
 
-		local items = windower.ffxi.get_items()
+		local items = get_items()
 		local inventory = items.inventory
 		local containers = {items.inventory, items.case, items.sack, items.satchel}
 		local invNum = 0
 		local otherNum = 0
-		local invColor = settings.colors.none
-		local otherColor = settings.colors.none
+		local invColor = colors.none
+		local otherColor = colors.none
 
 		-- Find the item and get the count
 		for i, item in ipairs(inventory) do
@@ -307,16 +317,16 @@ local function updateTrackItems(loading)
 
 		-- Determine the color based on the count / stack
 		if use_colors and invNum == 0 then
-			invColor = settings.colors.bad
+			invColor = colors.bad
 		elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
-			invColor = settings.colors.warning
+			invColor = colors.warning
 		end
 		invNum = string.format("%2s", invNum)
 
 		if use_colors and otherNum == 0 then
-			otherColor = settings.colors.bad
+			otherColor = colors.bad
 		elseif use_colors and (otherNum / res.items[item_id].stack) <= .26 then
-			otherColor = settings.colors.warning
+			otherColor = colors.warning
 		end
 		otherNum = string.format("%-2s", otherNum)
 
@@ -334,7 +344,7 @@ local function updateTrackItems(loading)
 		return false --no match found
 	end
 
-	local player = windower.ffxi.get_player()
+	local player = get_player()
 
 	local function processTrackedItems(input_layout)
 		return input_layout:gsub("%${track:(.-)}", function(match)
@@ -345,7 +355,7 @@ local function updateTrackItems(loading)
 					local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
 					return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
 				else
-					return '\\cs('..settings.colors.bad..')NO MATCH\\cr'
+					return '\\cs('..colors.bad..')NO MATCH\\cr'
 				end
 			end
 		end)
@@ -359,7 +369,7 @@ end
 
 -- Update Zone
 local function updateZone()
-	local zone_id = windower.ffxi.get_info().zone
+	local zone_id = get_info().zone
 	local zone = res.zones[zone_id].name
 	local zone_width = options.min_width.zone
 	zone_name = string.format("%-"..zone_width.."s", zone)
@@ -447,29 +457,29 @@ end
 -- Update Game Day
 local function updateGameDay()
 	local day_width = options.min_width.day
-	local day = string.format("%-"..day_width.."s", res.days[windower.ffxi.get_info().day].name)
-	local game_day_color = settings.colors.none
+	local day = string.format("%-"..day_width.."s", res.days[get_info().day].name)
+	local game_day_color = colors.none
 	if use_colors then
-		game_day_color = settings.colors[string.lower(res.elements[res.days[windower.ffxi.get_info().day].element].name)]
+		game_day_color = colors[string.lower(res.elements[res.days[get_info().day].element].name)]
 	end
 	game_day = '\\cs('..game_day_color..')'..day..'\\cr'
 end
 
 -- Update Game Time
 local function updateGameTime()
-	local game = windower.ffxi.get_info()
+	local game = get_info()
 	local game_time_hour = math.floor(game.time/60)
 	local game_time_minute = game.time - (math.floor(game.time/60)*60)
 	game_time_minute = string.format("%02d", game_time_minute)
-	local game_time_color = settings.colors.none
+	local game_time_color = colors.none
 	if use_colors and game_time_hour >= 6 and game_time_hour < 7 then --dawn
-		game_time_color = settings.colors.dusk_dawn
+		game_time_color = colors.dusk_dawn
 	elseif use_colors and game_time_hour >= 7 and game_time_hour < 17 then --daytime
-		game_time_color = settings.colors.day			
+		game_time_color = colors.day			
 	elseif use_colors and game_time_hour >= 17 and game_time_hour < 18 then --dusk
-		game_time_color = settings.colors.dusk_dawn			
+		game_time_color = colors.dusk_dawn			
 	elseif use_colors and ((game_time_hour >= 18 and game_time_hour < 24) or (game_time_hour >= 0 and game_time_hour < 7)) then --nighttime
-		game_time_color = settings.colors.night
+		game_time_color = colors.night
 	end
 	game_time_hour = string.format("%02d", game_time_hour)
 	local formatted_time = game_time_hour..':'..game_time_minute
@@ -486,28 +496,28 @@ end
 -- Update Weather
 local function updateWeather()
 	local weather_width = options.min_width.weather
-	local formatted_weather = string.format("%-"..weather_width.."s", res.weather[windower.ffxi.get_info().weather].name)
-	local weather_color = settings.colors.none
+	local formatted_weather = string.format("%-"..weather_width.."s", res.weather[get_info().weather].name)
+	local weather_color = colors.none
 	if use_colors then
-		weather_color = settings.colors[string.lower(res.elements[res.weather[windower.ffxi.get_info().weather].element].name)]
+		weather_color = colors[string.lower(res.elements[res.weather[get_info().weather].element].name)]
 	end
 	weather = '\\cs('..weather_color..')'..formatted_weather..'\\cr'
 end
 
 -- Update Inventory
 local function updateInventory(loading)
-	local inventory_color = settings.colors.none
+	local inventory_color = colors.none
 	local inv = ''
 
 	if loading then
 		inv = ' ?/?'
 	else
-		local bag = windower.ffxi.get_bag_info(0)
+		local bag = get_bag_info(0)
 		inv = bag.count..'/'..bag.max
 		if use_colors and bag.count == bag.max then
-			inventory_color = settings.colors.bad
+			inventory_color = colors.bad
 		elseif use_colors and bag.max - bag.count <= 10 then
-			inventory_color = settings.colors.warning
+			inventory_color = colors.warning
 		end
 	end
 
@@ -518,7 +528,7 @@ end
 
 -- Update Food
 local function updateFood()
-	local player = windower.ffxi.get_player()
+	local player = get_player()
 	local food_width = options.min_width.food
 	local formatted_food = "No Food"
 	if char_loading then
@@ -529,9 +539,9 @@ local function updateFood()
 		formatted_food = "Unknown Food"
 	end
 	formatted_food = string.format("%-"..food_width.."s", formatted_food)
-	local food_color = settings.colors.none
+	local food_color = colors.none
 	if use_colors then
-		food_color = foodActive() and settings.colors.good or settings.colors.bad
+		food_color = foodActive() and colors.good or colors.bad
 	end
 	food = '\\cs('..food_color..')'..formatted_food..'\\cr'
 end
@@ -541,7 +551,7 @@ local function updateReraise()
 
 	-- Check if we have reraise active
 	local function reraiseActive()
-		local buffs = windower.ffxi.get_player().buffs
+		local buffs = get_player().buffs
 
 		for _, buffId in ipairs(buffs) do
 			if buffId == 113 then
@@ -551,16 +561,16 @@ local function updateReraise()
 		return false
 	end
 
-	local reraise_color = settings.colors.none
+	local reraise_color = colors.none
 	local rr = "No Reraise"
 	if reraiseActive() then
 		rr = "Reraise On"
 		if use_colors then
-			reraise_color = settings.colors.good
+			reraise_color = colors.good
 		end
 	else
 		if use_colors then
-			reraise_color = settings.colors.bad
+			reraise_color = colors.bad
 		end
 	end
 	reraise = '\\cs('..reraise_color..')'..rr..'\\cr'
@@ -569,23 +579,23 @@ end
 
 -- Update Player Name
 local function updatePlayerName()
-	name = windower.ffxi.get_player().name
+	name = get_player().name
 end
 
 -- Update Player Job
 local function updatePlayerJob()
-	local player = windower.ffxi.get_player()
+	local player = get_player()
 	job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
 end
 
 -- Update TP
 local function updateTP(player_tp)
 	local tp_width = options.min_width.tp
-	local player = windower.ffxi.get_player()
+	local player = get_player()
 	player_tp = player and player.vitals.tp or 0
-	local tp_color = settings.colors.none
+	local tp_color = colors.none
 	if use_colors and player_tp >= 1000 then
-		tp_color = settings.colors.good
+		tp_color = colors.good
 	end
 	player_tp = string.format("%-"..tp_width.."s", player_tp)
 	tp = '\\cs('..tp_color..')'..player_tp..'\\cr'
@@ -594,14 +604,14 @@ end
 -- Update Gil
 local function updateGil(player_tp)
 	local gil_width = options.min_width.gil
-	local player_gil = windower.ffxi.get_items().gil
+	local player_gil = get_items().gil
 	player_gil = addCommas(player_gil)
 	gil = string.format("%-"..gil_width.."s", player_gil)
 end
 
 -- Get Direction
 local function getDirection()
-	local player = windower.ffxi.get_mob_by_target('me')
+	local player = get_mob_by_target('me')
 	local facing = player and player.facing or 10
 	local pi = math.pi
 	local directions = {
@@ -627,31 +637,31 @@ end
 
 -- Get Target
 local function getTarget(name_type)
-	local player = windower.ffxi.get_player()
+	local player = get_player()
 	local target_width = options.min_width.target
-	local target = windower.ffxi.get_mob_by_target('st') or windower.ffxi.get_mob_by_target('t')
+	local target = get_mob_by_target('st') or get_mob_by_target('t')
 	local target_name = target and target.name or 'No Target'
 	target_name = string.format("%-"..target_width.."s", target_name)
-	local target_color = settings.colors.none
+	local target_color = colors.none
 	if use_colors and target and target.id == player.id then
-		target_color = settings.colors.self
+		target_color = colors.self
 	elseif use_colors and target and isInParty(target.id) then
-		target_color = settings.colors.party
+		target_color = colors.party
 	elseif use_colors and target and isInAlliance(target.id) then
-		target_color = settings.colors.alliance
+		target_color = colors.alliance
 	elseif use_colors and target and target.is_npc then
 		if target.spawn_type == 16 then
 			if target.claim_id == 0 then
-				target_color = settings.colors.monster_passive
+				target_color = colors.monster_passive
 			elseif isInParty(target.claim_id) then
-				target_color = settings.colors.monster_claimed_party
+				target_color = colors.monster_claimed_party
 			elseif isInAlliance(target.claim_id) then
-				target_color = settings.colors.monster_claimed_alliance
+				target_color = colors.monster_claimed_alliance
 			else
-				target_color = settings.colors.monster_claimed_other
+				target_color = colors.monster_claimed_other
 			end
 		else
-			target_color = settings.colors.npc
+			target_color = colors.npc
 		end
 	end
 	if name_type == "w_hpp" then
@@ -668,7 +678,7 @@ local function getTarget(name_type)
 end
 
 local function updateMoon()
-	local moon = windower.ffxi.get_info()
+	local moon = get_info()
 	moon_percent = tostring(moon.moon)
 	moon_phase = res.moon_phases[moon.moon_phase].en
 end
@@ -676,12 +686,12 @@ end
 function updateInformerMain()
 
 	local mlvl = master_level or '--'
-	local speed = windower.ffxi.get_mob_by_target('me') and math.floor(100 * (windower.ffxi.get_mob_by_target('me').movement_speed / 5 - 1) + .1)
+	local speed = get_mob_by_target('me') and math.floor(100 * (get_mob_by_target('me').movement_speed / 5 - 1) + .1)
 	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
-	local target = windower.ffxi.get_mob_by_target('st','t')
+	local target = get_mob_by_target('st','t')
 	local target_distance = target and (string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
 
-	local pos = windower.ffxi.get_position()
+	local pos = get_position()
 
 	-- Replace placeholders
 	local function replacePlaceholders(str, replacements)
@@ -736,13 +746,14 @@ function updateInformerMain()
 		informer_sub2:pos(x, options.sub2.pos_y)
 	end
 
-	local sub_map_id, map_x, map_y = windower.ffxi.get_map_data()
+	local sub_map_id, map_x, map_y = get_map_data()
+	local in_mh = get_info().mog_house
 	
 	if options.sub1.hide_when_no_map then
 		if map_x == 0 and map_y == 0 and sub1_visible then
 			sub1_visible = false
 			informer_sub1:hide()
-		elseif map_x ~= nil and map_y ~= nil and map_x ~= 0 and map_y ~= 0 and settings.options.sub1.visible and not sub1_visible then
+		elseif map_x ~= nil and map_y ~= nil and map_x ~= 0 and map_y ~= 0 and options.sub1.visible and not sub1_visible and not in_mh then
 			sub1_visible = true
 			informer_sub1:show()
 		end
@@ -751,7 +762,7 @@ function updateInformerMain()
 		if map_x == 0 and map_y == 0 and sub2_visible then
 			sub2_visible = false
 			informer_sub2:hide()
-		elseif map_x ~= nil and map_y ~= nil and map_x ~= 0 and map_y ~= 0 and settings.options.sub2.visible and not sub2_visible then
+		elseif map_x ~= nil and map_y ~= nil and map_x ~= 0 and map_y ~= 0 and options.sub2.visible and not sub2_visible and not in_mh then
 			sub2_visible = true
 			informer_sub2:show()
 		end
@@ -794,7 +805,7 @@ end
 
 -- Is this player in our party
 function isInParty(id)
-	local actor = windower.ffxi.get_mob_by_id(id)
+	local actor = get_mob_by_id(id)
 
 	if actor == nil or not actor.in_party then
 		-- Not in our party
@@ -808,7 +819,7 @@ end
 
 -- Is this player in our alliance
 function isInAlliance(id)
-	local actor = windower.ffxi.get_mob_by_id(id)
+	local actor = get_mob_by_id(id)
 
 	if actor == nil or not actor.in_alliance then
 		-- Not in our alliance
@@ -821,15 +832,15 @@ function isInAlliance(id)
 end
 
 -- Record the last item used
-windower.register_event('action',function(act)
+register_event('action',function(act)
 	if not foodActive() and isInParty(act.actor_id) and act.category == 9 and act.targets[1].actions[1].message == 28 then
 		last_item_used = res.items[act.targets[1].actions[1].param].en
 	end
 end)
 
 -- Gain buffs
-windower.register_event('gain buff', function(buff)
-	local player = windower.ffxi.get_player()
+register_event('gain buff', function(buff)
+	local player = get_player()
 
 	if buff == 251 then -- Food, so the last item used was food
 
@@ -857,8 +868,8 @@ windower.register_event('gain buff', function(buff)
 end)
 
 -- Lose buffs
-windower.register_event('lose buff', function(buff)
-	local player = windower.ffxi.get_player()
+register_event('lose buff', function(buff)
+	local player = get_player()
 
 	if buff == 251 and not char_loading then -- Food
 		settings.food[string.lower(player.name)] = nil
@@ -871,10 +882,10 @@ windower.register_event('lose buff', function(buff)
 	end
 end)
 
-windower.register_event('prerender', function()
+register_event('prerender', function()
 
 	-- Main call to update the Informer bar
-	if windower.ffxi.get_info().logged_in then
+	if get_info().logged_in then
 		updateInformerMain()
 		if not char_loading then
 			if not loading_inv then
@@ -898,8 +909,8 @@ windower.register_event('prerender', function()
 end)
 
 -- Load
-windower.register_event('load', function()
-	if windower.ffxi.get_info().logged_in then
+register_event('load', function()
+	if get_info().logged_in then
 		updateEarthData()
 		updateTrackItems()
 		updateZone()
@@ -920,7 +931,7 @@ windower.register_event('load', function()
 end)
 
 -- Login
-windower.register_event('login', function()
+register_event('login', function()
 	char_loading = true --prevents food clearing immediately on login
 	login_loading = true --prevents frame lag while loading inventory from a login
 	updateEarthData()
@@ -947,59 +958,59 @@ windower.register_event('login', function()
 end)
 
 -- Logout
-windower.register_event('logout', function()
+register_event('logout', function()
 	hideInformerBars()
 	last_item_used = nil --delete the last item used when we switch characters
 end)
 
 -- Item movement
-windower.register_event('add item', function(bag,index,id,count)
+register_event('add item', function(bag,index,id,count)
 	updateTrackItems(login_loading)
 	updateInventory(login_loading)
 end)
-windower.register_event('remove item', function(bag,index,id,count)
+register_event('remove item', function(bag,index,id,count)
 	updateTrackItems()
 	updateInventory()
 end)
 
 -- Job Change
-windower.register_event('job change', function()
+register_event('job change', function()
 	updateTrackItems()
 	updatePlayerJob()
 end)
 
 -- Zone Change
-windower.register_event('zone change', function()
+register_event('zone change', function()
 	updateZone()
 	updatePlayerJob()
 end)
 
 -- Time Change
-windower.register_event('time change', function()
+register_event('time change', function()
 	updateGameTime()
 end)
 
 -- Day Change
-windower.register_event('day change', function()
+register_event('day change', function()
 	updateGameDay()
 end)
 
 -- Weather Change
-windower.register_event('weather change', function()
+register_event('weather change', function()
 	updateWeather()
 end)
 
 -- TP Change
-windower.register_event('tp change', function(new_tp)
+register_event('tp change', function(new_tp)
 	updateTP(new_tp)
 end)
 
 -- Unrecognized command
 function displayUnregnizedCommand()
-	windower.add_to_chat(220,'[Informer] '..('Unrecognized command. Type'):color(39)..(' //informer help'):color(1)..(' if you need help.'):color(39))
+	add_to_chat(220,'[Informer] '..('Unrecognized command. Type'):color(39)..(' //informer help'):color(1)..(' if you need help.'):color(39))
 end
 
-windower.register_event('addon command',function(addcmd, ...)
+register_event('addon command',function(addcmd, ...)
 
 	-- Update the Main bar position
 	if addcmd == 'pos' or addcmd == 'posmain' or addcmd == 'mainpos' then
@@ -1007,8 +1018,8 @@ windower.register_event('addon command',function(addcmd, ...)
 
 		-- If there are not enough parameters then output the current position and remind how to update
 		if #pos < 2 then
-			windower.add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
-			windower.add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer mainpos 100 200'):color(1)..(')'):color(8))
+			add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
+			add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer mainpos 100 200'):color(1)..(')'):color(8))
 
 		-- X and Y coordinates are provided
 		else
@@ -1024,7 +1035,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			else
 				settings:save('all')
 				texts.pos(informer_main, settings.pos.x, settings.pos.y)
-				windower.add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
+				add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
 
 			end
 		end
@@ -1035,8 +1046,8 @@ windower.register_event('addon command',function(addcmd, ...)
 
 		-- If there are not enough parameters then output the current position and remind how to update
 		if #pos < 2 then
-			windower.add_to_chat(220,'[Informer] '..('Sub1 Bar Position: '):color(36)..(options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
-			windower.add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub1pos 100 200'):color(1)..(')'):color(8))
+			add_to_chat(220,'[Informer] '..('Sub1 Bar Position: '):color(36)..(options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+			add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub1pos 100 200'):color(1)..(')'):color(8))
 
 		-- X and Y coordinates are provided
 		else
@@ -1052,7 +1063,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			else
 				settings:save('all')
 				texts.pos(informer_sub1, options.sub1.pos_x, options.sub1.pos_y)
-				windower.add_to_chat(220,'[Informer] '..('Sub1 Bar Position:'):color(36)..(' '..options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+				add_to_chat(220,'[Informer] '..('Sub1 Bar Position:'):color(36)..(' '..options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
 
 			end
 		end
@@ -1063,8 +1074,8 @@ windower.register_event('addon command',function(addcmd, ...)
 
 		-- If there are not enough parameters then output the current position and remind how to update
 		if #pos < 2 then
-			windower.add_to_chat(220,'[Informer] '..('Sub2 Bar Position: '):color(36)..(options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
-			windower.add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub2pos 100 200'):color(1)..(')'):color(8))
+			add_to_chat(220,'[Informer] '..('Sub2 Bar Position: '):color(36)..(options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+			add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub2pos 100 200'):color(1)..(')'):color(8))
 
 		-- X and Y coordinates are provided
 		else
@@ -1080,7 +1091,7 @@ windower.register_event('addon command',function(addcmd, ...)
 			else
 				settings:save('all')
 				texts.pos(informer_sub2, options.sub2.pos_x, options.sub2.pos_y)
-				windower.add_to_chat(220,'[Informer] '..('Sub2 Bar Position:'):color(36)..(' '..options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
+				add_to_chat(220,'[Informer] '..('Sub2 Bar Position:'):color(36)..(' '..options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
 
 			end
 		end
@@ -1091,8 +1102,8 @@ windower.register_event('addon command',function(addcmd, ...)
 		
 		-- If there are no parameters then output the current size and remind how to update
 		if #size < 1 then
-			windower.add_to_chat(220,'[Informer] '..('Font size:'):color(36)..(' '..settings.text.size):color(200))
-			windower.add_to_chat(220,'[Informer] '..('Update by adding a number (ex.'):color(8)..(' //informer size 12'):color(1)..(')'):color(8))
+			add_to_chat(220,'[Informer] '..('Font size:'):color(36)..(' '..settings.text.size):color(200))
+			add_to_chat(220,'[Informer] '..('Update by adding a number (ex.'):color(8)..(' //informer size 12'):color(1)..(')'):color(8))
 
 		-- Size number is provided
 		else
@@ -1107,20 +1118,20 @@ windower.register_event('addon command',function(addcmd, ...)
 				texts.size(informer_main, settings.text.size)
 				texts.size(informer_sub1, settings.text.size)
 				texts.size(informer_sub2, settings.text.size)
-				windower.add_to_chat(220,'[Informer] '..('Font Size:'):color(36)..(' '..settings.text.size):color(200))
+				add_to_chat(220,'[Informer] '..('Font Size:'):color(36)..(' '..settings.text.size):color(200))
 			end
 		end
 
 	-- Turn bold on or off
 	elseif addcmd == 'bold' then
-		settings.flags.bold = not settings.flags.bold
+		flags.bold = not flags.bold
 
 		-- Save the new setting, update the bold setting, then alert the user
 		settings:save('all')
-		texts.bold(informer_main, settings.flags.bold)
-		texts.bold(informer_sub1, settings.flags.bold)
-		texts.bold(informer_sub2, settings.flags.bold)
-		windower.add_to_chat(220,'[Informer] '..('Bold:'):color(36)..(' %s':format(settings.flags.bold and 'ON' or 'OFF')):color(200))
+		texts.bold(informer_main, flags.bold)
+		texts.bold(informer_sub1, flags.bold)
+		texts.bold(informer_sub2, flags.bold)
+		add_to_chat(220,'[Informer] '..('Bold:'):color(36)..(' %s':format(flags.bold and 'ON' or 'OFF')):color(200))
 
 	-- Turn colors on or off
 	elseif addcmd == 'color' or addcmd == 'colors' then
@@ -1139,14 +1150,14 @@ windower.register_event('addon command',function(addcmd, ...)
 
 		-- Save the new setting, update the colors setting, then alert the user
 		settings:save('all')
-		windower.add_to_chat(220,'[Informer] '..('Colors:'):color(36)..(' %s':format(options.colors and 'ON' or 'OFF')):color(200))
+		add_to_chat(220,'[Informer] '..('Colors:'):color(36)..(' %s':format(options.colors and 'ON' or 'OFF')):color(200))
 
 	elseif addcmd == 'help' then
 		local currMainPos = settings.pos
 		local currSub1Pos = {x = options.sub1.pos_x, y = options.sub1.pos_y}
 		local currSub2Pos = {x = options.sub2.pos_x, y = options.sub2.pos_y}
 		local currSize = settings.text.size
-		local currBold = settings.flags.bold
+		local currBold = flags.bold
 		local currColor = options.colors
 		local currJob = options.job
 		local currLoc = options.location
@@ -1155,17 +1166,17 @@ windower.register_event('addon command',function(addcmd, ...)
 		local currFood = options.food
 
 		local prefix = "//informer, //info"
-		windower.add_to_chat(8,('[Informer] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' mainpos '):color(36)..('[x y]'):color(53)..(' - Update Main Bar Position. ['):color(8)..(currMainPos.x..' '..currMainPos.y):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' sub1pos '):color(36)..('[x y]'):color(53)..(' - Update Sub1 Bar Position. ['):color(8)..(currSub1Pos.x..' '..currSub1Pos.y):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' sub2pos '):color(36)..('[x y]'):color(53)..(' - Update Sub2 Bar Position. ['):color(8)..(currSub2Pos.x..' '..currSub2Pos.y):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' size '):color(36)..('[#]'):color(53)..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' bold'):color(36)..(' - Update bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		windower.add_to_chat(8,(' color'):color(36)..(' - Update color setting. ['):color(8)..('%s':format(currColor and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		windower.add_to_chat(8,' ')
-		windower.add_to_chat(8,' Change the bar layouts in /data/settings.xml')
+		add_to_chat(8,('[Informer] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
+		add_to_chat(8,(' mainpos '):color(36)..('[x y]'):color(53)..(' - Update Main Bar Position. ['):color(8)..(currMainPos.x..' '..currMainPos.y):color(200)..(']'):color(8))
+		add_to_chat(8,(' sub1pos '):color(36)..('[x y]'):color(53)..(' - Update Sub1 Bar Position. ['):color(8)..(currSub1Pos.x..' '..currSub1Pos.y):color(200)..(']'):color(8))
+		add_to_chat(8,(' sub2pos '):color(36)..('[x y]'):color(53)..(' - Update Sub2 Bar Position. ['):color(8)..(currSub2Pos.x..' '..currSub2Pos.y):color(200)..(']'):color(8))
+		add_to_chat(8,(' size '):color(36)..('[#]'):color(53)..(' - Update font size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
+		add_to_chat(8,(' bold'):color(36)..(' - Update bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' color'):color(36)..(' - Update color setting. ['):color(8)..('%s':format(currColor and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,' Change the bar layouts in /data/settings.xml')
 
 	else
 		displayUnregnizedCommand()
