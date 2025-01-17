@@ -6,42 +6,51 @@ Displays a bar with information (much like InfoBar!)
 
 
 ## Features
-- Uses a layout (per job) that you can customize however you'd like using placeholders:
-  - **${day}** - Current Vana'diel day
-  - **${direction}** - Current direction your character is facing
-  - **${distance}** - Distance to current target/sub-target
-  - **${earth_date}** - Current Earth Date
-  - **${earth_day}** - Current Earth Day
-  - **${earth_time_12}** - Current Earth time (12HR format)
-  - **${earth_time_24}** - Current Earth time (24HR format)
-  - **${food}** - Current food you have (tracked per character)
-  - **${gil}** - Current gil amount
-  - **${inventory}** - Current number of items in your main inventory / total main inventory slots
-  - **${job}** - Current job/sub you are on
-  - **${mlvl}** - Current jobs master level (NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)
-  - **${moon_percent}** - Current moon phase by percent
-  - **${moon_phase}** - Current moon phase by name
-  - **${name}** - Current characters name
-  - **${pos}** - Current map position
-  - **${region}** - Current region
-  - **${reraise}** - Current reraise status
-  - **${speed}** - Current movement speed
-  - **${target}** - Current target/subtarget
-  - **${target_w_hpp}** - Current target/subtarget including its HP%
-  - **${time}** - Current Vana'diel time
-  - **${tp}** - Current TP
-  - **${track:Item Name}** - Current number of X item in your main inventory / current total number of X item between your inventory, satchel, case, and sack
-    - Informer is able to track any item in the game.
-    - The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive.
-  - **${weather}** - Current Vana'diel weather
-  - **${zone}** - Current zone
+- Main bar
+  - Can use a different layout per job that can be customized however you'd like using placeholders.
+- Sub1 and Sub2 bars
+  - Not tied to job like the Main bar is.
+  - Can each be individually turned on or off.
+  - Can be customized using placeholders.
+  - Can be centered and stays centered as the data in them changes.
+  - Can be turned off if the area has no map (to match how the FFXIDB minimap doesn't show when there is no map).
 - Minimum widths for most sections.
   - Controls how wide these sections are, creating a more static overall width for the bar, and preventing other sections after them from moving around.
   - Set to 0 to turn off
-- Colors! (which can be turned off)
+- Colors!
   - Day, weather, and food, etc
   - Warning when your main inventory is near to or full
   - Warning when tracked items are low
+  - Can be disabled
+
+## Placeholders
+- **${day}** - Current Vana'diel day
+- **${direction}** - Current direction your character is facing
+- **${distance}** - Distance to current target/sub-target
+- **${earth_date}** - Current Earth Date
+- **${earth_day}** - Current Earth Day
+- **${earth_time}** - Current Earth time
+- **${food}** - Current food you have (tracked per character)
+- **${gil}** - Current gil amount
+- **${inventory}** - Current number of items in your main inventory / total main inventory slots
+- **${job}** - Current job/sub you are on
+- **${mlvl}** - Current jobs master level (NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)
+- **${moon_percent}** - Current moon phase by percent
+- **${moon_phase}** - Current moon phase by name
+- **${name}** - Current characters name
+- **${pos}** - Current map position
+- **${region}** - Current region
+- **${reraise}** - Current reraise status
+- **${speed}** - Current movement speed
+- **${target}** - Current target/subtarget
+- **${target_w_hpp}** - Current target/subtarget including its HP%
+- **${time}** - Current Vana'diel time
+- **${tp}** - Current TP
+- **${track:Item Name}** - Current number of X item in your main inventory / current total number of X item between your inventory, satchel, case, and sack
+  - Able to track any item in the game.
+  - The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive.
+- **${weather}** - Current Vana'diel weather
+- **${zone}** - Current zone
 
 ## Commands
 All commands must be preceded with `//informer` or `//info` (ex: `//info color`)  
@@ -54,6 +63,7 @@ All commands must be preceded with `//informer` or `//info` (ex: `//info color`)
 - `help` - Display a list of commands and addon info.
 
 ## Earth Data Formatting
+Earth Date, Day, and Time placeholders are able to be modified in `data/settings.xml` file  
 - `%Y` - Year in full (e.g., 2025)
 - `%y` - Last two digits of the year (e.g., 25 for 2025)
 - `%m` - Month as a two-digit number (01 to 12)
