@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.0'
+_addon.version = '5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -39,21 +39,22 @@ packets = require('packets')
 
 defaults = {}							--In addition to the settings file, all of these are also configurable via commands in-game (//lb help).
 
-defaults.party_commands = true			--Allow party/alliance members to trigger certain commands via chat while in Party/Raid/Mog Kart Mode.
-defaults.flood_delay = 5				--Delay in seconds between incoming commands, preventing party members from spamming commands.
-defaults.reminder = true				--Display a reminder upon zoning that Leaderboard is running while in Party/Raid/Mog Kart Mode.
-defaults.commas = true					--Add commas to the scores.
-defaults.optout = {}					--List of names to be excluded from data collection.
-defaults.mode = 'Silent'				--Default mode Leaderboard starts in.
-defaults.rival = ''						--Name of an optional Rival to track.
-defaults.taunt = "Thought you should know I'm beating you on %s."	-- Text the taunt command sends your Rival
-defaults.kart_item_interval = 50		--Number of interval actions between when a random item box is given to a player in Mog Kart Mode. Lower is more often.
-defaults.kart_p_board_time = 300		--Time in seconds between when the Points Board gets put into party chat while in Mog Kart Mode (0 to turn off)
-defaults.kart_trust_item_time_max = 120	--Maximum time in seconds that a trust will use an item after they receive it.
-defaults.kart_trust_item_time_min = 10	--Minimum time in seconds that a trust will use an item after they receive it.
-defaults.osd_show_number = 10			--Number of places the On-Screen Display will show.
-defaults.default_osd_board = 'td'		--Initial board shown in the On-Screen Display upon loading the addon.
-defaults.output_all_delay = 6			--Delay between printing boards to party chat using the `all` command.
+defaults.options = {}
+defaults.options.party_commands = true			--Allow party/alliance members to trigger certain commands via chat while in Party/Raid/Mog Kart Mode.
+defaults.options.flood_delay = 5				--Delay in seconds between incoming commands, preventing party members from spamming commands.
+defaults.options.reminder = true				--Display a reminder upon zoning that Leaderboard is running while in Party/Raid/Mog Kart Mode.
+defaults.options.commas = true					--Add commas to the scores.
+defaults.options.mode = 'Silent'				--Default mode Leaderboard starts in.
+defaults.options.rival = ''						--Name of an optional Rival to track.
+defaults.options.taunt = "Thought you should know I'm beating you on %s."	-- Text the taunt command sends your Rival
+defaults.options.kart_item_interval = 50		--Number of interval actions between when a random item box is given to a player in Mog Kart Mode. Lower is more often.
+defaults.options.kart_p_board_time = 300		--Time in seconds between when the Points Board gets put into party chat while in Mog Kart Mode (0 to turn off)
+defaults.options.kart_trust_item_time_max = 120	--Maximum time in seconds that a trust will use an item after they receive it.
+defaults.options.kart_trust_item_time_min = 10	--Minimum time in seconds that a trust will use an item after they receive it.
+defaults.options.osd_show_number = 10			--Number of places the On-Screen Display will show.
+defaults.options.default_osd_board = 'td'		--Initial board shown in the On-Screen Display upon loading the addon.
+defaults.options.output_all_delay = 7			--Delay between printing boards to party chat using the `all` command.
+defaults.options.live_score_saving = true		--Save scores to the live file (data/live.xml) at a regular interval for crash recovery.
 
 --Party/Raid Mode party chat callouts while running
 defaults.party_calls = T{}
@@ -307,6 +308,7 @@ defaults.item.eft_bomb.placeHi			= 1
 defaults.item.eft_bomb.placeLo			= 18
 defaults.item.eft_bomb.accuracy			= 85
 
+defaults.optout = {} --List of names to be excluded from data collection.
 defaults.first_load = true
 defaults.visible = true
 
@@ -411,21 +413,35 @@ local get_mob_by_target = windower.ffxi.get_mob_by_target
 local get_mob_by_id = windower.ffxi.get_mob_by_id
 local register_event = windower.register_event
 
+local party_commands = settings.options.party_commands
+local reminder = settings.options.reminder
+local commas = settings.options.commas
+local mode = settings.options.mode
+local rival = settings.options.rival
+local kart_item_interval = settings.options.kart_item_interval
+local kart_trust_item_time_max = settings.options.kart_trust_item_time_max
+local kart_trust_item_time_min = settings.options.kart_trust_item_time_min
+local osd_show_number = settings.options.osd_show_number
+local live_score_saving = settings.options.live_score_saving
+local party_calls = settings.party_calls
+
 local self_name
 if get_mob_by_target('me') then
 	self_name = string.lower(get_mob_by_target('me').name)
 end
 register_event('login', function()
-	coroutine.sleep(3)
-	self_name = string.lower(get_mob_by_target('me').name)
+	coroutine.schedule(function()
+		self_name = string.lower(get_mob_by_target('me').name)
+	end, 3)
 end)
 
 local Heartbeat = 0
-local box_display = settings.default_osd_board
+local box_display = settings.options.default_osd_board
 local zoning = false
 local releaseValveOpen = true
 local kart_p_board_time = 1
 local output_all = false
+local reason_to_save = false
 
 local effects = {} --Current item effect players have active
 local flood_delay = {} --Individual flood delay for players
@@ -566,7 +582,7 @@ local function addCommas(number)
 	--Convert the number to a string
 	local formattedNumber = tostring(number)
 
-	if settings.commas then
+	if commas then
 		local length = #formattedNumber
 
 		if length > 3 then
@@ -717,7 +733,7 @@ local function updateBox(box_display)
 	text = text..first_row..'\n'
 
 	--Second row, always 35 characters long
-	local mode_text = ' '..settings.mode..' Mode'
+	local mode_text = ' '..mode..' Mode'
 	local space_text = ''
 	local pause_text = ('%s\\cr \n'):format(live.paused and 'Paused' or 'Running')
 	while string.len(mode_text) + string.len(space_text) + string.len(pause_text) < 39 do
@@ -731,13 +747,13 @@ local function updateBox(box_display)
 		text = text..' Waiting For Data...'
 	else
 		--Pull the list of the top names/scores and add it to the text string
-		for i = 1, settings.osd_show_number, 1
+		for i = 1, osd_show_number, 1
 		do
 			if info.name[i] ~= nil then --This may look redundant at first glance, but it removes any trailing empty places
 
 				if capitalize(info.name[i]) == get_mob_by_target('me').name then
 					t_c = selfColor
-				elseif info.name[i] == settings.rival then
+				elseif info.name[i] == rival then
 					t_c = rivalColor
 				else
 					t_c = textColor
@@ -817,10 +833,12 @@ BPNuke = S{
 if settings.first_load then
 
 	add_to_chat(8,('[Leaderboard] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..('Key'):color(220))
-	coroutine.sleep(1)
-	add_to_chat(8,'Please be mindful that Leaderboard is not intended to be a full parser, but to add some fun to events.')
-	coroutine.sleep(1)
-	add_to_chat(8,'Type'..(' //lb help'):color(1)..(' for a list of commands.'):color(8))
+	coroutine.schedule(function()
+		add_to_chat(8,'Please be mindful that Leaderboard is not intended to be a full parser, but to add some fun to events.')
+	end, 1)
+	coroutine.schedule(function()
+		add_to_chat(8,'Type'..(' //lb help'):color(1)..(' for a list of commands.'):color(8))
+	end, 2)
 	settings.first_load = false
 	settings:save('all')
 
@@ -1169,7 +1187,7 @@ local function addToOptout(name)
 		updateBoard(table)
 	end
 
-	live:save('all')
+	coroutine.schedule(function() live:save('all') end,0)
 	updateBox(box_display)
 
 end
@@ -1304,8 +1322,7 @@ function newChatMessage(str)
 	if releaseValveOpen then
 		say(str)
 		releaseValveOpen = false
-		coroutine.sleep(1.5)
-		checkChatBuffer()
+		coroutine.schedule(checkChatBuffer, 1.5)
 	
 	--If the releaseValve is closed, add the new chat message to the chatBuffer
 	else
@@ -1322,8 +1339,7 @@ function checkChatBuffer()
         local message = chatBuffer[1]
         say(message)
         table.remove(chatBuffer, 1)
-		coroutine.sleep(1.5)
-		checkChatBuffer()
+		coroutine.schedule(checkChatBuffer, 1.5)
 	
 	--If there are no more messages in the chatBuffer, open the releaseValve back up for new messages
 	else
@@ -1367,21 +1383,22 @@ local function giveItem()
 	local itemName = settings.item[item].name
 
 	live.items[player] = item
-	live:save('all')
+	coroutine.schedule(function() live:save('all') end,0)
 
 	if player == self_name then
 		add_to_chat(8,('[Leaderboard] '):color(220)..('Item Box! You receive '..settings.item[item].indart..' '..itemName..'! Type '):color(8)..('//lb item'):color(1)..(' to use, or '):color(8)..('//lb info'):color(1)..(' for a description.'):color(8))
 	elseif playerIsTrust then --If the recipient is a trust, use the item after a random amount of time (ITS AI!)
 		add_to_chat(8,('[Leaderboard] '):color(220)..('Item Box! '..capitalize(player)..' received '..settings.item[item].indart..' '..itemName..'!'):color(8))
-		coroutine.sleep(math.random(settings.kart_trust_item_time_min, settings.kart_trust_item_time_max))
-		if isPlayerInAlliance(player) then
-			if settings.mode == "Mog Kart" and live.items[player] then
-				useItem(player)
+		coroutine.schedule(function()
+			if isPlayerInAlliance(player) then
+				if mode == "Mog Kart" and live.items[player] then
+					useItem(player)
+				end
+			else
+				live.items[player] = nil
+				coroutine.schedule(function() live:save('all') end,0)
 			end
-		else
-			live.items[player] = nil
-			live:save('all')
-		end
+		end, math.random(kart_trust_item_time_min, kart_trust_item_time_max))
 	else
 		newChatMessage("/t "..player.." [LB] Item Box! You receive "..settings.item[item].indart.." "..itemName.."! Reply with `item` to use, or `info` for a description.")
 	end
@@ -1552,26 +1569,26 @@ local function useItem(name, specifiedTarget)
 		newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..' puts down '..banana.indart..' '..banana.name..'... Watch your feet!')
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
-		coroutine.sleep(math.random(banana.timeMin, banana.timeMax)) --wait a random amount of time
+		--wait a random amount of time before someone steps on the banana
+		coroutine.schedule(function()
+			local targetName = selectRandomPlayer(name) --select a random target
+			local targetPlace = findPlace(targetName, "point")
+			local updatedPlayerPlace = findPlace(name, "point")
 
-		local targetName = selectRandomPlayer(name) --select a random target
-		local targetPlace = findPlace(targetName, "point")
-		local updatedPlayerPlace = findPlace(name, "point")
-
-		if targetName then
-			if effects[targetName] and (effects[targetName].active == "bullet_bill" or effects[targetName].active == "super_star") then
-				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (Invincible!)')
-			else
-				local lostPoints = math.floor(points[targetName].score * (banana.points / 100))
-				points[targetName].score = points[targetName].score - lostPoints
-				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (-'..addCommas(lostPoints)..')')
+			if targetName then
+				if effects[targetName] and (effects[targetName].active == "bullet_bill" or effects[targetName].active == "super_star") then
+					newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (Invincible!)')
+				else
+					local lostPoints = math.floor(points[targetName].score * (banana.points / 100))
+					points[targetName].score = points[targetName].score - lostPoints
+					newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' steps on '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..banana.name..'! (-'..addCommas(lostPoints)..')')
+				end
 			end
-		end
+		end, math.random(banana.timeMin, banana.timeMax))
 
 
-	--Blue Shell
 	elseif live.items[name] == "blue_shell" then
 
 		local blue_shell = settings.item.blue_shell
@@ -1589,23 +1606,25 @@ local function useItem(name, specifiedTarget)
 		newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..' starts casting '..blue_shell.name..' on '..targetPlace..'|'..capitalize(targetName)..'... 10 seconds to impact!')
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
-		coroutine.sleep(10) --wait a 10 second casting time
+		--wait a 10 second casting time
+		coroutine.schedule(function()
 
-		local updatedPlayerPlace = findPlace(name, "point")
+			local updatedPlayerPlace = findPlace(name, "point")
 
-		if effects[targetName] and (effects[targetName].active == "bullet_bill" or effects[targetName].active == "super_star") then
-			newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' is hit with '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..'! (Invincible!)')
-		elseif effects[targetName] and effects[targetName].active == "super_horn" then
-			newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' avoids '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..' with their '..super_horn.name..'!')
-		elseif (math.random(1, 100) <= blue_shell.accuracy) then
-			local lostPoints = math.floor(points[targetName].score * (blue_shell.points / 100))
-			points[targetName].score = points[targetName].score - lostPoints
-			newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' is hit with '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..'! (-'..addCommas(lostPoints)..')')
-		else
-			newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' resists '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..'!')
-		end
+			if effects[targetName] and (effects[targetName].active == "bullet_bill" or effects[targetName].active == "super_star") then
+				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' is hit with '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..'! (Invincible!)')
+			elseif effects[targetName] and effects[targetName].active == "super_horn" then
+				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' avoids '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..' with their '..super_horn.name..'!')
+			elseif (math.random(1, 100) <= blue_shell.accuracy) then
+				local lostPoints = math.floor(points[targetName].score * (blue_shell.points / 100))
+				points[targetName].score = points[targetName].score - lostPoints
+				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' is hit with '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..'! (-'..addCommas(lostPoints)..')')
+			else
+				newChatMessage('/p [LB] '..targetPlace..'|'..capitalize(targetName)..' resists '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..blue_shell.name..'!')
+			end
+		end, 10)
 
 
 	--Bob-omb
@@ -1682,7 +1701,7 @@ local function useItem(name, specifiedTarget)
 		end
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
 
 	--Bullet Bill
@@ -1697,16 +1716,16 @@ local function useItem(name, specifiedTarget)
 		effects[name].active = "bullet_bill"
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
-		coroutine.sleep(bullet_bill.time)
+		coroutine.schedule(function()
+			local gainedPoints = effects[name].gainedPoints or 0
+			local updatedPlayerPlace = findPlace(name, "point")
 
-		local gainedPoints = effects[name].gainedPoints or 0
-		local updatedPlayerPlace = findPlace(name, "point")
+			newChatMessage('/p [LB] '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..bullet_bill.name..' effect wears off. (+'..addCommas(gainedPoints)..')')
 
-		newChatMessage('/p [LB] '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..bullet_bill.name..' effect wears off. (+'..addCommas(gainedPoints)..')')
-
-		effects[name] = nil
+			effects[name] = nil
+		end, bullet_bill.time)
 
 
 	--Coin
@@ -1731,7 +1750,7 @@ local function useItem(name, specifiedTarget)
 		end
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
 
 	--Eft Bomb
@@ -1762,7 +1781,7 @@ local function useItem(name, specifiedTarget)
 					newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..' tries to use '..eft_bomb.indart..' '..eft_bomb.name..' but it blows up in their face instead! (-'..addCommas(lostPoints)..')')
 				end
 				live.items[name] = nil
-				live:save('all')
+				coroutine.schedule(function() live:save('all') end,0)
 			else
 				if name == self_name then
 					add_to_chat(8,('[Leaderboard] '):color(220)..('The player `'..capitalize(targetName)..'` is not currently playing Mog Kart, please try again.'):color(8))
@@ -1785,7 +1804,7 @@ local function useItem(name, specifiedTarget)
 				newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..' tries to use '..eft_bomb.indart..' '..eft_bomb.name..' but it\'s a dud.')
 			end
 			live.items[name] = nil
-			live:save('all')
+			coroutine.schedule(function() live:save('all') end,0)
 		end
 
 
@@ -1852,7 +1871,7 @@ local function useItem(name, specifiedTarget)
 		end
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
 		
 	--Green Shell
@@ -1889,7 +1908,7 @@ local function useItem(name, specifiedTarget)
 		end
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
 
 	--Mushroom
@@ -1904,16 +1923,16 @@ local function useItem(name, specifiedTarget)
 		effects[name].active = "mushroom"
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
-		coroutine.sleep(mushroom.time)
+		coroutine.schedule(function()
+			local gainedPoints = effects[name].gainedPoints or 0
+			local updatedPlayerPlace = findPlace(name, "point")
 
-		local gainedPoints = effects[name].gainedPoints or 0
-		local updatedPlayerPlace = findPlace(name, "point")
+			newChatMessage('/p [LB] '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..mushroom.name..' effect wears off. (+'..addCommas(gainedPoints)..')')
 
-		newChatMessage('/p [LB] '..updatedPlayerPlace..'|'..capitalize(name)..'\'s '..mushroom.name..' effect wears off. (+'..addCommas(gainedPoints)..')')
-
-		effects[name] = nil
+			effects[name] = nil
+		end, mushroom.time)
 
 
 	--Red Shell
@@ -1941,7 +1960,7 @@ local function useItem(name, specifiedTarget)
 		end
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
 
 	--Super Horn
@@ -1990,14 +2009,14 @@ local function useItem(name, specifiedTarget)
 		end
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
 		effects[name] = {}
 		effects[name].active = "super_horn"
 
-		coroutine.sleep(super_horn.time)
-
-		effects[name] = nil
+		coroutine.schedule(function()
+			effects[name] = nil
+		end, super_horn.time)
 
 
 	--Super Star
@@ -2012,16 +2031,16 @@ local function useItem(name, specifiedTarget)
 		effects[name].active = "super_star"
 
 		live.items[name] = nil
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 
-		coroutine.sleep(super_star.time)
+		coroutine.schedule(function()
+			local gainedPoints = effects[name].gainedPoints or 0
+			local updatedPlayerPlace = findPlace(name, "point")
 
-		local gainedPoints = effects[name].gainedPoints or 0
-		local updatedPlayerPlace = findPlace(name, "point")
+			newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..'\'s '..super_star.name..' effect wears off. (+'..addCommas(gainedPoints)..')')
 
-		newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..'\'s '..super_star.name..' effect wears off. (+'..addCommas(gainedPoints)..')')
-
-		effects[name] = nil
+			effects[name] = nil
+		end, super_star.time)
 
 
 	else
@@ -2182,7 +2201,7 @@ register_event('chat message', function(message, sender, mode)
 
 
 	--Party Commands
-	if settings.party_commands and settings.mode ~= 'Silent' then
+	if party_commands and mode ~= 'Silent' then
 
 		--BUFF BOARD
 		elseif (message:lower():match("^lb b") or message:lower():match("^lbb")) then
@@ -2264,7 +2283,7 @@ register_event('chat message', function(message, sender, mode)
 	end
 
 	--Mog Kart Mode commands (limited to tells(3))
-	if settings.mode == 'Mog Kart' and mode == 3 then
+	if mode == 'Mog Kart' and mode == 3 then
 
 		--Use an item
 		if message:lower():match("^item") then
@@ -2284,8 +2303,9 @@ register_event('chat message', function(message, sender, mode)
 
 	--Add the sender to the flood_delay table for a set amount of time, then remove them
 	flood_delay[l_name] = true
-	coroutine.sleep(settings.flood_delay)
-	flood_delay[l_name] = nil
+	coroutine.schedule(function()
+		flood_delay[l_name] = nil
+	end, settings.options.flood_delay)
 
 end)
 
@@ -2330,13 +2350,13 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 			
 			--Update the leaderboard places
 			updateBoard("kill")
-			live:save('all')
+			reason_to_save = true
 			if box_display == 'kill' then
 				updateBox(box_display)
 			end
 
 			--Call out Kills, depending on the mode and how many Kills they are at
-			if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.kill then
+			if (mode == "Party" or mode == "Raid") and party_calls.kill then
 				local everyNumKills = kills % 10 --returns the remainder after euclidean division (division by subtraction)
 				if everyNumKills == 0 then --if that leftover number equals 0, then the number is a multiple of Num
 					newChatMessage('/p [KILL] '..actor_name..' has racked up '..addCommas(kills)..' kills!')
@@ -2384,7 +2404,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 				--Update the leaderboard places
 				updateBoard("death")
-				live:save('all')
+				reason_to_save = true
 				if box_display == 'death' then
 					updateBox(box_display)
 				end
@@ -2392,14 +2412,14 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 				local amount_lost = math.floor(((points[name] and points[name].score) or 0) * (settings.pctloss.death / 100))
 
 				--Call out Deaths, depending on the mode and how many Deaths they are at
-				if settings.mode ~= "Silent" and settings.party_calls.death then
+				if mode ~= "Silent" and party_calls.death then
 					if deaths == 1 and target_lower_name == deathPlaces.first.name then
-						newChatMessage('/p [DEATH] '..target_name..(' is the first to die!%s'):format(settings.mode == "Mog Kart" and ' (-'..addCommas(amount_lost)..')' or ''))
+						newChatMessage('/p [DEATH] '..target_name..(' is the first to die!%s'):format(mode == "Mog Kart" and ' (-'..addCommas(amount_lost)..')' or ''))
 					elseif deaths == 1 then
-						newChatMessage('/p [DEATH] '..target_name..(' has their first death!%s'):format(settings.mode == "Mog Kart" and ' (-'..addCommas(amount_lost)..')' or ''))
-					elseif settings.mode == "Mog Kart" then
+						newChatMessage('/p [DEATH] '..target_name..(' has their first death!%s'):format(mode == "Mog Kart" and ' (-'..addCommas(amount_lost)..')' or ''))
+					elseif mode == "Mog Kart" then
 						newChatMessage('/p [DEATH] '..target_name..' has died again... (-'..addCommas(amount_lost)..')')
-					elseif deaths < 10 and settings.mode == "Party" then
+					elseif deaths < 10 and mode == "Party" then
 						newChatMessage('/p [DEATH] '..target_name..(' has died %s'):format(deaths < 5 and '' or 'yet ')..'again...')
 					else
 						local everyNumDeaths = deaths % 5 --returns the remainder after euclidean division (division by subtraction)
@@ -2448,7 +2468,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 					--Update the leaderboard places
 					updateBoard("murder")
-					live:save('all')
+					reason_to_save = true
 					if box_display == 'murder' then
 						updateBox(box_display)
 					end
@@ -2480,7 +2500,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 					--Update the leaderboard places
 					updateBoard("victim")
-					live:save('all')
+					reason_to_save = true
 					if box_display == 'victim' then
 						updateBox(box_display)
 					end
@@ -2488,11 +2508,11 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 				end
 
 				--Call out Murders/Victims
-				if settings.mode ~= "Silent" and settings.party_calls.murder then
+				if mode ~= "Silent" and party_calls.murder then
 					if not settings.optout[actor_lower_name] and not settings.optout[target_lower_name] then
-						newChatMessage('/p [MURDER/VICTIM] '..actor_name..(' has %s'):format((murders == 1 and actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..target_name..(' to Altana!%s'):format(settings.mode == "Mog Kart" and ' ('..addCommas(points_transfered)..' transferred)' or ''))
+						newChatMessage('/p [MURDER/VICTIM] '..actor_name..(' has %s'):format((murders == 1 and actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..target_name..(' to Altana!%s'):format(mode == "Mog Kart" and ' ('..addCommas(points_transfered)..' transferred)' or ''))
 					elseif not settings.optout[actor_lower_name] then
-						newChatMessage('/p [MURDER/VICTIM] '..actor_name..(' has %s'):format((murders == 1 and actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..('sacrificed a victim to Altana!'):format(settings.mode == "Mog Kart" and ' (-'..addCommas(points_transfered)..')' or ''))
+						newChatMessage('/p [MURDER/VICTIM] '..actor_name..(' has %s'):format((murders == 1 and actor_lower_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..('sacrificed a victim to Altana!'):format(mode == "Mog Kart" and ' (-'..addCommas(points_transfered)..')' or ''))
 					elseif not settings.optout[target_lower_name] then
 						newChatMessage('/p [MURDER/VICTIM] '..target_name..(' %s'):format((murders == 1 and actor_lower_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
 					end
@@ -2558,7 +2578,7 @@ register_event('action',function(act)
 
 		--What are you and your Rivals original scores
 		local myOriginalTDScore = (tdIndividuals and tdIndividuals[string.lower(myName)] and tdIndividuals[string.lower(myName)].score) or 0
-		local rivalOriginalTDScore = (tdIndividuals and tdIndividuals[settings.rival] and tdIndividuals[settings.rival].score) or 0
+		local rivalOriginalTDScore = (tdIndividuals and tdIndividuals[rival] and tdIndividuals[rival].score) or 0
 
 		--Retrieve the actors relevant data
 		local tot_dmg = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].score) or 0
@@ -2583,17 +2603,17 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("td")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'td' then
 			updateBox(box_display)
 		end
 
 		--Call out Total Damage
-		if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.td then
+		if (mode == "Party" or mode == "Raid") and party_calls.td then
 			if everyNumTDs > index then
 
 				--Party Mode under 1m in WSs: call it out every 250k
-				if everyNumTDs < 5 and settings.mode == 'Party' then
+				if everyNumTDs < 5 and mode == 'Party' then
 					newChatMessage('/p [TOTAL DMG] '..actor_name..' has done over '..addCommas(points)..' total damage!')
 
 				--Party Mode over 1m in WSs, or Raid Mode: call it out every 500k
@@ -2615,14 +2635,14 @@ register_event('action',function(act)
 		end
 
 		--Did you or your rival beat the other
-		if settings.rival ~= "" then
+		if rival ~= "" then
 			if actor_name == myName then
 				if (rivalOriginalTDScore > myOriginalTDScore) and (tot_dmg > rivalOriginalTDScore) then
-					add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalTDScore)..' score with '):color(6)..(addCommas(tot_dmg)..' TOTAL DMG.'):color(158))
+					add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(rival)..'\'s '..addCommas(rivalOriginalTDScore)..' score with '):color(6)..(addCommas(tot_dmg)..' TOTAL DMG.'):color(158))
 				end
-			elseif actor_name == capitalize(settings.rival) then
+			elseif actor_name == capitalize(rival) then
 				if (myOriginalTDScore > rivalOriginalTDScore) and (tot_dmg > myOriginalTDScore) then
-					add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(settings.rival)..' is now beating your '..addCommas(myOriginalTDScore)..' score with '):color(28)..(addCommas(tot_dmg)..' TOTAL DMG.'):color(167))
+					add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(rival)..' is now beating your '..addCommas(myOriginalTDScore)..' score with '):color(28)..(addCommas(tot_dmg)..' TOTAL DMG.'):color(167))
 				end
 			end
 		end
@@ -2677,17 +2697,17 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("melee")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'melee' then
 			updateBox(box_display)
 		end
 
 		--Call out Melee damage
-		if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.melee then
+		if (mode == "Party" or mode == "Raid") and party_calls.melee then
 			if everyNumMelees > index then
 
 				--Party Mode under 1m melee damage: call it out every 250k
-				if everyNumMelees < 5 and settings.mode == 'Party' then
+				if everyNumMelees < 5 and mode == 'Party' then
 					newChatMessage('/p [MELEE] '..actor_name..' has done over '..addCommas(points)..' in melee damage!')
 
 				--Party Mode over 1m melee damage, or Raid Mode: call it out every 500k
@@ -2748,17 +2768,17 @@ register_event('action',function(act)
 
 			--Update the leaderboard places
 			updateBoard("cure")
-			live:save('all')
+			reason_to_save = true
 			if box_display == 'cure' then
 				updateBox(box_display)
 			end
 
 			--Call out Cures
-			if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.cure then
+			if (mode == "Party" or mode == "Raid") and party_calls.cure then
 				if everyNumCures > index then
 
 					--Party Mode under 100k cures: call it out every 25k
-					if everyNumCures < 5 and settings.mode == 'Party' then
+					if everyNumCures < 5 and mode == 'Party' then
 						newChatMessage('/p [CURE] '..actor_name..' has cured for over '..addCommas(points)..' HP!')
 
 					--Party Mode over 100k cures, or Raid Mode: call it out every 50k
@@ -2818,7 +2838,7 @@ register_event('action',function(act)
 
 			--Update the leaderboard places
 			updateBoard("whiff")
-			live:save('all')
+			reason_to_save = true
 			if box_display == 'whiff' then
 				updateBox(box_display)
 			end
@@ -2826,17 +2846,17 @@ register_event('action',function(act)
 			local amount_lost = math.floor(((points[name] and points[name].score) or 0) * (settings.pctloss.whiff / 100))
 
 			--Call out Whiffs, depending on the mode and how many Whiffs they are at
-			if settings.mode ~= "Silent" and settings.party_calls.whiff then
+			if mode ~= "Silent" and party_calls.whiff then
 				if whiffs == 1 then
-					if settings.mode == 'Party' then
-						newChatMessage('/p [WHIFF] '..actor_name..' whiffs '..ws_name..('%s'):format(actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.')..('%s'):format(settings.mode == "Mog Kart" and ' (-'..addCommas(amount_lost)..')' or ''))
+					if mode == 'Party' then
+						newChatMessage('/p [WHIFF] '..actor_name..' whiffs '..ws_name..('%s'):format(actor_lower_name == whiffPlaces.first.name and ' and is the first on the board.' or '.')..('%s'):format(mode == "Mog Kart" and ' (-'..addCommas(amount_lost)..')' or ''))
 					end
-				elseif settings.mode == "Mog Kart" then
+				elseif mode == "Mog Kart" then
 					newChatMessage('/p [WHIFF] '..actor_name..' whiffs '..ws_name..'. (-'..addCommas(amount_lost)..')')
 				elseif whiffs == 5 or whiffs == 10 then
 					newChatMessage('/p [WHIFF] '..actor_name..' whiffs '..ws_name..' and is up to '..whiffs..' whiffs now.')
 				elseif whiffs < 10 then
-					if settings.mode == 'Party' then
+					if mode == 'Party' then
 						newChatMessage('/p [WHIFF] '..actor_name..(' whiffs %s'):format(whiffs < 5 and '' or 'yet ')..'again with '..ws_name..'...')
 					end
 				elseif whiffs > 10 then
@@ -2879,8 +2899,8 @@ register_event('action',function(act)
 				--What are you and your Rivals original scores
 				local myOriginalHSNines = (hsIndividuals and hsIndividuals[string.lower(myName)] and hsIndividuals[string.lower(myName)].nines) or 0
 				local myOriginalHSScore = (hsIndividuals and hsIndividuals[string.lower(myName)] and hsIndividuals[string.lower(myName)].score) or 0
-				local rivalOriginalHSNines = (hsIndividuals and hsIndividuals[settings.rival] and hsIndividuals[settings.rival].nines) or 0
-				local rivalOriginalHSScore = (hsIndividuals and hsIndividuals[settings.rival] and hsIndividuals[settings.rival].score) or 0
+				local rivalOriginalHSNines = (hsIndividuals and hsIndividuals[rival] and hsIndividuals[rival].nines) or 0
+				local rivalOriginalHSScore = (hsIndividuals and hsIndividuals[rival] and hsIndividuals[rival].score) or 0
 
 				--Retrieve the actors relevant data
 				local nines = (hsIndividuals[actor_lower_name] and hsIndividuals[actor_lower_name].nines) or 0
@@ -2898,7 +2918,7 @@ register_event('action',function(act)
 
 				--Update the leaderboard places
 				updateBoard("hs")
-				live:save('all')
+				reason_to_save = true
 				if box_display == 'hs' then
 					updateBox(box_display)
 				end
@@ -2920,14 +2940,14 @@ register_event('action',function(act)
 				--Code for HIGH WS callouts is down inside LOW WS so that we can Do Logic to prevent it from calling both LOW WS and HIGH WS for the same WS
 
 				--Did you or your rival beat the other
-				if settings.rival ~= "" then
+				if rival ~= "" then
 					if actor_name == myName then
 						if ((rivalOriginalHSNines == myOriginalHSNines) and (nines > rivalOriginalHSNines) and (rivalOriginalHSScore > 0)) or ((rivalOriginalHSScore > myOriginalHSScore) and (damage > rivalOriginalHSScore)) then
-							add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalHSScore)..(rivalOriginalHSNines > 0 and ':'..rivalOriginalHSNines or '')..' HIGH WS score with '):color(6)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
+							add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(rival)..'\'s '..addCommas(rivalOriginalHSScore)..(rivalOriginalHSNines > 0 and ':'..rivalOriginalHSNines or '')..' HIGH WS score with '):color(6)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
 						end
-					elseif actor_name == capitalize(settings.rival) then
+					elseif actor_name == capitalize(rival) then
 						if ((rivalOriginalHSNines == myOriginalHSNines) and (nines > myOriginalHSNines)) or ((myOriginalHSScore > rivalOriginalHSScore) and damage > myOriginalHSScore) then
-							add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(settings.rival)..' is now beating your '..addCommas(myOriginalHSScore)..(myOriginalHSNines > 0 and ':'..myOriginalHSNines or '')..' HIGH WS score with '):color(28)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(167))
+							add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(rival)..' is now beating your '..addCommas(myOriginalHSScore)..(myOriginalHSNines > 0 and ':'..myOriginalHSNines or '')..' HIGH WS score with '):color(28)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(167))
 						end
 					end
 				end
@@ -2966,7 +2986,7 @@ register_event('action',function(act)
 
 				--Update the leaderboard places
 				updateBoard("ls")
-				live:save('all')
+				reason_to_save = true
 				if box_display == 'ls' then
 					updateBox(box_display)
 				end
@@ -2985,32 +3005,32 @@ register_event('action',function(act)
 					newLSPlace = 5
 				end
 
-				if (settings.mode == "Party" or settings.mode == "Raid") then
+				if (mode == "Party" or mode == "Raid") then
 
 					--Did the actor move up the HIGH WS leaderboard
-					if newHSPlace == originalHSPlace and newHSPlace == 1 and (damage > originalHSfirstscore or damage == 99999) and settings.party_calls.hs then
+					if newHSPlace == originalHSPlace and newHSPlace == 1 and (damage > originalHSfirstscore or damage == 99999) and party_calls.hs then
 						local everyTenNines = nines % 10 --returns the remainder after euclidean division (division by subtraction)
-						if nines == 1 or (nines >= 10 and everyTenNines == 0) or (nines < 10 and settings.mode == "Party") then
+						if nines == 1 or (nines >= 10 and everyTenNines == 0) or (nines < 10 and mode == "Party") then
 							newChatMessage('/p [HIGH WS] '..uppercase(actor_name)..' extends the lead! '..ws_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 						end
-					elseif newHSPlace < originalHSPlace and settings.party_calls.hs then
+					elseif newHSPlace < originalHSPlace and party_calls.hs then
 						if newHSPlace == 1 then
 							if damage > originalHSfirstscore then
 								newChatMessage('/p [HIGH WS] '..uppercase(actor_name)..' takes the board! '..ws_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 							end
-						elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and settings.mode == 'Party' then
+						elseif newHSPlace ~= originalHSPlace and newHSPlace ~= 6 and mode == 'Party' then
 							newChatMessage('/p [HIGH WS] '..actor_name..' moves up to No.'..newHSPlace..'! '..ws_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 						end
 
 					--Did the actor move up the LOW WS leaderboard
-					elseif newLSPlace == originalLSPlace and newLSPlace == 1 and damage < originalLSfirstscore and settings.party_calls.ls then
+					elseif newLSPlace == originalLSPlace and newLSPlace == 1 and damage < originalLSfirstscore and party_calls.ls then
 						newChatMessage('/p [LOW WS] '..uppercase(actor_name)..' extends the lead! '..ws_name..' for '..addCommas(damage)..' on the '..target_name..'!')
-					elseif newLSPlace < originalLSPlace and settings.party_calls.ls then
+					elseif newLSPlace < originalLSPlace and party_calls.ls then
 						if newLSPlace == 1 then
 							if damage < originalLSfirstscore then
 								newChatMessage('/p [LOW WS] '..uppercase(actor_name)..' takes the board! '..ws_name..' for '..addCommas(damage)..' on the '..target_name..'!')
 							end
-						elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and settings.mode == 'Party' then
+						elseif newLSPlace ~= originalLSPlace and newLSPlace ~= 6 and mode == 'Party' then
 							newChatMessage('/p [LOW WS] '..actor_name..' moves up to No.'..newLSPlace..'! '..ws_name..' for '..addCommas(damage)..' on the '..target_name..'!')
 						end
 					end
@@ -3027,7 +3047,7 @@ register_event('action',function(act)
 
 			--What are you and your Rivals original scores
 			local myOriginalWSScore = (wsIndividuals and wsIndividuals[string.lower(myName)] and wsIndividuals[string.lower(myName)].score) or 0
-			local rivalOriginalWSScore = (wsIndividuals and wsIndividuals[settings.rival] and wsIndividuals[settings.rival].score) or 0
+			local rivalOriginalWSScore = (wsIndividuals and wsIndividuals[rival] and wsIndividuals[rival].score) or 0
 
 			--Retrieve the actors relevant data
 			local wss = (wsIndividuals[actor_lower_name] and wsIndividuals[actor_lower_name].score) or 0
@@ -3045,17 +3065,17 @@ register_event('action',function(act)
 
 			--Update the leaderboard places
 			updateBoard("ws")
-			live:save('all')
+			reason_to_save = true
 			if box_display == 'ws' then
 				updateBox(box_display)
 			end
 
 			--Call out WSs
-			if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.ws then
+			if (mode == "Party" or mode == "Raid") and party_calls.ws then
 				if everyNumWSs > index then
 
 					--Party Mode under 1m in WSs: call it out every 250k
-					if everyNumWSs < 5 and settings.mode == 'Party' then
+					if everyNumWSs < 5 and mode == 'Party' then
 						newChatMessage('/p [TOTAL WS] '..actor_name..' has weapon skilled for over '..addCommas(points)..' damage!')
 
 					--Party Mode over 1m in WSs, or Raid Mode: call it out every 500k
@@ -3077,14 +3097,14 @@ register_event('action',function(act)
 			end
 
 			--Did you or your rival beat the other
-			if settings.rival ~= "" then
+			if rival ~= "" then
 				if actor_name == myName then
 					if (rivalOriginalWSScore > myOriginalWSScore) and (wss > rivalOriginalWSScore) then
-						add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalWSScore)..' score with '):color(6)..(addCommas(wss)..' TOTAL WS damage.'):color(158))
+						add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(rival)..'\'s '..addCommas(rivalOriginalWSScore)..' score with '):color(6)..(addCommas(wss)..' TOTAL WS damage.'):color(158))
 					end
-				elseif actor_name == capitalize(settings.rival) then
+				elseif actor_name == capitalize(rival) then
 					if (myOriginalWSScore > rivalOriginalWSScore) and (wss > myOriginalWSScore) then
-						add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(settings.rival)..' is now beating your '..addCommas(myOriginalWSScore)..' score with '):color(28)..(addCommas(wss)..' TOTAL WS damage.'):color(167))
+						add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(rival)..' is now beating your '..addCommas(myOriginalWSScore)..' score with '):color(28)..(addCommas(wss)..' TOTAL WS damage.'):color(167))
 					end
 				end
 			end
@@ -3127,8 +3147,8 @@ register_event('action',function(act)
 		--What are you and your Rivals original scores
 		local myOriginalSCNines = (scIndividuals and scIndividuals[string.lower(myName)] and scIndividuals[string.lower(myName)].nines) or 0
 		local myOriginalSCScore = (scIndividuals and scIndividuals[string.lower(myName)] and scIndividuals[string.lower(myName)].score) or 0
-		local rivalOriginalSCNines = (scIndividuals and scIndividuals[settings.rival] and scIndividuals[settings.rival].nines) or 0
-		local rivalOriginalSCScore = (scIndividuals and scIndividuals[settings.rival] and scIndividuals[settings.rival].score) or 0
+		local rivalOriginalSCNines = (scIndividuals and scIndividuals[rival] and scIndividuals[rival].nines) or 0
+		local rivalOriginalSCScore = (scIndividuals and scIndividuals[rival] and scIndividuals[rival].score) or 0
 
 		--Retrieve the actors relevant data
 		local nines = (scIndividuals[actor_lower_name] and scIndividuals[actor_lower_name].nines) or 0
@@ -3146,7 +3166,7 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("sc")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'sc' then
 			updateBox(box_display)
 		end
@@ -3166,10 +3186,10 @@ register_event('action',function(act)
 		end
 
 		--Did the actor move up the leaderboard
-		if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.sc then
+		if (mode == "Party" or mode == "Raid") and party_calls.sc then
 			if newSCPlace == originalSCPlace and newSCPlace == 1 and (damage > originalSCfirstscore or damage == 99999) then
 				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
-				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
+				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and mode == "Party") then
 					newChatMessage('/p [SKILLCHAIN] '..uppercase(actor_name)..' extends the lead! '..sc_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 				end
 			elseif newSCPlace < originalSCPlace then
@@ -3177,21 +3197,21 @@ register_event('action',function(act)
 					if damage > originalSCfirstscore then
 						newChatMessage('/p [SKILLCHAIN] '..uppercase(actor_name)..' takes the board! '..sc_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 					end
-				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and settings.mode == 'Party' then
+				elseif newSCPlace ~= originalSCPlace and newSCPlace ~= 6 and mode == 'Party' then
 					newChatMessage('/p [SKILLCHAIN] '..actor_name..' moves up to No.'..newSCPlace..'! '..sc_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 				end
 			end
 		end
 
 		--Did you or your rival beat the other
-		if settings.rival ~= "" then
+		if rival ~= "" then
 			if actor_name == myName then
 				if ((rivalOriginalSCNines == myOriginalSCNines) and (nines > rivalOriginalSCNines) and (rivalOriginalSCScore > 0)) or ((rivalOriginalSCScore > myOriginalSCScore) and (damage > rivalOriginalSCScore)) then
-					add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(settings.rival)..'\'s '..addCommas(rivalOriginalSCScore)..(rivalOriginalSCNines > 0 and ':'..rivalOriginalSCNines or '')..' SKILLCHAIN score with '):color(6)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
+					add_to_chat(8,('[Leaderboard] '):color(220)..('You\'re now beating '..capitalize(rival)..'\'s '..addCommas(rivalOriginalSCScore)..(rivalOriginalSCNines > 0 and ':'..rivalOriginalSCNines or '')..' SKILLCHAIN score with '):color(6)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(158))
 				end
-			elseif actor_name == capitalize(settings.rival) then
+			elseif actor_name == capitalize(rival) then
 				if ((rivalOriginalSCNines == myOriginalSCNines) and (nines > myOriginalSCNines)) or ((myOriginalSCScore > rivalOriginalSCScore) and damage > myOriginalSCScore) then
-					add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(settings.rival)..' is now beating your '..addCommas(myOriginalSCScore)..(myOriginalSCNines > 0 and ':'..myOriginalSCNines or '')..' SKILLCHAIN score with '):color(28)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(167))
+					add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(rival)..' is now beating your '..addCommas(myOriginalSCScore)..(myOriginalSCNines > 0 and ':'..myOriginalSCNines or '')..' SKILLCHAIN score with '):color(28)..(addCommas(damage)..(nines > 0 and ':'..nines or '')..'.'):color(167))
 				end
 			end
 		end
@@ -3251,7 +3271,7 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("mb")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'mb' then
 			updateBox(box_display)
 		end
@@ -3271,10 +3291,10 @@ register_event('action',function(act)
 		end
 
 		--Did the actor move up the leaderboard
-		if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.mb then
+		if (mode == "Party" or mode == "Raid") and party_calls.mb then
 			if newMBPlace == originalMBPlace and newMBPlace == 1 and (damage > originalMBfirstscore or damage == 99999) then
 				local everyFiveNines = nines % 5 -- returns the remainder after euclidean division (division by subtraction)
-				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and settings.mode == "Party") then
+				if nines == 1 or (nines >= 5 and everyFiveNines == 0) or (nines < 10 and mode == "Party") then
 					newChatMessage('/p [MAGIC BURST] '..uppercase(actor_name)..' extends the lead! '..spell_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 				end
 			elseif newMBPlace < originalMBPlace then
@@ -3282,7 +3302,7 @@ register_event('action',function(act)
 					if damage > originalMBfirstscore then
 						newChatMessage('/p [MAGIC BURST] '..uppercase(actor_name)..' takes the board! '..spell_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 					end
-				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and settings.mode == 'Party' then
+				elseif newMBPlace ~= originalMBPlace and newMBPlace ~= 6 and mode == 'Party' then
 					newChatMessage('/p [MAGIC BURST] '..actor_name..' moves up to No.'..newMBPlace..'! '..spell_name..' for '..addCommas(damage)..('%s on the '):format(nines > 0 and ':'..nines or '')..target_name..'!')
 				end
 			end
@@ -3315,17 +3335,17 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("nuke")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'nuke' then
 			updateBox(box_display)
 		end
 
 		--Call out Nukes
-		if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.nuke then
+		if (mode == "Party" or mode == "Raid") and party_calls.nuke then
 			if everyNumNukes > index then
 
 				--Party Mode under 1m nukes: call it out every 250k
-				if everyNumNukes < 5 and settings.mode == 'Party' then
+				if everyNumNukes < 5 and mode == 'Party' then
 					newChatMessage('/p [NUKE] '..actor_name..' has nuked for over '..addCommas(points)..' damage!')
 
 				--Party Mode over 1m nukes, or Raid Mode: call it out every 500k
@@ -3375,17 +3395,17 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("ra")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'ra' then
 			updateBox(box_display)
 		end
 
 		--Call out Ranged Attacks
-		if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.ra then
+		if (mode == "Party" or mode == "Raid") and party_calls.ra then
 			if everyNumRas > index then
 
 				--Party Mode under 50k in ras: call it out every 10k
-				if everyNumRas < 11 and settings.mode == 'Party' then
+				if everyNumRas < 11 and mode == 'Party' then
 					local everyOtherNum = everyNumRas % 2 --returns the remainder after euclidean division (division by subtraction)
 					if everyOtherNum == 0 then --if that leftover number equals 0, then the number is a multiple of 2 (2x5k = every 10k)
 						newChatMessage('/p [RANGED ATT] '..actor_name..' has ranged attacked for over '..addCommas(points)..' damage!')
@@ -3488,7 +3508,7 @@ register_event('action',function(act)
 				tries = tries + 1
 			end
 			--Call out Buff removals/lands, depending on the mode and how many Buff removals/lands they are at
-			if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.buff then
+			if (mode == "Party" or mode == "Raid") and party_calls.buff then
 				local everyNumBuffs = buffs % 25 --returns the remainder after euclidean division (division by subtraction)
 				if everyNumBuffs == 0 and buffs ~= 0 then --if that leftover number equals 0, then the number is a multiple of Num
 					newChatMessage('/p [BUFF] '..actor.name..' has landed/removed '..addCommas(buffs)..' buffs!')
@@ -3505,7 +3525,7 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("buff")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'buff' then
 			updateBox(box_display)
 		end
@@ -3533,7 +3553,7 @@ register_event('action',function(act)
 				tries = tries + 1
 			end
 			--Call out Debuff removals/lands, depending on the mode and how many Debuff removals/lands they are at
-			if (settings.mode == "Party" or settings.mode == "Raid") and settings.party_calls.debuff then
+			if (mode == "Party" or mode == "Raid") and party_calls.debuff then
 				local everyNumDebuffs = debuffs % 25 --returns the remainder after euclidean division (division by subtraction)
 				if everyNumDebuffs == 0 and debuffs ~= 0 then --if that leftover number equals 0, then the number is a multiple of Num
 					newChatMessage('/p [DEBUFF] '..actor.name..' has landed/removed '..addCommas(debuffs)..' debuffs!')
@@ -3547,7 +3567,7 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("debuff")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'debuff' then
 			updateBox(box_display)
 		end
@@ -3566,8 +3586,8 @@ register_event('action',function(act)
 		index = index +1 --Increment the index number at every interval
 		live.index = index
 
-		if settings.mode == "Mog Kart" then
-			local everyNumGiveItem = live.index % settings.kart_item_interval
+		if mode == "Mog Kart" then
+			local everyNumGiveItem = live.index % kart_item_interval
 			if everyNumGiveItem == 0 then
 				giveItem()
 			end
@@ -3577,7 +3597,7 @@ register_event('action',function(act)
 
 		--Update the leaderboard places
 		updateBoard("point")
-		live:save('all')
+		reason_to_save = true
 		if box_display == 'point' then
 			updateBox(box_display)
 		end
@@ -3594,7 +3614,7 @@ register_event('addon command',function(addcmd, ...)
 
 	--Give a random player a random item
 	if addcmd == 'randomitem' then
-		if settings.mode == "Mog Kart" then
+		if mode == "Mog Kart" then
 			giveItem()
 		else
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Items can only be given in Mog Kart Mode.'):color(8))
@@ -3604,8 +3624,8 @@ register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'item' then
 		if arg == 'reset' then
 			resetI()
-			live:save('all')
-			if settings.mode == "Mog Kart" then
+			coroutine.schedule(function() live:save('all') end,0)
+			if mode == "Mog Kart" then
 				newChatMessage('/p [LB] ITEM data reset.')
 			else
 				add_to_chat(8,('[Leaderboard] '):color(220)..('ITEM data reset.'):color(8))
@@ -3693,18 +3713,17 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Please add which board you would like reset (all/b/c/d/db/hs/k/ls/m/mb/ml/n/p/ra/sc/td/v/ws/w).'):color(8))
 			return
 		end
-		if settings.mode ~= "Silent" then
+		if mode ~= "Silent" then
 			newChatMessage('/p [LB] '..board..' data reset.')
 		else
 			add_to_chat(8,('[Leaderboard] '):color(220)..(board..' data reset.'):color(8))
 		end
-		live:save('all')
+		coroutine.schedule(function() live:save('all') end,0)
 		updateBox(box_display)
 
 
 	--Callouts for Party Mode setting
 	elseif addcmd == 'call' or addcmd == 'calls' or addcmd == 'callout' or addcmd == 'callouts' then
-		local party_calls = settings.party_calls
 		if arg == 'b' or arg == 'buff' or arg == 'buffs' then
 			party_calls.buff = not party_calls.buff
 			add_to_chat(8,('[Leaderboard] '):color(220)..('BUFF call:'):color(8)..(' %s':format(party_calls.buff and 'ON' or 'OFF')):color(200))
@@ -3777,8 +3796,9 @@ register_event('addon command',function(addcmd, ...)
 
 	--Reminder setting
 	elseif addcmd == 'reminder' or addcmd == 'reminders' or addcmd == 'remind' then
-		settings.reminder = not settings.reminder
-		add_to_chat(8,('[Leaderboard] '):color(220)..('Reminders:'):color(36)..(' %s':format(settings.reminder and 'ON' or 'OFF')):color(200))
+		settings.options.reminder = not settings.options.reminder
+		reminder = settings.options.reminder
+		add_to_chat(8,('[Leaderboard] '):color(220)..('Reminders:'):color(36)..(' %s':format(reminder and 'ON' or 'OFF')):color(200))
 		settings:save('all')
 
 
@@ -3822,27 +3842,29 @@ register_event('addon command',function(addcmd, ...)
 
 	--Comma setting
 	elseif addcmd == 'comma' or addcmd == 'commas' then
-		settings.commas = not settings.commas
-		add_to_chat(8,('[Leaderboard] '):color(220)..('Commas:'):color(36)..(' %s':format(settings.commas and 'ON' or 'OFF')):color(200))
+		settings.options.commas = not settings.options.commas
+		commas = settings.options.commas
+		add_to_chat(8,('[Leaderboard] '):color(220)..('Commas:'):color(36)..(' %s':format(commas and 'ON' or 'OFF')):color(200))
 		settings:save('all')
 		updateBox(box_display)
 
 
 	--Party Commands setting
 	elseif addcmd == 'partycommand' or addcmd == 'partycmd' or addcmd == 'partycommands' or addcmd == 'pcmd' then
-		settings.party_commands = not settings.party_commands
-		add_to_chat(8,('[Leaderboard] '):color(220)..('Party Commands (Party/Raid/Mog Kart mode only):'):color(36)..(' %s':format(settings.party_commands and 'ON' or 'OFF')):color(200))
+		settings.options.party_commands = not settings.options.party_commands
+		party_commands = settings.options.party_commands
+		add_to_chat(8,('[Leaderboard] '):color(220)..('Party Commands (Party/Raid/Mog Kart mode only):'):color(36)..(' %s':format(party_commands and 'ON' or 'OFF')):color(200))
 		settings:save('all')
 
 
 	--Flood Delay setting
 	elseif addcmd == 'flood' or addcmd == 'flooddelay' then
 		if arg == nil then
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Flood Delay for Party Commands: '):color(36)..(settings.flood_delay..' seconds.'):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('Flood Delay for Party Commands: '):color(36)..(settings.options.flood_delay..' seconds.'):color(200))
 		elseif tonumber(arg) ~= nil then
-			settings.flood_delay = arg
+			settings.options.flood_delay = arg
 			settings:save('all')
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Flood Delay for Party Commands: '):color(36)..(settings.flood_delay..' seconds.'):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('Flood Delay for Party Commands: '):color(36)..(settings.options.flood_delay..' seconds.'):color(200))
 		else
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Flood Delay must be a number.'):color(8))
 		end
@@ -3852,11 +3874,11 @@ register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'boardtime' or addcmd == 'boardtimer' then
 		local timer = {...}
 		if #timer < 1 then
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Point Board Callout:'):color(36)..(' '..settings.kart_p_board_time..('%s'):format(settings.kart_p_board_time == 0 and ' (off)' or '')):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Point Board Callout:'):color(36)..(' '..settings.options.kart_p_board_time..('%s'):format(settings.options.kart_p_board_time == 0 and ' (off)' or '')):color(200))
 		elseif tonumber(timer[1]) ~= nil then
-			settings.kart_p_board_time = tonumber(timer[1])
+			settings.options.kart_p_board_time = tonumber(timer[1])
 			settings:save('all')
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Point Board Callout:'):color(36)..(' '..settings.kart_p_board_time..('%s'):format(settings.kart_p_board_time == 0 and ' (off)' or '')):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Point Board Callout:'):color(36)..(' '..settings.options.kart_p_board_time..('%s'):format(settings.options.kart_p_board_time == 0 and ' (off)' or '')):color(200))
 		else
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Point Board Callout must be a number.'):color(8))
 		end
@@ -3866,11 +3888,12 @@ register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'itemtime' or addcmd == 'itemtimer' then
 		local timer = {...}
 		if #timer < 1 then
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Give Item Box:'):color(36)..(' '..settings.kart_item_interval):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Give Item Box:'):color(36)..(' '..kart_item_interval):color(200))
 		elseif tonumber(timer[1]) ~= nil then
-			settings.kart_item_interval = tonumber(timer[1])
+			settings.options.kart_item_interval = tonumber(timer[1])
+			kart_item_interval = settings.options.kart_item_interval
 			settings:save('all')
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Give Item Box:'):color(36)..(' '..settings.kart_item_interval):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Give Item Box:'):color(36)..(' '..kart_item_interval):color(200))
 		else
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Timer for Mog Kart Mode Give Item Box must be a number.'):color(8))
 		end
@@ -3919,21 +3942,22 @@ register_event('addon command',function(addcmd, ...)
 		else
 			live.paused = false
 		end
-		live:save('all')
-		if settings.mode ~= "Silent" then
-			newChatMessage(('/p [LB] '..settings.mode..' Mode %s'):format(live.paused and 'Paused' or 'Unpaused'))
+		coroutine.schedule(function() live:save('all') end,0)
+		if mode ~= "Silent" then
+			newChatMessage(('/p [LB] '..mode..' Mode %s'):format(live.paused and 'Paused' or 'Unpaused'))
 		else
-			add_to_chat(8,('[Leaderboard] '):color(220)..((settings.mode..' Mode %s'):format(live.paused and 'Paused' or 'Unpaused')):color(36))
+			add_to_chat(8,('[Leaderboard] '):color(220)..((mode..' Mode %s'):format(live.paused and 'Paused' or 'Unpaused')):color(36))
 		end
 		updateBox(box_display)
 
 
 	--Switch to Raid Mode
 	elseif addcmd == 'raid' or (addcmd == 'mode' and (arg == 'raid' or arg == 'r')) then
-		if settings.mode == "Raid" then
+		if mode == "Raid" then
 			add_to_chat(8,('[Leaderboard] '):color(220)..(('Raid Mode is currently active and %s.'):format(live.paused and 'paused' or 'running')):color(8))
 		else
-			settings.mode = "Raid"
+			settings.options.mode = "Raid"
+			mode = settings.options.mode
 			settings:save('all')
 			newChatMessage(('/p [LB] Raid Mode activated and %s.'):format(live.paused and 'paused' or 'running'))
 			updateBox(box_display)
@@ -3942,7 +3966,7 @@ register_event('addon command',function(addcmd, ...)
 
 	--Switch to Mog Kart Mode
 	elseif addcmd == 'kart' or addcmd == 'mog' or addcmd == 'mogkart' or (addcmd == 'mode' and (arg == 'kart' or arg == 'k' or arg == 'mog' or arg == 'm' or arg == 'mogkart')) then
-		if settings.mode == "Mog Kart" then
+		if mode == "Mog Kart" then
 			if arg == 'intro' then
 				if live.paused == false then
 					add_to_chat(8,('[Leaderboard] '):color(220)..('Mog Kart Mode is currently running. Please pause first before running the intro.'):color(8))
@@ -3955,25 +3979,27 @@ register_event('addon command',function(addcmd, ...)
 				newChatMessage("/p [LB] You may opt out of playing at any time by sending me a tell with `optout`.")
 				resetALL()
 				live.paused = false
-				live:save('all')
+				coroutine.schedule(function() live:save('all') end,0)
 				updateBox(box_display)
 			else
 				add_to_chat(8,('[Leaderboard] '):color(220)..(('Mog Kart Mode is currently active and %s.'):format(live.paused and 'paused' or 'running')):color(8))
 			end
 		else
-			settings.mode = "Mog Kart"
+			settings.options.mode = "Mog Kart"
+			mode = settings.options.mode
 			settings:save('all')
 			live.paused = true
-			live:save('all')
+			coroutine.schedule(function() live:save('all') end,0)
 			newChatMessage(('/p [LB] Mog Kart Mode activated and %s.'):format(live.paused and 'paused' or 'running'))
 			box_display = 'point'
 			updateBox(box_display)
-			coroutine.sleep(1)
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Beware - Mog Kart Mode uses party chat and tells heavily.'):color(8))
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Currently paused.'):color(8))
-			add_to_chat(8,('[Leaderboard] '):color(220)..('//lb kart intro'):color(1)..(' - Unpause, reset all data, and display how to play in party chat.'):color(8))
-			add_to_chat(8,('[Leaderboard] '):color(220)..('//lb pause'):color(1)..(' - Unpause, keep all current data.'):color(8))
-			if settings.kart_p_board_time ~= 0 then
+			coroutine.schedule(function()
+				add_to_chat(8,('[Leaderboard] '):color(220)..('Beware - Mog Kart Mode uses party chat and tells heavily.'):color(8))
+				add_to_chat(8,('[Leaderboard] '):color(220)..('Currently paused.'):color(8))
+				add_to_chat(8,('[Leaderboard] '):color(220)..('//lb kart intro'):color(1)..(' - Unpause, reset all data, and display how to play in party chat.'):color(8))
+				add_to_chat(8,('[Leaderboard] '):color(220)..('//lb pause'):color(1)..(' - Unpause, keep all current data.'):color(8))
+			end, 1)
+			if settings.options.kart_p_board_time ~= 0 then
 				kart_p_board_time = 1 --start the points board callout timer back up
 			end
 		end
@@ -3981,24 +4007,27 @@ register_event('addon command',function(addcmd, ...)
 
 	--Switch to Party Mode
 	elseif addcmd == 'party' or (addcmd == 'mode' and (arg == 'party' or arg == 'p')) then
-		if settings.mode == "Party" then
+		if mode == "Party" then
 			add_to_chat(8,('[Leaderboard] '):color(220)..(('Party Mode is currently active and %s.'):format(live.paused and 'paused' or 'running')):color(8))
 		else
-			settings.mode = "Party"
+			settings.options.mode = "Party"
+			mode = settings.options.mode
 			settings:save('all')
 			newChatMessage(('/p [LB] Party Mode activated and %s.'):format(live.paused and 'paused' or 'running'))
-			coroutine.sleep(0.5)
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Beware - Party Mode uses party chat heavily.'):color(8))
 			updateBox(box_display)
+			coroutine.schedule(function()
+				add_to_chat(8,('[Leaderboard] '):color(220)..('Beware - Party Mode uses party chat heavily.'):color(8))
+			end, 0.5)
 		end
 
 
 	--Switch to Silent Mode
 	elseif addcmd == 'silent' or (addcmd == 'mode' and (arg == 'silent' or arg == 's')) then
-		if settings.mode == "Silent" then
+		if mode == "Silent" then
 			add_to_chat(8,('[Leaderboard] '):color(220)..(('Silent Mode is currently active and %s.'):format(live.paused and 'paused' or 'running')):color(8))
 		else
-			settings.mode = "Silent"
+			settings.options.mode = "Silent"
+			mode = settings.options.mode
 			settings:save('all')
 			add_to_chat(8,('[Leaderboard] '):color(220)..(('Silent Mode activated and %s.'):format(live.paused and 'paused' or 'running')):color(8))
 			updateBox(box_display)
@@ -4007,7 +4036,7 @@ register_event('addon command',function(addcmd, ...)
 
 	--Display which mode Leaderboard is currently running in
 	elseif addcmd == 'mode' then
-		add_to_chat(8,('[Leaderboard] '):color(220)..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..settings.mode..' Mode'):color(8))
+		add_to_chat(8,('[Leaderboard] '):color(220)..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..mode..' Mode'):color(8))
 
 
 	--Display the commands for the different boards
@@ -4039,7 +4068,7 @@ register_event('addon command',function(addcmd, ...)
 			output_all = false
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Board output cancelled.'):color(8))
 		else
-			local delay = settings.output_all_delay
+			local delay = settings.options.output_all_delay
 			output_all = true
 
 			--Original boards list
@@ -4055,30 +4084,33 @@ register_event('addon command',function(addcmd, ...)
 			end
 
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Outputting '):color(8)..(tostring(#selected_boards)):color(1)..(' boards to party chat. Starting in '):color(8)..(tostring(delay)):color(1)..(' seconds.'):color(8))
-			coroutine.sleep(1)
-			local approx_time = (#selected_boards - 1) * delay
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Process will take approximately '):color(8)..(tostring(approx_time)):color(1)..(' seconds to complete.'):color(8))
-			coroutine.sleep(1)
-			add_to_chat(8,('[Leaderboard] '):color(220)..('Repeat '):color(8)..('//lb all'):color(1)..(' at any time to cancel.'):color(8))
-			coroutine.sleep(delay)
+			coroutine.schedule(function()
+				add_to_chat(8,('[Leaderboard] '):color(220)..('Repeat '):color(8)..('//lb all'):color(1)..(' at any time to cancel.'):color(8))
+			end, 1)
+			coroutine.schedule(function()
+				local approx_time = (#selected_boards - 1) * delay
+				add_to_chat(8,('[Leaderboard] '):color(220)..('Process will take approximately '):color(8)..(tostring(approx_time)):color(1)..(' seconds to complete.'):color(8))
+			end, 2)
 
-			--Output only the selected boards
-			for i = 1, #selected_boards do
-				if output_all then
-					local board = selected_boards[i]
-					cmd('lb ' .. board)
-					coroutine.sleep(.1)
-					if i == #selected_boards then
-						add_to_chat(8,('[Leaderboard] '):color(220)..('('):color(8)..(tostring(i)):color(1)..('/'):color(8)..(tostring(#selected_boards)):color(1)..(') Board output complete.'):color(8))
-						output_all = false
+			coroutine.schedule(function()
+				--Output only the selected boards
+				for i = 1, #selected_boards do
+					if output_all then
+						local board = selected_boards[i]
+						cmd('lb ' .. board)
+						coroutine.sleep(.1)
+						if i == #selected_boards then
+							add_to_chat(8,('[Leaderboard] '):color(220)..('('):color(8)..(tostring(i)):color(1)..('/'):color(8)..(tostring(#selected_boards)):color(1)..(') Board output complete.'):color(8))
+							output_all = false
+						else
+							add_to_chat(8,('[Leaderboard] '):color(220)..('('):color(8)..(tostring(i)):color(1)..('/'):color(8)..(tostring(#selected_boards)):color(1)..(') Repeat '):color(8)..('//lb all'):color(1)..(' to cancel.'):color(8))
+							coroutine.sleep(delay)
+						end
 					else
-						add_to_chat(8,('[Leaderboard] '):color(220)..('('):color(8)..(tostring(i)):color(1)..('/'):color(8)..(tostring(#selected_boards)):color(1)..(') Repeat '):color(8)..('//lb all'):color(1)..(' to cancel.'):color(8))
-						coroutine.sleep(delay)
+						break
 					end
-				else
-					break
 				end
-			end
+			end,delay)
 		end
 
 
@@ -4094,8 +4126,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.buff = not settings.party_calls.buff
-			add_to_chat(8,('[Leaderboard] '):color(220)..('BUFF call:'):color(8)..(' %s':format(settings.party_calls.buff and 'ON' or 'OFF')):color(200))
+			party_calls.buff = not party_calls.buff
+			add_to_chat(8,('[Leaderboard] '):color(220)..('BUFF call:'):color(8)..(' %s':format(party_calls.buff and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.buff
@@ -4182,8 +4214,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.cure = not settings.party_calls.cure
-			add_to_chat(8,('[Leaderboard] '):color(220)..('CURE call:'):color(8)..(' %s':format(settings.party_calls.cure and 'ON' or 'OFF')):color(200))
+			party_calls.cure = not party_calls.cure
+			add_to_chat(8,('[Leaderboard] '):color(220)..('CURE call:'):color(8)..(' %s':format(party_calls.cure and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.cure
@@ -4265,8 +4297,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.debuff = not settings.party_calls.debuff
-			add_to_chat(8,('[Leaderboard] '):color(220)..('DEBUFF call:'):color(8)..(' %s':format(settings.party_calls.debuff and 'ON' or 'OFF')):color(200))
+			party_calls.debuff = not party_calls.debuff
+			add_to_chat(8,('[Leaderboard] '):color(220)..('DEBUFF call:'):color(8)..(' %s':format(party_calls.debuff and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.debuff
@@ -4353,8 +4385,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.death = not settings.party_calls.death
-			add_to_chat(8,('[Leaderboard] '):color(220)..('DEATH call:'):color(8)..(' %s':format(settings.party_calls.death and 'ON' or 'OFF')):color(200))
+			party_calls.death = not party_calls.death
+			add_to_chat(8,('[Leaderboard] '):color(220)..('DEATH call:'):color(8)..(' %s':format(party_calls.death and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.death
@@ -4435,8 +4467,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.hs = not settings.party_calls.hs
-			add_to_chat(8,('[Leaderboard] '):color(220)..('HIGH WS call:'):color(8)..(' %s':format(settings.party_calls.hs and 'ON' or 'OFF')):color(200))
+			party_calls.hs = not party_calls.hs
+			add_to_chat(8,('[Leaderboard] '):color(220)..('HIGH WS call:'):color(8)..(' %s':format(party_calls.hs and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.hs
@@ -4518,8 +4550,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.kill = not settings.party_calls.kill
-			add_to_chat(8,('[Leaderboard] '):color(220)..('KILL call:'):color(8)..(' %s':format(settings.party_calls.kill and 'ON' or 'OFF')):color(200))
+			party_calls.kill = not party_calls.kill
+			add_to_chat(8,('[Leaderboard] '):color(220)..('KILL call:'):color(8)..(' %s':format(party_calls.kill and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.kill
@@ -4601,8 +4633,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.ls = not settings.party_calls.ls
-			add_to_chat(8,('[Leaderboard] '):color(220)..('LOW WS call:'):color(8)..(' %s':format(settings.party_calls.ls and 'ON' or 'OFF')):color(200))
+			party_calls.ls = not party_calls.ls
+			add_to_chat(8,('[Leaderboard] '):color(220)..('LOW WS call:'):color(8)..(' %s':format(party_calls.ls and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.ls
@@ -4684,8 +4716,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.mb = not settings.party_calls.mb
-			add_to_chat(8,('[Leaderboard] '):color(220)..('MAGIC BURST call:'):color(8)..(' %s':format(settings.party_calls.mb and 'ON' or 'OFF')):color(200))
+			party_calls.mb = not party_calls.mb
+			add_to_chat(8,('[Leaderboard] '):color(220)..('MAGIC BURST call:'):color(8)..(' %s':format(party_calls.mb and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.mb
@@ -4767,8 +4799,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.melee = not settings.party_calls.melee
-			add_to_chat(8,('[Leaderboard] '):color(220)..('MELEE call:'):color(8)..(' %s':format(settings.party_calls.melee and 'ON' or 'OFF')):color(200))
+			party_calls.melee = not party_calls.melee
+			add_to_chat(8,('[Leaderboard] '):color(220)..('MELEE call:'):color(8)..(' %s':format(party_calls.melee and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.melee
@@ -4850,8 +4882,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.murder = not settings.party_calls.murder
-			add_to_chat(8,('[Leaderboard] '):color(220)..('MURDER call:'):color(8)..(' %s':format(settings.party_calls.murder and 'ON' or 'OFF')):color(200))
+			party_calls.murder = not party_calls.murder
+			add_to_chat(8,('[Leaderboard] '):color(220)..('MURDER call:'):color(8)..(' %s':format(party_calls.murder and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.murder
@@ -4933,8 +4965,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.nuke = not settings.party_calls.nuke
-			add_to_chat(8,('[Leaderboard] '):color(220)..('NUKE call:'):color(8)..(' %s':format(settings.party_calls.nuke and 'ON' or 'OFF')):color(200))
+			party_calls.nuke = not party_calls.nuke
+			add_to_chat(8,('[Leaderboard] '):color(220)..('NUKE call:'):color(8)..(' %s':format(party_calls.nuke and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.nuke
@@ -5018,7 +5050,7 @@ register_event('addon command',function(addcmd, ...)
 		else
 			local places = live.places.point
 			local info = getPlacesInfo(places)
-			if settings.mode == "Mog Kart" or arg == 'all' then
+			if mode == "Mog Kart" or arg == 'all' then
 				if places.first == nil then
 					local text = "/p \r--POINTS BOARD--\rNo Points Yet"
 					newChatMessage(text)
@@ -5061,7 +5093,7 @@ register_event('addon command',function(addcmd, ...)
 					end
 					
 				end
-				if settings.kart_p_board_time ~= 0 then
+				if settings.options.kart_p_board_time ~= 0 then
 					kart_p_board_time = 1 --restart the timer
 				end
 			else
@@ -5099,8 +5131,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.ra = not settings.party_calls.ra
-			add_to_chat(8,('[Leaderboard] '):color(220)..('RANGED ATT call:'):color(8)..(' %s':format(settings.party_calls.ra and 'ON' or 'OFF')):color(200))
+			party_calls.ra = not party_calls.ra
+			add_to_chat(8,('[Leaderboard] '):color(220)..('RANGED ATT call:'):color(8)..(' %s':format(party_calls.ra and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.ra
@@ -5182,8 +5214,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.sc = not settings.party_calls.sc
-			add_to_chat(8,('[Leaderboard] '):color(220)..('SKILLCHAIN call:'):color(8)..(' %s':format(settings.party_calls.sc and 'ON' or 'OFF')):color(200))
+			party_calls.sc = not party_calls.sc
+			add_to_chat(8,('[Leaderboard] '):color(220)..('SKILLCHAIN call:'):color(8)..(' %s':format(party_calls.sc and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.sc
@@ -5265,8 +5297,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.td = not settings.party_calls.td
-			add_to_chat(8,('[Leaderboard] '):color(220)..('TOTAL DMG call:'):color(8)..(' %s':format(settings.party_calls.td and 'ON' or 'OFF')):color(200))
+			party_calls.td = not party_calls.td
+			add_to_chat(8,('[Leaderboard] '):color(220)..('TOTAL DMG call:'):color(8)..(' %s':format(party_calls.td and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.td
@@ -5355,8 +5387,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.murder = not settings.party_calls.murder
-			add_to_chat(8,('[Leaderboard] '):color(220)..('MURDER/VICTIM call:'):color(8)..(' %s':format(settings.party_calls.murder and 'ON' or 'OFF')):color(200))
+			party_calls.murder = not party_calls.murder
+			add_to_chat(8,('[Leaderboard] '):color(220)..('MURDER/VICTIM call:'):color(8)..(' %s':format(party_calls.murder and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.victim
@@ -5438,8 +5470,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.ws = not settings.party_calls.ws
-			add_to_chat(8,('[Leaderboard] '):color(220)..('TOTAL WS call:'):color(8)..(' %s':format(settings.party_calls.ws and 'ON' or 'OFF')):color(200))
+			party_calls.ws = not party_calls.ws
+			add_to_chat(8,('[Leaderboard] '):color(220)..('TOTAL WS call:'):color(8)..(' %s':format(party_calls.ws and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.ws
@@ -5521,8 +5553,8 @@ register_event('addon command',function(addcmd, ...)
 			settings.visible = true
 			showBox()
 		elseif arg == 'call' or arg == 'calls' or arg == 'callout' or arg == 'callouts' then
-			settings.party_calls.whiff = not settings.party_calls.whiff
-			add_to_chat(8,('[Leaderboard] '):color(220)..('WHIFF call:'):color(8)..(' %s':format(settings.party_calls.whiff and 'ON' or 'OFF')):color(200))
+			party_calls.whiff = not party_calls.whiff
+			add_to_chat(8,('[Leaderboard] '):color(220)..('WHIFF call:'):color(8)..(' %s':format(party_calls.whiff and 'ON' or 'OFF')):color(200))
 			settings:save('all')
 		else
 			local places = live.places.whiff
@@ -5676,9 +5708,10 @@ register_event('addon command',function(addcmd, ...)
 		elseif arg == 'w' or arg == 'whiff' or arg == 'whiffs' then
 			box_display = 'whiff'
 		elseif tonumber(arg) ~= nil then
-			settings.osd_show_number = tonumber(arg)
+			settings.options.osd_show_number = tonumber(arg)
+			osd_show_number = settings.options.osd_show_number
 			settings:save('all')
-			add_to_chat(8,('[Leaderboard] '):color(220)..('On-Screen Display Show to Place:'):color(36)..(' '..settings.osd_show_number):color(200))
+			add_to_chat(8,('[Leaderboard] '):color(220)..('On-Screen Display Show to Place:'):color(36)..(' '..osd_show_number):color(200))
 		end
 		updateBox(box_display)
 
@@ -5707,12 +5740,14 @@ register_event('addon command',function(addcmd, ...)
 	--Set a specific player as your Rival
 	elseif addcmd == 'rival' then
 		if arg == nil then
-			add_to_chat(8,('[Leaderboard] '):color(220)..('%s'):format(settings.rival ~= '' and (capitalize(settings.rival)):color(1)..(' is your Rival. Type '):color(8)..('//lb rival '..settings.rival):color(1)..(' to remove them.'):color(8) or ('No Rival set.'):color(8)))
-		elseif string.lower(arg) == settings.rival then
-			settings.rival = ""
+			add_to_chat(8,('[Leaderboard] '):color(220)..('%s'):format(rival ~= '' and (capitalize(rival)):color(1)..(' is your Rival. Type '):color(8)..('//lb rival '..rival):color(1)..(' to remove them.'):color(8) or ('No Rival set.'):color(8)))
+		elseif string.lower(arg) == rival then
+			settings.options.rival = ""
+			rival = ""
 			add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(arg)):color(1)..(' has been removed as your Rival. No Rival set.'):color(8))
 		else
-			settings.rival = string.lower(arg)
+			settings.options.rival = string.lower(arg)
+			rival = settings.options.rival
 			add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(arg)):color(1)..(' is now your Rival!'):color(8))
 		end
 		settings:save('all')
@@ -5727,23 +5762,23 @@ register_event('addon command',function(addcmd, ...)
 			--Make sure %s is included in the taunt
 			if not string.match(tauntText, "%%s") then
 				add_to_chat(8,('[Leaderboard] '):color(220)..('Please include a \'%s\' where the board names will go. Your current taunt text is:'):color(8))
-				add_to_chat(8,('[Leaderboard] '):color(220)..(settings.taunt):color(1))
+				add_to_chat(8,('[Leaderboard] '):color(220)..(settings.options.taunt):color(1))
 			else
-				settings.taunt = tauntText
+				settings.options.taunt = tauntText
 				settings:save('all')
 				add_to_chat(8,('[Leaderboard] '):color(220)..('Your taunt text has been updated to:'):color(8))
-				add_to_chat(8,('[Leaderboard] '):color(220)..(settings.taunt):color(1))
+				add_to_chat(8,('[Leaderboard] '):color(220)..(settings.options.taunt):color(1))
 			end
 			return
 		end
 		--Check if the settings file was manually updated without a "%s" in it.
-		if not string.match(settings.taunt, "%%s") then
+		if not string.match(settings.options.taunt, "%%s") then
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Please update your taunt text to include a \'%s\' where the board names will go.'):color(8))
 			add_to_chat(8,('[Leaderboard] '):color(220)..('Ex. '):color(8)..('//lb taunt I\'m beating you in %s. Just thought you should know.'):color(1))
 			return
 		end
 		--No Rival is set
-		if settings.rival == '' then
+		if rival == '' then
 			add_to_chat(8,('[Leaderboard] '):color(220)..('No Rival set.'):color(8))
 			return
 		end
@@ -5754,13 +5789,13 @@ register_event('addon command',function(addcmd, ...)
 		local yourSCScore = (live.individuals.sc and live.individuals.sc[string.lower(myName)] and live.individuals.sc[string.lower(myName)].score) or 0
 		local yourSCNines = (live.individuals.sc and live.individuals.sc[string.lower(myName)] and live.individuals.sc[string.lower(myName)].nines) or 0
 		local yourWSScore = (live.individuals.ws and live.individuals.ws[string.lower(myName)] and live.individuals.ws[string.lower(myName)].score) or 0
-		local rivalHSScore = (live.individuals.hs and live.individuals.hs[settings.rival] and live.individuals.hs[settings.rival].score) or 0
-		local rivalHSNines = (live.individuals.hs and live.individuals.hs[settings.rival] and live.individuals.hs[settings.rival].nines) or 0
-		local rivalTDScore = (live.individuals.td and live.individuals.td[settings.rival] and live.individuals.td[settings.rival].score) or 0
-		local rivalSCScore = (live.individuals.sc and live.individuals.sc[settings.rival] and live.individuals.sc[settings.rival].score) or 0
-		local rivalSCNines = (live.individuals.sc and live.individuals.sc[settings.rival] and live.individuals.sc[settings.rival].nines) or 0
-		local rivalWSScore = (live.individuals.ws and live.individuals.ws[settings.rival] and live.individuals.ws[settings.rival].score) or 0
-		local text = settings.taunt
+		local rivalHSScore = (live.individuals.hs and live.individuals.hs[rival] and live.individuals.hs[rival].score) or 0
+		local rivalHSNines = (live.individuals.hs and live.individuals.hs[rival] and live.individuals.hs[rival].nines) or 0
+		local rivalTDScore = (live.individuals.td and live.individuals.td[rival] and live.individuals.td[rival].score) or 0
+		local rivalSCScore = (live.individuals.sc and live.individuals.sc[rival] and live.individuals.sc[rival].score) or 0
+		local rivalSCNines = (live.individuals.sc and live.individuals.sc[rival] and live.individuals.sc[rival].nines) or 0
+		local rivalWSScore = (live.individuals.ws and live.individuals.ws[rival] and live.individuals.ws[rival].score) or 0
+		local text = settings.options.taunt
 		local imBeatingText = ''
 		local imBeating = {}
 		--Compare scores, add ones that you are beating your rival in into the imBeating table
@@ -5793,7 +5828,7 @@ register_event('addon command',function(addcmd, ...)
 				end
 			end
 		end
-		newChatMessage("/t "..settings.rival.." "..(text):format(imBeatingText))
+		newChatMessage("/t "..rival.." "..(text):format(imBeatingText))
 
 
 	--Unknown command
@@ -5821,10 +5856,15 @@ register_event('prerender', function()
 	--Creates a 1 second Heartbeat
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
+	
+		if live_score_saving and reason_to_save and windower.ffxi.get_info().logged_in and not live.paused then
+			coroutine.schedule(function() live:save('all') end,0)
+			reason_to_save = false
+		end
 
 		--Mog Kart Mode Party Board
-		if settings.kart_p_board_time > 0 and settings.mode == "Mog Kart" and not live.paused then
-			if kart_p_board_time <= settings.kart_p_board_time then
+		if settings.options.kart_p_board_time > 0 and mode == "Mog Kart" and not live.paused then
+			if kart_p_board_time <= settings.options.kart_p_board_time then
 				kart_p_board_time = kart_p_board_time + 1
 			else
 				cmd('lb p') --call the point board
@@ -5838,8 +5878,9 @@ end)
 
 --On zone change, remind that LB is running
 register_event('zone change',function()
-	if settings.reminder and settings.mode ~= 'Silent' then
-		coroutine.sleep(5)
-		add_to_chat(8,('[Leaderboard] '):color(220)..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..settings.mode..' Mode'):color(8))
+	if reminder and mode ~= 'Silent' then
+		coroutine.schedule(function()
+			add_to_chat(8,('[Leaderboard] '):color(220)..(('Currently %s'):format(live.paused and 'paused' or 'running')..' in '..mode..' Mode'):color(8))
+		end, 5)
 	end
 end)
