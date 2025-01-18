@@ -122,7 +122,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -648,6 +648,13 @@ sets.raise = {
 	neck="Moonlight Necklace",	--15 SIRD
 }
 
+-- Cursna (Cursna+, Healing Magic)
+sets.cursna = {
+	neck="Nicander's Necklace",
+	ring1="Haoma's Ring",
+	ring2="Haoma's Ring",
+}
+
 -- Holy Water (Holy Water+)
 sets.holy_water = {
 	neck="Nicander's Necklace",
@@ -809,7 +816,7 @@ end
 
 
 
-FileVersion = '14.7'
+FileVersion = '14.8'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2466,6 +2473,8 @@ function midcast(spell)
 				equip(sets.enhancing)
 			end
 		end
+	elseif spell.english == 'Cursna' then
+		equip(sets.cursna)
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
 	end
