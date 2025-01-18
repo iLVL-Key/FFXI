@@ -104,7 +104,7 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 ### Version History
 
 **5.1**
-- Added live_score_saving option. Save scores to the live file (data/live.xml) at a regular interval for crash recovery.
+- Added live_score_saving option. Save scores to the live file (data/live.xml) at a regular interval for crash recovery. Previously would do this without the option to turn it on or off.
 - Adjusted frequency of saving to the live file (scores). Previously would save after every action from anyone in your party/alliance. Will now instead check once per second and only save if there is a reason to (ie if nothing is happening it won't save). Dramatically reduces the number of saves/writes to file while still retaining the ability to save data in the event of a crash.
 - Adjusted nearly all coroutine.sleep() calls to be coroutine.schedule() calls instead.
 
