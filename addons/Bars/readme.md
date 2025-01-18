@@ -120,7 +120,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
    - `mp` - Display the MP bar while on this job.
    - `tp` - Display the TP bar while on this job.
    - `pet` - Display the Pet bar while on this job.
-   - `vertical_offset ` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
+   - `vertical_offset` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
 
 ## Changelog
 Version 3.1
