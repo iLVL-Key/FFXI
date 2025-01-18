@@ -119,7 +119,7 @@ SongposY		=	300		--	Y position for the Song list. 0 is top of the window, increa
 FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
 ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
-ShowTPMeter		=	'Off'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
+ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 PTMemNearDist	=	10		--	Maximum distance for a party member to be highlighted as "nearby".
 SongsFontSize	=	9		--	Adjust the font size of the Songs List.
 
@@ -182,7 +182,7 @@ NotiReraise		=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood		=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP		=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
 NotiLowHP		=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage		=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage		=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime		=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -399,7 +399,7 @@ sets.idle = {
 	legs="Nyame Flanchard",
 	feet="Fili Cothurnes +3",
 	neck="Warder's Charm +1",
-	waist="Carrier's Sash",
+	waist="Null Belt",
 	left_ear="Eabani Earring",
 	right_ear="Fili Earring +2",
 	left_ring="Shadow Ring",
@@ -421,6 +421,7 @@ sets.oh_shit = {
 	hands="Nyame Gauntlets",
 	legs="Nyame Flanchard",
 	neck="Warder's Charm +1",
+	waist="Null Belt",
 	left_ring="Shadow Ring",
 	right_ring="Defending Ring",
 	back="Shadow Mantle"
@@ -605,7 +606,12 @@ sets.scherzo = set_combine(sets.buff_song, {
 
 -- Non-Song Buffs (Conserve MP)
 sets.buff_other = {
-
+	head="Vanya Hood",
+	hands="Shrieker's Cuffs",
+	legs="Vanya Slops",
+	left_ear="Calamitous Earring",
+	right_ear="Mendi. Earring",
+	back="Solemnity Cape",
 }
 
 -- Song Debuffs
@@ -617,7 +623,7 @@ sets.debuff_song = {
 	legs="Inyanga Shalwar +2",
 	feet="Brioso Slippers +3",
 	neck="Mnbw. Whistle +1",
-	waist="Acuity Belt +1",
+	waist="Null Belt",
 	left_ear="Regal Earring",
 	right_ear="Fili Earring +2",
 	left_ring="Stikini Ring +1",
@@ -672,7 +678,18 @@ sets.horde_lullaby_II_single_wield = {
 
 -- Non-Song Magic Accuracy
 sets.magic_accuracy = {
-
+	head="Brioso Roundlet +3",
+	body="Fili Hongreline +3",
+	hands="Fili Manchettes +3",
+	legs="Fili Rhingrave +3",
+	feet="Fili Cothurnes +3",
+	neck="Mnbw. Whistle +1",
+	waist="Null Belt",
+	left_ear="Regal Earring",
+	right_ear="Fili Earring +2",
+	left_ring="Stikini Ring +1",
+	right_ring="Stikini Ring +1",
+	back={ name="Intarabus's Cape", augments={'CHR+20','Mag. Acc+20 /Mag. Dmg.+20','Mag. Acc.+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
 }
 
 -- Healing (Cure Potency, Healing Magic Skill)
@@ -684,8 +701,8 @@ sets.healing = {
 	legs="Vanya Slops",
 	feet="Vanya Clogs", --5
 	neck="Nodens Gorget", --5
-	left_ear="Mendi. Earring", --5
-	right_ear="Regal Earring",
+	left_ear="Regal Earring",
+	right_ear="Mendi. Earring", --5
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back="Solemnity Cape", --7
@@ -801,17 +818,7 @@ end
 
 
 
-FileVersion = '1.0.1'
-
---Version 1.0
---Added Chocobo Circuit to the list of Town Zones.
---Adjusted the Song List display. Bullet in front of each song is now larger and colored to indicate which type of song (default colors match the XIView color scheme for song icons). Party Member names are now centered, and colored based on their lowest current song duration. Song durations are now right-aligned.
---Adjusted HUD to now show party members in a different zone.
---Adjusted formatting of a number of things in the Options section.
---Adjusted Notifications to clear after joining a party.
---Fixed precast so that if Nightingale is up it will equip the proper specific song buff gear instead of the base buff_song set.
---Fixed an issue with SP Ability 2 recast.
---Various code cleanup.
+FileVersion = '1.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3374,6 +3381,8 @@ function midcast(spell)
 		end
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
+	elseif spell.action_type == 'Magic' then
+		equip(sets.buff_other)
 	end
 end
 
