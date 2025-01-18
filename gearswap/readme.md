@@ -12,7 +12,7 @@ Lots of little things to improve your experience. Each file has an Options and A
 - "Oh Shit" gear set for when you are in critical health, or are stunned, petrified, or terrorized.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
-- NOTE: AutoHWater/DoomAlert and AutoLockstyle option have been removed and now have their own standalone addons: [Excorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Excorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
+- NOTE: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
 
 ### Gear Modes
 Certain files have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
