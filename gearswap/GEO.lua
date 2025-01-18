@@ -80,7 +80,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -238,13 +238,13 @@ sets.idle = {
 	main="Idris",
 	sub="Genmei Shield",
 	range="Dunna",
-	head="Volte Beret",
+	head="Null Masque",
 	body="Azimuth Coat +3",
 	hands="Bagua Mitaines +3",
 	legs="Volte Brais",
 	feet="Geo. Sandals +3",
 	neck="Loricate Torque +1",
-	waist="Carrier's Sash",
+	waist="Null Belt",
 	left_ear="Eabani Earring",
 	right_ear="Azimuth Earring +1",
 	left_ring="Stikini Ring +1",
@@ -252,16 +252,16 @@ sets.idle = {
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
 }
 
--- Luopan (Pet Damage Taken-, Pet Regen)
+-- Idle w/ Luopan (Pet Damage Taken-, Pet Regen)
 -- Used when you DO have a Luopan bubble out.
 -- Combines with Idle set, only necessary to set the slots with specific desired stats
-sets.luopan_out = set_combine(sets.idle, {
+-- NOTE: Lupoan has a native Pet DT-50%. Dunna has Pet DT-5%. Overall Pet DT cap is 87.5%. Idris and Geo. Mitaines will cap Pet DT for your Luopan allowing you to focus on Pet Regen.
+sets.idle_luopan = set_combine(sets.idle, {
 	main="Idris",
 	sub="Genmei Shield",
 	range="Dunna",
 	head="Azimuth Hood +3",
 	hands="Geo. Mitaines +3",
-	legs="Volte Brais",
 	feet="Bagua Sandals +3",
 	waist="Isa Belt",
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Pet: "Regen"+10','Pet: "Regen"+5',}},
@@ -377,22 +377,40 @@ sets.fast_cast = {
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}}, --10%
 }
 
--- Geomancy (Geomancy+, Geomancy Skill, Handbell Skill, Indicolure duration+, Lupoan duration+)
+-- Indicolure (Geomancy+, 900 Geomancy Skill+Handbell Skill, Indicolure duration+, Azimuth set bonus)
 -- NOTE: You only need a combined skill of 900 between Geomancy skill and Handbell skill to cap your potency, anything over 900 is wasted)
-sets.geomancy = {
+sets.indicolure = {
 	main="Idris",
 	sub="Genmei Shield",
 	range="Dunna",
 	head="Azimuth Hood +3",
-	body="Bagua Tunic",
-	hands="Geo. Mitaines +3",
+	body="Azimuth Coat +3",
+	hands="Azimuth Gloves +3",
 	legs="Bagua Pants +3",
 	feet="Azimuth Gaiters +3",
-	neck="Bagua Charm +2",
-	left_ring="Stikini Ring +1",
-	right_ring="Stikini Ring +1",
 	back="Lifestream Cape",
 }
+
+-- Geocolure (Geomancy+, 900 Geomancy Skill+Handbell Skill, Lupoan duration+ (Bagua Charm), Azimuth set bonus)
+-- NOTE: You only need a combined skill of 900 between Geomancy skill and Handbell skill to cap your potency, anything over 900 is wasted)
+-- NOTE: Geocolure spells don't get any bonus at mid-cast except from the "Lupoan duration" augment on Bagua Charm. Luopan duration specifically reduces the native perpetuation cost "poison" on the Luopan and is only applied to the Luopan at time of cast (ie midcast).
+sets.geocolure = {
+	main="Idris",
+	sub="Genmei Shield",
+	range="Dunna",
+	head="Azimuth Hood +3",
+	body="Azimuth Coat +3",
+	hands="Azimuth Gloves +3",
+	legs="Azimuth Tights +3",
+	feet="Azimuth Gaiters +3",
+	neck="Bagua Charm +2",
+}
+
+-- Entrust (900 Geomancy Skill+Handbell Skill, Indicolure duration+, Azimuth set bonus)
+-- NOTE: Entrusted spells DO NOT receive and Geomancy+ bonus.
+sets.entrust = set_combine(sets.indicolure, {
+	main="Gada",
+})
 
 -- Elemental Spells (Magic Attack Bonus, Magic Damage, INT, Magic Accuracy)
 sets.elemental = {
@@ -587,7 +605,7 @@ end
 
 
 
-FileVersion = '14.5'
+FileVersion = '14.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1791,11 +1809,11 @@ function choose_set()
 			equip(set_combine(sets.idle, sets.town))
 		elseif LuopanActive == true then
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
-				equip(set_combine(sets.luopan_out, sets.oh_shit))
+				equip(set_combine(sets.idle_luopan, sets.oh_shit))
 			elseif DTOverride == "On" then
-				equip(set_combine(sets.luopan_out, sets.dt_override))
+				equip(set_combine(sets.idle_luopan, sets.dt_override))
 			else
-				equip(sets.luopan_out)
+				equip(sets.idle_luopan)
 			end
 		else
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
@@ -1951,7 +1969,15 @@ end
 
 function midcast(spell)
 	if spell.type == 'Geomancy' then
-		equip(sets.geomancy)
+		if string.find(spell.english,'Geo-') then
+			equip(sets.geocolure)
+		else
+			if buffactive['Entrust'] then
+				equip(sets.entrust)
+			else
+				equip(sets.indicolure)
+			end
+		end
 	elseif spell.english == 'Impact' then
 		equip(set_combine(sets.magic_accuracy, sets.impact))
 	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
