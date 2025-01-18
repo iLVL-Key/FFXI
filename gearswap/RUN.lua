@@ -146,7 +146,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -436,7 +436,7 @@ sets.oh_shit = {
 -- Idle (only need Refresh gear in here, combines with other sets based on situation)
 sets.idle = {
 	ammo="Homiliary",
-	head="Rawhide Mask",
+	head="Null Masque",
 	body="Agwu's Robe",
 	hands="Regal Gauntlets",
 	feet={ name="Herculean Boots", augments={'Pet: "Regen"+2','VIT+1','"Refresh"+2','Mag. Acc.+10 "Mag.Atk.Bns."+10',}},
@@ -726,7 +726,7 @@ end
 
 
 
-FileVersion = '9.8'
+FileVersion = '9.8.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1873,6 +1873,19 @@ local function primeAMUpdate(tp)
 
 end
 
+local function checkRunes()
+	local runes_found = false
+	local runes = {"Ignis", "Gelus", "Flabra", "Tellus", "Sulpor", "Unda", "Lux", "Tenebrae"}
+	for _, rune in ipairs(runes) do
+		if buffactive[rune] then
+			runes_found = true -- Switch to true if any rune is found
+		end
+	end
+	if not runes_found then
+		send_command('gs c ClearRunes')
+	end
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -2136,6 +2149,10 @@ function self_command(command)
 		NotiCountdown = NotiDelay
 	elseif command == 'Rune' then
 		send_command('input /ja '..RuneElement..' <me>')
+	elseif command == 'ClearRunes' then
+		Rune1Timer = 0
+		Rune2Timer = 0
+		Rune3Timer = 0
 	elseif command == 'AliveDelay' then
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'HUD' and ShowHUD == 'Off' then
@@ -2734,9 +2751,7 @@ function aftercast(spell)
 		Rune1BGColor = Rune2BGColor
 		Rune2BGColor = Rune3BGColor
 	elseif (spell.english == 'Rayke' or spell.english == 'Gambit' or spell.english == 'Lunge') and player.status == "Engaged" and not spell.interrupted then
-		Rune1Timer = 0
-		Rune2Timer = 0
-		Rune3Timer = 0
+		send_command('gs c ClearRunes')
 	elseif spell.english == 'Elemental Sforzo' and SfoTimer == 'On' and not spell.interrupted then
 		if player.equipment.body == 'Futhark Coat' or player.equipment.body == 'Futhark Coat +1' or player.equipment.body == 'Futhark Coat +2' or player.equipment.hands == 'Futhark Coat +3' then --these pieces extend Elemental Sforzo by 10 seconds so we adjust accordingly
 			send_command('input /echo [Elemental Sforzo] 40 seconds;wait 10;input /echo [Elemental Sforzo] 30 seconds;wait 10;input /echo [Elemental Sforzo] 20 seconds;wait 10;input /echo [Elemental Sforzo] 10 seconds')
@@ -2825,18 +2840,13 @@ windower.register_event('gain buff', function(buff)
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
 	elseif buff == 157 then --SJ Restricted
-		Rune1Timer = 0
-		Rune2Timer = 0
-		Rune3Timer = 0
+		send_command('gs c ClearRunes')
 	end
 end)
 
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-		-- AMTimer = pre_AMTimer
-		-- mythicNum = pre_mythicNum
-		-- primeNum = pre_primeNum
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
@@ -2917,6 +2927,8 @@ windower.register_event('lose buff', function(buff)
 		send_command('gs c ClearNotifications')
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
+	elseif buff == 523 or buff == 524 or buff == 525 or buff == 526 or buff == 527 or buff == 528 or buff == 529 or buff == 530 then
+		checkRunes() --any runes wear off, check if they all wore off
 	end
 end)
 
@@ -3372,9 +3384,7 @@ windower.register_event('prerender', function()
 			if LowHP == true then
 				LowHP = false
 			end
-			Rune1Timer = 0 --Runes get wiped
-			Rune2Timer = 0 
-			Rune3Timer = 0
+			send_command('gs c ClearRunes')
 		end
 	else
 		if Alive == false and announceAlive == true then
@@ -3588,7 +3598,6 @@ windower.register_event('prerender', function()
 		elseif party and party_count ~= 1 and party.count == 1 then
 			party_count = 1
 		end
-
 		--Recast color updates
 
 		if ElementalSforzo.recast then
@@ -4283,9 +4292,7 @@ windower.register_event('zone change',function()
 	end
 	send_command('gs c ClearNotifications') --clear any notifications on zone
 	send_command('gs c ClearDebuffs') --clear any debuffs on zone
-	Rune1Timer = 0
-	Rune2Timer = 0
-	Rune3Timer = 0
+	send_command('gs c ClearRunes')
 end)
 
 -------------------------------------------
