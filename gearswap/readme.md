@@ -451,6 +451,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0.2
+- Fixed the buff_other set not being used in midcast.
+
 Version 1.0.1
 - Fixed an issue with the max number of songs not calculating correctly under certain circumstances.
 
@@ -484,6 +487,11 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.6
+- Added Indicolure, Geocolure, and Entrust sets. These replace the Geomancy set, allowing more fine-tuned control over the stats for each.
+- Renamed luopan_out to idle_luopan to be a little more consitent.\
+- Removed the Geomancy set.
 
 Version 14.5
 - Added Chocobo Circuit to the list of Town Zones.
@@ -910,6 +918,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 14.8
+- Added Cursna set.
+
 Version 14.7
 - Added Chocobo Circuit to the list of Town Zones.
 - Adjusted a lot of set names to be easier to read using snake_case.
@@ -1204,6 +1215,9 @@ Version 11.0
 <details>
  
 <summary>RUN</summary>
+
+Version 9.8.1
+- Fixed Runes not clearing when put under level sync.
 
 Version 9.8
 - Added Chocobo Circuit to the list of Town Zones.
