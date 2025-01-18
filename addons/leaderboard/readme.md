@@ -102,6 +102,11 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 - In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of.
 
 ### Version History
+
+**5.1**
+- Adjusted frequency of saving to the live file (scores). Previously would save after every action from anyone in your party/alliance. Will now instead check once per second and only save if there is a reason to (ie if nothing is happening it won't save). Dramatically reduces the number of saves/writes to file while still retaining the ability to save data in the event of a crash.
+- Adjusted nearly all coroutine.sleep() calls to be coroutine.schedule() calls instead.
+
 **5.0**
 - Added 5 new boards: Total Damage, Total Weapon Skill, Ranged Attack, Buff, and Debuff.
 - Added command `all`. Will display all boards one after the other. Repeat command to stop.
