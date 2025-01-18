@@ -89,7 +89,7 @@ Version 5.0.1
 - Minor code cleanup.
 
 Version 5.0
-- Added two new sub bars. These bars have their own settings for visibility and position, are able to be centered, and can be hidden when there is no map for the current area (matching how the FFXIDB minimap functions). They are not tied to jobs like the Main bar is. (thanks github user Zorlac!)
+- Added two new sub bars. These bars use the same placeholder system, have their own settings for visibility and position, are able to be centered, and can be hidden when there is no map for the current area (matching how the FFXIDB minimap functions). They are not tied to jobs like the Main bar is. (thanks github user Zorlac!)
 - Added sub1pos and sub2pos commands to set the position of the sub bars.
 - Added Region (thanks github user Zorlac!), Earth Day, and Earth Date placeholders.
 - Added settings to edit the earth data formatting.
