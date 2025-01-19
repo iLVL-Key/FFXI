@@ -99,9 +99,12 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 - `report` - Receive a score report via tell. (receive command via tell only)
 
 ### Current Known Issues
-- In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline, when they are online, resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of.
+- In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline (when they are online) resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of. This isn't an issue with Leaderboard itself, just a case of lag eating a tell to another player.
 
 ### Version History
+
+**5.2**
+- Added live_score_saving_delay option. Delay in seconds between saving scores to the live file if turned on.
 
 **5.1**
 - Added live_score_saving option. Save scores to the live file (data/live.xml) at a regular interval for crash recovery. Previously would do this without the option to turn it on or off.
