@@ -5863,7 +5863,6 @@ register_event('prerender', function()
 		if live_score_saving and windower.ffxi.get_info().logged_in and not live.paused then
 			if live_score_saving_timer < live_score_saving_delay then
 				live_score_saving_timer = live_score_saving_timer +1
-				print(live_score_saving_timer)
 			elseif live_score_saving_timer >= live_score_saving_delay then
 				if reason_to_save then
 					coroutine.schedule(function() live:save('all') end,1)
