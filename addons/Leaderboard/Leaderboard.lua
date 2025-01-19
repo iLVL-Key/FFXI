@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.1'
+_addon.version = '5.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -55,6 +55,7 @@ defaults.options.osd_show_number = 10			--Number of places the On-Screen Display
 defaults.options.default_osd_board = 'td'		--Initial board shown in the On-Screen Display upon loading the addon.
 defaults.options.output_all_delay = 7			--Delay between printing boards to party chat using the `all` command.
 defaults.options.live_score_saving = true		--Save scores to the live file (data/live.xml) at a regular interval for crash recovery.
+defaults.options.live_score_saving_delay = 1	--Delay in seconds between saving scores to the live file if turned on.
 
 --Party/Raid Mode party chat callouts while running
 defaults.party_calls = T{}
@@ -423,6 +424,7 @@ local kart_trust_item_time_max = settings.options.kart_trust_item_time_max
 local kart_trust_item_time_min = settings.options.kart_trust_item_time_min
 local osd_show_number = settings.options.osd_show_number
 local live_score_saving = settings.options.live_score_saving
+local live_score_saving_delay = settings.options.live_score_saving_delay
 local party_calls = settings.party_calls
 
 local self_name
@@ -442,6 +444,7 @@ local releaseValveOpen = true
 local kart_p_board_time = 1
 local output_all = false
 local reason_to_save = false
+local live_score_saving_timer = 0
 
 local effects = {} --Current item effect players have active
 local flood_delay = {} --Individual flood delay for players
@@ -5857,9 +5860,17 @@ register_event('prerender', function()
 	if os.time() > Heartbeat then
 		Heartbeat = os.time()
 	
-		if live_score_saving and reason_to_save and windower.ffxi.get_info().logged_in and not live.paused then
-			coroutine.schedule(function() live:save('all') end,0)
-			reason_to_save = false
+		if live_score_saving and windower.ffxi.get_info().logged_in and not live.paused then
+			if live_score_saving_timer < live_score_saving_delay then
+				live_score_saving_timer = live_score_saving_timer +1
+				print(live_score_saving_timer)
+			elseif live_score_saving_timer >= live_score_saving_delay then
+				if reason_to_save then
+					coroutine.schedule(function() live:save('all') end,1)
+					reason_to_save = false
+					live_score_saving_timer = 0
+				end
+			end
 		end
 
 		--Mog Kart Mode Party Board
