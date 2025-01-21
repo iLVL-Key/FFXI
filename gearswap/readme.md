@@ -488,6 +488,9 @@ Version 1.0 BETA-1
  
 <summary>GEO</summary>
 
+Version 14.6.1
+- Adjusted Impact set to combine with Magic Accuracy set
+
 Version 14.6
 - Added Indicolure, Geocolure, and Entrust sets. These replace the Geomancy set, allowing more fine-tuned control over the stats for each.
 - Renamed luopan_out to idle_luopan to be a little more consitent.\
