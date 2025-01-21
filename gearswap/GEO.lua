@@ -245,7 +245,7 @@ sets.idle = {
 	feet="Geo. Sandals +3",
 	neck="Loricate Torque +1",
 	waist="Null Belt",
-	left_ear="Eabani Earring",
+	left_ear="Etiolation Earring",
 	right_ear="Azimuth Earring +1",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
@@ -302,13 +302,13 @@ sets.melee = {
 	hands="Azimuth Gloves +3",
 	legs="Azimuth Tights +3",
 	feet="Azimuth Gaiters +3",
-	neck="Ziel Charm",
+	neck="Null Loop",
 	waist="Windbuffet Belt +1",
 	left_ear="Mache Earring +1",
 	right_ear="Cessance Earring",
 	left_ring="Hetairoi Ring",
 	right_ring="Petrov Ring",
-	back="Aurist's Cape +1",
+	back="Null Shawl",
 }
 
 -- Weapon Skill - Basic (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
@@ -324,7 +324,7 @@ sets.weapon_skill = {
 	right_ear="Moonshade Earring",
 	left_ring="Hetairoi Ring",
 	right_ring="Karieyh Ring +1",
-	back="Aurist's Cape +1",
+	back="Null Shawl",
 }
 
 -- Exudation (combines with Weapon Skill set above)
@@ -439,8 +439,8 @@ sets.magic_accuracy = {
 	hands="Azimuth Gloves +3",
 	legs="Azimuth Tights +3",
 	feet="Azimuth Gaiters +3",
-	neck="Bagua Charm +2",
-	waist="Acuity Belt +1",
+	neck="Null Loop",
+	waist="Null Belt",
 	left_ear="Malignance Earring",
 	right_ear="Azimuth Earring +1",
 	left_ring="Stikini Ring +1",
@@ -516,10 +516,10 @@ sets.cursna = {
 }
 
 -- Impact (Twilight/Crepuscular Cloak)
-sets.impact = {
+sets.impact = set_combine(sets.magic_accuracy, {
 	head=empty,
 	body="Twilight Cloak",
-}
+})
 
 -- Holy Water (Holy Water+)
 sets.holy_water = {
@@ -605,7 +605,7 @@ end
 
 
 
-FileVersion = '14.6'
+FileVersion = '14.6.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
