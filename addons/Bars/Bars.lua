@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.1'
+_addon.version = '3.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2704,7 +2704,7 @@ windower.register_event('action', function (act)
 		end
 
 	--Job abilities
-	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 306 or msg == 318)) or act.category == 6 or act.category == 14 or act.category == 15 then
+	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599)) or act.category == 6 or act.category == 14 or act.category == 15 then
 
 		local target_action = ''
 		local target_action_shdw = ''
@@ -2800,6 +2800,68 @@ windower.register_event('action', function (act)
 		elseif act.category == 3 and msg == 110 then
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+		--Mug Success
+		elseif msg == 129 then
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil)'
+		--Mug Fail
+		elseif msg == 244 then
+			target_action_result = ' (Failed)'
+			target_action_result_shdw = ' (Failed)'
+		--Steal Success
+		elseif msg == 125 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr)'
+		--Aura Steal Absorb
+		elseif msg == 453 then
+			local aura = res.buffs[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..aura..'\\cr)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..aura..'\\cr)'
+		--Aura Steal Dispel
+		elseif msg == 321 or msg == 322 then
+			local aura = res.buffs[action_id].name
+			target_action_result = ' ('..aura..')'
+			target_action_result_shdw = ' ('..aura..')'
+		--Despoil Success + Attack Down
+		elseif msg == 593 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Att Down)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Att Down)'
+		--Despoil Success + Defense Down
+		elseif msg == 594 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Def Down)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Def Down)'
+		--Despoil Success + Magic Attack Down
+		elseif msg == 595 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MAtt Down)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MAtt Down)'
+		--Despoil Success + Magic Defense Down
+		elseif msg == 596 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MDef Down)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MDef Down)'
+		--Despoil Success + Evasion Down
+		elseif msg == 597 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Eva Down)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Eva Down)'
+		--Despoil Success + Accuracy Down
+		elseif msg == 598 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Acc Down)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Acc Down)'
+		--Despoil Success + Slow
+		elseif msg == 599 then
+			local item = res.items[action_id].name
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Slow)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Slow)'
+		--Steal/Despoil Fail
+		elseif msg == 153 then
+			target_action_result = ' (Failed)'
+			target_action_result_shdw = ' (Failed)'
 		--Most job abilities
 		elseif act.category == 6 then
 			--Erase
