@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.0.1'
+_addon.version = '5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -133,22 +133,24 @@ defaults.options.min_width.tp = 4
 defaults.options.sub1 = {}
 defaults.options.sub1.alpha = 255
 defaults.options.sub1.bg_alpha = 255
-defaults.options.sub1.centered = true
-defaults.options.sub1.hide_when_no_map = true
+defaults.options.sub1.centered = false
+defaults.options.sub1.hide_when_no_map = false
 defaults.options.sub1.pos_x = math.floor(windower.get_windower_settings().ui_x_res / 2)
 defaults.options.sub1.pos_y = 300
+defaults.options.sub1.right_aligned = false
 defaults.options.sub1.size = 11
-defaults.options.sub1.visible = true
+defaults.options.sub1.visible = false
 
 defaults.options.sub2 = {}
 defaults.options.sub2.alpha = 255
 defaults.options.sub2.bg_alpha = 255
-defaults.options.sub2.centered = true
-defaults.options.sub2.hide_when_no_map = true
+defaults.options.sub2.centered = false
+defaults.options.sub2.hide_when_no_map = false
 defaults.options.sub2.pos_x = math.floor(windower.get_windower_settings().ui_x_res / 2)
 defaults.options.sub2.pos_y = 400
+defaults.options.sub2.right_aligned = false
 defaults.options.sub2.size = 11
-defaults.options.sub2.visible = true
+defaults.options.sub2.visible = false
 
 defaults.food = {}
 
@@ -178,6 +180,7 @@ informer_sub1:alpha(options.sub1.alpha)
 informer_sub1:bg_alpha(options.sub1.bg_alpha)
 informer_sub1:draggable(false)
 informer_sub1:font(settings.text.font)
+informer_sub1:right_justified(options.sub1.right_aligned)
 informer_sub1:pos(options.sub1.pos_x, options.sub1.pos_y)
 informer_sub1:size(options.sub1.size)
 local sub1_visible = false
@@ -187,6 +190,7 @@ informer_sub2:alpha(options.sub2.alpha)
 informer_sub2:bg_alpha(options.sub2.bg_alpha)
 informer_sub2:draggable(false)
 informer_sub2:font(settings.text.font)
+informer_sub2:right_justified(options.sub2.right_aligned)
 informer_sub2:pos(options.sub2.pos_x, options.sub2.pos_y)
 informer_sub2:size(options.sub2.size)
 local sub2_visible = false
