@@ -4,6 +4,10 @@ Displays a bar with information (much like InfoBar!)
 
 ![Keylesta 2024-02-22 04 39 14](https://github.com/iLVL-Key/FFXI/assets/101156258/cf77b9fe-f046-471a-a37d-c5ccb4e79fe2)
 
+![Informer_Sub_Bars_1](https://github.com/user-attachments/assets/fcb1d3a9-9603-4a26-af51-53baf502557c)
+
+![Informer_Sub_Bars_2](https://github.com/user-attachments/assets/d400b9a2-8386-4ac5-a7b4-7af88d8bfd0f)
+
 
 ## Features
 - Main bar
@@ -83,6 +87,9 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 - `%X` - Locale’s time representation (e.g., 14:55:02)
 
 ## Changelog
+
+Version 5.1
+- Added right_align options for Sub1 and Sub2 Bars. (Main Bar can still be right aligned using the flags/right option)
 
 Version 5.0.1
 - Fixed Sub1 and Sub2 bars displaying when the addon is loaded inside of your mog house and the hide_when_no_map setting is on.
