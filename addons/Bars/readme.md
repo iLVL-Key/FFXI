@@ -123,6 +123,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
    - `vertical_offset` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
 
 ## Changelog
+
+Version 3.1.1
+- Fixed missing Steal, Despoil, and Mug results.
+
 Version 3.1
 - Added show_target_hex option. Shows the hex number of the current target. The Hex and Index options will override each other (only one or the other displayed at one time).
 
