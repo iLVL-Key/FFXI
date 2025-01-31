@@ -107,6 +107,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
  - `show_roll_lucky_info` - Shows the lucky and lucky numbers for COR rolls.
  - `show_self_action` - Shows the Self Action bar.
  - `show_self_when_target` - Shows the Target bar when you target yourself.
+ - `show_st_when_target` - Shows the Sub-Target bar when the Sub-Target is already the Target.
  - `show_target_action` - Shows the actions of the current target.
  - `show_target_action_result` - Shows the results of the action done by the current target (damage, buffs, resists, etc.).
  - `show_target_distance` - Shows the distance to the current target.
