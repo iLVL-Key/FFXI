@@ -1,0 +1,104 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>${ability} is ready to use again, kupo!</ability_ready>
+		<capped_job_points></capped_job_points>
+		<capped_merit_points>Kupo! Your Job Points are capped!</capped_merit_points>
+        <flavor_text>
+            <1>You&apos;re as reliable as a Mog Safe, kupo!</1>
+            <2>Your adventuring spirit inspires us all, kupo!</2>
+            <3>Your gear is shinier than a polished Gil, kupo!</3>
+            <4>Your kindness lights up the Mog House, kupo!</4>
+            <5>You handle battles with the finesse of a seasoned Moogle, kupo!</5>
+            <6>You&apos;re like a walking treasure trove of good ideas, kupo!</6>
+            <7>You make adventuring look like a dance, kupo!</7>
+            <8>Your dedication would impress even King Kupofried, kupo!</8>
+            <9>Your lockstyle is as fashionable as a Moogle hat, kupo!</9>
+            <10>Watching you coordinate in battle is like poetry in motion, kupo!</10>
+            <11>Your resourcefulness would make any Moogle proud, kupo!</11>
+            <12>You handle challenges like a true adventurer, kupo!</12>
+            <13>You always keep things kupo-tastic, kupo!</13>
+            <14>Your teamwork is better than a synchronized Mog dance, kupo!</14>
+            <15>The way you help others is Moogle-worthy, kupo!</15>
+            <16>Your cleverness is as crisp and captivating as crystal!</16>
+            <17>Your dedication dazzles like a diamond in the dark!</17>
+            <18>You handle heroic hurdles with heart and harmony, kupo!</18>
+            <19>Your boundless bravery baffles even the bravest beast, kupo!</19>
+            <20>You masterfully manage your macros with Moogle-level mastery, kupo!</20>
+            <21>Your swift skills in battle are simply stupendous, kupo!</21>
+            <22>Your strategic stance is as sharp as a sword, kupo!</22>
+            <23>Your thoughtful teamwork turns tough tides triumphantly, kupo!</23>
+            <24>You keep calm and collected amidst chaotic clashes, kupo!</24>
+            <25>Your polished prowess packs a powerful punch, kupo!</25>
+            <26>You&apos;re as resourceful as a reliable Mog House attendant, kupo!</26>
+            <27>Your tactical talents make every tussle triumphant, kupo!</27>
+            <28>You&apos;re as legendary as the Lost Library of the Moogles, kupo!</28>
+            <29>Your wonderous will wins wonderful victories, kupo!</29>
+            <30>Kupo! Did I remember to fluff my pom today?</30>
+            <31>Oh, my fur feels extra fabulous today, Kupo!</31>
+            <32>Kupo... was that a Gil I just saw sparkle?</32>
+            <33>Hmm, I wonder what adventurers eat for dinner. Kupo snacks?</33>
+            <34>Kupo-po! I must polish my pom-pom more often!</34>
+            <35>If I were a treasure chest, where would I hide? Kupo?</35>
+            <36>Kupo! Is it time to reorganize the Mog Safe again?</36>
+            <37>Pom-pom power always gets the job done, Kupo!</37>
+            <38>Kupo-po! I hope adventurers appreciate my Mogical assistance!</38>
+            <39>Hmm... do adventurers dream of Moogles, Kupo?</39>
+            <40>Kupo! Maybe I should learn a new Moogle dance!</40>
+            <41>Oh, dear Kupo! I&apos;ve misplaced my polishing cloth again!</41>
+            <42>Kupo! Is that shiny gear I spy? Marvelous!</42>
+            <43>I wonder if I could fit in an adventurer&apos;s backpack, Kupo!</43>
+            <44>Kupo-po! The stars are twinkling like Mog crystals tonight!</44>
+            <45>If I had wings, Kupo, I&apos;d fly to the highest treasure trove!</45>
+            <46>Kupo! I mustn&apos;t forget my Moogle meditation exercises.</46>
+            <47>Hmm, I should write a book: &apos;The Art of Pom-pom Polishing.&apos;</47>
+            <48>Kupo! A tidy Mog House is a happy Mog House!</48>
+            <49>Oh, Kupo! A nap sounds delightful right now.</49>
+            <50>Kupo! Polished pom-poms make perfect presentations!</50>
+            <51>Kupo! Shiny stones and sparkling stars soothe my soul!</51>
+            <52>Kupo-po! A marvelous Moogle must maintain meticulous manners!</52>
+            <53>Kupo! My fluffy fur feels fantastically fresh today!</53>
+            <54>Kupo! I&apos;d love a lazy lounge on a luminous log!</54>
+            <55>Kupo! Treasure troves tantalize this tiny traveler!</55>
+            <56>Kupo! Brilliant baubles bring boundless bliss!</56>
+            <57>Oh, Kupo! Daring deeds demand diligent determination!</57>
+            <58>Kupo! Fuzzy friends foster fabulous fun!</58>
+            <59>Kupo-po! Tidy trunks and terrific treasures take top priority!</59>
+            <60>Kupo! Adventurers adore adorably attentive assistants!</60>
+            <61>Kupo! Pondering precious possibilities perks up my pom!</61>
+            <62>Kupo! Calm caves and colorful crystals create cozy comfort!</62>
+            <63>Kupo! Sparkling skies soothe this small seeker!</63>
+            <64>Kupo! Nimble negotiations nurture notable notoriety!</64>
+            <65>Kupo-po! Wondrous wonders wait within wild woods!</65>
+            <66>Kupo! Loyal leaders love learning lively lore!</66>
+            <67>Kupo! Moggy mischief makes marvelous memories!</67>
+            <68>Oh, Kupo! Brave battles bring brilliant bounties!</68>
+            <69>Kupo! Patient preparation produces perfect performance!</69>
+        </flavor_text>
+		<info>
+        	<introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
+        	<name>Moogle</name>
+        	<name_color>259</name_color>
+        	<text_color>262</text_color>
+			<version>1.0</version>
+		</info>
+        <member_joined_alliance>${member} has joined the alliance, kupo!</member_joined_alliance>
+        <member_joined_party>${member} has joined the party, kupo!</member_joined_party>
+        <member_left_alliance>${member} has left the alliance, kupo!</member_left_alliance>
+        <member_left_party>${member} has left the party, kupo!</member_left_party>
+        <mireu_popped>Mireu has been mentioned in ${zone}, kupo!</mireu_popped>
+        <other_party_joined_alliance>Another party has joined the alliance, kupo!</other_party_joined_alliance>
+        <other_party_left_alliance>A party has left the alliance, kupo!</other_party_left_alliance>
+        <party_low_mp>Looks like ${member} could use a ${refresh}, kupo!</party_low_mp>
+        <sublimation_charged>Sublimation is fully charged and ready, kupo!</sublimation_charged>
+        <vorseal_reminder>Only about 10 minutes left on your Vorseal effect, so stay sharp, kupo!</vorseal_reminder>
+        <you_are_now_alliance_leader>You&apos;re now the alliance leader, kupo!</you_are_now_alliance_leader>
+        <you_are_now_party_leader>You&apos;re now the party leader, kupo!</you_are_now_party_leader>
+        <you_joined_alliance>You&apos;ve joined an alliance, kupo!</you_joined_alliance>
+        <you_joined_party>You&apos;ve joined a party, kupo!</you_joined_party>
+        <you_left_alliance>You&apos;ve left the alliance, kupo!</you_left_alliance>
+        <you_left_party>You&apos;ve left the party, kupo!</you_left_party>
+        <your_party_joined_alliance>Your party has joined an alliance, kupo!</your_party_joined_alliance>
+        <your_party_left_alliance>Your party has left the alliance, kupo!</your_party_left_alliance>
+    </global>
+</settings>
