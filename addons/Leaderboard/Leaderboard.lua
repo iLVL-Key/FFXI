@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.2'
+_addon.version = '5.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -36,6 +36,7 @@ require 'chat'
 texts = require('texts')
 config = require('config')
 packets = require('packets')
+math.randomseed(os.time())
 
 defaults = {}							--In addition to the settings file, all of these are also configurable via commands in-game (//lb help).
 
