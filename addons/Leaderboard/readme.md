@@ -103,6 +103,9 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 
 ### Version History
 
+**5.2.1**
+- Added math.randomseed(os.time()) to ensure better randomization.
+
 **5.2**
 - Added live_score_saving_delay option. Delay in seconds between saving scores to the live file if turned on.
 
