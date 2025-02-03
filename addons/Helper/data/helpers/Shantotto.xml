@@ -1,0 +1,109 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>Ah, ${ability} is primed - use it now, perfectly timed!</ability_ready>
+		<capped_job_points>Oh ho ho, the deed is done, your Job Points are capped-how fun!</capped_job_points>
+		<capped_merit_points>Oh ho ho, your Merit Points have hit the cap-no more room for a single scrap!</capped_merit_points>
+        <flavor_text>
+            <1>Oh ho, your humor&apos;s a delight - it brightens the night!</1>
+            <2>Ah, you listen with such care - a rare trait, I declare!</2>
+            <3>Ho ho, you light up every space - no one can take your place!</3>
+            <4>Oh ho, your creativity astounds - it knows no bounds!</4>
+            <5>Ah, your smile&apos;s quite contagious - its joy is outrageous!</5>
+            <6>Ho ho, your positivity spreads - lifting all hearts and heads!</6>
+            <7>Oh ho, you inspire with zest - bringing out the best!</7>
+            <8>Ah, your heart shines so bold - truly a treasure of gold!</8>
+            <9>Ho ho, a friend so rare - you&apos;re beyond compare!</9>
+            <10>Oh ho, your enthusiasm&apos;s fresh - always cutting through the mesh!</10>
+            <11>Ah, your thoughtfulness shows - you&apos;re one who truly knows!</11>
+            <12>Ho ho, your lockstyle&apos;s divine - fashioned to outshine!</12>
+            <13>Oh ho, you make all feel at ease - a welcoming breeze!</13>
+            <14>Ah, your ideas sparkle and gleam - each one a dream!</14>
+            <15>Ho ho, your work ethic&apos;s keen - a model rarely seen!</15>
+            <16>Ah, your confidence sparks a fire - one can only admire!</16>
+            <17>Oh ho, your help is profound - always around!</17>
+            <18>Ah, your mastery&apos;s true - a Vana&apos;diel guru!</18>
+            <19>Ho ho, your strategy&apos;s right - turning battles to light!</19>
+            <20>Ah, your gear&apos;s top-class - no one else can surpass!</20>
+            <21>Oh ho, your support never wanes - steadfast through all strains!</21>
+            <22>Ah, you make missions a breeze - done with practiced ease!</22>
+            <23>Ho ho, your timing&apos;s a gift - giving battles a lift!</23>
+            <24>Oh ho, your aggro control&apos;s ace - keeping us in the race!</24>
+            <25>Ah, your knowledge vast - it&apos;s unsurpassed!</25>
+            <26>Ho ho, you bind this team - our strongest dream!</26>
+            <27>Oh ho, your leveling zeal - inspires us to feel!</27>
+            <28>Ah, your DPS is unmatched - a powerhouse dispatched!</28>
+            <29>Oh ho, your tactics align - keeping all fine!</29>
+            <30>Ah, your macros flow - no step missed, no show!</30>
+            <31>Oh ho, you balance with grace - offense, defense in place!</31>
+            <32>Ah, your multi-tasking&apos;s a feat - never accept defeat!</32>
+            <33>Ho ho, your aid&apos;s a boon - always ready, day or moon!</33>
+            <34>Oh ho, that lockstyle&apos;s a sight - truly a fashion knight!</34>
+            <35>Oh ho ho, a plan so grand, all the world will understand!</35>
+            <36>What&apos;s this? A foe to smite? Prepare to tremble at my might!</36>
+            <37>The day is bright, my mood is high, let&apos;s turn some heads as I walk by!</37>
+            <38>Oh ho ho, what do I see? A challenge brewing just for me!</38>
+            <39>My magic&apos;s strong, my will is steel, let&apos;s see how these mortals feel!</39>
+            <40>The stars align, the winds do shift, my power&apos;s ready to give a lift!</40>
+            <41>Oh ho ho, they flee in fear, for Shantotto&apos;s wrath is drawing near!</41>
+            <42>A curious thought flits through my mind, how to leave my rivals in a bind!</42>
+            <43>Oh ho ho, a scheme so sweet, it will leave my foes in swift defeat!</43>
+            <44>Should I unleash my fiery flare, or leave them gasping, unaware?</44>
+            <45>A snap of my fingers, a flick of my wrist, I&apos;ll leave them lost in the mist!</45>
+            <46>The world&apos;s a stage, and I the queen, the greatest mage you&apos;ve ever seen!</46>
+            <47>Oh ho ho, my genius shows, even in my casual clothes!</47>
+            <48>Another day, another deed, Shantotto&apos;s triumphs are guaranteed!</48>
+            <49>What&apos;s this? A trinket to claim? Soon it shall bear my name!</49>
+            <50>The winds do howl, the skies do roar, yet my power always leaves them floored!</50>
+            <51>Oh ho ho, a spell divine, soon this world shall all be mine!</51>
+            <52>A little mischief, a tiny plight, makes the day just feel so right!</52>
+            <53>My laughter echoes far and wide, as I let my magic decide!</53>
+            <54>Oh ho ho, my rivals groan, their despair is music to my tone!</54>
+            <55>Oh, to dabble with a spell or two, and see what chaos might ensue!</55>
+            <56>Oh ho ho, a potion to brew, with results both shocking and new!</56>
+            <57>A spark of wit, a flare of flame, adventurers will know my name!</57>
+            <58>I stride with grace, I cast with flair, no one dares to even stare!</58>
+            <59>Oh ho ho, they take their chance, and then they cower at my glance!</59>
+            <60>When all is done, and they&apos;ve been beat, I&apos;ll have the last laugh, oh how sweet!</60>
+            <61>Should I bring forth thunder&apos;s might, or leave them dazzled by the light?</61>
+            <62>Oh ho ho, a twist of fate, my plans unfold at the perfect rate!</62>
+            <63>The fools do stumble, the weak do fall, yet I stand tallest of them all!</63>
+            <64>With every step, my legend grows, oh ho ho, how it shows!</64>
+            <65>The winds of destiny call to me, their whispers speak of victory!</65>
+            <66>Oh ho ho, another spell, to make their lives a living hell!</66>
+            <67>What&apos;s this I hear, a hint of doubt? Oh ho ho, I&apos;ll sort it out!</67>
+            <68>The clever rise, the foolish fall, my wisdom shall outshine them all!</68>
+            <69>A shock, a blast, a spell so bright, it turns the darkest day to night!</69>
+            <70>Oh ho ho, a riddle to solve, a puzzle for my mind to evolve!</70>
+            <71>The day is short, but oh, how sweet, when triumph makes it so complete!</71>
+            <72>Oh ho ho, a clever ploy, to turn their power into my toy!</72>
+            <73>The world is mine, the skies agree, they bow in awe of mighty me!</73>
+            <74>Oh ho ho, the tale is told, of Shantotto&apos;s brilliance, brave and bold!</74>
+        </flavor_text>
+		<info>
+        	<introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
+        	<name>Shantotto</name>
+        	<name_color>36</name_color>
+        	<text_color>209</text_color>
+			<version>1.0</version>
+		</info>
+        <member_joined_alliance>Oh ho, ${member} joins the fray - our power grows this day!</member_joined_alliance>
+        <member_joined_party>Oh ho, ${member} has come - let&apos;s make this party hum!</member_joined_party>
+        <member_left_alliance>Ah, ${member} takes their leave - a loss, we must grieve!</member_left_alliance>
+        <member_left_party>Ah, ${member} departs - time to guard our hearts!</member_left_party>
+        <mireu_popped>Ho ho, Mireu appears in sight - at ${zone}, prepare for the fight!</mireu_popped>
+        <other_party_joined_alliance>Ho ho, another party arrives - let&apos;s see how it thrives!</other_party_joined_alliance>
+        <other_party_left_alliance>Ah, a party has gone - fewer to lean upon!</other_party_left_alliance>
+        <party_low_mp>Oh ho, ${member} seems quite frail - how about a ${refresh} to prevail?</party_low_mp>
+        <sublimation_charged>Sublimation&apos;s charge is complete - now, unleash its feat!</sublimation_charged>
+        <vorseal_reminder>Oh ho ho! Your Vorseal effect is running low, about 10 minutes left, didn&apos;t you know?</vorseal_reminder>
+        <you_are_now_alliance_leader>Oh ho, alliance leader you are - lead them near and far!</you_are_now_alliance_leader>
+        <you_are_now_party_leader>Ah, party leader you claim - guide them to fame!</you_are_now_party_leader>
+        <you_joined_alliance>Oh ho, in alliance you stand - ready to lend a hand!</you_joined_alliance>
+        <you_joined_party>Oh ho, you&apos;ve joined a team - let your prowess gleam!</you_joined_party>
+        <you_left_alliance>Ah, you&apos;ve left the fold - adventures untold!</you_left_alliance>
+        <you_left_party>Ah, you&apos;ve left the crowd - no more voices too loud!</you_left_party>
+        <your_party_joined_alliance>Oh ho, your party joins in - a step closer to win!</your_party_joined_alliance>
+        <your_party_left_alliance>Ah, your party&apos;s now out - what&apos;s this all about?</your_party_left_alliance>
+    </global>
+</settings>
