@@ -1234,24 +1234,27 @@ register_event('addon command',function(addcmd, ...)
 			table.insert(helper_list, name .. '.xml')
 		end
 		table.sort(helper_list)
-		add_to_chat(220,('[Helper] '):color(39)..('Loaded Helpers: '):color(220)..('\n'..table.concat(helper_list, '\n')):color(1))
+		add_to_chat(1,('[Helper] '):color(39)..('Loaded Helpers: '):color(220)..('\n'..table.concat(helper_list, '\n')):color(1))
 
 	elseif addcmd == 'help' then
 		local prefix = "//helper"
 		local helper_version = helpers[current_helper].info.version
 		add_to_chat(8,('[Helper] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,(' Current Helper: '):color(8)..(current_helper_name):color(c_name)..(' Version '..helper_version):color(c_text))
-		add_to_chat(8,(' Command '):color(36)..('<required>'):color(2)..(' - Description'):color(8))
+		add_to_chat(8,(' Command '):color(36)..('<required> '):color(2)..('- Description'):color(8))
 		add_to_chat(8,' ')
-		add_to_chat(8,(' (blank/no command) '):color(36)..(' - Cycle to the next loaded Helper.'):color(8))
-		add_to_chat(8,(' load/l '):color(36)..('<file_name>'):color(2)..(' - Load a Helper file into the addon.'):color(8))
+		add_to_chat(8,(' (blank/no command) '):color(36)..('- Cycle to the next loaded Helper.'):color(8))
+		add_to_chat(8,(' load/l '):color(36)..('<file_name> '):color(2)..('- Load a Helper file into the addon.'):color(8))
 		add_to_chat(8,('   - Helper files must be in the /data/helpers folder.'):color(8))
 		add_to_chat(8,('   - Loaded Helpers are saved and do not need to be loaded again unless unloaded.'):color(8))
-		add_to_chat(8,(' unload/u '):color(36)..('<file_name>'):color(2)..(' - Unload a Helper file from the addon.'):color(8))
+		add_to_chat(8,(' unload/u '):color(36)..('<file_name> '):color(2)..('- Unload a Helper file from the addon.'):color(8))
 		add_to_chat(8,('   - Unloaded Helper files are not deleted but are removed from use by the addon.'):color(8))
-		add_to_chat(8,(' list '):color(36)..(' - List currently loaded Helpers.'):color(8))
+		add_to_chat(8,(' list '):color(36)..('- List currently loaded Helpers.'):color(8))
+
+	elseif addcmd == nil then
+		cycleHelper()
 
 	else
-		cycleHelper()
+		add_to_chat(8,('[Helper] '):color(220)..('Unrecognized command. Type'):color(8)..(' //helper help'):color(1)..(' for a list of commands.'):color(8))
 	end
 end)
