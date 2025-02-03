@@ -25,13 +25,14 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaFacts'
-_addon.version = '1.4'
+_addon.version = '1.4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanafacts','vf'}
 
 config = require('config')
 texts = require('texts')
 require 'chat'
+math.randomseed(os.time())
 
 --[[
 --Sources--
