@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.1.1'
+_addon.version = '3.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -109,6 +109,7 @@ defaults = {
 		fade_to_alpha = 0,
 		focus_target_max_distance = 40,
 		hide_focus_target_when_target = true,
+		highlight_when_sp_active = true,
 		max_action_length = 17,
 		max_name_length = 20,
 		remove_tachi_blade_from_ws_name = true,
@@ -170,6 +171,7 @@ defaults = {
 			pc_other = {r = 255, g = 255, b = 255},
 			pc_party = {r = 69, g = 199, b = 255},
 			pc_self = {r = 66, g = 135, b = 245},
+			sp_active_glow = {a = 75, r = 255, g = 225, b = 75},
 		},
 		self = {
 			bar = {r = 240, g = 240, b = 240},
@@ -237,6 +239,7 @@ local fade_multiplier = settings.options.fade_multiplier
 local fade_to_alpha = settings.options.fade_to_alpha
 local focus_target_max_distance = settings.options.focus_target_max_distance
 local hide_focus_target_when_target = settings.options.hide_focus_target_when_target
+local highlight_when_sp_active = settings.options.highlight_when_sp_active
 local max_action_length = settings.options.max_action_length
 local max_name_length = settings.options.max_name_length
 local remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
@@ -294,6 +297,7 @@ local inCS = false
 local zoning = false
 local job = ''
 local current_actions = {}
+local current_sp_actions = {}
 local focus_target = nil
 local focus_target_override = nil
 local bars_bg_str = ''
@@ -324,6 +328,7 @@ local screen_test_target = {
 	distance = 100,
 	index = 12345,
 }
+local sp = settings.colors.target.sp_active_glow
 
 --BACKGROUNDS
 
@@ -557,6 +562,9 @@ bars_text_focus_target:color(text_color.r,text_color.g,text_color.b)
 bars_text_focus_target:alpha(text_alpha)
 bars_text_focus_target:bg_alpha(0)
 bars_text_focus_target:draggable(false)
+bars_text_focus_target:stroke_color(sp.r,sp.g,sp.b)
+bars_text_focus_target:stroke_alpha(0)
+bars_text_focus_target:stroke_width(2.5)
 
 --Create the Focus Target Action TEXT text object
 local bars_text_focus_target_action = texts.new()
@@ -573,6 +581,9 @@ bars_text_sub_target:color(text_color.r,text_color.g,text_color.b)
 bars_text_sub_target:alpha(text_alpha)
 bars_text_sub_target:bg_alpha(0)
 bars_text_sub_target:draggable(false)
+bars_text_sub_target:stroke_color(sp.r,sp.g,sp.b)
+bars_text_sub_target:stroke_alpha(0)
+bars_text_sub_target:stroke_width(2.5)
 
 --Create the Sub-Target Action TEXT text object
 local bars_text_sub_target_action = texts.new()
@@ -589,6 +600,9 @@ bars_text_target:color(text_color.r,text_color.g,text_color.b)
 bars_text_target:alpha(text_alpha)
 bars_text_target:bg_alpha(0)
 bars_text_target:draggable(false)
+bars_text_target:stroke_color(sp.r,sp.g,sp.b)
+bars_text_target:stroke_alpha(0)
+bars_text_target:stroke_width(2.5)
 
 --Create the Target Action TEXT text object
 local bars_text_target_action = texts.new()
@@ -1055,10 +1069,29 @@ local function removeFromActionsTable(actor_id, index)
 
 end
 
---Clear all actions from the current_actions table
-local function clearActionsTable()
+--Add an SP to the current_sp_actions table
+local function addToSPTable(actor_id, sp_name)
+
+	current_sp_actions[actor_id] = {
+		sp_name = " "..sp_name,
+	}
+
+end
+
+--Remove an SP from the current_sp_actions table
+local function removeFromSPTable(actor_id)
+
+	if current_sp_actions[actor_id] then
+		current_sp_actions[actor_id] = nil
+	end
+
+end
+
+--Clear all actions from the action tables
+local function clearActionTables()
 
 	current_actions = {}
+	current_sp_actions = {}
 
 end
 
@@ -1202,6 +1235,11 @@ local function capitalize(str)
 
 	-- Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
 	str = string.gsub(str, " Ii$", " II")
+
+	-- Ensure letters after an apostrophe are not capitalized
+	str = string.gsub(str, "('%w)", function(apostropheLetter)
+		return string.lower(apostropheLetter)
+	end)
 
 	return str
 
@@ -1438,8 +1476,8 @@ local function updateFocusTarget()
 
 	local target = get_mob_by_target('t') or nil
 	local ft = focus_target_override and focus_target_override or focus_target
-
-	local ft_name = ft and ' '..ft.name or ''
+	local ft_sp_active = ft and current_sp_actions[ft.id]
+	local ft_name = ft and (ft_sp_active and Heartbeat % 2 == 0 and current_sp_actions[ft.id].sp_name or ' '..ft.name) or ''
 	local dyna_job = ft and show_dyna_jobs and dynaJob(ft.name) or false
 	local ft_dyna_job = ft and dyna_job and ' '..dyna_job or ''
 	local ft_index = ft and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
@@ -1477,7 +1515,7 @@ local function updateFocusTarget()
 				bars_text_focus_target:hide()
 				bars_text_focus_target_action:hide()
 			else
-				
+
 				--Fix the pad issue when 0
 				if spaces == 0 then
 					bars_meter_focus_target:hide()
@@ -1517,6 +1555,7 @@ local function updateFocusTarget()
 	bars_text_focus_target_action:text(Fade and text_ft_action:text_strip_format() or text_ft_action)
 	bars_text_focus_target:color(ct.r,ct.g,ct.b)
 	bars_text_focus_target_action:color(ct.r,ct.g,ct.b)
+	bars_text_focus_target:stroke_alpha(ft_sp_active and sp.a or 0)
 
 end
 
@@ -1525,7 +1564,8 @@ local function updateTarget()
 
 	local player = get_player()
 	local target = screen_test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
-	local target_name = target and ' '..target.name or ''
+	local target_sp_active = target and current_sp_actions[target.id]
+	local target_name = target and (target_sp_active and Heartbeat % 2 == 0 and current_sp_actions[target.id].sp_name or ' '..target.name) or ''
 	local dyna_job = target and show_dyna_jobs and dynaJob(target.name) or false
 	local target_dyna_job = target and dyna_job and ' '..dyna_job or ''
 	local target_index = target and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", target.index) or target.index)..')' or ''
@@ -1580,6 +1620,7 @@ local function updateTarget()
 		bars_text_target_action:text(Fade and text_target_action:text_strip_format() or text_target_action)
 		bars_text_target:color(ct.r,ct.g,ct.b)
 		bars_text_target_action:color(ct.r,ct.g,ct.b)
+		bars_text_target:stroke_alpha(target_sp_active and sp.a or 0)
 
 	else
 
@@ -1599,7 +1640,8 @@ local function updateSubTarget()
 	local player = get_player()
 	local st = screen_test and screen_test_sub_target or get_mob_by_target('st')
 	local target = get_mob_by_target('t')
-	local st_name = st and ' '..st.name or ''
+	local st_sp_active = st and current_sp_actions[st.id]
+	local st_name = st and (st_sp_active and Heartbeat % 2 == 0 and current_sp_actions[st.id].sp_name or ' '..st.name) or ''
 	local dyna_job = st and show_dyna_jobs and dynaJob(st.name) or false
 	local st_dyna_job = st and dyna_job and ' '..dyna_job or ''
 	local st_index = st and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
@@ -1652,6 +1694,7 @@ local function updateSubTarget()
 		bars_text_sub_target_action:text(Fade and text_st_action:text_strip_format() or text_st_action)
 		bars_text_sub_target:color(ct.r,ct.g,ct.b)
 		bars_text_sub_target_action:color(ct.r,ct.g,ct.b)
+		bars_text_sub_target:stroke_alpha(st_sp_active and sp.a or 0)
 
 	else
 
@@ -2015,7 +2058,7 @@ local function updatePetBar()
 			cm = color.elements.earth
 		elseif pet and (pet.name == "Ramuh" or pet.name == "ThunderSpirit") then
 			cm = color.elements.lightning
-		elseif pet and (pet.name == "Leviathan" or pet.name == "WaterSpirit")  then
+		elseif pet and (pet.name == "Leviathan" or pet.name == "WaterSpirit") then
 			cm = color.elements.water
 		elseif pet and (pet.name == "Fenrir" or pet.name == "Diabolos" or pet.name == "Atomos" or pet.name == "Odin" or pet.name == "DarkSpirit") then
 			cm = color.elements.dark
@@ -2372,10 +2415,11 @@ local function initialize()
 	updateMPBar()
 	updateTPBar()
 	--Wait 2 sec then repeat since values are 0 when first logging into a character
-	coroutine.sleep(2)
-	updateHPBar()
-	updateMPBar()
-	updateTPBar()
+	coroutine.schedule(function()
+		updateHPBar()
+		updateMPBar()
+		updateTPBar()
+	end, 2)
 end
 
 --Load
@@ -2475,7 +2519,7 @@ windower.register_event('prerender', function()
 			updatePetBar()
 		end
 	end
-	
+
 	--Fade away
 	if Fade then
 		if bg_fade_num > fade_to_alpha then
@@ -2499,7 +2543,7 @@ windower.register_event('prerender', function()
 	if pos == "(?-?)" and not zoning then
 		zoning = true
 		hideBars()
-		clearActionsTable() --flush the current_actions table to keep it clean just in case
+		clearActionTables() --flush the action tables to keep them clean
 	elseif pos ~= "(?-?)" and zoning then
 		zoning = false
 		showBars()
@@ -2538,6 +2582,8 @@ windower.register_event('action', function (act)
 	local target_count = act.target_count
 	local amount = addCommas(act.targets[1].actions[1].param)
 	local count = show_result_totals and target_count > 1 and target_count..'●' or ''
+
+	local sp_abils = {['Mighty Strikes'] = 45, ['Brazen Rush'] = 30, ['Hundred Fists'] = 45, ['Manafont'] = 60, ['Chainspell'] = 60, ['Perfect Dodge'] = 30, ['Invincible'] = 30, ['Blood Weapon'] = 30, ['Soul Enslavement'] = 30, ['Soul Voice'] = 180, ['Meikyo Shisui'] = 30, ['Yaegasumi'] = 45, ['Mikage'] = 45, ['Spirit Surge'] = 60, ['Azure Lore'] = 30, ['Unbridled Wisdom'] = 60, ['Overdrive'] = 60, ['Trance'] = 60, ['Tabula Rasa'] = 180, ['Bolster'] = 180, ['Elemental Sforzo'] = 30, ['Inner Strength'] = 30, ['Subtle Sorcery'] = 60, ['Unleash'] = 60, ['Clarion Call'] = 180, ['Overkill'] = 60, ['Fly High'] = 30, ['Astral Flow'] = 180, ['Astral Conduit'] = 30, ['Grand Pas'] = 30, ['Widened Compas'] = 60}
 
 	local rdc_r = formatRGB(color.result.damage.r)
 	local rdc_g = formatRGB(color.result.damage.g)
@@ -2590,6 +2636,7 @@ windower.register_event('action', function (act)
 		return
 	end
 
+	--Debug Stuff
 	-- if actor.name == player.name then
 	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name)
 	-- end
@@ -2613,8 +2660,9 @@ windower.register_event('action', function (act)
 			completeSelfMeter()
 		end
 
-		coroutine.sleep(clear_action_delay)
-		removeFromActionsTable(act.actor_id,trackingIndex)
+		coroutine.schedule(function()
+			removeFromActionsTable(act.actor_id, trackingIndex)
+		end, clear_action_delay)
 
 		return
 
@@ -2698,8 +2746,9 @@ windower.register_event('action', function (act)
 			end
 
 			--In case of lag and we don't receive the "finished" action, we remove the action after a long enough wait to be sure
-			coroutine.sleep(cast_time+clear_action_delay+5)
-			removeFromActionsTable(act.actor_id,trackingIndex)
+			coroutine.schedule(function()
+				removeFromActionsTable(act.actor_id, trackingIndex)
+			end, cast_time + clear_action_delay + 5)
 
 		end
 
@@ -2935,7 +2984,8 @@ windower.register_event('action', function (act)
 						target_action_result_shdw = ' ('..count..'Missed)'
 					end
 				end
-			--Cover
+
+				--Cover
 			elseif msg == 311 then
 				target_action_result = ' (Cover)'
 				target_action_result_shdw = ' (Cover)'
@@ -3030,7 +3080,7 @@ windower.register_event('action', function (act)
 						local r_8_t_shdw = '\\cs(000,000,000)'..r_8..'\\cr'
 						local r_9_t = '\\cs('..formatRGB(r_c9.r)..','..formatRGB(r_c9.g)..','..formatRGB(r_c9.b)..')'..r_9..'\\cr'
 						local r_9_t_shdw = '\\cs(000,000,000)'..r_9..'\\cr'
-						local r_10_t =  '\\cs('..formatRGB(r_c10.r)..','..formatRGB(r_c10.g)..','..formatRGB(r_c10.b)..')'..r_10..'\\cr'
+						local r_10_t = '\\cs('..formatRGB(r_c10.r)..','..formatRGB(r_c10.g)..','..formatRGB(r_c10.b)..')'..r_10..'\\cr'
 						local r_10_t_shdw = '\\cs(000,000,000)'..r_10..'\\cr'
 						local r_11_t = '\\cs('..formatRGB(r_c11.r)..','..formatRGB(r_c11.g)..','..formatRGB(r_c11.b)..')'..r_11..'\\cr'
 						local r_11_t_shdw = '\\cs(000,000,000)'..r_11..'\\cr'
@@ -3101,6 +3151,24 @@ windower.register_event('action', function (act)
 				target_action_result = ' (Party Enmity Transferred)'
 				target_action_result_shdw = ' (Party Enmity Transferred)'
 			end
+
+			if highlight_when_sp_active then
+
+				local time = nil
+
+				if abil_name ~= "[REDACTED]" then
+					time = sp_abils[abil_name]
+				end
+
+				if time then
+					addToSPTable(act.actor_id, abil_name)
+					coroutine.schedule(function()
+						removeFromSPTable(act.actor_id)
+					end, time)
+				end
+
+			end
+
 		--Non-blinkable job abilities
 		elseif act.category == 14 then
 			--Plain Damage (I don't think any do just direct damage but doesn't hurt)
@@ -3195,8 +3263,9 @@ windower.register_event('action', function (act)
 				completeSelfMeter()
 			end
 
-			coroutine.sleep(clear_action_delay)
-			removeFromActionsTable(act.actor_id,trackingIndex)
+			coroutine.schedule(function()
+				removeFromActionsTable(act.actor_id, trackingIndex)
+			end, clear_action_delay)
 
 		end
 
@@ -3674,9 +3743,10 @@ windower.register_event('action', function (act)
 
 			if act.param ~= nil then
 
-				coroutine.sleep(clear_action_delay)
-				removeFromActionsTable(player.id,trackingIndex)
-				removeFromActionsTable(act.actor_id,trackingIndex)
+				coroutine.schedule(function()
+					removeFromActionsTable(player.id, trackingIndex)
+					removeFromActionsTable(act.actor_id, trackingIndex)
+				end, clear_action_delay)
 
 			end
 		else
@@ -3690,8 +3760,9 @@ windower.register_event('action', function (act)
 
 			if act.param ~= nil then
 
-				coroutine.sleep(clear_action_delay)
-				removeFromActionsTable(act.actor_id,trackingIndex)
+				coroutine.schedule(function()
+					removeFromActionsTable(act.actor_id, trackingIndex)
+				end, clear_action_delay)
 
 			end
 		end
@@ -3707,7 +3778,7 @@ windower.register_event('action', function (act)
 		action_name_shdw = ' '..truncateAction(abil_name)
 		target_action = action_name..action_target_name
 		target_action_shdw = action_name_shdw..action_target_name_shdw
-		
+
 		--Dispel/Erase
 		if msg == 159 then
 			local buff_name = buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
@@ -3820,8 +3891,26 @@ windower.register_event('action', function (act)
 
 			addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
-			coroutine.sleep(clear_action_delay)
-			removeFromActionsTable(act.actor_id,trackingIndex)
+			coroutine.schedule(function()
+				removeFromActionsTable(act.actor_id, trackingIndex)
+			end, clear_action_delay)
+
+		end
+
+		if highlight_when_sp_active then
+
+			local time = nil
+
+			if abil_name ~= "[REDACTED]" then
+				time = sp_abils[abil_name]
+			end
+
+			if time then
+				addToSPTable(act.actor_id, abil_name)
+				coroutine.schedule(function()
+					removeFromSPTable(act.actor_id)
+				end, time)
+			end
 
 		end
 
