@@ -14,6 +14,9 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
 ↑The Target, Self Action, and TP visible in action showing WS and SC damage done (old v2.0 look).
 
+![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
+↑Bumba with Yaegasumi active before it wears off.
+
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
   - Bars automatically align to the top, but vertical offset can be adjusted per job if you prefer them aligned to the bottom.
@@ -39,19 +42,21 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Display the Index or Hex number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Display distance to target.
+- Highlights a targets name when they use an SP Ability and displays which ability for the duration of it.
+  - NOTE: Timing for players who have gear adding additional time cannot be accounted for.
 - Display Dynamis-Divergence mob jobs.
 - Markers on the TP bar for 1k/2k, and on the HP bar for yellow HP.
 - Fades away after a set time of inactivity.
 - Features can be turned on/off or adjusted via settings file or in-game commands.
 
 ## How To Setup
-- Load the addon with `//lua load bars`.
-- Type `//bars pos` and it will tell you the current position of the addon. You can then use `//bars pos # #` (where # represents an x and y position of your choosing) to move the base position of the addon around to where you would like it. Note that the position is where the Target bar is located, the other bars are then adjusted based on that.
-- Once you have the base position settled, you can add or remove any of the "player stat" bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to add/remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are on.
-- If you have a different number of bars shown for different jobs and would like them aligned to the bottom (for example, sitting on top of your chat log), you can adjust the offset for each job using `//bars offset #` (where # represents how many pixels the addon will be adjusted up or down for that specific job).
+1. Load the addon with `//lua load bars`.
+2. Type `//bars pos` and it will tell you the current position of the addon. You can then use `//bars pos # #` (where # represents an x and y position of your choosing) to move the base position of the addon around to where you would like it. Note that the position is where the Target bar is located, the other bars are then adjusted based on that.
+3. Once you have the base position settled, you can add or remove any of the "player stat" bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to add/remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are on.
+4. If you have a different number of bars shown for different jobs and would like them aligned to the bottom (for example, sitting on top of your chat log), you can adjust the offset for each job using `//bars offset #` (where # represents how many pixels the addon will be adjusted up or down for that specific job).
 #### Extra
-- You can type `//bars help` at any time to display the list of in game commands the addon supports. See **Commands** below.
-- Explore the `data/settings.xml` file to see the full list of options that are available to tweak. See **Options** below.
+5. You can type `//bars help` at any time to display the list of in game commands the addon supports. See **Commands** below.
+6. Explore the `data/settings.xml` file to see the full list of options that are available to tweak. See **Options** below.
 
 ## Commands
 All commands must be preceded with `//bars` (ex: `//bars pos`)  
@@ -91,6 +96,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
  - `fade_to_alpha` - Number the alpha will stop at after fading. 0 = completely invisible, 255 = completely visible.
  - `focus_target_max_distance` - The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed.
  - `hide_focus_target_when_target` - Hides the Auto Focus Target bar when the subject of it has been targeted (prevents a target being on both at the same time).
+ - `highlight_when_sp_active` - Highlights a target's name and displays which SP effect they have active.
  - `max_action_length` - The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space.
  - `max_name_length` - The maximum number of characters of a targets name displayed (target action line only). Target names longer than this number will be truncated to help save space.
  - `remove_tachi_blade_from_ws_name` - Removes "Tachi: " and "Blade: " from weapon skill names to help save (ex. Tachi: Yukikaze --> Yukikaze).
@@ -124,6 +130,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
    - `vertical_offset` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
 
 ## Changelog
+
+Version 3.2
+- Added highlight_when_sp_active option. Highlights a target's name and displays which SP effect they have active.
+- Adjusted nearly all coroutine.sleep() calls to be coroutine.schedule() calls instead.
+- Fixed words with apostrophes having the letters after an apostrophe being capitalized.
 
 Version 3.1.1
 - Fixed missing Steal, Despoil, and Mug results.
