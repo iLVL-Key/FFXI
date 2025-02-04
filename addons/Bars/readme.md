@@ -131,6 +131,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.2.1
+- Fixed missing check for "Auto Attack" from NMs to ignore.
+
 Version 3.2
 - Added highlight_when_sp_active option. Highlights a target's name and displays which SP effect they have active.
 - Adjusted nearly all coroutine.sleep() calls to be coroutine.schedule() calls instead.
