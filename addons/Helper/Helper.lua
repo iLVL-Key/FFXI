@@ -659,7 +659,7 @@ local function update_existing_helpers()
 		local local_helper_sha = helpers[name] and helpers[name].info and helpers[name].info.sha
 
 		-- Check if the Helper exists and has an outdated SHA
-		if local_helper_sha and local_helper_sha ~= github_helper_sha then
+		if not local_helper_sha or local_helper_sha ~= github_helper_sha then
 			download_helper(file_name, github_helper_sha)
 			table.insert(updated_helpers, file_name)
 		end
