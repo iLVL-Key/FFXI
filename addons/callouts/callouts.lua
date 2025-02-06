@@ -1,4 +1,4 @@
---Copyright (c) 2024, Key
+--Copyright (c) 2025, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.10.3'
+_addon.version = '1.11'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -324,6 +324,13 @@ windower.register_event('action',function(act)
 			end
 
 		end
+
+	elseif act.category == 4 then
+
+		if res.spells[act.param].en == 'Warp' and actor == 'Aurix' and callout.dynamis then
+			chat('/%s Aurix has warped!%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
+		end
+
 	end
 end)
 
@@ -512,7 +519,8 @@ end
 windower.register_event('addon command', function(addcmd)
 
 	if addcmd == 'help' then
-		add_to_chat(8,('[Callouts] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
+		local prefix = "//callouts, //co"
+		add_to_chat(8,('[Callouts] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,(' Command '):color(36)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(36,' chatmode/chat/mode'..(' - Switch between Echo and Party chat modes. ['):color(8)..(('%s'):format(chatmode == 'party' and 'Party' or 'Echo')):color(200)..(']'):color(8))
@@ -526,60 +534,60 @@ windower.register_event('addon command', function(addcmd)
 		else
 			chatmode = 'echo'
 		end
-		add_to_chat(220,'[Callouts] '..('Chat mode is now set to '):color(8)..(chatmode == 'party' and 'Party' or 'Echo'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Chat mode is now set to '):color(8)..(chatmode == 'party' and 'Party' or 'Echo'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'abyssea' or addcmd == 'aby' then
 		callout.abyssea = not callout.abyssea
-		add_to_chat(220,'[Callouts] '..('Abyssea callout is now set to '):color(8)..(callout.abyssea and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Abyssea callout is now set to '):color(8)..(callout.abyssea and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'ambuscade' or addcmd == 'ambu' then
 		callout.ambuscade = not callout.ambuscade
-		add_to_chat(220,'[Callouts] '..('Ambuscade callout is now set to '):color(8)..(callout.ambuscade and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Ambuscade callout is now set to '):color(8)..(callout.ambuscade and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'charm' then
 		callout.charm = not callout.charm
-		add_to_chat(220,'[Callouts] '..('Charm callout is now set to '):color(8)..(callout.charm and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Charm callout is now set to '):color(8)..(callout.charm and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'dynamis' or addcmd == 'dyna' or addcmd == 'dyn' then
 		callout.dynamis = not callout.dynamis
-		add_to_chat(220,'[Callouts] '..('Dynamis callout is now set to '):color(8)..(callout.dynamis and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Dynamis callout is now set to '):color(8)..(callout.dynamis and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'odyssey' or addcmd == 'ody' then
 		callout.odyssey = not callout.odyssey
-		add_to_chat(220,'[Callouts] '..('Odyssey callout is now set to '):color(8)..(callout.odyssey and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Odyssey callout is now set to '):color(8)..(callout.odyssey and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'omen' then
 		callout.omen = not callout.omen
-		add_to_chat(220,'[Callouts] '..('Omen callout is now set to '):color(8)..(callout.omen and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Omen callout is now set to '):color(8)..(callout.omen and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'ou' then
 		callout.ou = not callout.ou
-		add_to_chat(220,'[Callouts] '..('Ou callout is now set to '):color(8)..(callout.ou and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Ou callout is now set to '):color(8)..(callout.ou and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'sortie' then
 		callout.sortie = not callout.sortie
-		add_to_chat(220,'[Callouts] '..('Sortie callout is now set to '):color(8)..(callout.sortie and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Sortie callout is now set to '):color(8)..(callout.sortie and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'vagary' or addcmd == 'vag' then
 		callout.vagary = not callout.vagary
-		add_to_chat(220,'[Callouts] '..('Vagary callout is now set to '):color(8)..(callout.vagary and 'ON' or 'OFF'):color(200)..('.'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Vagary callout is now set to '):color(8)..(callout.vagary and 'ON' or 'OFF'):color(200)..('.'):color(8))
 		settings:save('all')
 
 	elseif addcmd == 'list' or addcmd == 'lists' or addcmd == 'l' then
-		add_to_chat(220,'[Callouts] '..('Current callouts:'):color(8))
+		add_to_chat(8,('[Callouts] '):color(220)..('Current callouts:'):color(8))
 		add_to_chat(8,(' Abyssea:'):color(36)..(' %s':format(callout.abyssea and 'ON' or 'OFF')):color(200)..(' - Red and Blue Procs'):color(8))
 		add_to_chat(8,(' Ambuscade:'):color(36)..(' %s':format(callout.ambuscade and 'ON' or 'OFF')):color(200)..(' - Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset'):color(8))
 		add_to_chat(8,(' Charm:'):color(36)..(' %s':format(callout.charm and 'ON' or 'OFF')):color(200)..(' - Party/Alliance members who get charmed'):color(8))
-		add_to_chat(8,(' Dynamis:'):color(36)..(' %s':format(callout.dynamis and 'ON' or 'OFF')):color(200)..(' - Halphas hate reset'):color(8))
+		add_to_chat(8,(' Dynamis:'):color(36)..(' %s':format(callout.dynamis and 'ON' or 'OFF')):color(200)..(' - Halphas hate reset, Aurix warp'):color(8))
 		add_to_chat(8,(' Odyssey:'):color(36)..(' %s':format(callout.odyssey and 'ON' or 'OFF')):color(200)..(' - Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters'):color(8))
 		add_to_chat(8,(' Omen:'):color(36)..(' %s':format(callout.omen and 'ON' or 'OFF')):color(200)..(' - Scales, Pain Sync, Target'):color(8))
 		add_to_chat(8,(' Ou:'):color(36)..(' %s':format(callout.ou and 'ON' or 'OFF')):color(200)..(' - Upcoming abilities'):color(8))
