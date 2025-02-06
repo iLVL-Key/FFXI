@@ -5,7 +5,7 @@ Various callouts for endgame things.
 ## Current Callouts:
 - **Ambuscade:** Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset
 - **Charm:** Party/Alliance members who get charmed
-- **Dynamis:** Halphas hate reset
+- **Dynamis:** Halphas hate reset, Aurix warp
 - **Odyssey:** Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters
 - **Omen:** Scales, Pain Sync, Target\
 - **Ou:** Upcoming abilities
