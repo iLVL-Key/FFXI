@@ -1443,7 +1443,7 @@ register_event('prerender', function()
 	elseif pos ~= "(?-?)" and zoning then
 		coroutine.schedule(function()
 			zoning = false
-		end, 3)
+		end, 4)
 	end
 
 	if not (zoning or paused) and logged_in then
