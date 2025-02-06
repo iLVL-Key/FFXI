@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.0'
+_addon.version = '1.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -418,7 +418,7 @@ local function get_local_helpers()
 	local local_helpers = {}
 
 	--Check for known helper files by iterating over the loaded list
-	for name, enabled in pairs(settings.options.helpers_loaded) do
+	for name, _ in pairs(settings.options.helpers_loaded) do
 		local file_name = "data/helpers/" .. name .. ".xml"
 		if file_exists(addon_path .. file_name) then
 			local_helpers[name] = true
@@ -437,7 +437,6 @@ local function get_github_helpers()
 
 	-- Ensure response was received
 	if not response or response == "" then
-		add_to_chat(8, ('[Helper] '):color(220) .. ('Failed to read GitHub response.'):color(8))
 		return nil
 	end
 
@@ -457,7 +456,7 @@ local function check_for_new_helpers()
 	local github_helpers = get_github_helpers()
 
 	if not github_helpers then
-		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve GitHub helpers.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve list of Helpers from GitHub. Please try again.'):color(8))
 		return
 	end
 
@@ -477,7 +476,7 @@ local function check_for_new_helpers()
 		end
 		new_updates = true
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('There are no new Helpers.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No new Helpers.'):color(8))
 	end
 end
 
@@ -490,7 +489,6 @@ local function get_github_addon_sha()
 
 	-- Ensure response was received
 	if not response or response == "" then
-		add_to_chat(8,('[Helper] '):color(220)..('Failed to retrieve GitHub SHA for the Helper addon.'):color(8))
 		return nil
 	end
 
@@ -505,12 +503,17 @@ local function check_for_addon_updates()
 	-- Retrieve the latest SHA from GitHub
 	local github_sha = get_github_addon_sha()
 
+	if not github_sha then
+		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve Helper addon version info from GitHub. Please try again.'):color(8))
+		return
+	end
+
 	-- Retrieve the locally stored SHA
 	local local_sha = settings.addon_sha
 
 	-- Compare SHAs
 	if local_sha and local_sha == github_sha then
-		add_to_chat(8,('[Helper] '):color(220)..('The Helper addon is up to date.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('Helper addon is up to date.'):color(8))
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('Update available for the Helper addon!'):color(8))
 		new_updates = true
@@ -559,7 +562,6 @@ local function get_github_helper_shas()
 
 	-- Ensure response was received
 	if not response or response == "" then
-		add_to_chat(8,('[Helper] '):color(220)..('Failed to retrieve GitHub SHA for Helpers.'):color(8))
 		return nil
 	end
 
@@ -579,6 +581,11 @@ end
 --Check for updates to the Helpers
 local function check_for_helper_updates()
 	local github_helper_shas = get_github_helper_shas()
+
+	if not github_helper_shas then
+		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve version info for Helpers from GitHub. Please try again.'):color(8))
+		return
+	end
 
 	local updated_helpers = {}
 
@@ -649,9 +656,12 @@ end
 
 --Check for updated Helpers on GitHub
 local function update_existing_helpers()
-	print('Checking for updated Helpers...')
 	local github_helper_shas = get_github_helper_shas()
-	if not github_helper_shas then return end
+
+	if not github_helper_shas then
+		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve version info for Helpers from GitHub. Please try again.'):color(8))
+		return
+	end
 
 	local updated_helpers = {}
 
@@ -676,7 +686,11 @@ end
 
 local function download_new_helpers()
 	local github_helper_shas = get_github_helper_shas()
-	if not github_helper_shas then return end
+
+	if not github_helper_shas then
+		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve version info for Helpers from GitHub. Please try again.'):color(8))
+		return
+	end
 
 	local new_helpers = {}
 
@@ -700,8 +714,13 @@ end
 
 --Check for updated addon on GitHub
 local function update_addon()
-	local github_addon_sha = get_github_addon_sha()
 	local local_addon_sha = settings.addon_sha
+	local github_addon_sha = get_github_addon_sha()
+
+	if not github_addon_sha then
+		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve Helper addon version info from GitHub. Please try again.'):color(8))
+		return
+	end
 
 	if not local_addon_sha or local_addon_sha ~= github_addon_sha then
 		download_addon(github_addon_sha)
@@ -1567,9 +1586,9 @@ register_event('addon command',function(addcmd, ...)
 			local helper_name = string.lower(table.concat(arg,' '))
 			if helpers[helper_name] then
 				helpers[helper_name] = nil
-				settings.options.helpers_loaded[helper_name] = nil
+				settings.options.helpers_loaded[helper_name] = false
 				--If the current Helper is the one we just unloaded, switch to Vana
-				if settings.options.current_helper == name then
+				if settings.options.current_helper == helper_name then
 					settings.options.current_helper = 'vana'
 					current_helper = 'vana'
 				end
@@ -1640,7 +1659,7 @@ register_event('addon command',function(addcmd, ...)
 			check_for_helper_updates()
 			check_for_addon_updates()
 			if new_updates then
-				add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download all updates.'):color(8))
+				add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download updates.'):color(8))
 				new_updates = false
 			end
 		end
