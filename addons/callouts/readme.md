@@ -7,7 +7,7 @@ Various callouts for endgame things.
 - **Charm:** Party/Alliance members who get charmed
 - **Dynamis:** Halphas hate reset, Aurix warp
 - **Odyssey:** Hate resets, full dispels, Bumba 1-HRs, Kalunga/Ngai fetters
-- **Omen:** Scales, Pain Sync, Target\
+- **Omen:** Scales, Pain Sync, Target
 - **Ou:** Upcoming abilities
 - **Sortie:** Elements/weaknesses, hate resets
 - **Vagary:** Perfidien/Plouton pop, weaknesses
