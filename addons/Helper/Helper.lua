@@ -82,6 +82,7 @@ defaults = {
 			tame = true,
 			troubadour = true,
 		},
+		after_zone_party_check_delay = 5,
 		auto_check_for_updates = true,
 		auto_update = true,
 		capped_job_points = true,
@@ -212,6 +213,7 @@ local capped_merit_points = settings.options.capped_merit_points
 local sublimation_charged = settings.options.sublimation_charged
 local sound_effects = settings.options.sound_effects
 local party_announcements = settings.options.party_announcements
+local after_zone_party_check_delay = settings.options.after_zone_party_check_delay
 
 local check_party_for_low_mp = settings.options.check_party_for_low_mp
 local check_party_for_low_mp_delay = settings.options.check_party_for_low_mp_delay
@@ -647,6 +649,7 @@ end
 
 --Check for updated Helpers on GitHub
 local function update_existing_helpers()
+	print('Checking for updated Helpers...')
 	local github_helper_shas = get_github_helper_shas()
 	if not github_helper_shas then return end
 
@@ -658,7 +661,7 @@ local function update_existing_helpers()
 		name = string.lower(name)
 		local local_helper_sha = helpers[name] and helpers[name].info and helpers[name].info.sha
 
-		-- Check if the Helper exists and has an outdated SHA
+		-- Check if the Helper exists and has an outdated SHA or if local_helper_sha is nil
 		if not local_helper_sha or local_helper_sha ~= github_helper_sha then
 			download_helper(file_name, github_helper_sha)
 			table.insert(updated_helpers, file_name)
@@ -1443,7 +1446,7 @@ register_event('prerender', function()
 	elseif pos ~= "(?-?)" and zoning then
 		coroutine.schedule(function()
 			zoning = false
-		end, 4)
+		end, after_zone_party_check_delay)
 	end
 
 	if not (zoning or paused) and logged_in then
@@ -1646,9 +1649,9 @@ register_event('addon command',function(addcmd, ...)
 		if arg[1] then
 			local subcmd = string.lower(table.concat(arg,' '))
 			if subcmd == "new" then
-				update_existing_helpers()
-			elseif subcmd == "current" then
 				download_new_helpers()
+			elseif subcmd == "current" then
+				update_existing_helpers()
 			elseif subcmd == "addon" then
 				update_addon()
 			else
