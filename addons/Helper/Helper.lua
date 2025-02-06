@@ -876,7 +876,7 @@ local function updateRecasts()
 	recast.formless_strikes = ability_recast[20] and math.floor(ability_recast[20]) or 0
 	recast.life_cycle = ability_recast[246] and math.floor(ability_recast[246]) or 0
 	recast.mana_wall = ability_recast[39] and math.floor(ability_recast[39]) or 0
-	recast.manawell = ability_recast[35] and math.floor(ability_recast[235]) or 0
+	recast.manawell = ability_recast[35] and math.floor(ability_recast[35]) or 0
 	recast.marcato = ability_recast[48] and math.floor(ability_recast[48]) or 0
 	recast.martyr = ability_recast[27] and math.floor(ability_recast[27]) or 0
 	recast.nightingale = ability_recast[109] and math.floor(ability_recast[109]) or 0
