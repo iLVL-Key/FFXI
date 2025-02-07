@@ -109,6 +109,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
  - `show_fancy_rolls` - Show a fancified version of COR rolls (if show_lucky_roll_info is turned on).
  - `show_max_hp_mp_on_bars` - Shows the current maximum HP and MP on their respective bars.
  - `show_pet_distance` - Show the distance between you and your pet.
+ - `show_pet_status` - Show the current status of your pet (Idle, Engaged, etc.).
+ - `show_pet_tp` - Show the current Tp of your pet.
  - `show_result_totals` - Show number of targets hit and totals from AoE cures/damage.
  - `show_roll_lucky_info` - Shows the lucky and lucky numbers for COR rolls.
  - `show_self_action` - Shows the Self Action bar.
@@ -130,6 +132,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
    - `vertical_offset` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
 
 ## Changelog
+
+Version 3.3
+- Added show_pet_tp option. Shows the current TP of your pet.
+- Added option for show_pet_status. Functionality was already present but missing the option.
+- Fixed missing Mug + HP drain and Despoil + TP Drain results.
 
 Version 3.2.1
 - Fixed missing check for "Auto Attack" from NMs to ignore.
