@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '1.11'
+_addon.version = '1.11.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -327,7 +327,7 @@ windower.register_event('action',function(act)
 
 	elseif act.category == 4 then
 
-		if res.spells[act.param].en == 'Warp' and actor == 'Aurix' and callout.dynamis then
+		if res.spells[act.param] and res.spells[act.param].en == 'Warp' and actor == 'Aurix' and callout.dynamis then
 			chat('/%s Aurix has warped!%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		end
 
