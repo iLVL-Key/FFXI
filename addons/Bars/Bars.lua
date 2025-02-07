@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.2.1'
+_addon.version = '3.2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -122,6 +122,8 @@ defaults = {
 		show_fancy_rolls = true,
 		show_max_hp_mp_on_bar = true,
 		show_pet_distance = true,
+		show_pet_status = true,
+		show_pet_tp = true,
 		show_result_totals = true,
 		show_roll_lucky_info = true,
 		show_self_action = true,
@@ -252,7 +254,9 @@ local show_commas_on_numbers = settings.options.show_commas_on_numbers
 local show_dyna_jobs = settings.options.show_dyna_jobs
 local show_fancy_rolls = settings.options.show_fancy_rolls
 local show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
+local show_pet_status = settings.options.show_pet_status
 local show_pet_distance = settings.options.show_pet_distance
+local show_pet_tp = settings.options.show_pet_tp
 local show_result_totals = settings.options.show_result_totals
 local show_roll_lucky_info = settings.options.show_roll_lucky_info
 local show_self_action = settings.options.show_self_action
@@ -296,6 +300,7 @@ local get_info = windower.ffxi.get_info
 local inCS = false
 local zoning = false
 local job = ''
+local pet_tp = 0
 local current_actions = {}
 local current_sp_actions = {}
 local focus_target = nil
@@ -2000,8 +2005,9 @@ local function updatePetBar()
 
 	local pet = get_mob_by_target('pet')
 	local hpp = pet and pet.hpp or 0
-	local status = job ~= 'geo' and pet and ' ('..res.statuses[pet.status].en..')' or ''
+	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and ' '..(string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100)) or ''
+	local tp = pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
 	local spaces = math.floor(bar_width * (hpp / 100))
 	--fix for the math flooring this to 0 when its not exactly 0
@@ -2068,8 +2074,8 @@ local function updatePetBar()
 	local cm_g = formatRGB(cm.g)
 	local cm_b = formatRGB(cm.b)
 
-	local text = pet_name..(pet and ': \\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'%\\cr' or '')..distance..status
-	local text_shdw = pet_name..(pet and ': \\cs(000,000,000)'..hpp..'%\\cr' or '')..distance..status
+	local text = pet_name..(pet and ': \\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'%\\cr' or '')..distance..status..tp
+	local text_shdw = pet_name..(pet and ': \\cs(000,000,000)'..hpp..'%\\cr' or '')..distance..status..tp
 
 	bars_meter_pet:text(pet_meter)
 	bars_text_shdw_pet:text(Fade and text_shdw:text_strip_format() or text_shdw)
@@ -2638,7 +2644,7 @@ windower.register_event('action', function (act)
 
 	--Debug Stuff
 	-- if actor.name == player.name then
-	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name)
+	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
 	-- end
 
 	--Action failed/interrupted
@@ -2853,10 +2859,19 @@ windower.register_event('action', function (act)
 		elseif msg == 129 then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil)'
+		--Mug Success + HP
+		elseif msg == 129 then
+			local hp_drain = act.targets[1].actions[1].add_effect_param
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..hp_drain..'\\cr HP)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil + \\cs(000,000,000)'..hp_drain..'\\cr HP)'
 		--Mug Fail
 		elseif msg == 244 then
 			target_action_result = ' (Failed)'
 			target_action_result_shdw = ' (Failed)'
+		--Mug Fail + HP Drain
+		elseif msg == 736 then
+			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP)'
+			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr HP)'
 		--Steal Success
 		elseif msg == 125 then
 			local item = res.items[action_id].name
@@ -2911,6 +2926,10 @@ windower.register_event('action', function (act)
 		elseif msg == 153 then
 			target_action_result = ' (Failed)'
 			target_action_result_shdw = ' (Failed)'
+		--Despoil Fail + TP
+		elseif msg == 746 then
+			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP)'
+			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr TP)'
 		--Most job abilities
 		elseif act.category == 6 then
 			--Erase
@@ -3915,6 +3934,16 @@ windower.register_event('action', function (act)
 		end
 
 	end
+end)
+
+windower.register_event('incoming chunk',function(id,original,modified,injected,blocked)
+    if not injected or (id == 0x67 or id == 0x068) then
+		local packet = packets.parse('incoming', original)
+		local msg_type = packet['Message Type']
+		if (msg_type == 0x04) then
+			pet_tp = packet['Pet TP']
+		end
+    end
 end)
 
 --Unrecognized command
