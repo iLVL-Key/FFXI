@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.0.1'
+_addon.version = '1.0.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -84,7 +84,7 @@ defaults = {
 		},
 		after_zone_party_check_delay = 5,
 		auto_check_for_updates = true,
-		auto_update = true,
+		auto_update = false,
 		capped_job_points = true,
 		capped_merit_points = true,
 		check_party_for_low_mp = true,
@@ -883,7 +883,7 @@ local function updateRecasts()
 	recast.convergence = ability_recast[183] and math.floor(ability_recast[183]) or 0
 	recast.convert = ability_recast[49] and math.floor(ability_recast[49]) or 0
 	recast.crooked_cards = ability_recast[96] and math.floor(ability_recast[96]) or 0
-	recast.dematerialize = ability_recast[248] and math.floor(ability_recast[248]) or 0
+	recast.dematerialize = ability_recast[351] and math.floor(ability_recast[351]) or 0
 	recast.devotion = ability_recast[28] and math.floor(ability_recast[28]) or 0
 	recast.diffusion = ability_recast[184] and math.floor(ability_recast[184]) or 0
 	recast.divine_seal = ability_recast[26] and math.floor(ability_recast[26]) or 0
