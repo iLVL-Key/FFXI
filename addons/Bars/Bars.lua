@@ -2007,7 +2007,7 @@ local function updatePetBar()
 	local hpp = pet and pet.hpp or 0
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and ' '..(string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100)) or ''
-	local tp = pet and show_pet_tp and ' TP: '..pet_tp or ''
+	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
 	local spaces = math.floor(bar_width * (hpp / 100))
 	--fix for the math flooring this to 0 when its not exactly 0
@@ -2759,7 +2759,7 @@ windower.register_event('action', function (act)
 		end
 
 	--Job abilities
-	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599)) or act.category == 6 or act.category == 14 or act.category == 15 then
+	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599 or msg == 736 or msg == 746)) or act.category == 6 or act.category == 14 or act.category == 15 then
 
 		local target_action = ''
 		local target_action_shdw = ''
