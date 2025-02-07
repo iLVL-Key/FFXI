@@ -327,7 +327,8 @@ windower.register_event('action',function(act)
 
 	elseif act.category == 4 then
 
-		if res.spells[act.param] and res.spells[act.param].en == 'Warp' and actor == 'Aurix' and callout.dynamis then
+		local spell = act.param
+		if spell and res.spells[act.param] and res.spells[act.param].en == 'Warp' and actor == 'Aurix' and callout.dynamis then
 			chat('/%s Aurix has warped!%s':format(chatmode,chatmode == 'party' and ' <call14>' or ''))
 		end
 
