@@ -32,17 +32,19 @@ Players can load different Helpers, each with its own personality and dialogue, 
   - Modify Helper settings & messages in XML files
 
 ## How To Setup
-1. Be sure to download the `data/sounds` folder, as well as the `data/helpers` folder for additional Helpers to choose from.
+1. Be sure to save the addon to `addons/Helper/Helper.lua`.
 2. Load the addon with `//lua load helper`.
-3. Vana is the default Helper and will automatically be created (`data/helpers/Vana.xml`) and loaded into the addon.
-4. Load additional Helpers into the addon with, for example, `//helper load moogle`. The name "moogle" in this example represents the name of the file, is case insensitive, and does not require the `.xml` attached.
-5. Type `//helper` (with no additional command) to cycle between Helpers you have loaded.
+3. Vana is the default Helper and will automatically be created and loaded into the addon.
+4. Update the addon by typing `//helper update`.
+   - This will download and install the latest version of the addon, including all sound files, as well as download and load all current Helpers into the addon.
+6. Type `//helper` (with no additional command) to cycle between Helpers you have loaded, or type `//helper load moogle` to select a specific Helper.
+   - The name "moogle" in this example represents the name of the file, is case insensitive, and does not require the `.xml` attached.
 
-- ## Commands
+## Commands
 All commands must be preceded with `//helper` (ex: `//helper list`)  
 `<required>` `[optional]`
 - `(blank, no command)` - Cycle to the next loaded Helper.
-- `load/l <file_name>` - Load a Helper file into the addon.
+- `load/l <file_name>` - Load a Helper file into the addon and select for use.
   - Helper files must be in the `/data/helpers` folder.
   - Loaded Helpers are saved and do not need to be loaded again unless unloaded.
 - `unload/u <file_name>` - Unload a Helper file from the addon.
@@ -51,3 +53,25 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `check [new|current|addon]` - Check for new updates. Does not update.
 - `update [new|current|addon]` - Download new updates.
 - `help` - Display a list of commands and addon info.
+
+## Changelog
+Version 1.1
+- Added check and download of sound files into the addon update commands. This now makes the Helper addon fully self-sufficient starting with just Helper.lua and no additional files.
+- Added descriptions into the Helper files.
+- Added "first run" messages displayed when loading the addon for the first time.
+- Added chat log messages when running checks/updates.
+- Adjusted the `list` command to now display the description of each Helper and in the appropriate colors for each.
+- Adjusted the `help` command to show the description of the current Helper.
+- Adjusted the `help` command to show the last update check date.
+
+Version 1.0.2
+- Adjusted auto_udate option to be false by default.
+- Fixed issue where Dematerialize recast was not being tracked correctly.
+
+Version 1.0.1
+- Adjusted unloaded Helpers to stay in the settings table of loaded_helpers but to be set to false instead of completely removed. This prevents the Helper being listed as "new" when we check for new Helpers. I may circle back to this to add in additional enable/disable commands to handle this and revert unload to completely remove, but not sure if that's necessary.
+- Adjusted a log of error messages relating to connecting to GitHub.
+- Fixed an issue with unloading a Helper that is the currently active Helper not switching to the default Vana correctly.
+
+Version 1.0
+- Initial version
