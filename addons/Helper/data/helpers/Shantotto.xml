@@ -2,18 +2,10 @@
 <settings>
     <global>
         <ability_ready>Ah, ${ability} is primed - use it now, perfectly timed!</ability_ready>
-		<capped_job_points>Oh ho ho, the deed is done, your Job Points are capped-how fun!</capped_job_points>
-		<capped_merit_points>Oh ho ho, your Merit Points have hit the cap-no more room for a single scrap!</capped_merit_points>
+        <capped_job_points>Oh ho ho, the deed is done, your Job Points are capped-how fun!</capped_job_points>
+        <capped_merit_points>Oh ho ho, your Merit Points have hit the cap-no more room for a single scrap!</capped_merit_points>
         <flavor_text>
             <1>Oh ho, your humor&apos;s a delight - it brightens the night!</1>
-            <2>Ah, you listen with such care - a rare trait, I declare!</2>
-            <3>Ho ho, you light up every space - no one can take your place!</3>
-            <4>Oh ho, your creativity astounds - it knows no bounds!</4>
-            <5>Ah, your smile&apos;s quite contagious - its joy is outrageous!</5>
-            <6>Ho ho, your positivity spreads - lifting all hearts and heads!</6>
-            <7>Oh ho, you inspire with zest - bringing out the best!</7>
-            <8>Ah, your heart shines so bold - truly a treasure of gold!</8>
-            <9>Ho ho, a friend so rare - you&apos;re beyond compare!</9>
             <10>Oh ho, your enthusiasm&apos;s fresh - always cutting through the mesh!</10>
             <11>Ah, your thoughtfulness shows - you&apos;re one who truly knows!</11>
             <12>Ho ho, your lockstyle&apos;s divine - fashioned to outshine!</12>
@@ -24,6 +16,7 @@
             <17>Oh ho, your help is profound - always around!</17>
             <18>Ah, your mastery&apos;s true - a Vana&apos;diel guru!</18>
             <19>Ho ho, your strategy&apos;s right - turning battles to light!</19>
+            <2>Ah, you listen with such care - a rare trait, I declare!</2>
             <20>Ah, your gear&apos;s top-class - no one else can surpass!</20>
             <21>Oh ho, your support never wanes - steadfast through all strains!</21>
             <22>Ah, you make missions a breeze - done with practiced ease!</22>
@@ -34,6 +27,7 @@
             <27>Oh ho, your leveling zeal - inspires us to feel!</27>
             <28>Ah, your DPS is unmatched - a powerhouse dispatched!</28>
             <29>Oh ho, your tactics align - keeping all fine!</29>
+            <3>Ho ho, you light up every space - no one can take your place!</3>
             <30>Ah, your macros flow - no step missed, no show!</30>
             <31>Oh ho, you balance with grace - offense, defense in place!</31>
             <32>Ah, your multi-tasking&apos;s a feat - never accept defeat!</32>
@@ -44,6 +38,7 @@
             <37>The day is bright, my mood is high, let&apos;s turn some heads as I walk by!</37>
             <38>Oh ho ho, what do I see? A challenge brewing just for me!</38>
             <39>My magic&apos;s strong, my will is steel, let&apos;s see how these mortals feel!</39>
+            <4>Oh ho, your creativity astounds - it knows no bounds!</4>
             <40>The stars align, the winds do shift, my power&apos;s ready to give a lift!</40>
             <41>Oh ho ho, they flee in fear, for Shantotto&apos;s wrath is drawing near!</41>
             <42>A curious thought flits through my mind, how to leave my rivals in a bind!</42>
@@ -54,6 +49,7 @@
             <47>Oh ho ho, my genius shows, even in my casual clothes!</47>
             <48>Another day, another deed, Shantotto&apos;s triumphs are guaranteed!</48>
             <49>What&apos;s this? A trinket to claim? Soon it shall bear my name!</49>
+            <5>Ah, your smile&apos;s quite contagious - its joy is outrageous!</5>
             <50>The winds do howl, the skies do roar, yet my power always leaves them floored!</50>
             <51>Oh ho ho, a spell divine, soon this world shall all be mine!</51>
             <52>A little mischief, a tiny plight, makes the day just feel so right!</52>
@@ -64,6 +60,7 @@
             <57>A spark of wit, a flare of flame, adventurers will know my name!</57>
             <58>I stride with grace, I cast with flair, no one dares to even stare!</58>
             <59>Oh ho ho, they take their chance, and then they cower at my glance!</59>
+            <6>Ho ho, your positivity spreads - lifting all hearts and heads!</6>
             <60>When all is done, and they&apos;ve been beat, I&apos;ll have the last laugh, oh how sweet!</60>
             <61>Should I bring forth thunder&apos;s might, or leave them dazzled by the light?</61>
             <62>Oh ho ho, a twist of fate, my plans unfold at the perfect rate!</62>
@@ -74,19 +71,24 @@
             <67>What&apos;s this I hear, a hint of doubt? Oh ho ho, I&apos;ll sort it out!</67>
             <68>The clever rise, the foolish fall, my wisdom shall outshine them all!</68>
             <69>A shock, a blast, a spell so bright, it turns the darkest day to night!</69>
+            <7>Oh ho, you inspire with zest - bringing out the best!</7>
             <70>Oh ho ho, a riddle to solve, a puzzle for my mind to evolve!</70>
             <71>The day is short, but oh, how sweet, when triumph makes it so complete!</71>
             <72>Oh ho ho, a clever ploy, to turn their power into my toy!</72>
             <73>The world is mine, the skies agree, they bow in awe of mighty me!</73>
             <74>Oh ho ho, the tale is told, of Shantotto&apos;s brilliance, brave and bold!</74>
+            <8>Ah, your heart shines so bold - truly a treasure of gold!</8>
+            <9>Ho ho, a friend so rare - you&apos;re beyond compare!</9>
         </flavor_text>
-		<info>
-        	<introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
-        	<name>Shantotto</name>
-        	<name_color>36</name_color>
-        	<text_color>209</text_color>
-			<version>1.0</version>
-		</info>
+        <info>
+			<description>Witty, rhyming, and slightly menacing.</description>
+            <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
+            <name>Shantotto</name>
+            <name_color>36</name_color>
+            <sha>6dcaf190755933a784729e1da4e258d0a9e9c0c5</sha>
+            <text_color>209</text_color>
+            <version>2</version>
+        </info>
         <member_joined_alliance>Oh ho, ${member} joins the fray - our power grows this day!</member_joined_alliance>
         <member_joined_party>Oh ho, ${member} has come - let&apos;s make this party hum!</member_joined_party>
         <member_left_alliance>Ah, ${member} takes their leave - a loss, we must grieve!</member_left_alliance>
