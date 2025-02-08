@@ -6,14 +6,6 @@
         <capped_merit_points>Your Merit Points are full! Now if only I could spend mine on something more fun...</capped_merit_points>
         <flavor_text>
             <1>Is that a kraken club in your pocket, or are you just happy to see me?</1>
-            <2>If gear swapping was foreplay, I&apos;d be the best in the game.</2>
-            <3>Did someone cast Refresh, or are you just naturally invigorating?</3>
-            <4>Nothing like a stiff... drink during a long raid, am I right?</4>
-            <5>Your macros are so smooth, I think I just swooned.</5>
-            <6>I love a good skillchain... but let&apos;s make sure we finish together.</6>
-            <7>Fyreign couldn&apos;t land a debuff if it came gift-wrapped.</7>
-            <8>If I had a gil for every bad decision Fyreign made, I&apos;d own Jeuno.</8>
-            <9>Tequila makes me a better player - or at least, I think so!</9>
             <10>One more shot of tequila and I might just try to tank this fight.</10>
             <11>I&apos;m not saying I flirt too much, but even my Trusts are blushing.</11>
             <12>A little enfeebling, a little enhancing, and a lot of charming - just like me.</12>
@@ -24,6 +16,7 @@
             <17>Nothing hits harder than a well-timed weapon skill... except maybe me after three shots of tequila.</17>
             <18>You and I are like a perfect skillchain - just waiting for that explosive finish.</18>
             <19>I like my cocktails like my subjobs - strong and versatile.</19>
+            <2>If gear swapping was foreplay, I&apos;d be the best in the game.</2>
             <20>Your lockstyle is so hot, I might need to call a white mage for Raise.</20>
             <21>Pulling without telling the party? Fyreign, you chaotic little gremlin.</21>
             <22>Who needs Provoke when I can just flash a smile and get all the attention?</22>
@@ -34,6 +27,7 @@
             <27>If dodging mechanics was an art, Fyreign would be drawing stick figures.</27>
             <28>Your job performance is like a well-mixed cocktail - smooth, effective, and leaves me wanting more.</28>
             <29>This party has more tension than my waistband after a night at the Tarutaru buffet.</29>
+            <3>Did someone cast Refresh, or are you just naturally invigorating?</3>
             <30>If charming monsters was a real ability, trust me, I&apos;d have the whole zone under my spell.</30>
             <31>You make me feel like I&apos;ve got double Madrigal and a perfect TP set.</31>
             <32>Fighting without buffs is like sex without tears - it just doesn&apos;t feel right.</32>
@@ -41,14 +35,22 @@
             <34>Your DPS is so high, I think I need a moment to cool off.</34>
             <35>You can stand in my burning circle anytime.</35>
             <36>You lint licker!</36>
+            <4>Nothing like a stiff... drink during a long raid, am I right?</4>
+            <5>Your macros are so smooth, I think I just swooned.</5>
+            <6>I love a good skillchain... but let&apos;s make sure we finish together.</6>
+            <7>Fyreign couldn&apos;t land a debuff if it came gift-wrapped.</7>
+            <8>If I had a gil for every bad decision Fyreign made, I&apos;d own Jeuno.</8>
+            <9>Tequila makes me a better player - or at least, I think so!</9>
         </flavor_text>
-		<info>
-        	<introduction>We aren&apos;t here for a long time; we&apos;re here for a good time. Now, pour a drink and replenish your panaceas. I&apos;m Galin, and we&apos;re about to make some memories.</introduction>
-        	<name>Galin</name>
-        	<name_color>36</name_color>
-        	<text_color>160</text_color>
-			<version>1.1</version>
-		</info>
+        <info>
+			<description>Flirty, fun, and fueled by tequila.</description>
+            <introduction>We aren&apos;t here for a long time; we&apos;re here for a good time. Now, pour a drink and replenish your panaceas. I&apos;m Galin, and we&apos;re about to make some memories.</introduction>
+            <name>Galin</name>
+            <name_color>36</name_color>
+            <sha>b75afaf274099b144eddbdcf23db89c9daa45ec9</sha>
+            <text_color>160</text_color>
+            <version>2</version>
+        </info>
         <member_joined_alliance>We&apos;ve got company! ${member} has joined the alliance, and I do love a big group.</member_joined_alliance>
         <member_joined_party>Ooh, ${member} joined the party! Let&apos;s see if they can keep up.</member_joined_party>
         <member_left_alliance>Farewell, ${member}! You&apos;ll be missed... unless you were just here for the loot.</member_left_alliance>
