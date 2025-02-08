@@ -6,14 +6,6 @@
         <capped_merit_points>Well look at you, sittin&apos; on a pile of Merit Points! That&apos;s some real noble effort right there!</capped_merit_points>
         <flavor_text>
             <1>Aw man, you&apos;re lookin&apos; perty sharp today!</1>
-            <2>You got that San d&apos;Orian spirit - classy and strong!</2>
-            <3>Y&apos;know, if you ever get tired of all that soot in Bastok, San d&apos;Oria&apos;s got open fields and fresh air.</3>
-            <4>Ain&apos;t nothin&apos; better than a crisp morning in Ronfaure!</4>
-            <5>Aw man, you&apos;re fightin&apos; like a true knight of San d&apos;Oria!</5>
-            <6>You ever just sit back and admire the flags in San d&apos;Oria? Real noble-lookin&apos;, ain&apos;t they?</6>
-            <7>Bastok&apos;s got machines, sure, but San d&apos;Oria&apos;s got history, honor, and bagpipes!</7>
-            <8>You ever try a fresh Elshimo coconut? Not as good as San d&apos;Orian wine, but still perty tasty!</8>
-            <9>Y&apos;know, people in San d&apos;Oria walk with purpose! Unlike Bastok where they just shuffle in the dust.</9>
             <10>You&apos;re tougher than an Orc in Davoi and twice as smart!</10>
             <11>Aw man, this is perty exciting - I can feel the energy in the air!</11>
             <12>Some folks say &apos;luck&apos; - I say &apos;San d&apos;Orian determination&apos;!</12>
@@ -24,6 +16,7 @@
             <17>You ever just stop and admire the craftsmanship of San d&apos;Orian armor?</17>
             <18>Aw man, you see that move? That was downright noble!</18>
             <19>Ain&apos;t nothin&apos; like a good day in San d&apos;Oria—blue skies, noble folk, and a perty castle!</19>
+            <2>You got that San d&apos;Orian spirit - classy and strong!</2>
             <20>You ever just stop and listen to the San d&apos;Orian anthem? Gives me chills every time!</20>
             <21>San d&apos;Oria&apos;s got the best views, the best food, and the best people!</21>
             <22>Aw man, the scent of fresh-baked San d&apos;Orian bread in the morning? Nothin&apos; beats it!</22>
@@ -34,14 +27,23 @@
             <27>You ever see a Bastokan knight? Yeah, me neither!</27>
             <28>Y&apos;know, I swear these dice are rigged. Probably made in Bastok...</28>
             <29>I think I&apos;m goin skiing this weekend!</29>
+            <3>Y&apos;know, if you ever get tired of all that soot in Bastok, San d&apos;Oria&apos;s got open fields and fresh air.</3>
             <30>I knew it!</30>
+            <4>Ain&apos;t nothin&apos; better than a crisp morning in Ronfaure!</4>
+            <5>Aw man, you&apos;re fightin&apos; like a true knight of San d&apos;Oria!</5>
+            <6>You ever just sit back and admire the flags in San d&apos;Oria? Real noble-lookin&apos;, ain&apos;t they?</6>
+            <7>Bastok&apos;s got machines, sure, but San d&apos;Oria&apos;s got history, honor, and bagpipes!</7>
+            <8>You ever try a fresh Elshimo coconut? Not as good as San d&apos;Orian wine, but still perty tasty!</8>
+            <9>Y&apos;know, people in San d&apos;Oria walk with purpose! Unlike Bastok where they just shuffle in the dust.</9>
         </flavor_text>
         <info>
+			<description>Super nice guy, loves San d'Oria maybe a little too much.</description>
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
+            <sha>4da55d2ba293e1da7e97ee580616becd6e5bebac</sha>
             <text_color>39</text_color>
-            <version>1</version>
+            <version>2</version>
         </info>
         <member_joined_alliance>Aw man, ${member} just hopped into the alliance - things are gettin&apos; exciting now!</member_joined_alliance>
         <member_joined_party>Hey now, ${member} just joined up! This party&apos;s lookin&apos; perty solid!</member_joined_party>
