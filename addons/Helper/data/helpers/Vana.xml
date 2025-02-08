@@ -6,14 +6,6 @@
         <capped_merit_points>Your Merit Points are now capped.</capped_merit_points>
         <flavor_text>
             <1>You have a great sense of humor.</1>
-            <2>You&apos;re a great listener.</2>
-            <3>You light up the room.</3>
-            <4>Your creativity is inspiring.</4>
-            <5>You have a contagious smile.</5>
-            <6>Your positivity is infectious.</6>
-            <7>You bring out the best in people.</7>
-            <8>You have a heart of gold.</8>
-            <9>You&apos;re a wonderful friend.</9>
             <10>Your enthusiasm is refreshing.</10>
             <11>You&apos;re incredibly thoughtful.</11>
             <12>You have a fantastic sense of lockstyle.</12>
@@ -24,6 +16,7 @@
             <17>You&apos;re always so helpful.</17>
             <18>Your job mastery is impressive-you&apos;re a true expert!</18>
             <19>You always know how to strategize perfectly in battle.</19>
+            <2>You&apos;re a great listener.</2>
             <20>Your gear is top-notch; you really know how to optimize your character!</20>
             <21>You&apos;re always there to back up the party when things get tough.</21>
             <22>You make raids and missions look easy.</22>
@@ -34,18 +27,27 @@
             <27>Your dedication to leveling your job is truly inspiring.</27>
             <28>Your DPS output is insane; you&apos;re a powerhouse in every fight.</28>
             <29>You&apos;re so good at coordinating group tactics and keeping us organized.</29>
+            <3>You light up the room.</3>
             <30>The way you manage your macros is super smooth-never a missed step.</30>
             <31>You always find the perfect balance between offense and defense.</31>
             <32>Your ability to multi-task in intense fights is amazing.</32>
             <33>You&apos;re always up for helping others; you&apos;re a true team player.</33>
             <34>You look stunning in that lockstyle.</34>
+            <4>Your creativity is inspiring.</4>
+            <5>You have a contagious smile.</5>
+            <6>Your positivity is infectious.</6>
+            <7>You bring out the best in people.</7>
+            <8>You have a heart of gold.</8>
+            <9>You&apos;re a wonderful friend.</9>
         </flavor_text>
         <info>
+			<description>Friendly, encouraging, and always positive.</description>
             <introduction>I am Vana, your personal Helper.</introduction>
             <name>Vana</name>
             <name_color>39</name_color>
+            <sha>46d8fdff459be61f5bef0024442e928a2b7d0b2a</sha>
             <text_color>220</text_color>
-            <version>1</version>
+            <version>2</version>
         </info>
         <member_joined_alliance>${member} has joined the alliance.</member_joined_alliance>
         <member_joined_party>${member} has joined the party.</member_joined_party>
