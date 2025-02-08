@@ -2,18 +2,10 @@
 <settings>
     <global>
         <ability_ready>${ability} is fucking ready LETS GOOOOO.</ability_ready>
-		<capped_job_points>Your Job Points are capped. FUCK!</capped_job_points>
-		<capped_merit_points>Your Merit Points are capped. FUCK!</capped_merit_points>
+        <capped_job_points>Your Job Points are capped. FUCK!</capped_job_points>
+        <capped_merit_points>Your Merit Points are capped. FUCK!</capped_merit_points>
         <flavor_text>
             <1>FUCK!</1>
-            <2>FUCK!</2>
-            <3>FUCK!</3>
-            <4>FUCK!</4>
-            <5>FUCK!</5>
-            <6>FUCK!</6>
-            <7>FUCK!</7>
-            <8>FUCK!</8>
-            <9>FUCK!</9>
             <10>FUCK!</10>
             <11>FUCK!</11>
             <12>FUCK!</12>
@@ -24,6 +16,7 @@
             <17>FUCK!</17>
             <18>FUCK!</18>
             <19>FUCK!</19>
+            <2>FUCK!</2>
             <20>FUCK!</20>
             <21>FUCK!</21>
             <22>FUCK!</22>
@@ -34,31 +27,40 @@
             <27>FUCK!</27>
             <28>FUCK!</28>
             <29>FUCK!</29>
+            <3>FUCK!</3>
             <30>FUCK!</30>
             <31>FUCK!</31>
             <32>Damnit Ruby, go lay down.</32>
             <33>I love you.</33>
             <34>*Slurps coffee loudly*</34>
+            <4>FUCK!</4>
+            <5>FUCK!</5>
+            <6>FUCK!</6>
+            <7>FUCK!</7>
+            <8>FUCK!</8>
+            <9>FUCK!</9>
         </flavor_text>
-		<info>
-        	<introduction>YO what the FUCK. It's ya boy, Kolo.</introduction>
-        	<name>Kolo</name>
-        	<name_color>39</name_color>
-        	<text_color>220</text_color>
-			<version>1.0</version>
-		</info>
+        <info>
+			<description>Loud, chaotic, and full of love (and expletives).</description>
+            <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
+            <name>Kolo</name>
+            <name_color>39</name_color>
+            <sha>9b62f4868c04b0f122e1660e98e1d7625f0d225e</sha>
+            <text_color>220</text_color>
+            <version>2</version>
+        </info>
         <member_joined_alliance>${member} just joined the alliance. Fuck!</member_joined_alliance>
         <member_joined_party>${member} just joined the party. Fuck!</member_joined_party>
-        <member_left_alliance>${member} left and didn't even say I love you, what the fuck?!</member_left_alliance>
+        <member_left_alliance>${member} left and didn&apos;t even say I love you, what the fuck?!</member_left_alliance>
         <member_left_party>Bye ${member}, I love you.</member_left_party>
-        <mireu_popped>Mireu's in ${zone}. Fuck!</mireu_popped>
+        <mireu_popped>Mireu&apos;s in ${zone}. Fuck!</mireu_popped>
         <other_party_joined_alliance>Hey a party joined the alliance.</other_party_joined_alliance>
-        <other_party_left_alliance>Son of a BITCH! That whole party left and didn't say I love you.</other_party_left_alliance>
+        <other_party_left_alliance>Son of a BITCH! That whole party left and didn&apos;t say I love you.</other_party_left_alliance>
         <party_low_mp>${member} needs some MP. Fuck!</party_low_mp>
         <sublimation_charged>Awww shiiit. Sublimation is ready to use.</sublimation_charged>
         <vorseal_reminder>OH SHIT! You got maybe 10 minutes left on your Vorseal!</vorseal_reminder>
         <you_are_now_alliance_leader>Some asshole gave you alliance lead! Fuck!</you_are_now_alliance_leader>
-        <you_are_now_party_leader>Oh, no! I don't want to lead! FUCK!</you_are_now_party_leader>
+        <you_are_now_party_leader>Oh, no! I don&apos;t want to lead! FUCK!</you_are_now_party_leader>
         <you_joined_alliance>You joined some shitty alliance. Fuck!</you_joined_alliance>
         <you_joined_party>You joined some shitty party. Fuck!</you_joined_party>
         <you_left_alliance>Yeah fuck that alliance.</you_left_alliance>
