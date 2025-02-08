@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.0.2'
+_addon.version = '1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -46,6 +46,7 @@ local addon_path = windower.addon_path
 local play_sound = windower.play_sound
 
 defaults = {
+	first_run = true,
 	last_check = 0,
 	options = {
 		ability_ready = {
@@ -132,6 +133,7 @@ vana = {
 	info = {
 		name = "Vana",
 		introduction = "I am Vana, your personal Helper.",
+		description = "Friendly, encouraging, and always positive.",
 		name_color = 39,
 		text_color = 220,
 		version = 1.0,
@@ -204,6 +206,7 @@ local current_helper_name
 local c_name
 local c_text
 
+local first_run = settings.first_run
 local introduce_on_load = settings.options.introduce_on_load
 local auto_check_for_updates = settings.options.auto_check_for_updates
 local auto_update = settings.options.auto_update
@@ -364,8 +367,32 @@ local function updatePartyStructure()
 
 end
 
+local function firstRun()
+
+	-- Exit if this isn't the first run
+	if not first_run then return end
+
+	first_run = false
+	settings.first_run = false
+	settings:save('all')
+
+	add_to_chat(8,('[Helper] '):color(220)..('Thank you for installing Helper.'):color(8))
+	coroutine.sleep(1)
+
+	add_to_chat(8,('[Helper] '):color(220)..('Type '):color(8)..('//helper update '):color(1)..('to make sure Helper is up to date with all files.'):color(8))
+	coroutine.sleep(1)
+
+	add_to_chat(8,('[Helper] '):color(220)..('Type '):color(8)..('//helper help '):color(1)..('at any time to view the list of commands.'):color(8))
+	coroutine.sleep(1)
+
+	add_to_chat(8,('[Helper] '):color(220)..('I hope you enjoy!  -Key'):color(8))
+	coroutine.sleep(1)
+
+end
+
 --Determine starting states
 local function initialize()
+
 	--Update the party/alliance structure
 	party_structure = updatePartyStructure()
 	in_alliance = false
@@ -415,6 +442,7 @@ end
 
 --Get a list of local Helper files
 local function get_local_helpers()
+
 	local local_helpers = {}
 
 	--Check for known helper files by iterating over the loaded list
@@ -426,10 +454,12 @@ local function get_local_helpers()
 	end
 
 	return local_helpers
+
 end
 
 --Get list of helpers from GitHub
 local function get_github_helpers()
+
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/helpers"
 
 	-- Use curl to fetch GitHub API response directly into a Lua variable
@@ -448,10 +478,12 @@ local function get_github_helpers()
 	end
 
 	return github_helpers
+
 end
 
 --Check for new helpers on GitHub
 local function check_for_new_helpers()
+
 	local local_helpers = get_local_helpers()
 	local github_helpers = get_github_helpers()
 
@@ -478,10 +510,12 @@ local function check_for_new_helpers()
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('No new Helpers.'):color(8))
 	end
+
 end
 
 --Get the SHA of the Helper.lua file on GitHub
 local function get_github_addon_sha()
+
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/Helper.lua"
 
 	-- Fetch GitHub API response directly into a Lua variable
@@ -496,10 +530,12 @@ local function get_github_addon_sha()
 	local helper_sha = response:match('"sha"%s*:%s*"([^"]+)"')
 
 	return helper_sha or nil
+
 end
 
 --Check for updates to the Helper addon
 local function check_for_addon_updates()
+
 	-- Retrieve the latest SHA from GitHub
 	local github_sha = get_github_addon_sha()
 
@@ -518,10 +554,12 @@ local function check_for_addon_updates()
 		add_to_chat(8,('[Helper] '):color(220)..('Update available for the Helper addon!'):color(8))
 		new_updates = true
 	end
+
 end
 
 --Update the SHA tag of a downloaded Helper
 local function update_helper_sha(file_name, new_sha)
+
 	local filepath = addon_path .. "data/helpers/" .. file_name
 
 	-- Read XML file
@@ -541,10 +579,11 @@ local function update_helper_sha(file_name, new_sha)
 
 	-- Save updated XML
 	local name = string.lower(file_name:gsub("%.xml$", ""))
-	coroutine.schedule(function()
+	-- coroutine.schedule(function()
 		helpers[name].info.sha = new_sha
 		helpers[name]:save('all')
-	end, 1)
+	-- end, 1)
+
 end
 
 --Uopdate the SHA tag of the Helper.lua file
@@ -555,6 +594,7 @@ end
 
 --Retrieve the SHAs of the Helper files on GitHub
 local function get_github_helper_shas()
+
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/helpers"
 
 	-- Fetch GitHub API response directly into a Lua variable
@@ -576,10 +616,12 @@ local function get_github_helper_shas()
 	end
 
 	return github_helper_shas
+
 end
 
 --Check for updates to the Helpers
 local function check_for_helper_updates()
+
 	local github_helper_shas = get_github_helper_shas()
 
 	if not github_helper_shas then
@@ -612,10 +654,12 @@ local function check_for_helper_updates()
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('All Helpers are up to date.'):color(8))
 	end
+
 end
 
 --Download a Helper from GitHub
 local function download_helper(file_name, github_helper_sha)
+
 	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/helpers/" .. file_name
 	local filepath = addon_path .. "data/helpers/" .. file_name
 
@@ -632,8 +676,6 @@ local function download_helper(file_name, github_helper_sha)
 	--Update the Helper SHA
 	update_helper_sha(file_name, github_helper_sha)
 
-	file_name = file_name:gsub("%.xml$", "")
-	add_to_chat(8,('[Helper] '):color(220)..('Updated: '):color(8)..(file_name):color(1))
 end
 
 --Download the latest version of Helper.lua from GitHub
@@ -652,10 +694,12 @@ local function download_addon(github_addon_sha)
 
 	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
 	windower.send_command('lua r helper')
+
 end
 
---Check for updated Helpers on GitHub
-local function update_existing_helpers()
+--Update any current Helpers that have been changed on GitHub
+local function update_current_helpers()
+
 	local github_helper_shas = get_github_helper_shas()
 
 	if not github_helper_shas then
@@ -666,6 +710,7 @@ local function update_existing_helpers()
 	local updated_helpers = {}
 
 	for name, github_helper_info in pairs(github_helper_shas) do
+
 		local file_name = github_helper_info.file_name
 		local github_helper_sha = github_helper_info.sha
 		name = string.lower(name)
@@ -678,13 +723,20 @@ local function update_existing_helpers()
 		end
 	end
 
-	-- Notify user
-	if #updated_helpers == 0 then
+	if #updated_helpers > 0 then
+		add_to_chat(8,('[Helper] '):color(220)..('Updated %s:'):color(8):format(#updated_helpers == 1 and 'Helper' or 'Helpers'))
+		for _, helper in ipairs(updated_helpers) do
+			add_to_chat(8,(' - '):color(8)..(helper):color(1))
+		end
+	else
 		add_to_chat(8,('[Helper] '):color(220)..('All Helpers are up to date.'):color(8))
 	end
+
 end
 
+--Download any new Helpers from GitHub
 local function download_new_helpers()
+
 	local github_helper_shas = get_github_helper_shas()
 
 	if not github_helper_shas then
@@ -706,14 +758,61 @@ local function download_new_helpers()
 		end
 	end
 
-	-- Notify user
-	if #new_helpers == 0 then
-		add_to_chat(8,('[Helper] '):color(220)..('No new Helpers found.'):color(8))
+	if #new_helpers > 0 then
+		add_to_chat(8,('[Helper] '):color(220)..('New %s:'):color(8):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
+		for _, helper in ipairs(new_helpers) do
+			add_to_chat(8,(' - '):color(8)..(helper):color(1))
+		end
+	else
+		add_to_chat(8,('[Helper] '):color(220)..('All new Helpers downloaded.'):color(8))
+	end
+
+end
+
+--Check for missing sound files
+local function check_and_download_sounds()
+	local sound_folder = windower.addon_path .. "data/sounds/"
+	
+	--Ensure the data/sounds folder exists
+	if not windower.dir_exists(sound_folder) then
+		windower.create_dir(sound_folder)
+	end
+
+	--List of required sound files
+	local sound_files = {
+		"ability_ready.wav",
+		"member_joined_party.wav",
+		"member_left_party.wav",
+		"now_alliance_leader.wav",
+		"now_party_leader.wav",
+		"party_joined_alliance.wav",
+		"party_left_alliance.wav"
+	}
+
+	--Base URL for sound files on GitHub
+	local base_url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/sounds/"
+
+	--Check each sound file
+	for _, filename in ipairs(sound_files) do
+		local file_path = sound_folder .. filename
+
+		--If the file does not exist, download it
+		if not windower.file_exists(file_path) then
+
+			local download_url = base_url .. filename
+			local curl_command = string.format('start /B curl -s -L -o "%s" "%s"', file_path, download_url)
+			os.execute(curl_command)
+
+		end
 	end
 end
 
 --Check for updated addon on GitHub
 local function update_addon()
+
+	--Make sure all sound files are present
+	check_and_download_sounds()
+
 	local local_addon_sha = settings.addon_sha
 	local github_addon_sha = get_github_addon_sha()
 
@@ -729,14 +828,54 @@ local function update_addon()
 	end
 end
 
+--Save the time of the last check
 local function save_last_check()
 	settings.last_check = os.time()
 	settings:save('all')
 end
 
+--Update everything
+local function updateAll()
+
+	add_to_chat(8,('[Helper] '):color(220)..('Downloading new Helpers...'):color(8))
+	coroutine.sleep(1)
+	download_new_helpers()
+
+	add_to_chat(8,('[Helper] '):color(220)..('Updating current Helpers...'):color(8))
+	coroutine.sleep(1)
+	update_current_helpers()
+
+	add_to_chat(8,('[Helper] '):color(220)..('Updating Helper addon...'):color(8))
+	coroutine.sleep(1)
+	update_addon()
+
+	save_last_check()
+
+end
+
+--Check for updates to everything
+local function checkAll()
+
+	add_to_chat(8,('[Helper] '):color(220)..('Checking for new Helpers...'):color(8))
+	coroutine.sleep(1)
+	check_for_new_helpers()
+
+	add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to current Helpers...'):color(8))
+	coroutine.sleep(1)
+	check_for_helper_updates()
+
+	add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to Helper addon...'):color(8))
+	coroutine.sleep(1)
+	check_for_addon_updates()
+
+	save_last_check()
+
+end
+
 --Auto-check for updates
 local function auto_check_for_updates()
-	if not auto_check_for_updates and not auto_update then
+
+	if first_run or (not auto_check_for_updates and not auto_update) then
 		return --Exit if neither auto-check nor auto-update is enabled
 	end
 
@@ -744,27 +883,15 @@ local function auto_check_for_updates()
 	local last_check = settings.last_check or 0
 	local one_week = 7 * 24 * 60 * 60  --7 days in seconds
 
-	--Check for updates if this is the first run
-	if get_info().logged_in and last_check == 0 then
-		
-		check_for_new_helpers()
-		check_for_helper_updates()
-		check_for_addon_updates()
-		save_last_check()
-		
 	--Only check if logged in and at least a week has passed since last check
-	elseif get_info().logged_in and (current_time - last_check >= one_week) then
+	if get_info().logged_in and (current_time - last_check >= one_week) then
 
 		if settings.auto_update then
-			update_existing_helpers()
-			download_new_helpers()
-			update_addon()
-			save_last_check()
+
+			updateAll()
+
 		elseif settings.auto_check_for_updates then
-			check_for_new_helpers()
-			check_for_helper_updates()
-			check_for_addon_updates()
-			save_last_check()
+			checkAll()
 		end
 
 	end
@@ -792,8 +919,11 @@ local function capitalize(str)
 end
 
 register_event('incoming chunk', function(id, original, modified, injected, blocked)
+
 	if injected or blocked then return end
+
 	local packet = packets.parse('incoming', original)
+
 	if id == 0x063 then
 		local player = get_player()
 		if player then -- on menu/zone update packet
@@ -820,6 +950,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 			job_points = job_points + jp_gained >= 500 and 500 or job_points + jp_gained
 		end
 	end
+
 	if capped_merit_points and merit_points == max_merit_points and not capped_merits then
 		capped_merits = true
 		local text = helpers[current_helper].capped_merit_points
@@ -829,6 +960,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	elseif merit_points < max_merit_points and capped_merits then
 		capped_merits = false
 	end
+
 	if capped_job_points and job_points == 500 and not capped_job_points then
 		capped_job_points = true
 		local text = helpers[current_helper].capped_job_points
@@ -838,20 +970,24 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	elseif job_points < 500 and capped_job_points then
 		capped_job_points = false
 	end
+
 end)
 
 --Introduce the Helper
 local function introduceHelper()
+
 	local introduction = helpers[current_helper].info.introduction
 	if introduction then
 		add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(introduction):color(c_text))
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('Current Helper is set to '):color(8)..(capitalize(helpers[current_helper].name)):color(1)..('.'):color(8))
 	end
+
 end
 
 --Pick a random flavor text
 local function flavorText()
+
 	local flavor_text = helpers[current_helper].flavor_text
 
 	--Check if there are no flavor text entries for the current Helper
@@ -868,10 +1004,12 @@ local function flavorText()
 
 	--Return a random entry from the list
 	return text_entries[math.random(#text_entries)]
+
 end
 
 --Update recast timers
 local function updateRecasts()
+
 	local ability_recast = windower.ffxi.get_ability_recasts()
 
 	recast.sp1 = ability_recast[0] and math.floor(ability_recast[0]) or 0
@@ -905,34 +1043,44 @@ local function updateRecasts()
 	recast.spontaneity = ability_recast[37] and math.floor(ability_recast[37]) or 0
 	recast.tame = ability_recast[99] and math.floor(ability_recast[99]) or 0
 	recast.troubadour = ability_recast[110] and math.floor(ability_recast[110]) or 0
+
 end
 
 --Load
 register_event('load', function()
+
 	if get_info().logged_in then
+
 		initialize()
+		updateRecasts()
+		auto_check_for_updates()
+		firstRun()
 		if introduce_on_load then
 			introduceHelper()
 		end
-		updateRecasts()
-		auto_check_for_updates()
+
 	end
+
 end)
 
 --Login
 register_event('login', function()
 
-	updateRecasts()
-	initialize()
-
-	--wait 2 seconds to let game values load
 	paused = true
+	
+	--wait 2 seconds to let game values load
 	coroutine.schedule(function()
+
 		paused = false
+
+		initialize()
+		updateRecasts()
+		auto_check_for_updates()
+		firstRun()
 		if introduce_on_load then
 			introduceHelper()
 		end
-		auto_check_for_updates()
+
 	end, 2)
 
 end)
@@ -972,18 +1120,29 @@ local function checkPartyForLowMP()
 	--Loop through party members p2 to p6
 	local positions = {'p1','p2','p3','p4','p5'}
 	for _, position in ipairs(positions) do
+
 		local member = get_party()[position]
+
 		if member and member.mp and member.mpp then
+
 			--Calculate estimated max MP based on current MP and mpp
 			local estimated_max_mp = math.floor(member.mp / (member.mpp / 100))
+
 			--Check for high max MP, low mpp, and no existing Ballad or Refresh buff
 			if estimated_max_mp > 1000 and member.mpp <= 25 and not hasBalladOrRefresh(member) then
+
 				local text = helpers[current_helper].party_low_mp
+
 				if text then
+
 					local low_mp_text = refreshPlaceholder(text,member.name,player_job)
+
 					add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(low_mp_text):color(c_text))
-					check_party_for_low_mp_toggle = false --turn the toggle off so this can't be triggered again until it's turned back on
-					check_party_for_low_mp_countdown = check_party_for_low_mp_delay --reset the countdown timer so we don't check again until ready
+					-- Turn the toggle off so this can't be triggered again until it's turned back on
+					check_party_for_low_mp_toggle = false
+					-- Reset the countdown timer so we don't check again until ready
+					check_party_for_low_mp_countdown = check_party_for_low_mp_delay
+
 				end
 			end
 		end
@@ -1002,6 +1161,7 @@ end
 
 --Replace the ability placeholders
 local function abilityPlaceholders(text, ability)
+
 	local player_job = get_player().main_job
 	local SP1 = {
 		WAR = "Mighty Strikes", MNK = "Hundred Fists", WHM = "Benediction",
@@ -1034,6 +1194,7 @@ local function abilityPlaceholders(text, ability)
 	end
 
 	return text:gsub("%${ability}", ability_name)
+
 end
 
 -- Function to cycle to the next Helper
@@ -1074,17 +1235,22 @@ end
 
 -- Helper function to create a table of member names for a given set of positions
 local function getMemberNames(structure, positions)
+
 	local members = {}
+
 	for _, position in ipairs(positions) do
 		if structure[position] then
 			table.insert(members, structure[position])
 		end
 	end
+
 	return members
+
 end
 
 -- Helper function to find the difference between two tables of member names
 local function findDifferences(old_members, new_members)
+
 	local changes = {
 		added = {},
 		removed = {}
@@ -1116,6 +1282,7 @@ local function findDifferences(old_members, new_members)
 	end
 
 	return changes
+
 end
 
 --Compare party/alliance structure
@@ -1173,36 +1340,42 @@ function trackPartyStructure()
 		if sound_effects.member_joined_party then
 			play_sound(addon_path..'data/sounds/member_joined_party.wav')
 		end
+
 	--You join a party that is not in an alliance
 	elseif announce.you_joined_party and not previously_in_party and now_in_party and not now_party_leader then
 		text = helpers[current_helper].you_joined_party
 		if sound_effects.member_joined_party then
 			play_sound(addon_path..'data/sounds/member_joined_party.wav')
 		end
+
 	--You leave a party that is part of an alliance
 	elseif announce.you_left_alliance and previously_in_alliance and not now_in_party then
 		text = helpers[current_helper].you_left_alliance
 		if sound_effects.member_left_party then
 			play_sound(addon_path..'data/sounds/member_left_party.wav')
 		end
+
 	--You leave a party that is not part of an alliance
 	elseif announce.you_left_party and previously_in_party and not now_in_party then
 		text = helpers[current_helper].you_left_party
 		if sound_effects.member_left_party then
 			play_sound(addon_path..'data/sounds/member_left_party.wav')
 		end
+
 	--Your party joined an alliance
 	elseif announce.your_party_joined_alliance and previously_in_party and now_in_alliance and not previously_in_alliance then
 		text = helpers[current_helper].your_party_joined_alliance
 		if sound_effects.party_joined_alliance then
 			play_sound(addon_path..'data/sounds/party_joined_alliance.wav')
 		end
+
 	--Your party left an alliance
 	elseif announce.your_party_left_alliance and previously_in_alliance and not now_in_alliance then
 		text = helpers[current_helper].your_party_left_alliance
 		if sound_effects.party_left_alliance then
 			play_sound(addon_path..'data/sounds/party_left_alliance.wav')
 		end
+
 	-- Another party joined the alliance
 	elseif announce.other_party_joined_alliance and previously_in_alliance and now_in_alliance and 
 	((not old_p2_leader and new_p2_leader) or (not old_p3_leader and new_p3_leader)) then
@@ -1210,6 +1383,7 @@ function trackPartyStructure()
 		if sound_effects.party_joined_alliance then
 			play_sound(addon_path..'data/sounds/party_joined_alliance.wav')
 		end
+
 	-- Another party left the alliance
 	elseif announce.other_party_left_alliance and previously_in_alliance and now_in_alliance and 
 	((old_p2_leader and not new_p2_leader) or (old_p3_leader and not new_p3_leader)) then
@@ -1217,6 +1391,7 @@ function trackPartyStructure()
 		if sound_effects.party_left_alliance then
 			play_sound(addon_path..'data/sounds/party_left_alliance.wav')
 		end
+
 	--Member joined/left your party
 	elseif not text and new_party_structure and party_structure and 
 	new_p1_count and old_p1_count and new_p1_count ~= old_p1_count then
@@ -1311,6 +1486,7 @@ function trackPartyStructure()
 		if sound_effects.now_alliance_leader then
 			play_sound(addon_path..'data/sounds/now_alliance_leader.wav')
 		end
+
 	--You become the party leader
 	elseif announce.you_are_now_party_leader and previously_in_party and not previously_party_leader and now_party_leader then
 		text = helpers[current_helper].you_are_now_party_leader
@@ -1360,10 +1536,12 @@ end)
 
 --Player changes job
 register_event('job change', function()
+
 	--prevents job changing from triggerring ability ready notifications
 	paused = true
 	coroutine.sleep(3)
 	paused = false
+
 end)
 
 --Parses incoming text
@@ -1545,6 +1723,7 @@ register_event('prerender', function()
 end)
 
 register_event('addon command',function(addcmd, ...)
+
 	local arg = {...}
 
 	if addcmd == 'load' or addcmd == 'l' then
@@ -1602,20 +1781,37 @@ register_event('addon command',function(addcmd, ...)
 		end
 
 	elseif addcmd == 'list' then
-		local helper_list = {}
 		for name, enabled in pairs(helpers) do
-			if enabled and helpers[name].info and helpers[name].info.name then
-				table.insert(helper_list, helpers[name].info.name)
+			if enabled and helpers[name].info then
+				local helper_name = helpers[name].info.name
+				local helper_version = helpers[name].info.version or "Unknown"
+				local helper_description = helpers[name].info.description or "No description available."
+				local c_name = helpers[name].info.name_color or 220
+				local c_text = helpers[name].info.text_color or 1
+				add_to_chat(8, ('['..helper_name..'] '):color(c_name) .. (helper_description..' (v'..helper_version..')'):color(c_text))
 			end
 		end
-		table.sort(helper_list)
-		add_to_chat(1,('[Helper] '):color(220)..('Loaded Helpers: '):color(220)..('\n'..table.concat(helper_list, '\n')):color(1))
 
 	elseif addcmd == 'help' then
+		local function get_last_check_date()
+			if not settings.last_check or settings.last_check == 0 then
+				return "Never"
+			end
+			-- Convert the timestamp into a readable date (MM/DD/YYYY)
+			local time_table = os.date("*t", settings.last_check)
+			return string.format("%d/%d/%d", time_table.month, time_table.day, time_table.year)
+		end
+		local last_check_date = get_last_check_date()		
 		local prefix = "//helper"
 		local helper_version = helpers[current_helper].info.version
+		local helper_description = helpers[current_helper].info.description or "No description available."
+		local c_name = helpers[current_helper].info.name_color or 220
+		local c_text = helpers[current_helper].info.text_color or 1
 		add_to_chat(8,('[Helper] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
-		add_to_chat(8,(' Current Helper: '):color(8)..('['..current_helper_name..']'):color(c_name)..(' Version '..helper_version):color(c_text))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
+		add_to_chat(8,(' ['..current_helper_name..']'):color(c_name)..(helper_description):color(c_text))
+		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' (blank/no command) '):color(36)..('- Cycle to the next loaded Helper.'):color(8))
@@ -1634,18 +1830,24 @@ register_event('addon command',function(addcmd, ...)
 		if arg[1] then
 			local subcmd = string.lower(table.concat(arg,' '))
 			if subcmd == "new" then
+				add_to_chat(8,('[Helper] '):color(220)..('Checking for new Helpers...'):color(8))
+				coroutine.sleep(1)
 				check_for_new_helpers()
 				if new_updates then
 					add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download new Helpers.'):color(8))
 					new_updates = false
 				end
 			elseif subcmd == "current" then
+				add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to current Helpers...'):color(8))
+				coroutine.sleep(1)
 				check_for_helper_updates()
 				if new_updates then
 					add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download current Helper updates.'):color(8))
 					new_updates = false
 				end
 			elseif subcmd == "addon" then
+				add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to Helper addon...'):color(8))
+				coroutine.sleep(1)
 				check_for_addon_updates()
 				if new_updates then
 					add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update addon'):color(1)..(' to download addon update.'):color(8))
@@ -1655,9 +1857,7 @@ register_event('addon command',function(addcmd, ...)
 				add_to_chat(8,('[Helper] '):color(220)..('Unrecognized command. Type'):color(8)..(' //helper help'):color(1)..(' for a list of commands.'):color(8))
 			end
 		else
-			check_for_new_helpers()
-			check_for_helper_updates()
-			check_for_addon_updates()
+			checkAll()
 			if new_updates then
 				add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download updates.'):color(8))
 				new_updates = false
@@ -1668,18 +1868,22 @@ register_event('addon command',function(addcmd, ...)
 		if arg[1] then
 			local subcmd = string.lower(table.concat(arg,' '))
 			if subcmd == "new" then
+				add_to_chat(8,('[Helper] '):color(220)..('Downloading new Helpers...'):color(8))
+				coroutine.sleep(1)
 				download_new_helpers()
 			elseif subcmd == "current" then
-				update_existing_helpers()
+				add_to_chat(8,('[Helper] '):color(220)..('Updating current Helpers...'):color(8))
+				coroutine.sleep(1)
+				update_current_helpers()
 			elseif subcmd == "addon" then
+				add_to_chat(8,('[Helper] '):color(220)..('Updating Helper addon...'):color(8))
+				coroutine.sleep(1)
 				update_addon()
 			else
 				add_to_chat(8,('[Helper] '):color(220)..('Unrecognized command. Type'):color(8)..(' //helper help'):color(1)..(' for a list of commands.'):color(8))
 			end
 		else
-			update_existing_helpers()
-			download_new_helpers()
-			update_addon()
+			updateAll()
 		end
 
 	elseif addcmd == nil then
