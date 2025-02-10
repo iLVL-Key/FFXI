@@ -2,7 +2,7 @@
 <settings>
     <global>
         <ability_ready>Oh baby, ${ability} is ready to pop! Use it wisely... or recklessly, I won&apos;t judge.</ability_ready>
-        <capped_job_points>Well, look at you, Job Points maxed out and ready for action - just how I like &apos;em!</capped_job_points>
+        <capped_job_points>Well, look at you, Job Points maxed out and ready for action - just like me!</capped_job_points>
         <capped_merit_points>Your Merit Points are full! Now if only I could spend mine on something more fun...</capped_merit_points>
         <flavor_text>
             <1>Is that a kraken club in your pocket, or are you just happy to see me?</1>
@@ -29,7 +29,7 @@
             <29>This party has more tension than my waistband after a night at the Tarutaru buffet.</29>
             <3>Did someone cast Refresh, or are you just naturally invigorating?</3>
             <30>If charming monsters was a real ability, trust me, I&apos;d have the whole zone under my spell.</30>
-            <31>You make me feel like I&apos;ve got double Madrigal and a perfect TP set.</31>
+            <31>You make me feel like I&apos;ve got double Marches and a perfect TP set.</31>
             <32>Fighting without buffs is like sex without tears - it just doesn&apos;t feel right.</32>
             <33>Did someone just cast Slow on this party? Or is it just Fyreign&apos;s reaction time?</33>
             <34>Your DPS is so high, I think I need a moment to cool off.</34>
@@ -41,15 +41,16 @@
             <7>Fyreign couldn&apos;t land a debuff if it came gift-wrapped.</7>
             <8>If I had a gil for every bad decision Fyreign made, I&apos;d own Jeuno.</8>
             <9>Tequila makes me a better player - or at least, I think so!</9>
+			<37>Did you see how thick my... last Helix was?</37>
         </flavor_text>
         <info>
-			<description>Flirty, fun, and fueled by tequila.</description>
+            <description>Flirty, fun, and fueled by tequila.</description>
             <introduction>We aren&apos;t here for a long time; we&apos;re here for a good time. Now, pour a drink and replenish your panaceas. I&apos;m Galin, and we&apos;re about to make some memories.</introduction>
             <name>Galin</name>
             <name_color>36</name_color>
-            <sha>b75afaf274099b144eddbdcf23db89c9daa45ec9</sha>
+            <sha>13f641ae3b1c7eed87f104d7d4da463d759cfa7a</sha>
             <text_color>160</text_color>
-            <version>2</version>
+            <type>Player</type>
         </info>
         <member_joined_alliance>We&apos;ve got company! ${member} has joined the alliance, and I do love a big group.</member_joined_alliance>
         <member_joined_party>Ooh, ${member} joined the party! Let&apos;s see if they can keep up.</member_joined_party>
@@ -59,6 +60,10 @@
         <other_party_joined_alliance>A new party just joined - more bodies, more fun, more chaos!</other_party_joined_alliance>
         <other_party_left_alliance>A party left the alliance? Well, their loss.</other_party_left_alliance>
         <party_low_mp>Oh dear, ${member} is running low on MP - someone give them a little pick-me-up, preferably in shot form.</party_low_mp>
+        <reminder_canteen>Your Mystical Canteen is ready - stay hydrated, stay gorgeous!</reminder_canteen>
+        <reminder_mog_locker>Oof,your Mog Locker lease is running out - better renew it before you're locked out... or locked in with me!</reminder_mog_locker>
+        <reminder_moglophone>Ding ding! Your Moglophone is ready to go, and so am I.</reminder_moglophone>
+        <reminder_plate>Ooo, looks like another Shiny Ra'Kaznarian Plate is up for grabs. Hope it's as satisfying as I am.</reminder_plate>
         <sublimation_charged>Sublimation is fully charged - like me after three margaritas!</sublimation_charged>
         <vorseal_reminder>You&apos;ve got about 10 minutes left on that Vorseal effect - plenty of time to make some magic happen!</vorseal_reminder>
         <you_are_now_alliance_leader>You&apos;re the new alliance leader! Time to crack the whip - or, you know, just invite people.</you_are_now_alliance_leader>
