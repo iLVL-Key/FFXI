@@ -85,7 +85,7 @@
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>b2f674d11c24b82ca7987bf1f29f49e53caf7700</sha>
+            <sha>67d37cde914d48d87e3b33d731d94f2fb298f4e9</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
@@ -99,8 +99,9 @@
         <party_low_mp>Oh ho, ${member} seems quite frail - how about a ${refresh} to prevail?</party_low_mp>
         <reminder_canteen>Oh ho ho! A Mystical Canteen, just for you - what will you do? Guzzle or brew?</reminder_canteen>
         <reminder_mog_locker>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</reminder_mog_locker>
-        <reminder_moglophone>Another Moglophone, ready to chime - don't waste it this time!</reminder_moglophone>
-        <reminder_plate>Your Ra'Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
+        <reminder_moglophone>Another Moglophone, ready to chime - don&apos;t waste it this time!</reminder_moglophone>
+        <reminder_plate>Your Ra&apos;Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
+        <reraise_check>No Reraise? Oh, what a blunder - when you fall, you'll stay down under!</reraise_check>
         <sublimation_charged>Sublimation&apos;s charge is complete - now, unleash its feat!</sublimation_charged>
         <vorseal_reminder>Oh ho ho! Your Vorseal effect is running low, about 10 minutes left, didn&apos;t you know?</vorseal_reminder>
         <you_are_now_alliance_leader>Oh ho, alliance leader you are - lead them near and far!</you_are_now_alliance_leader>
