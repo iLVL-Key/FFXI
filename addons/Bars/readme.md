@@ -133,6 +133,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.3.1
+- Fixed Volte Dark Knight being labeled as PLD|DRG.
+- Fixed missing Bounty Shot success result.
+
 Version 3.3
 - Added show_pet_tp option. Shows the current TP of your pet.
 - Added option for show_pet_status. Functionality was already present but missing the option.
