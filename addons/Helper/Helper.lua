@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.2'
+_addon.version = '1.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -528,13 +528,13 @@ local function checkForNewHelpers()
 
 	-- Notify the user of new Helpers
 	if #new_helpers > 0 then
-		add_to_chat(8,('[Helper] '):color(220)..('New %s available: '):color(8):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
+		add_to_chat(8,('[Helper] '):color(220)..('New %s available: '):color(6):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(new_helpers) do
 			add_to_chat(8,(' - '):color(8)..(helper):color(1))
 		end
 		new_updates = true
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('No new Helpers.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No new Helpers available.'):color(28))
 	end
 
 end
@@ -575,9 +575,9 @@ local function checkForAddonUpdates()
 
 	-- Compare SHAs
 	if local_addon_sha and local_addon_sha == github_addon_sha then
-		add_to_chat(8,('[Helper] '):color(220)..('Helper addon is up to date.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No Helper addon update available.'):color(28))
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('Update available for the Helper addon!'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('Helper addon update available!'):color(6))
 		new_updates = true
 	end
 
@@ -670,13 +670,13 @@ local function checkForHelperUpdates()
 
 	-- Notify the user about updates
 	if #updated_helpers > 0 then
-		add_to_chat(8,('[Helper] '):color(220)..('Updated %s available: '):color(8):format(#updated_helpers == 1 and 'Helper' or 'Helpers'))
+		add_to_chat(8,('[Helper] '):color(220)..('Updated %s available: '):color(6):format(#updated_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(updated_helpers) do
 			add_to_chat(8,(' - '):color(8)..(helper):color(1))
 		end
 		new_updates = true
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('All Helpers are up to date.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No updated Helpers available.'):color(28))
 	end
 
 end
@@ -748,12 +748,12 @@ local function updateCurrentHelpers()
 	end
 
 	if #updated_helpers > 0 then
-		add_to_chat(8,('[Helper] '):color(220)..('Updated %s:'):color(8):format(#updated_helpers == 1 and 'Helper' or 'Helpers'))
+		add_to_chat(8,('[Helper] '):color(220)..('Updated %s:'):color(6):format(#updated_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(updated_helpers) do
 			add_to_chat(8,(' - '):color(8)..(helper):color(1))
 		end
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('All Helpers are up to date.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No updated Helpers available.'):color(28))
 	end
 
 end
@@ -783,12 +783,12 @@ local function downloadNewHelpers()
 	end
 
 	if #new_helpers > 0 then
-		add_to_chat(8,('[Helper] '):color(220)..('New %s:'):color(8):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
+		add_to_chat(8,('[Helper] '):color(220)..('New %s:'):color(6):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(new_helpers) do
 			add_to_chat(8,(' - '):color(8)..(helper):color(1))
 		end
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('All new Helpers downloaded.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No new Helpers available.'):color(28))
 	end
 
 end
@@ -849,7 +849,7 @@ local function updateAddon()
 	if not local_addon_sha or local_addon_sha ~= github_addon_sha then
 		downloadAddon(github_addon_sha)
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('Helper addon is up to date.'):color(8))
+		add_to_chat(8,('[Helper] '):color(220)..('No Helper addon update available.'):color(28))
 	end
 end
 
