@@ -80,7 +80,7 @@
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
             <name_color>259</name_color>
-            <sha>9d9ab05031fc94388f38f90d6159aa3de1bf2305</sha>
+            <sha>e14b908fac6f577d5c36d2456f89a985cd04ebb6</sha>
             <text_color>262</text_color>
             <type>NPC</type>
         </info>
@@ -95,7 +95,8 @@
         <reminder_canteen>Kupo-ho! A fresh Mystical Canteen is ripe for the refilling!</reminder_canteen>
         <reminder_mog_locker>Kupo-po! Your marvelous Mog Locker lease is nearing its nerve-wracking nullification! Better renew, kupo!</reminder_mog_locker>
         <reminder_moglophone>Kupo-kwee! Another Moglophone has managed to materialize!</reminder_moglophone>
-        <reminder_plate>Kupo-po! Your Shiny Ra'Kaznarian Plate is polished and prepared!</reminder_plate>
+        <reminder_plate>Kupo-po! Your Shiny Ra&apos;Kaznarian Plate is polished and prepared!</reminder_plate>
+        <reraise_check>Kupo-po! You're prancing perilously without proper protective precautions! No Reraise, no revival, kupo!</reraise_check>
         <sublimation_charged>Sublimation is fully charged and ready, kupo!</sublimation_charged>
         <vorseal_reminder>Only about 10 minutes left on your Vorseal effect, so stay sharp, kupo!</vorseal_reminder>
         <you_are_now_alliance_leader>You&apos;re now the alliance leader, kupo!</you_are_now_alliance_leader>
