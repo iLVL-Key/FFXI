@@ -45,7 +45,7 @@
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
-            <sha>c2ae6ea59e125b8f71723be07e5fcf65ecca327d</sha>
+            <sha>0bb100f21719edbe02be82bc857230cb3af99122</sha>
             <text_color>220</text_color>
             <type>Player</type>
         </info>
@@ -59,8 +59,9 @@
         <party_low_mp>${member} needs some MP. Fuck!</party_low_mp>
         <reminder_canteen>AYO! another Mystical Canteen is ready! Chug that shit!</reminder_canteen>
         <reminder_mog_locker>YO, your Mog Locker lease is about to EXPIRE. SHIT! Better fix that before all your crap gets tossed out!</reminder_mog_locker>
-        <reminder_moglophone>HOLY SHIT, another Moglophone is ready! LET'S GOOOOO!</reminder_moglophone>
-        <reminder_plate>OH SHIT, another Shiny Ra'Kaznarian Plate is ready! Snatch that bad boy up!</reminder_plate>
+        <reminder_moglophone>HOLY SHIT, another Moglophone is ready! LET&apos;S GOOOOO!</reminder_moglophone>
+        <reminder_plate>OH SHIT, another Shiny Ra&apos;Kaznarian Plate is ready! Snatch that bad boy up!</reminder_plate>
+        <reraise_check>YO, YOU DON'T GOT RERAISE ON. YOU TRYNA DIE FOR REAL OR WHAT?!</reraise_check>
         <sublimation_charged>Awww shiiit. Sublimation is ready to use.</sublimation_charged>
         <vorseal_reminder>OH SHIT! You got maybe 10 minutes left on your Vorseal!</vorseal_reminder>
         <you_are_now_alliance_leader>Some asshole gave you alliance lead! Fuck!</you_are_now_alliance_leader>
