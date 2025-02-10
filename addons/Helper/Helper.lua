@@ -2036,11 +2036,11 @@ register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == 'help' then
 		local function get_last_check_date()
-			if not settings.last_check or settings.last_check == 0 then
+			if not timestamps.last_check or timestamps.last_check == 0 then
 				return "Never"
 			end
 			-- Convert the timestamp into a readable date (MM/DD/YYYY)
-			local time_table = os.date("*t", settings.last_check)
+			local time_table = os.date("*t", timestamps.last_check)
 			return string.format("%d/%d/%d", time_table.month, time_table.day, time_table.year)
 		end
 		local last_check_date = get_last_check_date()		
