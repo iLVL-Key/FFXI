@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.1'
+_addon.version = '1.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -46,8 +46,21 @@ local addon_path = windower.addon_path
 local play_sound = windower.play_sound
 
 defaults = {
+	addon_sha = nil,
 	first_run = true,
-	last_check = 0,
+	have_key_item = {
+		canteen = false,
+		moglophone = false,
+		plate = false,
+	},
+	timestamps = {
+		canteen = 0,
+		last_check = 0,
+		moglophone = 0,
+		mog_locker_expiration = 0,
+		mog_locker_reminder = 0,
+		plate = 0,
+	},
 	options = {
 		ability_ready = {
 			bestial_loyalty = true,
@@ -86,8 +99,6 @@ defaults = {
 		after_zone_party_check_delay = 5,
 		auto_check_for_updates = true,
 		auto_update = false,
-		capped_job_points = true,
-		capped_merit_points = true,
 		check_party_for_low_mp = true,
 		check_party_for_low_mp_delay = 900,
 		current_helper = "Vana",
@@ -96,7 +107,23 @@ defaults = {
 		flavor_text_window_min = 14400,
 		helpers_loaded = {vana = true},
 		introduce_on_load = true,
-		mireu_popped = true,
+		key_item_reminder_repeat_hours = 6,
+		key_item_reminders = {
+			canteen = true,
+			canteen_repeat_hours = 12,
+			moglophone = true,
+			moglophone_repeat_hours = 6,
+			plate = true,
+			plate_repeat_hours = 6,
+		},
+		notifications = {
+			capped_job_points = true,
+			capped_merit_points = true,
+			mireu_popped = true,
+			mog_locker_expiring = true,
+			sublimation_charged = true,
+			vorseal_wearing = true,
+		},
 		party_announcements = {
 			member_joined_party = true,
 			member_left_party = true,
@@ -113,17 +140,7 @@ defaults = {
 			you_are_now_alliance_leader = true,
 			you_are_now_party_leader = true,
 		},
-		sound_effects = {
-			ability_ready = true,
-			member_joined_party = true,
-			member_left_party = true,
-			now_alliance_leader = true,
-			now_party_leader = true,
-			party_joined_alliance = true,
-			party_left_alliance = true,
-		},
-		sublimation_charged = true,
-		vorseal_reminder = true,
+		sound_effects = true,
 	},
 }
 
@@ -136,7 +153,7 @@ vana = {
 		description = "Friendly, encouraging, and always positive.",
 		name_color = 39,
 		text_color = 220,
-		version = 1.0,
+		type = "NPC",
 		sha = nil,
 	},
 	flavor_text = {
@@ -175,11 +192,15 @@ vana = {
 		"You're always up for helping others; you're a true team player.",
 		"You look stunning in that lockstyle.",
 	},
+	ability_ready = "${ability} is ready to use again.",
 	capped_job_points = "Your Job Points are now capped.",
 	capped_merit_points = "Your Merit Points are now capped.",
+	mog_locker_expiring = "Your Mog Locker lease is expiring soon.",
+	reminder_canteen = "Another Mystical Canteen should be available now.",
+	reminder_moglophone = "Another Moglophone should be available now.",
+	reminder_plate = "Another Shiny Ra'Kaznarian Plate should be available now.",
 	party_low_mp = "It looks like ${member} could use a ${refresh}.",
 	sublimation_charged = "Sublimation is now fully charged and ready to use.",
-	ability_ready = "${ability} is ready to use again.",
 	mireu_popped = "Mireu was just mentioned in ${zone}.",
 	member_joined_party = "${member} has joined the party.",
 	member_left_party = "${member} has left the party.",
@@ -195,7 +216,7 @@ vana = {
 	other_party_left_alliance = "A party has left the alliance.",
 	you_are_now_alliance_leader = "You are now the alliance leader.",
 	you_are_now_party_leader = "You are now the party leader.",
-	vorseal_reminder = "You have about 10 minutes left on your Vorseal effect.",
+	vorseal_wearing = "You have about 10 minutes left on your Vorseal effect.",
 }
 
 settings = config.load(defaults)
@@ -206,32 +227,37 @@ local current_helper_name
 local c_name
 local c_text
 
+local addon_sha = settings.addon_sha
 local first_run = settings.first_run
-local introduce_on_load = settings.options.introduce_on_load
+local have_key_item = settings.have_key_item
+local timestamps = settings.timestamps
+
+local ability_ready = settings.options.ability_ready
+local after_zone_party_check_delay = settings.options.after_zone_party_check_delay
 local auto_check_for_updates = settings.options.auto_check_for_updates
 local auto_update = settings.options.auto_update
-local ability_ready = settings.options.ability_ready
-local capped_job_points = settings.options.capped_job_points
-local capped_merit_points = settings.options.capped_merit_points
-local sublimation_charged = settings.options.sublimation_charged
-local sound_effects = settings.options.sound_effects
-local party_announcements = settings.options.party_announcements
-local after_zone_party_check_delay = settings.options.after_zone_party_check_delay
-
 local check_party_for_low_mp = settings.options.check_party_for_low_mp
 local check_party_for_low_mp_delay = settings.options.check_party_for_low_mp_delay
+local capped_job_points = settings.options.notifications.capped_job_points
+local capped_merit_points = settings.options.notifications.capped_merit_points
+local flavor_text = settings.options.flavor_text
+local flavor_text_window_max = settings.options.flavor_text_window_max
+local flavor_text_window_min = settings.options.flavor_text_window_min
+local helpers_loaded = settings.options.helpers_loaded
+local introduce_on_load = settings.options.introduce_on_load
+local key_item_reminders = settings.options.key_item_reminders
+local mireu_popped = settings.options.notifications.mireu_popped
+local mog_locker_expiring = settings.options.notifications.mog_locker_expiring
+local party_announcements = settings.options.party_announcements
+local sound_effects = settings.options.sound_effects
+local sublimation_charged = settings.options.notifications.sublimation_charged
+local vorseal_wearing = settings.options.notifications.vorseal_wearing
+
 local check_party_for_low_mp_countdown = 0
 local check_party_for_low_mp_toggle = true
 
-local flavor_text = settings.options.flavor_text
-local flavor_text_window_min = settings.options.flavor_text_window_min
-local flavor_text_window_max = settings.options.flavor_text_window_max
 local flavor_text_countdown = math.floor(math.random(flavor_text_window_min,flavor_text_window_max))
-
-local mireu_popped = settings.options.mireu_popped
 local mireu_countdown = 0
-
-local vorseal_reminder = settings.options.vorseal_reminder
 local vorseal_countdown = -1
 
 local ready = {
@@ -315,7 +341,7 @@ local max_merit_points = 0
 local capped_merits = true
 local cap_points = 0
 local job_points = 0
-local capped_job_points = true
+local capped_jps = true
 local zoning = false
 local paused = false
 local new_updates = false
@@ -416,13 +442,13 @@ local function initialize()
 	zoning = false
 
 	--Load up the Helpers we have enabled
-	for name, enabled in pairs(settings.options.helpers_loaded) do
+	for name, enabled in pairs(helpers_loaded) do
 		if enabled then
 			if file_exists(addon_path..'data/helpers/'..name..'.xml') then
 				helpers[name] = config.load('data/helpers/'..name..'.xml')
 			--If the file doesn't exist, unload the Helper
 			else
-				settings.options.helpers_loaded[name] = nil
+				helpers_loaded[name] = nil
 				--If the current Helper is the one we just unloaded, switch to Vana
 				if settings.options.current_helper == name then
 					settings.options.current_helper = 'vana'
@@ -441,12 +467,12 @@ local function initialize()
 end
 
 --Get a list of local Helper files
-local function get_local_helpers()
+local function getLocalHelpers()
 
 	local local_helpers = {}
 
 	--Check for known helper files by iterating over the loaded list
-	for name, _ in pairs(settings.options.helpers_loaded) do
+	for name, _ in pairs(helpers_loaded) do
 		local file_name = "data/helpers/" .. name .. ".xml"
 		if file_exists(addon_path .. file_name) then
 			local_helpers[name] = true
@@ -458,7 +484,7 @@ local function get_local_helpers()
 end
 
 --Get list of helpers from GitHub
-local function get_github_helpers()
+local function getGitHubHelpers()
 
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/helpers"
 
@@ -482,10 +508,10 @@ local function get_github_helpers()
 end
 
 --Check for new helpers on GitHub
-local function check_for_new_helpers()
+local function checkForNewHelpers()
 
-	local local_helpers = get_local_helpers()
-	local github_helpers = get_github_helpers()
+	local local_helpers = getLocalHelpers()
+	local github_helpers = getGitHubHelpers()
 
 	if not github_helpers then
 		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve list of Helpers from GitHub. Please try again.'):color(8))
@@ -514,7 +540,7 @@ local function check_for_new_helpers()
 end
 
 --Get the SHA of the Helper.lua file on GitHub
-local function get_github_addon_sha()
+local function getGitHubAddonSHA()
 
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/Helper.lua"
 
@@ -534,21 +560,21 @@ local function get_github_addon_sha()
 end
 
 --Check for updates to the Helper addon
-local function check_for_addon_updates()
+local function checkForAddonUpdates()
 
 	-- Retrieve the latest SHA from GitHub
-	local github_sha = get_github_addon_sha()
+	local github_addon_sha = getGitHubAddonSHA()
 
-	if not github_sha then
+	if not github_addon_sha then
 		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve Helper addon version info from GitHub. Please try again.'):color(8))
 		return
 	end
 
 	-- Retrieve the locally stored SHA
-	local local_sha = settings.addon_sha
+	local local_addon_sha = addon_sha
 
 	-- Compare SHAs
-	if local_sha and local_sha == github_sha then
+	if local_addon_sha and local_addon_sha == github_addon_sha then
 		add_to_chat(8,('[Helper] '):color(220)..('Helper addon is up to date.'):color(8))
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('Update available for the Helper addon!'):color(8))
@@ -558,7 +584,7 @@ local function check_for_addon_updates()
 end
 
 --Update the SHA tag of a downloaded Helper
-local function update_helper_sha(file_name, new_sha)
+local function updateHelperSHA(file_name, new_sha)
 
 	local filepath = addon_path .. "data/helpers/" .. file_name
 
@@ -579,21 +605,19 @@ local function update_helper_sha(file_name, new_sha)
 
 	-- Save updated XML
 	local name = string.lower(file_name:gsub("%.xml$", ""))
-	-- coroutine.schedule(function()
-		helpers[name].info.sha = new_sha
-		helpers[name]:save('all')
-	-- end, 1)
+	helpers[name].info.sha = new_sha
+	helpers[name]:save('all')
 
 end
 
 --Uopdate the SHA tag of the Helper.lua file
-local function update_addon_sha(new_sha)
-	settings.addon_sha = new_sha
+local function updateAddonSHA(new_sha)
+	addon_sha = new_sha
 	settings:save()
 end
 
 --Retrieve the SHAs of the Helper files on GitHub
-local function get_github_helper_shas()
+local function getGitHubHelperSHAs()
 
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/helpers"
 
@@ -620,9 +644,9 @@ local function get_github_helper_shas()
 end
 
 --Check for updates to the Helpers
-local function check_for_helper_updates()
+local function checkForHelperUpdates()
 
-	local github_helper_shas = get_github_helper_shas()
+	local github_helper_shas = getGitHubHelperSHAs()
 
 	if not github_helper_shas then
 		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve version info for Helpers from GitHub. Please try again.'):color(8))
@@ -658,7 +682,7 @@ local function check_for_helper_updates()
 end
 
 --Download a Helper from GitHub
-local function download_helper(file_name, github_helper_sha)
+local function downloadHelper(file_name, github_helper_sha)
 
 	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/helpers/" .. file_name
 	local filepath = addon_path .. "data/helpers/" .. file_name
@@ -670,16 +694,16 @@ local function download_helper(file_name, github_helper_sha)
 	--Update the Helper table
 	local name = string.lower(file_name:gsub("%.xml$", ""))
 	helpers[name] = config.load('data/helpers/'..file_name)
-	settings.options.helpers_loaded[name] = true
+	helpers_loaded[name] = true
 	settings:save('all')
 
 	--Update the Helper SHA
-	update_helper_sha(file_name, github_helper_sha)
+	updateHelperSHA(file_name, github_helper_sha)
 
 end
 
 --Download the latest version of Helper.lua from GitHub
-local function download_addon(github_addon_sha)
+local function downloadAddon(github_addon_sha)
 
 	-- Define the download URL and destination path
 	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/Helper.lua"
@@ -690,7 +714,7 @@ local function download_addon(github_addon_sha)
 	os.execute(curl_command)
 
 	-- Update the stored SHA after successful download
-	update_addon_sha(github_addon_sha)
+	updateAddonSHA(github_addon_sha)
 
 	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
 	windower.send_command('lua r helper')
@@ -698,9 +722,9 @@ local function download_addon(github_addon_sha)
 end
 
 --Update any current Helpers that have been changed on GitHub
-local function update_current_helpers()
+local function updateCurrentHelpers()
 
-	local github_helper_shas = get_github_helper_shas()
+	local github_helper_shas = getGitHubHelperSHAs()
 
 	if not github_helper_shas then
 		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve version info for Helpers from GitHub. Please try again.'):color(8))
@@ -718,7 +742,7 @@ local function update_current_helpers()
 
 		-- Check if the Helper exists and has an outdated SHA or if local_helper_sha is nil
 		if not local_helper_sha or local_helper_sha ~= github_helper_sha then
-			download_helper(file_name, github_helper_sha)
+			downloadHelper(file_name, github_helper_sha)
 			table.insert(updated_helpers, file_name)
 		end
 	end
@@ -735,9 +759,9 @@ local function update_current_helpers()
 end
 
 --Download any new Helpers from GitHub
-local function download_new_helpers()
+local function downloadNewHelpers()
 
-	local github_helper_shas = get_github_helper_shas()
+	local github_helper_shas = getGitHubHelperSHAs()
 
 	if not github_helper_shas then
 		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve version info for Helpers from GitHub. Please try again.'):color(8))
@@ -753,7 +777,7 @@ local function download_new_helpers()
 
 		-- Check if the Helper file exists
 		if not file_exists(file_path) then
-			download_helper(file_name, github_helper_info.sha)
+			downloadHelper(file_name, github_helper_info.sha)
 			table.insert(new_helpers, file_name)
 		end
 	end
@@ -770,7 +794,7 @@ local function download_new_helpers()
 end
 
 --Check for missing sound files
-local function check_and_download_sounds()
+local function checkAndDownloadSounds()
 	local sound_folder = windower.addon_path .. "data/sounds/"
 	
 	--Ensure the data/sounds folder exists
@@ -783,6 +807,7 @@ local function check_and_download_sounds()
 		"ability_ready.wav",
 		"member_joined_party.wav",
 		"member_left_party.wav",
+		"notification.wav",
 		"now_alliance_leader.wav",
 		"now_party_leader.wav",
 		"party_joined_alliance.wav",
@@ -808,13 +833,13 @@ local function check_and_download_sounds()
 end
 
 --Check for updated addon on GitHub
-local function update_addon()
+local function updateAddon()
 
 	--Make sure all sound files are present
-	check_and_download_sounds()
+	checkAndDownloadSounds()
 
-	local local_addon_sha = settings.addon_sha
-	local github_addon_sha = get_github_addon_sha()
+	local local_addon_sha = addon_sha
+	local github_addon_sha = getGitHubAddonSHA()
 
 	if not github_addon_sha then
 		add_to_chat(8,('[Helper] '):color(220)..('Could not retrieve Helper addon version info from GitHub. Please try again.'):color(8))
@@ -822,15 +847,15 @@ local function update_addon()
 	end
 
 	if not local_addon_sha or local_addon_sha ~= github_addon_sha then
-		download_addon(github_addon_sha)
+		downloadAddon(github_addon_sha)
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('Helper addon is up to date.'):color(8))
 	end
 end
 
 --Save the time of the last check
-local function save_last_check()
-	settings.last_check = os.time()
+local function saveLastCheckTime()
+	timestamps.last_check = os.time()
 	settings:save('all')
 end
 
@@ -839,17 +864,17 @@ local function updateAll()
 
 	add_to_chat(8,('[Helper] '):color(220)..('Downloading new Helpers...'):color(8))
 	coroutine.sleep(1)
-	download_new_helpers()
+	downloadNewHelpers()
 
 	add_to_chat(8,('[Helper] '):color(220)..('Updating current Helpers...'):color(8))
 	coroutine.sleep(1)
-	update_current_helpers()
+	updateCurrentHelpers()
 
 	add_to_chat(8,('[Helper] '):color(220)..('Updating Helper addon...'):color(8))
 	coroutine.sleep(1)
-	update_addon()
+	updateAddon()
 
-	save_last_check()
+	saveLastCheckTime()
 
 end
 
@@ -858,29 +883,29 @@ local function checkAll()
 
 	add_to_chat(8,('[Helper] '):color(220)..('Checking for new Helpers...'):color(8))
 	coroutine.sleep(1)
-	check_for_new_helpers()
+	checkForNewHelpers()
 
 	add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to current Helpers...'):color(8))
 	coroutine.sleep(1)
-	check_for_helper_updates()
+	checkForHelperUpdates()
 
 	add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to Helper addon...'):color(8))
 	coroutine.sleep(1)
-	check_for_addon_updates()
+	checkForAddonUpdates()
 
-	save_last_check()
+	saveLastCheckTime()
 
 end
 
 --Auto-check for updates
-local function auto_check_for_updates()
+local function checkForUpdates()
 
 	if first_run or (not auto_check_for_updates and not auto_update) then
 		return --Exit if neither auto-check nor auto-update is enabled
 	end
 
 	local current_time = os.time()
-	local last_check = settings.last_check or 0
+	local last_check = timestamps.last_check or 0
 	local one_week = 7 * 24 * 60 * 60  --7 days in seconds
 
 	--Only check if logged in and at least a week has passed since last check
@@ -897,14 +922,147 @@ local function auto_check_for_updates()
 	end
 end
 
+--Save the current timestamp for a key item
+local function saveReminderTimestamp(key_item, key_item_reminder_repeat_hours)
+	if not key_item then
+		return
+	end
+
+	local hours = 20
+	if key_item_reminder_repeat_hours then
+		hours = key_item_reminder_repeat_hours
+	end
+
+	--Save the timestamp for 20 hours into the future
+	timestamps[key_item] = os.time() + (hours * 60 * 60)
+
+	--Save settings to persist the timestamp
+	settings:save('all')
+end
+
+--Remind the player about a key item
+local function remindPlayer(key_item)
+
+	local text = helpers[current_helper] and helpers[current_helper]['reminder_'..key_item]
+	if text then
+		add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name) .. (text):color(c_text))
+	end 
+
+	--Play sound if enabled
+	if sound_effects then 
+		play_sound(addon_path..'data/sounds/ability_ready.wav') 
+	end
+end
+
+--Check if the player has a key item
+local function haveKeyItem(key_item_id)
+	if not key_item_id then
+		return false
+	end
+
+	--Get the player's key items
+	local key_items = windower.ffxi.get_key_items()
+
+	--Check if the given key_item_id exists in the player's key items
+	for _, id in ipairs(key_items) do
+		if id == key_item_id then
+			return true
+		end
+	end
+
+	return false
+end
+
+--Check if a key item reminder should be triggered
+local function checkKIReminderTimestamps()
+
+	--List of tracked key items
+	local tracked_items = { canteen = 3137, moglophone = 3212, plate = 3300 }
+
+	--Get the current time
+	local current_time = os.time()
+
+	--Loop through each tracked KI
+	for key_item, id in pairs(tracked_items) do
+
+		if key_item_reminders[key_item] then
+
+			local reminder_time = timestamps[key_item]
+			local have_ki = have_key_item[key_item]
+
+			--We just used the KI
+			if have_ki and not haveKeyItem(id) then
+				have_key_item[key_item] = false
+				settings:save("all")
+				saveReminderTimestamp(key_item) --Set the reminder time for 20 hours from now
+
+			--We just received the KI again
+			elseif not have_ki and haveKeyItem(id) then
+				have_key_item[key_item] = true
+				settings:save("all")
+
+			--We do not yet have the KI
+			elseif not have_ki and not haveKeyItem(id) then
+				--Not the first run (reminder timestamp of 0) and the reminder timestamp has pased
+				if reminder_time and reminder_time ~= 0 and current_time >= reminder_time then
+					remindPlayer(key_item)
+					saveReminderTimestamp(key_item, key_item_reminders[key_item..'_repeat_hours']) --Reset the reminder time to repeat
+				end
+
+			end
+		end
+	end
+end
+
+local function checkMogLockerReminder()
+
+	if not mog_locker_expiring then
+		return
+	end
+
+	local current_time = os.time()
+	local one_week = 7 * 24 * 60 * 60  -- 7 days in seconds
+	local one_day = 24 * 60 * 60  -- 24 hours in seconds
+
+	--Expiration is more than a week away, clear reminder timestamp
+	if timestamps.mog_locker_reminder ~= 0 and timestamps.mog_locker_expiration - current_time > one_week then
+		timestamps.mog_locker_reminder = 0
+		settings:save('all')
+
+	--Expiration is under a week away
+	elseif timestamps.mog_locker_expiration - current_time < one_week then
+
+		if current_time >= timestamps.mog_locker_reminder then
+
+			local text = helpers[current_helper] and helpers[current_helper].mog_locker_expiring
+
+			if text then
+				add_to_chat(c_text, ('[' .. current_helper_name .. '] '):color(c_name) .. (text):color(c_text))
+			end
+	
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
+			--Update the reminder timestamp to trigger again in 24 hours
+			timestamps.mog_locker_reminder = current_time + one_day
+			settings:save('all')
+
+		end
+	end
+end
+
 --Reset starting states
 local function reset()
+
 	party_structure = {}
 	in_party = false
 	in_alliance = false
 	party_leader = false
 	alliance_leader = false
 	zoning = false
+
 end
 
 --Capitalize first letter
@@ -925,7 +1083,9 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	local packet = packets.parse('incoming', original)
 
 	if id == 0x063 then
+
 		local player = get_player()
+
 		if player then -- on menu/zone update packet
 			limit_points = packet['Limit Points'] or limit_points
 			merit_points = packet['Merit Points'] or merit_points
@@ -934,41 +1094,66 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 			cap_points = packet[job..' Capacity Points'] or cap_points
 			job_points = packet[job..' Job Points'] or job_points
 		end
+
 	elseif id == 0x02D then -- on kill packet
+
 		local msg = packet['Message']
+
 		if msg == 371 or msg == 372 then
 			local lp_gained = packet['Param 1']
 			limit_points = limit_points + lp_gained
 			local merits_gained = math.floor(limit_points / 10000)
 			limit_points = limit_points - (merits_gained * 10000)
 			merit_points = merit_points + merits_gained >= max_merit_points and max_merit_points or merit_points + merits_gained
+
 		elseif msg == 718 or msg == 735 then
 			local cp_gained = packet['Param 1']
 			cap_points = cap_points + cp_gained
 			local jp_gained = math.floor(cap_points / 30000)
 			cap_points = cap_points - (jp_gained * 30000)
 			job_points = job_points + jp_gained >= 500 and 500 or job_points + jp_gained
+
 		end
 	end
 
 	if capped_merit_points and merit_points == max_merit_points and not capped_merits then
+
 		capped_merits = true
 		local text = helpers[current_helper].capped_merit_points
+
 		if text then
 			add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
 		end
+
+		--Play sound if enabled
+		if sound_effects then 
+			play_sound(addon_path..'data/sounds/notification.wav') 
+		end
+
 	elseif merit_points < max_merit_points and capped_merits then
+
 		capped_merits = false
+
 	end
 
-	if capped_job_points and job_points == 500 and not capped_job_points then
-		capped_job_points = true
+	if capped_job_points and job_points == 500 and not capped_jps then
+
+		capped_jps = true
 		local text = helpers[current_helper].capped_job_points
+
 		if text then
 			add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
 		end
-	elseif job_points < 500 and capped_job_points then
-		capped_job_points = false
+
+		--Play sound if enabled
+		if sound_effects then 
+			play_sound(addon_path..'data/sounds/notification.wav') 
+		end
+
+	elseif job_points < 500 and capped_jps then
+
+		capped_jps = false
+
 	end
 
 end)
@@ -977,10 +1162,13 @@ end)
 local function introduceHelper()
 
 	local introduction = helpers[current_helper].info.introduction
+
 	if introduction then
 		add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(introduction):color(c_text))
+
 	else
 		add_to_chat(8,('[Helper] '):color(220)..('Current Helper is set to '):color(8)..(capitalize(helpers[current_helper].name)):color(1)..('.'):color(8))
+
 	end
 
 end
@@ -1053,7 +1241,7 @@ register_event('load', function()
 
 		initialize()
 		updateRecasts()
-		auto_check_for_updates()
+		checkForUpdates()
 		firstRun()
 		if introduce_on_load then
 			introduceHelper()
@@ -1075,7 +1263,7 @@ register_event('login', function()
 
 		initialize()
 		updateRecasts()
-		auto_check_for_updates()
+		checkForUpdates()
 		firstRun()
 		if introduce_on_load then
 			introduceHelper()
@@ -1337,42 +1525,42 @@ function trackPartyStructure()
 	--You join a party that is in an alliance
 	if announce.you_joined_alliance and not previously_in_party and now_in_party and now_in_alliance then
 		text = helpers[current_helper].you_joined_alliance
-		if sound_effects.member_joined_party then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/member_joined_party.wav')
 		end
 
 	--You join a party that is not in an alliance
 	elseif announce.you_joined_party and not previously_in_party and now_in_party and not now_party_leader then
 		text = helpers[current_helper].you_joined_party
-		if sound_effects.member_joined_party then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/member_joined_party.wav')
 		end
 
 	--You leave a party that is part of an alliance
 	elseif announce.you_left_alliance and previously_in_alliance and not now_in_party then
 		text = helpers[current_helper].you_left_alliance
-		if sound_effects.member_left_party then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/member_left_party.wav')
 		end
 
 	--You leave a party that is not part of an alliance
 	elseif announce.you_left_party and previously_in_party and not now_in_party then
 		text = helpers[current_helper].you_left_party
-		if sound_effects.member_left_party then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/member_left_party.wav')
 		end
 
 	--Your party joined an alliance
 	elseif announce.your_party_joined_alliance and previously_in_party and now_in_alliance and not previously_in_alliance then
 		text = helpers[current_helper].your_party_joined_alliance
-		if sound_effects.party_joined_alliance then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/party_joined_alliance.wav')
 		end
 
 	--Your party left an alliance
 	elseif announce.your_party_left_alliance and previously_in_alliance and not now_in_alliance then
 		text = helpers[current_helper].your_party_left_alliance
-		if sound_effects.party_left_alliance then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/party_left_alliance.wav')
 		end
 
@@ -1380,7 +1568,7 @@ function trackPartyStructure()
 	elseif announce.other_party_joined_alliance and previously_in_alliance and now_in_alliance and 
 	((not old_p2_leader and new_p2_leader) or (not old_p3_leader and new_p3_leader)) then
 		text = helpers[current_helper].other_party_joined_alliance
-		if sound_effects.party_joined_alliance then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/party_joined_alliance.wav')
 		end
 
@@ -1388,7 +1576,7 @@ function trackPartyStructure()
 	elseif announce.other_party_left_alliance and previously_in_alliance and now_in_alliance and 
 	((old_p2_leader and not new_p2_leader) or (old_p3_leader and not new_p3_leader)) then
 		text = helpers[current_helper].other_party_left_alliance
-		if sound_effects.party_left_alliance then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/party_left_alliance.wav')
 		end
 
@@ -1407,7 +1595,7 @@ function trackPartyStructure()
 			for _, member in ipairs(party1_changes.added) do
 				if member ~= '' then
 					text = memberPlaceholder(helpers[current_helper].member_joined_party, member)
-					if sound_effects.member_joined_party then
+					if sound_effects then
 						play_sound(addon_path..'data/sounds/member_joined_party.wav')
 					end
 				else
@@ -1422,7 +1610,7 @@ function trackPartyStructure()
 			for _, member in ipairs(party1_changes.removed) do
 				if member ~= '' then
 					text = memberPlaceholder(helpers[current_helper].member_left_party, member)
-					if sound_effects.member_left_party then
+					if sound_effects then
 						play_sound(addon_path..'data/sounds/member_left_party.wav')
 					end
 				else
@@ -1452,7 +1640,7 @@ function trackPartyStructure()
 			for _, member in ipairs(alliance_changes.added) do
 				if member ~= '' then
 					text = memberPlaceholder(helpers[current_helper].member_joined_alliance, member)
-					if sound_effects.member_joined_party then
+					if sound_effects then
 						play_sound(addon_path..'data/sounds/member_joined_party.wav')
 					end
 				else
@@ -1468,7 +1656,7 @@ function trackPartyStructure()
 			for _, member in ipairs(alliance_changes.removed) do
 				if member ~= '' then
 					text = memberPlaceholder(helpers[current_helper].member_left_alliance, member)
-					if sound_effects.member_left_party then
+					if sound_effects then
 						play_sound(addon_path..'data/sounds/member_left_party.wav')
 					end
 				else
@@ -1483,14 +1671,14 @@ function trackPartyStructure()
 	--You become the alliance leader
 	elseif announce.you_are_now_alliance_leader and previously_in_alliance and not previously_alliance_leader and now_alliance_leader then
 		text = helpers[current_helper].you_are_now_alliance_leader
-		if sound_effects.now_alliance_leader then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/now_alliance_leader.wav')
 		end
 
 	--You become the party leader
 	elseif announce.you_are_now_party_leader and previously_in_party and not previously_party_leader and now_party_leader then
 		text = helpers[current_helper].you_are_now_party_leader
-		if sound_effects.now_party_leader then
+		if sound_effects then
 			play_sound(addon_path..'data/sounds/now_party_leader.wav')
 		end
 	end
@@ -1512,23 +1700,29 @@ end
 register_event('gain buff', function(buff)
 
 	if buff == 188 and sublimation_charged and not paused then --Sublimation: Complete
+
 		local text = helpers[current_helper].sublimation_charged
+
 		if text then
 			add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
 		end
-		if sound_effects.ability_ready then
-			play_sound(addon_path..'data/sounds/ability_ready.wav')
-		end
-	elseif buff == 602 and vorseal_reminder then --Vorseal
-		vorseal_countdown = 6600
-	end
 
+		--Play sound if enabled
+		if sound_effects then 
+			play_sound(addon_path..'data/sounds/notification.wav') 
+		end
+
+	elseif buff == 602 and vorseal_wearing then --Vorseal
+
+		vorseal_countdown = 6600
+
+	end
 end)
 
 --Player loses a buff
 register_event('lose buff', function(buff)
 
-	if buff == 602 and vorseal_reminder then --Vorseal
+	if buff == 602 and vorseal_wearing then --Vorseal
 		vorseal_countdown = -1
 	end
 
@@ -1546,6 +1740,28 @@ end)
 
 --Parses incoming text
 register_event("incoming text", function(original,modified,original_mode)
+
+	if original_mode == 148 then
+
+		--Match the lease expiration message and extract the date/time
+		local year, month, day, hour, minute, second = original:match("Your Mog Locker lease is valid until (%d+)/(%d+)/(%d+) (%d+):(%d+):(%d+), kupo%.")
+
+		--If a match is found, convert it to a timestamp
+		if year and month and day and hour and minute and second then
+			local lease_expiry_time = os.time({
+				year = tonumber(year),
+				month = tonumber(month),
+				day = tonumber(day),
+				hour = tonumber(hour),
+				min = tonumber(minute),
+				sec = tonumber(second)
+			})
+
+			timestamps.mog_locker_expiration = lease_expiry_time
+			settings:save('all')
+
+		end
+	end
 
 	if original_mode == 212 and mireu_popped and mireu_countdown == 0 then
 
@@ -1612,6 +1828,7 @@ register_event("incoming text", function(original,modified,original_mode)
 					--No dragon name is found, so therefore is Mireu
 					local text = helpers[current_helper].mireu_popped
 					if text then
+
 						if zone == "Zi'Tah" then
 							text = mireuPlaceholder(text, "Escha - Zi'Tah")
 						elseif zone == "Ru'Aun" then
@@ -1619,10 +1836,19 @@ register_event("incoming text", function(original,modified,original_mode)
 						else
 							text = mireuPlaceholder(text, zone)
 						end
+
 						add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
+
+						--Play sound if enabled
+						if sound_effects then 
+							play_sound(addon_path..'data/sounds/notification.wav') 
+						end
+
 					end
+
 					mireu_countdown = 3900
 					return
+
 				end
 
 				return
@@ -1657,6 +1883,12 @@ register_event('prerender', function()
 		local player_job = get_player().main_job
 		local text = helpers[current_helper] and helpers[current_helper].ability_ready
 
+		--Check if any Key Items are ready
+		checkKIReminderTimestamps()
+
+		--Check on Mog Locker lease expiration time
+		checkMogLockerReminder()
+
 		--Check if abilities are ready
 		for ability, enabled in pairs(ability_ready) do
 			if enabled then
@@ -1668,7 +1900,7 @@ register_event('prerender', function()
 							text = abilityPlaceholders(text, ability_name[ability])
 							add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
 						end
-						if sound_effects.ability_ready then
+						if sound_effects then
 							play_sound(addon_path..'data/sounds/ability_ready.wav')
 						end
 					end
@@ -1702,24 +1934,34 @@ register_event('prerender', function()
 		end
 
 		--Countdown for Vorseal Reminder
-		local text = helpers[current_helper].vorseal_reminder
+		local text = helpers[current_helper].vorseal_wearing
 		if text then
-			if vorseal_reminder then
+
+			if vorseal_wearing then
+
 				if vorseal_countdown > 0 then
 					vorseal_countdown = vorseal_countdown - 1
+
 				elseif vorseal_countdown == 0 then
-					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
 					vorseal_countdown = -1
+
+					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
+
+					--Play sound if enabled
+					if sound_effects then 
+						play_sound(addon_path..'data/sounds/notification.wav') 
+					end
+
 				end
 			end
+
 			--Countdown for Mireu (so we don't call "Mireu popped" when the battle is over)
 			if mireu_popped and mireu_countdown > 0 then
 				mireu_countdown = mireu_countdown - 1
 			end
+
 		end
-
 	end
-
 end)
 
 register_event('addon command',function(addcmd, ...)
@@ -1783,12 +2025,12 @@ register_event('addon command',function(addcmd, ...)
 	elseif addcmd == 'list' then
 		for name, enabled in pairs(helpers) do
 			if enabled and helpers[name].info then
-				local helper_name = helpers[name].info.name
-				local helper_version = helpers[name].info.version or "Unknown"
+				local helper_name = helpers[name].info.name or "Unknown"
+				local helper_type = helpers[name].info.type and helpers[name].info.type.." - " or "Unknown Type - "
 				local helper_description = helpers[name].info.description or "No description available."
 				local c_name = helpers[name].info.name_color or 220
 				local c_text = helpers[name].info.text_color or 1
-				add_to_chat(8, ('['..helper_name..'] '):color(c_name) .. (helper_description..' (v'..helper_version..')'):color(c_text))
+				add_to_chat(8, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
 			end
 		end
 
@@ -1803,14 +2045,14 @@ register_event('addon command',function(addcmd, ...)
 		end
 		local last_check_date = get_last_check_date()		
 		local prefix = "//helper"
-		local helper_version = helpers[current_helper].info.version
+		local helper_type = helpers[current_helper].info.type and helpers[current_helper].info.type.." - " or "Unknown Type - "
 		local helper_description = helpers[current_helper].info.description or "No description available."
 		local c_name = helpers[current_helper].info.name_color or 220
 		local c_text = helpers[current_helper].info.text_color or 1
 		add_to_chat(8,('[Helper] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
-		add_to_chat(8,(' ['..current_helper_name..']'):color(c_name)..(helper_description):color(c_text))
+		add_to_chat(8,(' ['..current_helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
 		add_to_chat(8,' ')
@@ -1832,7 +2074,7 @@ register_event('addon command',function(addcmd, ...)
 			if subcmd == "new" then
 				add_to_chat(8,('[Helper] '):color(220)..('Checking for new Helpers...'):color(8))
 				coroutine.sleep(1)
-				check_for_new_helpers()
+				checkForNewHelpers()
 				if new_updates then
 					add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download new Helpers.'):color(8))
 					new_updates = false
@@ -1840,7 +2082,7 @@ register_event('addon command',function(addcmd, ...)
 			elseif subcmd == "current" then
 				add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to current Helpers...'):color(8))
 				coroutine.sleep(1)
-				check_for_helper_updates()
+				checkForHelperUpdates()
 				if new_updates then
 					add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update'):color(1)..(' to download current Helper updates.'):color(8))
 					new_updates = false
@@ -1848,7 +2090,7 @@ register_event('addon command',function(addcmd, ...)
 			elseif subcmd == "addon" then
 				add_to_chat(8,('[Helper] '):color(220)..('Checking for updates to Helper addon...'):color(8))
 				coroutine.sleep(1)
-				check_for_addon_updates()
+				checkForAddonUpdates()
 				if new_updates then
 					add_to_chat(8,('[Helper] '):color(220)..('Type'):color(8)..(' //helper update addon'):color(1)..(' to download addon update.'):color(8))
 					new_updates = false
@@ -1870,15 +2112,15 @@ register_event('addon command',function(addcmd, ...)
 			if subcmd == "new" then
 				add_to_chat(8,('[Helper] '):color(220)..('Downloading new Helpers...'):color(8))
 				coroutine.sleep(1)
-				download_new_helpers()
+				downloadNewHelpers()
 			elseif subcmd == "current" then
 				add_to_chat(8,('[Helper] '):color(220)..('Updating current Helpers...'):color(8))
 				coroutine.sleep(1)
-				update_current_helpers()
+				updateCurrentHelpers()
 			elseif subcmd == "addon" then
 				add_to_chat(8,('[Helper] '):color(220)..('Updating Helper addon...'):color(8))
 				coroutine.sleep(1)
-				update_addon()
+				updateAddon()
 			else
 				add_to_chat(8,('[Helper] '):color(220)..('Unrecognized command. Type'):color(8)..(' //helper help'):color(1)..(' for a list of commands.'):color(8))
 			end
