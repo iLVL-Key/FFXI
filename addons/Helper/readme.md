@@ -15,6 +15,7 @@ Players can load different Helpers, each with its own personality and dialogue, 
   - **Vorseal Wearing** → Notifies you when your Vorseal buff is about to expire.
   - **Mireu Pop Alerts** → Notifies you when the NM Mireu is mentioned.
   - **Mog Locker Expiring** → Don't let your Mog Locker lease expire.
+  - **Reraise Check** → Don't forget... again.
 - <ins>**Enhanced Party Awareness**</ins>
   - **Low MP Warnings** → Alerts you if a party member needs Refresh.
   - **Party & Alliance Updates** → Get messages when members join or leave.
@@ -50,11 +51,43 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
   - Helper files must be in the `/data/helpers` folder.
   - Loaded Helpers are saved and do not need to be loaded again unless unloaded.
 - `unload/u <file_name>` - Unload a Helper file from the addon.
-  - Unloaded Helper files are not deleted but are removed from use by the addon.
+  - Unloaded Helper files are not deleted but are set to disabled.
 - `list` - List currently loaded Helpers.
 - `check [new|current|addon]` - Check for new updates. Does not update.
 - `update [new|current|addon]` - Download new updates.
 - `help` - Display a list of commands and addon info.
+
+## Options
+Open the `/Helper/data/settings.xml` file to adjust these settings.
+- `ability_ready` - Alerts you when specific Job Abilites are ready to use again. Includes all SP abilities and abilities with recasts 10 minutes or longer.
+- `after_zone_party_check_delay_seconds` - Amount of time to pause watching for party structure changes after zoning. Adjust this higher if you get a notification about leaving then immediately joining a party after you zone.
+- `auto_check_for_updates` - Automatically check for updates once per week.
+- `auto_update` - Automatically update all files once per week. This will be run instead of auto_check_for_updates if set to true.
+- `check_party_for_low_mp` - If you are on BRD or RDM, will keep an eye on your party members MP levels.
+  - Only watches party members with Max MP over 1,000.
+- `check_party_for_low_mp_delay_minutes` - Amount of time after alerting you to a party member with low MP to start watching again.
+- `current_helper` - The currently loaded and active Helper.
+  - It is better to change this in-game with `//helper` to cycle Helpers or `//helper load name_of_helper` to load a specific Helper directly.
+- `flavor_text` - Display the occasional Flavor Text from the currently loaded Helper.
+- `flavor_text_window_max_hours` - The maximum amount of time before the next Flavor Text is displayed.
+- `flavor_text_window_min_hours` - The minimum amount of time before the next Flavor Text is displayed.
+- `helpers_loaded` - The list and enabled status of all Helpers currently loaded Helpers.
+  - It is better to change the enabled status of loaded Helpers in-game with `//helper unload name_of_helper` or `//helper load name_of_helper`.
+- `introduce_on_load` - Plays the current Helpers introduction text when the addon is loaded.
+- `key_item_reminders` - Alerts you when specific Key Items are ready to be picked up again from their respective NPCs.
+  - Tracks Mystical Canteen, Moglophone, and Shiny Ra'Kaznarian Plate.
+  - Sub-settings for turning tracking off for each individually.
+  - Sub-settings for adjusting the amount of time between additional repeat reminder after the first for each individually.
+- `notifications` - Alerts you about certain events happening.
+  - Alerts for Capped Job Points, Capped Merit Points, Mireu popping, Mog Locker lease expiring, Sublimation fully charged, and Vorseal wearing.
+  - Sub-settings for turning alerts off for each individually.
+- `party_announcements` - Alerts for any party structure updates.
+  - Alerts for party/alliance members joining or leaving, parties joining or leaving alliance, and you becoming party or alliance leader.
+  - Sub-settings for turning alerts off for each individually.
+- `reraise_check` - Alert letting you know that you are missing Reraise.
+- `reraise_check_delay_minutes` - Amount of time between each Reraise check.
+- `reraise_check_not_in_town` - Will not alert you of Reraise missing if in a town zone.
+- `sound_effects` - Play sound effects for alerts and notifications.
 
 ## Changelog
 
