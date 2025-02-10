@@ -612,7 +612,7 @@ end
 
 --Uopdate the SHA tag of the Helper.lua file
 local function updateAddonSHA(new_sha)
-	addon_sha = new_sha
+	settings.addon_sha = new_sha
 	settings:save('all')
 end
 
