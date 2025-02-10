@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.2'
+_addon.version = '1.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -340,7 +340,7 @@ local merit_points = 0
 local max_merit_points = 0
 local capped_merits = true
 local cap_points = 0
-local job_points = 0
+local job_points = 500
 local capped_jps = true
 local zoning = false
 local paused = false
