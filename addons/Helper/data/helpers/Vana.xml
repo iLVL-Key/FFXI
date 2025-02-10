@@ -45,7 +45,7 @@
             <introduction>I am Vana, your personal Helper.</introduction>
             <name>Vana</name>
             <name_color>39</name_color>
-            <sha>3ba03e57e82e61e2032dbdcf58ec269a00e10430</sha>
+            <sha>28070315c871548780e22a675d7e91640aa24eeb</sha>
             <text_color>220</text_color>
             <type>NPC</type>
         </info>
@@ -60,7 +60,8 @@
         <reminder_canteen>Another Mystical Canteen should be available now.</reminder_canteen>
         <reminder_mog_locker>Your Mog Locker lease is expiring soon.</reminder_mog_locker>
         <reminder_moglophone>Another Moglophone should be available now.</reminder_moglophone>
-        <reminder_plate>Another Shiny Ra'Kaznarian Plate should be available now.</reminder_plate>
+        <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate should be available now.</reminder_plate>
+        <reraise_check>You do not have Reraise on.</reraise_check>
         <sublimation_charged>Sublimation is now fully charged and ready to use.</sublimation_charged>
         <vorseal_reminder>You have about 10 minutes left on your Vorseal effect.</vorseal_reminder>
         <you_are_now_alliance_leader>You are now the alliance leader.</you_are_now_alliance_leader>
