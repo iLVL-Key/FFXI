@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.2.1'
+_addon.version = '1.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -1293,19 +1293,7 @@ local function checkPartyForLowMP()
 		return text:gsub("%${member}", member)
 	end
 
-	--Check if the member has either Ballad or Refresh in their active buffs
-	local function hasBalladOrRefresh(member)
-		if member and member.mob and member.mob.buff_details then
-			for _, buff in ipairs(member.mob.buff_details) do
-				if buff.name and ((player_job == 'BRD' and string.find(buff.name, "Ballad")) or (player_job == 'RDM' and string.find(buff.name, "Refresh"))) then
-					return true
-				end
-			end
-		end
-		return false
-	end
-
-	--Loop through party members p2 to p6
+	--Loop through party members 2 through 6
 	local positions = {'p1','p2','p3','p4','p5'}
 	for _, position in ipairs(positions) do
 
@@ -1317,7 +1305,7 @@ local function checkPartyForLowMP()
 			local estimated_max_mp = math.floor(member.mp / (member.mpp / 100))
 
 			--Check for high max MP, low mpp, and no existing Ballad or Refresh buff
-			if estimated_max_mp > 1000 and member.mpp <= 25 and not hasBalladOrRefresh(member) then
+			if estimated_max_mp > 1000 and member.mpp <= 25 then
 
 				local text = helpers[current_helper].party_low_mp
 
@@ -1326,9 +1314,9 @@ local function checkPartyForLowMP()
 					local low_mp_text = refreshPlaceholder(text,member.name,player_job)
 
 					add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(low_mp_text):color(c_text))
-					-- Turn the toggle off so this can't be triggered again until it's turned back on
+					--Turn the toggle off so this can't be triggered again until it's turned back on
 					check_party_for_low_mp_toggle = false
-					-- Reset the countdown timer so we don't check again until ready
+					--Reset the countdown timer so we don't check again until ready
 					check_party_for_low_mp_countdown = check_party_for_low_mp_delay
 
 				end
