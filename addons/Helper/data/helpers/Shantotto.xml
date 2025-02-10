@@ -81,13 +81,13 @@
             <9>Ho ho, a friend so rare - you&apos;re beyond compare!</9>
         </flavor_text>
         <info>
-			<description>Witty, rhyming, and slightly menacing.</description>
+            <description>Witty, rhyming, and slightly menacing.</description>
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>6dcaf190755933a784729e1da4e258d0a9e9c0c5</sha>
+            <sha>b2f674d11c24b82ca7987bf1f29f49e53caf7700</sha>
             <text_color>209</text_color>
-            <version>2</version>
+            <type>NPC</type>
         </info>
         <member_joined_alliance>Oh ho, ${member} joins the fray - our power grows this day!</member_joined_alliance>
         <member_joined_party>Oh ho, ${member} has come - let&apos;s make this party hum!</member_joined_party>
@@ -97,6 +97,10 @@
         <other_party_joined_alliance>Ho ho, another party arrives - let&apos;s see how it thrives!</other_party_joined_alliance>
         <other_party_left_alliance>Ah, a party has gone - fewer to lean upon!</other_party_left_alliance>
         <party_low_mp>Oh ho, ${member} seems quite frail - how about a ${refresh} to prevail?</party_low_mp>
+        <reminder_canteen>Oh ho ho! A Mystical Canteen, just for you - what will you do? Guzzle or brew?</reminder_canteen>
+        <reminder_mog_locker>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</reminder_mog_locker>
+        <reminder_moglophone>Another Moglophone, ready to chime - don't waste it this time!</reminder_moglophone>
+        <reminder_plate>Your Ra'Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
         <sublimation_charged>Sublimation&apos;s charge is complete - now, unleash its feat!</sublimation_charged>
         <vorseal_reminder>Oh ho ho! Your Vorseal effect is running low, about 10 minutes left, didn&apos;t you know?</vorseal_reminder>
         <you_are_now_alliance_leader>Oh ho, alliance leader you are - lead them near and far!</you_are_now_alliance_leader>
