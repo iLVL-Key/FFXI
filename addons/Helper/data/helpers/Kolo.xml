@@ -41,13 +41,13 @@
             <9>FUCK!</9>
         </flavor_text>
         <info>
-			<description>Loud, chaotic, and full of love (and expletives).</description>
+            <description>Loud, chaotic, and full of love (and expletives).</description>
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
-            <sha>9b62f4868c04b0f122e1660e98e1d7625f0d225e</sha>
+            <sha>c2ae6ea59e125b8f71723be07e5fcf65ecca327d</sha>
             <text_color>220</text_color>
-            <version>2</version>
+            <type>Player</type>
         </info>
         <member_joined_alliance>${member} just joined the alliance. Fuck!</member_joined_alliance>
         <member_joined_party>${member} just joined the party. Fuck!</member_joined_party>
@@ -57,6 +57,10 @@
         <other_party_joined_alliance>Hey a party joined the alliance.</other_party_joined_alliance>
         <other_party_left_alliance>Son of a BITCH! That whole party left and didn&apos;t say I love you.</other_party_left_alliance>
         <party_low_mp>${member} needs some MP. Fuck!</party_low_mp>
+        <reminder_canteen>AYO! another Mystical Canteen is ready! Chug that shit!</reminder_canteen>
+        <reminder_mog_locker>YO, your Mog Locker lease is about to EXPIRE. SHIT! Better fix that before all your crap gets tossed out!</reminder_mog_locker>
+        <reminder_moglophone>HOLY SHIT, another Moglophone is ready! LET'S GOOOOO!</reminder_moglophone>
+        <reminder_plate>OH SHIT, another Shiny Ra'Kaznarian Plate is ready! Snatch that bad boy up!</reminder_plate>
         <sublimation_charged>Awww shiiit. Sublimation is ready to use.</sublimation_charged>
         <vorseal_reminder>OH SHIT! You got maybe 10 minutes left on your Vorseal!</vorseal_reminder>
         <you_are_now_alliance_leader>Some asshole gave you alliance lead! Fuck!</you_are_now_alliance_leader>
