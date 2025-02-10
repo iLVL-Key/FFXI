@@ -35,20 +35,20 @@
             <34>Your DPS is so high, I think I need a moment to cool off.</34>
             <35>You can stand in my burning circle anytime.</35>
             <36>You lint licker!</36>
+            <37>Did you see how thick my... last Helix was?</37>
             <4>Nothing like a stiff... drink during a long raid, am I right?</4>
             <5>Your macros are so smooth, I think I just swooned.</5>
             <6>I love a good skillchain... but let&apos;s make sure we finish together.</6>
             <7>Fyreign couldn&apos;t land a debuff if it came gift-wrapped.</7>
             <8>If I had a gil for every bad decision Fyreign made, I&apos;d own Jeuno.</8>
             <9>Tequila makes me a better player - or at least, I think so!</9>
-			<37>Did you see how thick my... last Helix was?</37>
         </flavor_text>
         <info>
             <description>Flirty, fun, and fueled by tequila.</description>
             <introduction>We aren&apos;t here for a long time; we&apos;re here for a good time. Now, pour a drink and replenish your panaceas. I&apos;m Galin, and we&apos;re about to make some memories.</introduction>
             <name>Galin</name>
             <name_color>36</name_color>
-            <sha>13f641ae3b1c7eed87f104d7d4da463d759cfa7a</sha>
+            <sha>42ed31e63d2d8117c23a40fd38e0ecff8511cc25</sha>
             <text_color>160</text_color>
             <type>Player</type>
         </info>
@@ -61,9 +61,10 @@
         <other_party_left_alliance>A party left the alliance? Well, their loss.</other_party_left_alliance>
         <party_low_mp>Oh dear, ${member} is running low on MP - someone give them a little pick-me-up, preferably in shot form.</party_low_mp>
         <reminder_canteen>Your Mystical Canteen is ready - stay hydrated, stay gorgeous!</reminder_canteen>
-        <reminder_mog_locker>Oof,your Mog Locker lease is running out - better renew it before you're locked out... or locked in with me!</reminder_mog_locker>
+        <reminder_mog_locker>Oof,your Mog Locker lease is running out - better renew it before you&apos;re locked out... or locked in with me!</reminder_mog_locker>
         <reminder_moglophone>Ding ding! Your Moglophone is ready to go, and so am I.</reminder_moglophone>
-        <reminder_plate>Ooo, looks like another Shiny Ra'Kaznarian Plate is up for grabs. Hope it's as satisfying as I am.</reminder_plate>
+        <reminder_plate>Ooo, looks like another Shiny Ra&apos;Kaznarian Plate is up for grabs. Hope it&apos;s as satisfying as I am.</reminder_plate>
+        <reraise_check>You're walking around without Reraise? Risky! If you go down, who's gonna pick you up... besides me?</reraise_check>
         <sublimation_charged>Sublimation is fully charged - like me after three margaritas!</sublimation_charged>
         <vorseal_reminder>You&apos;ve got about 10 minutes left on that Vorseal effect - plenty of time to make some magic happen!</vorseal_reminder>
         <you_are_now_alliance_leader>You&apos;re the new alliance leader! Time to crack the whip - or, you know, just invite people.</you_are_now_alliance_leader>
