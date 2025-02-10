@@ -15,7 +15,7 @@
             <16>Aw man, your gear is lookin&apos; perty slick - fit for royalty!</16>
             <17>You ever just stop and admire the craftsmanship of San d&apos;Orian armor?</17>
             <18>Aw man, you see that move? That was downright noble!</18>
-            <19>Ain&apos;t nothin&apos; like a good day in San d&apos;Oria—blue skies, noble folk, and a perty castle!</19>
+            <19>Ain&apos;t nothin&apos; like a good day in San d&apos;Oria - blue skies, noble folk, and a perty castle!</19>
             <2>You got that San d&apos;Orian spirit - classy and strong!</2>
             <20>You ever just stop and listen to the San d&apos;Orian anthem? Gives me chills every time!</20>
             <21>San d&apos;Oria&apos;s got the best views, the best food, and the best people!</21>
@@ -37,13 +37,13 @@
             <9>Y&apos;know, people in San d&apos;Oria walk with purpose! Unlike Bastok where they just shuffle in the dust.</9>
         </flavor_text>
         <info>
-			<description>Super nice guy, loves San d'Oria maybe a little too much.</description>
+            <description>Super nice guy, loves San d&apos;Oria maybe a little too much.</description>
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
-            <sha>4da55d2ba293e1da7e97ee580616becd6e5bebac</sha>
+            <sha>04deea661145b4f64c0ac7d8946750970b43f4b6</sha>
             <text_color>39</text_color>
-            <version>2</version>
+            <type>Player</type>
         </info>
         <member_joined_alliance>Aw man, ${member} just hopped into the alliance - things are gettin&apos; exciting now!</member_joined_alliance>
         <member_joined_party>Hey now, ${member} just joined up! This party&apos;s lookin&apos; perty solid!</member_joined_party>
@@ -53,6 +53,10 @@
         <other_party_joined_alliance>Aw man, we got another group in here - things are about to get fun!</other_party_joined_alliance>
         <other_party_left_alliance>Welp, that other party packed up and left. Hope they&apos;re headin&apos; to San d&apos;Oria and not, y&apos;know, Bastok.</other_party_left_alliance>
         <party_low_mp>Looks like ${member} could use a lil&apos; pick-me-up. Somebody got a ${refresh} handy?</party_low_mp>
+        <reminder_canteen>Another Mystical Canteen is ready - now go quench that thirst!</reminder_canteen>
+        <reminder_moglophone>Well hey now, another Moglophone! Just don't let Bastok hear about it!</reminder_moglophone>
+        <reminder_mog_locker>Ah, dang it, your Mog Locker lease is almost up! If this were San d'Oria, you'd get a proper vault.</reminder_mog_locker>
+        <reminder_plate>Ooooh, that's a good-lookin' Ra'Kaznarian Plate! Go on and grab it!</reminder_plate>
         <sublimation_charged>Hey now, Sublimation&apos;s topped off and ready to roll!</sublimation_charged>
         <vorseal_reminder>Your Vorseal&apos;s got about 10 minutes left - make &apos;em count!</vorseal_reminder>
         <you_are_now_alliance_leader>Aw man, you&apos;re the alliance leader now! You&apos;re like San d&apos;Orian royalty!</you_are_now_alliance_leader>
