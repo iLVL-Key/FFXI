@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.3'
+_addon.version = '3.3.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1452,7 +1452,7 @@ local function dynaJob(mob_name)
 		--Next, use pattern matching for the job designators
 		for job, designators in pairs(job_designators) do
 			for _, designator in ipairs(designators) do
-				if string.find(mob_name, designator) then
+				if string.find(mob_name, designator) and mob_name ~= "Dark Knight" then
 					return job
 				end
 			end
@@ -2759,7 +2759,7 @@ windower.register_event('action', function (act)
 		end
 
 	--Job abilities
-	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599 or msg == 736 or msg == 746)) or act.category == 6 or act.category == 14 or act.category == 15 then
+	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599 or msg == 608 or msg == 736 or msg == 746)) or act.category == 6 or act.category == 14 or act.category == 15 then
 
 		local target_action = ''
 		local target_action_shdw = ''
@@ -2927,9 +2927,13 @@ windower.register_event('action', function (act)
 			target_action_result = ' (Failed)'
 			target_action_result_shdw = ' (Failed)'
 		--Despoil Fail + TP
-		elseif msg == 746 then
-			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP)'
-			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr TP)'
+		elseif msg == 608 then
+			target_action_result = ' (TH: \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
+			target_action_result_shdw = ' (TH: \\cs(000,000,000)'..amount..'\\cr)'
+		--Bounty Shot Success
+		elseif msg == 736 then
+			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP)'
+			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr HP)'
 		--Most job abilities
 		elseif act.category == 6 then
 			--Erase
