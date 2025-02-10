@@ -10,9 +10,11 @@ Players can load different Helpers, each with its own personality and dialogue, 
   - **Ability Ready Alerts** → Notifies you when an ability is ready to use.
   - **Job Points & Merit Points Capped** → Alerts you when you reach the max.
   - **Party & Alliance Updates** → Get messages when members join or leave.
+  - **Key Item Reminders** → Never forget to pickup a Mystical Canteen, Moglophone, or Shiny Ra'Kaznarian Plate again.
   - **Sublimation Charged** → Tells you when Sublimation is fully charged.
-  - **Vorseal Reminder** → Notifies you when your Vorseal buff is about to expire.
+  - **Vorseal Wearing** → Notifies you when your Vorseal buff is about to expire.
   - **Mireu Pop Alerts** → Notifies you when the NM Mireu is mentioned.
+  - **Mog Locker Expiring** → Don't let your Mog Locker lease expire.
 - <ins>**Enhanced Party Awareness**</ins>
   - **Low MP Warnings** → Alerts you if a party member needs Refresh.
   - **Party & Alliance Updates** → Get messages when members join or leave.
@@ -55,6 +57,20 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `help` - Display a list of commands and addon info.
 
 ## Changelog
+Version 1.2
+
+- Added KI Reminders category.
+- Added Mystical Canteen, Moglophone, and Shiny Ra'Kaznarian Plate KI Reminders.
+- Added Notification category.
+- Added Mog Locker expiring Notification.
+- Added new Notification Sound Effect.
+- Added after_zone_party_check_delay option. Amount of time to pause watching for party structure changes after zoning. Adjust this higher if you get a notification about leaving then immediately joining a party after you zone.
+- Added Helper Type (NPC, Player, etc.)
+- Added missing sound effect to Capped Job Points and Capped Merit Points
+- Adjusted Capped Job Points, Capped Merit Points, Mireu Popped, Sublimation Charged, and Vorseal Wearing to fall under the Notifications category.
+- Adjusted all Sound Effect options to fall under a single Sound Effect option.
+
+
 Version 1.1
 - Added check and download of sound files into the addon update commands. This now makes the Helper addon fully self-sufficient starting with just Helper.lua and no additional files.
 - Added descriptions into the Helper files.
