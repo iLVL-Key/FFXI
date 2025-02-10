@@ -57,8 +57,12 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `help` - Display a list of commands and addon info.
 
 ## Changelog
-Version 1.2
 
+Version 1.3
+- Added Reraise reminder.
+- Fixed Vorseal Wearing reminder not triggering under certain circumstances.
+
+Version 1.2
 - Added KI Reminders category.
 - Added Mystical Canteen, Moglophone, and Shiny Ra'Kaznarian Plate KI Reminders.
 - Added Notification category.
