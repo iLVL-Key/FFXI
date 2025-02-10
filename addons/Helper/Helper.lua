@@ -613,7 +613,7 @@ end
 --Uopdate the SHA tag of the Helper.lua file
 local function updateAddonSHA(new_sha)
 	addon_sha = new_sha
-	settings:save()
+	settings:save('all')
 end
 
 --Retrieve the SHAs of the Helper files on GitHub
