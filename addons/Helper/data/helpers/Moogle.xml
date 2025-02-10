@@ -2,10 +2,8 @@
 <settings>
     <global>
         <ability_ready>${ability} is ready to use again, kupo!</ability_ready>
-        <capped_job_points>
-
-        </capped_job_points>
-        <capped_merit_points>Kupo! Your Job Points are capped!</capped_merit_points>
+        <capped_job_points>Kupo-po! Your Job Points are positively, perfectly, and pristinely peaked!</capped_job_points>
+        <capped_merit_points>Kupo-po! Your Merit Points are maximally, marvelously, and most magically maxed!</capped_merit_points>
         <flavor_text>
             <1>You&apos;re as reliable as a Mog Safe, kupo!</1>
             <10>Watching you coordinate in battle is like poetry in motion, kupo!</10>
@@ -78,13 +76,13 @@
             <9>Your lockstyle is as fashionable as a Moogle hat, kupo!</9>
         </flavor_text>
         <info>
-			<description>Cheerful, helpful, and full of "kupo!"</description>
+            <description>Cheerful, helpful, and full of &quot;kupo!&quot;</description>
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
             <name_color>259</name_color>
-            <sha>ce5051fa87bcbe34e3e93423bb54f32a29ac080c</sha>
+            <sha>9d9ab05031fc94388f38f90d6159aa3de1bf2305</sha>
             <text_color>262</text_color>
-            <version>2</version>
+            <type>NPC</type>
         </info>
         <member_joined_alliance>${member} has joined the alliance, kupo!</member_joined_alliance>
         <member_joined_party>${member} has joined the party, kupo!</member_joined_party>
@@ -94,6 +92,10 @@
         <other_party_joined_alliance>Another party has joined the alliance, kupo!</other_party_joined_alliance>
         <other_party_left_alliance>A party has left the alliance, kupo!</other_party_left_alliance>
         <party_low_mp>Looks like ${member} could use a ${refresh}, kupo!</party_low_mp>
+        <reminder_canteen>Kupo-ho! A fresh Mystical Canteen is ripe for the refilling!</reminder_canteen>
+        <reminder_mog_locker>Kupo-po! Your marvelous Mog Locker lease is nearing its nerve-wracking nullification! Better renew, kupo!</reminder_mog_locker>
+        <reminder_moglophone>Kupo-kwee! Another Moglophone has managed to materialize!</reminder_moglophone>
+        <reminder_plate>Kupo-po! Your Shiny Ra'Kaznarian Plate is polished and prepared!</reminder_plate>
         <sublimation_charged>Sublimation is fully charged and ready, kupo!</sublimation_charged>
         <vorseal_reminder>Only about 10 minutes left on your Vorseal effect, so stay sharp, kupo!</vorseal_reminder>
         <you_are_now_alliance_leader>You&apos;re now the alliance leader, kupo!</you_are_now_alliance_leader>
