@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.2.1'
+_addon.version = '1.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -96,15 +96,15 @@ defaults = {
 			tame = true,
 			troubadour = true,
 		},
-		after_zone_party_check_delay = 5,
+		after_zone_party_check_delay_seconds = 5,
 		auto_check_for_updates = true,
 		auto_update = false,
 		check_party_for_low_mp = true,
-		check_party_for_low_mp_delay = 900,
+		check_party_for_low_mp_delay_minutes = 15,
 		current_helper = "Vana",
 		flavor_text = true,
-		flavor_text_window_max = 21600,
-		flavor_text_window_min = 14400,
+		flavor_text_window_max_hours = 6,
+		flavor_text_window_min_hours = 4,
 		helpers_loaded = {vana = true},
 		introduce_on_load = true,
 		key_item_reminder_repeat_hours = 6,
@@ -140,6 +140,9 @@ defaults = {
 			you_are_now_alliance_leader = true,
 			you_are_now_party_leader = true,
 		},
+		reraise_check = true,
+		reraise_check_delay_minutes = 60,
+		reraise_check_not_in_town = true,
 		sound_effects = true,
 	},
 }
@@ -200,6 +203,7 @@ vana = {
 	reminder_moglophone = "Another Moglophone should be available now.",
 	reminder_plate = "Another Shiny Ra'Kaznarian Plate should be available now.",
 	party_low_mp = "It looks like ${member} could use a ${refresh}.",
+	reraise_check = "You do not have Reraise on.",
 	sublimation_charged = "Sublimation is now fully charged and ready to use.",
 	mireu_popped = "Mireu was just mentioned in ${zone}.",
 	member_joined_party = "${member} has joined the party.",
@@ -233,22 +237,25 @@ local have_key_item = settings.have_key_item
 local timestamps = settings.timestamps
 
 local ability_ready = settings.options.ability_ready
-local after_zone_party_check_delay = settings.options.after_zone_party_check_delay
+local after_zone_party_check_delay_seconds = math.floor(settings.options.after_zone_party_check_delay_seconds)
 local auto_check_for_updates = settings.options.auto_check_for_updates
 local auto_update = settings.options.auto_update
 local check_party_for_low_mp = settings.options.check_party_for_low_mp
-local check_party_for_low_mp_delay = settings.options.check_party_for_low_mp_delay
+local check_party_for_low_mp_delay_minutes = math.floor(settings.options.check_party_for_low_mp_delay_minutes * 60)
 local capped_job_points = settings.options.notifications.capped_job_points
 local capped_merit_points = settings.options.notifications.capped_merit_points
 local flavor_text = settings.options.flavor_text
-local flavor_text_window_max = settings.options.flavor_text_window_max
-local flavor_text_window_min = settings.options.flavor_text_window_min
+local flavor_text_window_max_hours = math.floor(settings.options.flavor_text_window_max_hours * 60 * 60)
+local flavor_text_window_min_hours = math.floor(settings.options.flavor_text_window_min_hours * 60 * 60)
 local helpers_loaded = settings.options.helpers_loaded
 local introduce_on_load = settings.options.introduce_on_load
 local key_item_reminders = settings.options.key_item_reminders
 local mireu_popped = settings.options.notifications.mireu_popped
 local mog_locker_expiring = settings.options.notifications.mog_locker_expiring
 local party_announcements = settings.options.party_announcements
+local reraise_check = settings.options.reraise_check
+local reraise_check_delay_minutes = math.floor(settings.options.reraise_check_delay_minutes * 60)
+local reraise_check_not_in_town = settings.options.reraise_check_not_in_town
 local sound_effects = settings.options.sound_effects
 local sublimation_charged = settings.options.notifications.sublimation_charged
 local vorseal_wearing = settings.options.notifications.vorseal_wearing
@@ -256,9 +263,10 @@ local vorseal_wearing = settings.options.notifications.vorseal_wearing
 local check_party_for_low_mp_countdown = 0
 local check_party_for_low_mp_toggle = true
 
-local flavor_text_countdown = math.floor(math.random(flavor_text_window_min,flavor_text_window_max))
+local flavor_text_countdown = math.floor(math.random(flavor_text_window_min_hours,flavor_text_window_max_hours))
 local mireu_countdown = 0
 local vorseal_countdown = -1
+local reraise_countdown = reraise_check_delay_minutes
 
 local ready = {
 	bestial_loyalty = true,
@@ -940,20 +948,6 @@ local function saveReminderTimestamp(key_item, key_item_reminder_repeat_hours)
 	settings:save('all')
 end
 
---Remind the player about a key item
-local function remindPlayer(key_item)
-
-	local text = helpers[current_helper] and helpers[current_helper]['reminder_'..key_item]
-	if text then
-		add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name) .. (text):color(c_text))
-	end 
-
-	--Play sound if enabled
-	if sound_effects then 
-		play_sound(addon_path..'data/sounds/ability_ready.wav') 
-	end
-end
-
 --Check if the player has a key item
 local function haveKeyItem(key_item_id)
 	if not key_item_id then
@@ -1003,12 +997,24 @@ local function checkKIReminderTimestamps()
 
 			--We do not yet have the KI
 			elseif not have_ki and not haveKeyItem(id) then
+
 				--Not the first run (reminder timestamp of 0) and the reminder timestamp has pased
 				if reminder_time and reminder_time ~= 0 and current_time >= reminder_time then
-					remindPlayer(key_item)
-					saveReminderTimestamp(key_item, key_item_reminders[key_item..'_repeat_hours']) --Reset the reminder time to repeat
-				end
 
+					local text = helpers[current_helper] and helpers[current_helper]['reminder_'..key_item]
+					if text then
+						add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name) .. (text):color(c_text))
+					end 
+				
+					--Play sound if enabled
+					if sound_effects then 
+						play_sound(addon_path..'data/sounds/notification.wav') 
+					end
+
+					--Reset the reminder time to repeat
+					saveReminderTimestamp(key_item, key_item_reminders[key_item..'_repeat_hours'])
+
+				end
 			end
 		end
 	end
@@ -1051,6 +1057,39 @@ local function checkMogLockerReminder()
 
 		end
 	end
+end
+
+--Check if we have reraise active
+local function reraiseActive()
+
+	local buffs = get_player().buffs
+
+	for _, buffId in ipairs(buffs) do
+		if buffId == 113 then
+			return true
+		end
+	end
+
+	return false
+
+end
+
+--Check if the player is in a town zone
+local function isInTownZone()
+
+	local current_zone = res.zones[get_info().zone].name
+	local town_zones = {
+		'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
+		}
+
+	for _, town in ipairs(town_zones) do
+		if current_zone == town then
+			return true
+		end
+	end
+
+	return false
+
 end
 
 --Reset starting states
@@ -1317,7 +1356,7 @@ local function checkPartyForLowMP()
 					--Turn the toggle off so this can't be triggered again until it's turned back on
 					check_party_for_low_mp_toggle = false
 					--Reset the countdown timer so we don't check again until ready
-					check_party_for_low_mp_countdown = check_party_for_low_mp_delay
+					check_party_for_low_mp_countdown = check_party_for_low_mp_delay_minutes
 
 				end
 			end
@@ -1857,7 +1896,7 @@ register_event('prerender', function()
 	elseif pos ~= "(?-?)" and zoning then
 		coroutine.schedule(function()
 			zoning = false
-		end, after_zone_party_check_delay)
+		end, after_zone_party_check_delay_seconds)
 	end
 
 	if not (zoning or paused) and logged_in then
@@ -1916,24 +1955,50 @@ register_event('prerender', function()
 				local text = flavorText()
 				if text then
 					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
-					flavor_text_countdown = math.floor(math.random(flavor_text_window_min,flavor_text_window_max))
+					flavor_text_countdown = math.floor(math.random(flavor_text_window_min_hours,flavor_text_window_max_hours))
 				end
 			end
 		end
 
 		--Countdown for Vorseal Reminder
-		local text = helpers[current_helper].vorseal_wearing
-		if text then
+		local vorseal_text = helpers[current_helper].vorseal_wearing
+		if vorseal_wearing and vorseal_text then
 
-			if vorseal_wearing then
+			if vorseal_countdown > 0 then
+				vorseal_countdown = vorseal_countdown - 1
 
-				if vorseal_countdown > 0 then
-					vorseal_countdown = vorseal_countdown - 1
+			elseif vorseal_countdown == 0 then
+				vorseal_countdown = -1
 
-				elseif vorseal_countdown == 0 then
-					vorseal_countdown = -1
+				add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(vorseal_text):color(c_text))
 
-					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
+				--Play sound if enabled
+				if sound_effects then 
+					play_sound(addon_path..'data/sounds/notification.wav') 
+				end
+
+			end
+
+		end
+
+		--Countdown for Mireu (so we don't call "Mireu popped" when the battle is over)
+		if mireu_popped and mireu_countdown > 0 then
+			mireu_countdown = mireu_countdown - 1
+		end
+
+		--Countdown for Reraise Check
+		local reraise_text = helpers[current_helper].reraise_check
+		if reraise_check and reraise_text then
+
+			if reraise_countdown > 0 then
+				reraise_countdown = reraise_countdown - 1
+
+			elseif reraise_countdown == 0 then
+				reraise_countdown = reraise_check_delay_minutes
+
+				--Don't inform if in town
+				if not reraiseActive() and (not reraise_check_not_in_town or (reraise_check_not_in_town and not isInTownZone())) then
+					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(reraise_text):color(c_text))
 
 					--Play sound if enabled
 					if sound_effects then 
@@ -1942,12 +2007,6 @@ register_event('prerender', function()
 
 				end
 			end
-
-			--Countdown for Mireu (so we don't call "Mireu popped" when the battle is over)
-			if mireu_popped and mireu_countdown > 0 then
-				mireu_countdown = mireu_countdown - 1
-			end
-
 		end
 	end
 end)
