@@ -88,8 +88,22 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 - `reraise_check_delay_minutes` - Amount of time between each Reraise check.
 - `reraise_check_not_in_town` - Will not alert you of Reraise missing if in a town zone.
 - `sound_effects` - Play sound effects for alerts and notifications.
+- `sparkolade_reminder` - A weekly reminder to use your Sparks and Accolades. Will play at login if day/time passes while logged out.
+- `sparkolade_reminder_day` - Day of the week the Sparkolade reminder will run.
+  - Is not case-sensitive and accepts full day name and common abbreviations such as tu, tue, and tues.
+  - Defaults to Saturday if unable to determine day.
+- `sparkolade_reminder_time` - Time the Sparkolade reminder will run.
+  - Time must be a number in military time, ie 1730 instead of 530pm.
+  - Defaults to 1200 if unable to determine time.
 
 ## Changelog
+
+Version 1.4
+- Added Sparkolade reminder. A weekly reminder with the day and time able to be set by the user. Will play at login if day/time passes while logged out.
+- Adjusted the Mog Locker expiration to only check at the top of every hour.
+- Adjust the list command to display Helpers alphabetically.
+- Fixed an issue where first logging into a character without capped Job Points would then trigger the Capped Job Points notification upon logging into a character with capped Job Points.
+- Removed unused key_item_reminder_repeat_hours option.
 
 Version 1.3
 - Added Reraise reminder.
