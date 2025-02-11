@@ -45,7 +45,7 @@
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
-            <sha>0bb100f21719edbe02be82bc857230cb3af99122</sha>
+            <sha>8e5e41754778214ff38115c341bfd71ec54ee8dc</sha>
             <text_color>220</text_color>
             <type>Player</type>
         </info>
@@ -61,7 +61,8 @@
         <reminder_mog_locker>YO, your Mog Locker lease is about to EXPIRE. SHIT! Better fix that before all your crap gets tossed out!</reminder_mog_locker>
         <reminder_moglophone>HOLY SHIT, another Moglophone is ready! LET&apos;S GOOOOO!</reminder_moglophone>
         <reminder_plate>OH SHIT, another Shiny Ra&apos;Kaznarian Plate is ready! Snatch that bad boy up!</reminder_plate>
-        <reraise_check>YO, YOU DON'T GOT RERAISE ON. YOU TRYNA DIE FOR REAL OR WHAT?!</reraise_check>
+        <reraise_check>YO, YOU DON&apos;T GOT RERAISE ON. YOU TRYNA DIE FOR REAL OR WHAT?!</reraise_check>
+        <sparkolade_reminder>PROFIT, BABY! Spend those Sparkolades!</sparkolade_reminder>
         <sublimation_charged>Awww shiiit. Sublimation is ready to use.</sublimation_charged>
         <vorseal_reminder>OH SHIT! You got maybe 10 minutes left on your Vorseal!</vorseal_reminder>
         <you_are_now_alliance_leader>Some asshole gave you alliance lead! Fuck!</you_are_now_alliance_leader>
