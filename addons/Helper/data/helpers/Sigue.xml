@@ -41,7 +41,7 @@
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
-            <sha>27d5888fa6ffe19b246226259ab5b8742334a9f9</sha>
+            <sha>f742d36b26256f7ad1d829090e0d6f27ed62c27b</sha>
             <text_color>39</text_color>
             <type>Player</type>
         </info>
@@ -57,7 +57,8 @@
         <reminder_mog_locker>Ah, dang it, your Mog Locker lease is almost up! If this were San d&apos;Oria, you&apos;d get a proper vault.</reminder_mog_locker>
         <reminder_moglophone>Well hey now, another Moglophone! Just don&apos;t let Bastok hear about it!</reminder_moglophone>
         <reminder_plate>Ooooh, that&apos;s a good-lookin&apos; Ra&apos;Kaznarian Plate! Go on and grab it!</reminder_plate>
-        <reraise_check>Aww heck, you're running around without Reraise? That's a Bastokan move if I ever saw one!</reraise_check>
+        <reraise_check>Oh lordy, you&apos;re running around without Reraise? That&apos;s a Bastokan move if I ever saw one!</reraise_check>
+        <sparkolade_reminder>Sittin' on all them Sparkolades? Better spend 'em before some Bastoker tries to steal 'em!</sparkolade_reminder>
         <sublimation_charged>Hey now, Sublimation&apos;s topped off and ready to roll!</sublimation_charged>
         <vorseal_reminder>Your Vorseal&apos;s got about 10 minutes left - make &apos;em count!</vorseal_reminder>
         <you_are_now_alliance_leader>Aw man, you&apos;re the alliance leader now! You&apos;re like San d&apos;Orian royalty!</you_are_now_alliance_leader>
