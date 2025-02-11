@@ -85,7 +85,7 @@
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>67d37cde914d48d87e3b33d731d94f2fb298f4e9</sha>
+            <sha>7258803ab95ba776dbe300221fc96450c64cf843</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
@@ -101,7 +101,8 @@
         <reminder_mog_locker>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</reminder_mog_locker>
         <reminder_moglophone>Another Moglophone, ready to chime - don&apos;t waste it this time!</reminder_moglophone>
         <reminder_plate>Your Ra&apos;Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
-        <reraise_check>No Reraise? Oh, what a blunder - when you fall, you'll stay down under!</reraise_check>
+        <reraise_check>No Reraise? Oh, what a blunder - when you fall, you&apos;ll stay down under!</reraise_check>
+        <sparkolade_reminder>Hoarding Sparkolades, are we now? Use them up, or take a bow!</sparkolade_reminder>
         <sublimation_charged>Sublimation&apos;s charge is complete - now, unleash its feat!</sublimation_charged>
         <vorseal_reminder>Oh ho ho! Your Vorseal effect is running low, about 10 minutes left, didn&apos;t you know?</vorseal_reminder>
         <you_are_now_alliance_leader>Oh ho, alliance leader you are - lead them near and far!</you_are_now_alliance_leader>
