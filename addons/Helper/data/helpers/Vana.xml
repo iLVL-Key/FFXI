@@ -45,7 +45,7 @@
             <introduction>I am Vana, your personal Helper.</introduction>
             <name>Vana</name>
             <name_color>39</name_color>
-            <sha>28070315c871548780e22a675d7e91640aa24eeb</sha>
+            <sha>318a7707b5a628cda62836f5361124a66ad3fbc9</sha>
             <text_color>220</text_color>
             <type>NPC</type>
         </info>
@@ -62,6 +62,7 @@
         <reminder_moglophone>Another Moglophone should be available now.</reminder_moglophone>
         <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate should be available now.</reminder_plate>
         <reraise_check>You do not have Reraise on.</reraise_check>
+        <sparkolade_reminder>Don't forget to spend your Sparkolades.</sparkolade_reminder>
         <sublimation_charged>Sublimation is now fully charged and ready to use.</sublimation_charged>
         <vorseal_reminder>You have about 10 minutes left on your Vorseal effect.</vorseal_reminder>
         <you_are_now_alliance_leader>You are now the alliance leader.</you_are_now_alliance_leader>
