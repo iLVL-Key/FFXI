@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.3'
+_addon.version = '1.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -60,6 +60,7 @@ defaults = {
 		mog_locker_expiration = 0,
 		mog_locker_reminder = 0,
 		plate = 0,
+		sparkolades = 0,
 	},
 	options = {
 		ability_ready = {
@@ -107,7 +108,6 @@ defaults = {
 		flavor_text_window_min_hours = 4,
 		helpers_loaded = {vana = true},
 		introduce_on_load = true,
-		key_item_reminder_repeat_hours = 6,
 		key_item_reminders = {
 			canteen = true,
 			canteen_repeat_hours = 12,
@@ -144,6 +144,9 @@ defaults = {
 		reraise_check_delay_minutes = 60,
 		reraise_check_not_in_town = true,
 		sound_effects = true,
+		sparkolade_reminder = true,
+		sparkolade_reminder_day = "Saturday",
+		sparkolade_reminder_time = 1200,
 	},
 }
 
@@ -204,6 +207,7 @@ vana = {
 	reminder_plate = "Another Shiny Ra'Kaznarian Plate should be available now.",
 	party_low_mp = "It looks like ${member} could use a ${refresh}.",
 	reraise_check = "You do not have Reraise on.",
+	sparkolade_reminder = "Don't forget to spend your Sparkolades.",
 	sublimation_charged = "Sublimation is now fully charged and ready to use.",
 	mireu_popped = "Mireu was just mentioned in ${zone}.",
 	member_joined_party = "${member} has joined the party.",
@@ -257,6 +261,7 @@ local reraise_check = settings.options.reraise_check
 local reraise_check_delay_minutes = math.floor(settings.options.reraise_check_delay_minutes * 60)
 local reraise_check_not_in_town = settings.options.reraise_check_not_in_town
 local sound_effects = settings.options.sound_effects
+local sparkolade_reminder = settings.options.sparkolade_reminder
 local sublimation_charged = settings.options.notifications.sublimation_charged
 local vorseal_wearing = settings.options.notifications.vorseal_wearing
 
@@ -424,8 +429,104 @@ local function firstRun()
 
 end
 
+--Set the Sparkolade reminder timestamp
+local function setSparkoladeReminderTimestamp()
+	local days_of_week = {
+		sunday = 1, sun = 1, su = 1,
+		monday = 2, mon = 2, mo = 2,
+		tuesday = 3, tue = 3, tues = 3, tu = 3,
+		wednesday = 4, wed = 4, weds = 4, we = 4,
+		thursday = 5, thurs = 5, thu = 5, th = 5,
+		friday = 6, fri = 6, fr = 6,
+		saturday = 7, sat = 7, sa = 7,
+	}
+
+	-- Get user-configured day and time, default to "Monday 12:00"
+	local day_input = (settings.options.sparkolade_reminder_day or "Saturday"):lower()
+	local time_input = tonumber(settings.options.sparkolade_reminder_time) or 1200
+
+	-- Convert the input day to a numeric day of the week
+	local target_day = days_of_week[day_input]
+
+	-- Ensure time_input is in valid military time format (HHMM)
+	local hour = math.floor(time_input / 100)  -- Extract hours
+	local minute = time_input % 100  -- Extract minutes
+	if hour < 0 or hour > 23 then
+		hour = 12
+	end
+	if minute < 0 or minute > 59 then
+		minute = 0
+	end
+
+	-- Convert to number
+	hour = tonumber(hour) or 0
+	minute = tonumber(minute) or 0
+
+	-- Get current date/time
+	local now = os.date("*t")
+	local today = now.wday  -- Lua weeks start on Sunday (1)
+
+	-- Correct the day adjustment logic
+	local days_until_next = (target_day - today + 7) % 7
+	
+	-- If today is the target day but the time has passed, move to next week
+	if days_until_next == 0 and (now.hour > hour or (now.hour == hour and now.min >= minute)) then
+		days_until_next = 7
+	end
+
+	--Create the correct future timestamp
+	local base_time = os.time({ year = now.year, month = now.month, day = now.day, hour = now.hour, min = now.min, sec = 0 })
+	local reminder_time = base_time + (days_until_next * 24 * 60 * 60) --Add days in seconds
+
+	local temp_day = os.date("%d", reminder_time)
+
+	--Save the new timestamp
+	timestamps.sparkolades = reminder_time
+	settings:save('all')
+end
+
+
+
+local function checkSparkoladeReminder()
+	if not settings.timestamps or not settings.timestamps.sparkolades then
+		return
+	end
+
+	local current_time = os.time()
+
+	--Check if the reminder time has passed
+	if current_time >= settings.timestamps.sparkolades then
+
+		if settings.timestamps.sparkolades ~= 0 then
+
+			local text = helpers[current_helper] and helpers[current_helper].sparkolade_reminder
+			if text then
+				add_to_chat(c_text, ('[' .. current_helper_name .. '] '):color(c_name) .. (text):color(c_text))
+			end
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
+		end
+
+		--Set the next reminder
+		setSparkoladeReminderTimestamp()
+
+	end
+end
+
 --Determine starting states
 local function initialize()
+
+	limit_points = 0
+	merit_points = 0
+	max_merit_points = 0
+	capped_merits = true
+	cap_points = 0
+	job_points = 500
+	capped_jps = true
 
 	--Update the party/alliance structure
 	party_structure = updatePartyStructure()
@@ -468,9 +569,15 @@ local function initialize()
 		end
 	end
 
+	--Set the current helper name and colors
 	current_helper_name = helpers[current_helper].info.name
 	c_name = helpers[current_helper].info.name_color
 	c_text = helpers[current_helper].info.text_color
+
+	--Check if we've passed the Sparkolade reminder timestamp while logged out
+	coroutine.schedule(function()
+		checkSparkoladeReminder()
+	end, 5)
 
 end
 
@@ -1117,7 +1224,7 @@ end
 
 register_event('incoming chunk', function(id, original, modified, injected, blocked)
 
-	if injected or blocked then return end
+	if injected or blocked or paused then return end
 
 	local packet = packets.parse('incoming', original)
 
@@ -1297,10 +1404,11 @@ register_event('login', function()
 	
 	--wait 2 seconds to let game values load
 	coroutine.schedule(function()
+		
+		initialize()
 
 		paused = false
 
-		initialize()
 		updateRecasts()
 		checkForUpdates()
 		firstRun()
@@ -1903,8 +2011,8 @@ register_event('prerender', function()
 		trackPartyStructure()
 	end
 
-	--1 second heartbeat
-	if os.time() > heartbeat and logged_in then
+	--1 second heartbeat (does not run while zoning, paused(job change or immediately after logging in), or not logged in)
+	if os.time() > heartbeat and not (zoning or paused) and logged_in then
 		heartbeat = os.time()
 		updateRecasts()
 		local player_job = get_player().main_job
@@ -1913,8 +2021,15 @@ register_event('prerender', function()
 		--Check if any Key Items are ready
 		checkKIReminderTimestamps()
 
-		--Check on Mog Locker lease expiration time
-		checkMogLockerReminder()
+		--Check on Mog Locker lease expiration time once per hour
+		if heartbeat % 3600 == 0 then
+			checkMogLockerReminder()
+		end
+
+		--Check Sparkolade reminder every 1 minute
+		if heartbeat % 60 == 0 then
+			checkSparkoladeReminder()
+		end
 
 		--Check if abilities are ready
 		for ability, enabled in pairs(ability_ready) do
@@ -2070,35 +2185,48 @@ register_event('addon command',function(addcmd, ...)
 		end
 
 	elseif addcmd == 'list' then
+		local sorted_helpers = {}
 		for name, enabled in pairs(helpers) do
 			if enabled and helpers[name].info then
-				local helper_name = helpers[name].info.name or "Unknown"
-				local helper_type = helpers[name].info.type and helpers[name].info.type.." - " or "Unknown Type - "
-				local helper_description = helpers[name].info.description or "No description available."
-				local c_name = helpers[name].info.name_color or 220
-				local c_text = helpers[name].info.text_color or 1
-				add_to_chat(8, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
+				table.insert(sorted_helpers, name)
 			end
+		end
+		table.sort(sorted_helpers)
+		for _, name in ipairs(sorted_helpers) do
+			local helper_name = helpers[name].info.name or "Unknown"
+			local helper_type = helpers[name].info.type and helpers[name].info.type.." - " or "Unknown Type - "
+			local helper_description = helpers[name].info.description or "No description available."
+			local c_name = helpers[name].info.name_color or 220
+			local c_text = helpers[name].info.text_color or 1
+			add_to_chat(8, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
 		end
 
 	elseif addcmd == 'help' then
-		local function get_last_check_date()
+		local function getLastCheckDate()
 			if not timestamps.last_check or timestamps.last_check == 0 then
 				return "Never"
 			end
-			-- Convert the timestamp into a readable date (MM/DD/YYYY)
-			local time_table = os.date("*t", timestamps.last_check)
-			return string.format("%d/%d/%d", time_table.month, time_table.day, time_table.year)
+			-- Convert the timestamp into a readable date
+			return os.date("%a, %b %d, %I:%M %p", timestamps.last_check)
 		end
-		local last_check_date = get_last_check_date()		
+		local function getNextSparkoladeReminder()
+			if not sparkolade_reminder then
+				return "Off"
+			end
+			-- Convert the timestamp into a readable date
+			return os.date("%a, %b %d, %I:%M %p", timestamps.sparkolades)
+		end
+		local last_check_date = getLastCheckDate()		
 		local prefix = "//helper"
 		local helper_type = helpers[current_helper].info.type and helpers[current_helper].info.type.." - " or "Unknown Type - "
 		local helper_description = helpers[current_helper].info.description or "No description available."
 		local c_name = helpers[current_helper].info.name_color or 220
 		local c_text = helpers[current_helper].info.text_color or 1
+		local next_sparkolade_reminder = getNextSparkoladeReminder()
 		add_to_chat(8,('[Helper] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
+		add_to_chat(8,(' Next Sparkolade reminder: ')..(next_sparkolade_reminder):color(1))
 		add_to_chat(8,(' ['..current_helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
