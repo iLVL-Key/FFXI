@@ -133,6 +133,12 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.3.2
+- Adjusted highlight_when_sp_active option to display the time remaining on the SP Ability.
+- Fixed Volte Dark Knight being labeled as PLD|DRG. For reals.
+- Fixed SP ability highlight not fading when Bars fades out from inactivity.
+- Fixed a couple more Job Abilities showing incorrectly as Weapon Skills.
+
 Version 3.3.1
 - Fixed Volte Dark Knight being labeled as PLD|DRG.
 - Fixed missing Bounty Shot success result.
