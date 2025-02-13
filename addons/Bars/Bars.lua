@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.3.1'
+_addon.version = '3.3.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -34,6 +34,16 @@ texts = require('texts')
 res = require('resources')
 packets = require('packets')
 require 'chat'
+
+local get_mob_by_id = windower.ffxi.get_mob_by_id
+local get_player = windower.ffxi.get_player
+local add_to_chat = windower.add_to_chat
+local get_mob_by_target = windower.ffxi.get_mob_by_target
+local get_info = windower.ffxi.get_info
+local register_event = windower.register_event
+local get_mob_array = windower.ffxi.get_mob_array
+local get_mob_by_name = windower.ffxi.get_mob_by_name
+local get_position = windower.ffxi.get_position
 
 defaults = {
 	pos = {x = 200, y = 200},
@@ -290,12 +300,28 @@ local element_colors = {
 	[15] = { r = color.elements.none.r, g = color.elements.none.g, b = color.elements.none.b },
 }
 
-local cmd = windower.send_command
-local get_mob_by_id = windower.ffxi.get_mob_by_id
-local get_player = windower.ffxi.get_player
-local add_to_chat = windower.add_to_chat
-local get_mob_by_target = windower.ffxi.get_mob_by_target
-local get_info = windower.ffxi.get_info
+local sp_abils = {
+	['Mighty Strikes'] = 45, ['Brazen Rush'] = 30,
+	['Hundred Fists'] = 45, ['Inner Strength'] = 30,
+	['Manafont'] = 60, ['Subtle Sorcery'] = 60,
+	['Chainspell'] = 60,
+	['Perfect Dodge'] = 30,
+	['Invincible'] = 30,
+	['Blood Weapon'] = 30, ['Soul Enslavement'] = 30,
+	['Unleash'] = 60,
+	['Soul Voice'] = 180, ['Clarion Call'] = 180,
+	['Overkill'] = 60,
+	['Meikyo Shisui'] = 30, ['Yaegasumi'] = 45,
+	['Mikage'] = 45,
+	['Spirit Surge'] = 60, ['Fly High'] = 30,
+	['Astral Flow'] = 180, ['Astral Conduit'] = 30,
+	['Azure Lore'] = 30, ['Unbridled Wisdom'] = 60,
+	['Overdrive'] = 60,
+	['Trance'] = 60, ['Grand Pas'] = 30,
+	['Tabula Rasa'] = 180,
+	['Bolster'] = 180, ['Widened Compas'] = 60,
+	['Elemental Sforzo'] = 30,
+	}
 
 local inCS = false
 local zoning = false
@@ -658,7 +684,7 @@ bars_text_pet:bg_alpha(0)
 bars_text_pet:draggable(false)
 
 --Destroy all the text objects when we unload the addon
-windower.register_event('unload', function()
+register_event('unload', function()
 
 	bars_bg_focus_target:destroy()
 	bars_bg_sub_target:destroy()
@@ -1078,7 +1104,8 @@ end
 local function addToSPTable(actor_id, sp_name)
 
 	current_sp_actions[actor_id] = {
-		sp_name = " "..sp_name,
+		sp_name = sp_name,
+		timer = sp_abils[sp_name],
 	}
 
 end
@@ -1090,6 +1117,18 @@ local function removeFromSPTable(actor_id)
 		current_sp_actions[actor_id] = nil
 	end
 
+end
+
+--Countdown for active SP abilities
+local function decrementSPTimers()
+	for id, sp_action in pairs(current_sp_actions) do
+		local timer = sp_action.timer
+		if timer and timer > 0 then
+			sp_action.timer = timer - 1
+		elseif timer and timer <= 0 then
+			removeFromSPTable(id)
+		end
+	end
 end
 
 --Clear all actions from the action tables
@@ -1452,7 +1491,7 @@ local function dynaJob(mob_name)
 		--Next, use pattern matching for the job designators
 		for job, designators in pairs(job_designators) do
 			for _, designator in ipairs(designators) do
-				if string.find(mob_name, designator) and mob_name ~= "Dark Knight" then
+				if string.find(mob_name, designator) and mob_name ~= "Volte Dark Knight" then
 					return job
 				end
 			end
@@ -1482,7 +1521,9 @@ local function updateFocusTarget()
 	local target = get_mob_by_target('t') or nil
 	local ft = focus_target_override and focus_target_override or focus_target
 	local ft_sp_active = ft and current_sp_actions[ft.id]
-	local ft_name = ft and (ft_sp_active and Heartbeat % 2 == 0 and current_sp_actions[ft.id].sp_name or ' '..ft.name) or ''
+	local ft_sp_timer = ft_sp_active and ' '..string.format("%d:%02d", math.floor(current_sp_actions[ft.id].timer / 60), current_sp_actions[ft.id].timer % 60)
+	local ft_sp_name = ft_sp_active and ' '..current_sp_actions[ft.id].sp_name
+	local ft_name = ft and (ft_sp_active and Heartbeat % 2 == 0 and ft_sp_timer..ft_sp_name or ' '..ft.name) or ''
 	local dyna_job = ft and show_dyna_jobs and dynaJob(ft.name) or false
 	local ft_dyna_job = ft and dyna_job and ' '..dyna_job or ''
 	local ft_index = ft and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
@@ -1560,7 +1601,7 @@ local function updateFocusTarget()
 	bars_text_focus_target_action:text(Fade and text_ft_action:text_strip_format() or text_ft_action)
 	bars_text_focus_target:color(ct.r,ct.g,ct.b)
 	bars_text_focus_target_action:color(ct.r,ct.g,ct.b)
-	bars_text_focus_target:stroke_alpha(ft_sp_active and sp.a or 0)
+	bars_text_focus_target:stroke_alpha(not Fade and ft_sp_active and sp.a or 0)
 
 end
 
@@ -1570,7 +1611,9 @@ local function updateTarget()
 	local player = get_player()
 	local target = screen_test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
 	local target_sp_active = target and current_sp_actions[target.id]
-	local target_name = target and (target_sp_active and Heartbeat % 2 == 0 and current_sp_actions[target.id].sp_name or ' '..target.name) or ''
+	local target_sp_timer = target_sp_active and ' '..string.format("%d:%02d", math.floor(current_sp_actions[target.id].timer / 60), current_sp_actions[target.id].timer % 60) or ''
+	local target_sp_name = target_sp_active and ' '..current_sp_actions[target.id].sp_name
+	local target_name = target and (target_sp_active and Heartbeat % 2 == 0 and target_sp_name or ' '..target.name) or ''
 	local dyna_job = target and show_dyna_jobs and dynaJob(target.name) or false
 	local target_dyna_job = target and dyna_job and ' '..dyna_job or ''
 	local target_index = target and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", target.index) or target.index)..')' or ''
@@ -1588,8 +1631,8 @@ local function updateTarget()
 	local cm = target and (Fade and text_color or targetColor(target)) or color.target.pc_other
 	local ct = text_color
 	target_hpp = string.format("%3s", target_hpp)..'%'
-	local text = target_hpp..target_distance..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..target_name..'\\cr'..target_dyna_job..target_index
-	local text_shdw = target_hpp..target_distance..'\\cs(000,000,000)'..target_name..'\\cr'..target_dyna_job..target_index
+	local text = target_hpp..target_distance..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
+	local text_shdw = target_hpp..target_distance..'\\cs(000,000,000)'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
 	local target_status = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status or ''
 	local target_status_shdw = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status_shdw or ''
 	local target_action = target and current_actions[target.id] and current_actions[target.id].action or ''
@@ -1625,7 +1668,7 @@ local function updateTarget()
 		bars_text_target_action:text(Fade and text_target_action:text_strip_format() or text_target_action)
 		bars_text_target:color(ct.r,ct.g,ct.b)
 		bars_text_target_action:color(ct.r,ct.g,ct.b)
-		bars_text_target:stroke_alpha(target_sp_active and sp.a or 0)
+		bars_text_target:stroke_alpha(not Fade and target_sp_active and sp.a or 0)
 
 	else
 
@@ -1646,7 +1689,9 @@ local function updateSubTarget()
 	local st = screen_test and screen_test_sub_target or get_mob_by_target('st')
 	local target = get_mob_by_target('t')
 	local st_sp_active = st and current_sp_actions[st.id]
-	local st_name = st and (st_sp_active and Heartbeat % 2 == 0 and current_sp_actions[st.id].sp_name or ' '..st.name) or ''
+	local st_sp_timer = st_sp_active and ' '..string.format("%d:%02d", math.floor(current_sp_actions[st.id].timer / 60), current_sp_actions[st.id].timer % 60)
+	local st_sp_name = st_sp_active and ' '..current_sp_actions[st.id].sp_name
+	local st_name = st and (st_sp_active and Heartbeat % 2 == 0 and st_sp_timer..st_sp_name or ' '..st.name) or ''
 	local dyna_job = st and show_dyna_jobs and dynaJob(st.name) or false
 	local st_dyna_job = st and dyna_job and ' '..dyna_job or ''
 	local st_index = st and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
@@ -1699,7 +1744,7 @@ local function updateSubTarget()
 		bars_text_sub_target_action:text(Fade and text_st_action:text_strip_format() or text_st_action)
 		bars_text_sub_target:color(ct.r,ct.g,ct.b)
 		bars_text_sub_target_action:color(ct.r,ct.g,ct.b)
-		bars_text_sub_target:stroke_alpha(st_sp_active and sp.a or 0)
+		bars_text_sub_target:stroke_alpha(not Fade and st_sp_active and sp.a or 0)
 
 	else
 
@@ -2115,11 +2160,11 @@ local function checkForFocusTarget()
 	local nearby = nil
 
 	--Loop through all the mobs in memory (nearby)
-	for i,v in pairs(windower.ffxi.get_mob_array()) do
+	for i,v in pairs(get_mob_array()) do
 
 		local distance = math.floor(v.distance:sqrt() * 100) / 100
 		local nearby_mob_by_id = get_mob_by_id(v.id)
-		local nearby_mob_by_name = windower.ffxi.get_mob_by_name(v.name)
+		local nearby_mob_by_name = get_mob_by_name(v.name)
 
 		--Does an id nearby match an entry in our auto focus target list?
 		if nearby_mob_by_id and auto_focus_target_list[convertToSave(v.id)] 
@@ -2156,7 +2201,7 @@ local function checkForFocusTargetOverride()
 	local nearby = false
 
 	--Loop through all the mobs in memory (nearby)
-	for i,v in pairs(windower.ffxi.get_mob_array()) do
+	for i,v in pairs(get_mob_array()) do
 
 		local distance = math.floor(v.distance:sqrt() * 100) / 100
 
@@ -2360,7 +2405,7 @@ local function screenTest()
 end
 
 --Job Changing
-windower.register_event('job change', function()
+register_event('job change', function()
 	hideBars()
 	setJob()
 	setPosition()
@@ -2369,7 +2414,7 @@ windower.register_event('job change', function()
 end)
 
 --Target Changing
-windower.register_event('target change', function()
+register_event('target change', function()
 	updateTarget()
 	if not condense_target_and_subtarget_bars then
 		updateSubTarget()
@@ -2378,32 +2423,32 @@ windower.register_event('target change', function()
 end)
 
 --HP Changing
-windower.register_event('hp change', function(new_hp,old_hp)
+register_event('hp change', function(new_hp,old_hp)
 	updateHPBar()
 	if new_hp < old_hp then
 		resetFadeDelay()
 	end
 end)
-windower.register_event('hpp change', function()
+register_event('hpp change', function()
 	updateHPBar()
 end)
-windower.register_event('hpmax change', function()
+register_event('hpmax change', function()
 	updateHPBar()
 end)
 
 --MP Changing
-windower.register_event('mp change', function()
+register_event('mp change', function()
 	updateMPBar()
 end)
-windower.register_event('mpp change', function()
+register_event('mpp change', function()
 	updateMPBar()
 end)
-windower.register_event('mpmax change', function()
+register_event('mpmax change', function()
 	updateMPBar()
 end)
 
 --TP Changing
-windower.register_event('tp change', function()
+register_event('tp change', function()
 	updateTPBar()
 end)
 
@@ -2429,24 +2474,24 @@ local function initialize()
 end
 
 --Load
-windower.register_event('load', function()
+register_event('load', function()
 	if get_info().logged_in then
 		initialize()
 	end
 end)
 
 --Login
-windower.register_event('login', function()
+register_event('login', function()
 	initialize()
 	resetFadeDelay()
 end)
 
 --Logout
-windower.register_event('logout', function()
+register_event('logout', function()
 	resetFadeDelay()
 end)
 
-windower.register_event('status change', function(status)
+register_event('status change', function(status)
 
 	--In a cutscene: Hide the bars
 	if status == 4 and not inCS then
@@ -2462,7 +2507,7 @@ windower.register_event('status change', function(status)
 	resetFadeDelay()
 end)
 
-windower.register_event('prerender', function()
+register_event('prerender', function()
 
 	if get_info().logged_in and show_self_action then
 		updateSelfAction()
@@ -2501,29 +2546,36 @@ windower.register_event('prerender', function()
 		updatePetBar()
 	end
 
-	--Fade timer
-	if fade_after_delay and os.time() > Heartbeat and get_info().logged_in then
-		Heartbeat = os.time()
-		local status = get_player() and get_player().status
-		local in_combat = get_player() and get_player().in_combat
-		local player = get_player()
-		local target = get_mob_by_target('st','t')
-		local has_target = target and target.id ~= player.id and true or false
-		if fade_delay > 0 and status ~= 1 and not (in_combat or has_target) then
-			fade_delay = fade_delay -1
-		elseif fade_delay == 0 then
-			Fade = true
-			fade_delay = -1
-			--Update so the color stripping happens before the fade
-			updateFocusTarget()
-			updateTarget()
-			updateSubTarget()
-			updateSelfAction()
-			updateHPBar()
-			updateMPBar()
-			updateTPBar()
-			updatePetBar()
+	if os.time() > Heartbeat then
+
+		--Countdown for active SP Abilities
+		decrementSPTimers()
+
+		--Fade timer
+		if fade_after_delay and get_info().logged_in then
+			Heartbeat = os.time()
+			local status = get_player() and get_player().status
+			local in_combat = get_player() and get_player().in_combat
+			local player = get_player()
+			local target = get_mob_by_target('st','t')
+			local has_target = target and target.id ~= player.id and true or false
+			if fade_delay > 0 and status ~= 1 and not (in_combat or has_target) then
+				fade_delay = fade_delay -1
+			elseif fade_delay == 0 then
+				Fade = true
+				fade_delay = -1
+				--Update so the color stripping happens before the fade
+				updateFocusTarget()
+				updateTarget()
+				updateSubTarget()
+				updateSelfAction()
+				updateHPBar()
+				updateMPBar()
+				updateTPBar()
+				updatePetBar()
+			end
 		end
+
 	end
 
 	--Fade away
@@ -2545,7 +2597,7 @@ windower.register_event('prerender', function()
 	end
 
 	--Hide while zoning
-	local pos = windower.ffxi.get_position()
+	local pos = get_position()
 	if pos == "(?-?)" and not zoning then
 		zoning = true
 		hideBars()
@@ -2558,7 +2610,7 @@ windower.register_event('prerender', function()
 
 end)
 
-windower.register_event('action', function (act)
+register_event('action', function (act)
 	local msg = act.targets[1].actions[1].message
 	local player = get_player()
 	local actor = get_mob_by_id(act.actor_id)
@@ -2588,8 +2640,6 @@ windower.register_event('action', function (act)
 	local target_count = act.target_count
 	local amount = addCommas(act.targets[1].actions[1].param)
 	local count = show_result_totals and target_count > 1 and target_count..'●' or ''
-
-	local sp_abils = {['Mighty Strikes'] = 45, ['Brazen Rush'] = 30, ['Hundred Fists'] = 45, ['Manafont'] = 60, ['Chainspell'] = 60, ['Perfect Dodge'] = 30, ['Invincible'] = 30, ['Blood Weapon'] = 30, ['Soul Enslavement'] = 30, ['Soul Voice'] = 180, ['Meikyo Shisui'] = 30, ['Yaegasumi'] = 45, ['Mikage'] = 45, ['Spirit Surge'] = 60, ['Azure Lore'] = 30, ['Unbridled Wisdom'] = 60, ['Overdrive'] = 60, ['Trance'] = 60, ['Tabula Rasa'] = 180, ['Bolster'] = 180, ['Elemental Sforzo'] = 30, ['Inner Strength'] = 30, ['Subtle Sorcery'] = 60, ['Unleash'] = 60, ['Clarion Call'] = 180, ['Overkill'] = 60, ['Fly High'] = 30, ['Astral Flow'] = 180, ['Astral Conduit'] = 30, ['Grand Pas'] = 30, ['Widened Compas'] = 60}
 
 	local rdc_r = formatRGB(color.result.damage.r)
 	local rdc_g = formatRGB(color.result.damage.g)
@@ -2855,15 +2905,15 @@ windower.register_event('action', function (act)
 		elseif act.category == 3 and msg == 110 then
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+		--Mug Success + HP
+		elseif msg == 129 and act.targets[1].actions[1].has_add_effect then
+			local hp_drain = act.targets[1].actions[1].add_effect_param
+			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..hp_drain..'\\cr HP)'
+			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil + \\cs(000,000,000)'..hp_drain..'\\cr HP)'
 		--Mug Success
 		elseif msg == 129 then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil)'
-		--Mug Success + HP
-		elseif msg == 129 then
-			local hp_drain = act.targets[1].actions[1].add_effect_param
-			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..hp_drain..'\\cr HP)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil + \\cs(000,000,000)'..hp_drain..'\\cr HP)'
 		--Mug Fail
 		elseif msg == 244 then
 			target_action_result = ' (Failed)'
@@ -2926,14 +2976,10 @@ windower.register_event('action', function (act)
 		elseif msg == 153 then
 			target_action_result = ' (Failed)'
 			target_action_result_shdw = ' (Failed)'
-		--Despoil Fail + TP
+		--Bounty Shot Success
 		elseif msg == 608 then
 			target_action_result = ' (TH: \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
 			target_action_result_shdw = ' (TH: \\cs(000,000,000)'..amount..'\\cr)'
-		--Bounty Shot Success
-		elseif msg == 736 then
-			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP)'
-			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr HP)'
 		--Most job abilities
 		elseif act.category == 6 then
 			--Erase
@@ -3013,7 +3059,7 @@ windower.register_event('action', function (act)
 				target_action_result = ' (Cover)'
 				target_action_result_shdw = ' (Cover)'
 			--Buff/Debuff
-			elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then --removed 100
+			elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
 				local landed = calculateInfo(act).landed
 				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
@@ -3175,21 +3221,11 @@ windower.register_event('action', function (act)
 				target_action_result_shdw = ' (Party Enmity Transferred)'
 			end
 
-			if highlight_when_sp_active then
-
-				local time = nil
-
-				if abil_name ~= "[REDACTED]" then
-					time = sp_abils[abil_name]
-				end
-
+			if highlight_when_sp_active and abil_name ~= "[REDACTED]" then
+				local time = sp_abils[abil_name]
 				if time then
 					addToSPTable(act.actor_id, abil_name)
-					coroutine.schedule(function()
-						removeFromSPTable(act.actor_id)
-					end, time)
 				end
-
 			end
 
 		--Non-blinkable job abilities
@@ -3319,7 +3355,7 @@ windower.register_event('action', function (act)
 
 			--Players
 			if isPlayer(actor.id) then
-				if msg == 317 or msg == 318 or msg == 324 then
+				if msg == 100 or msg == 317 or msg == 318 or msg == 324 then
 					action_name = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or ' [REDACTED]'
 					action_name_shdw = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or ' [REDACTED]'
 				else
@@ -3920,27 +3956,17 @@ windower.register_event('action', function (act)
 
 		end
 
-		if highlight_when_sp_active then
-
-			local time = nil
-
-			if abil_name ~= "[REDACTED]" then
-				time = sp_abils[abil_name]
-			end
-
+		if highlight_when_sp_active and abil_name ~= "[REDACTED]" then
+			local time = sp_abils[abil_name]
 			if time then
 				addToSPTable(act.actor_id, abil_name)
-				coroutine.schedule(function()
-					removeFromSPTable(act.actor_id)
-				end, time)
 			end
-
 		end
 
 	end
 end)
 
-windower.register_event('incoming chunk',function(id,original,modified,injected,blocked)
+register_event('incoming chunk',function(id,original,modified,injected,blocked)
     if not injected or (id == 0x67 or id == 0x068) then
 		local packet = packets.parse('incoming', original)
 		local msg_type = packet['Message Type']
@@ -3955,7 +3981,7 @@ local function displayUnregnizedCommand()
 	add_to_chat(8,('[Bars] '):color(220)..('Unrecognized command. Type'):color(8)..(' //bars help'):color(1)..(' for a list of commands.'):color(8))
 end
 
-windower.register_event('addon command',function(addcmd, ...)
+register_event('addon command',function(addcmd, ...)
 
 	--Update the bar position
 	if addcmd == 'pos' or addcmd == 'position' or addcmd == 'p' then
