@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.4'
+_addon.version = '1.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -147,6 +147,7 @@ defaults = {
 		sparkolade_reminder = true,
 		sparkolade_reminder_day = "Saturday",
 		sparkolade_reminder_time = 1200,
+		voices = false,
 	},
 }
 
@@ -231,7 +232,6 @@ settings = config.load(defaults)
 helpers.vana = config.load('data/helpers/Vana.xml', vana)
 
 local current_helper = string.lower(settings.options.current_helper)
-local current_helper_name
 local c_name
 local c_text
 
@@ -264,6 +264,7 @@ local sound_effects = settings.options.sound_effects
 local sparkolade_reminder = settings.options.sparkolade_reminder
 local sublimation_charged = settings.options.notifications.sublimation_charged
 local vorseal_wearing = settings.options.notifications.vorseal_wearing
+local voices = settings.options.voices
 
 local check_party_for_low_mp_countdown = 0
 local check_party_for_low_mp_toggle = true
@@ -485,9 +486,44 @@ local function setSparkoladeReminderTimestamp()
 	settings:save('all')
 end
 
+--Get the correct Helper
+local function getHelper()
+	
+	if voices then
 
+		local active_helpers = {}
+		for name, enabled in pairs(helpers_loaded) do
+			if enabled then
+				table.insert(active_helpers, name)
+			end
+		end
+
+		local random_helper = active_helpers[math.random(#active_helpers)]
+		local selected_helper = {
+			helper = random_helper,
+			name = helpers[random_helper].info.name,
+			c_name = helpers[random_helper].info.name_color,
+			c_text = helpers[random_helper].info.text_color,
+		}
+
+		return selected_helper
+
+	else
+
+		local selected_helper = {
+			helper = current_helper,
+			name = helpers[current_helper].info.name,
+			c_name = helpers[current_helper].info.name_color,
+			c_text = helpers[current_helper].info.text_color,
+		}
+
+		return selected_helper
+
+	end
+end
 
 local function checkSparkoladeReminder()
+
 	if not settings.timestamps or not settings.timestamps.sparkolades then
 		return
 	end
@@ -499,14 +535,17 @@ local function checkSparkoladeReminder()
 
 		if settings.timestamps.sparkolades ~= 0 then
 
-			local text = helpers[current_helper] and helpers[current_helper].sparkolade_reminder
+			local selected = getHelper()
+			local text = helpers[selected.helper].sparkolade_reminder
 			if text then
-				add_to_chat(c_text, ('[' .. current_helper_name .. '] '):color(c_name) .. (text):color(c_text))
-			end
 
-			--Play sound if enabled
-			if sound_effects then 
-				play_sound(addon_path..'data/sounds/notification.wav') 
+				add_to_chat(selected.c_text, ('[' .. selected.name .. '] '):color(selected.c_name) .. (text):color(selected.c_text))
+
+				--Play sound if enabled
+				if sound_effects then 
+					play_sound(addon_path..'data/sounds/notification.wav') 
+				end
+
 			end
 
 		end
@@ -568,11 +607,6 @@ local function initialize()
 			end
 		end
 	end
-
-	--Set the current helper name and colors
-	current_helper_name = helpers[current_helper].info.name
-	c_name = helpers[current_helper].info.name_color
-	c_text = helpers[current_helper].info.text_color
 
 	--Check if we've passed the Sparkolade reminder timestamp while logged out
 	coroutine.schedule(function()
@@ -831,7 +865,7 @@ local function downloadAddon(github_addon_sha)
 	-- Update the stored SHA after successful download
 	updateAddonSHA(github_addon_sha)
 
-	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(6))
+	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
 	windower.send_command('lua r helper')
 
 end
@@ -1108,15 +1142,18 @@ local function checkKIReminderTimestamps()
 				--Not the first run (reminder timestamp of 0) and the reminder timestamp has pased
 				if reminder_time and reminder_time ~= 0 and current_time >= reminder_time then
 
-					local text = helpers[current_helper] and helpers[current_helper]['reminder_'..key_item]
+					local selected = getHelper()
+					local text = helpers[selected.helper]['reminder_'..key_item]
 					if text then
-						add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name) .. (text):color(c_text))
+
+						add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name) .. (text):color(selected.c_text))
+
+						--Play sound if enabled
+						if sound_effects then 
+							play_sound(addon_path..'data/sounds/notification.wav') 
+						end
+
 					end 
-				
-					--Play sound if enabled
-					if sound_effects then 
-						play_sound(addon_path..'data/sounds/notification.wav') 
-					end
 
 					--Reset the reminder time to repeat
 					saveReminderTimestamp(key_item, key_item_reminders[key_item..'_repeat_hours'])
@@ -1147,17 +1184,19 @@ local function checkMogLockerReminder()
 
 		if current_time >= timestamps.mog_locker_reminder then
 
-			local text = helpers[current_helper] and helpers[current_helper].mog_locker_expiring
-
+			local selected = getHelper()
+			local text = helpers[selected.helper].mog_locker_expiring
 			if text then
-				add_to_chat(c_text, ('[' .. current_helper_name .. '] '):color(c_name) .. (text):color(c_text))
+
+				add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+				--Play sound if enabled
+				if sound_effects then 
+					play_sound(addon_path..'data/sounds/notification.wav') 
+				end
+
 			end
 	
-			--Play sound if enabled
-			if sound_effects then 
-				play_sound(addon_path..'data/sounds/notification.wav') 
-			end
-
 			--Update the reminder timestamp to trigger again in 24 hours
 			timestamps.mog_locker_reminder = current_time + one_day
 			settings:save('all')
@@ -1265,15 +1304,18 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	if capped_merit_points and merit_points == max_merit_points and not capped_merits then
 
 		capped_merits = true
-		local text = helpers[current_helper].capped_merit_points
 
+		local selected = getHelper()
+		local text = helpers[selected.helper].capped_merit_points
 		if text then
-			add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
-		end
 
-		--Play sound if enabled
-		if sound_effects then 
-			play_sound(addon_path..'data/sounds/notification.wav') 
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
 		end
 
 	elseif merit_points < max_merit_points and capped_merits then
@@ -1285,15 +1327,18 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	if capped_job_points and job_points == 500 and not capped_jps then
 
 		capped_jps = true
-		local text = helpers[current_helper].capped_job_points
 
+		local selected = getHelper()
+		local text = helpers[selected.helper].capped_job_points
 		if text then
-			add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
-		end
 
-		--Play sound if enabled
-		if sound_effects then 
-			play_sound(addon_path..'data/sounds/notification.wav') 
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
 		end
 
 	elseif job_points < 500 and capped_jps then
@@ -1307,22 +1352,25 @@ end)
 --Introduce the Helper
 local function introduceHelper()
 
-	local introduction = helpers[current_helper].info.introduction
+	local selected = getHelper()
+	local introduction = helpers[selected.helper].info.introduction
 
 	if introduction then
-		add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(introduction):color(c_text))
-
+		add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(introduction):color(selected.c_text))
 	else
-		add_to_chat(8,('[Helper] '):color(220)..('Current Helper is set to '):color(8)..(capitalize(helpers[current_helper].name)):color(1)..('.'):color(8))
-
+		if voices then
+			add_to_chat(8,('[Helper] '):color(220)..('Voices Mode: '):color(8)..('On'):color(1))
+		else
+			add_to_chat(8,('[Helper] '):color(220)..('Current Helper is set to '):color(8)..(capitalize(helpers[current_helper].name)):color(1)..('.'):color(8))
+		end
 	end
 
 end
 
 --Pick a random flavor text
-local function flavorText()
+local function flavorText(selected_helper)
 
-	local flavor_text = helpers[current_helper].flavor_text
+	local flavor_text = helpers[selected_helper].flavor_text
 
 	--Check if there are no flavor text entries for the current Helper
 	if not flavor_text or next(flavor_text) == nil then
@@ -1454,19 +1502,26 @@ local function checkPartyForLowMP()
 			--Check for high max MP, low mpp, and no existing Ballad or Refresh buff
 			if estimated_max_mp > 1000 and member.mpp <= 25 then
 
-				local text = helpers[current_helper].party_low_mp
-
+				local selected = getHelper()
+				local text = helpers[selected.helper].party_low_mp
 				if text then
 
-					local low_mp_text = refreshPlaceholder(text,member.name,player_job)
+					text = refreshPlaceholder(text,member.name,player_job)
 
-					add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(low_mp_text):color(c_text))
-					--Turn the toggle off so this can't be triggered again until it's turned back on
-					check_party_for_low_mp_toggle = false
-					--Reset the countdown timer so we don't check again until ready
-					check_party_for_low_mp_countdown = check_party_for_low_mp_delay_minutes
+					add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+					
+					--Play sound if enabled
+					if sound_effects then 
+						play_sound(addon_path..'data/sounds/notification.wav') 
+					end
 
 				end
+
+				--Turn the toggle off so this can't be triggered again until it's turned back on
+				check_party_for_low_mp_toggle = false
+				--Reset the countdown timer so we don't check again until ready
+				check_party_for_low_mp_countdown = check_party_for_low_mp_delay_minutes
+
 			end
 		end
 	end
@@ -1546,7 +1601,6 @@ function cycleHelper()
 	-- Move to the next Helper in the list and update info, wrap around if needed
 	local nextIndex = currentIndex % #helperNames + 1
 	current_helper = helperNames[nextIndex]
-	current_helper_name = helpers[current_helper].info.name
 	c_name = helpers[current_helper].info.name_color
 	c_text = helpers[current_helper].info.text_color
 
@@ -1656,62 +1710,63 @@ function trackPartyStructure()
 		end
 	end
 
+	local selected = getHelper()
 	local text = nil
 	--You join a party that is in an alliance
 	if announce.you_joined_alliance and not previously_in_party and now_in_party and now_in_alliance then
-		text = helpers[current_helper].you_joined_alliance
-		if sound_effects then
+		text = helpers[selected.helper].you_joined_alliance
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/member_joined_party.wav')
 		end
 
 	--You join a party that is not in an alliance
 	elseif announce.you_joined_party and not previously_in_party and now_in_party and not now_party_leader then
-		text = helpers[current_helper].you_joined_party
-		if sound_effects then
+		text = helpers[selected.helper].you_joined_party
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/member_joined_party.wav')
 		end
 
 	--You leave a party that is part of an alliance
 	elseif announce.you_left_alliance and previously_in_alliance and not now_in_party then
-		text = helpers[current_helper].you_left_alliance
-		if sound_effects then
+		text = helpers[selected.helper].you_left_alliance
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/member_left_party.wav')
 		end
 
 	--You leave a party that is not part of an alliance
 	elseif announce.you_left_party and previously_in_party and not now_in_party then
-		text = helpers[current_helper].you_left_party
-		if sound_effects then
+		text = helpers[selected.helper].you_left_party
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/member_left_party.wav')
 		end
 
 	--Your party joined an alliance
 	elseif announce.your_party_joined_alliance and previously_in_party and now_in_alliance and not previously_in_alliance then
-		text = helpers[current_helper].your_party_joined_alliance
-		if sound_effects then
+		text = helpers[selected.helper].your_party_joined_alliance
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/party_joined_alliance.wav')
 		end
 
 	--Your party left an alliance
 	elseif announce.your_party_left_alliance and previously_in_alliance and not now_in_alliance then
-		text = helpers[current_helper].your_party_left_alliance
-		if sound_effects then
+		text = helpers[selected.helper].your_party_left_alliance
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/party_left_alliance.wav')
 		end
 
 	-- Another party joined the alliance
 	elseif announce.other_party_joined_alliance and previously_in_alliance and now_in_alliance and 
 	((not old_p2_leader and new_p2_leader) or (not old_p3_leader and new_p3_leader)) then
-		text = helpers[current_helper].other_party_joined_alliance
-		if sound_effects then
+		text = helpers[selected.helper].other_party_joined_alliance
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/party_joined_alliance.wav')
 		end
 
 	-- Another party left the alliance
 	elseif announce.other_party_left_alliance and previously_in_alliance and now_in_alliance and 
 	((old_p2_leader and not new_p2_leader) or (old_p3_leader and not new_p3_leader)) then
-		text = helpers[current_helper].other_party_left_alliance
-		if sound_effects then
+		text = helpers[selected.helper].other_party_left_alliance
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/party_left_alliance.wav')
 		end
 
@@ -1729,9 +1784,12 @@ function trackPartyStructure()
 		if announce.member_joined_party and new_p1_count > old_p1_count then
 			for _, member in ipairs(party1_changes.added) do
 				if member ~= '' then
-					text = memberPlaceholder(helpers[current_helper].member_joined_party, member)
-					if sound_effects then
-						play_sound(addon_path..'data/sounds/member_joined_party.wav')
+					text = helpers[selected.helper].member_joined_party
+					if text then
+						text = memberPlaceholder(text, member)
+						if sound_effects then
+							play_sound(addon_path..'data/sounds/member_joined_party.wav')
+						end
 					end
 				else
 					--if the name of the member hasn't loaded yet and thus comes back nil/empty,
@@ -1744,9 +1802,12 @@ function trackPartyStructure()
 		elseif announce.member_left_party and new_p1_count < old_p1_count then
 			for _, member in ipairs(party1_changes.removed) do
 				if member ~= '' then
-					text = memberPlaceholder(helpers[current_helper].member_left_party, member)
-					if sound_effects then
-						play_sound(addon_path..'data/sounds/member_left_party.wav')
+					text = helpers[selected.helper].member_left_party
+					if text then
+						text = memberPlaceholder(text, member)
+						if sound_effects then
+							play_sound(addon_path..'data/sounds/member_left_party.wav')
+						end
 					end
 				else
 					--if the name of the member hasn't loaded yet and thus comes back nil/empty,
@@ -1774,9 +1835,12 @@ function trackPartyStructure()
 		if announce.member_joined_alliance and (new_p2_count > old_p2_count or new_p3_count > old_p3_count) then
 			for _, member in ipairs(alliance_changes.added) do
 				if member ~= '' then
-					text = memberPlaceholder(helpers[current_helper].member_joined_alliance, member)
-					if sound_effects then
-						play_sound(addon_path..'data/sounds/member_joined_party.wav')
+					text = helpers[selected.helper].member_joined_alliance
+					if text then
+						text = memberPlaceholder(text, member)
+						if sound_effects then
+							play_sound(addon_path..'data/sounds/member_joined_party.wav')
+						end
 					end
 				else
 					--if the name of the member hasn't loaded yet and thus comes back nil/empty,
@@ -1790,9 +1854,12 @@ function trackPartyStructure()
 		elseif announce.member_left_alliance and (new_p2_count < old_p2_count or new_p3_count < old_p3_count) then
 			for _, member in ipairs(alliance_changes.removed) do
 				if member ~= '' then
-					text = memberPlaceholder(helpers[current_helper].member_left_alliance, member)
-					if sound_effects then
-						play_sound(addon_path..'data/sounds/member_left_party.wav')
+					text = helpers[selected.helper].member_left_alliance
+					if text then
+						text = memberPlaceholder(text, member)
+						if sound_effects then
+							play_sound(addon_path..'data/sounds/member_left_party.wav')
+						end
 					end
 				else
 					--if the name of the member hasn't loaded yet and thus comes back nil/empty,
@@ -1805,21 +1872,21 @@ function trackPartyStructure()
 
 	--You become the alliance leader
 	elseif announce.you_are_now_alliance_leader and previously_in_alliance and not previously_alliance_leader and now_alliance_leader then
-		text = helpers[current_helper].you_are_now_alliance_leader
-		if sound_effects then
+		text = helpers[selected.helper].you_are_now_alliance_leader
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/now_alliance_leader.wav')
 		end
 
 	--You become the party leader
 	elseif announce.you_are_now_party_leader and previously_in_party and not previously_party_leader and now_party_leader then
-		text = helpers[current_helper].you_are_now_party_leader
-		if sound_effects then
+		text = helpers[selected.helper].you_are_now_party_leader
+		if text and sound_effects then
 			play_sound(addon_path..'data/sounds/now_party_leader.wav')
 		end
 	end
 
 	if text then
-		add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
+		add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 	end
 
 	-- Save the current states for future comparison
@@ -1836,15 +1903,17 @@ register_event('gain buff', function(buff)
 
 	if buff == 188 and sublimation_charged and not paused then --Sublimation: Complete
 
-		local text = helpers[current_helper].sublimation_charged
-
+		local selected = getHelper()
+		local text = helpers[selected.helper].sublimation_charged
 		if text then
-			add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
-		end
 
-		--Play sound if enabled
-		if sound_effects then 
-			play_sound(addon_path..'data/sounds/notification.wav') 
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
 		end
 
 	elseif buff == 602 and vorseal_wearing then --Vorseal
@@ -1961,7 +2030,8 @@ register_event("incoming text", function(original,modified,original_mode)
 					end
 
 					--No dragon name is found, so therefore is Mireu
-					local text = helpers[current_helper].mireu_popped
+					local selected = getHelper()
+					local text = helpers[selected.helper].mireu_popped
 					if text then
 
 						if zone == "Zi'Tah" then
@@ -1972,7 +2042,7 @@ register_event("incoming text", function(original,modified,original_mode)
 							text = mireuPlaceholder(text, zone)
 						end
 
-						add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
+						add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
 						--Play sound if enabled
 						if sound_effects then 
@@ -2013,10 +2083,34 @@ register_event('prerender', function()
 
 	--1 second heartbeat (does not run while zoning, paused(job change or immediately after logging in), or not logged in)
 	if os.time() > heartbeat and not (zoning or paused) and logged_in then
+
 		heartbeat = os.time()
+
 		updateRecasts()
+
 		local player_job = get_player().main_job
-		local text = helpers[current_helper] and helpers[current_helper].ability_ready
+
+		local selected = getHelper()
+		local text = helpers[selected.helper].ability_ready
+		if text then
+			--Check if abilities are ready
+			for ability, enabled in pairs(ability_ready) do
+				if enabled then
+					if recast[ability] and recast[ability] > 0 and ready[ability] then
+						ready[ability] = false
+					elseif recast[ability] == 0 and not ready[ability] then
+						if not paused then
+							text = abilityPlaceholders(text, ability_name[ability])
+							add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+							if sound_effects then
+								play_sound(addon_path..'data/sounds/ability_ready.wav')
+							end
+						end
+						ready[ability] = true
+					end
+				end
+			end
+		end
 
 		--Check if any Key Items are ready
 		checkKIReminderTimestamps()
@@ -2031,61 +2125,53 @@ register_event('prerender', function()
 			checkSparkoladeReminder()
 		end
 
-		--Check if abilities are ready
-		for ability, enabled in pairs(ability_ready) do
-			if enabled then
-				if recast[ability] and recast[ability] > 0 and ready[ability] then
-					ready[ability] = false
-				elseif recast[ability] == 0 and not ready[ability] then
-					if not paused then
-						if text then
-							text = abilityPlaceholders(text, ability_name[ability])
-							add_to_chat(c_text, ('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
-						end
-						if sound_effects then
-							play_sound(addon_path..'data/sounds/ability_ready.wav')
-						end
-					end
-
-					ready[ability] = true
-				end
-			end
-		end
-
 		--Coutdown for checking party for low mp
 		if check_party_for_low_mp and (player_job == 'RDM' or player_job == 'BRD') then
+
 			if check_party_for_low_mp_countdown > 0 then
+
 				check_party_for_low_mp_countdown = check_party_for_low_mp_countdown - 1
+
 			elseif check_party_for_low_mp_countdown == 0 then
+
 				check_party_for_low_mp_toggle = true
 				checkPartyForLowMP()
+
 			end
 		end
 
 		--Countdown for Flavor text
 		if flavor_text then
+
 			if flavor_text_countdown > 0 then
+
 				flavor_text_countdown = flavor_text_countdown - 1
+
 			elseif flavor_text_countdown == 0 then
-				local text = flavorText()
+
+				local selected = getHelper()
+				local text = flavorText(selected.helper)
 				if text then
-					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(text):color(c_text))
+					add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 					flavor_text_countdown = math.floor(math.random(flavor_text_window_min_hours,flavor_text_window_max_hours))
 				end
 			end
 		end
 
 		--Countdown for Vorseal Reminder
-		local vorseal_text = helpers[current_helper].vorseal_wearing
+		local selected = getHelper()
+		local vorseal_text = helpers[selected.helper].vorseal_wearing
 		if vorseal_wearing and vorseal_text then
 
 			if vorseal_countdown > 0 then
+
 				vorseal_countdown = vorseal_countdown - 1
 
 			elseif vorseal_countdown == 0 then
+
 				vorseal_countdown = -1
 
-				add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(vorseal_text):color(c_text))
+				add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(vorseal_text):color(selected.c_text))
 
 				--Play sound if enabled
 				if sound_effects then 
@@ -2102,7 +2188,8 @@ register_event('prerender', function()
 		end
 
 		--Countdown for Reraise Check
-		local reraise_text = helpers[current_helper].reraise_check
+		local selected = getHelper()
+		local reraise_text = helpers[selected.helper].reraise_check
 		if reraise_check and reraise_text then
 
 			if reraise_countdown > 0 then
@@ -2113,7 +2200,7 @@ register_event('prerender', function()
 
 				--Don't inform if in town
 				if not reraiseActive() and (not reraise_check_not_in_town or (reraise_check_not_in_town and not isInTownZone())) then
-					add_to_chat(c_text,('['..current_helper_name..'] '):color(c_name)..(reraise_text):color(c_text))
+					add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(reraise_text):color(selected.c_text))
 
 					--Play sound if enabled
 					if sound_effects then 
@@ -2138,23 +2225,19 @@ register_event('addon command',function(addcmd, ...)
 				file_name = file_name..'.xml'
 			end
 			if file_exists(addon_path..'data/helpers/'..file_name) then
-				if helpers[new_helper] then
-					settings.options.current_helper = new_helper
-					current_helper = new_helper
-					current_helper_name = helpers[current_helper].info.name
-					c_name = helpers[current_helper].info.name_color
-					c_text = helpers[current_helper].info.text_color
-					settings:save('all')
-					introduceHelper()
-				else
+				if not helpers[new_helper] then
 					helpers[new_helper] = config.load('data/helpers/'..file_name)
 					settings.options.helpers_loaded[new_helper] = true
-					settings.options.current_helper = new_helper
-					current_helper = new_helper
-					current_helper_name = helpers[current_helper].info.name
-					c_name = helpers[current_helper].info.name_color
-					c_text = helpers[current_helper].info.text_color
-					settings:save('all')
+				end
+				settings.options.current_helper = new_helper
+				current_helper = new_helper
+				helper_name = helpers[current_helper].info.name
+				c_name = helpers[current_helper].info.name_color
+				c_text = helpers[current_helper].info.text_color
+				settings:save('all')
+				if voices then
+					add_to_chat(8,('[Helper] '):color(220)..('Helper loaded: '):color(8)..(helper_name):color(1))
+				else
 					introduceHelper()
 				end
 			else
@@ -2218,6 +2301,7 @@ register_event('addon command',function(addcmd, ...)
 		end
 		local last_check_date = getLastCheckDate()		
 		local prefix = "//helper"
+		local helper_name = helpers[current_helper].info.name and helpers[current_helper].info.name or "Unknown"
 		local helper_type = helpers[current_helper].info.type and helpers[current_helper].info.type.." - " or "Unknown Type - "
 		local helper_description = helpers[current_helper].info.description or "No description available."
 		local c_name = helpers[current_helper].info.name_color or 220
@@ -2227,7 +2311,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
 		add_to_chat(8,(' Next Sparkolade reminder: ')..(next_sparkolade_reminder):color(1))
-		add_to_chat(8,(' ['..current_helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
+		add_to_chat(8,voices and (' Voices Mode: '):color(8)..('On'):color(1) or (' ['..helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
 		add_to_chat(8,' ')
@@ -2238,6 +2322,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' unload/u '):color(36)..('<file_name> '):color(2)..('- Unload a Helper file from the addon.'):color(8))
 		add_to_chat(8,('   - Unloaded Helper files are not deleted but are removed from use by the addon.'):color(8))
 		add_to_chat(8,(' list '):color(36)..('- List currently loaded Helpers.'):color(8))
+		add_to_chat(8,(' voices/v '):color(36)..('- Randomly selects an active Helper to use for each alert.'):color(8))
 		add_to_chat(8,(' check '):color(36)..('[new|current|addon]'):color(53)..('- Check for new updates. Does not update.'):color(8))
 		add_to_chat(8,(' update '):color(36)..('[new|current|addon]'):color(53)..('- Download new updates.'):color(8))
 		add_to_chat(8,('   - Optionally specify which to check/update:'):color(8))
@@ -2302,6 +2387,12 @@ register_event('addon command',function(addcmd, ...)
 		else
 			updateAll()
 		end
+
+	elseif addcmd == "voices" or addcmd == "voice" or addcmd == "v" then
+		settings.options.voices = not settings.options.voices
+		voices = settings.options.voices
+		settings:save('all')
+		add_to_chat(8,('[Helper] '):color(220)..('Voices Mode: '):color(8)..(voices and 'On' or 'Off'):color(1))
 
 	elseif addcmd == nil then
 		cycleHelper()
