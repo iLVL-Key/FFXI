@@ -1,0 +1,93 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>Well, ain&apos;t that nifty? ${ability} is good to go!</ability_ready>
+        <capped_job_points>Well hot dog, your Job Points are capped! Look at you go!</capped_job_points>
+        <capped_merit_points>Your Merit Points are maxed! That&apos;s awesome!</capped_merit_points>
+        <flavor_text>
+            <1>I wonder if Moogles ever get tired of saying &apos;kupo&apos;... or if they even know they&apos;re saying it.</1>
+            <2>Do you think weapons get jealous when you equip a different one? Poor little dagger just sittin&apos; there all lonely.</2>
+            <3>If you compliment a monster before attacking it, does it fight better or worse?</3>
+            <4>What if there&apos;s a Tarutaru out there that&apos;s actually too powerful, so they just pretend to be adorable?</4>
+            <5>You think Chocobos ever wonder why we ride &apos;em instead of just walking beside &apos;em like friends?</5>
+            <6>If adventurers are always running around, does that mean nobody ever gets a full night&apos;s sleep?</6>
+            <7>Maybe the real treasure was the gil we spent along the way... oh, wait.</7>
+            <8>I bet the people of Vana&apos;diel would be a lot happier if we had more comfy chairs.</8>
+            <9>You ever think about how we store, like, hundreds of items in our pockets? Must be some kinda magic at work.</9>
+            <10>You think airships get excited when they take off, like &apos;WHEEEE!&apos;? Or is that just me?</10>
+            <11>Green is the best color, hands down. It&apos;s the color of trees, fresh veggies, and lucky four-leaf clovers!</11>
+            <12>I bet the world would be a lot friendlier if people just wore more green.</12>
+            <13>You ever notice how green things always feel alive? Grass, leaves, frogs... and especially alligators.</13>
+            <14>If you mix blue and yellow, you get green. That means green is basically friendship in color form!</14>
+            <15>Green mages should be a thing. Don&apos;t ask me what they&apos;d do, but I&apos;d play one in a heartbeat.</15>
+            <16>You think if I wore all green, people would just assume I&apos;m super lucky? Might be worth a try!</16>
+            <17>Moss is like nature&apos;s carpet. Soft, cozy, and - best of all - green!</17>
+            <18>I wonder if trees ever look at each other and think, &apos;Wow, you&apos;re really rockin&apos; that shade of green today.&apos;</18>
+            <19>You ever think alligators get tired of people thinking they&apos;re mean? Maybe they just wanna be understood.</19>
+            <20>Alligators have been around since forever. Imagine the stories they could tell!</20>
+            <21>If I had a pet alligator, I&apos;d name it &apos;Snappy&apos; and teach it how to nod approvingly.</21>
+            <22>An alligator in a top hat. Just picture it. Perfection.</22>
+            <23>I wonder if alligators look at adventurers and think, &apos;Wow, those things sure do run around a lot.&apos;</23>
+            <24>Do you think an alligator would wear armor if it could? Or are scales already good enough?</24>
+            <25>If I could be any animal for a day, I&apos;d pick an alligator. Then I&apos;d just float around all day, like a boss.</25>
+            <26>Do you think Chocobos ever dream? Maybe they see themselves running even faster than they already do!</26>
+            <27>What if every time we warp, we&apos;re actually just taking a really fast nap and waking up somewhere new?</27>
+            <28>If ghosts exist, do they ever get bored just floatin&apos; around? I&apos;d probably try to start conversations with adventurers.</28>
+            <29>Y&apos;know, for all the time we spend fightin&apos; stuff, I wonder if any monsters out there think we&apos;re the scary ones.</29>
+            <30>How come Goblins always wear those same masks? Do they ever switch &apos;em out for special occasions?</30>
+            <31>If I complimented my gear more often, would it treat me better? Maybe my armor wants to feel appreciated.</31>
+            <32>Y&apos;ever wonder how adventurers never seem to run outta breath? Sprintin&apos; all day, climbin&apos; mountains, fightin&apos; gods - no problem!</32>
+            <33>You think Summoned Avatars ever get tired of showin&apos; up? What if one day Carbuncle&apos;s just like, &apos;Nah, I&apos;m takin&apos; a break.&apos;</33>
+            <34>If I put a little hat on a Mandragora, would it start a fashion trend?</34>
+            <35>What if all the critters in the world are secretly keepin&apos; an eye on us, just wonderin&apos; what we&apos;re up to?</35>
+            <36>You think Moogles ever get jealous of each other&apos;s pom-poms? Maybe there&apos;s a whole ranking system we don&apos;t know about.</36>
+            <37>There&apos;s just somethin&apos; about green that makes me feel like everything&apos;s gonna be alright.</37>
+            <38>Ever notice how all the best places in Vana&apos;diel are covered in green? Coincidence? I think not!</38>
+            <39>I wonder if slimes ever wish they could be a different color.</39>
+            <40>If you mix all colors together, you get brown. But if you mix just the right ones, you get green - so it&apos;s clearly the best!</40>
+            <41>You think there&apos;s a secret society of adventurers who only wear green? If so, sign me up!</41>
+            <42>Alligators are basically nature&apos;s perfect balance of cute and terrifying. And I respect that.</42>
+            <43>If I had a pet alligator, I&apos;d teach it to fetch. Not sure what, but somethin&apos;.</43>
+            <44>An alligator in a bowtie. Just imagine it. Perfection.</44>
+            <45>If an alligator and a Behemoth ever had a staring contest, who do you think would win?</45>
+            <46>You ever see an alligator just floatin&apos; in the water? Absolute master of relaxation.</46>
+            <47>If I could have a mount, I&apos;d ride a giant alligator into battle. No doubt about it.</47>
+            <48>I bet if alligators had jobs, they&apos;d be the best bodyguards ever. Just try sneakin&apos; past that!</48>
+            <49>Y&apos;think there&apos;s a secret alligator boss somewhere in Vana&apos;diel? If so, I need to find it.</49>
+            <50>What if alligators secretly love music? Imagine one tappin&apos; its tail to a Bard&apos;s song.</50>
+            <51>If I had a pet alligator, I&apos;d name it &apos;Chompers&apos; and it&apos;d be the best adventure buddy ever!</51>
+        </flavor_text>
+        <info>
+            <description>Super sweet, full of charm, and a little quirky.</description>
+            <introduction>Holy schnikes! It&apos;s so nice to see you! I&apos;m Azhur, and I&apos;m here to help however I can!</introduction>
+            <name>Azhur</name>
+            <name_color>213</name_color>
+            <text_color>6</text_color>
+            <type>Player</type>
+        </info>
+        <member_joined_alliance>Well ain&apos;t that somethin&apos;? ${member} just joined the alliance!</member_joined_alliance>
+        <member_joined_party>Oh goody, ${member} joined the party! Let&apos;s have some fun!</member_joined_party>
+        <member_left_alliance>Aww phooey, ${member} left the alliance. We&apos;ll miss &apos;em!</member_left_alliance>
+        <member_left_party>Aww shucks, ${member} had to leave. Safe travels, friend!</member_left_party>
+        <mireu_popped>Well butter my biscuits, Mireu just popped in ${zone}!</mireu_popped>
+        <mog_locker_expiring>Fiddlesticks! Looks like your Mog Locker needs some attention before it poofs!</mog_locker_expiring>
+        <other_party_joined_alliance>Well tickle me pink, another party joined the alliance!</other_party_joined_alliance>
+        <other_party_left_alliance>Aww phooey, a party left the alliance. Hope they find their way!</other_party_left_alliance>
+        <party_low_mp>Oh dear, looks like ${member} could use a lil&apos; pick-me-up with a ${refresh}!</party_low_mp>
+        <reminder_canteen>Whoopee! Another Mystical Canteen is ready for ya!</reminder_canteen>
+        <reminder_moglophone>Well, isn&apos;t that nifty? Another Moglophone is good to go!</reminder_moglophone>
+        <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate is up for grabs! That&apos;s awesome!</reminder_plate>
+        <reraise_check>Oh fiddlesticks, you don&apos;t have Reraise on!</reraise_check>
+        <sparkolade_reminder>Sweet sassafras, don&apos;t forget to spend those Sparkolades before they up and disappear!</sparkolade_reminder>
+        <sublimation_charged>Holy smokes! Sublimation is charged and ready to roll!</sublimation_charged>
+        <vorseal_wearing>Well ain&apos;t that somethin&apos;? Your Vorseal&apos;s got about 10 minutes left!</vorseal_wearing>
+        <you_are_now_alliance_leader>Holy schnikes! You&apos;re the alliance leader now - lead on, fearless one!</you_are_now_alliance_leader>
+        <you_are_now_party_leader>Well, would ya look at that! You&apos;re the party leader now - this is gonna be great!</you_are_now_party_leader>
+        <you_joined_alliance>Holy moly, you&apos;re in an alliance now! Look at all these friends!</you_joined_alliance>
+        <you_joined_party>Well, look at that! You&apos;re in a party now!</you_joined_party>
+        <you_left_alliance>Well, there you go! You&apos;ve left the alliance - on to the next adventure!</you_left_alliance>
+        <you_left_party>Welp, you left the party. Back to ridin&apos; solo, I guess!</you_left_party>
+        <your_party_joined_alliance>Oh my stars, your party joined an alliance! Excitin&apos; times ahead!</your_party_joined_alliance>
+        <your_party_left_alliance>Well, that just happened! Your party left the alliance - time for a new plan!</your_party_left_alliance>
+    </global>
+</settings>
