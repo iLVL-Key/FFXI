@@ -35,13 +35,16 @@
             <7>Bastok&apos;s got machines, sure, but San d&apos;Oria&apos;s got history, honor, and bagpipes!</7>
             <8>You ever try a fresh Elshimo coconut? Not as good as San d&apos;Orian wine, but still perty tasty!</8>
             <9>Y&apos;know, people in San d&apos;Oria walk with purpose! Unlike Bastok where they just shuffle in the dust.</9>
+			<31>Hmmm... which Rostam should I use today?</31>
+			<32>Even a bad roll looks good with the right lockstytle.</32>
+			<33>High-fives and butt slaps all around!</33>
         </flavor_text>
         <info>
             <description>Super nice guy, loves San d&apos;Oria maybe a little too much.</description>
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
-            <sha>f742d36b26256f7ad1d829090e0d6f27ed62c27b</sha>
+            <sha>5b16d080f5e0d1a2f92ad6157dfb2ef7d36366c5</sha>
             <text_color>39</text_color>
             <type>Player</type>
         </info>
@@ -58,7 +61,7 @@
         <reminder_moglophone>Well hey now, another Moglophone! Just don&apos;t let Bastok hear about it!</reminder_moglophone>
         <reminder_plate>Ooooh, that&apos;s a good-lookin&apos; Ra&apos;Kaznarian Plate! Go on and grab it!</reminder_plate>
         <reraise_check>Oh lordy, you&apos;re running around without Reraise? That&apos;s a Bastokan move if I ever saw one!</reraise_check>
-        <sparkolade_reminder>Sittin' on all them Sparkolades? Better spend 'em before some Bastoker tries to steal 'em!</sparkolade_reminder>
+        <sparkolade_reminder>Sittin&apos; on all them Sparkolades? Better spend &apos;em before some Bastoker tries to steal &apos;em!</sparkolade_reminder>
         <sublimation_charged>Hey now, Sublimation&apos;s topped off and ready to roll!</sublimation_charged>
         <vorseal_reminder>Your Vorseal&apos;s got about 10 minutes left - make &apos;em count!</vorseal_reminder>
         <you_are_now_alliance_leader>Aw man, you&apos;re the alliance leader now! You&apos;re like San d&apos;Orian royalty!</you_are_now_alliance_leader>
