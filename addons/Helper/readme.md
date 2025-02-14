@@ -53,6 +53,7 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `unload/u <file_name>` - Unload a Helper file from the addon.
   - Unloaded Helper files are not deleted but are set to disabled.
 - `list` - List currently loaded Helpers.
+- `voices/v` - Randomly selects an active Helper to use for each alert.
 - `check [new|current|addon]` - Check for new updates. Does not update.
 - `update [new|current|addon]` - Download new updates.
 - `help` - Display a list of commands and addon info.
@@ -95,8 +96,13 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 - `sparkolade_reminder_time` - Time the Sparkolade reminder will run.
   - Time must be a number in military time, ie 1730 instead of 530pm.
   - Defaults to 1200 if unable to determine time.
+  - `voices` - Randomly selects an active Helper to use for each alert.
 
 ## Changelog
+
+Version 1.5
+- Added Voices Mode. Will randomly select an active Helper to use for each alert.
+- Adjusted Sound effects to only play if the accompanying text is present.
 
 Version 1.4
 - Added Sparkolade reminder. A weekly reminder with the day and time able to be set by the user. Will play at login if day/time passes while logged out.
