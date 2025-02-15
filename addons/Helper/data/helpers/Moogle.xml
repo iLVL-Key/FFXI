@@ -75,12 +75,13 @@
             <8>Your dedication would impress even King Kupofried, kupo!</8>
             <9>Your lockstyle is as fashionable as a Moogle hat, kupo!</9>
         </flavor_text>
+        <food_wears_off>Kupo! Your marvelous meal is all gone! Maybe a Moogle-approved meal to munch on?</food_wears_off>
         <info>
             <description>Cheerful, helpful, and full of &quot;kupo!&quot;</description>
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
             <name_color>259</name_color>
-            <sha>91941cc876a1a6dcc8e943753d1965a29e829e68</sha>
+            <sha>393831bb4952013efaa807ed2571c586aca1c47e</sha>
             <text_color>262</text_color>
             <type>NPC</type>
         </info>
