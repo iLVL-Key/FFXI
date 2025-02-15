@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.5'
+_addon.version = '1.5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -104,8 +104,8 @@ defaults = {
 		check_party_for_low_mp_delay_minutes = 15,
 		current_helper = "Vana",
 		flavor_text = true,
-		flavor_text_window_max_hours = 6,
-		flavor_text_window_min_hours = 4,
+		flavor_text_window_max_hours = 4,
+		flavor_text_window_min_hours = 2,
 		helpers_loaded = {vana = true},
 		introduce_on_load = true,
 		key_item_reminders = {
@@ -432,6 +432,7 @@ end
 
 --Set the Sparkolade reminder timestamp
 local function setSparkoladeReminderTimestamp()
+
 	local days_of_week = {
 		sunday = 1, sun = 1, su = 1,
 		monday = 2, mon = 2, mo = 2,
@@ -464,26 +465,37 @@ local function setSparkoladeReminderTimestamp()
 	minute = tonumber(minute) or 0
 
 	-- Get current date/time
-	local now = os.date("*t")
-	local today = now.wday  -- Lua weeks start on Sunday (1)
+	local now = os.time()
+	local now_table = os.date("*t", now)
+	local today = now_table.wday  -- Lua weeks start on Sunday (1)
 
 	-- Correct the day adjustment logic
 	local days_until_next = (target_day - today + 7) % 7
 	
 	-- If today is the target day but the time has passed, move to next week
-	if days_until_next == 0 and (now.hour > hour or (now.hour == hour and now.min >= minute)) then
+	if days_until_next == 0 and (now_table.hour > hour or (now_table.hour == hour and now_table.min >= minute)) then
 		days_until_next = 7
 	end
 
-	--Create the correct future timestamp
-	local base_time = os.time({ year = now.year, month = now.month, day = now.day, hour = now.hour, min = now.min, sec = 0 })
-	local reminder_time = base_time + (days_until_next * 24 * 60 * 60) --Add days in seconds
+    -- Use `os.time()` to properly roll over months and years
+    local future_time = now + (days_until_next * 86400)  -- Add days in seconds
+    local reminder_table = os.date("*t", future_time)  -- Get the correct date
 
-	local temp_day = os.date("%d", reminder_time)
+    -- Set the exact reminder time
+    reminder_table.hour = hour
+    reminder_table.min = minute
+    reminder_table.sec = 0
 
-	--Save the new timestamp
-	timestamps.sparkolades = reminder_time
-	settings:save('all')
+    -- Convert back to a timestamp
+    local reminder_time = os.time(reminder_table)
+
+    -- Save the new timestamp
+    settings.timestamps = settings.timestamps or {}
+    settings.timestamps.sparkolades = reminder_time
+    settings:save('all')
+
+    add_to_chat(8, "[Helper] Sparkolade reminder set for: " .. os.date("%A, %I:%M %p", reminder_time))
+
 end
 
 --Get the correct Helper
@@ -524,7 +536,7 @@ end
 
 local function checkSparkoladeReminder()
 
-	if not settings.timestamps or not settings.timestamps.sparkolades then
+	if not sparkolade_reminder or not settings.timestamps or not settings.timestamps.sparkolades then
 		return
 	end
 
