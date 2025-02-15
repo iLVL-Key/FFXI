@@ -6,14 +6,6 @@
         <capped_merit_points>Your Merit Points are maxed! That&apos;s awesome!</capped_merit_points>
         <flavor_text>
             <1>I wonder if Moogles ever get tired of saying &apos;kupo&apos;... or if they even know they&apos;re saying it.</1>
-            <2>Do you think weapons get jealous when you equip a different one? Poor little dagger just sittin&apos; there all lonely.</2>
-            <3>If you compliment a monster before attacking it, does it fight better or worse?</3>
-            <4>What if there&apos;s a Tarutaru out there that&apos;s actually too powerful, so they just pretend to be adorable?</4>
-            <5>You think Chocobos ever wonder why we ride &apos;em instead of just walking beside &apos;em like friends?</5>
-            <6>If adventurers are always running around, does that mean nobody ever gets a full night&apos;s sleep?</6>
-            <7>Maybe the real treasure was the gil we spent along the way... oh, wait.</7>
-            <8>I bet the people of Vana&apos;diel would be a lot happier if we had more comfy chairs.</8>
-            <9>You ever think about how we store, like, hundreds of items in our pockets? Must be some kinda magic at work.</9>
             <10>You think airships get excited when they take off, like &apos;WHEEEE!&apos;? Or is that just me?</10>
             <11>Green is the best color, hands down. It&apos;s the color of trees, fresh veggies, and lucky four-leaf clovers!</11>
             <12>I bet the world would be a lot friendlier if people just wore more green.</12>
@@ -24,6 +16,7 @@
             <17>Moss is like nature&apos;s carpet. Soft, cozy, and - best of all - green!</17>
             <18>I wonder if trees ever look at each other and think, &apos;Wow, you&apos;re really rockin&apos; that shade of green today.&apos;</18>
             <19>You ever think alligators get tired of people thinking they&apos;re mean? Maybe they just wanna be understood.</19>
+            <2>Do you think weapons get jealous when you equip a different one? Poor little dagger just sittin&apos; there all lonely.</2>
             <20>Alligators have been around since forever. Imagine the stories they could tell!</20>
             <21>If I had a pet alligator, I&apos;d name it &apos;Snappy&apos; and teach it how to nod approvingly.</21>
             <22>An alligator in a top hat. Just picture it. Perfection.</22>
@@ -34,6 +27,7 @@
             <27>What if every time we warp, we&apos;re actually just taking a really fast nap and waking up somewhere new?</27>
             <28>If ghosts exist, do they ever get bored just floatin&apos; around? I&apos;d probably try to start conversations with adventurers.</28>
             <29>Y&apos;know, for all the time we spend fightin&apos; stuff, I wonder if any monsters out there think we&apos;re the scary ones.</29>
+            <3>If you compliment a monster before attacking it, does it fight better or worse?</3>
             <30>How come Goblins always wear those same masks? Do they ever switch &apos;em out for special occasions?</30>
             <31>If I complimented my gear more often, would it treat me better? Maybe my armor wants to feel appreciated.</31>
             <32>Y&apos;ever wonder how adventurers never seem to run outta breath? Sprintin&apos; all day, climbin&apos; mountains, fightin&apos; gods - no problem!</32>
@@ -44,6 +38,7 @@
             <37>There&apos;s just somethin&apos; about green that makes me feel like everything&apos;s gonna be alright.</37>
             <38>Ever notice how all the best places in Vana&apos;diel are covered in green? Coincidence? I think not!</38>
             <39>I wonder if slimes ever wish they could be a different color.</39>
+            <4>What if there&apos;s a Tarutaru out there that&apos;s actually too powerful, so they just pretend to be adorable?</4>
             <40>If you mix all colors together, you get brown. But if you mix just the right ones, you get green - so it&apos;s clearly the best!</40>
             <41>You think there&apos;s a secret society of adventurers who only wear green? If so, sign me up!</41>
             <42>Alligators are basically nature&apos;s perfect balance of cute and terrifying. And I respect that.</42>
@@ -54,14 +49,21 @@
             <47>If I could have a mount, I&apos;d ride a giant alligator into battle. No doubt about it.</47>
             <48>I bet if alligators had jobs, they&apos;d be the best bodyguards ever. Just try sneakin&apos; past that!</48>
             <49>Y&apos;think there&apos;s a secret alligator boss somewhere in Vana&apos;diel? If so, I need to find it.</49>
+            <5>You think Chocobos ever wonder why we ride &apos;em instead of just walking beside &apos;em like friends?</5>
             <50>What if alligators secretly love music? Imagine one tappin&apos; its tail to a Bard&apos;s song.</50>
             <51>If I had a pet alligator, I&apos;d name it &apos;Chompers&apos; and it&apos;d be the best adventure buddy ever!</51>
+            <6>If adventurers are always running around, does that mean nobody ever gets a full night&apos;s sleep?</6>
+            <7>Maybe the real treasure was the gil we spent along the way... oh, wait.</7>
+            <8>I bet the people of Vana&apos;diel would be a lot happier if we had more comfy chairs.</8>
+            <9>You ever think about how we store, like, hundreds of items in our pockets? Must be some kinda magic at work.</9>
         </flavor_text>
+        <food_wears_off>Well, ain't that a pickle! Your food ran out - better fix that before your tummy starts grumblin'!</food_wears_off>
         <info>
             <description>Super sweet, full of charm, and a little quirky.</description>
             <introduction>Holy schnikes! It&apos;s so nice to see you! I&apos;m Azhur, and I&apos;m here to help however I can!</introduction>
             <name>Azhur</name>
             <name_color>213</name_color>
+            <sha>e73cd0604a0b77ece6929ceba4e9f636c89c73a7</sha>
             <text_color>6</text_color>
             <type>Player</type>
         </info>
