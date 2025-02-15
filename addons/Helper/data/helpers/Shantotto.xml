@@ -80,12 +80,13 @@
             <8>Ah, your heart shines so bold - truly a treasure of gold!</8>
             <9>Ho ho, a friend so rare - you&apos;re beyond compare!</9>
         </flavor_text>
+        <food_wears_off>That boost is gone, my hungry friend - if you don't eat soon, your strength may end!</food_wears_off>
         <info>
             <description>Witty, rhyming, and slightly menacing.</description>
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>7258803ab95ba776dbe300221fc96450c64cf843</sha>
+            <sha>783d4e28f835be408748fc3cf35631785ee5ff19</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
