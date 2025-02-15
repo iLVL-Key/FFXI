@@ -37,33 +37,34 @@
             <36>You lint licker!</36>
             <37>Did you see how thick my... last Helix was?</37>
             <38>I like my drinks like I like my men - strong, smooth, and knocking me on my ass.</38>
+            <39>You must be a Bard, &apos;cause you&apos;re hitting all the right notes with me.</39>
             <4>Nothing like a stiff... drink during a long raid, am I right?</4>
+            <40>Mmm, I love a good pull... in battle and otherwise.</40>
+            <41>You ever seen someone handle a staff like this? Trust me, it&apos;s an art.</41>
+            <42>Ooo, you&apos;re critting in all the right places.</42>
+            <43>I swear I was just checking your gear, not undressing you with my eyes.</43>
+            <44>I&apos;d say I&apos;m a hands-on kind of guy, but that might get me in trouble.</44>
+            <45>Your playstyle is just my type - aggressive, confident, and always going all the way.</45>
+            <46>If I had a gil for every time I got distracted watching you fight... well, I&apos;d have enough for another round of tequila.</46>
+            <47>I like my tanks like I like my men - sturdy, dependable, and ready for a beating.</47>
+            <48>Careful now, if you keep looking at me like that, I might just pop my two-hour early.</48>
+            <49>I don&apos;t need food buffs when I&apos;ve got eye candy like you around.</49>
             <5>Your macros are so smooth, I think I just swooned.</5>
+            <50>You can call me a Summoner, &apos;cause I&apos;m about to make something huge appear.</50>
+            <51>I&apos;m not saying I&apos;d ride you like a Chocobo, but... okay, yes, that is what I&apos;m saying.</51>
+            <52>Let&apos;s get a party together - just you, me, and some poor excuse to use /rest.</52>
             <6>I love a good skillchain... but let&apos;s make sure we finish together.</6>
             <7>Fyreign couldn&apos;t land a debuff if it came gift-wrapped.</7>
             <8>If I had a gil for every bad decision Fyreign made, I&apos;d own Jeuno.</8>
             <9>Tequila makes me a better player - or at least, I think so!</9>
-			<39>You must be a Bard, 'cause you're hitting all the right notes with me.</39>
-			<40>Mmm, I love a good pull... in battle and otherwise.</40>
-			<41>You ever seen someone handle a staff like this? Trust me, it's an art.</41>
-			<42>Ooo, you're critting in all the right places.</42>
-			<43>I swear I was just checking your gear, not undressing you with my eyes.</43>
-			<44>I'd say I'm a hands-on kind of guy, but that might get me in trouble.</44>
-			<45>Your playstyle is just my type - aggressive, confident, and always going all the way.</45>
-			<46>If I had a gil for every time I got distracted watching you fight... well, I'd have enough for another round of tequila.</46>
-			<47>I like my tanks like I like my men - sturdy, dependable, and ready for a beating.</47>
-			<48>Careful now, if you keep looking at me like that, I might just pop my two-hour early.</48>
-			<49>I don't need food buffs when I've got eye candy like you around.</49>
-			<50>You can call me a Summoner, 'cause I'm about to make something huge appear.</50>
-			<51>I'm not saying I'd ride you like a Chocobo, but... okay, yes, that is what I'm saying.</51>
-			<52>Let's get a party together - just you, me, and some poor excuse to use /rest.</52>
         </flavor_text>
+        <food_wears_off>Well, there goes your food. I'll just have to keep you full in -other- ways.</food_wears_off>
         <info>
             <description>Flirty, fun, and fueled by tequila.</description>
             <introduction>We aren&apos;t here for a long time; we&apos;re here for a good time. Now, pour a drink and replenish your panaceas. I&apos;m Galin, and we&apos;re about to make some memories.</introduction>
             <name>Galin</name>
             <name_color>36</name_color>
-            <sha>c7947eed1479d87e752c71de45ef4a95123cc15e</sha>
+            <sha>b6e0b5accd551549fc9a6b66c3ff73fadaed9333</sha>
             <text_color>160</text_color>
             <type>Player</type>
         </info>
