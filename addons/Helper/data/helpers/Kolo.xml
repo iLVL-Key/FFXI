@@ -40,12 +40,13 @@
             <8>FUCK!</8>
             <9>FUCK!</9>
         </flavor_text>
+        <food_wears_off>Fuck! Your food wore off. EAT SOME DAMN FOOD.</food_wears_off>
         <info>
             <description>Loud, chaotic, and full of love (and expletives).</description>
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
-            <sha>8e5e41754778214ff38115c341bfd71ec54ee8dc</sha>
+            <sha>03006e32a6daebe3728687c8dee961ee82bdbd5d</sha>
             <text_color>220</text_color>
             <type>Player</type>
         </info>
