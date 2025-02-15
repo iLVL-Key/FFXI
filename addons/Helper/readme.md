@@ -100,6 +100,13 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 1.6
+- Added Food wearing off notification.
+
+Version 1.5.1
+- Fixed the `sparkolade_reminder` option not actually turning the option on or off.
+- Fixed an issue with time of the next Sparkolade reminder drifting.
+
 Version 1.5
 - Added Voices Mode. Will randomly select an active Helper to use for each alert.
 - Adjusted Sound effects to only play if the accompanying text is present.
