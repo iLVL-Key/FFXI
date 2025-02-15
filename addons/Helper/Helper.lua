@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.5.1'
+_addon.version = '1.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -119,6 +119,7 @@ defaults = {
 		notifications = {
 			capped_job_points = true,
 			capped_merit_points = true,
+			food_wears_off = true,
 			mireu_popped = true,
 			mog_locker_expiring = true,
 			sublimation_charged = true,
@@ -202,6 +203,7 @@ vana = {
 	ability_ready = "${ability} is ready to use again.",
 	capped_job_points = "Your Job Points are now capped.",
 	capped_merit_points = "Your Merit Points are now capped.",
+	food_wears_off = "Your food has worn off.",
 	mog_locker_expiring = "Your Mog Locker lease is expiring soon.",
 	reminder_canteen = "Another Mystical Canteen should be available now.",
 	reminder_moglophone = "Another Moglophone should be available now.",
@@ -251,6 +253,7 @@ local capped_merit_points = settings.options.notifications.capped_merit_points
 local flavor_text = settings.options.flavor_text
 local flavor_text_window_max_hours = math.floor(settings.options.flavor_text_window_max_hours * 60 * 60)
 local flavor_text_window_min_hours = math.floor(settings.options.flavor_text_window_min_hours * 60 * 60)
+local food_wears_off = settings.options.notifications.food_wears_off
 local helpers_loaded = settings.options.helpers_loaded
 local introduce_on_load = settings.options.introduce_on_load
 local key_item_reminders = settings.options.key_item_reminders
@@ -493,8 +496,6 @@ local function setSparkoladeReminderTimestamp()
     settings.timestamps = settings.timestamps or {}
     settings.timestamps.sparkolades = reminder_time
     settings:save('all')
-
-    add_to_chat(8, "[Helper] Sparkolade reminder set for: " .. os.date("%A, %I:%M %p", reminder_time))
 
 end
 
@@ -1939,7 +1940,24 @@ end)
 register_event('lose buff', function(buff)
 
 	if buff == 602 and vorseal_wearing then --Vorseal
+
 		vorseal_countdown = -1
+
+	elseif buff == 251 and food_wears_off then --Food
+
+		local selected = getHelper()
+		local text = helpers[selected.helper].food_wears_off
+		if text then
+
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
+		end
+
 	end
 
 end)
