@@ -183,7 +183,7 @@ defaults.facts = {
 	"588 CE - Hunterking Dormillique ascends to San d'Oria's throne.",
 	"588 CE - A party of envoys from the East visit Windurst. They are denied an audience with the Star Sybil for being heretics.",
 	"589 CE - A party of envoys from the East establishes diplomatic relations with the Yagudo Theocracy.",
-	"589 CE - The Yagudo begin regularly receiving weaponryand instruction in the Eastern arts, such as Ninjutsu, from the East.",
+	"589 CE - The Yagudo begin regularly receiving weaponry and instruction in the Eastern arts, such as Ninjutsu, from the East.",
 	"594 CE - Bastok holds a grand festival for its 100th anniversary.",
 	"594 CE - The place where Ironman Mayer first broke ground with his pickaxe in Bastok is christened \"Firewater Circle.\"",
 	"595 CE - Bastok's Department of Industry is established, with Lilienthal as its head.",
