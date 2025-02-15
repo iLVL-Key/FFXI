@@ -29,22 +29,23 @@
             <29>I think I&apos;m goin skiing this weekend!</29>
             <3>Y&apos;know, if you ever get tired of all that soot in Bastok, San d&apos;Oria&apos;s got open fields and fresh air.</3>
             <30>I knew it!</30>
+            <31>Hmmm... which Rostam should I use today?</31>
+            <32>Even a bad roll looks good with the right lockstytle.</32>
+            <33>High-fives and butt slaps all around!</33>
             <4>Ain&apos;t nothin&apos; better than a crisp morning in Ronfaure!</4>
             <5>Aw man, you&apos;re fightin&apos; like a true knight of San d&apos;Oria!</5>
             <6>You ever just sit back and admire the flags in San d&apos;Oria? Real noble-lookin&apos;, ain&apos;t they?</6>
             <7>Bastok&apos;s got machines, sure, but San d&apos;Oria&apos;s got history, honor, and bagpipes!</7>
             <8>You ever try a fresh Elshimo coconut? Not as good as San d&apos;Orian wine, but still perty tasty!</8>
             <9>Y&apos;know, people in San d&apos;Oria walk with purpose! Unlike Bastok where they just shuffle in the dust.</9>
-			<31>Hmmm... which Rostam should I use today?</31>
-			<32>Even a bad roll looks good with the right lockstytle.</32>
-			<33>High-fives and butt slaps all around!</33>
         </flavor_text>
+        <food_wears_off>Your food ran out quicker than a Bastokan when the check is ready!</food_wears_off>
         <info>
             <description>Super nice guy, loves San d&apos;Oria maybe a little too much.</description>
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
-            <sha>5b16d080f5e0d1a2f92ad6157dfb2ef7d36366c5</sha>
+            <sha>b9ac426973034f35918057daadd7131e2c9f1490</sha>
             <text_color>39</text_color>
             <type>Player</type>
         </info>
