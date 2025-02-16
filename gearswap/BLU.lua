@@ -107,7 +107,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoSubCharge	=	'Off'	--[On/Off]		Automatically attempts to keep Sublimation charging.
-OccShadows		=	13		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
+OccShadows		=	14		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
 
 -- Heads Up Display --
 HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
@@ -346,16 +346,15 @@ function get_sets()
 -- NOTE: All other Modes will use this Idle set unless gear is specified in each one. If you only care to use one Idle set, regardless of Mode, you may ignore the other Idle sets. They are only available should you wish to make use of them.
 sets.Mode1.idle = {
 	ammo="Staunch Tathlum +1",
-	head="Rawhide Mask",
+	head="Null Masque",
 	body="Hashishin Mintan +3",
 	hands={ name="Herculean Gloves", augments={'Enmity-4','"Avatar perpetuation cost" -2','"Refresh"+2','Accuracy+3 Attack+3',}},
 	legs="Carmine Cuisses +1",
 	feet={ name="Herculean Boots", augments={'Pet: "Regen"+2','VIT+1','"Refresh"+2','Mag. Acc.+10 "Mag.Atk.Bns."+10',}},
 	neck="Loricate Torque +1",
-	waist="Flume Belt",
-	left_ear="Suppanomimi",
-	--left_ear="Hearty Earring",
-	right_ear="Ethereal Earring",
+	waist="Null Belt",
+	left_ear="Ethereal Earring",
+	right_ear="Hashi. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Damage taken-5%',}},
@@ -393,7 +392,7 @@ sets.Mode1.melee = {
 	neck="Mirage Stole +2",
 	waist="Windbuffet Belt +1",
 	left_ear="Suppanomimi",
-	right_ear="Hashi. Earring +1",
+	right_ear="Hashi. Earring +2",
 	left_ring="Epona's Ring",
 	right_ring="Hetairoi Ring",
 	back={ name="Rosmerta's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
@@ -459,11 +458,11 @@ sets.weapon_skill = {
 	neck="Mirage Stole +2",
 	waist="Sailfi Belt +1",
 	left_ear="Moonshade Earring",
-	right_ear="Hashi. Earring +1",
-	left_ring="Chirich Ring",
-	right_ring="Chirich Ring",
-	-- left_ring="Karieyh Ring +1",
-	-- right_ring="Cornelia's Ring",
+	right_ear="Hashi. Earring +2",
+	-- left_ring="Chirich Ring",
+	-- right_ring="Chirich Ring",
+	left_ring="Karieyh Ring +1",
+	right_ring="Cornelia's Ring",
 	back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
 }
 
@@ -558,7 +557,7 @@ sets.physical = {
 	neck="Mirage Stole +2",
 	waist="Sailfi Belt +1",
 	left_ear="Mache Earring +1",
-	right_ear="Hashi. Earring +1",
+	right_ear="Hashi. Earring +2",
 	left_ring="Ilabrat Ring",
 	right_ring="Jhakri Ring",
 	back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
@@ -575,7 +574,7 @@ sets.magical = {
 	neck="Sibyl Scarf",
 	waist="Orpheus's Sash",
 	left_ear="Friomisi Earring",
-	right_ear="Regal Earring",
+	right_ear="Hashi. Earring +2",
 	left_ring="Shiva Ring +1",
 	right_ring="Metamor. Ring +1",
 	back={ name="Rosmerta's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','"Mag.Atk.Bns."+10','Spell interruption rate down-10%',}},
@@ -609,13 +608,13 @@ sets.magic_accuracy = {
 	hands="Hashi. Bazu. +3",
 	legs="Hashishin Tayt +3",
 	feet="Hashi. Basmak +3",
-	neck="Mirage Stole +2",
-	waist="Acuity Belt +1",
+	neck="Null Loop",
+	waist="Null Belt",
 	left_ear="Njordr Earring",
-	right_ear="Hashi. Earring +1",
+	right_ear="Hashi. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Metamor. Ring +1",
-	back="Aurist's Cape +1",
+	back="Null Shawl",
 }
 
 -- Buff (Conserve MP)
@@ -641,7 +640,7 @@ sets.blue_magic_skill = {
 	feet="Luhlaza Charuqs +3",
 	neck="Mirage Stole +2",
 	left_ear="Njordr Earring",
-	right_ear="Hashi. Earring +1",
+	right_ear="Hashi. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back="Cornflower Cape",
@@ -771,7 +770,7 @@ end
 
 
 
-FileVersion = '18.8'
+FileVersion = '18.8.1'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -1583,11 +1582,7 @@ local function formatAbils(input,input_sh)
 			end
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
@@ -2242,6 +2237,22 @@ end
 -------------------------------------------
 
 function precast(spell)
+	local transport_spells = S{
+		'Teleport-Holla', 'Teleport-Dem', 'Teleport-Mea', 'Teleport-Altep', 'Teleport-Yhoat', 'Teleport-Vahzl',
+		'Recall-Jugner', 'Recall-Meriph', 'Recall-Pashh',
+		'Warp', 'Warp II', 'Retrace', 'Escape'
+	}
+	if transport_unlocked and transport_spells:contains(spell.en) then
+		transport_unlocked = false
+	elseif transport_spells:contains(spell.en) then
+		cancel_spell()
+		transport_unlocked = true
+		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Casting is now unlocked. Repeat to cast.'):color(8))
+		if AlertSounds == 'On' then
+			play_sound(Notification_Cancel)
+		end
+		return
+	end
 	if buffactive['terror'] then
 		if AlertSounds == 'On' then
 			play_sound(Notification_Cancel)
@@ -2514,8 +2525,6 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-		-- mythicNum = 0
-		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
