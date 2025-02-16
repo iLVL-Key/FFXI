@@ -182,7 +182,7 @@ NotiReraise		=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood		=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP		=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
 NotiLowHP		=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage		=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage		=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiTime		=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -404,7 +404,7 @@ sets.idle = {
 	right_ear="Fili Earring +2",
 	left_ring="Shadow Ring",
 	right_ring="Defending Ring",
-	back="Shadow Mantle",
+	back="Null Shawl",
 }
 
 -- DT Override (Damage Taken-, Magic Evasion)
@@ -628,7 +628,7 @@ sets.debuff_song = {
 	right_ear="Fili Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
-	back={ name="Intarabus's Cape", augments={'CHR+20','Mag. Acc+20 /Mag. Dmg.+20','Mag. Acc.+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
+	back="Null Shawl",
 }
 
 -- Song Debuffs - Main/Sub Dual Wield
@@ -683,13 +683,13 @@ sets.magic_accuracy = {
 	hands="Fili Manchettes +3",
 	legs="Fili Rhingrave +3",
 	feet="Fili Cothurnes +3",
-	neck="Mnbw. Whistle +1",
+	neck="Null Loop",
 	waist="Null Belt",
 	left_ear="Regal Earring",
 	right_ear="Fili Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
-	back={ name="Intarabus's Cape", augments={'CHR+20','Mag. Acc+20 /Mag. Dmg.+20','Mag. Acc.+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
+	back="Null Shawl",
 }
 
 -- Healing (Cure Potency, Healing Magic Skill)
@@ -818,7 +818,7 @@ end
 
 
 
-FileVersion = '1.0.2'
+FileVersion = '1.0.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1797,14 +1797,10 @@ local function formatAbils(input,input_sh)
 			local rightPadding = string.rep(" ", rightPaddingLength)
 
 			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
@@ -3485,8 +3481,6 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-		-- mythicNum = 0
-		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
