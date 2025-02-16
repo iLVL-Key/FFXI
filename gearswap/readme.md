@@ -89,12 +89,15 @@ In general, each HUD has..
 **A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
 
 ## Issues
-- Loading one of these files after having certain lua files made by some other folks loaded will cause some things to not function correctly (for example, you have your normal WAR lua file loaded, then type `//gs load whateveryounamedoneofthesefiles` to test it out). These issues seem to be mostly with using keyboard shortcuts (for example, Weapon Cycler not working correctly when hitting the kb shortcut to cycle). Renaming the file so that gearswap will load directly into it /without/ first loading into the other file (simply `WAR.lua`, for example) then typing `lua r gearswap` should fix the issue. I'm not sure what the other files are doing or not doing that causes issues.
+- Loading one of these files after having certain lua files made by some other folks loaded may cause some things to not function correctly (for example, you have your normal WAR lua file loaded, then type `//gs load whateveryounamedoneofthesefiles` to test it out). These issues seem to be mostly with using keyboard shortcuts (for example, Weapon Cycler not working correctly when hitting the kb shortcut to cycle). Renaming the file so that gearswap will load directly into it /without/ first loading into the other file (simply `WAR.lua`, for example) then typing `lua r gearswap` should fix the issue. I'm not sure exactly what the other files are doing or not doing that causes issues, but my guess is they are not removing keybinds once their files are unloaded.
 
 ## Changelog
 
 <details>
 <summary>BLU</summary>
+
+Verison 18.8.1
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
 Version 18.8
 - Added Chocobo Circuit to the list of Town Zones.
@@ -451,6 +454,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Verison 1.0.3
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
+
 Version 1.0.2
 - Fixed the buff_other set not being used in midcast.
 
@@ -487,6 +493,9 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Verison 14.6.2
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
 Version 14.6.1
 - Adjusted Impact set to combine with Magic Accuracy set
@@ -776,6 +785,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Verison 7.7.1
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
+
 Version 7.7
 - Added Chocobo Circuit to the list of Town Zones.
 - Adjusted a lot of set names to be easier to read using snake_case.
@@ -920,6 +932,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Verison 14.8.1
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
 Version 14.8
 - Added Cursna set.
@@ -1219,6 +1234,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Verison 9.8.2
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
+
 Version 9.8.1
 - Fixed Runes not clearing when put under level sync.
 
@@ -1441,6 +1459,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Verison 15.0.1
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
 Version 15.0
 - Overhauled the way Weapon Skills are handled. Dramatically simplified WS code. Removed the Capped TP and Attack Cap WS sets. Will now use, in order:  `sets["Weapon Skill Name"].high_buff` if above the Attack Cap Threshold and the set exists > `sets["Weapon Skill Name"]` if the set exists > basic `weapons_skill` set. The `.high_buff` sets allow for setting specific gear per WS instead of a single Capped Attack set that overlays on top of any given WS set. Will layer `hachirin_no_obi`, `ygnass_resolve_1`, `ws_accuracy`, `sekkaniki`, and `meikyo_shisui` sets on top of the base set used as necessary.
@@ -1704,6 +1725,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Verison 12.6.1
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
+
 Version 12.6
 - Added Chocobo Circuit to the list of Town Zones.
 - Adjusted a lot of set names to be easier to read using snake_case.
@@ -1930,6 +1954,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Verison 9.0.1
+- Fixed Mode 3 and 4 not equipping correctly.
+- Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
 Version 9.0
 - Overhauled the way Weapon Skills are handled. Dramatically simplified WS code. Removed the Capped TP and Attack Cap WS sets. Will now use, in order: `ws_accuracy` if in High Accuracy Mode (Mode3) > `sets["Weapon Skill Name"].high_buff` if above the Attack Cap Threshold and the set exists > `sets["Weapon Skill Name"]` if the set exists > `weapons_skill`. The `.high_buff` sets allow for setting specific gear per WS instead of a single Capped Attack set that overlays on top of any given WS set. Will layer `hachirin_no_obi` and `ygnass_resolve_1` sets on top of the base set used as necessary.
