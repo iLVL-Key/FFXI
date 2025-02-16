@@ -146,9 +146,9 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, Super Jump will be used.
-AttackCapThreshold	=	5000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
+AttackCapThreshold	=	4200	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
-DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
+DangerRepeat		=	5		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas			=	'On'	--[On/Off]  Adds commas to damage numbers.
@@ -402,7 +402,7 @@ sets.hasso.Mode3 = set_combine(sets.hasso.Mode1, {
 	right_ear="Kasuga Earring +2",
 	left_ring="Hetairoi Ring",
 	right_ring="Niqmaddu Ring",
-	back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
+	back="Null Shawl",
 })
 
 -- Hasso Mode 4 (Example: Hasso+, with a focus on Subtle Blow, then filling in the rest with Multi-Attack, Zanshin, Store TP, and DT)
@@ -445,7 +445,9 @@ sets.idle = {
 	head="Wakido Kabuto +3",
 	feet="Danzo Sune-ate",
 	neck="Rep. Plat. Medal",
+	waist="Null Belt",
 	right_ring="Karieyh Ring +1",
+	back="Null Shawl",
 }
 
 -- Oh Shit
@@ -483,6 +485,7 @@ sets.weapon_skill = {
 sets.ws_accuracy = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
+	left_ring="Cornelia's Ring",
 	right_ring="Karieyh Ring +1",
 }
 
@@ -495,11 +498,11 @@ sets["Tachi: Ageha"] = set_combine(sets.weapon_skill, {
 	hands="Kasuga Kote +3",
 	legs="Kasuga Haidate +3",
 	feet="Kas. Sune-Ate +3",
-	waist="Eschan Stone",
+	waist="Null Belt",
 	right_ear="Kasuga Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
-	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
+	back="Null Shawl",
 })
 
 -- Tachi: Jinpu (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
@@ -515,6 +518,7 @@ sets["Tachi: Jinpu"] = set_combine(sets.weapon_skill, {
 -- Tachi: Jinpu - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Jinpu"].high_buff = set_combine(sets.weapon_skill, {
 	body="Sakonji Domaru +3",
+	waist="Orpheus's Sash",
 	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
@@ -532,6 +536,7 @@ sets["Tachi: Kagero"] = set_combine(sets.weapon_skill, {
 -- Tachi: Kagero - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Kagero"].high_buff = set_combine(sets.weapon_skill, {
 	body="Sakonji Domaru +3",
+	waist="Orpheus's Sash",
 	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 })
@@ -781,7 +786,7 @@ end
 
 
 
-FileVersion = '15.0'
+FileVersion = '15.0.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1510,14 +1515,10 @@ local function formatAbils(input,input_sh)
 			local rightPadding = string.rep(" ", rightPaddingLength)				
 
 			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
