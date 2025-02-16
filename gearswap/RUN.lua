@@ -146,7 +146,7 @@ NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20%.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, Magic Burst, and Blood Pact damage.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 
 -- Debuff Notifications --
@@ -430,7 +430,7 @@ sets.oh_shit = {
 	neck="Warder's Charm +1",
 	left_ring="Shadow Ring",
 	right_ring="Defending Ring",
-	back="Shadow Mantle"
+	back="Shadow Mantle",
 }
 
 -- Idle (only need Refresh gear in here, combines with other sets based on situation)
@@ -443,6 +443,7 @@ sets.idle = {
 	waist="Plat. Mog. Belt",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
+	back="Null Shawl",
 }
 
 -- Movement speed
@@ -726,7 +727,7 @@ end
 
 
 
-FileVersion = '9.8.1'
+FileVersion = '9.8.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1662,11 +1663,7 @@ local function formatAbils(input,input_sh)
 			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
