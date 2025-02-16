@@ -150,7 +150,7 @@ LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
 AttackCapThreshold	=	4500	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
-DangerRepeat		=	10		--Maximum number of times the Danger Sound will repeat, once per second.
+DangerRepeat		=	5		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 AddCommas			=	'On'	--[On/Off]  Adds commas to damage numbers.
@@ -366,7 +366,7 @@ AbysseaProcCycle = {
 
 function get_sets()
 
--- Mode 1 (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
+-- Mode 1 Single Wield (Multi-Attack) (Example: A focus on Multi-Attack and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
 sets.Mode1.single_wield = {
 	ammo="Coiste Bodhar",
@@ -411,7 +411,7 @@ sets.Mode1.dual_wield = set_combine(sets.Mode1, {
 
 })
 
--- Mode 2 (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
+-- Mode 2 Single Wield (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
 sets.Mode2.single_wield = set_combine(sets.Mode1, {
 
 })
@@ -439,15 +439,31 @@ sets.Mode4 = set_combine(sets.Mode1, {
 
 -- Idle (Movement Speed, Regain, Regen)
 sets.idle = {
+	ammo="Staunch Tathlum +1",
+	head="Null Masque",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Sakpata's Cuisses",
 	feet="Hermes' Sandals",
 	neck="Rep. Plat. Medal",
+	waist="Null Belt",
+	left_ear="Eabani Earring",
+	right_ear="Boii Earring +2",
+	left_ring="Defending Ring",
 	right_ring="Karieyh Ring +1",
+	back="Null Shawl",
 }
 
 -- Oh Shit
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
 sets.oh_shit = {
+	head="Null Masque",
+	body="Sakpata's Plate",
+	hands="Sakpata's Gauntlets",
+	legs="Sakpata's Cuisses",
+	feet="Hermes' Sandals",
 	neck="Warder's Charm +1",
+	waist="Carrier's Sash",
 	left_ring="Defending Ring",
 	right_ring="Shadow Ring",
 	back="Shadow Mantle",
@@ -486,8 +502,9 @@ sets["Armor Break"] = set_combine(sets.weapon_skill, {
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
 	feet="Boii Calligae +3",
-	neck="Moonlight Necklace",
-	waist="Eschan Stone",
+	neck="Null Loop",
+	waist="Null Belt",
+	back="Null Shawl",
 })
 
 -- Disaster (STR, VIT)
@@ -584,8 +601,10 @@ sets["Resolution"].high_buff = set_combine(sets.weapon_skill, {
 
 -- Sanguine Blade (Dark Elemental Magic Attack Bonus)
 sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
+	ammo="Coiste Bodhar",
 	head="Pixie Hairpin +1",
-	hands="Nyame Gauntlets",
+	waist="Eschan Stone",
+	right_ear="Friomisi Earring",
 	left_ring="Archon Ring",
 })
 
@@ -840,7 +859,7 @@ end
 
 
 
-FileVersion = '9.0'
+FileVersion = '9.0.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1643,14 +1662,10 @@ local function formatAbils(input,input_sh)
 			local rightPadding = string.rep(" ", rightPaddingLength)				
 
 			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
@@ -2143,12 +2158,17 @@ function choose_set()
 		if LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(sets.oh_shit)
 		else
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(sets[Mode].two_handed)
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(sets[Mode].dual_wield)
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(sets[Mode].two_handed)
+				elseif dualWield() then
+					equip(sets[Mode].dual_wield)
+				else
+					equip(sets[Mode].single_wield)
+				end
 			else
-				equip(sets[Mode].single_wield)
+				print(Mode)
+				equip(sets[Mode])
 			end
 		end
 	elseif player.status == "Idle" then 
@@ -2182,54 +2202,78 @@ function choose_set()
 			hud_noti:color(255,255,255)
 		end
 		if AdoulinZones:contains(world.area) then
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.adoulin))
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.adoulin))
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(set_combine(sets[Mode].two_handed, sets.idle, sets.adoulin))
+				elseif dualWield() then
+					equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.adoulin))
+				else
+					equip(set_combine(sets[Mode].single_wield, sets.idle, sets.adoulin))
+				end
 			else
-				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.adoulin))
+				equip(set_combine(sets[Mode], sets.idle, sets.adoulin))
 			end
 		elseif BastokZones:contains(world.area) then
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.bastok))
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.bastok))
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(set_combine(sets[Mode].two_handed, sets.idle, sets.bastok))
+				elseif dualWield() then
+					equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.bastok))
+				else
+					equip(set_combine(sets[Mode].single_wield, sets.idle, sets.bastok))
+				end
 			else
-				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.bastok))
+				equip(set_combine(sets[Mode], sets.idle, sets.bastok))
 			end
 		elseif SandyZones:contains(world.area) then
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.sandoria))
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.sandoria))
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(set_combine(sets[Mode].two_handed, sets.idle, sets.sandoria))
+				elseif dualWield() then
+					equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.sandoria))
+				else
+					equip(set_combine(sets[Mode].single_wield, sets.idle, sets.sandoria))
+				end
 			else
-				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.sandoria))
+				equip(set_combine(sets[Mode], sets.idle, sets.sandoria))
 			end
 		elseif WindyZones:contains(world.area) then
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.windurst))
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.windurst))
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(set_combine(sets[Mode].two_handed, sets.idle, sets.windurst))
+				elseif dualWield() then
+					equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.windurst))
+				else
+					equip(set_combine(sets[Mode].single_wield, sets.idle, sets.windurst))
+				end
 			else
-				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.windurst))
+				equip(set_combine(sets[Mode], sets.idle, sets.windurst))
 			end
 		elseif TownZones:contains(world.area) then
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].two_handed, sets.idle, sets.town))
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.town))
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(set_combine(sets[Mode].two_handed, sets.idle, sets.town))
+				elseif dualWield() then
+					equip(set_combine(sets[Mode].dual_wield, sets.idle, sets.town))
+				else
+					equip(set_combine(sets[Mode].single_wield, sets.idle, sets.town))
+				end
 			else
-				equip(set_combine(sets[Mode].single_wield, sets.idle, sets.town))
+				equip(set_combine(sets[Mode], sets.idle, sets.town))
 			end
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.oh_shit))
 		else
-			if (Mode == 'Mode1' or Mode == 'Mode2') and twoHanded() then
-				equip(set_combine(sets[Mode].two_handed, sets.idle))
-			elseif (Mode == 'Mode1' or Mode == 'Mode2') and dualWield() then
-				equip(set_combine(sets[Mode].dual_wield, sets.idle))
+			if Mode == 'Mode1' or Mode == 'Mode2' then
+				if twoHanded() then
+					equip(set_combine(sets[Mode].two_handed, sets.idle))
+				elseif dualWield() then
+					equip(set_combine(sets[Mode].dual_wield, sets.idle))
+				else
+					equip(set_combine(sets[Mode].single_wield, sets.idle))
+				end
 			else
-				equip(set_combine(sets[Mode].single_wield, sets.idle))
+				equip(set_combine(sets[Mode], sets.idle))
 			end
 		end
 	end
@@ -2485,8 +2529,6 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-		-- mythicNum = 0
-		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
