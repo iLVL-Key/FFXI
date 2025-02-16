@@ -366,13 +366,13 @@ sets.Mode3 = set_combine(sets.Mode1, {
 	hands="Bhikku Gloves +3",
 	legs="Bhikku Hose +3",
 	feet="Tatena. Sune. +1",
-	neck="Mnk. Nodowa +2",
+	neck="Null Loop",
 	waist="Moonbow Belt +1",
 	left_ear="Odr Earring",
 	right_ear="Bhikku Earring +1",
 	left_ring="Ilabrat Ring",
 	right_ring="Niqmaddu Ring",
-	back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+	back="Null Shawl",
 })
 
 -- Mode 4 (Subtle Blow) (Example: A focus on Subtle blow, with a mix of Multi-Attack, Store TP, DEX, Accuracy, and Attack)
@@ -406,14 +406,20 @@ sets.Mode5 = set_combine(sets.Mode1, {
 
 -- Idle (Movement Speed, Regain, Regen)
 sets.idle = {
+	head="Null Masque",
 	feet="Herald's Gaiters",
 	neck="Rep. Plat. Medal",
+	waist="Null Belt",
 	left_ring="Karieyh Ring +1",
+	back="Null Shawl",
 }
 
 -- Oh Shit
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
 sets.oh_shit = {
+	head="Malignance Chapeau",
+	body="Malignance Tabard",
+	legs="Bhikku Hose +3",
 	neck="Warder's Charm +1",
 	left_ring="Defending Ring",
 	right_ring="Shadow Ring",
@@ -708,7 +714,7 @@ end
 
 
 
-FileVersion = '7.7'
+FileVersion = '7.7.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1437,14 +1443,10 @@ local function formatAbils(input,input_sh)
 			local rightPadding = string.rep(" ", rightPaddingLength)				
 
 			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
@@ -2225,8 +2227,6 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-		-- mythicNum = 0
-		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
