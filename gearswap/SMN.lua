@@ -270,16 +270,16 @@ sets.idle = {
 	ammo="Staunch Tathlum +1",
 	head="Beckoner's Horn +3",
 	body="Apo. Dalmatica +1",
-	hands="Asteria Mitts +1",
-	legs="Assid. Pants +1",
+	hands="Nyame Gauntlets",
+	legs="Volte Brais",
 	feet="Herald's Gaiters",
 	neck="Smn. Collar +2",
-	waist="Regal Belt",
+	waist="Null Belt",
 	left_ear="Lugalbanda Earring",
 	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
-	back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
+	back="Null Shawl",
 }
 
 -- Avatar (Avatar Perpetuation- (cap is -14), Refresh, Avatar's Favor+, etc.)
@@ -292,7 +292,7 @@ sets.avatar = set_combine(sets.idle, {
 	head="Beckoner's Horn +3",
 	body="Beck. Doublet +3",		--Perp -8
 	hands="Asteria Mitts +1",
-	legs="Assid. Pants +1",			--Perp -3 (over cap but it has refresh)
+	legs="Volte Brais",
 	feet="Baaya. Sabots +1",
 	neck="Smn. Collar +2",
 	waist="Incarnation Sash",
@@ -332,18 +332,18 @@ sets.melee = {
 	main="Nirvana",
 	sub="Vox Grip",
 	ammo="Epitaph",
-	head="Beckoner's Horn +3",
+	head="Nyame Helm",
 	body="Beck. Doublet +3",
-	hands="Lamassu Mitts +1",
-	legs="Assid. Pants +1",
-	feet="Beck. Pigaches +3",
-	neck="Caller's Pendant",
-	waist="Incarnation Sash",
+	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Null Loop",
+	waist="Windbuffet Belt +1",
 	left_ear="Lugalbanda Earring",
-	right_ear="Evans Earring",
-	left_ring="Stikini Ring +1",
+	right_ear="Beck. Earring +2",
+	left_ring="Hetairoi Ring",
 	right_ring="Stikini Ring +1",
-	back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
+	back="Null Shawl",
 }
 
 -- Rest
@@ -363,7 +363,8 @@ sets.weapon_skill = {
 	left_ear="Ishvara Earring",
 	right_ear="Moonshade Earring",
 	left_ring="Hetairoi Ring",
-	right_ring="Karieyh Ring +1",
+	right_ring="Cornelia's Ring",
+	back="Null Shawl",
 }
 
 -- Garland of Bliss (combines with Weapon Skill set above)
@@ -623,7 +624,7 @@ end
 
 
 
-FileVersion = '12.6'
+FileVersion = '12.6.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1334,14 +1335,10 @@ local function formatAbils(input,input_sh)
 			local rightPadding = string.rep(" ", rightPaddingLength)				
 
 			-- Determine recast coloring for brackets
-			local c = (ab[ability] and ab[ability].recast == 0) and color.abil.active or color.abil.ready
+			local c = recast == 0 and color.abil.active or color.abil.ready
 
 			-- Apply brackets with recast coloring
-			if leftPaddingLength == 0 then --the \\q somehow fixes the issue with \\cs not working if it is the first thing in the string (any non-reserved letter seems to work)
-				formattedString = leftPadding..'\\q\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			else --but the q itself will show up in the string if it gets spaces applied in front of it as padding (from being centered)
-				formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
-			end
+			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
 
 			return formattedString
 
@@ -2214,8 +2211,6 @@ end)
 windower.register_event('lose buff', function(buff)
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-		-- mythicNum = 0
-		-- primeNum = 0
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
