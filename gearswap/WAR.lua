@@ -859,7 +859,7 @@ end
 
 
 
-FileVersion = '9.0.1'
+FileVersion = '9.0.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1454,62 +1454,27 @@ local function checkProcWeapons(mainSlot, subSlot)
 
 end
 
--- Are we using a two handed weapon?
+--Are we using a two handed weapon?
 local function twoHanded()
 
-	local weapon_id = false
+	local weapon = player.equipment.main and items:with('name', player.equipment.main)
 
-	for _, item in pairs(items) do
+	return weapon and (weapon.skill == 4 or weapon.skill == 6 or weapon.skill == 7 or weapon.skill == 8 or weapon.skill == 10 or weapon.skill == 12) or false
 
-		if item.name == player.equipment.main then
-			weapon_id = item.id
-			break
-
-		end
-	end
-
-	if weapon_id then
-
-		local skill = items[weapon_id].skill
-
-		if skill == 4 or skill == 6 or skill == 7 or skill == 8 or skill == 10 or skill == 12 then
-			return true
-		else
-			return false
-		end
-
-	else
-		return false
-
-	end
 end
 
--- Are we dualwielding weapons?
+--Are we dual wielding weapons?
 local function dualWield()
 
-	local weapon_id = false
-
-	for _, item in pairs(items) do
-		if item.name == player.equipment.sub then
-			weapon_id = item.id
-			break
-
-		end
-	end
+	local weapon_id = player.equipment.sub and items:with('name', player.equipment.sub) and items:with('name', player.equipment.sub).id or nil
 
 	if weapon_id then
-
 		local skill = items[weapon_id].skill
-
-		if skill == 4 or skill == 2 or skill == 3 or skill == 5 or skill == 9 or skill == 11 then
-			return true
-		else
-			return false
-		end
-
+		return skill == 2 or skill == 3 or skill == 5 or skill == 9 or skill == 11
 	else
 		return false
 	end
+
 end
 
 --Color the appropriate Ability/spell recast
@@ -2167,7 +2132,6 @@ function choose_set()
 					equip(sets[Mode].single_wield)
 				end
 			else
-				print(Mode)
 				equip(sets[Mode])
 			end
 		end
