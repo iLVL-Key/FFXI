@@ -816,7 +816,7 @@ end
 
 
 
-FileVersion = '14.8.1'
+FileVersion = '14.8.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1421,31 +1421,10 @@ end
 -- Are we using a two handed weapon?
 local function twoHanded()
 
-	local weapon_id = false
+	local weapon = player.equipment.main and items:with('name', player.equipment.main)
 
-	for _, item in pairs(items) do
+	return weapon and (weapon.skill == 4 or weapon.skill == 6 or weapon.skill == 7 or weapon.skill == 8 or weapon.skill == 10 or weapon.skill == 12) or false
 
-		if item.name == player.equipment.main then
-			weapon_id = item.id
-			break
-
-		end
-	end
-
-	if weapon_id then
-
-		local skill = items[weapon_id].skill
-
-		if skill == 4 or skill == 6 or skill == 7 or skill == 8 or skill == 10 or skill == 12 then
-			return true
-		else
-			return false
-		end
-
-	else
-		return false
-
-	end
 end
 
 --Color the appropriate Ability/spell recast
