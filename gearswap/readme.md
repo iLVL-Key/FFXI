@@ -933,6 +933,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 14.8.2
+- Adjusted code for checking if we are using a 2-handed weapon. More efficient.
+
 Verison 14.8.1
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
@@ -1233,6 +1236,9 @@ Version 11.0
 <details>
  
 <summary>RUN</summary>
+
+Version 9.8.3
+- Adjusted code for checking if we are using a 2-handed weapon. More efficient.
 
 Verison 9.8.2
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
@@ -1954,6 +1960,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 9.0.2
+- Adjusted code for checking if we are using a 2-handed weapon and if we are dual wielding. More efficient.
+- Fixed a leftover print call from 9.0.1
 
 Verison 9.0.1
 - Fixed Mode 3 and 4 not equipping correctly.
