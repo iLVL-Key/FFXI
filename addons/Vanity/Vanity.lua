@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '1.3'
+_addon.version = '2.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -33,115 +33,57 @@ config = require('config')
 res = require('resources')
 require 'chat'
 
+local add_to_chat = windower.add_to_chat
+
 defaults = {}
 
-defaults.options = {}
-defaults.options.after_disable_delay = 9
-defaults.options.after_job_change_delay = 6
-defaults.options.after_zone_delay = 5
+defaults.options = {
+	after_disable_delay = 9,
+	after_job_change_delay = 6,
+	after_zone_delay = 5,
+}
 
-defaults.lockstyles = {}
+defaults.lockstyles = {
+	blm = "{combat:0},{town:0}",
+	blu = "{combat:0},{town:0}",
+	brd = "{combat:0},{town:0}",
+	bst = "{combat:0},{town:0}",
+	cor = "{combat:0},{town:0}",
+	dnc = "{combat:0},{town:0}",
+	drg = "{combat:0},{town:0}",
+	drk = "{combat:0},{town:0}",
+	geo = "{combat:0},{town:0}",
+	mnk = "{combat:0},{town:0}",
+	nin = "{combat:0},{town:0}",
+	pld = "{combat:0},{town:0}",
+	pup = "{combat:0},{town:0}",
+	rdm = "{combat:0},{town:0}",
+	rng = "{combat:0},{town:0}",
+	run = "{combat:0},{town:0}",
+	sam = "{combat:0},{town:0}",
+	sch = "{combat:0},{town:0}",
+	smn = "{combat:0},{town:0}",
+	thf = "{combat:0},{town:0}",
+	war = "{combat:0},{town:0}",
+	whm = "{combat:0},{town:0}",
+}
 
-defaults.lockstyles.blm = {}
-defaults.lockstyles.blm.combat = 0
-defaults.lockstyles.blm.town = 0
-
-defaults.lockstyles.blu = {}
-defaults.lockstyles.blu.combat = 0
-defaults.lockstyles.blu.town = 0
-
-defaults.lockstyles.brd = {}
-defaults.lockstyles.brd.combat = 0
-defaults.lockstyles.brd.town = 0
-
-defaults.lockstyles.bst = {}
-defaults.lockstyles.bst.combat = 0
-defaults.lockstyles.bst.town = 0
-
-defaults.lockstyles.cor = {}
-defaults.lockstyles.cor.combat = 0
-defaults.lockstyles.cor.town = 0
-
-defaults.lockstyles.dnc = {}
-defaults.lockstyles.dnc.combat = 0
-defaults.lockstyles.dnc.town = 0
-
-defaults.lockstyles.drg = {}
-defaults.lockstyles.drg.combat = 0
-defaults.lockstyles.drg.town = 0
-
-defaults.lockstyles.drk = {}
-defaults.lockstyles.drk.combat = 0
-defaults.lockstyles.drk.town = 0
-
-defaults.lockstyles.geo = {}
-defaults.lockstyles.geo.combat = 0
-defaults.lockstyles.geo.town = 0
-
-defaults.lockstyles.mnk = {}
-defaults.lockstyles.mnk.combat = 0
-defaults.lockstyles.mnk.town = 0
-
-defaults.lockstyles.nin = {}
-defaults.lockstyles.nin.combat = 0
-defaults.lockstyles.nin.town = 0
-
-defaults.lockstyles.pld = {}
-defaults.lockstyles.pld.combat = 0
-defaults.lockstyles.pld.town = 0
-
-defaults.lockstyles.pup = {}
-defaults.lockstyles.pup.combat = 0
-defaults.lockstyles.pup.town = 0
-
-defaults.lockstyles.rdm = {}
-defaults.lockstyles.rdm.combat = 0
-defaults.lockstyles.rdm.town = 0
-
-defaults.lockstyles.rng = {}
-defaults.lockstyles.rng.combat = 0
-defaults.lockstyles.rng.town = 0
-
-defaults.lockstyles.run = {}
-defaults.lockstyles.run.combat = 0
-defaults.lockstyles.run.town = 0
-
-defaults.lockstyles.sam = {}
-defaults.lockstyles.sam.combat = 0
-defaults.lockstyles.sam.town = 0
-
-defaults.lockstyles.sch = {}
-defaults.lockstyles.sch.combat = 0
-defaults.lockstyles.sch.town = 0
-
-defaults.lockstyles.smn = {}
-defaults.lockstyles.smn.combat = 0
-defaults.lockstyles.smn.town = 0
-
-defaults.lockstyles.thf = {}
-defaults.lockstyles.thf.combat = 0
-defaults.lockstyles.thf.town = 0
-
-defaults.lockstyles.war = {}
-defaults.lockstyles.war.combat = 0
-defaults.lockstyles.war.town = 0
-
-defaults.lockstyles.whm = {}
-defaults.lockstyles.whm.combat = 0
-defaults.lockstyles.whm.town = 0
-
-defaults.town_zones = {
+defaults.town_zones = S{
 	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
     }
 
 settings = config.load(defaults)
 
-local add_to_chat = windower.add_to_chat
+local town_zones = settings.town_zones
+local lockstyles = settings.lockstyles
+local after_job_change_delay = settings.options.after_job_change_delay
+local after_zone_delay = settings.options.after_zone_delay
+local after_disable_delay = settings.options.after_disable_delay
 
 local Heartbeat = 0
 local lockstyle_delay = -1
 
--- Turn the entire string into all uppercase
+--Turn the entire string into all uppercase
 function uppercase(str)
 
 	local uppercased = string.gsub(str, "%a", function(letter)
@@ -154,15 +96,11 @@ end
 
 -- Are we located in a town zone?
 local function townZone()
+
 	local zone_name = res.zones[windower.ffxi.get_info().zone].name
 
-	for _, name in ipairs(settings.town_zones) do
-		if name == zone_name then
-			return true
-		end
-	end
+	return settings.town_zones:contains(zone_name)
 
-	return false
 end
 
 -- Run the lockstyle game command for the job/location combination
@@ -171,210 +109,347 @@ local function setLockstyle()
 	if not windower.ffxi.get_info().logged_in then return end
 
 	local job = string.lower(windower.ffxi.get_player().main_job)
-	local lockstyle = settings.lockstyles
-	local location = townZone() and 'town' or 'combat'
+	local location = townZone() and "town" or "combat"
+	local lockstyle_str = lockstyles[job] or "{combat:0}{town:0}"
 
-	if lockstyle[job][location] ~= 0 then
-		windower.send_command('input /lockstyleset '..lockstyle[job][location])
+	--Extract lockstyle numbers for the relevant location
+	local lockstyle_numbers = lockstyle_str:match("{"..location..":([^}]*)}") or "0"
+
+	--If "0" is present (disabled), do nothing
+	if lockstyle_numbers == "0" then return end
+
+	--Convert to a table of numbers
+	local lockstyle_table = {}
+	for num in lockstyle_numbers:gmatch("%d+") do
+		table.insert(lockstyle_table, tonumber(num))
 	end
 
+	--Select a random lockstyle from the table
+	if #lockstyle_table > 0 then
+		local selected_lockstyle = lockstyle_table[math.random(#lockstyle_table)]
+		windower.send_command('input /lockstyleset '..selected_lockstyle)
+	end
 end
 
--- List all lockstyles that have been designated (not 0)
-local function listLockstyles()
-
-	local noneDesignated = true
+--List all lockstyles
+local function listAllLockstyles()
 
 	add_to_chat(8,('[Vanity] '):color(220)..('Lockstyles:'):color(8))
 
-	for job, data in pairs(settings.lockstyles) do
-		if data.combat ~= 0 then
-			add_to_chat(8,' - '..(uppercase(job)..' Combat: '..data.combat):color(1))
-			noneDesignated = false
+	--Collect jobs in a table and sort them alphabetically
+	local jobs = {}
+	for job in pairs(settings.lockstyles) do
+		table.insert(jobs, job)
+	end
+	table.sort(jobs)
+
+	--Iterate over the sorted jobs
+	for _, job in ipairs(jobs) do
+		local lockstyle_str = settings.lockstyles[job]
+
+		--Extract combat and town lockstyle numbers using pattern matching
+		local combat_str = lockstyle_str:match("{combat:([^}]*)}") or "0"
+		local town_str = lockstyle_str:match("{town:([^}]*)}") or "0"
+
+		local combatLockstyles = combat_str == "0" and "x" or combat_str
+		local townLockstyles = town_str == "0" and "x" or town_str
+
+		add_to_chat(8,(uppercase(job)..' - Combat: '):color(8)..(combatLockstyles):color(combatLockstyles == 'x' and 39 or 1)..('  Town: '):color(8)..(townLockstyles):color(townLockstyles == 'x' and 39 or 1))
+	end
+end
+
+local function displayLockstyles(job, location)
+
+	--Retrieve the current lockstyle string
+	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
+
+	--Extract the relevant lockstyle numbers using pattern matching
+	local lockstyle_str = current_str:match("{"..location..":([^}]*)}") or "0"
+
+	local list = lockstyle_str == "0" and "x" or lockstyle_str
+	local loc = location == "combat" and " Combat" or " Town"
+
+	add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..loc):color(1)..((' %s: '):format(#list == 1 and 'lockstyle' or 'lockstyles')):color(8)..(list):color(list == 'x' and 39 or 1)..(list == 'x' and ' (Disabled)' or ''):color(8)..(#list > 1 and ' (Chosen at random)' or ''):color(8))
+
+end
+
+--Add a specified lockstyle number
+local function addLockstyle(job, location, lockstyle_num)
+
+	--Retrieve the current lockstyle string
+	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
+
+	--Extract combat and town lockstyle groups using pattern matching
+	local combat_str = current_str:match("{combat:([^}]*)}") or "0"
+	local town_str = current_str:match("{town:([^}]*)}") or "0"
+
+	--If the lockstyle_num is 0, disable the lockstyle by setting it to "0" and removing all others
+	local new_combat_str = location == "combat" and "0" or combat_str
+	local new_town_str = location == "town" and "0" or town_str
+
+	--Otherwise, add the number normally
+	if lockstyle_num ~= 0 then
+		local lockstyles = {}
+		for num in (location == "combat" and combat_str or town_str):gmatch("%d+") do
+			lockstyles[tonumber(num)] = true
 		end
-		if data.town ~= 0 then
-			add_to_chat(8,' - '..(uppercase(job)..' Town: '..data.town):color(1))
-			noneDesignated = false
+
+		--Add the new lockstyle number and remove 0 if present
+		lockstyles[tonumber(lockstyle_num)] = true
+		lockstyles[0] = nil
+
+		--Convert back to a sorted comma-separated string
+		local new_lockstyle_str = table.concat(
+			(function()
+				local sorted = {}
+				for num in pairs(lockstyles) do table.insert(sorted, num) end
+				table.sort(sorted)
+				return sorted
+			end)(),
+			","
+		)
+
+		--Update only the relevant location
+		if location == "combat" then
+			new_combat_str = new_lockstyle_str
+		else
+			new_town_str = new_lockstyle_str
 		end
 	end
 
-	if noneDesignated then
-		add_to_chat(8,' -'..('[None Designated]'):color(1))
+	--Construct the new lockstyle string
+	local new_str = string.format(
+		"{combat:%s}{town:%s}",
+		new_combat_str,
+		new_town_str
+	)
+
+	--Save the updated string
+	settings.lockstyles[job] = new_str
+	settings:save()
+
+	displayLockstyles(job, location)
+
+end
+
+--Remove a specified lockstyle number
+local function removeLockstyle(job, location, lockstyle_num)
+
+	--Retrieve the current lockstyle string
+	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
+
+	--Extract combat and town lockstyle groups using pattern matching
+	local combat_str = current_str:match("{combat:([^}]*)}") or "0"
+	local town_str = current_str:match("{town:([^}]*)}") or "0"
+
+	--Convert the relevant part into a table
+	local lockstyles = {}
+	for num in (location == "combat" and combat_str or town_str):gmatch("%d+") do
+		lockstyles[tonumber(num)] = true
 	end
+
+	--Remove the specified lockstyle number
+	lockstyles[tonumber(lockstyle_num)] = nil
+
+	--If the table is now empty, set it to "0" (disabled)
+	local new_lockstyle_str
+	if next(lockstyles) == nil then
+		new_lockstyle_str = "0"
+	else
+		--Convert back to a sorted comma-separated string
+		new_lockstyle_str = table.concat(
+			(function()
+				local sorted = {}
+				for num in pairs(lockstyles) do table.insert(sorted, num) end
+				table.sort(sorted)
+				return sorted
+			end)(),
+			","
+		)
+	end
+
+	--Update only the relevant location
+	local new_combat_str = location == "combat" and new_lockstyle_str or combat_str
+	local new_town_str = location == "town" and new_lockstyle_str or town_str
+
+	--Construct the new lockstyle string
+	local new_str = string.format(
+		"{combat:%s}{town:%s}",
+		new_combat_str,
+		new_town_str
+	)
+
+	--Save the updated string
+	settings.lockstyles[job] = new_str
+	settings:save()
+
+	displayLockstyles(job, location)
 
 end
 
 windower.register_event('job change',function()
 
-	local delay = settings.options.after_job_change_delay
-
 	--We use this way for a timer (instead of the coroutine.sleep like with zoning) so that we can reset it during the countdown in case we change jobs again while its running, preventing it from trying to set the lockstyle multiple times.
-	if delay ~= 0 then
-		lockstyle_delay = delay --start/restart the timer
+	if after_job_change_delay ~= 0 then
+		lockstyle_delay = after_job_change_delay --start/restart the timer
 	end
 
 end)
 
 windower.register_event('zone change',function()
 
-	local delay = settings.options.after_zone_delay
-
-	if delay ~= 0 then
-		coroutine.sleep(delay) --wait a short delay after zoning, if too early will error
+	if after_zone_delay ~= 0 then
+		coroutine.sleep(after_zone_delay) --wait a short delay after zoning, if too early will error
 		setLockstyle() --set the appropriate lockstyle
 	end
 
 end)
 
-windower.register_event('addon command',function(addcmd, ...)
+windower.register_event('addon command',function(cmd, ...)
 
 	local args = {...}
-	local arg = args[1]
-	local arg2 = tonumber(args[2])
-	local match = false
-	local job_to_update = windower.ffxi.get_player().main_job
-	local jobs = {
-		"blm", "blu", "brd", "bst", "cor", "dnc", "drg", "drk", "geo", "mnk", "nin", "pld", "pup", "rdm", "rng", "run", "sam", "smn", "sch", "thf", "war", "whm"
-	}
+	local sub_cmd = args[1]
+	local lockstyle_num = tonumber(args[2])
+	local job = string.lower(windower.ffxi.get_player().main_job)
 
-	local function pickRandomJob()
-		local randomIndex = math.random(1, #jobs)
-		return jobs[randomIndex]
-	end
+	if cmd == 'combat' or cmd == 'c' then
 
-	local function pickRandomGear()
-		local options = {"combat", "town"}
-		local randomIndex = math.random(1, #options)
-		return options[randomIndex]
-	end
+		if not sub_cmd then
 
-	local function pickRandomEquipSet()
-		return math.random(0, 200)
-	end
+			displayLockstyles(job, 'combat')
 
-	local randomJob = pickRandomJob()
-	local randomGear = pickRandomGear()
-	local randomEquipSet = pickRandomEquipSet()
+		elseif sub_cmd == 'add' or sub_cmd == 'a' then
 
-	for _, job in ipairs(jobs) do
-		if job == addcmd then
-			match = true
-			job_to_update = job
-		end
-	end
+			if lockstyle_num and (lockstyle_num >= 0 and lockstyle_num <= 200) then
+				addLockstyle(job, 'combat', lockstyle_num)
+			else
+				add_to_chat(8,('[Vanity] '):color(220)..('Please provide a number '):color(8)..('1'):color(1)..('-'):color(8)..('200 '):color(1)..('('):color(8)..('0 '):color(1)..('to clear list and disable).'):color(8))
+			end
 
-	local job = string.lower(job_to_update)
+		elseif sub_cmd == 'remove' or sub_cmd == 'rem' or sub_cmd == 'r' then
 
-	if addcmd == 'combat' or (addcmd == job and arg == 'combat') then
-		if arg == nil or (arg == 'combat' and arg2 == nil) then
-			add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Combat'):color(1)..(' lockstyle is currently '):color(8)..(settings.lockstyles[job].combat == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].combat):color(1))..('.'):color(8))
-		elseif (tonumber(arg) >= 0 and tonumber(arg) <= 200) or (arg == 'combat' and arg2 and arg2 >= 0 and arg2 <= 200) then
-			settings.lockstyles[job].combat = arg == 'combat' and arg2 or tonumber(arg)
-			settings:save()
-			add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Combat'):color(1)..(' lockstyle is now '):color(8)..(settings.lockstyles[job].combat == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].combat):color(1))..('.'):color(8))
+			removeLockstyle(job, 'combat', lockstyle_num)
+
 		else
-			add_to_chat(8,('[Vanity] '):color(220)..('Please select an Equipment Set number between '):color(8)..('1'):color(1)..(' and '):color(8)..('200'):color(1)..(' ('):color(8)..('0'):color(1)..(' to disable).'):color(8))
-			add_to_chat(8,'  Example: '..('//vanity '..job..' combat '..randomEquipSet):color(1))
+			add_to_chat(8,('[Vanity] '):color(220)..('Please provide the sub-command '):color(8)..('add '):color(1)..('or '):color(8)..('remove'):color(1)..('.'):color(8))
 		end
 
-	elseif addcmd == 'town' or (addcmd == job and arg == 'town') then
-		if arg == nil or (arg == 'town' and arg2 == nil) then
-			add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Town'):color(1)..(' lockstyle is currently '):color(8)..(settings.lockstyles[job].town == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].town):color(1))..('.'):color(8))
-		elseif (tonumber(arg) >= 0 and tonumber(arg) <= 200) or (arg == 'town' and arg2 and arg2 >= 0 and arg2 <= 200) then
-			settings.lockstyles[job].town = arg == 'town' and arg2 or tonumber(arg)
-			settings:save()
-			add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..' Town'):color(1)..(' lockstyle is now '):color(8)..(settings.lockstyles[job].town == 0 and ('Disabled (0)'):color(1) or ('Equipment Set '..settings.lockstyles[job].town):color(1))..('.'):color(8))
+	elseif cmd == 'town' or cmd == 't' then
+
+		if not sub_cmd then
+
+			displayLockstyles(job, 'town')
+
+		elseif sub_cmd == 'add' or sub_cmd == 'a' then
+
+			if lockstyle_num and (lockstyle_num >= 0 and lockstyle_num <= 200) then
+				addLockstyle(job, 'town', lockstyle_num)
+			else
+				add_to_chat(8,('[Vanity] '):color(220)..('Please provide a number '):color(8)..('1'):color(1)..('-'):color(8)..('200 '):color(1)..('('):color(8)..('0 '):color(1)..('to clear list and disable).'):color(8))
+			end
+
+		elseif sub_cmd == 'remove' or sub_cmd == 'rem' or sub_cmd == 'r' then
+
+			removeLockstyle(job, 'town', lockstyle_num)
+
 		else
-			add_to_chat(8,('[Vanity] '):color(220)..('Please select an Equipment Set number between '):color(8)..('1'):color(1)..(' and '):color(8)..('200'):color(1)..(' ('):color(8)..('0'):color(1)..(' to disable).'):color(8))
-			add_to_chat(8,'  Example: '..('//vanity '..job..' town '..randomEquipSet):color(1))
+			add_to_chat(8,('[Vanity] '):color(220)..('Please provide the sub-command '):color(8)..('add '):color(1)..('or '):color(8)..('remove'):color(1)..('.'):color(8))
 		end
 
-	elseif addcmd == 'help' then
+	elseif cmd == 'help' then
 
-		local currDisableDelay = settings.options.after_disable_delay == 0 and 'OFF' or settings.options.after_disable_delay
-		local currJCDelay = settings.options.after_job_change_delay == 0 and 'OFF' or settings.options.after_job_change_delay
-		local currZoneDelay = settings.options.after_zone_delay == 0 and 'OFF' or settings.options.after_zone_delay
+		local currDisableDelay = after_disable_delay == 0 and 'OFF' or after_disable_delay
+		local currJCDelay = after_job_change_delay == 0 and 'OFF' or after_job_change_delay
+		local currZoneDelay = safter_zone_delay == 0 and 'OFF' or after_zone_delay
 
 		local prefix = "//vanity, //van"
 		add_to_chat(8,('[Vanity] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
-		add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' <required>'):color(2)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
+		add_to_chat(8,(' Control your lockstyles based on character, job, and location.'):color(1))
+		add_to_chat(8,(' If multiple lockstyle #\'s are set, will pick one at random.'):color(1))
 		add_to_chat(8,' ')
-		add_to_chat(8,(' blm/blu/brd/etc '):color(36)..('<combat/town>'):color(2)..(' [#]'):color(53)..(' - Display/update which Equipment Set # is used (1-200, 0 to disable).'):color(8))
-		add_to_chat(8,(' set/s'):color(36)..(' - Manually set lockstyle based on job and zone.'):color(8))
-		add_to_chat(8,(' list/l'):color(36)..(' - List all non-disabled lockstyles for the current character.'):color(8))
-		add_to_chat(8,(' disable/d'):color(36)..(' [#]'):color(53)..(' - Display/update After Disable Delay (1-20, 0 to disable). ['):color(8)..(''..currDisableDelay):color(200)..(']'):color(8))
-		add_to_chat(8,(' job/j'):color(36)..(' [#]'):color(53)..(' - Display/update After Job Change Delay (1-20, 0 to disable). ['):color(8)..(''..currJCDelay):color(200)..(']'):color(8))
-		add_to_chat(8,(' zone/z'):color(36)..(' [#]'):color(53)..(' - Display/update After Zone Delay (1-20, 0 to disable). ['):color(8)..(''..currZoneDelay):color(200)..(']'):color(8))
+		add_to_chat(8,(' Command '):color(36)..('Optional '):color(53)..('Required '):color(2)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
+		add_to_chat(8,(' combat/c '):color(36)..('- Display Equip. Set #\'s for your current job in combat zones.'):color(8))
+		add_to_chat(8,(' town/t '):color(36)..('- Display Equip. Set #\'s for your current job in town zones.'):color(8))
+		add_to_chat(8,('   - add/a '):color(53)..('# '):color(2)..('- Add an Equip. Set # to the combat/town list.'):color(8))
+		add_to_chat(8,('     - Number must be 1-200, 0 will clear list and disable.'):color(8))
+		add_to_chat(8,('   - remove/r '):color(53)..('# '):color(2)..('- Remove an Equip. Set # from the combat/town list.'):color(8))
+		add_to_chat(8,(' set/s'):color(36)..(' - Set current lockstyle based on job and zone.'):color(8))
+		add_to_chat(8,(' list/l'):color(36)..(' - List all lockstyles for the current character.'):color(8))
+		add_to_chat(8,(' disable/d'):color(36)..(' #'):color(53)..(' - Display/update After Disable Delay (1-20, 0 to disable). ['):color(8)..(''..currDisableDelay):color(200)..(']'):color(8))
+		add_to_chat(8,(' job/j'):color(36)..(' #'):color(53)..(' - Display/update After Job Change Delay (1-20, 0 to disable). ['):color(8)..(''..currJCDelay):color(200)..(']'):color(8))
+		add_to_chat(8,(' zone/z'):color(36)..(' #'):color(53)..(' - Display/update After Zone Delay (1-20, 0 to disable). ['):color(8)..(''..currZoneDelay):color(200)..(']'):color(8))
 
-	elseif addcmd == 'set' or addcmd == 's' then
+	elseif cmd == 'set' or cmd == 's' then
 		setLockstyle()
 
-	elseif addcmd == 'disable' or addcmd == 'd' then
-		if arg == nil then
-			local delay = settings.options.after_disable_delay
+	elseif cmd == 'disable' or cmd == 'd' then
+		if sub_cmd == nil then
+			local delay = after_disable_delay
 			add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is currently set to '):color(8)..(delay == 0 and ('OFF'):color(1) or (''..delay):color(1)..((' %s'):format(delay == 1 and 'second' or 'seconds')):color(8))..'.':color(8))
 		else
-			arg = tonumber(arg)
-			if arg and arg >= 1 and arg <= 20 then
-				settings.options.after_disable_delay = arg
+			sub_cmd = tonumber(sub_cmd)
+			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
+				settings.options.after_disable_delay = sub_cmd
+				after_disable_delay = settings.options.after_disable_delay
 				settings:save('all')
-				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..(settings.options.after_disable_delay..' seconds'):color(1)..('.'):color(8))
-			elseif arg == 0 then
+				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..(after_disable_delay..' seconds'):color(1)..('.'):color(8))
+			elseif sub_cmd == 0 then
 				settings.options.after_disable_delay = 0
+				after_disable_delay = settings.options.after_disable_delay
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Disable Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
-				add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
+				add_to_chat(8,'  Example: '..('//vanity '..cmd..' 9'):color(1))
 			end
 		end
 
-	elseif addcmd == 'jobchange' or addcmd == 'j' then
-		if arg == nil then
-			local delay = settings.options.after_job_change_delay
+	elseif cmd == 'jobchange' or cmd == 'j' then
+		if sub_cmd == nil then
+			local delay = after_job_change_delay
 			add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is currently set to '):color(8)..(delay == 0 and ('OFF'):color(1) or (''..delay):color(1)..((' %s'):format(delay == 1 and 'second' or 'seconds')):color(8))..'.':color(8))
 		else
-			arg = tonumber(arg)
-			if arg and arg >= 1 and arg <= 20 then
-				settings.options.after_job_change_delay = arg
+			sub_cmd = tonumber(sub_cmd)
+			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
+				settings.options.after_job_change_delay = sub_cmd
+				after_job_change_delay = settings.options.after_job_change_delay
 				settings:save('all')
-				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..(settings.options.after_job_change_delay..' seconds'):color(1)..('.'):color(8))
-			elseif arg == 0 then
+				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..(after_job_change_delay..' seconds'):color(1)..('.'):color(8))
+			elseif sub_cmd == 0 then
 				settings.options.after_job_change_delay = 0
+				after_job_change_delay = settings.options.after_job_change_delay
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Job Change Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
-				add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
+				add_to_chat(8,'  Example: '..('//vanity '..cmd..' 9'):color(1))
 			end
 		end
 
-	elseif addcmd == 'zone' or addcmd == 'z' then
-		if arg == nil then
-			local delay = settings.options.after_zone_delay
+	elseif cmd == 'zone' or cmd == 'z' then
+		if sub_cmd == nil then
+			local delay = after_zone_delay
 			add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is currently set to '):color(8)..(delay == 0 and ('OFF'):color(1) or (''..delay):color(1)..((' %s'):format(delay == 1 and 'second' or 'seconds')):color(8))..'.':color(8))
 		else
-			arg = tonumber(arg)
-			if arg and arg >= 1 and arg <= 20 then
-				settings.options.after_zone_delay = arg
+			sub_cmd = tonumber(sub_cmd)
+			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
+				settings.options.after_zone_delay = sub_cmd
+				after_zone_delay = settings.options.after_zone_delay
 				settings:save('all')
-				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..(settings.options.after_zone_delay..' seconds'):color(1)..('.'):color(8))
-			elseif arg == 0 then
+				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..(after_zone_delay..' seconds'):color(1)..('.'):color(8))
+			elseif sub_cmd == 0 then
 				settings.options.after_zone_delay = 0
+				after_zone_delay = settings.options.after_zone_delay
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Zone Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
-				add_to_chat(8,'  Example: '..('//vanity '..addcmd..' 9'):color(1))
+				add_to_chat(8,'  Example: '..('//vanity '..cmd..' 9'):color(1))
 			end
 		end
 
-	elseif addcmd == 'list' or addcmd == 'l' then
-		listLockstyles()
-
-	elseif not match then
-		add_to_chat(8,('[Vanity] '):color(220)..('Please use the 3 letter abbreviation for the job lockstyle you would like to update.'):color(8))
-		add_to_chat(8,'  Example: '..('//vanity '..randomJob..' '..randomGear..' '..randomEquipSet):color(1))
+	elseif cmd == 'list' or cmd == 'l' then
+		listAllLockstyles()
 
 	else
 		add_to_chat(8,('[Vanity] '):color(220)..('Unrecognized command. Type'):color(8)..(' //vanity help'):color(1)..(' for a list of commands.'):color(8))
@@ -384,19 +459,29 @@ windower.register_event('addon command',function(addcmd, ...)
 end)
 
 windower.register_event('prerender', function()
+
 	if os.time() > Heartbeat then
+
 		Heartbeat = os.time()
+
 		if lockstyle_delay > 0 then
+
 			lockstyle_delay = lockstyle_delay -1
+
 		elseif lockstyle_delay == 0 then
+
 			lockstyle_delay = -1
 			setLockstyle()
+
 		end
+
 	end
 end)
 
 windower.register_event('incoming text',function(org)
+
 	local delay = settings.options.after_disable_delay
+
 	if delay ~= 0 and not townZone() and org:find('Style lock mode disabled.') then
 
 		coroutine.sleep(delay) --wait a short delay after lockstyle is disabled, if too early will error
