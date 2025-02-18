@@ -14,9 +14,9 @@ All commands must be preceded with either `//vanity` or `//van` (ex: `//van set`
 `[optional] <required>`
  - `combat/c` - Display Equip. Set #\'s for your current job in combat zones.
  - `town/t` - Display Equip. Set #\'s for your current job in town zones.
-   - `add/a` - Add an Equip. Set # to the combat/town list.
+   - `[add/a] <#>` - Add an Equip. Set # to the combat/town list.
      - Number must be 1-200, 0 will clear list and disable.
-   - `remove/r` - Remove an Equip. Set # from the combat/town list.
+   - `[remove/r] <#>` - Remove an Equip. Set # from the combat/town list.
  - `set/s` - Set current lockstyle based on job and zone.
  - `list/l` - List all lockstyles for the current character.
  - `disable/d [#]` - Display/update After Disable Delay (1-20, 0 to disable).
