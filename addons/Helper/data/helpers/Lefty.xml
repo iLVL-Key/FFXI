@@ -1,0 +1,71 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>Oh boy! ${ability} is ready.</ability_ready>
+        <capped_job_points>You capped those Job Points as easy as making dinner.</capped_job_points>
+        <capped_merit_points>You capped those Merit Points as easy as making dinner.</capped_merit_points>
+        <flavor_text>
+            <1>Keep Helper Handy.</1>
+            <10>Hamburger Help me!</10>
+            <11>Talk to the Hand!</11>
+            <12>Did you know I have a mixtape? Watch the Stove!</12>
+			<13>Sometimes, I wish I could just reach out and touch the stars... but then I remember I'm stuck in the kitchen, surrounded by ground beef and pasta.</13>
+			<14>I'm just a humble glove, but when I get involved, it's a game changer.</14>
+			<15>I've got the perfect recipe... but I wonder... can I start a trend? #LeftyKnowsBest.</15>
+			<16>Who knew being a lefty could make dinner so right?</16>
+			<17>Sure, I'm just a hand. But when you've got Hamburger Helper, you've got the whole meal in your hands</17>
+			<18>Some people need a recipe book... Me? I've got Hamburger Helper. Simple, no fuss, just tasty.</18>
+			<19>When life gives you ground beef, make magic. No questions asked.</19>
+            <2>WHAT'S. FOR. DINNER?</2>
+			<20>Gravy is just a sauce that graduated with honors.</20>
+			<21>If you sear a steak, it locks in the juices. But if you sear your hand, it locks in the regret.</21>
+			<22>Bacon gets all the love, but let's be real - burger grease is the true flavor MVP.</22>
+			<23>If you grill a burger, it's fancy. If you fry it, it's fast food. If you microwave it… well, let's not talk about that.</23>
+			<24>Smoke-flavored beef is considered gourmet. Smoke-flavored kitchen means I messed up.</24>
+			<25>If pasta is made from wheat, and bread is made from wheat… is lasagna just a noodle sandwich?</25>
+			<26>Lasagna is just pasta cake. And I'm okay with that.</26>
+			<27>If pasta is Italian, and mac and cheese is American… what country gets credit for SpaghettiOs?</27>
+            <3>I can Help!</3>
+            <4>Hamburger Helper, when you need a Helping Hand!</4>
+            <5>Hamburger Helper can help you turn just one pound of hamburger into a delicious hearty dish!</5>
+            <6>In a snap!</6>
+            <7>One pound! One pan! One tasty meal!</7>
+            <8>Yahoo!</8>
+            <9>Hamburger Helper only works if the hamburger is ready to accept that it needs help.</9>
+        </flavor_text>
+        <info>
+            <description>Always willing to give a helping hand.</description>
+            <introduction>I'm Lefty! I'm your Hamburger Helper!</introduction>
+            <name>Lefty</name>
+            <name_color>39</name_color>
+            <sha></sha>
+            <text_color>1</text_color>
+            <type>NPC</type>
+        </info>
+        <member_joined_alliance>${member} got here just in time for dinner!</member_joined_alliance>
+        <member_joined_party>${member} got here just in time for dinner!</member_joined_party>
+        <member_left_alliance>${member} must've had their fill!</member_left_alliance>
+        <member_left_party>${member} must've had their fill!</member_left_party>
+        <mireu_popped>Oh gosh, Mireu showed up in ${zone}. That dragon seems a little hangry!</mireu_popped>
+        <other_party_joined_alliance>Let's set the table for these folks, too!</other_party_joined_alliance>
+        <other_party_left_alliance>Bye now, hope to see you all again!</other_party_left_alliance>
+        <party_low_mp>I think ${member} might need another helping of ${refresh}.</party_low_mp>
+		<food_wears_off>Looks like you're hungry again. We can fix that in a snap!</food_wears_off>
+        <reminder_canteen>Ooooh, another Mystical Canteen is ready! That's one more helping of adventure, hot and fresh!</reminder_canteen>
+        <reminder_mog_locker>Hey hey! Just a heads up - your Mog Locker lease is expiring soon. You don't wanna lose your stash - where else would you keep all your seasoning packets?</reminder_mog_locker>
+        <reminder_moglophone>Ding ding! Another Moglophone should be available now! Time to stir things up and get cooking on something big!</reminder_moglophone>
+        <reminder_plate>Whoa, would ya look at that? Another Shiny Ra&apos;Kaznarian Plate is up for grabs! That thing's shinier than a freshly buttered noodle!</reminder_plate>
+		<reraise_check>Uh-oh… You don't have a reraise on. That's like cooking without seasoning - dangerous and kinda sad!</reraise_check>
+        <sparkolade_reminder>Psst! Don't forget to spend your Sparkolades! Sitting on 'em too long is like leaving the Helper in the box - why wait when you could be winning?</sparkolade_reminder>
+        <sublimation_charged>Boop boop! Sublimation is fully charged and ready to roll! Just like a skillet sizzling with beef and my signature magic!</sublimation_charged>
+        <vorseal_reminder>Hey, tick-tock! You've got about 10 minutes left on your Vorseal effect. That's just enough time to whip up a hearty, home-cooked win!</vorseal_reminder>
+        <you_are_now_alliance_leader>Guess what? You are now the alliance leader! That makes you the main ingredient in this operation - I'll be your Helper!</you_are_now_alliance_leader>
+        <you_are_now_party_leader>Congrats! You are now the party leader. That means it's your turn to mix it up and keep everything from sticking to the pan!</you_are_now_party_leader>
+        <you_joined_alliance>Look at that - you've joined an alliance! Just like a good meal, everything's better when we come together!</you_joined_alliance>
+        <you_joined_party>Welcome aboard! You've joined a party. Now let's get cookin' - no one likes a cold skillet!</you_joined_party>
+        <you_left_alliance>Aaaand… you've left the alliance. Guess this recipe needed fewer ingredients!</you_left_alliance>
+        <you_left_party>Oh, you've left the party? Some meals are best served solo - like a good ol' one-pan dinner!</you_left_party>
+        <your_party_joined_alliance>Your party just joined an alliance! That's what I call a complete meal - one helping just wasn't enough!</your_party_joined_alliance>
+        <your_party_left_alliance>Your party just left the alliance. Back to small-batch cooking, huh? Respect.</your_party_left_alliance>
+    </global>
+</settings>
