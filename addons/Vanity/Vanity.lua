@@ -25,15 +25,22 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '2.0'
+_addon.version = '3.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
 config = require('config')
 res = require('resources')
+items = res.items
 require 'chat'
+math.randomseed(os.time())
 
 local add_to_chat = windower.add_to_chat
+local get_player = windower.ffxi.get_player
+local get_items = windower.ffxi.get_items
+local get_info = windower.ffxi.get_info
+local send_command = windower.send_command
+local register_event = windower.register_event
 
 defaults = {}
 
@@ -43,34 +50,46 @@ defaults.options = {
 	after_zone_delay = 5,
 }
 
+defaults.help = {
+	a = "At the simplest, Vanity can use just one lockstyle for all conditions by setting either the town or combat lockstyle for each job.",
+	b = "Designate separate lockstyles for town and combat zones by setting different lockstyles for both town and combat for each job.",
+	c = "If you wish to have Vanity choose a random lockstyle, you can set multiple lockstyles by separating numbers with a comma.",
+	d = "Designate lockstyles for specific zones by using the zone option. For example, {zone=Western Adoulin:1,2,3} will set lockstyles 1, 2, and 3 for Western Adoulin.",
+	e = "Designate lockstyles for the common endgame activities Dynamis, Odyssey, Omen, Vagary, and Sortie by using the dynamis, odyssey, omen, vagary, and sortie conditions. For example, {dynamis:1,2,3} will set lockstyles 1, 2, and 3 for all Dynamis zones.",
+	f = "Designate lockstyles for specific weapons or weapon types by using the weapon name or skill conditions: main_name, main_skill, sub_name, sub_skill, range_name, and range_skill. For example, {main_name=Excalibur:1,2,3} will set lockstyles 1, 2, and 3 for Excalibur in the main slot. {sub_skill=Sword:1,2,3} will set lockstyles 1, 2, and 3 for any Sword in the sub slot.",
+	g = "Priority is as follows: zone, (dynamis, odyssey, omen, sortie, vagary), main_weapon, main_skill, sub_weapon, sub_skill, range_weapon, range_skill, combat, town. Will equip based on current condition and which conditions have lockstyles designated, going from highest to lowest priority (zone being the highest and town the lowest). The only exception is while in town: zone will still be prioritized first, then town immediately after.",
+	h = "If you wish to disable a lockstyle, set the lockstyles to 0. For example, {town:0} will disable the town lockstyle for that job. Removing the condition entirely will also disable it.",
+	i = "Things to note: All zone, weapon, and weapon skill names are case-insensitive but will still need to be spelled exactly including spaces and apostrophes, for example {main_name=bunzi`s rod:10} (thats technically a backtick in the example since an apostrophe here would be turned into ASCII code, but you get the idea). Lockstyle numbers must be between 1 and 200, numbers outside this (aside from 0) will simply be ignored. If no valid lockstyles are found for a condition, Vanity will do nothing. To manually set your lockstyle inside of a macro, use `/console vanity set` on its own line. Order does not matter, for example {town:1,2}{combat:3,4} is the same as {combat:4,3}{town:2,1}.",
+}
+
 defaults.lockstyles = {
-	blm = "{combat:0},{town:0}",
-	blu = "{combat:0},{town:0}",
-	brd = "{combat:0},{town:0}",
-	bst = "{combat:0},{town:0}",
-	cor = "{combat:0},{town:0}",
-	dnc = "{combat:0},{town:0}",
-	drg = "{combat:0},{town:0}",
-	drk = "{combat:0},{town:0}",
-	geo = "{combat:0},{town:0}",
-	mnk = "{combat:0},{town:0}",
-	nin = "{combat:0},{town:0}",
-	pld = "{combat:0},{town:0}",
-	pup = "{combat:0},{town:0}",
-	rdm = "{combat:0},{town:0}",
-	rng = "{combat:0},{town:0}",
-	run = "{combat:0},{town:0}",
-	sam = "{combat:0},{town:0}",
-	sch = "{combat:0},{town:0}",
-	smn = "{combat:0},{town:0}",
-	thf = "{combat:0},{town:0}",
-	war = "{combat:0},{town:0}",
-	whm = "{combat:0},{town:0}",
+	blm = "{combat:0}{town:0}",
+	blu = "{combat:0}{town:0}",
+	brd = "{combat:0}{town:0}",
+	bst = "{combat:0}{town:0}",
+	cor = "{combat:0}{town:0}",
+	dnc = "{combat:0}{town:0}",
+	drg = "{combat:0}{town:0}",
+	drk = "{combat:0}{town:0}",
+	geo = "{combat:0}{town:0}",
+	mnk = "{combat:0}{town:0}",
+	nin = "{combat:0}{town:0}",
+	pld = "{combat:0}{town:0}",
+	pup = "{combat:0}{town:0}",
+	rdm = "{combat:0}{town:0}",
+	rng = "{combat:0}{town:0}",
+	run = "{combat:0}{town:0}",
+	sam = "{combat:0}{town:0}",
+	sch = "{combat:0}{town:0}",
+	smn = "{combat:0}{town:0}",
+	thf = "{combat:0}{town:0}",
+	war = "{combat:0}{town:0}",
+	whm = "{combat:0}{town:0}",
 }
 
 defaults.town_zones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
-    }
+	"Western Adoulin","Eastern Adoulin","Celennia Memorial Library","Silver Knife","Bastok Markets","Bastok Mines","Metalworks","Port Bastok","Chateau d'Oraguille","Northern San d'Oria","Port San d'Oria","Southern San d'Oria","Heavens Tower","Port Windurst","Windurst Walls","Windurst Waters","Windurst Woods","Lower Jeuno","Port Jeuno","Ru'Lude Gardens","Upper Jeuno","Aht Urhgan Whitegate","The Colosseum","Tavnazian Safehold","Southern San d'Oria [S]","Bastok Markets [S]","Windurst Waters [S]","Mhaura","Selbina","Rabao","Kazham","Norg","Nashmau","Mog Garden","Leafallia","Chocobo Circuit"
+	}
 
 settings = config.load(defaults)
 
@@ -94,41 +113,169 @@ function uppercase(str)
 
 end
 
--- Are we located in a town zone?
-local function townZone()
+--These ended up not being used, but I didn't want to delete them just in case
+-- --Are we using a two handed weapon?
+-- local function twoHanded()
 
-	local zone_name = res.zones[windower.ffxi.get_info().zone].name
+-- 	local equipment = get_items().equipment
+-- 	local main = get_items(equipment.main_bag,equipment.main)
 
-	return settings.town_zones:contains(zone_name)
+-- 	if not main then return false end
+
+-- 	local skill = items[main.id].skill
+-- 	return skill == 4 or skill == 6 or skill == 7 or skill == 8 or skill == 10 or skill == 12
+
+-- end
+
+-- --Are we dualwielding weapons?
+-- local function dualWield()
+
+-- 	local equipment = get_items().equipment
+-- 	local sub = get_items(equipment.sub_bag,equipment.sub)
+
+-- 	if not sub then return false end
+
+-- 	local skill = items[sub.id].skill
+-- 	return skill == 2 or skill == 3 or skill == 5 or skill == 9 or skill == 11
+
+-- end
+
+--Determine what type of location we are in
+local function getLocation()
+
+	local job = string.lower(get_player().main_job)
+	local zone_name = res.zones[get_info().zone].name
+	local lockstyle_str = lockstyles[job] or "{combat:0}{town:0}"
+
+	--Check if any custom zone exists in lockstyles and has valid lockstyles
+	for custom_zone_match, lockstyle_numbers in lockstyle_str:gmatch("{zone=([^:}]+):([^}]*)}") do
+		if string.lower(custom_zone_match) == string.lower(zone_name) and lockstyle_numbers ~= "0" then
+			--Extract numbers and check if at least one is within 1-200
+			for num in lockstyle_numbers:gmatch("%d+") do
+				if tonumber(num) >= 1 and tonumber(num) <= 200 then
+					return "zone="..zone_name
+				end
+			end
+		end
+	end
+
+	--Check special locations
+	if zone_name:find("^Dynamis") then
+		return 'dynamis'
+	elseif zone_name == "Walk of Echoes [P1]" then
+		return 'odyssey'
+	elseif zone_name == "Reisenjima Henge" then
+		return 'omen'
+	elseif zone_name == "Outer Ra'Kaznar [U2]" then
+		return 'sortie'
+	elseif zone_name == "Outer Ra'Kaznar [U1]" then
+		return 'vagary'
+	elseif town_zones:contains(zone_name) then
+		return 'town'
+	end
+
+	--None of the above, so we must be in combat
+	return 'combat'
 
 end
 
--- Run the lockstyle game command for the job/location combination
+--Run the lockstyle game command for the job/condition combination
 local function setLockstyle()
 
-	if not windower.ffxi.get_info().logged_in then return end
+	if not get_info().logged_in then return end
 
-	local job = string.lower(windower.ffxi.get_player().main_job)
-	local location = townZone() and "town" or "combat"
+	local job = string.lower(get_player().main_job)
+	local location = getLocation()
 	local lockstyle_str = lockstyles[job] or "{combat:0}{town:0}"
 
-	--Extract lockstyle numbers for the relevant location
-	local lockstyle_numbers = lockstyle_str:match("{"..location..":([^}]*)}") or "0"
+	--Get equipped weapon names and skills
+	local equipment = get_items().equipment
 
-	--If "0" is present (disabled), do nothing
+	local main = equipment.main_bag ~= 0 and get_items(equipment.main_bag, equipment.main) or nil
+	local main_name = main and main.id and items[main.id] and items[main.id].name or nil
+	local main_skill = main and main.id and items[main.id] and items[main.id].skill and res.skills[items[main.id].skill] and res.skills[items[main.id].skill].name or nil
+
+	local sub = equipment.sub_bag ~= 0 and get_items(equipment.sub_bag, equipment.sub) or nil
+	local sub_name = sub and sub.id and items[sub.id] and items[sub.id].name or nil
+	local sub_skill = sub and sub.id and items[sub.id] and items[sub.id].skill and res.skills[items[sub.id].skill].name or nil
+
+	local range = equipment.range_bag ~= 0 and get_items(equipment.range_bag, equipment.range) or nil
+	local range_name = range and range.id and items[range.id] and items[range.id].name or nil
+	local range_skill = range and range.id and items[range.id] and items[range.id].skill and res.skills[items[range.id].skill] and res.skills[items[range.id].skill].name or nil
+
+	--Builde the priority order based on current conditions
+	local priority = {}
+
+	--First priorities based on location conditions
+	if location:find("zone=") then
+		table.insert(priority, location)
+	elseif location == "town" then
+		table.insert(priority, "town")
+	elseif location == "dynamis" then
+		table.insert(priority, "dynamis")
+	elseif location == "odyssey" then
+		table.insert(priority, "odyssey")
+	elseif location == "omen" then
+		table.insert(priority, "omen")
+	elseif location == "sortie" then
+		table.insert(priority, "sortie")
+	elseif location == "vagary" then
+		table.insert(priority, "vagary")
+	end
+	--If none of the above are true then we can assume we are in a combat location
+
+	--Escape special characters for pattern matching (mamely for +1 weapons since + is a special character)
+	local function escapePattern(str)
+		return str:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1")
+	end
+
+	--Weapon-based conditions come next
+	if main_name then table.insert(priority, "main_name="..escapePattern(main_name)) end
+	if main_skill then table.insert(priority, "main_skill="..main_skill) end
+	if sub_name then table.insert(priority, "sub_name="..escapePattern(sub_name)) end
+	if sub_skill then table.insert(priority, "sub_skill="..sub_skill) end
+	if range_name then table.insert(priority, "range_name="..escapePattern(range_name)) end
+	if range_skill then table.insert(priority, "range_skill="..range_skill) end
+
+	--Last priorities are combat and town (town will be duplicate if location is town but that's fine)
+	table.insert(priority, "combat")
+	table.insert(priority, "town")
+	-- print("Priority", table.concat(priority, ", "))
+
+	--Find the first valid (non-disabled) lockstyle in order of priority
+	local lockstyle_numbers = "0"
+	for _, loc in ipairs(priority) do
+		local temp_lockstyle = lockstyle_str:lower():match("{"..loc:lower()..":([^}]*)}") or "0"
+		
+		if temp_lockstyle ~= "0" then
+			--Extract numbers and check if at least one is valid (1-200)
+			local valid_lockstyles = {}
+			for num in temp_lockstyle:gmatch("%d+") do
+				-- print(loc, num)
+				num = tonumber(num)
+				if num >= 1 and num <= 200 then
+					table.insert(valid_lockstyles, num)
+				end
+			end
+			
+			--If we found valid lockstyles, use them
+			if #valid_lockstyles > 0 then
+				lockstyle_numbers = valid_lockstyles
+				break
+			end
+		end
+	end
+
+	--If no valid lockstyles were found, do nothing
 	if lockstyle_numbers == "0" then return end
 
-	--Convert to a table of numbers
-	local lockstyle_table = {}
-	for num in lockstyle_numbers:gmatch("%d+") do
-		table.insert(lockstyle_table, tonumber(num))
+	--Select a random lockstyle from the valid numbers
+	if #lockstyle_numbers > 0 then
+		local selected_lockstyle = lockstyle_numbers[math.random(#lockstyle_numbers)]
+		-- print("Setting lockstyle "..selected_lockstyle.." for "..job.." in "..location)
+		send_command('input /lockstyleset ' .. selected_lockstyle)
 	end
 
-	--Select a random lockstyle from the table
-	if #lockstyle_table > 0 then
-		local selected_lockstyle = lockstyle_table[math.random(#lockstyle_table)]
-		windower.send_command('input /lockstyleset '..selected_lockstyle)
-	end
 end
 
 --List all lockstyles
@@ -136,158 +283,156 @@ local function listAllLockstyles()
 
 	add_to_chat(8,('[Vanity] '):color(220)..('Lockstyles:'):color(8))
 
-	--Collect jobs in a table and sort them alphabetically
+	--Convert settings.lockstyles into a standard Lua table to ensure all jobs are processed
 	local jobs = {}
 	for job in pairs(settings.lockstyles) do
 		table.insert(jobs, job)
 	end
+
+	--Sort the jobs alphabetically
 	table.sort(jobs)
 
 	--Iterate over the sorted jobs
 	for _, job in ipairs(jobs) do
 		local lockstyle_str = settings.lockstyles[job]
+		local parts = {}
 
-		--Extract combat and town lockstyle numbers using pattern matching
-		local combat_str = lockstyle_str:match("{combat:([^}]*)}") or "0"
-		local town_str = lockstyle_str:match("{town:([^}]*)}") or "0"
+		--Extract all `{key=value}` and `{key:value}` sections dynamically
+		for key, value in lockstyle_str:gmatch("{([^=:}]+)[:=]([^}]*)}") do
+			if value ~= "0" then
+				local formatted_key = key:gsub("_", " "):gsub("^%l", string.upper) --Format key nicely
+				table.insert(parts, (formatted_key .. ": "):color(8) .. value:color(1))
+			end
+		end
 
-		local combatLockstyles = combat_str == "0" and "x" or combat_str
-		local townLockstyles = town_str == "0" and "x" or town_str
-
-		add_to_chat(8,(uppercase(job)..' - Combat: '):color(8)..(combatLockstyles):color(combatLockstyles == 'x' and 39 or 1)..('  Town: '):color(8)..(townLockstyles):color(townLockstyles == 'x' and 39 or 1))
+		--Only print if at least one lockstyle category is enabled
+		if #parts > 0 then
+			add_to_chat(8, (uppercase(job)):color(1) .. " - " .. table.concat(parts, "  "))
+		end
 	end
 end
 
+--Display lockstyles for the specified job/location (only used for in-game commands which are limited to combat and town only)
 local function displayLockstyles(job, location)
 
 	--Retrieve the current lockstyle string
 	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
 
-	--Extract the relevant lockstyle numbers using pattern matching
+	--Extract the relevant lockstyle numbers
 	local lockstyle_str = current_str:match("{"..location..":([^}]*)}") or "0"
 
-	local list = lockstyle_str == "0" and "x" or lockstyle_str
-	local loc = location == "combat" and " Combat" or " Town"
+	--Count how many numbers are in the list
+	local num_count = 0
+	for _ in lockstyle_str:gmatch("%d+") do
+		num_count = num_count + 1
+	end
 
-	add_to_chat(8,('[Vanity] '):color(220)..(uppercase(job)..loc):color(1)..((' %s: '):format(#list == 1 and 'lockstyle' or 'lockstyles')):color(8)..(list):color(list == 'x' and 39 or 1)..(list == 'x' and ' (Disabled)' or ''):color(8)..(#list > 1 and ' (Chosen at random)' or ''):color(8))
+	--Make the location name look nice
+	local list = lockstyle_str == "0" and "x" or lockstyle_str
+	local loc = " Town"
+	if location == 'combat' then
+		loc = " Combat"
+	end
+
+	add_to_chat(8, ('[Vanity] '):color(220)..
+		(uppercase(job)..loc):color(1)..
+		(' %s: '):format(num_count == 1 and 'lockstyle' or 'lockstyles'):color(8)..
+		(list):color(list == 'x' and 39 or 1)..
+		(list == 'x' and ' (Disabled)' or ''):color(8)..
+		(num_count > 1 and ' (Chosen at random)' or ''):color(8))
 
 end
 
---Add a specified lockstyle number
+--Add a lockstyle number to the specified location (Combat and Town only)
 local function addLockstyle(job, location, lockstyle_num)
 
 	--Retrieve the current lockstyle string
-	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
+	local current_str = lockstyles[job] or "{combat:0}{town:0}"
 
-	--Extract combat and town lockstyle groups using pattern matching
-	local combat_str = current_str:match("{combat:([^}]*)}") or "0"
-	local town_str = current_str:match("{town:([^}]*)}") or "0"
+	--Extract and remove the relevant section (`{combat:...}` or `{town:...}`)
+	local updated_str = current_str:gsub("{"..location..":([^}]*)}", "", 1)
+	local existing_section = current_str:match("{"..location..":([^}]*)}")
 
-	--If the lockstyle_num is 0, disable the lockstyle by setting it to "0" and removing all others
-	local new_combat_str = location == "combat" and "0" or combat_str
-	local new_town_str = location == "town" and "0" or town_str
+	--If there was no existing section, default to "0"
+	existing_section = existing_section or "0"
 
-	--Otherwise, add the number normally
-	if lockstyle_num ~= 0 then
+	--If disabling, set section to "0"
+	if lockstyle_num == 0 then
+		existing_section = "0"
+	else
+		--Convert existing lockstyles to a table
 		local lockstyles = {}
-		for num in (location == "combat" and combat_str or town_str):gmatch("%d+") do
+		for num in existing_section:gmatch("%d+") do
 			lockstyles[tonumber(num)] = true
 		end
 
-		--Add the new lockstyle number and remove 0 if present
+		--Add the new lockstyle number and remove `0` if present
 		lockstyles[tonumber(lockstyle_num)] = true
 		lockstyles[0] = nil
 
 		--Convert back to a sorted comma-separated string
-		local new_lockstyle_str = table.concat(
-			(function()
-				local sorted = {}
-				for num in pairs(lockstyles) do table.insert(sorted, num) end
-				table.sort(sorted)
-				return sorted
-			end)(),
-			","
-		)
+		local sorted_lockstyles = {}
+		for num in pairs(lockstyles) do table.insert(sorted_lockstyles, num) end
+		table.sort(sorted_lockstyles)
 
-		--Update only the relevant location
-		if location == "combat" then
-			new_combat_str = new_lockstyle_str
-		else
-			new_town_str = new_lockstyle_str
-		end
+		--Rebuild the updated section
+		existing_section = table.concat(sorted_lockstyles, ",")
 	end
 
-	--Construct the new lockstyle string
-	local new_str = string.format(
-		"{combat:%s}{town:%s}",
-		new_combat_str,
-		new_town_str
-	)
+	--Append the modified section back to the string
+	local new_str = updated_str.."{"..location..":"..existing_section.."}"
 
-	--Save the updated string
+	--Save the updated lockstyle string
 	settings.lockstyles[job] = new_str
+	lockstyles[job] = new_str
 	settings:save()
 
 	displayLockstyles(job, location)
-
 end
 
---Remove a specified lockstyle number
+--Remove a lockstyle number from the specified location (Combat and Town only)
 local function removeLockstyle(job, location, lockstyle_num)
-
 	--Retrieve the current lockstyle string
-	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
+	local current_str = lockstyles[job] or "{combat:0}{town:0}"
 
-	--Extract combat and town lockstyle groups using pattern matching
-	local combat_str = current_str:match("{combat:([^}]*)}") or "0"
-	local town_str = current_str:match("{town:([^}]*)}") or "0"
+	--Extract and remove the relevant section (`{combat:...}` or `{town:...}`)
+	local updated_str = current_str:gsub("{"..location..":([^}]*)}", "", 1)
+	local existing_section = current_str:match("{"..location..":([^}]*)}")
 
-	--Convert the relevant part into a table
+	--If there was no existing section, do nothing
+	if not existing_section then return end
+
+	--Convert existing lockstyles to a table
 	local lockstyles = {}
-	for num in (location == "combat" and combat_str or town_str):gmatch("%d+") do
+	for num in existing_section:gmatch("%d+") do
 		lockstyles[tonumber(num)] = true
 	end
 
 	--Remove the specified lockstyle number
 	lockstyles[tonumber(lockstyle_num)] = nil
 
-	--If the table is now empty, set it to "0" (disabled)
-	local new_lockstyle_str
-	if next(lockstyles) == nil then
-		new_lockstyle_str = "0"
-	else
+	--If the table is empty, set it to "0" (disabled)
+	local updated_section = "0"
+	if next(lockstyles) then
 		--Convert back to a sorted comma-separated string
-		new_lockstyle_str = table.concat(
-			(function()
-				local sorted = {}
-				for num in pairs(lockstyles) do table.insert(sorted, num) end
-				table.sort(sorted)
-				return sorted
-			end)(),
-			","
-		)
+		local sorted_lockstyles = {}
+		for num in pairs(lockstyles) do table.insert(sorted_lockstyles, num) end
+		table.sort(sorted_lockstyles)
+		updated_section = table.concat(sorted_lockstyles, ",")
 	end
 
-	--Update only the relevant location
-	local new_combat_str = location == "combat" and new_lockstyle_str or combat_str
-	local new_town_str = location == "town" and new_lockstyle_str or town_str
+	--Append the modified section back to the string
+	local new_str = updated_str.."{"..location..":"..updated_section.."}"
 
-	--Construct the new lockstyle string
-	local new_str = string.format(
-		"{combat:%s}{town:%s}",
-		new_combat_str,
-		new_town_str
-	)
-
-	--Save the updated string
+	-- Save the updated lockstyle string
 	settings.lockstyles[job] = new_str
+	lockstyles[job] = new_str
 	settings:save()
 
 	displayLockstyles(job, location)
-
 end
 
-windower.register_event('job change',function()
+register_event('job change',function()
 
 	--We use this way for a timer (instead of the coroutine.sleep like with zoning) so that we can reset it during the countdown in case we change jobs again while its running, preventing it from trying to set the lockstyle multiple times.
 	if after_job_change_delay ~= 0 then
@@ -296,21 +441,21 @@ windower.register_event('job change',function()
 
 end)
 
-windower.register_event('zone change',function()
+register_event('zone change',function()
 
 	if after_zone_delay ~= 0 then
-		coroutine.sleep(after_zone_delay) --wait a short delay after zoning, if too early will error
-		setLockstyle() --set the appropriate lockstyle
+		--Set the appropriate lockstyle after the delay
+		coroutine.schedule(setLockstyle, after_zone_delay)
 	end
 
 end)
 
-windower.register_event('addon command',function(cmd, ...)
+register_event('addon command',function(cmd, ...)
 
 	local args = {...}
 	local sub_cmd = args[1]
 	local lockstyle_num = tonumber(args[2])
-	local job = string.lower(windower.ffxi.get_player().main_job)
+	local job = string.lower(get_player().main_job)
 
 	if cmd == 'combat' or cmd == 'c' then
 
@@ -324,6 +469,7 @@ windower.register_event('addon command',function(cmd, ...)
 				addLockstyle(job, 'combat', lockstyle_num)
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please provide a number '):color(8)..('1'):color(1)..('-'):color(8)..('200 '):color(1)..('('):color(8)..('0 '):color(1)..('to clear list and disable).'):color(8))
+				add_to_chat(8,'  Example: '..('//van '..cmd..' '..sub_cmd..' 7'):color(1))
 			end
 
 		elseif sub_cmd == 'remove' or sub_cmd == 'rem' or sub_cmd == 'r' then
@@ -331,7 +477,8 @@ windower.register_event('addon command',function(cmd, ...)
 			removeLockstyle(job, 'combat', lockstyle_num)
 
 		else
-			add_to_chat(8,('[Vanity] '):color(220)..('Please provide the sub-command '):color(8)..('add '):color(1)..('or '):color(8)..('remove'):color(1)..('.'):color(8))
+			add_to_chat(8,('[Vanity] '):color(220)..('Please provide the sub-command '):color(8)..('add/a '):color(1)..('or '):color(8)..('remove/r'):color(1)..('.'):color(8))
+			add_to_chat(8,'  Example: '..('//van '..cmd..' add 7'):color(1))
 		end
 
 	elseif cmd == 'town' or cmd == 't' then
@@ -346,6 +493,7 @@ windower.register_event('addon command',function(cmd, ...)
 				addLockstyle(job, 'town', lockstyle_num)
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please provide a number '):color(8)..('1'):color(1)..('-'):color(8)..('200 '):color(1)..('('):color(8)..('0 '):color(1)..('to clear list and disable).'):color(8))
+				add_to_chat(8,'  Example: '..('//van '..cmd..' '..sub_cmd..' 7'):color(1))
 			end
 
 		elseif sub_cmd == 'remove' or sub_cmd == 'rem' or sub_cmd == 'r' then
@@ -353,7 +501,8 @@ windower.register_event('addon command',function(cmd, ...)
 			removeLockstyle(job, 'town', lockstyle_num)
 
 		else
-			add_to_chat(8,('[Vanity] '):color(220)..('Please provide the sub-command '):color(8)..('add '):color(1)..('or '):color(8)..('remove'):color(1)..('.'):color(8))
+			add_to_chat(8,('[Vanity] '):color(220)..('Please provide the sub-command '):color(8)..('add/a '):color(1)..('or '):color(8)..('remove/r'):color(1)..('.'):color(8))
+			add_to_chat(8,'  Example: '..('//van '..cmd..' add 7'):color(1))
 		end
 
 	elseif cmd == 'help' then
@@ -364,20 +513,23 @@ windower.register_event('addon command',function(cmd, ...)
 
 		local prefix = "//vanity, //van"
 		add_to_chat(8,('[Vanity] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
-		add_to_chat(8,(' Control your lockstyles based on character, job, and location.'):color(1))
-		add_to_chat(8,(' If multiple lockstyle #\'s are set, will pick one at random.'):color(1))
+		add_to_chat(8,(' Control your lockstyles based on character, job, and other conditions.'):color(1))
+		add_to_chat(8,(' If multiple lockstyles are designated, one will be chosen at random.'):color(1))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('Optional '):color(53)..('Required '):color(2)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
-		add_to_chat(8,(' combat/c '):color(36)..('- Display Equip. Set #\'s for your current job in combat zones.'):color(8))
-		add_to_chat(8,(' town/t '):color(36)..('- Display Equip. Set #\'s for your current job in town zones.'):color(8))
-		add_to_chat(8,('   - add/a '):color(53)..('# '):color(2)..('- Add an Equip. Set # to the combat/town list.'):color(8))
+		add_to_chat(8,(' combat/c '):color(36)..('- Display lockstyles for your current job in combat zones.'):color(8))
+		add_to_chat(8,(' town/t '):color(36)..('- Display lockstyles for your current job in town zones.'):color(8))
+		add_to_chat(8,('   - add/a '):color(53)..('# '):color(2)..('- Add a lockstyle to the combat/town list.'):color(8))
 		add_to_chat(8,('     - Number must be 1-200, 0 will clear list and disable.'):color(8))
-		add_to_chat(8,('   - remove/r '):color(53)..('# '):color(2)..('- Remove an Equip. Set # from the combat/town list.'):color(8))
-		add_to_chat(8,(' set/s'):color(36)..(' - Set current lockstyle based on job and zone.'):color(8))
-		add_to_chat(8,(' list/l'):color(36)..(' - List all lockstyles for the current character.'):color(8))
+		add_to_chat(8,('   - remove/r '):color(53)..('# '):color(2)..('- Remove a lockstyle from the combat/town list.'):color(8))
+		add_to_chat(8,(' set/s'):color(36)..(' - Set (apply) lockstyle based on current conditions.'):color(8))
+		add_to_chat(8,(' list/l'):color(36)..(' - List ALL lockstyles for the current character.'):color(8))
 		add_to_chat(8,(' disable/d'):color(36)..(' #'):color(53)..(' - Display/update After Disable Delay (1-20, 0 to disable). ['):color(8)..(''..currDisableDelay):color(200)..(']'):color(8))
 		add_to_chat(8,(' job/j'):color(36)..(' #'):color(53)..(' - Display/update After Job Change Delay (1-20, 0 to disable). ['):color(8)..(''..currJCDelay):color(200)..(']'):color(8))
 		add_to_chat(8,(' zone/z'):color(36)..(' #'):color(53)..(' - Display/update After Zone Delay (1-20, 0 to disable). ['):color(8)..(''..currZoneDelay):color(200)..(']'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' Advanced Lockstyle conditions such as '):color(8)..('custom zones '):color(6)..('and '):color(8)..('specific weapons'):color(6))
+		add_to_chat(8,(' can be found in the '):color(8)..('Vanity/data/settings.xml '):color(1)..('file.'):color(8))
 
 	elseif cmd == 'set' or cmd == 's' then
 		setLockstyle()
@@ -390,17 +542,17 @@ windower.register_event('addon command',function(cmd, ...)
 			sub_cmd = tonumber(sub_cmd)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_disable_delay = sub_cmd
-				after_disable_delay = settings.options.after_disable_delay
+				after_disable_delay = sub_cmd
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..(after_disable_delay..' seconds'):color(1)..('.'):color(8))
 			elseif sub_cmd == 0 then
 				settings.options.after_disable_delay = 0
-				after_disable_delay = settings.options.after_disable_delay
+				after_disable_delay = 0
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Disable Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
-				add_to_chat(8,'  Example: '..('//vanity '..cmd..' 9'):color(1))
+				add_to_chat(8,'  Example: '..('//van '..cmd..' 9'):color(1))
 			end
 		end
 
@@ -412,17 +564,17 @@ windower.register_event('addon command',function(cmd, ...)
 			sub_cmd = tonumber(sub_cmd)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_job_change_delay = sub_cmd
-				after_job_change_delay = settings.options.after_job_change_delay
+				after_job_change_delay = sub_cmd
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..(after_job_change_delay..' seconds'):color(1)..('.'):color(8))
 			elseif sub_cmd == 0 then
 				settings.options.after_job_change_delay = 0
-				after_job_change_delay = settings.options.after_job_change_delay
+				after_job_change_delay = 0
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Job Change Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
-				add_to_chat(8,'  Example: '..('//vanity '..cmd..' 9'):color(1))
+				add_to_chat(8,'  Example: '..('//van '..cmd..' 9'):color(1))
 			end
 		end
 
@@ -434,17 +586,17 @@ windower.register_event('addon command',function(cmd, ...)
 			sub_cmd = tonumber(sub_cmd)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_zone_delay = sub_cmd
-				after_zone_delay = settings.options.after_zone_delay
+				after_zone_delay = sub_cmd
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..(after_zone_delay..' seconds'):color(1)..('.'):color(8))
 			elseif sub_cmd == 0 then
 				settings.options.after_zone_delay = 0
-				after_zone_delay = settings.options.after_zone_delay
+				after_zone_delay = 0
 				settings:save('all')
 				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Zone Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
-				add_to_chat(8,'  Example: '..('//vanity '..cmd..' 9'):color(1))
+				add_to_chat(8,'  Example: '..('//van '..cmd..' 9'):color(1))
 			end
 		end
 
@@ -452,13 +604,13 @@ windower.register_event('addon command',function(cmd, ...)
 		listAllLockstyles()
 
 	else
-		add_to_chat(8,('[Vanity] '):color(220)..('Unrecognized command. Type'):color(8)..(' //vanity help'):color(1)..(' for a list of commands.'):color(8))
+		add_to_chat(8,('[Vanity] '):color(220)..('Unrecognized command. Type'):color(8)..(' //van help'):color(1)..(' for a list of commands.'):color(8))
 
 	end
 
 end)
 
-windower.register_event('prerender', function()
+register_event('prerender', function()
 
 	if os.time() > Heartbeat then
 
@@ -478,15 +630,18 @@ windower.register_event('prerender', function()
 	end
 end)
 
-windower.register_event('incoming text',function(org)
+register_event('incoming text',function(org)
 
-	local delay = settings.options.after_disable_delay
+	if after_disable_delay ~= 0 and org:find('Style lock mode disabled.') then
 
-	if delay ~= 0 and not townZone() and org:find('Style lock mode disabled.') then
+		local location = getLocation()
 
-		coroutine.sleep(delay) --wait a short delay after lockstyle is disabled, if too early will error
+		if location ~= 'town' then
 
-		setLockstyle() --set the appropriate lockstyle
+			--wait a short delay after lockstyle is disabled, if too early will error
+			coroutine.schedule(setLockstyle, after_disable_delay)
+
+		end
 
 	end
 end)
