@@ -1,5 +1,5 @@
 # Vanity
-Allows players to automatically set and manage lockstyles based on their current job and location (combat or town zones). Players can configure specific lockstyle sets for different jobs and location types, enabling automatic lockstyle updates upon zoning, job changes, or after lockstyle mode gets disabled. Supports multiple lockstyle sets for the same job/location resulting in a random set chosen from the list.
+Allows players to automatically set and manage lockstyles based on their current job and location (combat or town zones), plus other advanced conditions. Automatic lockstyle updates upon zoning, job changes, or after lockstyle mode gets disabled. Supports multiple lockstyle sets for the same conditions resulting in a random set chosen from the list.
 
 ## Features
  - Designate lockstyles per job, per character.
