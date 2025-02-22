@@ -41,7 +41,7 @@
             <name_color>39</name_color>
             <sha>0a8842f053a205c281fa4e1c4ad6e0fa254b0a66</sha>
             <text_color>1</text_color>
-            <type>NPC</type>
+            <type>Special Guest</type>
         </info>
         <member_joined_alliance>${member} got here just in time for dinner!</member_joined_alliance>
         <member_joined_party>${member} got here just in time for dinner!</member_joined_party>
