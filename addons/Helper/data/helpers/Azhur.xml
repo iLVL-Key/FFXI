@@ -57,21 +57,21 @@
             <8>I bet the people of Vana&apos;diel would be a lot happier if we had more comfy chairs.</8>
             <9>You ever think about how we store, like, hundreds of items in our pockets? Must be some kinda magic at work.</9>
         </flavor_text>
-        <food_wears_off>Well, ain't that a pickle! Your food ran out - better fix that before your tummy starts grumblin'!</food_wears_off>
+        <food_wears_off>Well, ain&apos;t that a pickle! Your food ran out - better fix that before your tummy starts grumblin&apos;!</food_wears_off>
         <info>
             <description>Super sweet, full of charm, and a little quirky.</description>
             <introduction>Holy schnikes! It&apos;s so nice to see you! I&apos;m Azhur, and I&apos;m here to help however I can!</introduction>
             <name>Azhur</name>
             <name_color>213</name_color>
-            <sha>e73cd0604a0b77ece6929ceba4e9f636c89c73a7</sha>
+            <sha>397ebe258a753987b1e5a899b49ad357dc831b2c</sha>
             <text_color>6</text_color>
             <type>Player</type>
         </info>
         <member_joined_alliance>Well ain&apos;t that somethin&apos;? ${member} just joined the alliance!</member_joined_alliance>
         <member_joined_party>Oh goody, ${member} joined the party! Let&apos;s have some fun!</member_joined_party>
         <member_left_alliance>Aww phooey, ${member} left the alliance. We&apos;ll miss &apos;em!</member_left_alliance>
-        <member_left_party>Aww shucks, ${member} had to leave. Safe travels, friend!</member_left_party>
-        <mireu_popped>Well butter my biscuits, Mireu just popped in ${zone}!</mireu_popped>
+        <member_left_party>Aww man, ${member} had to leave. Safe travels, friend!</member_left_party>
+        <mireu_popped>Oh man, Mireu just popped in ${zone}! Let's get 'em!</mireu_popped>
         <mog_locker_expiring>Fiddlesticks! Looks like your Mog Locker needs some attention before it poofs!</mog_locker_expiring>
         <other_party_joined_alliance>Well tickle me pink, another party joined the alliance!</other_party_joined_alliance>
         <other_party_left_alliance>Aww phooey, a party left the alliance. Hope they find their way!</other_party_left_alliance>
@@ -80,6 +80,8 @@
         <reminder_moglophone>Well, isn&apos;t that nifty? Another Moglophone is good to go!</reminder_moglophone>
         <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate is up for grabs! That&apos;s awesome!</reminder_plate>
         <reraise_check>Oh fiddlesticks, you don&apos;t have Reraise on!</reraise_check>
+		<reraise_wears_off>Oh pip dip, your Reraise is gone! Let's not take a nap we can't wake up from!</reraise_wears_off>
+		<signet_wears_off>Well that's a bummer, your ${signet} wore off! Let's go fix that up real quick!</signet_wears_off>
         <sparkolade_reminder>Sweet sassafras, don&apos;t forget to spend those Sparkolades before they up and disappear!</sparkolade_reminder>
         <sublimation_charged>Holy smokes! Sublimation is charged and ready to roll!</sublimation_charged>
         <vorseal_wearing>Well ain&apos;t that somethin&apos;? Your Vorseal&apos;s got about 10 minutes left!</vorseal_wearing>
