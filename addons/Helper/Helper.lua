@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.6'
+_addon.version = '1.7'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -97,7 +97,7 @@ defaults = {
 			tame = true,
 			troubadour = true,
 		},
-		after_zone_party_check_delay_seconds = 5,
+		after_zone_party_check_delay_seconds = 6,
 		auto_check_for_updates = true,
 		auto_update = false,
 		check_party_for_low_mp = true,
@@ -122,6 +122,8 @@ defaults = {
 			food_wears_off = true,
 			mireu_popped = true,
 			mog_locker_expiring = true,
+			reraise_wears_off = true,
+			signet_wears_off = true,
 			sublimation_charged = true,
 			vorseal_wearing = true,
 		},
@@ -210,6 +212,8 @@ vana = {
 	reminder_plate = "Another Shiny Ra'Kaznarian Plate should be available now.",
 	party_low_mp = "It looks like ${member} could use a ${refresh}.",
 	reraise_check = "You do not have Reraise on.",
+	reraise_wears_off = "Your Reraise effect has worn off.",
+	signet_wears_off = "Your ${signet} effect has worn off.",
 	sparkolade_reminder = "Don't forget to spend your Sparkolades.",
 	sublimation_charged = "Sublimation is now fully charged and ready to use.",
 	mireu_popped = "Mireu was just mentioned in ${zone}.",
@@ -263,6 +267,8 @@ local party_announcements = settings.options.party_announcements
 local reraise_check = settings.options.reraise_check
 local reraise_check_delay_minutes = math.floor(settings.options.reraise_check_delay_minutes * 60)
 local reraise_check_not_in_town = settings.options.reraise_check_not_in_town
+local reraise_wears_off = settings.options.notifications.reraise_wears_off
+local signet_wears_off = settings.options.notifications.signet_wears_off
 local sound_effects = settings.options.sound_effects
 local sparkolade_reminder = settings.options.sparkolade_reminder
 local sublimation_charged = settings.options.notifications.sublimation_charged
@@ -361,6 +367,7 @@ local job_points = 500
 local capped_jps = true
 local zoning = false
 local paused = false
+local alive = true
 local new_updates = false
 
 --Update the party/alliance structure
@@ -878,7 +885,7 @@ local function downloadAddon(github_addon_sha)
 	-- Update the stored SHA after successful download
 	updateAddonSHA(github_addon_sha)
 
-	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(6))
+	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
 	windower.send_command('lua r helper')
 
 end
@@ -1550,6 +1557,11 @@ local function memberPlaceholder(text, name)
 	return text:gsub("%${member}", name)
 end
 
+--Replace Signet placeholder
+local function signetPlaceholder(text, buff)
+	return text:gsub("%${signet}", buff)
+end
+
 --Replace the ability placeholders
 local function abilityPlaceholders(text, ability)
 
@@ -1931,6 +1943,7 @@ register_event('gain buff', function(buff)
 
 	elseif buff == 602 and vorseal_wearing then --Vorseal
 
+		--Set the countdown to 110 minutes (Vorseal lasts 2 hours)
 		vorseal_countdown = 6600
 
 	end
@@ -1941,13 +1954,49 @@ register_event('lose buff', function(buff)
 
 	if buff == 602 and vorseal_wearing then --Vorseal
 
+		--Turn the countdown off
 		vorseal_countdown = -1
 
-	elseif buff == 251 and food_wears_off then --Food
+	--Food
+	elseif buff == 251 and food_wears_off and alive then
 
 		local selected = getHelper()
 		local text = helpers[selected.helper].food_wears_off
 		if text then
+
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
+		end
+
+	--Reraise
+	elseif buff == 133 and reraise_wears_off and alive then
+
+		local selected = getHelper()
+		local text = helpers[selected.helper].reraise_wears_off
+		if text then
+
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+			--Play sound if enabled
+			if sound_effects then 
+				play_sound(addon_path..'data/sounds/notification.wav') 
+			end
+
+		end
+
+		--Signet, Sanction, Sigil, Ionis
+	elseif (buff == 253 or buff == 256 or buff == 268 or buff == 512) and signet_wears_off then
+
+		local selected = getHelper()
+		local text = helpers[selected.helper].signet_wears_off
+		if text then
+
+			text = signetPlaceholder(text, buff)
 
 			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
@@ -2095,16 +2144,25 @@ end)
 
 register_event('prerender', function()
 
-	--Short delay after zoning to prevent "left...joined" messages after every zone.
 	local pos = windower.ffxi.get_position()
 	local logged_in = get_info().logged_in
+	local player = get_player()
 
+	--The zoning flag prevents a few things from happening while zoning
 	if pos == "(?-?)" and logged_in and not zoning then
 		zoning = true
 	elseif pos ~= "(?-?)" and zoning then
+		--Short delay after zoning to prevent "left...joined" messages after every zone.
 		coroutine.schedule(function()
 			zoning = false
 		end, after_zone_party_check_delay_seconds)
+	end
+
+	--The alive flag prevents a few things from happening when you die
+	if player.vitals.hp == 0 and alive then
+		alive = false
+	elseif player.vitals.hp > 0 and not alive then
+		alive = true
 	end
 
 	if not (zoning or paused) and logged_in then
@@ -2352,7 +2410,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' unload/u '):color(36)..('<file_name> '):color(2)..('- Unload a Helper file from the addon.'):color(8))
 		add_to_chat(8,('   - Unloaded Helper files are not deleted but are removed from use by the addon.'):color(8))
 		add_to_chat(8,(' list '):color(36)..('- List currently loaded Helpers.'):color(8))
-		add_to_chat(8,(' voices/v '):color(36)..('- Randomly selects an active Helper to use for each alert.'):color(8))
+		add_to_chat(8,(' voices/v '):color(36)..('- Randomly selects a Helper to use for EACH alert/notification.'):color(8))
 		add_to_chat(8,(' check '):color(36)..('[new|current|addon]'):color(53)..('- Check for new updates. Does not update.'):color(8))
 		add_to_chat(8,(' update '):color(36)..('[new|current|addon]'):color(53)..('- Download new updates.'):color(8))
 		add_to_chat(8,('   - Optionally specify which to check/update:'):color(8))
