@@ -80,13 +80,13 @@
             <8>Ah, your heart shines so bold - truly a treasure of gold!</8>
             <9>Ho ho, a friend so rare - you&apos;re beyond compare!</9>
         </flavor_text>
-        <food_wears_off>That boost is gone, my hungry friend - if you don't eat soon, your strength may end!</food_wears_off>
+        <food_wears_off>That boost is gone, my hungry friend - if you don&apos;t eat soon, your strength may end!</food_wears_off>
         <info>
             <description>Witty, rhyming, and slightly menacing.</description>
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>783d4e28f835be408748fc3cf35631785ee5ff19</sha>
+            <sha>b6a181b43238c4398a3a33c0df97399852b06a4f</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
@@ -103,6 +103,8 @@
         <reminder_moglophone>Another Moglophone, ready to chime - don&apos;t waste it this time!</reminder_moglophone>
         <reminder_plate>Your Ra&apos;Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
         <reraise_check>No Reraise? Oh, what a blunder - when you fall, you&apos;ll stay down under!</reraise_check>
+		<reraise_wears_off>Your Reraise spell has slipped away - fall now, and you're there to stay!</reraise_wears_off>
+		<signet_wears_off>Oh ho ho! Your ${signet} is through - now what, adventurer? What will you do?</signet_wears_off>
         <sparkolade_reminder>Hoarding Sparkolades, are we now? Use them up, or take a bow!</sparkolade_reminder>
         <sublimation_charged>Sublimation&apos;s charge is complete - now, unleash its feat!</sublimation_charged>
         <vorseal_reminder>Oh ho ho! Your Vorseal effect is running low, about 10 minutes left, didn&apos;t you know?</vorseal_reminder>
