@@ -39,7 +39,7 @@
             <introduction>I&apos;m Lefty! I&apos;m your Hamburger Helper!</introduction>
             <name>Lefty</name>
             <name_color>39</name_color>
-            <sha>0a8842f053a205c281fa4e1c4ad6e0fa254b0a66</sha>
+            <sha>57f8e24818dd0fe4157d9622544d8a68dab9f486</sha>
             <text_color>1</text_color>
             <type>Special Guest</type>
         </info>
@@ -56,6 +56,8 @@
         <reminder_moglophone>Ding ding! Another Moglophone should be available now! Time to stir things up and get cooking on something big!</reminder_moglophone>
         <reminder_plate>Whoa, would ya look at that? Another Shiny Ra&apos;Kaznarian Plate is up for grabs! That thing&apos;s shinier than a freshly buttered noodle!</reminder_plate>
         <reraise_check>Uh-oh... You don&apos;t have a reraise on. That&apos;s like cooking without seasoning - dangerous and kinda sad!</reraise_check>
+		<reraise_wears_off>Welp, your Reraise just noodled its way outta here - better stir up another before you get sauced!</reraise_wears_off>
+		<signet_wears_off>Oh no, your ${signet} just slipped right off the plate! Better scoop up another!</signet_wears_off>
         <sparkolade_reminder>Psst! Don&apos;t forget to spend your Sparkolades! Sitting on &apos;em too long is like leaving the Helper in the box - why wait when you could be winning?</sparkolade_reminder>
         <sublimation_charged>Boop boop! Sublimation is fully charged and ready to roll! Just like a skillet sizzling with beef and my signature magic!</sublimation_charged>
         <vorseal_reminder>Hey, tick-tock! You&apos;ve got about 10 minutes left on your Vorseal effect. That&apos;s just enough time to whip up a hearty, home-cooked win!</vorseal_reminder>
