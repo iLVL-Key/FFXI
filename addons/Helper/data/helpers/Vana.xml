@@ -46,7 +46,7 @@
             <introduction>I am Vana, your personal Helper.</introduction>
             <name>Vana</name>
             <name_color>39</name_color>
-            <sha>12a97d49bb1f81c99e7a55a664ef6c31af92a463</sha>
+            <sha>14d7eb75dec79c2c9f036a0c1dbec909e6d3642c</sha>
             <text_color>220</text_color>
             <type>NPC</type>
         </info>
@@ -63,6 +63,8 @@
         <reminder_moglophone>Another Moglophone should be available now.</reminder_moglophone>
         <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate should be available now.</reminder_plate>
         <reraise_check>You do not have Reraise on.</reraise_check>
+		<reraise_wears_off>Your Reraise effect has worn off.</reraise_wears_off>
+		<signet_wears_off>Your ${signet} effect has worn off.</signet_wears_off>
         <sparkolade_reminder>Don&apos;t forget to spend your Sparkolades.</sparkolade_reminder>
         <sublimation_charged>Sublimation is now fully charged and ready to use.</sublimation_charged>
         <vorseal_reminder>You have about 10 minutes left on your Vorseal effect.</vorseal_reminder>
