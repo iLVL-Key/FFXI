@@ -81,7 +81,7 @@
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
             <name_color>259</name_color>
-            <sha>393831bb4952013efaa807ed2571c586aca1c47e</sha>
+            <sha>92792ee5f13360237d2dc7c041a9ae4ae751068f</sha>
             <text_color>262</text_color>
             <type>NPC</type>
         </info>
@@ -98,6 +98,8 @@
         <reminder_moglophone>Kupo-kwee! Another Moglophone has managed to materialize!</reminder_moglophone>
         <reminder_plate>Kupo-po! Your Shiny Ra&apos;Kaznarian Plate is polished and prepared!</reminder_plate>
         <reraise_check>Kupo-po! You&apos;re prancing perilously without proper protective precautions! No Reraise, no revival, kupo!</reraise_check>
+		<reraise_wears_off>Kupo-kupo! Your reliable Reraise has rudely run off - reapply before you regret it!</reraise_wears_off>
+		<signet_wears_off>Kupo-po! Your beautiful ${signet} has blinked away - best bounce to a guard before it's too late!</signet_wears_off>
         <sparkolade_reminder>Kupo-ho! Sparkolades are stacking sky-high - so be sure to spend them swiftly, savvy shopper!</sparkolade_reminder>
         <sublimation_charged>Sublimation is fully charged and ready, kupo!</sublimation_charged>
         <vorseal_reminder>Only about 10 minutes left on your Vorseal effect, so stay sharp, kupo!</vorseal_reminder>
