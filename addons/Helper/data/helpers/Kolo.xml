@@ -46,7 +46,7 @@
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
-            <sha>03006e32a6daebe3728687c8dee961ee82bdbd5d</sha>
+            <sha>340cf1f8e373d5baceb18584b3d5d4f4c54547da</sha>
             <text_color>220</text_color>
             <type>Player</type>
         </info>
@@ -63,6 +63,8 @@
         <reminder_moglophone>HOLY SHIT, another Moglophone is ready! LET&apos;S GOOOOO!</reminder_moglophone>
         <reminder_plate>OH SHIT, another Shiny Ra&apos;Kaznarian Plate is ready! Snatch that bad boy up!</reminder_plate>
         <reraise_check>YO, YOU DON&apos;T GOT RERAISE ON. YOU TRYNA DIE FOR REAL OR WHAT?!</reraise_check>
+		<reraise_wears_off>Your Reraise is gone. FUCK. I hope you live in constant fear.</reraise_wears_off>
+		<signet_wears_off>Your ${signet} is gone! Wow, amazing! Just fantastic! LOVE THAT!</signet_wears_off>
         <sparkolade_reminder>PROFIT, BABY! Spend those Sparkolades!</sparkolade_reminder>
         <sublimation_charged>Awww shiiit. Sublimation is ready to use.</sublimation_charged>
         <vorseal_reminder>OH SHIT! You got maybe 10 minutes left on your Vorseal!</vorseal_reminder>
