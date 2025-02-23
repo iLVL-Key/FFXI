@@ -80,7 +80,7 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
   - Sub-settings for turning tracking off for each individually.
   - Sub-settings for adjusting the amount of time between additional repeat reminder after the first for each individually.
 - `notifications` - Alerts you about certain events happening.
-  - Alerts for Capped Job Points, Capped Merit Points, Mireu popping, Mog Locker lease expiring, Sublimation fully charged, and Vorseal wearing.
+  - Alerts for Capped Job Points, Capped Merit Points, Mireu popping, Mog Locker lease expiring, Reraise wearing off, Signet (includes all "region" buffs) wearing off, Sublimation fully charged, and Vorseal wearing.
   - Sub-settings for turning alerts off for each individually.
 - `party_announcements` - Alerts for any party structure updates.
   - Alerts for party/alliance members joining or leaving, parties joining or leaving alliance, and you becoming party or alliance leader.
@@ -99,6 +99,11 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
   - `voices` - Randomly selects an active Helper to use for each alert.
 
 ## Changelog
+
+Version 1.7
+- Added `reraise_wears_off` notification.
+- Added `signet_wears_off` notification. Applies to Signet, Sanction, Sigil, and Ionis.
+- Fixed Food wearing off notification from playing when you die.
 
 Version 1.6
 - Added Food wearing off notification.
