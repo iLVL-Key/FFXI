@@ -2022,7 +2022,6 @@ win.register_event('lose buff', function(buff)
 		
 			for _, buffId in ipairs(buffs) do
 				if regionBuffs[buffId] then
-					print(buffId)
 					return true
 				end
 			end
