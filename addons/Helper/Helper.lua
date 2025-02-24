@@ -260,64 +260,8 @@ vana = {
 	vorseal_wearing = "You have about 10 minutes left on your Vorseal effect.",
 }
 
-mayakov = {
-    info = {
-        name = "Mayakov",
-        introduction = "Ah, yeth, another performer gratheth the thtage! I, Mayakov, thall enthure your every movement ith a maaathterpiethe!",
-        name_color = 211, -- A vibrant, theatrical pink
-        text_color = 228, -- A golden spotlight-worthy hue
-        version = 1.0,
-        sha = nil,
-    },
-    flavor_text = {
-        "Every battle ith a performanthe, and darling, you thimply *mutht* thine!",
-        "Your footwork - *atrothiouth*! We mutht rehearthe, rehearthe, rehearthe!",
-        "Ah, your movementh are becoming *le magnifique!* Keep it up, yeth!",
-        "A warrior without rhythm ith like a danther without thoul - thimply unthinkable!",
-        "One doeth not *walk* through Vana'diel! One glideth, one pirouetteth, one *commandth* the thpotlight!",
-        "Tsk tsk, thuch thlow reactionth! You mutht move with the grathe of a *Danther*!",
-        "Did you *thee* that? A movement tho elegant, tho divine, it nearly brought a tear to my eye~!",
-        "Life ith a thage, darling, and you are the thtar! Now, act like it!",
-        "If your dodging were any thlower, I'd have to call it a *tragic* performanthe!",
-        "Ah-ha! Yeth, that wath *exquithite!* You are learning, my thtunning pupil!",
-        "A well-timed ability ith no different than a perfectly landed path de deux - divine, flawleth, utterly *captivating*!",
-        "No, no, NO! Too rigid, too thtiff! You mutht learn to flow like a Riverrrne breeeze!",
-        "A victory without flair ith no victory at all! Now, add a dramatic flourith, th'il vous plait!",
-        "Oh-ho! That execution! That flair! You *do* have the makingth of a true thtar!",
-        "A true performer never falterth, never fumblth, and alwayth thmilth through the thweat!",
-        "Even in battle, one mutht think of poithe, eleganthe, *grathe*! I *will* thculpt you into a maaatherpiethe!",
-        "Your lockthtyle? Hm. Acceptable. But could it be more... *dramatic*? Yeth, yeth, I think it could!",
-        "Oh-ho-ho! You thtrike with thuch flair! It ith ath if the heaventh themthelveth applaud you!",
-        "Remember, darling, it'th not *what* you do, it'th *how* you do it - with grathe, with drama, with pathion~!",
-        "Even in the heat of battle, a true performer never lotheth their compothure!",
-    },
-    capped_job_points = "Ah-ha! Your thkillth have reached their peak! A true maaatherpiethe in motion!",
-    capped_merit_points = "Oh-ho-ho! Your potential ith pothitively overflowing! Thuperb, thplendid, *exquithite*!",
-    party_low_mp = "Oh, tragedy! A performer without energy! Thomeone, *pleathe*, grant ${member} a ${refresh} before they *collapthe*!",
-    sublimation_charged = "Ah-ha! Your energy ith *priiiimed* for a grand performanthe! Now, dazzle uth!",
-    ability_ready = "Darling, your ${ability} ith ready! Now, deliver a *thow-thtopping* performanthe!",
-    mireu_popped = "Oh-ho! Mireu hath entered the thtage in ${zone}! The drama! The exthitement!",
-    member_joined_party = "*Ah!* A new catht member hath arrived! Welcome, welcome, ${member}, to our *dazzling* production!",
-    member_left_party = "A bitterthweet farewell! ${member} hath left the thtage. We *thall* meet again, I am *thure* of it!",
-    member_joined_alliance = "Ah-ha! Our enthemble growth! Welcome, ${member}, to the grandetht of productionth!",
-    member_left_alliance = "Alath, ${member} hath taken their final bow and left the allianthe!",
-    you_joined_party = "And thhheene! You have entered the thtage of battle - prepare to *captivate*!",
-    you_left_party = "You have exited the thotlight... but a performer'th journey never truly endth!",
-    you_joined_alliance = "Ah-ha! The curtain ritheth on a new act - you have joined an allianthe, yeth!",
-    you_left_alliance = "A dramatic exit, yeth, but all performantheth mutht end... for now!",
-    your_party_joined_alliance = "Marvelouth! Your troupe hath joined a larger enthemble - let the thectacle begin!",
-    your_party_left_alliance = "Ah, a tholo performanthe onthe more! Let uth make it a maaagnifique one!",
-    other_party_joined_alliance = "Oh-ho! Another group enterth the thtage - our production growth ever more *divine*!",
-    other_party_left_alliance = "Tragic! That party hath exited the performanthe! But fret not - the thow mutht go on!",
-    you_are_now_alliance_leader = "Ah-ha! You are now the *maethtro* of thith grand thymphony! Lead with flair, darling!",
-    you_are_now_party_leader = "Oh-ho! You have been granted the *thacred* role of party leader! Command with pathion~!",
-    vorseal_reminder = "Oh dear, your Vortheal'th light ith fading! A performer *mutht* have their thtage illuminated at all timeth!",
-}
-
-
 settings = config.load(defaults)
 helpers.vana = config.load('data/helpers/Vana.xml', vana)
-helpers.mayakov = config.load('data/helpers/Mayakov.xml', mayakov)
 
 local current_helper = string.lower(settings.options.current_helper)
 local c_name
