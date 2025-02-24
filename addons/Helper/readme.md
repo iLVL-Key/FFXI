@@ -102,6 +102,10 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 1.8.1
+- Fixed Reraise wearing off message displaying incorrectly.
+- Fixed error message when logging out to character select.
+
 Version 1.8
 - Added `random_helper_on_load` option to select a random Helper to use each time addon loads.
 - Added `random` command. Select a random Helper to use.
