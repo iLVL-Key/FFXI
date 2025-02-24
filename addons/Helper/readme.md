@@ -53,7 +53,8 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `unload/u <file_name>` - Unload a Helper file from the addon.
   - Unloaded Helper files are not deleted but are set to disabled.
 - `list` - List currently loaded Helpers.
-- `voices/v` - Randomly selects an active Helper to use for each alert.
+- `random/r` - Selects a random Helper to use.
+- `voices/v` - Selects a random Helper to use for EACH alert/notification.
 - `check [new|current|addon]` - Check for new updates. Does not update.
 - `update [new|current|addon]` - Download new updates.
 - `help` - Display a list of commands and addon info.
@@ -85,6 +86,7 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 - `party_announcements` - Alerts for any party structure updates.
   - Alerts for party/alliance members joining or leaving, parties joining or leaving alliance, and you becoming party or alliance leader.
   - Sub-settings for turning alerts off for each individually.
+- `random_helper_on_load` - Selects a random Helper to use each time addon loads.
 - `reraise_check` - Alert letting you know that you are missing Reraise.
 - `reraise_check_delay_minutes` - Amount of time between each Reraise check.
 - `reraise_check_not_in_town` - Will not alert you of Reraise missing if in a town zone.
@@ -99,6 +101,11 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
   - `voices` - Randomly selects an active Helper to use for each alert.
 
 ## Changelog
+
+Version 1.8
+- Added `random_helper_on_load` option to select a random Helper to use each time addon loads.
+- Added `random` command. Select a random Helper to use.
+- Fixed Reraise wearing off notification set to wrong buff (Drown).
 
 Version 1.7
 - Added `reraise_wears_off` notification.
