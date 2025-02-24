@@ -36,14 +36,20 @@ require 'chat'
 math.randomseed(os.time())
 
 local win = {
-	get_player = windower.ffxi.get_player,
-	get_party = windower.ffxi.get_party,
-	add_to_chat = windower.add_to_chat,
-	get_info = windower.ffxi.get_info,
-	register_event = windower.register_event,
-	file_exists = windower.file_exists,
 	addon_path = windower.addon_path,
+	add_to_chat = windower.add_to_chat,
+	create_dir = windower.create_dir,
+	dir_exists = windower.dir_exists,
+	file_exists = windower.file_exists,
+	get_ability_recasts = windower.ffxi.get_ability_recasts,
+	get_info = windower.ffxi.get_info,
+	get_key_items = windower.ffxi.get_key_items,
+	get_party = windower.ffxi.get_party,
+	get_position = windower.ffxi.get_position,
+	get_player = windower.ffxi.get_player,
+	register_event = windower.register_event,
 	play_sound = windower.play_sound,
+	send_command = windower.send_command,
 }
 
 defaults = {
@@ -906,7 +912,7 @@ local function downloadAddon(github_addon_sha)
 	updateAddonSHA(github_addon_sha)
 
 	win.add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
-	windower.send_command('lua r helper')
+	win.send_command('lua r helper')
 
 end
 
@@ -962,7 +968,7 @@ local function downloadNewHelpers()
 	for name, github_helper_info in pairs(github_helper_shas) do
 		local file_name = github_helper_info.file_name
 		name = string.lower(name)
-		local file_path = windower.win.addon_path .. 'data/helpers/' .. name .. '.xml'
+		local file_path = win.addon_path .. 'data/helpers/' .. name .. '.xml'
 
 		--Check if the Helper file exists
 		if not win.file_exists(file_path) then
@@ -984,11 +990,11 @@ end
 
 --Check for missing sound files
 local function checkAndDownloadSounds()
-	local sound_folder = windower.win.addon_path .. "data/sounds/"
+	local sound_folder = win.addon_path .. "data/sounds/"
 	
 	--Ensure the data/sounds folder exists
-	if not windower.dir_exists(sound_folder) then
-		windower.create_dir(sound_folder)
+	if not win.dir_exists(sound_folder) then
+		win.create_dir(sound_folder)
 	end
 
 	--List of required sound files
@@ -1011,7 +1017,7 @@ local function checkAndDownloadSounds()
 		local file_path = sound_folder .. filename
 
 		--If the file does not exist, download it
-		if not windower.win.file_exists(file_path) then
+		if not win.file_exists(file_path) then
 
 			local download_url = base_url .. filename
 			local curl_command = string.format('start /B curl -s -L -o "%s" "%s"', file_path, download_url)
@@ -1137,7 +1143,7 @@ local function haveKeyItem(key_item_id)
 	end
 
 	--Get the player's key items
-	local key_items = windower.ffxi.get_key_items()
+	local key_items = win.get_key_items()
 
 	--Check if the given key_item_id exists in the player's key items
 	for _, id in ipairs(key_items) do
@@ -1439,7 +1445,7 @@ end
 --Update recast timers
 local function updateRecasts()
 
-	local ability_recast = windower.ffxi.get_ability_recasts()
+	local ability_recast = win.get_ability_recasts()
 
 	recast.sp1 = ability_recast[0] and math.floor(ability_recast[0]) or 0
 	recast.sp2 = ability_recast[254] and math.floor(ability_recast[254]) or 0
@@ -2177,7 +2183,7 @@ end)
 
 win.register_event('prerender', function()
 
-	local pos = windower.ffxi.get_position()
+	local pos = win.get_position()
 	local logged_in = win.get_info().logged_in
 	local player = win.get_player()
 
