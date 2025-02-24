@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.7'
+_addon.version = '1.8'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -143,6 +143,7 @@ defaults = {
 			you_are_now_alliance_leader = true,
 			you_are_now_party_leader = true,
 		},
+		random_helper_on_load = true,
 		reraise_check = true,
 		reraise_check_delay_minutes = 60,
 		reraise_check_not_in_town = true,
@@ -628,6 +629,19 @@ local function initialize()
 		end
 	end
 
+	--Select a random Helper if the option is enabled
+	if settings.options.random_helper_on_load then
+		local active_helpers = {}
+		for name, enabled in pairs(helpers_loaded) do
+			if enabled then
+				table.insert(active_helpers, name)
+			end
+		end
+		current_helper = active_helpers[math.random(#active_helpers)]
+		settings.options.current_helper = current_helper
+		settings:save('all')
+	end
+
 	--Check if we've passed the Sparkolade reminder timestamp while logged out
 	coroutine.schedule(function()
 		checkSparkoladeReminder()
@@ -657,7 +671,7 @@ local function getGitHubHelpers()
 
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/helpers"
 
-	-- Use curl to fetch GitHub API response directly into a Lua variable
+	--Use curl to fetch GitHub API response directly into a Lua variable
 	local response = io.popen(string.format('curl -s -L -H "User-Agent: Windower-Helper-Addon" "%s"', request_url)):read("*all")
 
 	-- Ensure response was received
@@ -665,7 +679,7 @@ local function getGitHubHelpers()
 		return nil
 	end
 
-	-- Extract file_names using Lua pattern matching
+	--Extract file_names using Lua pattern matching
 	local github_helpers = {}
 	for file_name in response:gmatch('"name"%s*:%s*"([^"]+%.xml)"') do
 		local name = file_name:gsub("%.xml$", "")
@@ -695,7 +709,7 @@ local function checkForNewHelpers()
 		end
 	end
 
-	-- Notify the user of new Helpers
+	--Notify the user of new Helpers
 	if #new_helpers > 0 then
 		add_to_chat(8,('[Helper] '):color(220)..('New %s available: '):color(6):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(new_helpers) do
@@ -713,15 +727,15 @@ local function getGitHubAddonSHA()
 
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/Helper.lua"
 
-	-- Fetch GitHub API response directly into a Lua variable
+	--Fetch GitHub API response directly into a Lua variable
 	local response = io.popen(string.format('curl -s -L -H "User-Agent: Windower-Helper-Addon" "%s"', request_url)):read("*all")
 
-	-- Ensure response was received
+	--Ensure response was received
 	if not response or response == "" then
 		return nil
 	end
 
-	-- Extract SHA using Lua pattern matching
+	--Extract SHA using Lua pattern matching
 	local helper_sha = response:match('"sha"%s*:%s*"([^"]+)"')
 
 	return helper_sha or nil
@@ -731,7 +745,7 @@ end
 --Check for updates to the Helper addon
 local function checkForAddonUpdates()
 
-	-- Retrieve the latest SHA from GitHub
+	--Retrieve the latest SHA from GitHub
 	local github_addon_sha = getGitHubAddonSHA()
 
 	if not github_addon_sha then
@@ -739,10 +753,10 @@ local function checkForAddonUpdates()
 		return
 	end
 
-	-- Retrieve the locally stored SHA
+	--Retrieve the locally stored SHA
 	local local_addon_sha = addon_sha
 
-	-- Compare SHAs
+	--Compare SHAs
 	if local_addon_sha and local_addon_sha == github_addon_sha then
 		add_to_chat(8,('[Helper] '):color(220)..('No Helper addon update available.'):color(28))
 	else
@@ -757,22 +771,22 @@ local function updateHelperSHA(file_name, new_sha)
 
 	local filepath = addon_path .. "data/helpers/" .. file_name
 
-	-- Read XML file
+	--Read XML file
 	local file = io.open(filepath, "r")
 	if not file then return end
 	local content = file:read("*all")
 	file:close()
 
-	-- Check if SHA tag already exists
+	--Check if SHA tag already exists
 	if content:match("<sha>.-</sha>") then
-		-- Replace existing SHA
+		--Replace existing SHA
 		content = content:gsub("<sha>.-</sha>", "<sha>" .. new_sha .. "</sha>")
 	else
-		-- Insert new SHA tag inside <info>
+		--Insert new SHA tag inside <info>
 		content = content:gsub("(<info>.-)</info>", "%1\n    <sha>" .. new_sha .. "</sha>\n</info>")
 	end
 
-	-- Save updated XML
+	--Save updated XML
 	local name = string.lower(file_name:gsub("%.xml$", ""))
 	helpers[name].info.sha = new_sha
 	helpers[name]:save('all')
@@ -790,15 +804,15 @@ local function getGitHubHelperSHAs()
 
 	local request_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/helpers"
 
-	-- Fetch GitHub API response directly into a Lua variable
+	--Fetch GitHub API response directly into a Lua variable
 	local response = io.popen(string.format('curl -s -L -H "User-Agent: Windower-Helper-Addon" "%s"', request_url)):read("*all")
 
-	-- Ensure response was received
+	--Ensure response was received
 	if not response or response == "" then
 		return nil
 	end
 
-	-- Extract SHAs using Lua pattern matching
+	--Extract SHAs using Lua pattern matching
 	local github_helper_shas = {}
 	for file_name, sha in response:gmatch('"name"%s*:%s*"([^"]+%.xml)",.-"sha"%s*:%s*"([^"]+)"') do
 		local name = file_name:gsub("%.xml$", ""):lower()
@@ -824,12 +838,12 @@ local function checkForHelperUpdates()
 
 	local updated_helpers = {}
 
-	-- Loop through loaded Helpers and compare SHAs
+	--Loop through loaded Helpers and compare SHAs
 	for name, helper in pairs(helpers) do
 		local local_sha = helper.info and helper.info.sha
 		local github_sha = github_helper_shas[name].sha
 		
-		-- If SHA is different or missing locally, mark as updated
+		--If SHA is different or missing locally, mark as updated
 		if github_sha and (not local_sha or local_sha ~= github_sha) then
 			name = string.lower(name)
 			local helper_name = helpers[name].info.name
@@ -837,7 +851,7 @@ local function checkForHelperUpdates()
 		end
 	end
 
-	-- Notify the user about updates
+	--Notify the user about updates
 	if #updated_helpers > 0 then
 		add_to_chat(8,('[Helper] '):color(220)..('Updated %s available: '):color(6):format(#updated_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(updated_helpers) do
@@ -856,7 +870,7 @@ local function downloadHelper(file_name, github_helper_sha)
 	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/helpers/" .. file_name
 	local filepath = addon_path .. "data/helpers/" .. file_name
 
-	-- Download the file
+	--Download the file
 	local curl_command = string.format('curl -s -L -o "%s" "%s"', filepath, url)
 	os.execute(curl_command)
 
@@ -874,15 +888,15 @@ end
 --Download the latest version of Helper.lua from GitHub
 local function downloadAddon(github_addon_sha)
 
-	-- Define the download URL and destination path
+	--Define the download URL and destination path
 	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/Helper.lua"
 	local filepath = addon_path .. "Helper.lua"
 
-	-- Download the file
+	--Download the file
 	local curl_command = string.format('curl -s -L -o "%s" "%s"', filepath, url)
 	os.execute(curl_command)
 
-	-- Update the stored SHA after successful download
+	--Update the stored SHA after successful download
 	updateAddonSHA(github_addon_sha)
 
 	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
@@ -909,7 +923,7 @@ local function updateCurrentHelpers()
 		name = string.lower(name)
 		local local_helper_sha = helpers[name] and helpers[name].info and helpers[name].info.sha
 
-		-- Check if the Helper exists and has an outdated SHA or if local_helper_sha is nil
+		--Check if the Helper exists and has an outdated SHA or if local_helper_sha is nil
 		if not local_helper_sha or local_helper_sha ~= github_helper_sha then
 			downloadHelper(file_name, github_helper_sha)
 			table.insert(updated_helpers, file_name)
@@ -944,7 +958,7 @@ local function downloadNewHelpers()
 		name = string.lower(name)
 		local file_path = windower.addon_path .. 'data/helpers/' .. name .. '.xml'
 
-		-- Check if the Helper file exists
+		--Check if the Helper file exists
 		if not file_exists(file_path) then
 			downloadHelper(file_name, github_helper_info.sha)
 			table.insert(new_helpers, file_name)
@@ -1069,8 +1083,9 @@ end
 --Auto-check for updates
 local function checkForUpdates()
 
+	--Exit if neither auto-check nor auto-update is enabled
 	if first_run or (not auto_check_for_updates and not auto_update) then
-		return --Exit if neither auto-check nor auto-update is enabled
+		return
 	end
 
 	local current_time = os.time()
@@ -1191,8 +1206,8 @@ local function checkMogLockerReminder()
 	end
 
 	local current_time = os.time()
-	local one_week = 7 * 24 * 60 * 60  -- 7 days in seconds
-	local one_day = 24 * 60 * 60  -- 24 hours in seconds
+	local one_week = 7 * 24 * 60 * 60  --7 days in seconds
+	local one_day = 24 * 60 * 60  --24 hours in seconds
 
 	--Expiration is more than a week away, clear reminder timestamp
 	if timestamps.mog_locker_reminder ~= 0 and timestamps.mog_locker_expiration - current_time > one_week then
@@ -1287,11 +1302,12 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 	local packet = packets.parse('incoming', original)
 
+	--Menu/zone update packet
 	if id == 0x063 then
 
 		local player = get_player()
 
-		if player then -- on menu/zone update packet
+		if player then
 			limit_points = packet['Limit Points'] or limit_points
 			merit_points = packet['Merit Points'] or merit_points
 			max_merit_points = packet['Max Merit Points'] or max_merit_points
@@ -1300,7 +1316,8 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 			job_points = packet[job..' Job Points'] or job_points
 		end
 
-	elseif id == 0x02D then -- on kill packet
+	--Killed-a-thing packet
+	elseif id == 0x02D then
 
 		local msg = packet['Message']
 
@@ -1372,17 +1389,21 @@ end)
 --Introduce the Helper
 local function introduceHelper()
 
-	local selected = getHelper()
-	local introduction = helpers[selected.helper].info.introduction
+	local current = {
+		helper = current_helper,
+		name = helpers[current_helper].info.name,
+		c_name = helpers[current_helper].info.name_color,
+		c_text = helpers[current_helper].info.text_color,
+	}
 
-	if introduction then
-		add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(introduction):color(selected.c_text))
+	local introduction = helpers[current.helper].info.introduction
+
+	if voices then
+		add_to_chat(8,('[Helper] '):color(220)..('Current Helper: '):color(8)..(current.name):color(1)..(' (Voices Mode: '):color(8)..('On'):color(1)..(')'):color(8))
+	elseif introduction then
+		add_to_chat(current.c_text,('['..current.name..'] '):color(current.c_name)..(introduction):color(current.c_text))
 	else
-		if voices then
-			add_to_chat(8,('[Helper] '):color(220)..('Voices Mode: '):color(8)..('On'):color(1))
-		else
-			add_to_chat(8,('[Helper] '):color(220)..('Current Helper is set to '):color(8)..(capitalize(helpers[current_helper].name)):color(1)..('.'):color(8))
-		end
+		add_to_chat(8,('[Helper] '):color(220)..('Current Helper:'):color(8)..(capitalize(helpers[current_helper].name)):color(1)..('.'):color(8))
 	end
 
 end
@@ -1974,7 +1995,7 @@ register_event('lose buff', function(buff)
 		end
 
 	--Reraise
-	elseif buff == 133 and reraise_wears_off and alive then
+	elseif buff == 113 and reraise_wears_off and alive then
 
 		local selected = getHelper()
 		local text = helpers[selected.helper].reraise_wears_off
@@ -2323,11 +2344,7 @@ register_event('addon command',function(addcmd, ...)
 				c_name = helpers[current_helper].info.name_color
 				c_text = helpers[current_helper].info.text_color
 				settings:save('all')
-				if voices then
-					add_to_chat(8,('[Helper] '):color(220)..('Helper loaded: '):color(8)..(helper_name):color(1))
-				else
-					introduceHelper()
-				end
+				introduceHelper()
 			else
 				add_to_chat(8,('[Helper] '):color(220)..('File '):color(8)..('data/'..file_name):color(1)..(' does not exist.'):color(8))
 			end
@@ -2367,9 +2384,10 @@ register_event('addon command',function(addcmd, ...)
 			local helper_name = helpers[name].info.name or "Unknown"
 			local helper_type = helpers[name].info.type and helpers[name].info.type.." - " or "Unknown Type - "
 			local helper_description = helpers[name].info.description or "No description available."
+			local helper_creator = helpers[name].info.creator and " (Creator: "..helpers[name].info.creator..")" or ""
 			local c_name = helpers[name].info.name_color or 220
 			local c_text = helpers[name].info.text_color or 1
-			add_to_chat(8, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
+			add_to_chat(c_text, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
 		end
 
 	elseif addcmd == 'help' then
@@ -2392,6 +2410,7 @@ register_event('addon command',function(addcmd, ...)
 		local helper_name = helpers[current_helper].info.name and helpers[current_helper].info.name or "Unknown"
 		local helper_type = helpers[current_helper].info.type and helpers[current_helper].info.type.." - " or "Unknown Type - "
 		local helper_description = helpers[current_helper].info.description or "No description available."
+		local helper_creator = helpers[name].info.creator and " (Creator: "..helpers[name].info.creator..")" or ""
 		local c_name = helpers[current_helper].info.name_color or 220
 		local c_text = helpers[current_helper].info.text_color or 1
 		local next_sparkolade_reminder = getNextSparkoladeReminder()
@@ -2399,7 +2418,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
 		add_to_chat(8,(' Next Sparkolade reminder: ')..(next_sparkolade_reminder):color(1))
-		add_to_chat(8,voices and (' Voices Mode: '):color(8)..('On'):color(1) or (' ['..helper_name..'] '):color(c_name)..(helper_type..helper_description):color(c_text))
+		add_to_chat(8,voices and (' Voices Mode: '):color(8)..('On'):color(1) or (' ['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
 		add_to_chat(8,' ')
@@ -2410,7 +2429,8 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' unload/u '):color(36)..('<file_name> '):color(2)..('- Unload a Helper file from the addon.'):color(8))
 		add_to_chat(8,('   - Unloaded Helper files are not deleted but are removed from use by the addon.'):color(8))
 		add_to_chat(8,(' list '):color(36)..('- List currently loaded Helpers.'):color(8))
-		add_to_chat(8,(' voices/v '):color(36)..('- Randomly selects a Helper to use for EACH alert/notification.'):color(8))
+		add_to_chat(8,(' random/r '):color(36)..('- Selects a random Helper to use.'):color(8))
+		add_to_chat(8,(' voices/v '):color(36)..('- Selects a random Helper to use for EACH alert/notification.'):color(8))
 		add_to_chat(8,(' check '):color(36)..('[new|current|addon]'):color(53)..('- Check for new updates. Does not update.'):color(8))
 		add_to_chat(8,(' update '):color(36)..('[new|current|addon]'):color(53)..('- Download new updates.'):color(8))
 		add_to_chat(8,('   - Optionally specify which to check/update:'):color(8))
@@ -2474,6 +2494,26 @@ register_event('addon command',function(addcmd, ...)
 			end
 		else
 			updateAll()
+		end
+
+	elseif addcmd == "random" or addcmd == "r" then
+		local helper_list = {}
+		for name, enabled in pairs(helpers) do
+			if enabled and helpers[name].info then
+				table.insert(helper_list, name)
+			end
+		end
+		if #helper_list > 0 then
+			local random_helper = helper_list[math.random(1, #helper_list)]
+			settings.options.current_helper = random_helper
+			current_helper = random_helper
+			helper_name = helpers[current_helper].info.name
+			c_name = helpers[current_helper].info.name_color
+			c_text = helpers[current_helper].info.text_color
+			settings:save('all')
+			introduceHelper()
+		else
+			add_to_chat(8,('[Helper] '):color(220)..('No Helpers are currently loaded.'):color(8))
 		end
 
 	elseif addcmd == "voices" or addcmd == "voice" or addcmd == "v" then
