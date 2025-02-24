@@ -521,6 +521,21 @@ sets.impact = set_combine(sets.magic_accuracy, {
 	body="Twilight Cloak",
 })
 
+-- Dispelga (Daybreak)
+sets.dispelga = set_combine(sets.magic_accuracy, {
+	main="Daybreak",
+})
+
+-- Phalanx (Phalanx+)
+sets.phalanx = set_combine(sets.buff, {
+
+})
+
+-- Aquaveil (Aquaveil+)
+sets.aquaveil = set_combine(sets.buff, {
+
+})
+
 -- Holy Water (Holy Water+)
 sets.holy_water = {
 	neck="Nicander's Necklace",
@@ -605,7 +620,7 @@ end
 
 
 
-FileVersion = '14.6.2'
+FileVersion = '14.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1954,6 +1969,8 @@ function precast(spell)
 		equip(sets.Elemental)
 	elseif spell.english == 'Impact' then
 		equip(set_combine(sets.fast_cast, sets.impact))
+	elseif spell.english == 'Dispelga' then
+		equip(set_combine(sets.fast_cast, sets.dispelga))
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		equip(sets.fast_cast)
 	end
@@ -1976,10 +1993,8 @@ function midcast(spell)
 		end
 	elseif spell.english == 'Impact' then
 		equip(set_combine(sets.magic_accuracy, sets.impact))
-	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
-		equip(sets.elemental)
-	elseif spell.skill == 'Enfeebling Magic' then
-		equip(sets.enfeeble)
+	elseif spell.english == 'Dispelga' then
+		equip(set_combine(sets.magic_accuracy, sets.dispelga))
 	elseif spell.english == 'Refresh' then
 		equip(set_combine(sets.buff, sets.refresh))
 	elseif spell.english == 'Cursna' then
@@ -1988,8 +2003,16 @@ function midcast(spell)
 		equip(set_combine(sets.buff, sets.healing))
 	elseif string.find(spell.english,'Aspir') or string.find(spell.english,'Drain') then
 		equip(sets.aspir_drain)
-	elseif string.find(spell.english,'Absorb') then
+	elseif string.find(spell.english,'Absorb') or spell.english == 'Stun' or spell.english == 'Dispel' then
 		equip(sets.magic_accuracy)
+	elseif spell.english == 'Phalanx' then
+		equip(sets.phalanx)
+	elseif spell.english == 'Aquaveil' then
+		equip(sets.aquaveil)
+	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
+		equip(sets.elemental)
+	elseif spell.skill == 'Enfeebling Magic' then
+		equip(sets.enfeeble)
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
 	end
