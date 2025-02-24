@@ -36,14 +36,14 @@ require 'chat'
 math.randomseed(os.time())
 
 local win = {
-	get_player = windower.ffxi.get_player
-	get_party = windower.ffxi.get_party
-	add_to_chat = windower.add_to_chat
-	get_info = windower.ffxi.get_info
-	register_event = windower.register_event
-	file_exists = windower.file_exists
-	addon_path = windower.addon_path
-	play_sound = windower.play_sound
+	get_player = windower.ffxi.get_player,
+	get_party = windower.ffxi.get_party,
+	add_to_chat = windower.add_to_chat,
+	get_info = windower.ffxi.get_info,
+	register_event = windower.register_event,
+	file_exists = windower.file_exists,
+	addon_path = windower.addon_path,
+	play_sound = windower.play_sound,
 }
 
 defaults = {
