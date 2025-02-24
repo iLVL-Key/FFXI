@@ -150,7 +150,7 @@ defaults = {
 			you_are_now_alliance_leader = true,
 			you_are_now_party_leader = true,
 		},
-		random_helper_on_load = true,
+		random_helper_on_load = false,
 		reraise_check = true,
 		reraise_check_delay_minutes = 60,
 		reraise_check_not_in_town = true,
@@ -1175,13 +1175,13 @@ local function checkKIReminderTimestamps()
 			--We just used the KI
 			if have_ki and not haveKeyItem(id) then
 				have_key_item[key_item] = false
-				settings:save("all")
+				settings:save('all')
 				saveReminderTimestamp(key_item) --Set the reminder time for 20 hours from now
 
 			--We just received the KI again
 			elseif not have_ki and haveKeyItem(id) then
 				have_key_item[key_item] = true
-				settings:save("all")
+				settings:save('all')
 
 			--We do not yet have the KI
 			elseif not have_ki and not haveKeyItem(id) then
