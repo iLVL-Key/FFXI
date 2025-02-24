@@ -494,6 +494,11 @@ Version 1.0 BETA-1
  
 <summary>GEO</summary>
 
+Version 14.7
+- Added Phalanx and Aquaveil sets
+- Added Stun and Dispel using Magic Accuracy set.
+- Added Dispelga support.
+
 Verison 14.6.2
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
