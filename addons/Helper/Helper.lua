@@ -280,7 +280,7 @@ local options = {
 	signet_wears_off = settings.options.notifications.signet_wears_off,
 	sound_effects = settings.options.sound_effects,
 	sparkolade_reminder = settings.options.sparkolade_reminder,
-	sparkolade_reminder_day = settings.options.sparkolade_reminder_time,
+	sparkolade_reminder_day = settings.options.sparkolade_reminder_day,
 	sparkolade_reminder_time = settings.options.sparkolade_reminder_time,
 	sublimation_charged = settings.options.notifications.sublimation_charged,
 	vorseal_wearing = settings.options.notifications.vorseal_wearing,
@@ -466,7 +466,7 @@ local function setSparkoladeReminderTimestamp()
 		saturday = 7, sat = 7, sa = 7,
 	}
 
-	-- Get user-configured day and time, default to "Monday 12:00"
+	-- Get user-configured day and time, default to "Saturday 12:00"
 	local day_input = (options.sparkolade_reminder_day or "Saturday"):lower()
 	local time_input = tonumber(options.sparkolade_reminder_time) or 1200
 
