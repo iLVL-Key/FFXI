@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.8.2'
+_addon.version = '1.8.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -2428,7 +2428,7 @@ win.register_event('addon command',function(addcmd, ...)
 		local helper_name = helpers[current_helper].info.name and helpers[current_helper].info.name or "Unknown"
 		local helper_type = helpers[current_helper].info.type and helpers[current_helper].info.type.." - " or "Unknown Type - "
 		local helper_description = helpers[current_helper].info.description or "No description available."
-		local helper_creator = helpers[name].info.creator and " (Creator: "..helpers[name].info.creator..")" or ""
+		local helper_creator = helpers[current_helper].info.creator and " (Creator: "..helpers[current_helper].info.creator..")" or ""
 		local c_name = helpers[current_helper].info.name_color or 220
 		local c_text = helpers[current_helper].info.text_color or 1
 		local next_sparkolade_reminder = getNextSparkoladeReminder()
