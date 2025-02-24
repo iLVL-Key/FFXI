@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.8.3'
+_addon.version = '1.8.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -1252,21 +1252,6 @@ local function checkMogLockerReminder()
 	end
 end
 
---Check if we have reraise active
-local function reraiseActive()
-
-	local buffs = win.get_player().buffs
-
-	for _, buffId in ipairs(buffs) do
-		if buffId == 113 then
-			return true
-		end
-	end
-
-	return false
-
-end
-
 --Check if the player is in a town zone
 local function isInTownZone()
 
@@ -2028,8 +2013,26 @@ win.register_event('lose buff', function(buff)
 
 		end
 
-		--Signet, Sanction, Sigil, Ionis
+	--Signet, Sanction, Sigil, Ionis
 	elseif (buff == 253 or buff == 256 or buff == 268 or buff == 512) and options.signet_wears_off then
+
+		local function regionBuffActive()
+			local buffs = windower.ffxi.get_player().buffs
+			local regionBuffs = { [253] = true, [256] = true, [268] = true, [512] = true }
+		
+			for _, buffId in ipairs(buffs) do
+				if regionBuffs[buffId] then
+					print(buffId)
+					return true
+				end
+			end
+		
+			return false
+		end
+
+		if regionBuffActive() then
+			return
+		end
 
 		local selected = getHelper()
 		local text = helpers[selected.helper].signet_wears_off
@@ -2324,6 +2327,17 @@ win.register_event('prerender', function()
 
 			elseif countdowns.reraise == 0 then
 				countdowns.reraise = options.reraise_check_delay_minutes
+
+				--Check if we have reraise active
+				local function reraiseActive()
+					local buffs = win.get_player().buffs
+					for _, buffId in ipairs(buffs) do
+						if buffId == 113 then
+							return true
+						end
+					end
+					return false
+				end
 
 				--Don't inform if in town
 				if not reraiseActive() and (not options.reraise_check_not_in_town or (options.reraise_check_not_in_town and not isInTownZone())) then
