@@ -102,6 +102,10 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 1.8.2
+- Fixed Auto Check and Auto Update from not actually doing either of those things.
+- Fixed number of overall local variables. Condensed a lot of individual variables into tables.
+
 Version 1.8.1
 - Fixed Reraise wearing off message displaying incorrectly.
 - Fixed error message when logging out to character select.
