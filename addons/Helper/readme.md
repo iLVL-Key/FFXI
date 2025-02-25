@@ -102,6 +102,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 1.8.5
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+
 Version 1.8.4
 - Fixed Signet/Sanction/Sigil/Ionis wearing off notification playing when switching from one to another.
 
