@@ -172,33 +172,35 @@ inst = {
 }
 
 --  General Notifications  --
-ReraiseReminder	=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
-Noti3000TP		=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
-NotiTrade		=	'On'	--[On/Off]	Displays a notification when someone trades you.
-NotiInvite		=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
-NotiSneak		=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
-NotiInvis		=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
-NotiReraise		=	'On'	--[On/Off]	Displays a notification when reraise wears off.
-NotiFood		=	'On'	--[On/Off]	Displays a notification when food wears off.
-NotiLowMP		=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
-NotiLowHP		=	'On'	--[On/Off]	Displays a notification when HP is low.
-NotiDamage		=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-NotiTime		=	'On'	--[On/Off]	Displays a notification for time remaining notices.
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
+NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
+NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
+NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
+NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
+NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
+NotiSignet			=	'On'	--[On/Off]	Displays a notification when Signet/Sanction/Sigil/Ionis wears off.
+NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
+NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
+NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
+NotiVorseal			=	'On'	--[On/Off]	Displays a notification when Vorseal wears off.
 
 -- Debuff Notifications --
-NotiDoom			=	'On'	--[On/Off]	Displays a notification when you are doomed.
+NotiAmnesia			=	'On'	--[On/Off]	Displays a notification when you have amnesia.
 NotiCharm			=	'On'	--[On/Off]	Displays a notification when you are charmed/animated.
-NotiTerror			=	'On'	--[On/Off]	Displays a notification when you are terrorized.
+NotiCurse			=	'On'	--[On/Off]	Displays a notification when you are cursed/haunted/zombied.
+NotiDoom			=	'On'	--[On/Off]	Displays a notification when you are doomed.
+NotiEncumbrance		=	'On'	--[On/Off]	Displays a notification when you are encumbered.
+NotiParalysis		=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
 NotiPetrification	=	'On'	--[On/Off]	Displays a notification when you are petrified.
+NotiPlague			=	'On'	--[On/Off]	Displays a notification when you are plagued.
+NotiSilence			=	'On'	--[On/Off]	Displays a notification when you are silenced/muted.
 NotiSleep			=	'On'	--[On/Off]	Displays a notification when you are slept.
 NotiStun			=	'On'	--[On/Off]	Displays a notification when you are stunned.
-NotiSilence			=	'On'	--[On/Off]	Displays a notification when you are silenced/muted.
-NotiParalysis		=	'On'	--[On/Off]	Displays a notification when you are paralyzed.
-NotiPlague			=	'On'	--[On/Off]	Displays a notification when you are plagued.
-NotiCurse			=	'On'	--[On/Off]	Displays a notification when you are cursed/haunted/zombied.
-NotiAmnesia			=	'On'	--[On/Off]	Displays a notification when you have amnesia.
 NotiTaint			=	'On'	--[On/Off]	Displays a notification when you are tainted.
-NotiEncumbrance		=	'On'	--[On/Off]	Displays a notification when you are encumbered.
+NotiTerror			=	'On'	--[On/Off]	Displays a notification when you are terrorized.
 
 -------------------------------------------
 --           ADVANCED OPTIONS            --
@@ -818,7 +820,7 @@ end
 
 
 
-FileVersion = '1.0.3'
+FileVersion = '1.0.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3497,7 +3499,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti:text('«« Reraise Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 602 and string.find(world.area,'Escha') then --Vorseal
+	elseif buff == 602 and string.find(world.area,'Escha') and NotiVorseal == 'On' then --Vorseal
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
 		end
@@ -3505,7 +3507,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti:text('«« Vorseal Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 253 then --Signet
+	elseif buff == 253 and NotiSignet == 'On' then --Signet
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
 		end
@@ -3513,7 +3515,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti:text('«« Signet Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 256 then --Sanction
+	elseif buff == 256 and NotiSignet == 'On' then --Sanction
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
 		end
@@ -3521,7 +3523,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti:text('«« Sanction Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 268 then --Sigil
+	elseif buff == 268 and NotiSignet == 'On' then --Sigil
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
 		end
@@ -3529,7 +3531,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti:text('«« Sigil Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 512 then --Ionis
+	elseif buff == 512 and NotiSignet == 'On' then --Ionis
 		if AlertSounds == 'On' then
 			play_sound(Notification_Bad)
 		end
