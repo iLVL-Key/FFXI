@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '3.0'
+_addon.version = '3.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -543,12 +543,12 @@ register_event('addon command',function(cmd, ...)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_disable_delay = sub_cmd
 				after_disable_delay = sub_cmd
-				settings:save('all')
+				settings:save()
 				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..(after_disable_delay..' seconds'):color(1)..('.'):color(8))
 			elseif sub_cmd == 0 then
 				settings.options.after_disable_delay = 0
 				after_disable_delay = 0
-				settings:save('all')
+				settings:save()
 				add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Disable Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
@@ -565,12 +565,12 @@ register_event('addon command',function(cmd, ...)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_job_change_delay = sub_cmd
 				after_job_change_delay = sub_cmd
-				settings:save('all')
+				settings:save()
 				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..(after_job_change_delay..' seconds'):color(1)..('.'):color(8))
 			elseif sub_cmd == 0 then
 				settings.options.after_job_change_delay = 0
 				after_job_change_delay = 0
-				settings:save('all')
+				settings:save()
 				add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Job Change Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
@@ -587,12 +587,12 @@ register_event('addon command',function(cmd, ...)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_zone_delay = sub_cmd
 				after_zone_delay = sub_cmd
-				settings:save('all')
+				settings:save()
 				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..(after_zone_delay..' seconds'):color(1)..('.'):color(8))
 			elseif sub_cmd == 0 then
 				settings.options.after_zone_delay = 0
 				after_zone_delay = 0
-				settings:save('all')
+				settings:save()
 				add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is now '):color(8)..('OFF'):color(1)..('.'):color(8))
 			else
 				add_to_chat(8,('[Vanity] '):color(220)..('Please select a Zone Delay between '):color(8)..('1'):color(1)..(' and '):color(8)..('20'):color(1)..('.'):color(8))
