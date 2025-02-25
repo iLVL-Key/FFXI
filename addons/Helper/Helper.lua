@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '1.8.4'
+_addon.version = '1.8.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -1260,6 +1260,11 @@ local function isInTownZone()
 		'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
 		}
 
+	--If in a mog house, return true (mostly just for Al Zahbi MH)
+	if win.get_info().mog_house then
+		return true
+	end
+
 	for _, town in ipairs(town_zones) do
 		if current_zone == town then
 			return true
@@ -2338,7 +2343,7 @@ win.register_event('prerender', function()
 					return false
 				end
 
-				--Don't inform if in town
+				--Only inform if reraise is not active and we are not in town
 				if not reraiseActive() and (not options.reraise_check_not_in_town or (options.reraise_check_not_in_town and not isInTownZone())) then
 					win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(reraise_text):color(selected.c_text))
 
@@ -2400,7 +2405,7 @@ win.register_event('addon command',function(addcmd, ...)
 				win.add_to_chat(8,('[Helper] '):color(220)..(capitalize(helper_name)):color(1)..(' is not currently loaded.'):color(8))
 			end
 		else
-			win.add_to_chat(8,('[Helper] '):color(220)..('Please provide the name of a Helper to be unloaded.'):color(8))
+			win.add_to_chat(8,('[Helper] '):color(220)..('Please provide a Helper name to be unloaded.'):color(8))
 		end
 
 	elseif addcmd == 'list' then
