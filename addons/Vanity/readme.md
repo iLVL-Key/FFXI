@@ -53,6 +53,10 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 - Order does not matter, for example {town:1,2}{combat:3,4} is the same as {combat:4,3}{town:2,1}.
 
 ## Changelog
+
+Version 3.0.1
+- Fixed an issue with using the in-game commands to change disable/job change/zone timing settings which would then delete all per-character lockstyles. This change now makes it so changing those settings with the in-game commands will be saved per-character instead.
+
 Version 3.0
 - Overhauled lockstyle conditions. No longer just Combat and Town.
 - Added new Zone condition. Will allow you to specify the name of a zone to designate lockstyles for.
