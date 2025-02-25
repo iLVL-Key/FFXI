@@ -96,6 +96,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.8.2
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
+
 Verison 18.8.1
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
@@ -454,6 +457,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.0.4
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
+
 Verison 1.0.3
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
@@ -493,6 +499,9 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.7.1
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
 Version 14.7
 - Added Phalanx and Aquaveil sets
@@ -790,6 +799,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.7.2
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
+
 Verison 7.7.1
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
@@ -937,6 +949,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.8.3
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
 Version 14.8.2
 - Adjusted code for checking if we are using a 2-handed weapon. More efficient.
@@ -1242,6 +1257,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.8.4
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
+
 Version 9.8.3
 - Adjusted code for checking if we are using a 2-handed weapon. More efficient.
 
@@ -1470,6 +1488,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 15.0.2
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
 Verison 15.0.1
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
@@ -1736,6 +1757,9 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.6.2
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
+
 Verison 12.6.1
 - Fixed "the random q" issue. In short, they broke a workaround for an issue with coloring text by finally fixing the issue.
 
@@ -1965,6 +1989,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 9.0.3
+- Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
 Version 9.0.2
 - Adjusted code for checking if we are using a 2-handed weapon and if we are dual wielding. More efficient.
