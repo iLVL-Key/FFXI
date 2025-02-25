@@ -54,6 +54,13 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.1
+- Adjusted calls to save and a few other functions to be multi-box friendly.
+- Adjusted Job Change Delay to use a timestamp instead of a countdown timer. Mostly just because it's cleaner and more reliable.
+- Fixed After Zone Delay not showing "Off" correctly in the help command if set to 0
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+- Removed a bunch of basically duplicate variables.
+
 Version 3.0.1
 - Fixed an issue with using the in-game commands to change disable/job change/zone timing settings which would then delete all per-character lockstyles. This change now makes it so changing those settings with the in-game commands will be saved per-character instead.
 
