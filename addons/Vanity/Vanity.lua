@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '3.1'
+_addon.version = '3.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -141,7 +141,7 @@ end
 local function getLocation()
 
 	--Reload the settings file to update with any new changes
-	config.reload(settings)
+	settings = config.load(defaults)
 
 	local job = string.lower(win.get_player().main_job)
 	local zone_name = res.zones[win.get_info().zone].name
@@ -185,7 +185,7 @@ local function setLockstyle()
 	if not win.get_info().logged_in then return end
 
 	--Reload the settings file to update with any new changes
-	config.reload(settings)
+	settings = config.load(defaults)
 
 	local job = string.lower(win.get_player().main_job)
 	local location = getLocation()
@@ -283,7 +283,7 @@ end
 local function listAllLockstyles()
 
 	--Reload the settings file to update with any new changes
-	config.reload(settings)
+	settings = config.load(defaults)
 
 	win.add_to_chat(8,('[Vanity] '):color(220)..('Lockstyles:'):color(8))
 
@@ -320,7 +320,7 @@ end
 local function displayLockstyles(job, location)
 
 	--Reload the settings file to update with any new changes
-	config.reload(settings)
+	settings = config.load(defaults)
 
 	--Retrieve the current lockstyle string
 	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
@@ -354,7 +354,7 @@ end
 local function addLockstyle(job, location, lockstyle_num)
 
 	--Reload the settings file to update with any new changes
-	config.reload(settings)
+	settings = config.load(defaults)
 
 	--Retrieve the current lockstyle string
 	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
@@ -403,7 +403,7 @@ end
 local function removeLockstyle(job, location, lockstyle_num)
 
 	--Reload the settings file to update with any new changes
-	config.reload(settings)
+	settings = config.load(defaults)
 
 	--Retrieve the current lockstyle string
 	local current_str = settings.lockstyles[job] or "{combat:0}{town:0}"
@@ -552,6 +552,8 @@ win.register_event('addon command',function(cmd, ...)
 			win.add_to_chat(8,('[Vanity] '):color(220)..('After Disable Delay'):color(1)..(' is currently set to '):color(8)..(delay == 0 and ('OFF'):color(1) or (''..delay):color(1)..((' %s'):format(delay == 1 and 'second' or 'seconds')):color(8))..'.':color(8))
 		else
 			sub_cmd = tonumber(sub_cmd)
+			--Reload the settings file to update with any new changes
+			settings = config.load(defaults)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_disable_delay = sub_cmd
 				settings:save()
@@ -573,6 +575,8 @@ win.register_event('addon command',function(cmd, ...)
 			win.add_to_chat(8,('[Vanity] '):color(220)..('After Job Change Delay'):color(1)..(' is currently set to '):color(8)..(delay == 0 and ('OFF'):color(1) or (''..delay):color(1)..((' %s'):format(delay == 1 and 'second' or 'seconds')):color(8))..'.':color(8))
 		else
 			sub_cmd = tonumber(sub_cmd)
+			--Reload the settings file to update with any new changes
+			settings = config.load(defaults)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_job_change_delay = sub_cmd
 				settings:save()
@@ -594,6 +598,8 @@ win.register_event('addon command',function(cmd, ...)
 			win.add_to_chat(8,('[Vanity] '):color(220)..('After Zone Delay'):color(1)..(' is currently set to '):color(8)..(delay == 0 and ('OFF'):color(1) or (''..delay):color(1)..((' %s'):format(delay == 1 and 'second' or 'seconds')):color(8))..'.':color(8))
 		else
 			sub_cmd = tonumber(sub_cmd)
+			--Reload the settings file to update with any new changes
+			settings = config.load(defaults)
 			if sub_cmd and sub_cmd >= 1 and sub_cmd <= 20 then
 				settings.options.after_zone_delay = sub_cmd
 				settings:save()
