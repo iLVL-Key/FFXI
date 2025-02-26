@@ -133,8 +133,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
-Version 3.3.2
-- Adjusted highlight_when_sp_active option to display the time remaining on the SP Ability.
+Version 3.4
+- Added time remaining on the active SP Ability displayed on the target's name to the highlight_when_sp_active option.
+- Adjusted positioning of Target, Focus Target, and Sub Target text just slightly upward.
 - Fixed Volte Dark Knight being labeled as PLD|DRG. For reals.
 - Fixed SP ability highlight not fading when Bars fades out from inactivity.
 - Fixed a couple more Job Abilities showing incorrectly as Weapon Skills.
