@@ -42,7 +42,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Display the Index or Hex number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Display distance to target.
-- Highlights a targets name when they use an SP Ability and displays which ability for the duration of it.
+- Highlights a targets name when they use an SP Ability and displays the SP name and time remaining.
   - NOTE: Timing for players who have gear adding additional time cannot be accounted for.
 - Display Dynamis-Divergence mob jobs.
 - Markers on the TP bar for 1k/2k, and on the HP bar for yellow HP.
@@ -96,7 +96,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
  - `fade_to_alpha` - Number the alpha will stop at after fading. 0 = completely invisible, 255 = completely visible.
  - `focus_target_max_distance` - The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed.
  - `hide_focus_target_when_target` - Hides the Auto Focus Target bar when the subject of it has been targeted (prevents a target being on both at the same time).
- - `highlight_when_sp_active` - Highlights a target's name and displays which SP effect they have active.
+ - `highlight_when_sp_active` - Highlights a targets name when they use an SP Ability and displays the SP name and time remaining.
  - `max_action_length` - The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space.
  - `max_name_length` - The maximum number of characters of a targets name displayed (target action line only). Target names longer than this number will be truncated to help save space.
  - `remove_tachi_blade_from_ws_name` - Removes "Tachi: " and "Blade: " from weapon skill names to help save (ex. Tachi: Yukikaze --> Yukikaze).
