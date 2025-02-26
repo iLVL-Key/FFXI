@@ -54,8 +54,11 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.1.1
+- Fixed a saving issue with multiple characters. (Thanks again Mekaider!)
+
 Version 3.1
-- Adjusted calls to save and a few other functions to be multi-box friendly.
+- Adjusted calls to save and a few other functions to be multi-box friendly. (Thanks Mekaider!)
 - Adjusted Job Change Delay to use a timestamp instead of a countdown timer. Mostly just because it's cleaner and more reliable.
 - Fixed After Zone Delay not showing "Off" correctly in the help command if set to 0
 - Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
