@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.3.2'
+_addon.version = '3.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -856,10 +856,10 @@ local function setPosition()
 
 	--Determine positions based on which bars are displayed
 	local positions = assign_positions(base_stat, show_bars[job])
-	local pos_hp = positions.hp and positions.hp or player_stats_2
-	local pos_mp = positions.mp and positions.mp or player_stats_3
-	local pos_tp = positions.tp and positions.tp or player_stats_4
-	local pos_pet = positions.pet and positions.pet or player_stats_5
+	local pos_hp = positions.hp or player_stats_2
+	local pos_mp = positions.mp or player_stats_3
+	local pos_tp = positions.tp or player_stats_4
+	local pos_pet = positions.pet or player_stats_5
 
 	--Set bar positions
 	bars_bg_focus_target:pos(pos_focus_target.x, pos_focus_target.y + 8)
@@ -881,21 +881,21 @@ local function setPosition()
 	bars_marker_hp:pos(pos_hp.x, pos_hp.y + 7)
 	bars_marker_tp:pos(pos_tp.x, pos_tp.y + 7)
 	bars_text_shdw_focus_target:pos(pos_focus_target.x + 1.5, pos_focus_target.y + text_vertical_offset + 1.5)
-	bars_text_shdw_focus_target_action:pos(pos_focus_target.x + 1.5, pos_focus_target.y + 1.5 + 13)
+	bars_text_shdw_focus_target_action:pos(pos_focus_target.x + 1.5, pos_focus_target.y + 13 + 1.5)
 	bars_text_shdw_sub_target:pos(pos_sub_target.x + 1.5, pos_sub_target.y + text_vertical_offset + 1.5)
-	bars_text_shdw_sub_target_action:pos(pos_sub_target.x + 1.5, pos_sub_target.y + 1.5 + 13)
-	bars_text_shdw_target:pos(pos_target.x + 1.5, pos_target.y + text_vertical_offset + 1.5 - target_text_size_difference)
+	bars_text_shdw_sub_target_action:pos(pos_sub_target.x + 1.5, pos_sub_target.y + 13 + 1.5)
+	bars_text_shdw_target:pos(pos_target.x + 1.5, pos_target.y + text_vertical_offset - target_text_size_difference + 1.5)
 	bars_text_shdw_target_action:pos(pos_target.x + 1.5, pos_target.y + 1.5 + 13)
-	bars_text_shdw_self_action:pos(pos_self.x + 1.5, pos_self.y + text_vertical_offset + 1.5 - self_action_text_size_difference)
+	bars_text_shdw_self_action:pos(pos_self.x + 1.5, pos_self.y + text_vertical_offset - self_action_text_size_difference + 1.5)
 	bars_text_shdw_hp:pos(pos_hp.x + 1.5, pos_hp.y + text_vertical_offset + 1.5)
 	bars_text_shdw_mp:pos(pos_mp.x + 1.5, pos_mp.y + text_vertical_offset + 1.5)
 	bars_text_shdw_tp:pos(pos_tp.x + 1.5, pos_tp.y + text_vertical_offset + 1.5)
 	bars_text_shdw_pet:pos(pos_pet.x + 1.5, pos_pet.y + text_vertical_offset + 1.5)
-	bars_text_focus_target:pos(pos_focus_target.x, pos_focus_target.y + text_vertical_offset)
+	bars_text_focus_target:pos(pos_focus_target.x - 2.5, pos_focus_target.y + text_vertical_offset - 2.5)
 	bars_text_focus_target_action:pos(pos_focus_target.x, pos_focus_target.y + 13)
-	bars_text_sub_target:pos(pos_sub_target.x, pos_sub_target.y + text_vertical_offset)
+	bars_text_sub_target:pos(pos_sub_target.x - 2.5, pos_sub_target.y + text_vertical_offset - 2.5)
 	bars_text_sub_target_action:pos(pos_sub_target.x, pos_sub_target.y + 13)
-	bars_text_target:pos(pos_target.x, pos_target.y + text_vertical_offset - target_text_size_difference)
+	bars_text_target:pos(pos_target.x - 2.5, pos_target.y + text_vertical_offset - target_text_size_difference - 2.5)
 	bars_text_target_action:pos(pos_target.x, pos_target.y + 13)
 	bars_text_self_action:pos(pos_self.x, pos_self.y + text_vertical_offset - self_action_text_size_difference)
 	bars_text_hp:pos(pos_hp.x, pos_hp.y + text_vertical_offset)
