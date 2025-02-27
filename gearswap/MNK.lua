@@ -716,7 +716,7 @@ end
 
 
 
-FileVersion = '7.7.2'
+FileVersion = '7.7.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1676,7 +1676,7 @@ function self_command(command)
 		hud_bg_color:bg_color(c.r,c.g,c.b)
 		choose_set()
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
-		if TownZones:contains(world.area) then
+		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:color(255,255,255)
@@ -1723,7 +1723,7 @@ function self_command(command)
 		hud_debuffs:color(255,255,255)
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if TownZones:contains(world.area) then
+			if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 				send_command('wait 5;gs c Choose Set')
 			end
 		elseif ZoneGear ~= "Off" then
@@ -1947,7 +1947,7 @@ function choose_set()
 			setEquip(sets[Mode])
 		end
 	elseif player.status == "Idle" then
-		if TownZones:contains(world.area) then
+		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:color(255,255,255)
@@ -1984,7 +1984,7 @@ function choose_set()
 			equip(set_combine(sets[Mode], sets.idle, sets.sandoria))
 		elseif WindyZones:contains(world.area) then
 			equip(set_combine(sets[Mode], sets.idle, sets.windurst))
-		elseif TownZones:contains(world.area) then
+		elseif TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets[Mode], sets.idle, sets.town))
 		elseif LowHP == true then --if we have low HP we equip the Oh Shit gear set
 			equip(set_combine(sets.idle, sets.oh_shit))
@@ -2325,7 +2325,7 @@ windower.register_event('tp change',function()
 	end
 
 	--HUD TP Meter
-	if not TownZones:contains(world.area) then
+	if not (TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then
 		local TPMeter = ''
 		local spaces = 0
 		local c = color.AM3
@@ -2787,7 +2787,7 @@ windower.register_event('prerender', function()
 			announceAlive = false
 			send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
 		end
-		if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area)) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
+		if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
 			if LowHP == false then
 				LowHP = true
 				DangerCountdown = DangerRepeat
@@ -2817,7 +2817,7 @@ windower.register_event('prerender', function()
 		getRecasts()
 		getHUDAbils()
 
-		if AutoSave == 'On' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep']) and not TownZones:contains(world.area) and not AutoSaveUsed then
+		if AutoSave == 'On' and player.hp <= AutoSaveThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep']) and not (TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) and not AutoSaveUsed then
 			if Chakra.recast and Chakra.recast == 0 then
 				send_command('input /ja "Chakra" <me>;wait .5;input /ja "Chakra <me>')
 			elseif player.status == "Engaged" and Mode ~= 'Mode5' and HighJump.recast and HighJump.recast == 0 then
@@ -2860,7 +2860,7 @@ windower.register_event('prerender', function()
 			flash('Noti')
 			NotiCountdown = -1
 		end
-		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
+		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house)) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
 			play_sound(Notification_Danger)
 		end
