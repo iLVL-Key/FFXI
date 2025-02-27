@@ -107,6 +107,7 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 AlertSounds		=	'On'	--[On/Off]		Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoSubCharge	=	'Off'	--[On/Off]		Automatically attempts to keep Sublimation charging.
+TransportLock	=	'On'	--[On/Off]		Cancels your first Transport spell and unlocks for 3 min or until zone.
 OccShadows		=	14		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
 
 -- Heads Up Display --
@@ -772,7 +773,7 @@ end
 
 
 
-FileVersion = '18.8.2'
+FileVersion = '18.9'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -890,6 +891,8 @@ primeNum = 0
 AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
+transport_locked = true
+transport_lock_timestamp = 0
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -1850,7 +1853,7 @@ function self_command(command)
 		setMode('Mode5')
 		choose_set()
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
-		if TownZones:contains(world.area) then
+		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:color(255,255,255)
@@ -1922,7 +1925,7 @@ function self_command(command)
 		hud_mode:text('Mode: '..modeName[Mode])
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if TownZones:contains(world.area) then
+			if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 				send_command('wait 5;gs c Choose Set')
 			end
 		elseif ZoneGear ~= "Off" then
@@ -2170,7 +2173,7 @@ function choose_set()
 			equip(sets.oh_shit)
 		end
 	elseif player.status == "Idle" then
-		if TownZones:contains(world.area) then
+		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:color(255,255,255)
@@ -2220,7 +2223,7 @@ function choose_set()
 			equip(set_combine(sets[Mode].idle, sets.sandoria))
 		elseif WindyZones:contains(world.area) then
 			equip(set_combine(sets[Mode].idle, sets.windurst))
-		elseif TownZones:contains(world.area) then
+		elseif TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets[Mode].idle, sets.town))
 		else
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
@@ -2244,15 +2247,14 @@ function precast(spell)
 		'Recall-Jugner', 'Recall-Meriph', 'Recall-Pashh',
 		'Warp', 'Warp II', 'Retrace', 'Escape'
 	}
-	if transport_unlocked and transport_spells:contains(spell.en) then
-		transport_unlocked = false
-	elseif transport_spells:contains(spell.en) then
+	if TransportLock and transport_spells:contains(spell.en) and transport_locked then
 		cancel_spell()
-		transport_unlocked = true
-		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Casting is now unlocked. Repeat to cast.'):color(8))
+		transport_locked = false
+		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
 		if AlertSounds == 'On' then
 			play_sound(Notification_Cancel)
 		end
+		transport_lock_timestamp = os.time() + 180
 		return
 	end
 	if buffactive['terror'] then
@@ -2428,6 +2430,8 @@ function midcast(spell)
 		equip(set_combine(sets.buff, sets.healing))
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
+	elseif spell.action_type == 'Magic' then
+		equip(sets.buff)
 	end
 end
 
@@ -2625,7 +2629,7 @@ windower.register_event('tp change',function()
 	end
 
 	--HUD TP Meter
-	if not TownZones:contains(world.area) then
+	if not (TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then
 		local TPMeter = ''
 		local spaces = 0
 		local c = color.AM3
@@ -3079,7 +3083,7 @@ windower.register_event('prerender', function()
 			announceAlive = false
 			send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
 		end
-		if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area)) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
+		if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
 			if LowHP == false then
 				LowHP = true
 				DangerCountdown = DangerRepeat
@@ -3160,7 +3164,7 @@ windower.register_event('prerender', function()
 			flash('Noti')
 			NotiCountdown = -1
 		end
-		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
+		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house)) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
 			play_sound(Notification_Danger)
 		end
@@ -3184,6 +3188,11 @@ windower.register_event('prerender', function()
 			send_command('gs c ClearNotifications')
 		elseif party and party_count ~= 1 and party.count == 1 then
 			party_count = 1
+		end
+		if transport_lock_timestamp ~= 0 and os.time() > transport_lock_timestamp then
+			transport_locked = true
+			transport_lock_timestamp = 0
+			windower.add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
 		end
 
 		--Recast color updates
@@ -4038,6 +4047,8 @@ windower.register_event('zone change',function()
 	end
 	send_command('gs c ClearNotifications') --clear any notifications on zone
 	send_command('gs c ClearDebuffs') --clear any debuffs on zone
+	transport_locked = true
+	transport_lock_timestamp = 0
 end)
 
 -------------------------------------------
