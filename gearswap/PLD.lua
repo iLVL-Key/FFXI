@@ -333,7 +333,7 @@ sets.tank = {
 	left_ring="Moonlight Ring",		--5 DT
 	right_ring="Gelatinous Ring +1",
 	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
-	
+
 	-- ammo="Staunch Tathlum +1",
 	-- head="Sakpata's Helm",
 	-- body="Sakpata's Plate",
@@ -818,7 +818,7 @@ end
 
 
 
-FileVersion = '14.8.3'
+FileVersion = '14.8.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1817,7 +1817,7 @@ function self_command(command)
 		hud_bg_color:bg_color(c.r,c.g,c.b)
 		choose_set()
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
-		if TownZones:contains(world.area) then
+		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:color(255,255,255)
@@ -1872,7 +1872,7 @@ function self_command(command)
 		hud_debuffs:color(255,255,255)
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if TownZones:contains(world.area) then
+			if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 				send_command('wait 5;gs c Choose Set')
 			end
 		elseif ZoneGear ~= "Off" then
@@ -2111,7 +2111,7 @@ function choose_set()
 		end
 		equip({main=pair[1],sub=pair[2]})
 	elseif player.status == "Idle" then
-		if TownZones:contains(world.area) then
+		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:color(255,255,255)
@@ -2156,7 +2156,7 @@ function choose_set()
 			equip(set_combine(sets.idle, sets.movement_speed, sets.sandoria))
 		elseif WindyZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.movement_speed, sets.windurst))
-		elseif TownZones:contains(world.area) then
+		elseif TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets.idle, sets.movement_speed, sets.town))
 		else
 			if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set (plus movement speed to <{Run away!}>)
@@ -2417,7 +2417,7 @@ function midcast(spell)
 			equip(sets.enmity_spells)
 		end
 	elseif string.find(spell.english,'Enlight') then
-		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') == 'Auto' and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
 			equip(sets.enlight_sird)
 		else
 			equip(sets.enlight)
@@ -2454,6 +2454,12 @@ function midcast(spell)
 		equip(sets.cursna)
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
+	elseif spell.action_type == 'Magic' then
+		if (Mode == 'Combat' or ((Mode == 'Auto' or Mode == 'DPS') and player.in_combat == true)) and not buffactive['Aquaveil'] then -- in combat, no Aquaveil, so we need SIRD
+			equip(sets.enmity_spells_sird)
+		else
+			equip(sets.enmity_spells)
+		end
 	end
 end
 
@@ -2654,7 +2660,7 @@ windower.register_event('tp change',function()
 	end
 
 	--HUD TP Meter
-	if not TownZones:contains(world.area) then
+	if not (TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then
 		local TPMeter = ''
 		local spaces = 0
 		local c = color.AM3
@@ -3166,7 +3172,7 @@ windower.register_event('prerender', function()
 			MaxHP = false
 			choose_set()
 		end
-		if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area)) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
+		if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
 			if LowHP == false then
 				LowHP = true
 				DangerCountdown = DangerRepeat
@@ -3196,7 +3202,7 @@ windower.register_event('prerender', function()
 		if AutoMajesty == 'On' and buffactive['Majesty'] then
 			MajestyTimer = MajestyTimer - 1
 		end
-		if AutoSentinel == 'On' and player.hp <= AutSntThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep']) and Sentinel.recast and Sentinel.recast == 0 and not TownZones:contains(world.area) then
+		if AutoSentinel == 'On' and player.hp <= AutSntThreshold and Alive == true and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep']) and Sentinel.recast and Sentinel.recast == 0 and not (TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then
 			send_command('input /ja Sentinel <me>;wait .5;input /ja Sentinel <me>')
 		end
 		if player.equipment.main == nil or player.equipment.sub == nil then
@@ -3239,7 +3245,7 @@ windower.register_event('prerender', function()
 			flash('Noti')
 			NotiCountdown = -1
 		end
-		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area))) and AlertSounds == 'On' and DangerCountdown > 0 then
+		if (NotiDoom == 'On' and buffactive['doom']) or (NotiLowHP == 'On' and LowHP == true and Alive == true and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house)) and AlertSounds == 'On' and DangerCountdown > 0 then
 			DangerCountdown = DangerCountdown - 1
 			play_sound(Notification_Danger)
 		end
@@ -3255,7 +3261,7 @@ windower.register_event('prerender', function()
 					local c = color.Combat
 					hud_bg_color:bg_color(c.r,c.g,c.b)
 				else
-					if TownZones:contains(world.area) then
+					if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 						hud_mode_shdw:text('Mode: '..Mode)
 						hud_mode:text('Mode: '..Mode)
 						local c = color.Auto
