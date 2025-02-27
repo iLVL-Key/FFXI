@@ -96,6 +96,11 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.9
+- Added TransportLock Option. Cancels the first cast of a transport spell and unlocks additional spells for 3 minutes or until you zone.
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+- Fixed missing "catch-all" for any spells not specified for a midcast set.
+
 Version 18.8.2
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
@@ -457,6 +462,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.1
+- Added TransportLock Option. Cancels the first cast of a transport spell and unlocks additional spells for 3 minutes or until you zone.
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+
 Version 1.0.4
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
@@ -499,6 +508,12 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.8
+- Added TransportLock Option. Cancels the first cast of a transport spell and unlocks additional spells for 3 minutes or until you zone.
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+- Fixed Impact and Dispelga not equipping Fast Cast as intended.
+- Fixed missing "catch-all" for any spells not specified for a midcast set.
 
 Version 14.7.1
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
@@ -799,6 +814,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.7.3
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+
 Version 7.7.2
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
@@ -949,6 +967,11 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.8.4
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+- Fixed Enlight SIRD set not equipping correctly.
+- Fixed missing "catch-all" for any spells not specified for a midcast set.
 
 Version 14.8.3
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
@@ -1257,6 +1280,10 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.8.5
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+- Fixed missing "catch-all" for any spells not specified for a midcast set.
+
 Version 9.8.4
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
@@ -1488,6 +1515,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 15.0.3
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
 
 Version 15.0.2
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
@@ -1757,6 +1787,11 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.7
+- Added TransportLock Option. Cancels the first cast of a transport spell and unlocks additional spells for 3 minutes or until you zone.
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
+- Fixed missing "catch-all" for any spells not specified for a midcast set.
+
 Version 12.6.2
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
 
@@ -1989,6 +2024,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 9.0.4
+- Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
 
 Version 9.0.3
 - Fixed missing Notification Option for Vorseal and Signet/Sanction/Sigil/Ionis wearing off.
