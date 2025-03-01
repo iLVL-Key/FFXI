@@ -1,0 +1,69 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <Kolo>
+            <description>Loud, chaotic, and full of love (and expletives).</description>
+            <name>Kolo</name>
+            <name_color>39</name_color>
+            <text_color>220</text_color>
+            <type>Player</type>
+        </Kolo>
+        <azhur>
+            <description>Super sweet, full of charm, and a little quirky.</description>
+            <name>Azhur</name>
+            <name_color>213</name_color>
+            <text_color>6</text_color>
+            <type>Player</type>
+        </azhur>
+        <galin>
+            <description>Flirty, fun, and fueled by tequila.</description>
+            <name>Galin</name>
+            <name_color>36</name_color>
+            <text_color>160</text_color>
+            <type>Player</type>
+        </galin>
+        <lefty>
+            <creator>Xerus@Valefor</creator>
+            <description>Always willing to give a helping hand.</description>
+            <name>Lefty</name>
+            <name_color>39</name_color>
+            <text_color>1</text_color>
+            <type>Sp. Guest</type>
+        </lefty>
+        <mayakov>
+            <description>Flamboyant, theatrical, and obthethed with perfecthion.</description>
+            <name>Mayakov</name>
+            <name_color>211</name_color>
+            <text_color>228</text_color>
+            <type>NPC</type>
+        </mayakov>
+        <moogle>
+            <description>Cheerful, helpful, and full of &quot;kupo!&quot;</description>
+            <name>Moogle</name>
+            <name_color>3</name_color>
+            <text_color>53</text_color>
+            <type>NPC</type>
+        </moogle>
+        <shantotto>
+            <description>Witty, rhyming, and slightly menacing.</description>
+            <name>Shantotto</name>
+            <name_color>36</name_color>
+            <text_color>209</text_color>
+            <type>NPC</type>
+        </shantotto>
+        <sigue>
+            <description>Super nice guy, loves San d&apos;Oria maybe a little too much.</description>
+            <name>Sigue</name>
+            <name_color>36</name_color>
+            <text_color>39</text_color>
+            <type>Player</type>
+        </sigue>
+        <vana>
+            <description>Friendly, encouraging, and always positive.</description>
+            <name>Vana</name>
+            <name_color>39</name_color>
+            <text_color>220</text_color>
+            <type>Fictional</type>
+        </vana>
+    </global>
+</settings>
