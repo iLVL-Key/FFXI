@@ -1,13 +1,6 @@
 <?xml version="1.1" ?>
 <settings>
     <global>
-        <Kolo>
-            <description>Loud, chaotic, and full of love (and expletives).</description>
-            <name>Kolo</name>
-            <name_color>39</name_color>
-            <text_color>220</text_color>
-            <type>Player</type>
-        </Kolo>
         <azhur>
             <description>Super sweet, full of charm, and a little quirky.</description>
             <name>Azhur</name>
@@ -22,6 +15,13 @@
             <text_color>160</text_color>
             <type>Player</type>
         </galin>
+        <kolo>
+            <description>Loud, chaotic, and full of love (and expletives).</description>
+            <name>Kolo</name>
+            <name_color>39</name_color>
+            <text_color>220</text_color>
+            <type>Player</type>
+        </kolo>
         <lefty>
             <creator>Xerus@Valefor</creator>
             <description>Always willing to give a helping hand.</description>
@@ -51,6 +51,7 @@
             <text_color>209</text_color>
             <type>NPC</type>
         </shantotto>
+        <sha></sha>
         <sigue>
             <description>Super nice guy, loves San d&apos;Oria maybe a little too much.</description>
             <name>Sigue</name>
