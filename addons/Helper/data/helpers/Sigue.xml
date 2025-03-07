@@ -32,7 +32,7 @@
             <31>Hmmm... which Rostam should I use today?</31>
             <32>Even a bad roll looks good with the right lockstytle.</32>
             <33>High-fives and butt slaps all around!</33>
-			<34>My next Wild Card is gonna be a 6, I guarantee it!</34>
+            <34>My next Wild Card is gonna be a 6, I guarantee it!</34>
             <4>Ain&apos;t nothin&apos; better than a crisp morning in Ronfaure!</4>
             <5>Aw man, you&apos;re fightin&apos; like a true knight of San d&apos;Oria!</5>
             <6>You ever just sit back and admire the flags in San d&apos;Oria? Real noble-lookin&apos;, ain&apos;t they?</6>
@@ -46,7 +46,7 @@
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
-            <sha>e7148b09a2d67072dad25db65d7004c546b80d6b</sha>
+            <sha>36c90f2ffaa0385ca6d998c44f2154dcab9c9abb</sha>
             <text_color>39</text_color>
             <type>Player</type>
         </info>
@@ -63,11 +63,11 @@
         <reminder_moglophone>Well hey now, another Moglophone! Just don&apos;t let Bastok hear about it!</reminder_moglophone>
         <reminder_plate>Ooooh, that&apos;s a good-lookin&apos; Ra&apos;Kaznarian Plate! Go on and grab it!</reminder_plate>
         <reraise_check>Oh lordy, you&apos;re running around without Reraise? That&apos;s a Bastokan move if I ever saw one!</reraise_check>
-		<reraise_wears_off>Oh no, your Reraise wore off! Better get that back on before you end up in Bastok!</reraise_wears_off>
-		<signet_wears_off>Well now, that ain't great - you lost ${signet}! Hope you got a friendly guard nearby!</signet_wears_off>
+        <reraise_wears_off>Oh no, your Reraise wore off! Better get that back on before you end up in Bastok!</reraise_wears_off>
+        <signet_wears_off>Well now, that ain&apos;t great - you lost ${signet}! Hope you got a friendly guard nearby!</signet_wears_off>
         <sparkolade_reminder>Sittin&apos; on all them Sparkolades? Better spend &apos;em before some Bastoker tries to steal &apos;em!</sparkolade_reminder>
         <sublimation_charged>Hey now, Sublimation&apos;s topped off and ready to roll!</sublimation_charged>
-        <vorseal_reminder>Your Vorseal&apos;s got about 10 minutes left - make &apos;em count!</vorseal_reminder>
+        <vorseal_wearing>Your Vorseal&apos;s got about 10 minutes left - make &apos;em count!</vorseal_wearing>
         <you_are_now_alliance_leader>Aw man, you&apos;re the alliance leader now! You&apos;re like San d&apos;Orian royalty!</you_are_now_alliance_leader>
         <you_are_now_party_leader>Well look at that, you&apos;re in charge now! A true leader, San d&apos;Orian style!</you_are_now_party_leader>
         <you_joined_alliance>Aw man, you&apos;re in an alliance now! This is gonna be perty epic!</you_joined_alliance>
