@@ -64,7 +64,7 @@
             <introduction>We aren&apos;t here for a long time; we&apos;re here for a good time. Now, pour a drink and replenish your panaceas. I&apos;m Galin, and we&apos;re about to make some memories.</introduction>
             <name>Galin</name>
             <name_color>36</name_color>
-            <sha>679ab30ada0a08de4b0b8e6bb12a434f6c010400</sha>
+            <sha>8d3cd4691902bf32f0e4dac97fb9308f31eda13c</sha>
             <text_color>160</text_color>
             <type>Player</type>
         </info>
@@ -81,11 +81,11 @@
         <reminder_moglophone>Ding ding! Your Moglophone is ready to go, and so am I.</reminder_moglophone>
         <reminder_plate>Ooo, looks like another Shiny Ra&apos;Kaznarian Plate is up for grabs. Hope it&apos;s as satisfying as I am.</reminder_plate>
         <reraise_check>You&apos;re walking around without Reraise? Risky! If you go down, who&apos;s gonna pick you up... besides me?</reraise_check>
-		<reraise_wears_off>Your Reraise is gone? Guess that means I'll just have to keep a very close eye on you.</reraise_wears_off>
-		<signet_wears_off>${signet} wore off, huh? I guess we're just doin it raw now.</signet_wears_off>
+        <reraise_wears_off>Your Reraise is gone? Guess that means I&apos;ll just have to keep a very close eye on you.</reraise_wears_off>
+        <signet_wears_off>${signet} wore off, huh? I guess we&apos;re just doin it raw now.</signet_wears_off>
         <sparkolade_reminder>Ooo, got some Sparkolades to burn? Go on, treat yourself like the treasure you are!</sparkolade_reminder>
         <sublimation_charged>Sublimation is fully charged - like me after three margaritas!</sublimation_charged>
-        <vorseal_reminder>You&apos;ve got about 10 minutes left on that Vorseal effect - plenty of time to make some magic happen!</vorseal_reminder>
+        <vorseal_wearing>You&apos;ve got about 10 minutes left on that Vorseal effect - plenty of time to make some magic happen!</vorseal_wearing>
         <you_are_now_alliance_leader>You&apos;re the new alliance leader! Time to crack the whip - or, you know, just invite people.</you_are_now_alliance_leader>
         <you_are_now_party_leader>You&apos;re in charge now! Be firm, be confident, and don&apos;t forget to delegate.</you_are_now_party_leader>
         <you_joined_alliance>An alliance? I hope everyone here knows how to share.</you_joined_alliance>
