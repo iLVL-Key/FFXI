@@ -80,9 +80,9 @@
             <description>Cheerful, helpful, and full of &quot;kupo!&quot;</description>
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
-            <name_color>259</name_color>
-            <sha>92792ee5f13360237d2dc7c041a9ae4ae751068f</sha>
-            <text_color>262</text_color>
+            <name_color>3</name_color>
+            <sha>bd8c2303e15bb491ecd6488efe98223cd6547217</sha>
+            <text_color>53</text_color>
             <type>NPC</type>
         </info>
         <member_joined_alliance>${member} has joined the alliance, kupo!</member_joined_alliance>
@@ -98,11 +98,11 @@
         <reminder_moglophone>Kupo-kwee! Another Moglophone has managed to materialize!</reminder_moglophone>
         <reminder_plate>Kupo-po! Your Shiny Ra&apos;Kaznarian Plate is polished and prepared!</reminder_plate>
         <reraise_check>Kupo-po! You&apos;re prancing perilously without proper protective precautions! No Reraise, no revival, kupo!</reraise_check>
-		<reraise_wears_off>Kupo-kupo! Your reliable Reraise has rudely run off - reapply before you regret it!</reraise_wears_off>
-		<signet_wears_off>Kupo-po! Your beautiful ${signet} has blinked away - best bounce to a guard before it's too late!</signet_wears_off>
+        <reraise_wears_off>Kupo-kupo! Your reliable Reraise has rudely run off - reapply before you regret it!</reraise_wears_off>
+        <signet_wears_off>Kupo-po! Your beautiful ${signet} has blinked away - best bounce to a guard before it&apos;s too late!</signet_wears_off>
         <sparkolade_reminder>Kupo-ho! Sparkolades are stacking sky-high - so be sure to spend them swiftly, savvy shopper!</sparkolade_reminder>
         <sublimation_charged>Sublimation is fully charged and ready, kupo!</sublimation_charged>
-        <vorseal_reminder>Only about 10 minutes left on your Vorseal effect, so stay sharp, kupo!</vorseal_reminder>
+        <vorseal_wearing>Only about 10 minutes left on your Vorseal effect, so stay sharp, kupo!</vorseal_wearing>
         <you_are_now_alliance_leader>You&apos;re now the alliance leader, kupo!</you_are_now_alliance_leader>
         <you_are_now_party_leader>You&apos;re now the party leader, kupo!</you_are_now_party_leader>
         <you_joined_alliance>You&apos;ve joined an alliance, kupo!</you_joined_alliance>
