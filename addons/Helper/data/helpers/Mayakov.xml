@@ -2,18 +2,10 @@
 <settings>
     <global>
         <ability_ready>Darling, your ${ability} ith ready! Now, deliver a *thow-thtopping* performanthe!</ability_ready>
-        <capped_job_points>Ah-ha! Your thkillth have reached their peak! A true maaatherpiethe in motion!</capped_job_points>
-        <capped_merit_points>Oh-ho-ho! Your potential ith pothitively overflowing! Thuperb, thplendid, *exquithite*!</capped_merit_points>
+        <capped_job_points>Ah-ha! Your Job Pointh have reached their peak! A true maaatherpiethe in motion!</capped_job_points>
+        <capped_merit_points>Oh-ho-ho! Your Merit Pointh are pothitively overflowing! Thuperb, thplendid, *exquithite*!</capped_merit_points>
         <flavor_text>
             <1>Every battle ith a performanthe, and darling, you thimply *mutht* thine!</1>
-            <2>Your footwork - *atrothiouth*! We mutht rehearthe, rehearthe, rehearthe!</2>
-            <3>Ah, your movementh are becoming *le magnifique!* Keep it up, yeth!</3>
-            <4>A warrior without rhythm ith like a danther without thoul - thimply unthinkable!</4>
-            <5>One doeth not *walk* through Vana&apos;diel! One glideth, one pirouetteth, one *commandth* the thpotlight!</5>
-            <6>Tsk tsk, thuch thlow reactionth! You mutht move with the grathe of a *Danther*!</6>
-            <7>Did you *thee* that? A movement tho elegant, tho divine, it nearly brought a tear to my eye~!</7>
-            <8>Life ith a thage, darling, and you are the thtar! Now, act like it!</8>
-            <9>If your dodging were any thlower, I&apos;d have to call it a *tragic* performanthe!</9>
             <10>Ah-ha! Yeth, that wath *exquithite!* You are learning, my thtunning pupil!</10>
             <11>A well-timed ability ith no different than a perfectly landed path de deux - divine, flawleth, utterly *captivating*!</11>
             <12>No, no, NO! Too rigid, too thtiff! You mutht learn to flow like a Riverrrne breeeze!</12>
@@ -24,21 +16,30 @@
             <17>Your lockthtyle? Hm. Acceptable. But could it be more... *dramatic*? Yeth, yeth, I think it could!</17>
             <18>Oh-ho-ho! You thtrike with thuch flair! It ith ath if the heaventh themthelveth applaud you!</18>
             <19>Remember, darling, it&apos;th not *what* you do, it&apos;th *how* you do it - with grathe, with drama, with pathion~!</19>
+            <2>Your footwork - *atrothiouth*! We mutht rehearthe, rehearthe, rehearthe!</2>
             <20>Even in the heat of battle, a true performer never lotheth their compothure!</20>
+            <3>Ah, your movementh are becoming *le magnifique!* Keep it up, yeth!</3>
+            <4>A warrior without rhythm ith like a danther without thoul - thimply unthinkable!</4>
+            <5>One doeth not *walk* through Vana&apos;diel! One glideth, one pirouetteth, one *commandth* the thpotlight!</5>
+            <6>Tsk tsk, thuch thlow reactionth! You mutht move with the grathe of a *Danther*!</6>
+            <7>Did you *thee* that? A movement tho elegant, tho divine, it nearly brought a tear to my eye~!</7>
+            <8>Life ith a thage, darling, and you are the thtar! Now, act like it!</8>
+            <9>If your dodging were any thlower, I&apos;d have to call it a *tragic* performanthe!</9>
         </flavor_text>
         <food_wears_off>Dramatic! Tragic! Your food ith gone! Time for a well-detherved encore!</food_wears_off>
         <info>
             <description>Flamboyant, theatrical, and obthethed with perfecthion.</description>
             <introduction>Ah, yeth, another performer gratheth the thtage! I, Mayakov, thall enthure your every movement ith a mathterpiethe!</introduction>
             <name>Mayakov</name>
-            <name_color>211</name_color>
-            <text_color>228</text_color>
+            <name_color>39</name_color>
+            <sha>a3f198b4a518190e43ea99a921791da6c330fd4e</sha>
+            <text_color>160</text_color>
             <type>NPC</type>
         </info>
         <member_joined_alliance>Ah-ha! Our enthemble growth! Welcome, ${member}, to the grandetht of productionth!</member_joined_alliance>
-        <member_joined_party>*Ah!* A new catht member hath arrived! Welcome, welcome, ${member}, to our *dazzling* production!</member_joined_party>
+        <member_joined_party>*Ah!* A new catht member hath arrived! Welcome, ${member}, to our *dazzling* production!</member_joined_party>
         <member_left_alliance>Alath, ${member} hath taken their final bow and left the allianthe!</member_left_alliance>
-        <member_left_party>A bitterthweet farewell! ${member} hath left the thtage. We *thall* meet again, I am *thure* of it!</member_left_party>
+        <member_left_party>A bitterthweet farewell! ${member} hath left the thtage. We *thall* meet again!</member_left_party>
         <mireu_popped>Oh-ho! Mireu hath entered the thtage in ${zone}! The drama! The exthitement!</mireu_popped>
         <mog_locker_expiring>Oh, diTHATHter! Your Mog Locker ith on the brink of exthpiration! What of the cothtumeth?! The accthethorieth?!</mog_locker_expiring>
         <other_party_joined_alliance>Oh-ho! Another group enterth the thtage - our production growth ever more *divine*!</other_party_joined_alliance>
@@ -51,11 +52,10 @@
         <reraise_wears_off>Tragedy thtriketh! Your Reraithe ith gone! Renew it, unleth you with for an early final curtain!</reraise_wears_off>
         <signet_wears_off>Oh-ho! Without your ${signet}, your battleth are now mere exhibitionth! Where ith your motivathion?!</signet_wears_off>
         <sparkolade_reminder>Thparkoladeth are meant to be thpent, not gathered like dull trinketh! Uthe them for PEAK BRILLIANTHE!</sparkolade_reminder>
-        <sublimation_charged>Ah-ha! Your energy ith *priiiimed* for a grand performanthe! Now, dazzle uth!</sublimation_charged>
-        <vorseal_reminder>Oh dear, your Vortheal&apos;th light ith fading! A performer *mutht* have their thtage illuminated at all timeth!</vorseal_reminder>
-        <vorseal_wearing>Tick tock, darling! Your Vortheal&apos;th light ith fading! A performer *mutht* have their thtage illuminated at all timeth!</vorseal_wearing>
+        <sublimation_charged>Ah-ha! Your Thublimation ith *priiiimed* for a grand performanthe! Now, dazzle uth!</sublimation_charged>
+        <vorseal_wearing>Oh dear, your Vortheal&apos;th light ith fading fatht! A performer *mutht* have their thtage illuminated at all timeth!</vorseal_wearing>
         <you_are_now_alliance_leader>Ah-ha! You are now the *maethtro* of thith grand thymphony! Lead with flair, darling!</you_are_now_alliance_leader>
-        <you_are_now_party_leader>Oh-ho! You have been granted the *thacred* role of party leader! Command with pathion~!</you_are_now_party_leader>
+        <you_are_now_party_leader>Oh-ho! The lead role ith yourth! It'th *thowtime*!</you_are_now_party_leader>
         <you_joined_alliance>Ah-ha! The curtain ritheth on a new act - you have joined an allianthe, yeth!</you_joined_alliance>
         <you_joined_party>The curtain ritheth! You have entered the thtage of battle - prepare to *captivate*!</you_joined_party>
         <you_left_alliance>A dramatic exit, yeth, but all performantheth mutht end... for now!</you_left_alliance>
