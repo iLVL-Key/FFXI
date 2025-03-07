@@ -35,13 +35,11 @@ Players can load different Helpers, each with its own personality and dialogue, 
   - Modify Helper settings & messages in XML files
 
 ## How To Setup
-1. Be sure to save the addon to `addons/Helper/Helper.lua`.
+1. Save the addon to `/addons/Helper/Helper.lua`.
 2. Load the addon with `//lua load helper`.
-3. Vana is the default Helper and will automatically be created and loaded into the addon.
-4. Update the addon by typing `//helper update`.
+   - Vana is the default Helper and will automatically be created and loaded into the addon.
+3. Update the addon by typing `//helper update`.
    - This will download and install the latest version of the addon, including all sound files, as well as download and load all current Helpers into the addon.
-6. Type `//helper` (with no additional command) to cycle between Helpers you have loaded, or type `//helper load moogle` to select a specific Helper.
-   - The name "moogle" in this example represents the name of the file, is case insensitive, and does not require the `.xml` attached.
 
 ## Commands
 All commands must be preceded with `//helper` (ex: `//helper list`)  
@@ -55,6 +53,8 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `list` - List currently loaded Helpers.
 - `random/r` - Selects a random Helper to use.
 - `voices/v` - Selects a random Helper to use for EACH alert/notification.
+- `sound/s` - Switch sounds between Custom Helper, Default, or off.
+- `face/f` - Toggle Helper Faceplates on or off.
 - `check [new|current|addon]` - Check for new updates. Does not update.
 - `update [new|current|addon]` - Download new updates.
 - `help` - Display a list of commands and addon info.
@@ -71,6 +71,7 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 - `current_helper` - The currently loaded and active Helper.
   - It is better to change this in-game with `//helper` to cycle Helpers or `//helper load name_of_helper` to load a specific Helper directly.
 - `flavor_text` - Display the occasional Flavor Text from the currently loaded Helper.
+- `flavor_text_in_combat` - Controls flavor text displaying while in combat.
 - `flavor_text_window_max_hours` - The maximum amount of time before the next Flavor Text is displayed.
 - `flavor_text_window_min_hours` - The minimum amount of time before the next Flavor Text is displayed.
 - `helpers_loaded` - The list and enabled status of all Helpers currently loaded Helpers.
@@ -101,6 +102,23 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
   - `voices` - Randomly selects an active Helper to use for each alert.
 
 ## Changelog
+
+Version 2.0
+- Overhauled folder structure. The `sounds` folder has been renamed to `media` and moved inside the `/data/helpers` folder. If you are upgrading from a previous version, you may safely delete the `/data/sounds` folder.
+- Added support for Custom Helper sounds. Will use sounds in a `/data/media/helper_name` folder for the current Helper if present, otherwise uses the default sounds in the `data/media/` folder.
+- Added support for Helper Faceplates. Will briefly display an image of the current Helper when a notification/alert plays. Stored in a `/data/media/helper_name` folder.
+- Added `sounds/s` in-game command to cycle sounds: Custom Helper > Default > Off
+- Added `face/f` in-game command to toggle Helper Faceplates on or off.
+- Added `flavor_text_in_combat` option to control flavor text displaying while in combat.
+- Added a 5 second wait after logging in before auto check/update runs.
+- Added additional options for party announcement sounds, and will follow a hierarchy to decide which sound to use if not available.
+  - member_joined_party now has you_joined_party, you_joined_alliance, member_joined_party, and member_joined_alliance.
+  - member_left_party now has you_left_party, you_left_alliance, member_left_party, and member_left_alliance.
+  - party_joined_alliance now has your_party_joined_alliance, and other_party_joined_alliance.
+  - party_left_alliance now has your_party_left_alliance, and other_party_left_alliance.
+- Adjusted calls to download from GitHub to wait up to 5 seconds to make sure the download completes before moving on or giving up.
+- Adjusted Reraise Reminder to pause while dead.
+- Fixed Signet wearing off notification going off when switching from a character with to a character without.
 
 Version 1.8.5
 - Fixed Mog House in Al Zahbi not being recognized as a "town" zone.
