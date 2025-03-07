@@ -1954,10 +1954,10 @@ function trackPartyStructure()
 		end
 	end
 
-	local selected = getHelper()
 	local text = nil
 	--You join a party that is in an alliance
 	if announce.you_joined_alliance and not previously_in_party and now_in_party and now_in_alliance then
+		local selected = getHelper()
 		text = helpers[selected.helper].you_joined_alliance
 		if text then
 			playSound(selected.helper, 'you_joined_alliance')
@@ -1966,6 +1966,7 @@ function trackPartyStructure()
 
 	--You join a party that is not in an alliance
 	elseif announce.you_joined_party and not previously_in_party and now_in_party and not now_party_leader then
+		local selected = getHelper()
 		text = helpers[selected.helper].you_joined_party
 		if text then
 			playSound(selected.helper, 'you_joined_party')
@@ -1974,6 +1975,7 @@ function trackPartyStructure()
 
 	--You leave a party that is part of an alliance
 	elseif announce.you_left_alliance and previously_in_alliance and not now_in_party then
+		local selected = getHelper()
 		text = helpers[selected.helper].you_left_alliance
 		if text then
 			playSound(selected.helper, 'you_left_alliance')
@@ -1982,6 +1984,7 @@ function trackPartyStructure()
 
 	--You leave a party that is not part of an alliance
 	elseif announce.you_left_party and previously_in_party and not now_in_party then
+		local selected = getHelper()
 		text = helpers[selected.helper].you_left_party
 		if text then
 			playSound(selected.helper, 'you_left_party')
@@ -1990,6 +1993,7 @@ function trackPartyStructure()
 
 	--Your party joined an alliance
 	elseif announce.your_party_joined_alliance and previously_in_party and now_in_alliance and not previously_in_alliance then
+		local selected = getHelper()
 		text = helpers[selected.helper].your_party_joined_alliance
 		if text then
 			playSound(selected.helper, 'your_party_joined_alliance')
@@ -1998,6 +2002,7 @@ function trackPartyStructure()
 
 	--Your party left an alliance
 	elseif announce.your_party_left_alliance and previously_in_alliance and not now_in_alliance then
+		local selected = getHelper()
 		text = helpers[selected.helper].your_party_left_alliance
 		if text then
 			playSound(selected.helper, 'your_party_left_alliance')
@@ -2007,6 +2012,7 @@ function trackPartyStructure()
 	-- Another party joined the alliance
 	elseif announce.other_party_joined_alliance and previously_in_alliance and now_in_alliance and 
 	((not old_p2_leader and new_p2_leader) or (not old_p3_leader and new_p3_leader)) then
+		local selected = getHelper()
 		text = helpers[selected.helper].other_party_joined_alliance
 		if text then
 			playSound(selected.helper, 'other_party_joined_alliance')
@@ -2016,6 +2022,7 @@ function trackPartyStructure()
 	-- Another party left the alliance
 	elseif announce.other_party_left_alliance and previously_in_alliance and now_in_alliance and 
 	((old_p2_leader and not new_p2_leader) or (old_p3_leader and not new_p3_leader)) then
+		local selected = getHelper()
 		text = helpers[selected.helper].other_party_left_alliance
 		if text then
 			playSound(selected.helper, 'other_party_left_alliance')
@@ -2036,6 +2043,7 @@ function trackPartyStructure()
 		if announce.member_joined_party and new_p1_count > old_p1_count then
 			for _, member in ipairs(party1_changes.added) do
 				if member ~= '' then
+					local selected = getHelper()
 					text = helpers[selected.helper].member_joined_party
 					if text then
 						text = memberPlaceholder(text, member)
@@ -2053,6 +2061,7 @@ function trackPartyStructure()
 		elseif announce.member_left_party and new_p1_count < old_p1_count then
 			for _, member in ipairs(party1_changes.removed) do
 				if member ~= '' then
+					local selected = getHelper()
 					text = helpers[selected.helper].member_left_party
 					if text then
 						text = memberPlaceholder(text, member)
@@ -2085,6 +2094,7 @@ function trackPartyStructure()
 		if announce.member_joined_alliance and (new_p2_count > old_p2_count or new_p3_count > old_p3_count) then
 			for _, member in ipairs(alliance_changes.added) do
 				if member ~= '' then
+					local selected = getHelper()
 					text = helpers[selected.helper].member_joined_alliance
 					if text then
 						text = memberPlaceholder(text, member)
@@ -2103,6 +2113,7 @@ function trackPartyStructure()
 		elseif announce.member_left_alliance and (new_p2_count < old_p2_count or new_p3_count < old_p3_count) then
 			for _, member in ipairs(alliance_changes.removed) do
 				if member ~= '' then
+					local selected = getHelper()
 					text = helpers[selected.helper].member_left_alliance
 					if text then
 						text = memberPlaceholder(text, member)
@@ -2120,6 +2131,7 @@ function trackPartyStructure()
 
 	--You become the alliance leader
 	elseif announce.you_are_now_alliance_leader and previously_in_alliance and not previously_alliance_leader and now_alliance_leader then
+		local selected = getHelper()
 		text = helpers[selected.helper].you_are_now_alliance_leader
 		if text then
 			playSound(selected.helper, 'now_alliance_leader')
@@ -2128,6 +2140,7 @@ function trackPartyStructure()
 
 	--You become the party leader
 	elseif announce.you_are_now_party_leader and previously_in_party and not previously_party_leader and now_party_leader then
+		local selected = getHelper()
 		text = helpers[selected.helper].you_are_now_party_leader
 		if text then
 			playSound(selected.helper, 'now_party_leader')
@@ -2424,15 +2437,15 @@ win.register_event('prerender', function()
 		local player = win.get_player()
 		local player_job = player.main_job
 
-		local selected = getHelper()
-		local text = helpers[selected.helper].ability_ready
-		if text then
-			--Check if abilities are ready
-			for ability, enabled in pairs(opt.ability_ready) do
-				if enabled then
-					if recast[ability] and recast[ability] > 0 and ready[ability] then
-						ready[ability] = false
-					elseif recast[ability] == 0 and not ready[ability] then
+		--Check if abilities are ready
+		for ability, enabled in pairs(opt.ability_ready) do
+			if enabled then
+				if recast[ability] and recast[ability] > 0 and ready[ability] then
+					ready[ability] = false
+				elseif recast[ability] == 0 and not ready[ability] then
+					local selected = getHelper()
+					local text = helpers[selected.helper].ability_ready
+					if text then
 						text = abilityPlaceholders(text, ability_name[ability])
 						win.add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 						playSound(selected.helper, 'ability_ready')
@@ -2491,9 +2504,7 @@ win.register_event('prerender', function()
 		end
 
 		--Countdown for Vorseal Reminder
-		local selected = getHelper()
-		local vorseal_text = helpers[selected.helper].vorseal_wearing
-		if opt.vorseal_wearing and vorseal_text then
+		if opt.vorseal_wearing then
 
 			if countdowns.vorseal > 0 then
 
@@ -2502,11 +2513,14 @@ win.register_event('prerender', function()
 			elseif countdowns.vorseal == 0 then
 
 				countdowns.vorseal = -1
+				local selected = getHelper()
+				local vorseal_text = helpers[selected.helper].vorseal_wearing
+				if vorseal_text then
+					win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(vorseal_text):color(selected.c_text))
 
-				win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(vorseal_text):color(selected.c_text))
-
-				playSound(selected.helper, 'notification')
-				showFaceplate(selected.helper)
+					playSound(selected.helper, 'notification')
+					showFaceplate(selected.helper)
+				end
 
 			end
 
@@ -2523,9 +2537,7 @@ win.register_event('prerender', function()
 		end
 
 		--Countdown for Reraise Check
-		local selected = getHelper()
-		local reraise_text = helpers[selected.helper].reraise_check
-		if opt.reraise_check and reraise_text and player.vitals.hp ~= 0 then
+		if opt.reraise_check and player.vitals.hp ~= 0 then
 
 			if countdowns.reraise > 0 then
 				countdowns.reraise = countdowns.reraise - 1
@@ -2546,10 +2558,15 @@ win.register_event('prerender', function()
 
 				--Only inform if reraise is not active and we are not in town
 				if not reraiseActive() and (not opt.reraise_check_not_in_town or (opt.reraise_check_not_in_town and not isInTownZone())) then
-					win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(reraise_text):color(selected.c_text))
 
-					playSound(selected.helper, 'notification')
-					showFaceplate(selected.helper)
+					local selected = getHelper()
+					local reraise_text = helpers[selected.helper].reraise_check
+					if reraise_text then
+						win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(reraise_text):color(selected.c_text))
+
+						playSound(selected.helper, 'notification')
+						showFaceplate(selected.helper)
+					end
 
 				end
 			end
@@ -2784,6 +2801,7 @@ win.register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == "test" then
 		local selected = getHelper()
+		win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..('This is a test notification!'):color(selected.c_text))
 		playSound(selected.helper, 'notification')
 		showFaceplate(selected.helper)
 		
