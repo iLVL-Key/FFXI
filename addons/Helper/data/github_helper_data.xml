@@ -33,8 +33,8 @@
         <mayakov>
             <description>Flamboyant, theatrical, and obthethed with perfecthion.</description>
             <name>Mayakov</name>
-            <name_color>211</name_color>
-            <text_color>228</text_color>
+            <name_color>39</name_color>
+            <text_color>160</text_color>
             <type>NPC</type>
         </mayakov>
         <moogle>
@@ -61,8 +61,8 @@
         <vana>
             <description>Friendly, encouraging, and always positive.</description>
             <name>Vana</name>
-            <name_color>39</name_color>
-            <text_color>220</text_color>
+            <name_color>220</name_color>
+            <text_color>8</text_color>
             <type>Fictional</type>
         </vana>
     </global>
