@@ -1,80 +1,80 @@
 <?xml version="1.1" ?>
 <settings>
     <global>
-        <ability_ready>Aw man, ${ability} is back on deck - time to show &apos;em what you got!</ability_ready>
-        <capped_job_points>Aw man, you maxed out your Job Points? Now that&apos;s perty impressive!</capped_job_points>
-        <capped_merit_points>Well look at you, sittin&apos; on a pile of Merit Points! That&apos;s some real noble effort right there!</capped_merit_points>
+        <ability_ready>${ability} is ready to use again.</ability_ready>
+        <capped_job_points>Your Job Points are now capped.</capped_job_points>
+        <capped_merit_points>Your Merit Points are now capped.</capped_merit_points>
         <flavor_text>
-            <1>Aw man, you&apos;re lookin&apos; perty sharp today!</1>
-            <10>You&apos;re tougher than an Orc in Davoi and twice as smart!</10>
-            <11>Aw man, this is perty exciting - I can feel the energy in the air!</11>
-            <12>Some folks say &apos;luck&apos; - I say &apos;San d&apos;Orian determination&apos;!</12>
-            <13>If I had a gil for every time Bastok lost a conquest tally, I&apos;d own my own chateau by now!</13>
-            <14>Ya keep fightin&apos; like that, and you&apos;ll be the pride of San d&apos;Oria in no time!</14>
-            <15>Have I mentioned that San d&apos;Oria&apos;s got the best smiths? Not like those rusty ol&apos; Bastokan scraps.</15>
-            <16>Aw man, your gear is lookin&apos; perty slick - fit for royalty!</16>
-            <17>You ever just stop and admire the craftsmanship of San d&apos;Orian armor?</17>
-            <18>Aw man, you see that move? That was downright noble!</18>
-            <19>Ain&apos;t nothin&apos; like a good day in San d&apos;Oria - blue skies, noble folk, and a perty castle!</19>
-            <2>You got that San d&apos;Orian spirit - classy and strong!</2>
-            <20>You ever just stop and listen to the San d&apos;Orian anthem? Gives me chills every time!</20>
-            <21>San d&apos;Oria&apos;s got the best views, the best food, and the best people!</21>
-            <22>Aw man, the scent of fresh-baked San d&apos;Orian bread in the morning? Nothin&apos; beats it!</22>
-            <23>Some people use maps, but a real San d&apos;Orian just follows their instincts!</23>
-            <24>Ya ever notice how everything in Bastok is just... brown? Even their spirits seem a little dusty!</24>
-            <25>I hear in Bastok, they call rust &apos;industrial seasoning&apos;</25>
-            <26>The way you play, it&apos;s like you got a San d&apos;Orian Prince&apos;s confidence!</26>
-            <27>You ever see a Bastokan knight? Yeah, me neither!</27>
-            <28>Y&apos;know, I swear these dice are rigged. Probably made in Bastok...</28>
-            <29>I think I&apos;m goin skiing this weekend!</29>
-            <3>Y&apos;know, if you ever get tired of all that soot in Bastok, San d&apos;Oria&apos;s got open fields and fresh air.</3>
-            <30>I knew it!</30>
-            <31>Hmmm... which Rostam should I use today?</31>
-            <32>Even a bad roll looks good with the right lockstytle.</32>
-            <33>High-fives and butt slaps all around!</33>
-            <34>My next Wild Card is gonna be a 6, I guarantee it!</34>
-            <4>Ain&apos;t nothin&apos; better than a crisp morning in Ronfaure!</4>
-            <5>Aw man, you&apos;re fightin&apos; like a true knight of San d&apos;Oria!</5>
-            <6>You ever just sit back and admire the flags in San d&apos;Oria? Real noble-lookin&apos;, ain&apos;t they?</6>
-            <7>Bastok&apos;s got machines, sure, but San d&apos;Oria&apos;s got history, honor, and bagpipes!</7>
-            <8>You ever try a fresh Elshimo coconut? Not as good as San d&apos;Orian wine, but still perty tasty!</8>
-            <9>Y&apos;know, people in San d&apos;Oria walk with purpose! Unlike Bastok where they just shuffle in the dust.</9>
+            <1>You have a great sense of humor.</1>
+            <10>Your enthusiasm is refreshing.</10>
+            <11>You&apos;re incredibly thoughtful.</11>
+            <12>You have a fantastic sense of lockstyle.</12>
+            <13>You always make people feel welcome.</13>
+            <14>You&apos;re full of great ideas.</14>
+            <15>You have an amazing work ethic.</15>
+            <16>Your confidence is inspiring.</16>
+            <17>You&apos;re always so helpful.</17>
+            <18>Your job mastery is impressive-you&apos;re a true expert!</18>
+            <19>You always know how to strategize perfectly in battle.</19>
+            <2>You&apos;re a great listener.</2>
+            <20>Your gear is top-notch; you really know how to optimize your character!</20>
+            <21>You&apos;re always there to back up the party when things get tough.</21>
+            <22>You make raids and missions look easy.</22>
+            <23>Your timing with abilities is flawless.</23>
+            <24>The way you handle aggro is amazing-you never let us down.</24>
+            <25>Your knowledge of the game is outstanding.</25>
+            <26>You&apos;re the glue that holds this alliance together.</26>
+            <27>Your dedication to leveling your job is truly inspiring.</27>
+            <28>Your DPS output is insane; you&apos;re a powerhouse in every fight.</28>
+            <29>You&apos;re so good at coordinating group tactics and keeping us organized.</29>
+            <3>You light up the room.</3>
+            <30>The way you manage your macros is super smooth-never a missed step.</30>
+            <31>You always find the perfect balance between offense and defense.</31>
+            <32>Your ability to multi-task in intense fights is amazing.</32>
+            <33>You&apos;re always up for helping others; you&apos;re a true team player.</33>
+            <34>You look stunning in that lockstyle.</34>
+            <4>Your creativity is inspiring.</4>
+            <5>You have a contagious smile.</5>
+            <6>Your positivity is infectious.</6>
+            <7>You bring out the best in people.</7>
+            <8>You have a heart of gold.</8>
+            <9>You&apos;re a wonderful friend.</9>
         </flavor_text>
-        <food_wears_off>Your food ran out quicker than a Bastokan when the check is due!</food_wears_off>
+        <food_wears_off>Your food has worn off.</food_wears_off>
         <info>
-            <description>Super nice guy, loves San d&apos;Oria maybe a little too much.</description>
-            <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
-            <name>Sigue</name>
-            <name_color>36</name_color>
-            <sha>36c90f2ffaa0385ca6d998c44f2154dcab9c9abb</sha>
-            <text_color>39</text_color>
-            <type>Player</type>
+            <description>Friendly, encouraging, and always positive.</description>
+            <introduction>I am Vana, your personal Helper.</introduction>
+            <name>Vana</name>
+            <name_color>220</name_color>
+            <sha>b5e048cc7a2428d8809da92e3d669a8854830456</sha>
+            <text_color>8</text_color>
+            <type>NPC</type>
         </info>
-        <member_joined_alliance>Aw man, ${member} just hopped into the alliance - things are gettin&apos; exciting now!</member_joined_alliance>
-        <member_joined_party>Hey now, ${member} just joined up! This party&apos;s lookin&apos; perty solid!</member_joined_party>
-        <member_left_alliance>Well shoot, ${member} stepped out. Hope they ain&apos;t headin&apos; to Bastok...</member_left_alliance>
-        <member_left_party>Well shoot, ${member} just left.</member_left_party>
-        <mireu_popped>Aw man, Mireu just got spotted in ${zone}! Let&apos;s get in there!</mireu_popped>
-        <other_party_joined_alliance>Aw man, we got another group in here - things are about to get fun!</other_party_joined_alliance>
-        <other_party_left_alliance>Welp, that other party packed up and left. Hope they&apos;re headin&apos; to San d&apos;Oria and not, y&apos;know, Bastok.</other_party_left_alliance>
-        <party_low_mp>Looks like ${member} could use a lil&apos; pick-me-up. Somebody got a ${refresh} handy?</party_low_mp>
-        <reminder_canteen>Another Mystical Canteen is ready - now go quench that thirst!</reminder_canteen>
-        <reminder_mog_locker>Ah, dang it, your Mog Locker lease is almost up! If this were San d&apos;Oria, you&apos;d get a proper vault.</reminder_mog_locker>
-        <reminder_moglophone>Well hey now, another Moglophone! Just don&apos;t let Bastok hear about it!</reminder_moglophone>
-        <reminder_plate>Ooooh, that&apos;s a good-lookin&apos; Ra&apos;Kaznarian Plate! Go on and grab it!</reminder_plate>
-        <reraise_check>Oh lordy, you&apos;re running around without Reraise? That&apos;s a Bastokan move if I ever saw one!</reraise_check>
-        <reraise_wears_off>Oh no, your Reraise wore off! Better get that back on before you end up in Bastok!</reraise_wears_off>
-        <signet_wears_off>Well now, that ain&apos;t great - you lost ${signet}! Hope you got a friendly guard nearby!</signet_wears_off>
-        <sparkolade_reminder>Sittin&apos; on all them Sparkolades? Better spend &apos;em before some Bastoker tries to steal &apos;em!</sparkolade_reminder>
-        <sublimation_charged>Hey now, Sublimation&apos;s topped off and ready to roll!</sublimation_charged>
-        <vorseal_wearing>Your Vorseal&apos;s got about 10 minutes left - make &apos;em count!</vorseal_wearing>
-        <you_are_now_alliance_leader>Aw man, you&apos;re the alliance leader now! You&apos;re like San d&apos;Orian royalty!</you_are_now_alliance_leader>
-        <you_are_now_party_leader>Well look at that, you&apos;re in charge now! A true leader, San d&apos;Orian style!</you_are_now_party_leader>
-        <you_joined_alliance>Aw man, you&apos;re in an alliance now! This is gonna be perty epic!</you_joined_alliance>
-        <you_joined_party>Aw man, you&apos;re in a party now! Time to have some fun!</you_joined_party>
-        <you_left_alliance>Well dang, alliance fun&apos;s over for now. Back to solo life!</you_left_alliance>
-        <you_left_party>Well, there ya go - off on your own again.</you_left_party>
-        <your_party_joined_alliance>Aw man, our parties just linked up - this is gonna be perty good!</your_party_joined_alliance>
-        <your_party_left_alliance>Welp, back to just the party. Ain&apos;t nothin&apos; wrong with that!</your_party_left_alliance>
+        <member_joined_alliance>${member} has joined the alliance.</member_joined_alliance>
+        <member_joined_party>${member} has joined the party.</member_joined_party>
+        <member_left_alliance>${member} has left the alliance.</member_left_alliance>
+        <member_left_party>${member} has left the party.</member_left_party>
+        <mireu_popped>Mireu was just mentioned in ${zone}.</mireu_popped>
+        <other_party_joined_alliance>A party has joined the alliance.</other_party_joined_alliance>
+        <other_party_left_alliance>A party has left the alliance.</other_party_left_alliance>
+        <party_low_mp>It looks like ${member} could use a ${refresh}.</party_low_mp>
+        <reminder_canteen>Another Mystical Canteen should be available now.</reminder_canteen>
+        <reminder_mog_locker>Your Mog Locker lease is expiring soon.</reminder_mog_locker>
+        <reminder_moglophone>Another Moglophone should be available now.</reminder_moglophone>
+        <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate should be available now.</reminder_plate>
+        <reraise_check>You do not have Reraise on.</reraise_check>
+        <reraise_wears_off>Your Reraise effect has worn off.</reraise_wears_off>
+        <signet_wears_off>Your ${signet} effect has worn off.</signet_wears_off>
+        <sparkolade_reminder>Don&apos;t forget to spend your Sparkolades.</sparkolade_reminder>
+        <sublimation_charged>Sublimation is now fully charged and ready to use.</sublimation_charged>
+        <vorseal_wearing>You have about 10 minutes left on your Vorseal effect.</vorseal_wearing>
+        <you_are_now_alliance_leader>You are now the alliance leader.</you_are_now_alliance_leader>
+        <you_are_now_party_leader>You are now the party leader.</you_are_now_party_leader>
+        <you_joined_alliance>You have joined an alliance.</you_joined_alliance>
+        <you_joined_party>You have joined a party.</you_joined_party>
+        <you_left_alliance>You have left the alliance.</you_left_alliance>
+        <you_left_party>You have left the party.</you_left_party>
+        <your_party_joined_alliance>Your party has joined an alliance.</your_party_joined_alliance>
+        <your_party_left_alliance>Your party has left the alliance.</your_party_left_alliance>
     </global>
 </settings>
