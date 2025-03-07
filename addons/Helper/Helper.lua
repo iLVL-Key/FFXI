@@ -792,12 +792,11 @@ end
 
 local function checkForNewHelpers()
 	local local_helpers = getLocalHelpers()
-	local github_helpers = nil
+	local github_helpers = getGitHubHelpers()
 
 	--Wait for GitHub data (up to 5 seconds)
 	local max_attempts = 10 --Check every 0.5s, up to 5s total
 	for i = 1, max_attempts do
-		github_helpers = getGitHubHelpers()
 		if github_helpers then
 			break --Exit the loop as soon as data is retrieved
 		end
@@ -805,7 +804,7 @@ local function checkForNewHelpers()
 	end
 
 	if not github_helpers then
-		win.add_to_chat(8, ('[Helper] '):color(220) .. ('Failed to retrieve list of Helpers from GitHub. Please try again.'):color(8))
+		win.add_to_chat(8, ('[Helper] '):color(220) .. ('Could not retrieve list of Helpers from GitHub. Please try again.'):color(8))
 		return
 	end
 
@@ -859,12 +858,11 @@ end
 function checkForAddonUpdates()
 
 	--Retrieve the latest SHA from GitHub
-	local github_addon_sha = nil
+	local github_addon_sha = getGitHubAddonSHA()
 
 	--Wait for GitHub data (up to 5 seconds)
 	local max_attempts = 10 --Check every 0.5s, up to 5s total
 	for i = 1, max_attempts do
-		github_addon_sha = getGitHubAddonSHA()
 		if github_addon_sha then
 			break --Exit the loop as soon as data is retrieved
 		end
@@ -952,12 +950,11 @@ end
 --Check for updates to the Helpers
 function checkForHelperUpdates()
 
-	local github_helper_shas = nil
+	local github_helper_shas = getGitHubHelperSHAs()
 
 	--Wait for GitHub data (up to 5 seconds)
 	local max_attempts = 10 --Check every 0.5s, up to 5s total
 	for i = 1, max_attempts do
-		github_helper_shas = getGitHubHelperSHAs()
 		if github_helper_shas then
 			break --Exit the loop as soon as data is retrieved
 		end
@@ -1040,12 +1037,11 @@ end
 --Update any current Helpers that have been changed on GitHub
 function updateCurrentHelpers()
 
-	local github_helper_shas = nil
+	local github_helper_shas = getGitHubHelperSHAs()
 
 	--Wait for GitHub data (up to 5 seconds)
 	local max_attempts = 10 --Check every 0.5s, up to 5s total
 	for i = 1, max_attempts do
-		github_helper_shas = getGitHubHelperSHAs()
 		if github_helper_shas then
 			break --Exit the loop as soon as data is retrieved
 		end
@@ -1086,43 +1082,61 @@ end
 
 --Download media files for a specific Helper
 function downloadHelperMedia(helper_name)
+
 	local github_media_url = "https://api.github.com/repos/iLVL-Key/FFXI/contents/addons/Helper/data/media/"..helper_name
 	local save_path = media_folder..helper_name.."/"
-	
-	--Ensure the data/helper/media folder exists
+
+	-- Ensure /data/media/ exists
 	if not win.dir_exists(media_folder) then
 		win.create_dir(media_folder)
 	end
 
-	--Ensure the local Helper media folder exists
+	-- Ensure local Helper media folder exists
 	if not win.dir_exists(save_path) then
 		win.create_dir(save_path)
 	end
 
-	--Fetch the list of media files from GitHub
+	-- Fetch the list of media files from GitHub
 	local response = io.popen(string.format('curl -s -L -H "User-Agent: Windower-Helper-Addon" "%s"', github_media_url)):read("*all")
 
+	--Wait for GitHub data (up to 5 seconds)
+	local max_attempts = 10 --Check every 0.5s, up to 5s total
+	for i = 1, max_attempts do
+		if response then
+			break --Exit the loop as soon as data is retrieved
+		end
+		coroutine.sleep(0.5) --Wait 0.5 seconds before retrying
+	end
+
 	if not response or response == "" then
+		win.add_to_chat(8, ('[Helper] '):color(220) .. ('Could not retrieve list of Helper Media from GitHub. Please try again.'):color(8))
 		return
 	end
 
-	--Extract file names from JSON response
-	for file_name, download_url in response:gmatch('"name"%s*:%s*"([^"]+)",%s*"download_url"%s*:%s*"([^"]+)"') do
-		local file_path = save_path..file_name
+	-- Extract media file names and URLs
+	local github_files = {}
 
-		--Download each media file
-		os.execute(string.format('curl -s -L -o "%s" "%s"', file_path, download_url))
+	for file_name in response:gmatch('"name"%s*:%s*"([^"]+)"') do
+		local download_url = response:match('"download_url"%s*:%s*"(.-)"', response:find(file_name))
+		if download_url then
+			table.insert(github_files, { name = file_name, url = download_url })
+		end
+	end
+
+	-- Download each media file
+	for _, file in ipairs(github_files) do
+		local file_path = save_path .. file.name
+		os.execute(string.format('curl -s -L -o "%s" "%s"', file_path, file.url))
 	end
 end
 
 --Download any new Helpers from GitHub
 function downloadNewHelpers()
-	local github_helper_shas = nil
+	local github_helper_shas = getGitHubHelperSHAs()
 
 	--Wait for GitHub data (10 checks)
 	local max_attempts = 10  --Check every 0.5s, up to 5s total
 	for i = 1, max_attempts do
-		github_helper_shas = getGitHubHelperSHAs()
 		if github_helper_shas then
 			break --Exit the loop as soon as data is retrieved
 		end
@@ -1207,12 +1221,11 @@ function updateAddon()
 	checkAndDownloadSounds()
 
 	local local_addon_sha = addon_sha
-	local github_addon_sha = nil
+	local github_addon_sha = getGitHubAddonSHA()
 
 	--Wait for GitHub data (up to 5 seconds)
 	local max_attempts = 10 --Check every 0.5s, up to 5s total
 	for i = 1, max_attempts do
-		github_addon_sha = getGitHubAddonSHA()
 		if github_addon_sha then
 			break --Exit the loop as soon as data is retrieved
 		end
