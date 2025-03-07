@@ -2,8 +2,8 @@
 <settings>
     <global>
         <ability_ready>Ah, ${ability} is primed - use it now, perfectly timed!</ability_ready>
-        <capped_job_points>Oh ho ho, the deed is done, your Job Points are capped-how fun!</capped_job_points>
-        <capped_merit_points>Oh ho ho, your Merit Points have hit the cap-no more room for a single scrap!</capped_merit_points>
+        <capped_job_points>Oh ho ho, the deed is done, your Job Points are capped - how fun!</capped_job_points>
+        <capped_merit_points>Oh ho ho, your Merit Points have hit the cap - no more room for a single scrap!</capped_merit_points>
         <flavor_text>
             <1>Oh ho, your humor&apos;s a delight - it brightens the night!</1>
             <10>Oh ho, your enthusiasm&apos;s fresh - always cutting through the mesh!</10>
@@ -86,35 +86,35 @@
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>b6a181b43238c4398a3a33c0df97399852b06a4f</sha>
+            <sha>853439f859e32252de854dd43f4e2eedae2c6e31</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
-        <member_joined_alliance>Oh ho, ${member} joins the fray - our power grows this day!</member_joined_alliance>
-        <member_joined_party>Oh ho, ${member} has come - let&apos;s make this party hum!</member_joined_party>
-        <member_left_alliance>Ah, ${member} takes their leave - a loss, we must grieve!</member_left_alliance>
-        <member_left_party>Ah, ${member} departs - time to guard our hearts!</member_left_party>
+        <member_joined_alliance>Ah-ha, ${member} has arrived - now our strength is amplified!</member_joined_alliance>
+        <member_joined_party>With ${member} here, we shan't retreat - our foes shall crumble in defeat!</member_joined_party>
+        <member_left_alliance>Ah, ${member} has bid adieu - a loss for us, a gain for who?</member_left_alliance>
+        <member_left_party>Oh, ${member} is gone, what a shame - our battles now won't be the same!</member_left_party>
         <mireu_popped>Ho ho, Mireu appears in sight - at ${zone}, prepare for the fight!</mireu_popped>
-        <other_party_joined_alliance>Ho ho, another party arrives - let&apos;s see how it thrives!</other_party_joined_alliance>
-        <other_party_left_alliance>Ah, a party has gone - fewer to lean upon!</other_party_left_alliance>
-        <party_low_mp>Oh ho, ${member} seems quite frail - how about a ${refresh} to prevail?</party_low_mp>
-        <reminder_canteen>Oh ho ho! A Mystical Canteen, just for you - what will you do? Guzzle or brew?</reminder_canteen>
+        <other_party_joined_alliance>A party joins, how quaint, how neat - I do hope they can take the heat!</other_party_joined_alliance>
+        <other_party_left_alliance>A party gone, now that's a twist - that's okay, they won't be missed.</other_party_left_alliance>
+        <party_low_mp>Tsk tsk, ${member} looks quite weak - perhaps a ${refresh} is what they seek?</party_low_mp>
+        <reminder_canteen>A Mystical Canteen, just for you - what will you do? Guzzle or brew?</reminder_canteen>
         <reminder_mog_locker>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</reminder_mog_locker>
         <reminder_moglophone>Another Moglophone, ready to chime - don&apos;t waste it this time!</reminder_moglophone>
         <reminder_plate>Your Ra&apos;Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
         <reraise_check>No Reraise? Oh, what a blunder - when you fall, you&apos;ll stay down under!</reraise_check>
-		<reraise_wears_off>Your Reraise spell has slipped away - fall now, and you're there to stay!</reraise_wears_off>
-		<signet_wears_off>Oh ho ho! Your ${signet} is through - now what, adventurer? What will you do?</signet_wears_off>
+        <reraise_wears_off>Your Reraise spell has slipped away - fall now, and you&apos;re there to stay!</reraise_wears_off>
+        <signet_wears_off>Oh ho ho! Your ${signet} is through - what now, adventurer? What will you do?</signet_wears_off>
         <sparkolade_reminder>Hoarding Sparkolades, are we now? Use them up, or take a bow!</sparkolade_reminder>
-        <sublimation_charged>Sublimation&apos;s charge is complete - now, unleash its feat!</sublimation_charged>
-        <vorseal_reminder>Oh ho ho! Your Vorseal effect is running low, about 10 minutes left, didn&apos;t you know?</vorseal_reminder>
-        <you_are_now_alliance_leader>Oh ho, alliance leader you are - lead them near and far!</you_are_now_alliance_leader>
-        <you_are_now_party_leader>Ah, party leader you claim - guide them to fame!</you_are_now_party_leader>
-        <you_joined_alliance>Oh ho, in alliance you stand - ready to lend a hand!</you_joined_alliance>
-        <you_joined_party>Oh ho, you&apos;ve joined a team - let your prowess gleam!</you_joined_party>
-        <you_left_alliance>Ah, you&apos;ve left the fold - adventures untold!</you_left_alliance>
-        <you_left_party>Ah, you&apos;ve left the crowd - no more voices too loud!</you_left_party>
-        <your_party_joined_alliance>Oh ho, your party joins in - a step closer to win!</your_party_joined_alliance>
-        <your_party_left_alliance>Ah, your party&apos;s now out - what&apos;s this all about?</your_party_left_alliance>
+        <sublimation_charged>Sublimation&apos;s charge is complete - use it now, unleash its feat!</sublimation_charged>
+        <vorseal_wearing>Oh ho ho! Your Vorseal effect is running low - about 10 minutes left, didn&apos;t you know?</vorseal_wearing>
+        <you_are_now_alliance_leader>Alliance leader, now that's grand - but will you rule with steady hand?</you_are_now_alliance_leader>
+        <you_are_now_party_leader>Party leader you are, the power is great - use it wisely, or seal your fate!</you_are_now_party_leader>
+        <you_joined_alliance>Joined an alliance, oh what a day - do make sure you don't get in the way!</you_joined_alliance>
+        <you_joined_party>Oh ho, you're part of the team - time to fight and make them scream!</you_joined_party>
+        <you_left_alliance>The alliance is done, you've taken your leave - what's next now, what will you achieve?</you_left_alliance>
+        <you_left_party>The party's done, you walk alone - will you rise, or just bemoan?</you_left_party>
+        <your_party_joined_alliance>A grand alliance, strength anew - but will it last? That's up to you!</your_party_joined_alliance>
+        <your_party_left_alliance>That alliance? A fragile thing - without your might, they'll feel the sting!</your_party_left_alliance>
     </global>
 </settings>
