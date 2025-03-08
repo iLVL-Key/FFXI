@@ -134,6 +134,7 @@ defaults = {
 			faceplate_fade_delay_seconds = 4,
 			faceplate_fade_multiplier = 5,
 			faceplates = true,
+			faceplates_large = true,
 			custom_sounds = true,
 			sound_effects = true,
 		},
@@ -279,6 +280,7 @@ opt = {
 	check_party_for_low_mp_delay_minutes = math.floor(settings.options.check_party_for_low_mp_delay_minutes * 60),
 	custom_sounds = settings.options.media.custom_sounds,
 	faceplates = settings.options.media.faceplates,
+	faceplates_large = settings.options.media.faceplates_large,
 	faceplate_fade_delay_seconds = settings.options.media.faceplate_fade_delay_seconds,
 	faceplate_fade_multiplier = settings.options.media.faceplate_fade_multiplier,
 	faceplate_pos = settings.options.media.faceplate_pos,
@@ -408,14 +410,10 @@ faceplate_fade_out_timestamp = 0
 faceplate_fade_alpha_num = 255
 media_folder = win.addon_path.."data/media/"
 
-helper_image = images.new()
-helper_image:repeat_xy(1, 1)
-helper_image:draggable(true)
-helper_image:fit(true)
-helper_image:pos(opt.faceplate_pos.x,opt.faceplate_pos.y)
-helper_image:path(windower.addon_path..'data/media/shantotto/faceplate.png')
-helper_image:alpha(0)
-helper_image:show()
+helper_faceplate = images.new()
+helper_faceplate:pos(opt.faceplate_pos.x,opt.faceplate_pos.y)
+helper_faceplate:alpha(0)
+helper_faceplate:show()
 
 --Update the party/alliance structure
 function updatePartyStructure()
@@ -543,11 +541,12 @@ function showFaceplate(helper_name)
 	if not opt.faceplates then return end
 
 	local helper_folder = media_folder..helper_name.."/"
-	local file_name = "faceplate.png"
+	local size = opt.faceplates_large and "large" or "small"
+	local file_name = "faceplate_"..size..".png"
 
 	if win.file_exists(helper_folder..file_name) then
-		helper_image:path(helper_folder..file_name)
-		helper_image:alpha(255)
+		helper_faceplate:path(helper_folder..file_name)
+		helper_faceplate:alpha(255)
 		faceplate_fade_alpha_num = 255
 		faceplate_fade_out_timestamp = os.time() + opt.faceplate_fade_delay_seconds
 
@@ -2455,9 +2454,9 @@ win.register_event('prerender', function()
 	if faceplate_fade_out then
 		if faceplate_fade_alpha_num > opt.faceplate_fade_multiplier then
 			faceplate_fade_alpha_num = faceplate_fade_alpha_num - opt.faceplate_fade_multiplier
-			helper_image:alpha(faceplate_fade_alpha_num)
+			helper_faceplate:alpha(faceplate_fade_alpha_num)
 		elseif faceplate_fade_alpha_num <= opt.faceplate_fade_multiplier then
-			helper_image:alpha(0)
+			helper_faceplate:alpha(0)
 			faceplate_fade_out = false
 		end
 	end
@@ -2833,6 +2832,26 @@ win.register_event('addon command',function(addcmd, ...)
 			opt.helper_sounds = true
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Sound Mode: '):color(8)..('Custom Helper Sounds (if available)'):color(1))
+		end
+
+	elseif addcmd == "faces" or addcmd == "face" or addcmd == "faceplates" or addcmd == "faceplate" or addcmd == "f" then
+		if opt.faceplates and opt.faceplates_large then
+			settings.options.faceplates_large = false
+			opt.faceplates_large = false
+			settings:save('all')
+			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Small'):color(1))
+		elseif opt.faceplates then
+			settings.options.faceplates = false
+			opt.faceplates = false
+			settings:save('all')
+			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Off'):color(1))
+		else
+			settings.options.faceplates = true
+			opt.faceplates = true
+			settings.options.faceplates_large = true
+			opt.faceplates_large = true
+			settings:save('all')
+			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Large'):color(1))
 		end
 
 	elseif addcmd == nil then
