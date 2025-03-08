@@ -1015,6 +1015,9 @@ function downloadHelper(file_name, github_helper_sha)
 	--Update the Helper SHA
 	updateHelperSHA(file_name, github_helper_sha)
 
+	--Small delay to avoid freezing the game
+	coroutine.sleep(0.1)
+
 end
 
 --Download the latest version of Helper.lua from GitHub
@@ -1127,8 +1130,13 @@ function downloadHelperMedia(helper_name)
 
 	-- Download each media file
 	for _, file in ipairs(github_files) do
+
 		local file_path = save_path .. file.name
 		os.execute(string.format('curl -s -L -o "%s" "%s"', file_path, file.url))
+
+		--Small delay to avoid freezing the game
+		coroutine.sleep(0.1)
+
 	end
 end
 
@@ -1165,6 +1173,7 @@ function downloadNewHelpers(arg)
 
 			--Check for a media folder and download files if it exists
 			downloadHelperMedia(name)
+
 		end
 	end
 
@@ -1696,7 +1705,7 @@ end)
 win.register_event('login', function()
 
 	paused = true
-	
+
 	--wait 5 seconds to let game values load
 	coroutine.schedule(function()
 		
@@ -1711,7 +1720,7 @@ win.register_event('login', function()
 		end
 
 	end, 5)
-	
+
 	--wait 6 seconds before auto check/update
 	coroutine.schedule(function()
 		checkForUpdates()
