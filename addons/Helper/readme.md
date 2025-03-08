@@ -67,7 +67,8 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 Open the `/Helper/data/settings.xml` file to adjust these settings.
 - `ability_ready` - Alerts you when specific Job Abilites are ready to use again. Includes all SP abilities and abilities with recasts 10 minutes or longer.
 - `after_zone_party_check_delay_seconds` - Amount of time to pause watching for party structure changes after zoning. Adjust this higher if you get a notification about leaving then immediately joining a party after you zone.
-- `auto_check_for_updates` - Automatically check for updates once per week.
+- `auto_check_for_updates` - Automatically check for updates.
+- `auto_check_for_updates_delay_days` - Days between automatically checking for updates.
 - `auto_update` - Automatically update all files once per week. This will be run instead of auto_check_for_updates if set to true.
 - `check_party_for_low_mp` - If you are on BRD or RDM, will keep an eye on your party members MP levels.
   - Only watches party members with Max MP over 1,000.
@@ -115,6 +116,7 @@ Version 2.0
 - Added `face/f` in-game command to toggle Helper Faceplates on or off.
 - Added `update full` subcommand. Forces a full redownload of everything.
 - Added `flavor_text_in_combat` option to control flavor text displaying while in combat.
+- Added `auto_check_for_updates_delay_days` option to set how many days between the auto check for updates. Default has been updated from the hard-coded 7 days to 30 days.
 - Added a 5 second wait after logging in before auto check/update runs.
 - Added additional options for party announcement sounds, and will follow a hierarchy to decide which sound to use if not available.
   - member_joined_party now has you_joined_party, you_joined_alliance, member_joined_party, and member_joined_alliance.
@@ -123,6 +125,8 @@ Version 2.0
   - party_left_alliance now has your_party_left_alliance, and other_party_left_alliance.
 - Adjusted calls to download from GitHub to wait up to 5 seconds to make sure the download completes before moving on or giving up.
 - Adjusted Reraise Reminder to pause while dead.
+- Adjusted delay after login to let game values load from 2 to 5 seconds. This gives a little more leeway for slow loading and prevents the Sublimation notification from going off if you login with the buff already on you.
+- Adjusted delay for running the automatic check for updates from 5 to 6 seconds to account for the above delay change (let's Helper introduction run first).
 - Fixed Signet wearing off notification going off when switching from a character with to a character without.
 
 Version 1.8.5
