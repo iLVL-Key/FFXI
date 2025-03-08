@@ -2793,7 +2793,7 @@ win.register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == "voices" or addcmd == "voice" or addcmd == "v" then
 		settings.options.voices = not settings.options.voices
-		opt.voices = settings.opt.voices
+		opt.voices = settings.options.voices
 		settings:save('all')
 		win.add_to_chat(8,('[Helper] '):color(220)..('Voices Mode: '):color(8)..(opt.voices and 'On' or 'Off'):color(1))
 
