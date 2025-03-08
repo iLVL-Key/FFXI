@@ -1131,7 +1131,8 @@ function downloadHelperMedia(helper_name)
 end
 
 --Download any new Helpers from GitHub
-function downloadNewHelpers()
+function downloadNewHelpers(arg)
+
 	local github_helper_shas = getGitHubHelperSHAs()
 
 	--Wait for GitHub data (10 checks)
@@ -1156,7 +1157,7 @@ function downloadNewHelpers()
 		local file_path = win.addon_path..'data/helpers/'..name..'.xml'
 
 		--Check if the Helper file exists
-		if not win.file_exists(file_path) then
+		if not win.file_exists(file_path) or arg == 'full' then
 			downloadHelper(file_name, github_helper_info.sha) --Download the Helper XML
 			table.insert(new_helpers, file_name)
 
@@ -1177,7 +1178,7 @@ function downloadNewHelpers()
 end
 
 --Check for missing sound files
-function checkAndDownloadSounds()
+function checkAndDownloadSounds(arg)
 	
 	--Ensure the data/helper/media folder exists
 	if not win.dir_exists(media_folder) then
@@ -1204,7 +1205,7 @@ function checkAndDownloadSounds()
 		local file_path = media_folder .. filename
 
 		--If the file does not exist, download it
-		if not win.file_exists(file_path) then
+		if not win.file_exists(file_path) or arg == 'full' then
 
 			local download_url = base_url .. filename
 			local curl_command = string.format('start /B curl -s -L -o "%s" "%s"', file_path, download_url)
@@ -1215,10 +1216,10 @@ function checkAndDownloadSounds()
 end
 
 --Check for updated addon on GitHub
-function updateAddon()
+function updateAddon(arg)
 
 	--Make sure all sound files are present
-	checkAndDownloadSounds()
+	checkAndDownloadSounds(arg)
 
 	local local_addon_sha = addon_sha
 	local github_addon_sha = getGitHubAddonSHA()
@@ -1237,7 +1238,7 @@ function updateAddon()
 		return
 	end
 
-	if not local_addon_sha or local_addon_sha ~= github_addon_sha then
+	if not local_addon_sha or local_addon_sha ~= github_addon_sha or arg == 'full' then
 		downloadAddon(github_addon_sha)
 	else
 		win.add_to_chat(8,('[Helper] '):color(220)..('No Helper addon update available.'):color(28))
@@ -1248,6 +1249,21 @@ end
 function saveLastCheckTime()
 	timestamps.last_check = os.time()
 	settings:save('all')
+end
+
+--Force a full update/redownload for everything
+function updateFull()
+
+	win.add_to_chat(8,('[Helper] '):color(220)..('Downloading all Helpers...'):color(8))
+	coroutine.sleep(1)
+	downloadNewHelpers('full')
+
+	win.add_to_chat(8,('[Helper] '):color(220)..('Updating Helper addon...'):color(8))
+	coroutine.sleep(1)
+	updateAddon('full')
+
+	saveLastCheckTime()
+
 end
 
 --Update everything
@@ -2622,9 +2638,9 @@ win.register_event('addon command',function(addcmd, ...)
 		win.add_to_chat(8,(' sound/s '):color(36)..('- Switch sounds between Custom Helper, Default, or off.'):color(8))
 		win.add_to_chat(8,(' face/f '):color(36)..('- Toggle Helper Faceplates on or off.'):color(8))
 		win.add_to_chat(8,(' check '):color(36)..('[new|current|addon]'):color(53)..('- Check for new updates. Does not update.'):color(8))
-		win.add_to_chat(8,(' update '):color(36)..('[new|current|addon]'):color(53)..('- Download new updates.'):color(8))
+		win.add_to_chat(8,(' update '):color(36)..('[new|current|addon|full]'):color(53)..('- Download new updates.'):color(8))
 		win.add_to_chat(8,('   - Optionally specify which to check/update:'):color(8))
-		win.add_to_chat(8,('       New Helpers, current Helpers, or the addon itself.'):color(8))
+		win.add_to_chat(8,('     New Helpers, current Helpers, the addon itself, or full (re)download of everthing.'):color(8))
 
 	elseif addcmd == 'load' or addcmd == 'l' then
 		if arg[1] then
@@ -2743,6 +2759,10 @@ win.register_event('addon command',function(addcmd, ...)
 				win.add_to_chat(8,('[Helper] '):color(220)..('Updating Helper addon...'):color(8))
 				coroutine.sleep(1)
 				updateAddon()
+			elseif subcmd == "full" then
+				win.add_to_chat(8,('[Helper] '):color(220)..('Performing full update. This will take a moment...'):color(8))
+				coroutine.sleep(1)
+				updateFull()
 			else
 				win.add_to_chat(8,('[Helper] '):color(220)..('Unrecognized command. Type'):color(8)..(' //helper help'):color(1)..(' for a list of commands.'):color(8))
 			end
