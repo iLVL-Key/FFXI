@@ -2165,6 +2165,7 @@ function trackPartyStructure()
 	end
 
 	if text then
+		local selected = getHelper()
 		win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 	end
 
