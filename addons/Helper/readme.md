@@ -25,10 +25,10 @@ Players can load different Helpers, each with its own personality and dialogue, 
   - Easily switch between Helpers
   - Create your own!
 - <ins>**GitHub-Powered Updates**</ins>
-  - **Checks for new Helpers** → Detects new available Helpers.
-  - **Checks for Helper updates** → Notifies you if an update is available to current Helpers.
-  - **Updates the addon itself** → Updates the addon (Helper.lua) when a new version is released.
-  - **Optional automatic updates** → Updates addon and Helpers automatically (if enabled in settings).
+  - **Checks for new Helpers** → New available Helpers added to the GitHub repo.
+  - **Checks for Helper updates** → Updates available for current Helpers you have.
+  - **Checks for addon updates** → Update available for the addon itself (Helper.lua).
+  - **Optional automatic updates** → Updates addon and Helpers automatically (if enabled).
 - <ins>**Customization & User Control**</ins>
   - Choose between automatic or manual updates
   - Enable/disable individual Helpers
