@@ -1976,6 +1976,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].you_joined_alliance
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'you_joined_alliance')
 			showFaceplate(selected.helper)
 		end
@@ -1985,6 +1986,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].you_joined_party
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'you_joined_party')
 			showFaceplate(selected.helper)
 		end
@@ -1994,6 +1996,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].you_left_alliance
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'you_left_alliance')
 			showFaceplate(selected.helper)
 		end
@@ -2003,6 +2006,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].you_left_party
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'you_left_party')
 			showFaceplate(selected.helper)
 		end
@@ -2012,6 +2016,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].your_party_joined_alliance
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'your_party_joined_alliance')
 			showFaceplate(selected.helper)
 		end
@@ -2021,6 +2026,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].your_party_left_alliance
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'your_party_left_alliance')
 			showFaceplate(selected.helper)
 		end
@@ -2031,6 +2037,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].other_party_joined_alliance
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'other_party_joined_alliance')
 			showFaceplate(selected.helper)
 		end
@@ -2041,6 +2048,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].other_party_left_alliance
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'other_party_left_alliance')
 			showFaceplate(selected.helper)
 		end
@@ -2063,6 +2071,7 @@ function trackPartyStructure()
 					text = helpers[selected.helper].member_joined_party
 					if text then
 						text = memberPlaceholder(text, member)
+						win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 						playSound(selected.helper, 'member_joined_party')
 						showFaceplate(selected.helper)
 					end
@@ -2081,6 +2090,7 @@ function trackPartyStructure()
 					text = helpers[selected.helper].member_left_party
 					if text then
 						text = memberPlaceholder(text, member)
+						win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 						playSound(selected.helper, 'member_left_party')
 						showFaceplate(selected.helper)
 					end
@@ -2114,6 +2124,7 @@ function trackPartyStructure()
 					text = helpers[selected.helper].member_joined_alliance
 					if text then
 						text = memberPlaceholder(text, member)
+						win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 						playSound(selected.helper, 'member_joined_alliance')
 						showFaceplate(selected.helper)
 					end
@@ -2133,6 +2144,7 @@ function trackPartyStructure()
 					text = helpers[selected.helper].member_left_alliance
 					if text then
 						text = memberPlaceholder(text, member)
+						win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 						playSound(selected.helper, 'member_left_alliance')
 						showFaceplate(selected.helper)
 					end
@@ -2150,6 +2162,7 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].you_are_now_alliance_leader
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'now_alliance_leader')
 			showFaceplate(selected.helper)
 		end
@@ -2159,14 +2172,10 @@ function trackPartyStructure()
 		local selected = getHelper()
 		text = helpers[selected.helper].you_are_now_party_leader
 		if text then
+			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 			playSound(selected.helper, 'now_party_leader')
 			showFaceplate(selected.helper)
 		end
-	end
-
-	if text then
-		local selected = getHelper()
-		win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 	end
 
 	-- Save the current states for future comparison
