@@ -107,6 +107,7 @@ defaults = {
 		},
 		after_zone_party_check_delay_seconds = 8,
 		auto_check_for_updates = true,
+		auto_check_for_updates_delay_days = 30,
 		auto_update = false,
 		check_party_for_low_mp = true,
 		check_party_for_low_mp_delay_minutes = 15,
@@ -270,6 +271,7 @@ opt = {
 	ability_ready = settings.options.ability_ready,
 	after_zone_party_check_delay_seconds = math.floor(settings.options.after_zone_party_check_delay_seconds),
 	auto_check_for_updates = settings.options.auto_check_for_updates,
+	auto_check_for_updates_delay_days = settings.options.auto_check_for_updates_delay_days,
 	auto_update = settings.options.auto_update,
 	capped_job_points = settings.options.notifications.capped_job_points,
 	capped_merit_points = settings.options.notifications.capped_merit_points,
@@ -1314,10 +1316,10 @@ function checkForUpdates()
 
 	local current_time = os.time()
 	local last_check = timestamps.last_check or 0
-	local one_week = 7 * 24 * 60 * 60  --7 days in seconds
+	local next_check = opt.auto_check_for_updates_delay_days * 24 * 60 * 60  --X days in seconds
 
 	--Only check if at least a week has passed since last check
-	if current_time - last_check >= one_week then
+	if current_time - last_check >= next_check then
 
 		if opt.auto_update then
 
@@ -1343,8 +1345,6 @@ function saveReminderTimestamp(key_item, key_item_reminder_repeat_hours)
 
 	--Save the timestamp for 20 hours into the future
 	timestamps[key_item] = os.time() + (hours * 60 * 60)
-
-	--Save settings to persist the timestamp
 	settings:save('all')
 end
 
@@ -1697,7 +1697,7 @@ win.register_event('login', function()
 
 	paused = true
 	
-	--wait 2 seconds to let game values load
+	--wait 5 seconds to let game values load
 	coroutine.schedule(function()
 		
 		initialize()
@@ -1710,12 +1710,12 @@ win.register_event('login', function()
 			introduceHelper()
 		end
 
-	end, 2)
+	end, 5)
 	
-	--wait 5 seconds before auto check/update
+	--wait 6 seconds before auto check/update
 	coroutine.schedule(function()
 		checkForUpdates()
-	end, 5)
+	end, 6)
 
 end)
 
