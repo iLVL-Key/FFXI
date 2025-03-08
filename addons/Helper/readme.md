@@ -56,7 +56,11 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 - `sound/s` - Switch sounds between Custom Helper, Default, or off.
 - `face/f` - Toggle Helper Faceplates on or off.
 - `check [new|current|addon]` - Check for new updates. Does not update.
-- `update [new|current|addon]` - Download new updates.
+- `update [new|current|addon|full]` - Download new updates.
+  - `new` - Download new Helpers only.
+  - `current` - Update current Helpers only.
+  - `addon` - Update the Helper addon itself only.
+  - `full` - Force a full redownload of everything.
 - `help` - Display a list of commands and addon info.
 
 ## Options
@@ -109,6 +113,7 @@ Version 2.0
 - Added support for Helper Faceplates. Will briefly display an image of the current Helper when a notification/alert plays. Stored in a `/data/media/helper_name` folder.
 - Added `sounds/s` in-game command to cycle sounds: Custom Helper > Default > Off
 - Added `face/f` in-game command to toggle Helper Faceplates on or off.
+- Added `update full` subcommand. Forces a full redownload of everything.
 - Added `flavor_text_in_combat` option to control flavor text displaying while in combat.
 - Added a 5 second wait after logging in before auto check/update runs.
 - Added additional options for party announcement sounds, and will follow a hierarchy to decide which sound to use if not available.
