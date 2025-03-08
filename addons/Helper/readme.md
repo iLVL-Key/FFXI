@@ -123,6 +123,7 @@ Version 2.0
   - member_left_party now has you_left_party, you_left_alliance, member_left_party, and member_left_alliance.
   - party_joined_alliance now has your_party_joined_alliance, and other_party_joined_alliance.
   - party_left_alliance now has your_party_left_alliance, and other_party_left_alliance.
+  - Added small (0.1 second) pauses inside download functions to prevent complete freezing of the game while they run. This was especially noticeable when updating the first time or when running the new `update full` subcommand for a complete redownload of everything.
 - Adjusted calls to download from GitHub to wait up to 5 seconds to make sure the download completes before moving on or giving up.
 - Adjusted Reraise Reminder to pause while dead.
 - Adjusted delay after login to let game values load from 2 to 5 seconds. This gives a little more leeway for slow loading and prevents the Sublimation notification from going off if you login with the buff already on you.
