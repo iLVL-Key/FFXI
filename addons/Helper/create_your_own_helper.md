@@ -14,6 +14,8 @@ You can simply go down line by line and change the text to whatever you like, th
 
 Another thing to note is that the numbers for the `name_color` and `text_color` relate to a specific chat channel in-game. If you have the Battlemod addon loaded, you can type `//bm colortest` and it will spit out a lot of colored numbers into your chatlog for reference. I have noticed that some of the numbers and their colors don't seem to match up when used in other addons, though I'm not sure where that issue lies. In addition, since these are technically chat channels that are being "borrowed" to color the text in the users chat log, you will run across some number/colors that may move the Helpers text into a different window if the user has the chatlog split into two windows. This is a result of fixing an issue where if the text is too long, and spills over into a second line in the users chatlog, it will lose its coloring and revert to the initial color set by add_to_chat. To fix that, I made the initial chat channel/color be the same as the text color, but then that introduced the issue where some colors will be in different windows.  
 
+For the Flavor Text, you'll notice that each line is numbered. The total number does not matter, you can have 1 total, or you can have 200. All you will need to do is keep the numbers unique and in order.
+
 Once you finish your changes and save that file, you can then load it in-game with `//helper load your_helper_name`.  
 
 Now that we've gotten the basics for your new Helper done, you could stop there and it will work just fine, but let's add some pizazz!
