@@ -2,8 +2,20 @@
 The Helper addon acts as a customizable in-game assistant that provides alerts, notifications, and flavor text to enhance the player's experience. The addon features a system of "Helpers"—virtual companions that deliver messages in chat, track important gameplay events, and provide reminders. The default Helper, Vana, offers encouragement, alerts players about key game mechanics (such as abilities becoming ready or capped job/merit points), and notifies them of party-related events like members joining or leaving.
 
 Players can load different Helpers, each with its own personality and dialogue, and cycle between them. The addon also supports sound effects for key notifications and reminders for gameplay mechanics like Sublimation being fully charged or Vorseal effects nearing expiration. With its blend of functionality and personality, Helper adds both utility and charm to the FFXI experience.
+## Helpers
+These are 3 of the many Helpers currently available to use.  
 
-![Helpers_list](https://github.com/user-attachments/assets/791deba5-f990-4766-a5c8-e6dcac9555d3)
+![faceplate_small](https://github.com/user-attachments/assets/18178a4d-ab89-4b3e-a99c-2b66a2394243)  
+**Shantotto**  
+Witty, rhyming, and slightly menacing.  
+
+![faceplate_small](https://github.com/user-attachments/assets/72b7bb44-c0e9-41a1-8af6-0faa6852aab3)  
+**Moogle**  
+Cheerful, helpful, and full of "kupo!"  
+
+![faceplate_small](https://github.com/user-attachments/assets/11961710-5f2d-4af9-8f55-ebf54d041a45)  
+**Mayakov**  
+Flamboyant, theatrical, and obthethed with perfecthion.  
 
 ## Features
 - <ins>**Automated Notifications & Alerts**</ins>
