@@ -31,14 +31,6 @@ _addon.version = '5.2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
-
---TODO
-------
---Chat mode: Descriptive (current) and condensed (similar to battlemod)
---Add Drain and drain spikes to healing.
-
-
-
 require 'logger'
 require 'chat'
 texts = require('texts')
@@ -2573,26 +2565,26 @@ register_event('action',function(act)
 	end
 
 	if checkForMessage(direct_damage, msg) or spike ~= 0 then
-		
+
 		---------------
 		-- TOTAL DMG --
 		---------------
-		
+
 		if spike ~= 0 then
 			actor_name = target_name
 			actor_lower_name = string.lower(actor_name)
 		end
-		
+
 		if (actor == false and spike == 0) or settings.optout[actor_lower_name] or (actor_name == '[REDACTED]' and actor) then
 			return
 		end
-		
+
 		local tdIndividuals = live.individuals.td
-		
+
 		--What are you and your Rivals original scores
 		local myOriginalTDScore = (tdIndividuals and tdIndividuals[string.lower(myName)] and tdIndividuals[string.lower(myName)].score) or 0
 		local rivalOriginalTDScore = (tdIndividuals and tdIndividuals[rival] and tdIndividuals[rival].score) or 0
-		
+
 		--Retrieve the actors relevant data
 		local tot_dmg = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].score) or 0
 		local index = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].index) or 0
