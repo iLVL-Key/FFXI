@@ -27,9 +27,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.2.1'
+_addon.version = '5.2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
+
+
+--TODO
+------
+--Chat mode: Descriptive (current) and condensed (similar to battlemod)
+--Add Drain and drain spikes to healing.
+
+
 
 require 'logger'
 require 'chat'
@@ -859,7 +867,8 @@ local function getActor(id)
 	--Loop through the alliance members to see if the index of the actor matches anyones pet
 	for i = 1, 18, 1 do
 		local ally_member = get_mob_by_target(ally_pos[i]) or nil
-		if ally_member and get_mob_by_id(id) and get_mob_by_id(id).index == ally_member.pet_index then
+		if get_mob_by_id(id) and get_mob_by_id(id).index and ally_member and ally_member.pet_index
+		and get_mob_by_id(id).index == ally_member.pet_index then
 			--If there is a match, return the name of the pets owner
 			actor = ally_member
 			return actor
@@ -2564,26 +2573,26 @@ register_event('action',function(act)
 	end
 
 	if checkForMessage(direct_damage, msg) or spike ~= 0 then
-
+		
 		---------------
 		-- TOTAL DMG --
 		---------------
-
+		
 		if spike ~= 0 then
 			actor_name = target_name
 			actor_lower_name = string.lower(actor_name)
 		end
-
+		
 		if (actor == false and spike == 0) or settings.optout[actor_lower_name] or (actor_name == '[REDACTED]' and actor) then
 			return
 		end
-
+		
 		local tdIndividuals = live.individuals.td
-
+		
 		--What are you and your Rivals original scores
 		local myOriginalTDScore = (tdIndividuals and tdIndividuals[string.lower(myName)] and tdIndividuals[string.lower(myName)].score) or 0
 		local rivalOriginalTDScore = (tdIndividuals and tdIndividuals[rival] and tdIndividuals[rival].score) or 0
-
+		
 		--Retrieve the actors relevant data
 		local tot_dmg = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].score) or 0
 		local index = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].index) or 0
@@ -4777,7 +4786,7 @@ register_event('addon command',function(addcmd, ...)
 				end
 				local text = ""
 				if places.first == nil then
-					text = "/"..chatmode.." \r--MAGIC BURST BOARD--\rNo Magic Burssts Yet"
+					text = "/"..chatmode.." \r--MAGIC BURST BOARD--\rNo Magic Bursts Yet"
 				else
 					text = "/"..chatmode.." \r--"..uppercase(places.first.name).."\'S MAGIC BURST BOARD--"
 					for i = 1, 5, 1 do
