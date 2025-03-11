@@ -3,19 +3,16 @@ The Helper addon acts as a customizable in-game assistant that provides alerts, 
 
 Players can load different Helpers, each with its own personality and dialogue, and cycle between them. The addon also supports sound effects for key notifications and reminders for gameplay mechanics like Sublimation being fully charged or Vorseal effects nearing expiration. With its blend of functionality and personality, Helper adds both utility and charm to the FFXI experience.
 ## Helpers
-These are 3 of the many Helpers currently available to use.  
+Choose your companion! These are just **three** of the many Helpers available—each with their own unique personality!  
 
-![faceplate_small](https://github.com/user-attachments/assets/18178a4d-ab89-4b3e-a99c-2b66a2394243)  
-**Shantotto**  
-Witty, rhyming, and slightly menacing.  
+## Helpers  
+These are just **three** of the many Helpers available!  
 
-![faceplate_small](https://github.com/user-attachments/assets/72b7bb44-c0e9-41a1-8af6-0faa6852aab3)  
-**Moogle**  
-Cheerful, helpful, and full of "kupo!"  
+| ![Shantotto](https://github.com/user-attachments/assets/18178a4d-ab89-4b3e-a99c-2b66a2394243) | ![Moogle](https://github.com/user-attachments/assets/72b7bb44-c0e9-41a1-8af6-0faa6852aab3) | ![Mayakov](https://github.com/user-attachments/assets/11961710-5f2d-4af9-8f55-ebf54d041a45) |
+|---|---|---|
+| **Shantotto**  | **Moogle**  | **Mayakov**  |
+| Witty, rhyming, and slightly menacing. | Cheerful, helpful, and full of "kupo!" | Flamboyant, theatrical, and obthethed with perfecthion. |
 
-![faceplate_small](https://github.com/user-attachments/assets/11961710-5f2d-4af9-8f55-ebf54d041a45)  
-**Mayakov**  
-Flamboyant, theatrical, and obthethed with perfecthion.  
 
 ## Features
 - <ins>**Automated Notifications & Alerts**</ins>
@@ -56,67 +53,54 @@ Flamboyant, theatrical, and obthethed with perfecthion.
 ## Commands
 All commands must be preceded with `//helper` (ex: `//helper list`)  
 `<required>` `[optional]`
-- `(blank, no command)` - Cycle to the next loaded Helper.
-- `load/l <file_name>` - Load a Helper file into the addon and select for use.
-  - Helper files must be in the `/data/helpers` folder.
-  - Loaded Helpers are saved and do not need to be loaded again unless unloaded.
-- `unload/u <file_name>` - Unload a Helper file from the addon.
-  - Unloaded Helper files are not deleted but are set to disabled.
-- `list` - List currently loaded Helpers.
-- `random/r` - Selects a random Helper to use.
-- `voices/v` - Selects a random Helper to use for EACH alert/notification.
-- `sound/s` - Switch sounds between Custom Helper, Default, or off.
-- `face/f` - Toggle Helper Faceplates on or off.
-- `check [new|current|addon]` - Check for new updates. Does not update.
-- `update [new|current|addon|full]` - Download new updates.
-  - `new` - Download new Helpers only.
-  - `current` - Update current Helpers only.
-  - `addon` - Update the Helper addon itself only.
-  - `full` - Force a full redownload of everything.
-- `help` - Display a list of commands and addon info.
+
+| Command | Description |
+|---------|-------------|
+| *(blank, no command)* | Cycle to the next loaded Helper. |
+| `load/l <file_name>` | Load a Helper file into the addon and select for use.<br> - Helper files must be in the `/data/helpers` folder.<br> - Loaded Helpers are saved and do not need to be loaded again unless unloaded. |
+| `unload/u <file_name>` | Unload a Helper file from the addon.<br> - Unloaded Helper files are not deleted but are set to disabled. |
+| `list` | List currently loaded Helpers. |
+| `random/r` | Selects a random Helper to use. |
+| `voices/v` | Selects a random Helper to use for EACH alert/notification. |
+| `sound/s` | Switch sounds between Custom Helper, Default, or off. |
+| `face/f` | Toggle Helper Faceplates on or off. |
+| `check [new\|current\|addon]` | Check for new updates. Does not update. |
+| `update [new\|current\|addon\|full]` | Download new updates.<br> - `new` - Download new Helpers only.<br> - `current` - Update current Helpers only.<br> - `addon` - Update the Helper addon itself only.<br> - `full` - Force a full redownload of everything. |
+| `help` | Display a list of commands and addon info. |
+
 
 ## Options
 Open the `/Helper/data/settings.xml` file to adjust these settings.
-- `ability_ready` - Alerts you when specific Job Abilites are ready to use again. Includes all SP abilities and abilities with recasts 10 minutes or longer.
-- `after_zone_party_check_delay_seconds` - Amount of time to pause watching for party structure changes after zoning. Adjust this higher if you get a notification about leaving then immediately joining a party after you zone.
-- `auto_check_for_updates` - Automatically check for updates.
-- `auto_check_for_updates_delay_days` - Days between automatically checking for updates.
-- `auto_update` - Automatically update all files once per week. This will be run instead of auto_check_for_updates if set to true.
-- `check_party_for_low_mp` - If you are on BRD or RDM, will keep an eye on your party members MP levels.
-  - Only watches party members with Max MP over 1,000.
-- `check_party_for_low_mp_delay_minutes` - Amount of time after alerting you to a party member with low MP to start watching again.
-- `current_helper` - The currently loaded and active Helper.
-  - It is better to change this in-game with `//helper` to cycle Helpers or `//helper load name_of_helper` to load a specific Helper directly.
-- `flavor_text` - Display the occasional Flavor Text from the currently loaded Helper.
-- `flavor_text_in_combat` - Controls flavor text displaying while in combat.
-- `flavor_text_window_max_hours` - The maximum amount of time before the next Flavor Text is displayed.
-- `flavor_text_window_min_hours` - The minimum amount of time before the next Flavor Text is displayed.
-- `helpers_loaded` - The list and enabled status of all Helpers currently loaded Helpers.
-  - It is better to change the enabled status of loaded Helpers in-game with `//helper unload name_of_helper` or `//helper load name_of_helper`.
-- `introduce_on_load` - Plays the current Helpers introduction text when the addon is loaded.
-- `key_item_reminders` - Alerts you when specific Key Items are ready to be picked up again from their respective NPCs.
-  - Tracks Mystical Canteen, Moglophone, and Shiny Ra'Kaznarian Plate.
-  - Sub-settings for turning tracking off for each individually.
-  - Sub-settings for adjusting the amount of time between additional repeat reminder after the first for each individually.
-- `notifications` - Alerts you about certain events happening.
-  - Alerts for Capped Job Points, Capped Merit Points, Mireu popping, Mog Locker lease expiring, Reraise wearing off, Signet (includes all "region" buffs) wearing off, Sublimation fully charged, and Vorseal wearing.
-  - Sub-settings for turning alerts off for each individually.
-- `party_announcements` - Alerts for any party structure updates.
-  - Alerts for party/alliance members joining or leaving, parties joining or leaving alliance, and you becoming party or alliance leader.
-  - Sub-settings for turning alerts off for each individually.
-- `random_helper_on_load` - Selects a random Helper to use each time addon loads.
-- `reraise_check` - Alert letting you know that you are missing Reraise.
-- `reraise_check_delay_minutes` - Amount of time between each Reraise check.
-- `reraise_check_not_in_town` - Will not alert you of Reraise missing if in a town zone.
-- `sound_effects` - Play sound effects for alerts and notifications.
-- `sparkolade_reminder` - A weekly reminder to use your Sparks and Accolades. Will play at login if day/time passes while logged out.
-- `sparkolade_reminder_day` - Day of the week the Sparkolade reminder will run.
-  - Is not case-sensitive and accepts full day name and common abbreviations such as tu, tue, and tues.
-  - Defaults to Saturday if unable to determine day.
-- `sparkolade_reminder_time` - Time the Sparkolade reminder will run.
-  - Time must be a number in military time, ie 1730 instead of 530pm.
-  - Defaults to 1200 if unable to determine time.
-  - `voices` - Randomly selects an active Helper to use for each alert.
+
+| Option | Description |
+|--------|-------------|
+| `ability_ready` | Alerts you when specific Job Abilities are ready to use again. Includes all SP abilities and abilities with recasts 10 minutes or longer. |
+| `after_zone_party_check_delay_seconds` | Amount of time to pause watching for party structure changes after zoning. Adjust this higher if you get a notification about leaving then immediately joining a party after you zone. |
+| `auto_check_for_updates` | Automatically check for updates. |
+| `auto_check_for_updates_delay_days` | Days between automatically checking for updates. |
+| `auto_update` | Automatically update all files once per week. This will be run instead of `auto_check_for_updates` if set to true. |
+| `check_party_for_low_mp` | If you are on BRD or RDM, will keep an eye on your party members' MP levels.<br> - Only watches party members with Max MP over 1,000. |
+| `check_party_for_low_mp_delay_minutes` | Amount of time after alerting you to a party member with low MP to start watching again. |
+| `current_helper` | The currently loaded and active Helper.<br> - It is better to change this in-game with `//helper` to cycle Helpers or `//helper load name_of_helper` to load a specific Helper directly. |
+| `flavor_text` | Display the occasional Flavor Text from the currently loaded Helper. |
+| `flavor_text_in_combat` | Controls flavor text displaying while in combat. |
+| `flavor_text_window_max_hours` | The maximum amount of time before the next Flavor Text is displayed. |
+| `flavor_text_window_min_hours` | The minimum amount of time before the next Flavor Text is displayed. |
+| `helpers_loaded` | The list and enabled status of all currently loaded Helpers.<br> - It is better to change the enabled status of loaded Helpers in-game with `//helper unload name_of_helper` or `//helper load name_of_helper`. |
+| `introduce_on_load` | Plays the current Helper’s introduction text when the addon is loaded. |
+| `key_item_reminders` | Alerts you when specific Key Items are ready to be picked up again from their respective NPCs.<br> - Tracks Mystical Canteen, Moglophone, and Shiny Ra'Kaznarian Plate.<br> - Sub-settings for turning tracking off for each individually.<br> - Sub-settings for adjusting the amount of time between additional repeat reminders after the first for each individually. |
+| `notifications` | Alerts you about certain events happening.<br> - Alerts for Capped Job Points, Capped Merit Points, Mireu popping, Mog Locker lease expiring, Reraise wearing off, Signet (includes all "region" buffs) wearing off, Sublimation fully charged, and Vorseal wearing off.<br> - Sub-settings for turning alerts off for each individually. |
+| `party_announcements` | Alerts for any party structure updates.<br> - Alerts for party/alliance members joining or leaving, parties joining or leaving alliance, and you becoming party or alliance leader.<br> - Sub-settings for turning alerts off for each individually. |
+| `random_helper_on_load` | Selects a random Helper to use each time the addon loads. |
+| `reraise_check` | Alert letting you know that you are missing Reraise. |
+| `reraise_check_delay_minutes` | Amount of time between each Reraise check. |
+| `reraise_check_not_in_town` | Will not alert you of Reraise missing if in a town zone. |
+| `sound_effects` | Play sound effects for alerts and notifications. |
+| `sparkolade_reminder` | A weekly reminder to use your Sparks and Accolades. Will play at login if the day/time passes while logged out. |
+| `sparkolade_reminder_day` | Day of the week the Sparkolade reminder will run.<br> - Is not case-sensitive and accepts full day names and common abbreviations such as `tu`, `tue`, and `tues`.<br> - Defaults to Saturday if unable to determine the day. |
+| `sparkolade_reminder_time` | Time the Sparkolade reminder will run.<br> - Time must be a number in military time, i.e., `1730` instead of `5:30 PM`.<br> - Defaults to `1200` if unable to determine time. |
+| `voices` | Randomly selects an active Helper to use for each alert. |
+
 
 ## Changelog
 Version 2.0.1
