@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.0'
+_addon.version = '2.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -499,22 +499,22 @@ function playSound(helper_name, sound_name)
 	elseif opt.custom_sounds 
 	and (sound_name == "you_joined_party" or sound_name == "you_joined_alliance" or sound_name == "member_joined_party" or sound_name == "member_joined_alliance") 
 	and win.file_exists(helper_folder.."member_joined_party.wav") then
-		win.play_sound(helper_folder..file_name)
+		win.play_sound(helper_folder.."member_joined_party.wav")
 
 	elseif opt.custom_sounds 
 	and (sound_name == "you_left_party" or sound_name == "you_left_alliance" or sound_name == "member_left_party" or sound_name == "member_left_alliance") 
 	and win.file_exists(helper_folder.."member_left_party.wav") then
-		win.play_sound(helper_folder..file_name)
+		win.play_sound(helper_folder.."member_left_party.wav")
 
 	elseif opt.custom_sounds 
 	and (sound_name == "your_party_joined_alliance" or sound_name == "other_party_joined_alliance") 
 	and win.file_exists(helper_folder.."party_joined_alliance.wav") then
-		win.play_sound(helper_folder..file_name)
+		win.play_sound(helper_folder.."party_joined_alliance.wav")
 
 	elseif opt.custom_sounds 
 	and (sound_name == "your_party_left_alliance" or sound_name == "other_party_left_alliance") 
 	and win.file_exists(helper_folder.."party_left_alliance.wav") then
-		win.play_sound(helper_folder..file_name)
+		win.play_sound(helper_folder.."party_left_alliance.wav")
 
 	elseif opt.custom_sounds and win.file_exists(helper_folder.."notification.wav") then
 		win.play_sound(helper_folder.."notification.wav")
@@ -2039,7 +2039,7 @@ function trackPartyStructure()
 			showFaceplate(selected.helper)
 		end
 
-	-- Another party joined the alliance
+	--Another party joined the alliance
 	elseif announce.other_party_joined_alliance and previously_in_alliance and now_in_alliance and 
 	((not old_p2_leader and new_p2_leader) or (not old_p3_leader and new_p3_leader)) then
 		local selected = getHelper()
@@ -2050,7 +2050,7 @@ function trackPartyStructure()
 			showFaceplate(selected.helper)
 		end
 
-	-- Another party left the alliance
+	--Another party left the alliance
 	elseif announce.other_party_left_alliance and previously_in_alliance and now_in_alliance and 
 	((old_p2_leader and not new_p2_leader) or (old_p3_leader and not new_p3_leader)) then
 		local selected = getHelper()
@@ -2065,7 +2065,7 @@ function trackPartyStructure()
 	elseif not text and new_party_structure and party_structure and 
 	new_p1_count and old_p1_count and new_p1_count ~= old_p1_count then
 
-		-- Compare member names for changes in party 1
+		--Compare member names for changes in party 1
 		local party1_positions = {'p0', 'p1', 'p2', 'p3', 'p4', 'p5'}
 		local old_party1_members = getMemberNames(party_structure, party1_positions)
 		local new_party1_members = getMemberNames(new_party_structure, party1_positions)
