@@ -119,6 +119,8 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
   - `voices` - Randomly selects an active Helper to use for each alert.
 
 ## Changelog
+Version 2.0.1
+- Fixed Alliance join/left custom sounds not playing.
 
 Version 2.0
 - Overhauled folder structure. The `sounds` folder has been renamed to `media` and moved inside the `/data/helpers` folder. If you are upgrading from a previous version, you may safely delete the `/data/sounds` folder.
