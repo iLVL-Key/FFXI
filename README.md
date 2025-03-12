@@ -1,6 +1,6 @@
 Welcome to my FFXI Github!  
 
-I have hundreds of hours into creating these addons and GearSwap files.  
+I have put hundreds of hours into creating these addons and GearSwap files.  
 
 Consider checking out one of my other projects, a product brand called Joke&Vogue. Aside from "regular" products, I have some that are FFXI-related that I think you may like.  
 
