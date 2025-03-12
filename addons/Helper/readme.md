@@ -28,7 +28,7 @@ Choose your companion! These are just **three** of the many Helpers available - 
   - **You Became Party/Alliance Leader** → Tells you when you’re promoted to leader.
 - <ins>**Interchangeable Helper System (Custom NPC-Like Assistants)**</ins>
   - Choose from multiple Helper personalities.
-  - Easily switch between Helpers
+  - Easily switch between Helpers.
   - Create your own!
 - <ins>**GitHub-Powered Updates**</ins>
   - **Checks for new Helpers** → New available Helpers added to the GitHub repo.
@@ -36,12 +36,13 @@ Choose your companion! These are just **three** of the many Helpers available - 
   - **Checks for addon updates** → Update available for the addon itself (Helper.lua).
   - **Optional automatic updates** → Updates addon and Helpers automatically (if enabled).
 - <ins>**Customization & User Control**</ins>
-  - Choose between automatic or manual updates
-  - Enable/disable individual Helpers
-  - Modify Helper settings & messages in XML files
+  - Choose between automatic or manual updates.
+  - Enable/disable individual Helpers.
+  - Modify Helper settings & messages in XML files.
 
 ## How To Setup
 1. Save the addon to `/addons/Helper/Helper.lua`.
+   - All you need to start is the `Helper.lua` file itself. Everything else will be downloaded in step 3.
 2. Load the addon with `//lua load helper`.
    - Vana is the default Helper and will automatically be created and loaded into the addon.
 3. Update the addon by typing `//helper update`.
