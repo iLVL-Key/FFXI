@@ -3,10 +3,7 @@ The Helper addon acts as a customizable in-game assistant that provides alerts, 
 
 Players can load different Helpers, each with its own personality and dialogue, and cycle between them. The addon also supports sound effects for key notifications and reminders for gameplay mechanics like Sublimation being fully charged or Vorseal effects nearing expiration. With its blend of functionality and personality, Helper adds both utility and charm to the FFXI experience.
 ## Helpers
-Choose your companion! These are just **three** of the many Helpers available—each with their own unique personality!  
-
-## Helpers  
-These are just **three** of the many Helpers available!  
+Choose your companion! These are just **three** of the many Helpers available - each with their own unique personality!  
 
 | ![Shantotto](https://github.com/user-attachments/assets/18178a4d-ab89-4b3e-a99c-2b66a2394243) | ![Moogle](https://github.com/user-attachments/assets/72b7bb44-c0e9-41a1-8af6-0faa6852aab3) | ![Mayakov](https://github.com/user-attachments/assets/11961710-5f2d-4af9-8f55-ebf54d041a45) |
 |---|---|---|
