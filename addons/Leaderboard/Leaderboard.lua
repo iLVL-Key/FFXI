@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.2.2'
+_addon.version = '5.2.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -1223,6 +1223,24 @@ local function optoutList()
 end
 
 
+--Find the place a player is in on a given board
+function findPlace(name, board)
+
+	local placeLookup = {first = 1, second = 2, third = 3, fourth = 4, fifth = 5, sixth = 6, seventh = 7, eighth = 8, ninth = 9, tenth = 10, eleventh = 11, twelfth = 12, thirteenth = 13, fourteenth = 14, fifteenth = 15, sixteenth = 16, seventeenth = 17, eighteenth = 18}
+
+	--Match the selected name to the names on the points board
+    for place, data in pairs(live.places[board]) do
+        if data.name == name then
+            return placeLookup[place]
+        end
+    end
+
+	--If no match, return false
+    return false
+
+end
+
+
 --Send the specified player their score report via tell
 local function reportPlayerScores(name)
 	local ind = live.individuals
@@ -1364,50 +1382,22 @@ local function checkForMessage(tbl, value)
 end
 
 
-local function giveItem()
-	--Select a random player from the list of players who have points	
-	local player = selectPlayerForItem()
-	local playerIsTrust
-	if player then
-		playerIsTrust = windower.ffxi.get_mob_by_name(capitalize(player)).is_npc
-	else
-		return
+--Check that the given player in currently in the party/alliance
+local function isPlayerInAlliance(player)
+
+	local ally_pos = {
+		'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
+	}
+	--Loop through the alliance members to see if the indicated player is in the alliance
+	for i = 1, 18, 1 do
+		local ally_member = get_mob_by_target(ally_pos[i]) or nil
+		if ally_member and ally_member.name == capitalize(player) then
+			-- If there is a match, return true
+			return true
+		end
 	end
-
-	--Determine what place they are in on the points board
-	local place = findPlace(player, "point")
-	if place == false then
-		return
-	end
-
-	--Select an appropriate item for them
-	local item = selectItem(place)
-	if item == false then
-		return
-	end
-	local itemName = settings.item[item].name
-
-	live.items[player] = item
-	coroutine.schedule(function() live:save('all') end,0)
-
-	if player == self_name then
-		add_to_chat(8,('[Leaderboard] '):color(220)..('Item Box! You receive '..settings.item[item].indart..' '..itemName..'! Type '):color(8)..('//lb item'):color(1)..(' to use, or '):color(8)..('//lb info'):color(1)..(' for a description.'):color(8))
-	elseif playerIsTrust then --If the recipient is a trust, use the item after a random amount of time (ITS AI!)
-		add_to_chat(8,('[Leaderboard] '):color(220)..('Item Box! '..capitalize(player)..' received '..settings.item[item].indart..' '..itemName..'!'):color(8))
-		coroutine.schedule(function()
-			if isPlayerInAlliance(player) then
-				if mode == "Mog Kart" and live.items[player] then
-					useItem(player)
-				end
-			else
-				live.items[player] = nil
-				coroutine.schedule(function() live:save('all') end,0)
-			end
-		end, math.random(kart_trust_item_time_min, kart_trust_item_time_max))
-	else
-		newChatMessage("/t "..player.." [LB] Item Box! You receive "..settings.item[item].indart.." "..itemName.."! Reply with `item` to use, or `info` for a description.")
-	end
-
+	--If not, return false
+	return false
 end
 
 
@@ -1454,24 +1444,6 @@ local function selectRandomPlayer(itemUser)
     local selectedName = names[randomIndex] --Use the index number to select a name from the names table
 
 	return selectedName -- Return the name
-
-end
-
-
---Find the place a player is in on a given board
-function findPlace(name, board)
-
-	local placeLookup = {first = 1, second = 2, third = 3, fourth = 4, fifth = 5, sixth = 6, seventh = 7, eighth = 8, ninth = 9, tenth = 10, eleventh = 11, twelfth = 12, thirteenth = 13, fourteenth = 14, fifteenth = 15, sixteenth = 16, seventeenth = 17, eighteenth = 18}
-
-	--Match the selected name to the names on the points board
-    for place, data in pairs(live.places[board]) do
-        if data.name == name then
-            return placeLookup[place]
-        end
-    end
-
-	--If no match, return false
-    return false
 
 end
 
@@ -1537,25 +1509,6 @@ local function selectItem(place)
 		return false
 	end
 
-end
-
-
---Check that the given player in currently in the party/alliance
-local function isPlayerInAlliance(player)
-
-	local ally_pos = {
-		'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
-	}
-	--Loop through the alliance members to see if the indicated player is in the alliance
-	for i = 1, 18, 1 do
-		local ally_member = get_mob_by_target(ally_pos[i]) or nil
-		if ally_member and ally_member.name == capitalize(player) then
-			-- If there is a match, return true
-			return true
-		end
-	end
-	--If not, return false
-	return false
 end
 
 
@@ -2050,6 +2003,53 @@ local function useItem(name, specifiedTarget)
 
 	else
 		return
+	end
+
+end
+
+
+local function giveItem()
+	--Select a random player from the list of players who have points	
+	local player = selectPlayerForItem()
+	local playerIsTrust
+	if player then
+		playerIsTrust = windower.ffxi.get_mob_by_name(capitalize(player)).is_npc
+	else
+		return
+	end
+
+	--Determine what place they are in on the points board
+	local place = findPlace(player, "point")
+	if place == false then
+		return
+	end
+
+	--Select an appropriate item for them
+	local item = selectItem(place)
+	if item == false then
+		return
+	end
+	local itemName = settings.item[item].name
+
+	live.items[player] = item
+	coroutine.schedule(function() live:save('all') end,0)
+
+	if player == self_name then
+		add_to_chat(8,('[Leaderboard] '):color(220)..('Item Box! You receive '..settings.item[item].indart..' '..itemName..'! Type '):color(8)..('//lb item'):color(1)..(' to use, or '):color(8)..('//lb info'):color(1)..(' for a description.'):color(8))
+	elseif playerIsTrust then --If the recipient is a trust, use the item after a random amount of time (ITS AI!)
+		add_to_chat(8,('[Leaderboard] '):color(220)..('Item Box! '..capitalize(player)..' received '..settings.item[item].indart..' '..itemName..'!'):color(8))
+		coroutine.schedule(function()
+			if isPlayerInAlliance(player) then
+				if mode == "Mog Kart" and live.items[player] then
+					useItem(player)
+				end
+			else
+				live.items[player] = nil
+				coroutine.schedule(function() live:save('all') end,0)
+			end
+		end, math.random(kart_trust_item_time_min, kart_trust_item_time_max))
+	else
+		newChatMessage("/t "..player.." [LB] Item Box! You receive "..settings.item[item].indart.." "..itemName.."! Reply with `item` to use, or `info` for a description.")
 	end
 
 end
@@ -2565,26 +2565,26 @@ register_event('action',function(act)
 	end
 
 	if checkForMessage(direct_damage, msg) or spike ~= 0 then
-
+		
 		---------------
 		-- TOTAL DMG --
 		---------------
-
+		
 		if spike ~= 0 then
 			actor_name = target_name
 			actor_lower_name = string.lower(actor_name)
 		end
-
+		
 		if (actor == false and spike == 0) or settings.optout[actor_lower_name] or (actor_name == '[REDACTED]' and actor) then
 			return
 		end
-
+		
 		local tdIndividuals = live.individuals.td
-
+		
 		--What are you and your Rivals original scores
 		local myOriginalTDScore = (tdIndividuals and tdIndividuals[string.lower(myName)] and tdIndividuals[string.lower(myName)].score) or 0
 		local rivalOriginalTDScore = (tdIndividuals and tdIndividuals[rival] and tdIndividuals[rival].score) or 0
-
+		
 		--Retrieve the actors relevant data
 		local tot_dmg = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].score) or 0
 		local index = (tdIndividuals[actor_lower_name] and tdIndividuals[actor_lower_name].index) or 0
