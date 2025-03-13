@@ -61,77 +61,81 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ## Commands
 All commands must be preceded with `//bars` (ex: `//bars pos`)  
 `[optional] <required>`
- - `pos/p [x y]` - Update overall Position.
- - `hp/mp/tp/pet` - Toggle HP/MP/TP/Pet bar display setting for current job.
- - `width/w` - Update the bar Width.
- - `distance/d`  - Toggle the Distance option.
- - `marker/m` - Toggle the HP/TP Marker option.
- - `hex/h` - Toggle the target Hex option (overrides Index).
- - `index/i` - Toggle the target Index option (overrides Hex).
- - `offset/o` - Update the vertical Offset for the current job.
- - `add/a <target>` - Add a target to the Auto Focus Target list.
-   - Valid targets: Names, IDs, <t>, or current highlighted target.
-   - Use quotes to surround names with spaces.
- - `remove/r <target>` - Remove a target from the Auto Focus Target list.
- - `focus/f` - Temporarily override the Auto Focus Target with the current cursor target.
-   - Type again to remove the override.
-   - Automatically removed when target moves out of range.
- - `list/l` - Show the Auto Focus Target list.
- - `size/s [#]` - Update the font Size.
- - `bold/b` - Toggle the Bold setting.
- - `help` - Display a list of commands and addon info.
 
-## Options
-Open the `/bars/data/settings.xml` file to adjust these settings.
- - `abbreviate_common_mob_names` - Common mob names will be abbreviated to save space (ex. Sweetwater --> Swt.). Does not apply to the main name on the Target bar.
- - `bar_width` - Adjust the width of the bars. The Focus Target and Sub-Target bars will always be half of this number.
- - `bars_vertical_spacing` - The vertical spacing between each bars section.
- - `char_width_multiplier` - Font size is multiplied by this number to calculate character width in pixels. Affects only the horizontal position of the Sub-Target bar.
- - `clear_action_delay` - The delay in seconds after an action completes that it will be cleared from the screen (supports decimals ie 4.5).
- - `color_spells` - Colorize the names of spells to match their element.
- - `condense_target_and_subtarget_bars` - Display sub-targets in the Target bar instead of their own separate Sub-Target bar.
- - `fade_after_delay` - Fades all bars out of view after a set time delay of inaction.
- - `fade_delay` - Time in seconds to delay fade.
- - `fade_multiplier` - Number the alpha is reduced per frame during fade. Higher number fades faster.
- - `fade_to_alpha` - Number the alpha will stop at after fading. 0 = completely invisible, 255 = completely visible.
- - `focus_target_max_distance` - The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed.
- - `hide_focus_target_when_target` - Hides the Auto Focus Target bar when the subject of it has been targeted (prevents a target being on both at the same time).
- - `highlight_when_sp_active` - Highlights a targets name when they use an SP Ability and displays the SP name and time remaining.
- - `max_action_length` - The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space.
- - `max_name_length` - The maximum number of characters of a targets name displayed (target action line only). Target names longer than this number will be truncated to help save space.
- - `remove_tachi_blade_from_ws_name` - Removes "Tachi: " and "Blade: " from weapon skill names to help save (ex. Tachi: Yukikaze --> Yukikaze).
- - `self_action_text_size_difference` - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Self Actions.
- - `short_skillchain_names` - Uses shortened names for skillchains (4 characters long) to help save space.
- - `show_action_status_indicators` - Shows icons depicting when a spell/ability is casting, completed, or interrupted.
- - `show_bar_markers` - Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP.
- - `show_commas_on_numbers` - Adds commas to numbers for easier readability.
- - `show_dyna_jobs` - Show the job of Dynamis Divergence mobs.
- - `show_fancy_rolls` - Show a fancified version of COR rolls (if show_lucky_roll_info is turned on).
- - `show_max_hp_mp_on_bars` - Shows the current maximum HP and MP on their respective bars.
- - `show_pet_distance` - Show the distance between you and your pet.
- - `show_pet_status` - Show the current status of your pet (Idle, Engaged, etc.).
- - `show_pet_tp` - Show the current Tp of your pet.
- - `show_result_totals` - Show number of targets hit and totals from AoE cures/damage.
- - `show_roll_lucky_info` - Shows the lucky and lucky numbers for COR rolls.
- - `show_self_action` - Shows the Self Action bar.
- - `show_self_when_target` - Shows the Target bar when you target yourself.
- - `show_st_when_target` - Shows the Sub-Target bar when the Sub-Target is already the Target.
- - `show_target_action` - Shows the actions of the current target.
- - `show_target_action_result` - Shows the results of the action done by the current target (damage, buffs, resists, etc.).
- - `show_target_distance` - Shows the distance to the current target.
- - `show_target_hex` - Shows the hex number of the current target.
- - `show_target_index` - Shows the index number of the current target.
- - `target_action_text_size_difference` - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target actions.
- - `target_text_size_difference` - The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target.
- - `text_vertical_offset` - The vertical offset in pixels between a bar and its text (this is what sets the text above a bar by default).
- - `z_show_player_stat_bars` - Select which "player stats" bars are displayed for each job.
-   - `hp` - Display the HP bar while on this job.
-   - `mp` - Display the MP bar while on this job.
-   - `tp` - Display the TP bar while on this job.
-   - `pet` - Display the Pet bar while on this job.
-   - `vertical_offset` - Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher.
+| Command | Description |
+|---------|-------------|
+| `pos/p [x y]` | Update overall Position. |
+| `hp/mp/tp/pet` | Toggle HP/MP/TP/Pet bar display setting for current job. |
+| `width/w` | Update the bar Width. |
+| `distance/d` | Toggle the Distance option. |
+| `marker/m` | Toggle the HP/TP Marker option. |
+| `hex/h` | Toggle the target Hex option (overrides Index). |
+| `index/i` | Toggle the target Index option (overrides Hex). |
+| `offset/o` | Update the vertical Offset for the current job. |
+| `add/a <target>` | Add a target to the Auto Focus Target list.<br> - Valid targets: Names, IDs, `<t>`, or current highlighted target.<br> - Use quotes to surround names with spaces. |
+| `remove/r <target>` | Remove a target from the Auto Focus Target list. |
+| `focus/f` | Temporarily override the Auto Focus Target with the current cursor target.<br> - Type again to remove the override.<br> - Automatically removed when target moves out of range. |
+| `list/l` | Show the Auto Focus Target list. |
+| `size/s [#]` | Update the font Size. |
+| `bold/b` | Toggle the Bold setting. |
+| `help` | Display a list of commands and addon info. |
+
+## Options  
+Open the `/bars/data/settings.xml` file to adjust these settings.  
+
+| **Setting** | **Description** |
+|------------|----------------|
+| `abbreviate_common_mob_names` | Common mob names will be abbreviated to save space (ex. Sweetwater → Swt.). Does not apply to the main name on the Target bar. |
+| `bar_width` | Adjust the width of the bars. The Focus Target and Sub-Target bars will always be half of this number. |
+| `bars_vertical_spacing` | The vertical spacing between each bars section. |
+| `char_width_multiplier` | Font size is multiplied by this number to calculate character width in pixels. Affects only the horizontal position of the Sub-Target bar. |
+| `clear_action_delay` | The delay in seconds after an action completes that it will be cleared from the screen (supports decimals, e.g., 4.5). |
+| `color_spells` | Colorize the names of spells to match their element. |
+| `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
+| `fade_after_delay` | Fades all bars out of view after a set time delay of inaction. |
+| `fade_delay` | Time in seconds to delay fade. |
+| `fade_multiplier` | Number the alpha is reduced per frame during fade. Higher number fades faster. |
+| `fade_to_alpha` | Number the alpha will stop at after fading. 0 = completely invisible, 255 = completely visible. |
+| `focus_target_max_distance` | The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed. |
+| `hide_focus_target_when_target` | Hides the Auto Focus Target bar when the subject of it has been targeted (prevents a target being on both at the same time). |
+| `highlight_when_sp_active` | Highlights a target’s name when they use an SP Ability and displays the SP name and time remaining. |
+| `max_action_length` | The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space. |
+| `max_name_length` | The maximum number of characters of a target’s name displayed (target action line only). Target names longer than this number will be truncated to help save space. |
+| `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
+| `self_action_text_size_difference` | The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Self Actions. |
+| `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
+| `show_action_status_indicators` | Shows icons depicting when a spell/ability is casting, completed, or interrupted. |
+| `show_bar_markers` | Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP. |
+| `show_commas_on_numbers` | Adds commas to numbers for easier readability. |
+| `show_dyna_jobs` | Show the job of Dynamis Divergence mobs. |
+| `show_fancy_rolls` | Show a fancified version of COR rolls (if `show_lucky_roll_info` is turned on). |
+| `show_max_hp_mp_on_bars` | Shows the current maximum HP and MP on their respective bars. |
+| `show_pet_distance` | Show the distance between you and your pet. |
+| `show_pet_status` | Show the current status of your pet (Idle, Engaged, etc.). |
+| `show_pet_tp` | Show the current TP of your pet. |
+| `show_result_totals` | Show number of targets hit and totals from AoE cures/damage. |
+| `show_roll_lucky_info` | Shows the lucky and unlucky numbers for COR rolls. |
+| `show_self_action` | Shows the Self Action bar. |
+| `show_self_when_target` | Shows the Target bar when you target yourself. |
+| `show_st_when_target` | Shows the Sub-Target bar when the Sub-Target is already the Target. |
+| `show_target_action` | Shows the actions of the current target. |
+| `show_target_action_result` | Shows the results of the action done by the current target (damage, buffs, resists, etc.). |
+| `show_target_distance` | Shows the distance to the current target. |
+| `show_target_hex` | Shows the hex number of the current target. |
+| `show_target_index` | Shows the index number of the current target. |
+| `target_action_text_size_difference` | The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target actions. |
+| `target_text_size_difference` | The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target. |
+| `text_vertical_offset` | The vertical offset in pixels between a bar and its text (this is what sets the text above a bar by default). |
+| `z_show_player_stat_bars` | Select which "player stats" bars are displayed for each job. |
+| **→ `hp`** | Display the HP bar while on this job. |
+| **→ `mp`** | Display the MP bar while on this job. |
+| **→ `tp`** | Display the TP bar while on this job. |
+| **→ `pet`** | Display the Pet bar while on this job. |
+| **→ `vertical_offset`** | Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher. |
 
 ## Changelog
+Version 3.4.1
+- Fixed missing Dream Shroud (Diabolos BP: Ward) results.
 
 Version 3.4
 - Added time remaining on the active SP Ability displayed on the target's name to the highlight_when_sp_active option.
