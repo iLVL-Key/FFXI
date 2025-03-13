@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.4'
+_addon.version = '3.4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -3770,6 +3770,10 @@ register_event('action', function (act)
 			elseif msg == 364 then
 				target_action_result = ' ('..count..'Stat Boost)'
 				target_action_result_shdw = ' ('..count..'Stat Boost)'
+			--MAB/MDB
+			elseif msg == 414 then
+				target_action_result = ' ('..count..'MAB/MDB)'
+				target_action_result_shdw = ' ('..count..'MAB/MDB)'
 			--TP Reduced
 			elseif msg == 730 then
 				target_action_result = ' (TP Reduced to \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
