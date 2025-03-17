@@ -47,7 +47,7 @@
             <40>You shine, even when you do not see it yourself.</40>
             <41>No matter how far you roam, there will always be a light to guide you home.</41>
         </flavor_text>
-        <food_wears_off>Your meal has passed, but strength remains in you.</food_wears_off>
+        <food_wears_off>Your meals effect has passed. However, strength still remains in you.</food_wears_off>
         <info>
             <description>Warm, comforting, and protective.</description>
             <introduction>I am Altana, ever watching, ever guiding. May my light bring you peace.</introduction>
@@ -67,11 +67,11 @@
         <party_low_mp>${member} is growing weary. A ${refresh} may help them carry on.</party_low_mp>
         <reminder_canteen>Another Mystical Canteen awaits. Take what is offered with gratitude.</reminder_canteen>
         <reminder_moglophone>A Moglophone is ready. Use it wisely.</reminder_moglophone>
-        <reminder_plate>A Shiny Ra&apos;Kaznarian Plate is prepared. May it serve you well.</reminder_plate>
+        <reminder_plate>A Shiny Ra&apos;Kaznarian Plate is available. May it serve you well.</reminder_plate>
         <reraise_check>You do not have Reraise. Even the strongest must be prepared for hardship.</reraise_check>
         <reraise_wears_off>Your Reraise has faded. Stand strong, but do not shun precaution.</reraise_wears_off>
-        <signet_wears_off>Your ${signet} has faded. Seek it again, and may fortune follow you.</signet_wears_off>
-        <sparkolade_reminder>Your Sparkolades may remain. Do not let blessings go to waste.</sparkolade_reminder>
+        <signet_wears_off>Your ${signet} has expired. Seek it again, and may fortune follow you.</signet_wears_off>
+        <sparkolade_reminder>You may still have Sparkolades. Do not let blessings go to waste.</sparkolade_reminder>
         <sublimation_charged>Sublimation is fully charged. A wellspring of strength, ready when needed.</sublimation_charged>
         <vorseal_wearing>Your Vorseal will fade shortly. Even light must be tended to, lest it dim.</vorseal_wearing>
         <you_are_now_alliance_leader>You are now the alliance leader. Guide them with wisdom and grace.</you_are_now_alliance_leader>
