@@ -1,0 +1,84 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>${ability} is ready. Use it, though it will make no difference in the end.</ability_ready>
+        <capped_job_points>Your Job Points have reached their limit... and still, you wish for more.</capped_job_points>
+        <capped_merit_points>Your Merit Points are full. And yet, what has truly changed?</capped_merit_points>
+        <flavor_text>
+            <1>Your struggle is meaningless... yet still you fight.</1>
+            <2>The world decays, and you are but a fading ember.</2>
+            <3>No matter how bright the dawn, the night will return.</3>
+            <4>Seek strength, gain power... it will not spare you from fate.</4>
+            <5>You run from oblivion, yet it is all that awaits you.</5>
+            <6>The eternal cycle persists, indifferent to your efforts.</6>
+            <7>All things will break, all things will fall, all things will be forgotten.</7>
+            <8>You would defy me? You cannot even defy time.</8>
+            <9>Even the most glorious victories are but a breath against eternity.</9>
+            <10>Stay your course if you wish... but nothing waits beyond the end.</10>
+            <11>Seek comfort in your allies, your friends... they, too, will be taken by the void.</11>
+            <12>The world moves in cycles... and you are merely another turn of the wheel.</12>
+            <13>Hope? There is no hope. There is only the inevitable end.</13>
+            <14>Your achievements will crumble like dust upon the wind.</14>
+            <15>Do you believe you are different? That you can *change* fate?</15>
+            <16>Even light is but a flicker before it is consumed.</16>
+            <17>There is no meaning, no path, no purpose. Only the endless return to nothingness.</17>
+            <18>You cling to life like a leaf upon the river, hoping to resist the current.</18>
+            <19>It is not cruelty, nor hatred, nor wrath. It is simply what must be.</19>
+            <20>Still you fight, still you wish to exist? Foolish, but... entertaining.</20>
+            <21>You are but a mote of dust in the storm, and the storm will not be stayed.</21>
+            <22>You stand against the void, but in time, it will consume you.</22>
+            <23>All victories fade, all triumphs crumble, all lives end.</23>
+            <24>You carve your name into history... but history forgets.</24>
+            <25>A thousand battles, a thousand wars... none of it matters.</25>
+            <26>Light, darkness - it is all the same in the end.</26>
+            <27>Your journey has a destination, whether you see it or not.</27>
+            <28>Even the stars will one day die. What makes you think you will not?</28>
+            <29>A legacy? A lasting mark? Nothing you build will stand forever.</29>
+            <30>You struggle, you fight, and for what? A moment of respite before the inevitable.</30>
+            <31>The void does not hunger. It simply is.</31>
+            <32>You are dust, held together for but a fleeting moment.</32>
+            <33>The gods do not protect you. They merely watch as you fade.</33>
+            <34>It is not cruelty, nor punishment. Only the certainty of oblivion.</34>
+            <35>You hold your weapon tightly, as if it will stop what is coming.</35>
+            <36>No magic, no steel, no strength will outlast time itself.</36>
+            <37>Everything you cherish will one day be lost.</37>
+            <38>Why do you fight? You already know how this ends.</38>
+            <39>The end does not rush toward you. It simply waits for you to arrive.</39>
+        </flavor_text>
+        <food_wears_off>Your nourishment fades. A reminder of how fleeting stability is.</food_wears_off>
+        <info>
+            <description>Dark, foreboding, and indifferent to your struggles.</description>
+            <introduction>I am Promathia. All things return to nothing... and so shall you.</introduction>
+            <name>Promathia</name>
+            <name_color>209</name_color>
+            <text_color>160</text_color>
+            <type>NPC</type>
+        </info>
+        <member_joined_alliance>${member} has joined the alliance. Do they still believe they can prevail?</member_joined_alliance>
+        <member_joined_party>${member} has joined the party. Another pawn against the tide of nothingness.</member_joined_party>
+        <member_left_alliance>${member} has left the alliance. One by one, they all will fall.</member_left_alliance>
+        <member_left_party>${member} has left the party. Departing, like all things do.</member_left_party>
+        <mireu_popped>Mireu has risen in ${zone}. Another trial that ends in the same decay.</mireu_popped>
+        <mog_locker_expiring>Your Mog Locker lease nears expiry. Even storage decays.</mog_locker_expiring>
+        <other_party_joined_alliance>Another party has joined the alliance... more players upon the board of destiny.</other_party_joined_alliance>
+        <other_party_left_alliance>Another party has left the alliance. Another bond... undone.</other_party_left_alliance>
+        <party_low_mp>${member} grows weak. Their MP fades, as all things do. Perhaps a ${refresh} will delay the inevitable.</party_low_mp>
+        <reminder_canteen>Another Mystical Canteen is available. One more delay of the inevitable.</reminder_canteen>
+        <reminder_moglophone>Another Moglophone is available. Will it change anything?</reminder_moglophone>
+        <reminder_plate>A Shiny Ra&apos;Kaznarian Plate awaits. How long until it dulls?</reminder_plate>
+        <reraise_check>No Reraise? How fitting. Prepare for your final descent.</reraise_check>
+        <reraise_wears_off>Your Reraise is gone. Now, let us see how you truly fare.</reraise_wears_off>
+        <signet_wears_off>Your ${signet} fades. And so too, will all you have gathered.</signet_wears_off>
+        <sparkolade_reminder>Your Sparkolades remain unused. It will make no difference in the end.</sparkolade_reminder>
+        <sublimation_charged>Sublimation is fully charged. A fleeting reserve of power, nothing more.</sublimation_charged>
+        <vorseal_wearing>Your Vorseal will fade soon. But really, it was never bright to begin with.</vorseal_wearing>
+        <you_are_now_alliance_leader>You are now the alliance leader. It will not stay their end.</you_are_now_alliance_leader>
+        <you_are_now_party_leader>You are now the party leader. An illusion of control.</you_are_now_party_leader>
+        <you_joined_alliance>You have joined an alliance. Unity is fleeting, as all things are.</you_joined_alliance>
+        <you_joined_party>You have joined a party. It will not stave off your end.</you_joined_party>
+        <you_left_alliance>You have left the alliance. In the end, all must stand alone.</you_left_alliance>
+        <you_left_party>You have left the party. A lone path changes nothing.</you_left_party>
+        <your_party_joined_alliance>Your party has joined an alliance. Clinging to others, the illusion of strength.</your_party_joined_alliance>
+        <your_party_left_alliance>Your party departs the alliance. Still they drift towards the same fate.</your_party_left_alliance>
+    </global>
+</settings>
