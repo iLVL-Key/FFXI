@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.0.1'
+_addon.version = '2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -400,7 +400,6 @@ cap_points = 0
 job_points = 500
 capped_jps = true
 check_party_for_low_mp_toggle = true
-zoning = false
 paused = false
 alive = true
 new_updates = false
@@ -675,7 +674,7 @@ function checkSparkoladeReminder()
 
 				win.add_to_chat(selected.c_text, ('[' .. selected.name .. '] '):color(selected.c_name) .. (text):color(selected.c_text))
 
-				playSound(selected.helper, 'notification')
+				playSound(selected.helper, 'sparkolade_reminder')
 				showFaceplate(selected.helper)
 
 			end
@@ -719,7 +718,7 @@ function initialize()
 			end
 		end
 	end
-	zoning = false
+	paused = false
 
 	--Load up the Helpers we have enabled
 	for name, enabled in pairs(opt.helpers_loaded) do
@@ -1415,7 +1414,7 @@ function checkKIReminderTimestamps()
 
 						win.add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name) .. (text):color(selected.c_text))
 
-						playSound(selected.helper, 'notification')
+						playSound(selected.helper, 'reminder'..key_item)
 						showFaceplate(selected.helper)
 
 					end 
@@ -1455,7 +1454,7 @@ function checkMogLockerReminder()
 
 				win.add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-				playSound(selected.helper, 'notification')
+				playSound(selected.helper, 'mog_locker_expiring')
 				showFaceplate(selected.helper)
 
 			end
@@ -1499,7 +1498,7 @@ function reset()
 	in_alliance = false
 	party_leader = false
 	alliance_leader = false
-	zoning = false
+	paused = false
 
 end
 
@@ -1566,7 +1565,7 @@ win.register_event('incoming chunk', function(id, original, modified, injected, 
 
 			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-			playSound(selected.helper, 'notification')
+			playSound(selected.helper, 'capped_merit_points')
 			showFaceplate(selected.helper)
 
 		end
@@ -1587,7 +1586,7 @@ win.register_event('incoming chunk', function(id, original, modified, injected, 
 
 			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-			playSound(selected.helper, 'notification')
+			playSound(selected.helper, 'capped_job_points')
 			showFaceplate(selected.helper)
 
 		end
@@ -1769,7 +1768,7 @@ function checkPartyForLowMP()
 
 					win.add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 					
-					playSound(selected.helper, 'notification')
+					playSound(selected.helper, 'party_low_mp')
 					showFaceplate(selected.helper)
 
 				end
@@ -2206,7 +2205,7 @@ win.register_event('gain buff', function(buff)
 
 			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-			playSound(selected.helper, 'notification')
+			playSound(selected.helper, 'sublimation_charged')
 			showFaceplate(selected.helper)
 
 		end
@@ -2238,7 +2237,7 @@ win.register_event('lose buff', function(buff)
 
 			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-			playSound(selected.helper, 'notification')
+			playSound(selected.helper, 'food_wears_off')
 			showFaceplate(selected.helper)
 
 		end
@@ -2252,7 +2251,7 @@ win.register_event('lose buff', function(buff)
 
 			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-			playSound(selected.helper, 'notification')
+			playSound(selected.helper, 'reraise_wears_off')
 			showFaceplate(selected.helper)
 
 		end
@@ -2285,7 +2284,7 @@ win.register_event('lose buff', function(buff)
 
 			win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-			playSound(selected.helper, 'notification')
+			playSound(selected.helper, 'signet_wears_off')
 			showFaceplate(selected.helper)
 
 		end
@@ -2406,7 +2405,7 @@ win.register_event("incoming text", function(original,modified,original_mode)
 
 						win.add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
-						playSound(selected.helper, 'notification')
+						playSound(selected.helper, 'mireu_popped')
 						showFaceplate(selected.helper)
 
 					end
@@ -2429,13 +2428,13 @@ win.register_event('prerender', function()
 	local logged_in = win.get_info().logged_in
 	local player = win.get_player()
 
-	--The zoning flag prevents a few things from happening while zoning
-	if pos == "(?-?)" and logged_in and not zoning then
-		zoning = true
-	elseif pos ~= "(?-?)" and zoning then
+	--Prevents a few things from happening while zoning
+	if pos == "(?-?)" and logged_in and not paused then
+		paused = true
+	elseif pos ~= "(?-?)" and paused then
 		--Short delay after zoning to prevent "left...joined" messages after every zone.
 		coroutine.schedule(function()
-			zoning = false
+			paused = false
 		end, opt.after_zone_party_check_delay_seconds)
 	end
 
@@ -2446,7 +2445,7 @@ win.register_event('prerender', function()
 		alive = true
 	end
 
-	if not (zoning or paused) and logged_in then
+	if not paused and logged_in then
 		trackPartyStructure()
 	end
 
@@ -2461,8 +2460,8 @@ win.register_event('prerender', function()
 		end
 	end
 
-	--1 second heartbeat (does not run while zoning, paused(job change or immediately after logging in), or not logged in)
-	if os.time() > heartbeat and not (zoning or paused) and logged_in then
+	--1 second heartbeat (does not run while paused (job change, zoning, or immediately after logging in), or not logged in)
+	if os.time() > heartbeat and not paused and logged_in then
 
 		heartbeat = os.time()
 
@@ -2552,7 +2551,7 @@ win.register_event('prerender', function()
 				if vorseal_text then
 					win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(vorseal_text):color(selected.c_text))
 
-					playSound(selected.helper, 'notification')
+					playSound(selected.helper, 'vorseal_wearing')
 					showFaceplate(selected.helper)
 				end
 
@@ -2598,7 +2597,7 @@ win.register_event('prerender', function()
 					if reraise_text then
 						win.add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(reraise_text):color(selected.c_text))
 
-						playSound(selected.helper, 'notification')
+						playSound(selected.helper, 'reraise_check')
 						showFaceplate(selected.helper)
 					end
 
@@ -2654,7 +2653,7 @@ win.register_event('addon command',function(addcmd, ...)
 		win.add_to_chat(8,(' random/r '):color(36)..('- Selects a random Helper to use.'):color(8))
 		win.add_to_chat(8,(' voices/v '):color(36)..('- Selects a random Helper to use for EACH alert/notification.'):color(8))
 		win.add_to_chat(8,(' sound/s '):color(36)..('- Switch sounds between Custom Helper, Default, or off.'):color(8))
-		win.add_to_chat(8,(' face/f '):color(36)..('- Toggle Helper Faceplates on or off.'):color(8))
+		win.add_to_chat(8,(' face/f '):color(36)..('- Switch Helper Faceplates between Large, Small, or off.'):color(8))
 		win.add_to_chat(8,(' check '):color(36)..('[new|current|addon]'):color(53)..('- Check for new updates. Does not update.'):color(8))
 		win.add_to_chat(8,(' update '):color(36)..('[new|current|addon|full]'):color(53)..('- Download new updates.'):color(8))
 		win.add_to_chat(8,('   - Optionally specify which to check/update:'):color(8))
