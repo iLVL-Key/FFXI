@@ -61,7 +61,7 @@ All commands must be preceded with `//helper` (ex: `//helper list`)
 | `random/r` | Selects a random Helper to use. |
 | `voices/v` | Selects a random Helper to use for EACH alert/notification. |
 | `sound/s` | Switch sounds between Custom Helper, Default, or off. |
-| `face/f` | Toggle Helper Faceplates on or off. |
+| `face/f` | Switch Helper Faceplates between Large, Small, or off. |
 | `check [new\|current\|addon]` | Check for new updates. Does not update. |
 | `update [new\|current\|addon\|full]` | Download new updates.<br> - `new` - Download new Helpers only.<br> - `current` - Update current Helpers only.<br> - `addon` - Update the Helper addon itself only.<br> - `full` - Force a full redownload of everything. |
 | `help` | Display a list of commands and addon info. |
