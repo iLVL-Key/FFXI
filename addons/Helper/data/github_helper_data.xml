@@ -2,6 +2,13 @@
 <settings>
     <global>
         <azhur>
+            <description>Warm, comforting, and protective.</description>
+            <name>Altana</name>
+            <name_color>36</name_color>
+            <text_color>1</text_color>
+            <type>NPC</type>
+        </azhur>
+        <azhur>
             <description>Super sweet, full of charm, and a little quirky.</description>
             <name>Azhur</name>
             <name_color>213</name_color>
@@ -44,6 +51,13 @@
             <text_color>53</text_color>
             <type>NPC</type>
         </moogle>
+        <shantotto>
+            <description>Dark, foreboding, and indifferent to your struggles.</description>
+            <name>Promathia</name>
+            <name_color>209</name_color>
+            <text_color>160</text_color>
+            <type>NPC</type>
+        </shantotto>
         <shantotto>
             <description>Witty, rhyming, and slightly menacing.</description>
             <name>Shantotto</name>
