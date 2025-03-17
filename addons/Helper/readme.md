@@ -101,6 +101,12 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+
+Version 2.1
+- Added the ability to have sound files for `sparkolade_reminder`, `reminder_canteen`, `reminder_moglophone`, and `reminder_plate`, `mog_locker_expiring`, `capped_merit_points`, `capped_job_points`, `party_low_mp`, `sublimation_charged`, `food_wears_off`, `reraise_wears_off`, `signet_wears_off`, `mireu_popped`, `vorseal_wearing`, `reraise_check`. This now allows for all notifications to have custom sound files.
+- Adjusted the zoning and paused flags to condense into just the paused flag. This also fixes a few notifications that would trigger unintentionally.
+- Fixed help text for the face command.
+
 Version 2.0.1
 - Fixed Alliance join/left custom sounds not playing.
 
