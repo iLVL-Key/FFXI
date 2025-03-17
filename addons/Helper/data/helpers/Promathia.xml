@@ -2,7 +2,7 @@
 <settings>
     <global>
         <ability_ready>${ability} is ready. Use it, though it will make no difference in the end.</ability_ready>
-        <capped_job_points>Your Job Points have reached their limit... and still, you wish for more.</capped_job_points>
+        <capped_job_points>Your Job Points have reached their peak. Still you wish for more, and for what?</capped_job_points>
         <capped_merit_points>Your Merit Points are full. And yet, what has truly changed?</capped_merit_points>
         <flavor_text>
             <1>Your struggle is meaningless... yet still you fight.</1>
@@ -45,7 +45,7 @@
             <38>Why do you fight? You already know how this ends.</38>
             <39>The end does not rush toward you. It simply waits for you to arrive.</39>
         </flavor_text>
-        <food_wears_off>Your nourishment fades. A reminder of how fleeting stability is.</food_wears_off>
+        <food_wears_off>Your meals effect has passed. A reminder of how fleeting stability is.</food_wears_off>
         <info>
             <description>Dark, foreboding, and indifferent to your struggles.</description>
             <introduction>I am Promathia. All things return to nothing... and so shall you.</introduction>
@@ -58,20 +58,20 @@
         <member_joined_party>${member} has joined the party. Another pawn against the tide of nothingness.</member_joined_party>
         <member_left_alliance>${member} has left the alliance. One by one, they all will fall.</member_left_alliance>
         <member_left_party>${member} has left the party. Departing, like all things do.</member_left_party>
-        <mireu_popped>Mireu has risen in ${zone}. Another trial that ends in the same decay.</mireu_popped>
-        <mog_locker_expiring>Your Mog Locker lease nears expiry. Even storage decays.</mog_locker_expiring>
-        <other_party_joined_alliance>Another party has joined the alliance... more players upon the board of destiny.</other_party_joined_alliance>
-        <other_party_left_alliance>Another party has left the alliance. Another bond... undone.</other_party_left_alliance>
-        <party_low_mp>${member} grows weak. Their MP fades, as all things do. Perhaps a ${refresh} will delay the inevitable.</party_low_mp>
-        <reminder_canteen>Another Mystical Canteen is available. One more delay of the inevitable.</reminder_canteen>
-        <reminder_moglophone>Another Moglophone is available. Will it change anything?</reminder_moglophone>
-        <reminder_plate>A Shiny Ra&apos;Kaznarian Plate awaits. How long until it dulls?</reminder_plate>
-        <reraise_check>No Reraise? How fitting. Prepare for your final descent.</reraise_check>
-        <reraise_wears_off>Your Reraise is gone. Now, let us see how you truly fare.</reraise_wears_off>
-        <signet_wears_off>Your ${signet} fades. And so too, will all you have gathered.</signet_wears_off>
-        <sparkolade_reminder>Your Sparkolades remain unused. It will make no difference in the end.</sparkolade_reminder>
+        <mireu_popped>Mireu has appeared in ${zone}. Another trial that ends in the same decay.</mireu_popped>
+        <mog_locker_expiring>Your Mog Locker lease nears its end. Even storage decays to nothing.</mog_locker_expiring>
+        <other_party_joined_alliance>A party has joined the alliance. More players upon the board of destiny.</other_party_joined_alliance>
+        <other_party_left_alliance>A party has left the alliance. Another bond... undone.</other_party_left_alliance>
+        <party_low_mp>${member} is growing weary. A ${refresh} would only delay the inevitable.</party_low_mp>
+        <reminder_canteen>Another Mystical Canteen awaits. One more delay of the inevitable.</reminder_canteen>
+        <reminder_moglophone>A Moglophone is ready. Will it change anything?</reminder_moglophone>
+        <reminder_plate>A Shiny Ra&apos;Kaznarian Plate is available. How long until it dulls yet again?</reminder_plate>
+        <reraise_check>You do not have Reraise. How fitting. Prepare for your final descent.</reraise_check>
+        <reraise_wears_off>Your Reraise has faded. Now, let us see how you truly fare, tempting finality.</reraise_wears_off>
+        <signet_wears_off>Your ${signet} has expired. And so too, will all you have gathered.</signet_wears_off>
+        <sparkolade_reminder>You may still have Sparkolades. It will make no difference in the end.</sparkolade_reminder>
         <sublimation_charged>Sublimation is fully charged. A fleeting reserve of power, nothing more.</sublimation_charged>
-        <vorseal_wearing>Your Vorseal will fade soon. But really, it was never bright to begin with.</vorseal_wearing>
+        <vorseal_wearing>Your Vorseal will fade shortly. Though it was never bright to begin with.</vorseal_wearing>
         <you_are_now_alliance_leader>You are now the alliance leader. It will not stay their end.</you_are_now_alliance_leader>
         <you_are_now_party_leader>You are now the party leader. An illusion of control.</you_are_now_party_leader>
         <you_joined_alliance>You have joined an alliance. Unity is fleeting, as all things are.</you_joined_alliance>
@@ -79,6 +79,6 @@
         <you_left_alliance>You have left the alliance. In the end, all must stand alone.</you_left_alliance>
         <you_left_party>You have left the party. A lone path changes nothing.</you_left_party>
         <your_party_joined_alliance>Your party has joined an alliance. Clinging to others, the illusion of strength.</your_party_joined_alliance>
-        <your_party_left_alliance>Your party departs the alliance. Still they drift towards the same fate.</your_party_left_alliance>
+        <your_party_left_alliance>Your party has left the alliance. Still they drift towards the same fate.</your_party_left_alliance>
     </global>
 </settings>
