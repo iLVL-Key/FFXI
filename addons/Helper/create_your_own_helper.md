@@ -35,12 +35,13 @@ Small Faceplate example
 
 
 # Custom Sounds
-The Custom Sound system is fairly flexible, so there are varying ways you can decide to make sounds clips.
-- A sound file for each (the "Specifics" below, 16 total)
-- A sound file for only the categories (the "Generics" below, 8 total)
-- A singe sound file (notification) that gets used for everything.
+The Custom Sound system is fairly flexible, so there are varying ways you can decide to make sounds clips. Some sounds have been grouped, and the Generic sound will played if one of the Specifics is not present. This means if you do all of the Specifics in a group, you do not need to do the Generic. Conversely, you can also only do the Generic and it will be used in place of the Specifics for that group.
+- A sound file for each, doing the Specific and not the Generics (31 total).
+- A sound file for each, but only the Generics for the groups (23 total).
+- A sound file for the Generics, and a single sound file for the rest (5 total).
+- A singe sound file (notification.wav) that gets used for everything.
 
-The addon uses a hierarchy to decide which sound to play when a notification/alert happens. Note that if you do not supply any sound files (or only some) for your Helper, it will still use the default sounds.  
+The addon uses a hierarchy to decide which sound to play when a notification/alert happens. Note that if you do not supply any sound files for your Helper, it will still use the default sounds.  
 
 ("player" here means the addon user, "member" is anyone not the player.)
 ## Notification
@@ -49,14 +50,59 @@ The addon uses a hierarchy to decide which sound to play when a notification/ale
 ## Ability Ready
 * **ability_ready.wav** - Any ability (with a cooldown of 10min or longer) is now ready to use.
 
+## Capped Job Points
+* **capped_job_points.wav** - The players job points are now capped.
+
+## Capped Merit Points
+* **capped_merit_points.wav** - The players merit points are now capped.
+
+## Food Wears Off
+* **food_wears_off.wav** - The players food has just worn off.
+
+## Mireu Has Popped
+* **mireu_popped.wav** - Mireu has just popped.
+
+## Mog Locker Nearing Expiration
+* **mog_locker_expiring.wav** - The players Mog Locker is nearing expiration. Plays one week before the expiration date, then once per day until expired or renewed.
+
+## A Party Member Has Low MP
+* **party_low_mp.wav** - A player in the players party has low MP. Plays only if the player is on RDM or BRD. Text will adjust to refresh/ballad based on players job if `${refresh}` is used, but this sound file will be played for either job.
+
+## Mystical Canteen Reminder
+* **reminder_canteen.wav** - A new Mystical Canteen is ready.
+
+## Moglophone Reminder
+* **reminder_moglophone.wav** - A new Moglophone is ready.
+
+## Shiny Ra'Kaznarian Plate Reminder
+* **reminder_plate.wav** - A new Shiny Ra'Kaznarian Plate is ready.
+
+## Reraise Check
+* **reraise_check.wav** - The player does not have Reraise on.
+
+## Reraise Wears Off
+* **reraise_wears_off.wav** - The player has lost Reraise.
+
+## Regional Buff Wears Off
+* **signet_wears_off.wav** - The player has lost a Regional Buff (Signet, Sigil, Sanction, or Ionis).
+
+## Sparkolade Reminder
+* **sparkolade_reminder.wav** - A reminder to use your Sparkolades. Plays once per week.
+
+## Sublimation Charged
+* **sublimation_charged.wav** - Sublimation has finished charging.
+
+## Vorseal Is About To Wear Off
+* **vorseal_wearing.wav** - The players Vorseal will wear off in 10 minutes.
+
 ## Leader
 * **now_alliance_leader.wav** - The player is now the alliance leader.
 * **now_party_leader.wav** - The player is now the party leader.
 
 ## Member Joined 
-### Member Joined Generic
+### Member Joined *Generic*
 * **member_joined_party.wav** - Used if the below "Member Joined Specific" files are not present. Played for any instance of a member (including the player) joining a party/alliance. If the 4 files below are all present, this file will not be used at all.
-### Member Joined Specific
+### Member Joined *Specific*
 If any (or all) of these are missing, it will play the above member_joined_party.wav in their place.
 * **you_joined_party.wav** - The player joins a party.
 * **you_joined_alliance.wav** - The player joins a pre-established alliance.
@@ -64,9 +110,9 @@ If any (or all) of these are missing, it will play the above member_joined_party
 * **member_joined_alliance.wav** - A member joins your alliance.
 
 ## Member Left
-### Member Left Generic
+### Member Left *Generic*
 * **member_left_party.wav** - Used if the below "Member Left Specific" files are not present. Played for any instance of a member (including the player) leaving a party/alliance. If the 4 files below are all present, this file will not be used at all.
-### Member Left Specific
+### Member Left *Specific*
 If any (or all) of these are missing, it will play the above member_left_party.wav in their place.
 * **you_left_party.wav** - The player left their party.
 * **you_left_alliance.wav** - The player left their party that was in an alliance.
@@ -74,15 +120,15 @@ If any (or all) of these are missing, it will play the above member_left_party.w
 * **member_left_alliance.wav** - A member left a different party that was in your alliance.
 
 ## Party Joined
-### Party Joined Generic
+### Party Joined *Generic*
 * **party_joined_alliance.wav** - Used if the below "Party Joined Specific" files are not present. Played when the players party joins an alliance, or when a different party joins the players pre-established alliance. If the 2 files below are both present, this file will not be used at all.
-### Party Joined Specific
+### Party Joined *Specific*
 * **your_party_joined_alliance.wav** - The players party has joined an alliance.
 * **other_party_joined_alliance.wav** - A different party has joined the players pre-established alliance.
 
 ## Party Left
-### Party Left Generic
+### Party Left *Generic*
 * **party_left_alliance.wav** - Used if the below "Party Left Specific" files are not present. Played when the players party left an alliance, or when a different party left the players alliance. If the 2 files below are both present, this file will not be used at all.
-### Party Left Specific
+### Party Left *Specific*
 * **your_party_left_alliance.wav** - The players party has left an alliance.
 * **other_party_joined_alliance.wav** - A different party has left the players alliance.
