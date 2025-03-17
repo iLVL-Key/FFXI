@@ -1414,7 +1414,7 @@ function checkKIReminderTimestamps()
 
 						win.add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name) .. (text):color(selected.c_text))
 
-						playSound(selected.helper, 'reminder'..key_item)
+						playSound(selected.helper, 'reminder_'..key_item)
 						showFaceplate(selected.helper)
 
 					end 
