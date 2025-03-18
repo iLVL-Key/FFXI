@@ -3,12 +3,45 @@ The Helper addon acts as a customizable in-game assistant that provides alerts, 
 
 Players can load different Helpers, each with its own personality and dialogue, and cycle between them. The addon also supports sound effects for key notifications and reminders for gameplay mechanics like Sublimation being fully charged or Vorseal effects nearing expiration. With its blend of functionality and personality, Helper adds both utility and charm to the FFXI experience.
 ## Helpers
-Choose your companion! These are just **three** of the many Helpers available - each with their own unique personality!  
+Choose your companion! Each has their own unique personality!  
+### Default
+**Vana** - Friendly, encouraging, and always positive.  
+The default Helper. Has no Faceplate, and uses the default sounds.
 
+### NPCs
 | ![Shantotto](https://github.com/user-attachments/assets/18178a4d-ab89-4b3e-a99c-2b66a2394243) | ![Moogle](https://github.com/user-attachments/assets/72b7bb44-c0e9-41a1-8af6-0faa6852aab3) | ![Mayakov](https://github.com/user-attachments/assets/11961710-5f2d-4af9-8f55-ebf54d041a45) |
 |---|---|---|
 | **Shantotto**  | **Moogle**  | **Mayakov**  |
 | Witty, rhyming, and slightly menacing. | Cheerful, helpful, and full of "kupo!" | Flamboyant, theatrical, and obthethed with perfecthion. |
+
+| ![Altana](https://github.com/user-attachments/assets/c7c91a06-5dcf-4b0e-9792-09af916987a3) | ![Promathia](https://github.com/user-attachments/assets/1c71e534-d2df-43c1-a78a-967a0dfd0294) |
+|---|---|
+| **Altana**  | **Promathia**  |
+| Warm, comforting, and protective. | Dark, foreboding, and indifferent to your struggles. |
+
+### Players
+| ![Azhur](https://github.com/user-attachments/assets/38a6c564-3245-4b6b-8dea-8eb491674cf2) | ![Galin](https://github.com/user-attachments/assets/a5db9576-3123-476d-91c6-f8d97c676e4d) |
+|---|---|
+| **Azhur**  | **Galin**  |
+| Super sweet, full of charm, and a little quirky. | Flirty, fun, and fueled by tequila. |
+
+| ![Kolo](https://github.com/user-attachments/assets/51483097-44c8-4093-ab94-42c4c15c42a8) | ![Sigue](https://github.com/user-attachments/assets/d1f5d3b4-a78b-4ffd-a8b7-0f620f57ddb4) |
+|---|---|
+| **Kolo**  | **Sigue**  |
+| Loud, chaotic, and full of love (and expletives). | Super nice guy, loves San d'Oria maybe a little too much. |
+
+### Special Guests
+| ![faceplate_small](https://github.com/user-attachments/assets/35520a01-d7a8-438d-ba21-3ac397928889) |
+|---|
+| **Lefty** |
+| Always willing to give a helping hand. |
+
+
+
+
+
+
+
 
 
 ## Features
