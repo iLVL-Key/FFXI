@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.1'
+_addon.version = '2.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -2814,9 +2814,9 @@ win.register_event('addon command',function(addcmd, ...)
 		win.add_to_chat(8,('[Helper] '):color(220)..('Voices Mode: '):color(8)..(opt.voices and 'On' or 'Off'):color(1))
 
 	elseif addcmd == "sounds" or addcmd == "sound" or addcmd == "s" then
-		if opt.sound_effects and opt.helper_sounds then
-			settings.options.helper_sounds = false
-			opt.helper_sounds = false
+		if opt.sound_effects and opt.custom_sounds then
+			settings.options.media.custom_sounds = false
+			opt.custom_sounds = false
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Sound Mode: '):color(8)..('Default Sounds'):color(1))
 		elseif opt.sound_effects then
@@ -2827,27 +2827,27 @@ win.register_event('addon command',function(addcmd, ...)
 		else
 			settings.options.sound_effects = true
 			opt.sound_effects = true
-			settings.options.helper_sounds = true
-			opt.helper_sounds = true
+			settings.options.media.custom_sounds = true
+			opt.custom_sounds = true
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Sound Mode: '):color(8)..('Custom Helper Sounds (if available)'):color(1))
 		end
 
 	elseif addcmd == "faces" or addcmd == "face" or addcmd == "faceplates" or addcmd == "faceplate" or addcmd == "f" then
 		if opt.faceplates and opt.faceplates_large then
-			settings.options.faceplates_large = false
+			settings.options.media.faceplates_large = false
 			opt.faceplates_large = false
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Small'):color(1))
 		elseif opt.faceplates then
-			settings.options.faceplates = false
+			settings.options.media.faceplates = false
 			opt.faceplates = false
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Off'):color(1))
 		else
-			settings.options.faceplates = true
+			settings.options.media.faceplates = true
 			opt.faceplates = true
-			settings.options.faceplates_large = true
+			settings.options.media.faceplates_large = true
 			opt.faceplates_large = true
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Large'):color(1))
