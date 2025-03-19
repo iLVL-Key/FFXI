@@ -36,14 +36,6 @@ The default Helper. Has no Faceplate, and uses the default sounds.
 | **Lefty** |
 | Always willing to give a helping hand. |
 
-
-
-
-
-
-
-
-
 ## Features
 - <ins>**Automated Notifications & Alerts**</ins>
   - **Ability Ready Alerts** → Notifies you when an ability is ready to use.
@@ -134,6 +126,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 2.1.1
+- Fixed an issue with faceplate options not saving correctly.
+- Fixed an issue with sound options not saving correctly.
 
 Version 2.1
 - Added the ability to have sound files for `sparkolade_reminder`, `reminder_canteen`, `reminder_moglophone`, and `reminder_plate`, `mog_locker_expiring`, `capped_merit_points`, `capped_job_points`, `party_low_mp`, `sublimation_charged`, `food_wears_off`, `reraise_wears_off`, `signet_wears_off`, `mireu_popped`, `vorseal_wearing`, `reraise_check`. This now allows for all notifications to have custom sound files.
