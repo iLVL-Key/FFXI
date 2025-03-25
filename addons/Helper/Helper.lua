@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.1.1'
+_addon.version = '2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -57,17 +57,17 @@ defaults = {
 	addon_sha = nil,
 	first_run = true,
 	have_key_item = {
-		canteen = false,
-		moglophone = false,
-		plate = false,
+		canteen = {},
+		moglophone = {},
+		plate = {},
 	},
 	timestamps = {
-		canteen = 0,
+		canteen = {},
 		last_check = 0,
-		moglophone = 0,
-		mog_locker_expiration = 0,
-		mog_locker_reminder = 0,
-		plate = 0,
+		moglophone = {},
+		mog_locker_expiration = {},
+		mog_locker_reminder = {},
+		plate = {},
 		sparkolades = 0,
 	},
 	options = {
@@ -1351,7 +1351,8 @@ function saveReminderTimestamp(key_item, key_item_reminder_repeat_hours)
 	end
 
 	--Save the timestamp for 20 hours into the future
-	timestamps[key_item] = os.time() + (hours * 60 * 60)
+	local player = win.get_player()
+	timestamps[key_item][string.lower(player.name)] = os.time() + (hours * 60 * 60)
 	settings:save('all')
 end
 
@@ -1388,24 +1389,25 @@ function checkKIReminderTimestamps()
 
 		if opt.key_item_reminders[key_item] then
 
-			local reminder_time = timestamps[key_item]
-			local have_ki = have_key_item[key_item]
+			local player = win.get_player()
+			local reminder_time = timestamps[key_item][string.lower(player.name)] or 0
+			local have_ki = have_key_item[key_item][string.lower(player.name)] or false
 
 			--We just used the KI
 			if have_ki and not haveKeyItem(id) then
-				have_key_item[key_item] = false
+				have_key_item[key_item][string.lower(player.name)] = false
 				settings:save('all')
 				saveReminderTimestamp(key_item) --Set the reminder time for 20 hours from now
 
 			--We just received the KI again
 			elseif not have_ki and haveKeyItem(id) then
-				have_key_item[key_item] = true
+				have_key_item[key_item][string.lower(player.name)] = true
 				settings:save('all')
 
 			--We do not yet have the KI
 			elseif not have_ki and not haveKeyItem(id) then
 
-				--Not the first run (reminder timestamp of 0) and the reminder timestamp has pased
+				--Not the first run (first run = reminder timestamp of 0) and the reminder timestamp has pased
 				if reminder_time and reminder_time ~= 0 and current_time >= reminder_time then
 
 					local selected = getHelper()
@@ -1429,7 +1431,7 @@ function checkKIReminderTimestamps()
 end
 
 function checkMogLockerReminder()
-
+	
 	if not opt.mog_locker_expiring then
 		return
 	end
@@ -1438,15 +1440,19 @@ function checkMogLockerReminder()
 	local one_week = 7 * 24 * 60 * 60  --7 days in seconds
 	local one_day = 24 * 60 * 60  --24 hours in seconds
 
+	local player = win.get_player()
+	local expiration_time = timestamps.mog_locker_expiration[string.lower(player.name)] or 0
+	local reminder_time = timestamps.mog_locker_reminder[string.lower(player.name)] or 0
+
 	--Expiration is more than a week away, clear reminder timestamp
-	if timestamps.mog_locker_reminder ~= 0 and timestamps.mog_locker_expiration - current_time > one_week then
-		timestamps.mog_locker_reminder = 0
+	if expiration_time - current_time > one_week then
+		timestamps.mog_locker_reminder[string.lower(player.name)] = 0
 		settings:save('all')
 
 	--Expiration is under a week away
-	elseif timestamps.mog_locker_expiration - current_time < one_week then
+	elseif expiration_time - current_time < one_week then
 
-		if current_time >= timestamps.mog_locker_reminder then
+		if current_time >= reminder_time then
 
 			local selected = getHelper()
 			local text = helpers[selected.helper].mog_locker_expiring
@@ -1460,7 +1466,7 @@ function checkMogLockerReminder()
 			end
 	
 			--Update the reminder timestamp to trigger again in 24 hours
-			timestamps.mog_locker_reminder = current_time + one_day
+			timestamps.mog_locker_reminder[string.lower(player.name)] = current_time + one_day
 			settings:save('all')
 
 		end
@@ -2322,7 +2328,9 @@ win.register_event("incoming text", function(original,modified,original_mode)
 				sec = tonumber(second)
 			})
 
-			timestamps.mog_locker_expiration = lease_expiry_time
+			--Store the timestamp in the timestamps table
+			local player = win.get_player()
+			timestamps.mog_locker_expiration[string.lower(player.name)] = lease_expiry_time
 			settings:save('all')
 
 		end
@@ -2840,12 +2848,12 @@ win.register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Small'):color(1))
 		elseif opt.faceplates then
-			settings.options.media.faceplates = false
+			settings.options.faceplates = false
 			opt.faceplates = false
 			settings:save('all')
 			win.add_to_chat(8,('[Helper] '):color(220)..('Faceplates: '):color(8)..('Off'):color(1))
 		else
-			settings.options.media.faceplates = true
+			settings.options.faceplates = true
 			opt.faceplates = true
 			settings.options.media.faceplates_large = true
 			opt.faceplates_large = true
