@@ -127,6 +127,10 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.2.1
+- Adjusted list of New Helpers (`//helper check new`) to be sorted alphabetically.
+- Adjusted list of Helpers (`//helper list`) to show both loaded and unloaded Helpers.
+
 Version 2.2
 - Adjusted timestamps for canteen, moglophone, and plate reminders, as well as mog locker expiration being saved based on character name. This allows different characters to have their own timestamps.
 
