@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.2.1'
+_addon.version = '2.2.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -1749,6 +1749,7 @@ end)
 --Logout
 win.register_event('logout', function()
 	reset()
+	helper_faceplate:alpha(0)
 end)
 
 --Party MP checks
