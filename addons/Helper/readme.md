@@ -127,6 +127,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.2.2
+- Fixed Faceplate getting left on screen if triggered right before logging out.
+
 Version 2.2.1
 - Adjusted list of New Helpers (`//helper check new`) to be sorted alphabetically.
 - Adjusted list of Helpers (`//helper list`) to show both loaded and unloaded Helpers.
