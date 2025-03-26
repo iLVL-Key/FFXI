@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.2'
+_addon.version = '2.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -43,6 +43,7 @@ win = {
 	dir_exists = windower.dir_exists,
 	file_exists = windower.file_exists,
 	get_ability_recasts = windower.ffxi.get_ability_recasts,
+	get_dir = windower.get_dir,
 	get_info = windower.ffxi.get_info,
 	get_key_items = windower.ffxi.get_key_items,
 	get_party = windower.ffxi.get_party,
@@ -761,20 +762,28 @@ end
 
 --Get a list of local Helper files
 function getLocalHelpers()
-
 	local local_helpers = {}
+	local helpers_path = win.addon_path .. "data/helpers/"
 
-	--Check for known helper files by iterating over the loaded list
-	for name, _ in pairs(opt.helpers_loaded) do
-		local file_name = "data/helpers/" .. name .. ".xml"
-		if win.file_exists(win.addon_path .. file_name) then
-			local_helpers[name] = true
+	--Ensure the folder exists before scanning
+	if not win.dir_exists(helpers_path) then
+		return local_helpers --Return empty table if folder is missing
+	end
+
+	--Get a list of files in the directory
+	local files = win.get_dir(helpers_path)
+	if files then
+		for _, file in ipairs(files) do
+			if file:match("%.xml$") then --Only process .xml files
+				local name = file:gsub("%.xml$", "") --Remove .xml extension
+				local_helpers[string.lower(name)] = true
+			end
 		end
 	end
 
 	return local_helpers
-
 end
+
 
 local function getGitHubHelpers()
 	local request_url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/github_helper_data.xml"
@@ -816,7 +825,12 @@ local function checkForNewHelpers()
 		end
 	end
 
-	--Display the list of new Helpers
+	-- Sort the new_helpers table alphabetically by helper name
+	table.sort(new_helpers, function(a, b)
+		return (a.name or "") < (b.name or "")
+	end)
+
+	-- Display the list of new Helpers
 	if #new_helpers > 0 then
 		win.add_to_chat(8, ('[Helper] '):color(220) .. ('New %s available: '):color(6):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(new_helpers) do
@@ -826,7 +840,7 @@ local function checkForNewHelpers()
 			local helper_creator = helper.creator and " (Creator: " .. helper.creator .. ")" or ""
 			local c_name = helper.name_color or 220
 			local c_text = helper.text_color or 1
-
+	
 			win.add_to_chat(c_text, ('[' .. helper_name .. '] '):color(c_name) .. (helper_type .. helper_description .. helper_creator):color(c_text))
 		end
 	else
@@ -2714,21 +2728,39 @@ win.register_event('addon command',function(addcmd, ...)
 		end
 
 	elseif addcmd == 'list' then
-		local sorted_helpers = {}
-		for name, enabled in pairs(helpers) do
-			if enabled and helpers[name].info then
-				table.insert(sorted_helpers, name)
+		local loaded_helpers = {}
+		local unloaded_helpers = {}
+		--Separate Helpers into Loaded and Unloaded
+		for name, enabled in pairs(opt.helpers_loaded) do
+			if enabled then
+				table.insert(loaded_helpers, name)
+			else
+				table.insert(unloaded_helpers, name)
 			end
 		end
-		table.sort(sorted_helpers)
-		for _, name in ipairs(sorted_helpers) do
-			local helper_name = helpers[name].info.name or "Unknown"
-			local helper_type = helpers[name].info.type and helpers[name].info.type.." - " or "Unknown Type - "
-			local helper_description = helpers[name].info.description or "No description available."
-			local helper_creator = helpers[name].info.creator and " (Creator: "..helpers[name].info.creator..")" or ""
-			local c_name = helpers[name].info.name_color or 220
-			local c_text = helpers[name].info.text_color or 1
-			win.add_to_chat(c_text, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
+		--Sort both lists
+		table.sort(loaded_helpers)
+		table.sort(unloaded_helpers)
+		--Print Loaded Helpers
+		if #loaded_helpers > 0 then
+			win.add_to_chat(6,('[Helper] '):color(220)..('Loaded Helpers:'):color(6))
+			for _, name in ipairs(loaded_helpers) do
+				local helper_name = helpers[name].info.name or "Unknown"
+				local helper_type = helpers[name].info.type and helpers[name].info.type.." - " or "Unknown Type - "
+				local helper_description = helpers[name].info.description or "No description available."
+				local helper_creator = helpers[name].info.creator and " (Creator: "..helpers[name].info.creator..")" or ""
+				local c_name = helpers[name].info.name_color or 220
+				local c_text = helpers[name].info.text_color or 1
+				win.add_to_chat(c_text,('['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
+			end
+		end
+		--Print Unloaded Helpers
+		if #unloaded_helpers > 0 then
+			win.add_to_chat(8,('[Helper] '):color(220)..('Unloaded Helpers:'):color(28))
+			for _, name in ipairs(unloaded_helpers) do
+				local helper_name = capitalize(name)
+				win.add_to_chat(c_text,('- '):color(1)..(name):color(8))
+			end
 		end
 
 	elseif addcmd == "check" then
