@@ -484,7 +484,9 @@ function displayHelp()
 	add_to_chat(8,' ')
 	add_to_chat(8,(' Command '):color(36)..(' - Description'):color(8))
 	add_to_chat(8,(' show/hide '):color(36)..(' - Show/hide the VanaPad window.'):color(8))
+	add_to_chat(8,(' copy/c '):color(36)..(' - Copy the current note to the clipboard.'):color(8))
 	add_to_chat(8,(' edit/e '):color(36)..(' - Edit the current note.'):color(8))
+	add_to_chat(8,(' delete/d '):color(36)..(' - Delete the current note.'):color(8))
 	add_to_chat(8,(' title/t '):color(36)..(' - Add a custom title to the current note.'):color(8))
 end
 
@@ -755,6 +757,10 @@ register_event('addon command',function(add_cmd, ...)
 	if add_cmd == "edit" or add_cmd == "e" or add_cmd == "new" or add_cmd == "n" then
 		local text = table.concat({...}, " ")
 		editNote(text)
+	elseif add_cmd == "delete" or add_cmd == "d" then
+		deleteNote(current_note)
+	elseif add_cmd == "copy" or add_cmd == "c" then
+		copyNote(current_note)
 	elseif add_cmd == "show" then
 		VanaPad:show()
 		settings.visible = true
