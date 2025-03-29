@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaPad'
-_addon.version = '1.0 BETA-5'
+_addon.version = '1.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanapad','vp'}
 
