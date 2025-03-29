@@ -23,7 +23,7 @@ All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)
 
 ## Version History
 
-Version 1.0 BETA-5
+Version 1.0 (Full Release)
 - Adjusted accuracy of button detection to be much more precise. Now uses the exact width of the text box to determine the spacing of buttons.
 - Code cleanup.
 
