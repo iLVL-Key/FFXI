@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'VanaPad'
-_addon.version = '1.0 BETA-4'
+_addon.version = '1.0 BETA-5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanapad','vp'}
 
@@ -33,7 +33,11 @@ config = require('config')
 texts = require('texts')
 require 'chat'
 
-local defaults = {
+add_to_chat = windower.add_to_chat
+send_command = windower.send_command
+register_event = windower.register_event
+
+defaults = {
 	pos = {
 		x = windower.get_windower_settings().ui_x_res - 604,
 		y = 16
@@ -77,15 +81,12 @@ local defaults = {
 
 settings = config.load(defaults)
 
-local color = settings.options.colors
-local note = settings.notes
-local option = settings.options
+color = settings.options.colors
+note = settings.notes
+option = settings.options
 
-local add_to_chat = windower.add_to_chat
-local send_command = windower.send_command
-
-local c = {}
-c.little_x = color.text_header
+c = {}
+c.delete = color.text_header
 c.edit = color.text_header
 c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
 c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
@@ -100,11 +101,11 @@ c.note9 = note.note9 and color.btn_note_full or color.btn_note_empty
 c.help = color.text_header
 c.underscore = color.text_header
 c.pin = color.text_header
-c.big_x = color.text_header
+c.hide = color.text_header
 c.content = color.text_note
 
-local hoveringOver = {
-    little_x = false,
+hovering_over = {
+    delete = false,
     edit = false,
     note0 = false,
     note1 = false,
@@ -119,14 +120,14 @@ local hoveringOver = {
     help = false,
     underscore = false,
     pin = false,
-    big_x = false
+    hide = false
 }
 
-local addon_name = _addon.name
-local title = addon_name
-local currentNote = "none"
-local titleOverride = nil
-local newTitle = {
+addon_name = _addon.name
+title = addon_name
+current_note = "none"
+title_override = nil
+new_title = {
     note0 = "Note 0",
     note1 = "Note 1",
     note2 = "Note 2",
@@ -138,22 +139,22 @@ local newTitle = {
     note8 = "Note 8",
     note9 = "Note 9"
 }
-local Heartbeat = 0
-local Fade = false
-local FadeDelay = option.fade_delay
-local FadeNum = option.fade_bg_max
-local zoning = false
-local entering_note = false
-local temp_string = ""
-local shift_down = false
+heartbeat = 0
+fade = false
+fade_delay = option.fade_delay
+fade_num = option.fade_bg_max
+zoning = false
+entering_note = false
+temp_string = ""
+shift_down = false
 
 --these help to fix a weird double-click bug in windower
-local double_click_fix_edit = false
-local double_click_fix_pin = settings.flags.draggable
-local double_click_fix_help = false
+double_click_fix_edit = false
+double_click_fix_pin = settings.flags.draggable
+double_click_fix_help = false
 
 -- Mapping of DirectInput key codes to characters
-local key_map = {
+key_map = {
 	-- Numbers and symbols (without shift)
 	[0x02] = '1', [0x03] = '2', [0x04] = '3', [0x05] = '4', [0x06] = '5',
 	[0x07] = '6', [0x08] = '7', [0x09] = '8', [0x0A] = '9', [0x0B] = '0',
@@ -192,29 +193,29 @@ local key_map = {
 }
 
 --Format RGB values with leading zeros (helps prevent an issue with text shifting when changing colors)
-local function formatRGB(value)
+function formatRGB(value)
 	return string.format("%03d", value)
 end
 
 -- Update the VanaPad text box
-local function updateBox(displayNote)
+function updateBox(display_note)
 
-	local cx = c.little_x
+	local cx = c.delete
 	local ce = c.edit
-	local c0 = currentNote == "note0" and color.btn_note_current or c.note0
-	local c1 = currentNote == "note1" and color.btn_note_current or c.note1
-	local c2 = currentNote == "note2" and color.btn_note_current or c.note2
-	local c3 = currentNote == "note3" and color.btn_note_current or c.note3
-	local c4 = currentNote == "note4" and color.btn_note_current or c.note4
-	local c5 = currentNote == "note5" and color.btn_note_current or c.note5
-	local c6 = currentNote == "note6" and color.btn_note_current or c.note6
-	local c7 = currentNote == "note7" and color.btn_note_current or c.note7
-	local c8 = currentNote == "note8" and color.btn_note_current or c.note8
-	local c9 = currentNote == "note9" and color.btn_note_current or c.note9
+	local c0 = current_note == "note0" and color.btn_note_current or c.note0
+	local c1 = current_note == "note1" and color.btn_note_current or c.note1
+	local c2 = current_note == "note2" and color.btn_note_current or c.note2
+	local c3 = current_note == "note3" and color.btn_note_current or c.note3
+	local c4 = current_note == "note4" and color.btn_note_current or c.note4
+	local c5 = current_note == "note5" and color.btn_note_current or c.note5
+	local c6 = current_note == "note6" and color.btn_note_current or c.note6
+	local c7 = current_note == "note7" and color.btn_note_current or c.note7
+	local c8 = current_note == "note8" and color.btn_note_current or c.note8
+	local c9 = current_note == "note9" and color.btn_note_current or c.note9
 	local ch = c.help
 	local cu = c.underscore
 	local cp = c.pin
-	local cX = c.big_x
+	local cX = c.hide
 	local cc = c.content
 
 	function wordWrap(input)
@@ -289,30 +290,30 @@ local function updateBox(displayNote)
 		return lines
 	end
 
-	local emptyNote = "Click Edit (±) or type \n`//vp edit textgoeshere`"
+	local empty_note = "Click Edit (±) or type \n`//vp edit textgoeshere`"
 
 	--content of the note displayed
 	local content = ""
 
-	if displayNote == "none" then
-		title = titleOverride and titleOverride or addon_name
+	if display_note == "none" then
+		title = title_override and title_override or addon_name
 	else
-		title = titleOverride and titleOverride or (entering_note and "Edit Mode" or (note[displayNote] and note[displayNote].title or newTitle[displayNote]))
-		local wrappedContent = wordWrap(note[displayNote] and note[displayNote].content or "")
-		content = note[displayNote] and "\\cs("..formatRGB(cc.r)..","..formatRGB(cc.g)..","..formatRGB(cc.b)..")"..table.concat(wrappedContent, "\n").."\\cr" or (entering_note and "\\cs(255,050,050)|\\cr" or emptyNote)
+		title = title_override and title_override or (entering_note and "Edit Mode" or (note[display_note] and note[display_note].title or new_title[display_note]))
+		local wrapped_content = wordWrap(note[display_note] and note[display_note].content or "")
+		content = note[display_note] and "\\cs("..formatRGB(cc.r)..","..formatRGB(cc.g)..","..formatRGB(cc.b)..")"..table.concat(wrapped_content, "\n").."\\cr" or (entering_note and "\\cs(255,050,050)|\\cr" or empty_note)
 	end
 
-	local totalLength = option.window_width
-	local titleMax = totalLength - 20 --space for the buttons
-	local truncatedTitle = string.sub(title, 1, titleMax)
-	local textLength = string.len(truncatedTitle)
-	local spacesCount = titleMax - textLength
-	local spaces = string.rep(" ", spacesCount)
+	local total_length = option.window_width
+	local title_max = total_length - 20 --space for the buttons
+	local truncated_title = string.sub(title, 1, title_max)
+	local text_length = string.len(truncated_title)
+	local spaces_count = title_max - text_length
+	local spaces = string.rep(" ", spaces_count)
 	local pin = settings.flags.draggable and "○" or "•"
 
 	--buttons
-	local bx = entering_note and currentNote ~= "none" and note[currentNote] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr" or "\\cs(255,255,255) \\cr"
-	local be = currentNote ~= "none" and "\\cs("..formatRGB(ce.r)..","..formatRGB(ce.g)..","..formatRGB(ce.b)..")±\\cr" or "\\cs(255,255,255) \\cr"
+	local bx = entering_note and current_note ~= "none" and note[current_note] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr" or "\\cs(255,255,255) \\cr"
+	local be = current_note ~= "none" and "\\cs("..formatRGB(ce.r)..","..formatRGB(ce.g)..","..formatRGB(ce.b)..")±\\cr" or "\\cs(255,255,255) \\cr"
 	local b0 = "\\cs("..formatRGB(c0.r)..","..formatRGB(c0.g)..","..formatRGB(c0.b)..")0\\cr"
 	local b1 = "\\cs("..formatRGB(c1.r)..","..formatRGB(c1.g)..","..formatRGB(c1.b)..")1\\cr"
 	local b2 = "\\cs("..formatRGB(c2.r)..","..formatRGB(c2.g)..","..formatRGB(c2.b)..")2\\cr"
@@ -331,18 +332,18 @@ local function updateBox(displayNote)
 --VanaPad v1.0             x ± 0123456789 ?_•X
 --○•
 
-	return truncatedTitle..spaces.." "..bx.." "..be.." "..b0..b1..b2..b3..b4..b5..b6..b7..b8..b9.." "..bh..bu..bp..bX..(content ~= "" and "\n\n" or (entering_note and "\n\n\n\n" or ""))..content
+	return truncated_title..spaces.." "..bx.." "..be.." "..b0..b1..b2..b3..b4..b5..b6..b7..b8..b9.." "..bh..bu..bp..bX..(content ~= "" and "\n\n" or (entering_note and "\n\n\n\n" or ""))..content
 end
 
 -- Create the VanaPad text object
-local formattedDisplay = updateBox("none")
-local VanaPad = texts.new(formattedDisplay, settings)
+formatted_display = updateBox("none")
+VanaPad = texts.new(formatted_display, settings)
 if settings.visible then
 	VanaPad:show()
 end
 
 --Set initial state of the text box using settings from the options
-local function initialize()
+function initialize()
 	local tc = color.text_header
 	VanaPad:color(tc.r,tc.g,tc.b)
 	local bgc = color.bg_normal
@@ -351,7 +352,7 @@ local function initialize()
 end
 
 -- Delete the current note
-local function deleteNote(note)
+function deleteNote(note)
 	if note ~= "none" then
 		settings.notes[note] = nil
 		settings:save('all')
@@ -359,7 +360,7 @@ local function deleteNote(note)
 	if double_click_fix_edit == true then
 		disableEditMode()
 	end
-	VanaPad:text(updateBox(currentNote))
+	VanaPad:text(updateBox(current_note))
 end
 
 -- Enable Edit Mode
@@ -370,7 +371,7 @@ function enableEditMode()
 	VanaPad:bg_alpha(255)
 	local bgc = color.bg_edit
 	VanaPad:bg_color(bgc.r,bgc.g,bgc.b)
-	VanaPad:text(updateBox(currentNote))
+	VanaPad:text(updateBox(current_note))
 end
 
 -- Disable Edit Mode
@@ -378,17 +379,17 @@ function disableEditMode()
 	entering_note = false
 	double_click_fix_edit = false
 	add_to_chat(8,('[VanaPad] '):color(220)..('Edit Mode disabled. Normal keyboard function resumed.'):color(8))
-	if note[currentNote] and note[currentNote].content == "" then
-		deleteNote(currentNote)
+	if note[current_note] and note[current_note].content == "" then
+		deleteNote(current_note)
 	end
 	VanaPad:bg_alpha(option.fade_bg_max)
 	local bgc = color.bg_normal
 	VanaPad:bg_color(bgc.r,bgc.g,bgc.b)
-	VanaPad:text(updateBox(currentNote))
+	VanaPad:text(updateBox(current_note))
 end
 
 -- Keyboard input
-local function keyboard_event(dik, down, flags, blocked)
+function keyboard_event(dik, down, flags, blocked)
 
 	-- Update shift state
 	if dik == 0x2A or dik == 0x36 then  -- 0x2A and 0x36 are Left Shift and Right Shift
@@ -398,7 +399,7 @@ local function keyboard_event(dik, down, flags, blocked)
 
 	-- If entering note mode, handle input differently
 	if entering_note then
-		temp_string = note[currentNote] and note[currentNote].content or ""
+		temp_string = note[current_note] and note[current_note].content or ""
 		if down then
 			if dik == 0x01 then  -- Escape key to finish Edit Mode
 				disableEditMode()
@@ -436,34 +437,34 @@ local function keyboard_event(dik, down, flags, blocked)
 end
 
 -- Register the keyboard event
-windower.register_event('keyboard', keyboard_event)
+register_event('keyboard', keyboard_event)
 
-local function shrinkPad()
+function shrinkPad()
 
-	currentNote = "none"
-	VanaPad:text(updateBox(currentNote))
+	current_note = "none"
+	VanaPad:text(updateBox(current_note))
 
 end
 
 -- Create a new note
 function editNote(content)
 
-	settings.notes[currentNote] = {title = newTitle[currentNote], content = content}
+	settings.notes[current_note] = {title = new_title[current_note], content = content}
 	settings:save('all')
-	VanaPad:text(updateBox(currentNote))
+	VanaPad:text(updateBox(current_note))
 
 end
 
 -- Update a notes title
 function updateTitle(title)
 
-	settings.notes[currentNote].title = title
+	settings.notes[current_note].title = title
 	settings:save('all')
-	VanaPad:text(updateBox(currentNote))
+	VanaPad:text(updateBox(current_note))
 
 end
 
-local function displayHelp()
+function displayHelp()
 	local prefix = "//vanapad, //vp"
 	add_to_chat(8,('[VanaPad] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 	add_to_chat(8,' ')
@@ -474,12 +475,13 @@ local function displayHelp()
 end
 
 -- Return which button the mouse is hovering over
-local function getMouseOnCharacter(mouseX, mouseY)
-	local boxPos = settings.pos
-	local charWidth = settings.text.size * 0.765  -- Approximate width of a character in pixels for Consolas at given font size
-	local textWidth = option.window_width * charWidth  -- Total width for 30 characters
-	local hoverPositions = {
-		{char = "little_x", offset = 19},
+function getMouseOnCharacter(mouseX, mouseY)
+	local box_pos = settings.pos
+	local total_width = VanaPad:extents() --Total width of the text box
+	local buttons_width = total_width - (settings.padding * 2) --Width of the buttons area (excludes padding)
+	local char_width = buttons_width / option.window_width --Width of each character in the buttons area
+	local hover_positions = {
+		{char = "delete", offset = 19},
 		{char = "edit", offset = 17},
 		{char = "note0", offset = 15},
 		{char = "note1", offset = 14},
@@ -494,18 +496,18 @@ local function getMouseOnCharacter(mouseX, mouseY)
 		{char = "help", offset = 4},
 		{char = "underscore", offset = 3},
 		{char = "pin", offset = 2},
-		{char = "big_x", offset = 1},
+		{char = "hide", offset = 1},
 	}
 
 	-- Hovering over a button
-	for _, pos in ipairs(hoverPositions) do
-		if mouseX >= boxPos.x + textWidth - (charWidth * pos.offset) and mouseX <= boxPos.x + textWidth - (charWidth * (pos.offset - 1)) and mouseY >= boxPos.y and mouseY <= boxPos.y + (settings.text.size * 2.3) then
+	for _, pos in ipairs(hover_positions) do
+		if mouseX >= box_pos.x + settings.padding + buttons_width - (char_width * pos.offset) and mouseX <= box_pos.x + settings.padding + buttons_width - (char_width * (pos.offset - 1)) and mouseY >= box_pos.y and mouseY <= box_pos.y + (settings.text.size * 2.3) then
 			return pos.char
 		end
 	end
 
 	-- Not over a button, but still hovering over the bar itself
-	if mouseX >= boxPos.x and mouseX <= boxPos.x + textWidth and mouseY >= boxPos.y and mouseY <= boxPos.y + (settings.text.size * 2.3) then
+	if mouseX >= box_pos.x and mouseX <= box_pos.x + total_width and mouseY >= box_pos.y and mouseY <= box_pos.y + (settings.text.size * 2.3) then
 		return "bar"
 	end
 
@@ -514,24 +516,23 @@ local function getMouseOnCharacter(mouseX, mouseY)
 end
 
 -- Event handler for mouse movements
-local function onMouseMove(type, mouseX, mouseY)
+function onMouseMove(type, mouseX, mouseY)
 
 	--if the box is not visible, no need to bother with checking any mouse hovering
 	if not settings.visible then
 		return
 	end
 
-	--local settings.notes = notes
 	local hover = getMouseOnCharacter(mouseX, mouseY)
 
 	if hover ~= "none" then
-		if FadeDelay < option.fade_delay then
-			FadeDelay = option.fade_delay
+		if fade_delay < option.fade_delay then
+			fade_delay = option.fade_delay
 		end
-		if Fade then
-			Fade = false
+		if fade then
+			fade = false
 			VanaPad:bg_alpha(option.fade_bg_max)
-			FadeNum = option.fade_bg_max
+			fade_num = option.fade_bg_max
 			c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
 			c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
 			c.note2 = note.note2 and color.btn_note_full or color.btn_note_empty
@@ -542,128 +543,128 @@ local function onMouseMove(type, mouseX, mouseY)
 			c.note7 = note.note7 and color.btn_note_full or color.btn_note_empty
 			c.note8 = note.note8 and color.btn_note_full or color.btn_note_empty
 			c.note9 = note.note9 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
 	end
 
-	if titleOverride ~= nil and hover == "none" or hover == "bar" then
-		titleOverride = nil
-		VanaPad:text(updateBox(currentNote))
+	if title_override ~= nil and hover == "none" or hover == "bar" then
+		title_override = nil
+		VanaPad:text(updateBox(current_note))
 	end
 
-	if hoveringOver[hover] == false then
-		hoveringOver[hover] = true
+	if hovering_over[hover] == false then
+		hovering_over[hover] = true
 		c[hover] = color.btn_hover
-		if hover == "little_x" then
-			titleOverride = note[currentNote] and "Delete" or nil
+		if hover == "delete" then
+			title_override = note[current_note] and "Delete" or nil
 		elseif hover == "edit" then
-			titleOverride = entering_note and "Finish" or (currentNote ~= "none" and "Edit" or nil)
+			title_override = entering_note and "Finish" or (current_note ~= "none" and "Edit" or nil)
 		elseif hover == "help" then
-			titleOverride = "Help"
+			title_override = "Help"
 		elseif hover == "underscore" then
-			titleOverride = "Shrink"
+			title_override = "Shrink"
 		elseif hover == "pin" then
-			titleOverride = settings.flags.draggable and "Pin" or "Unpin"
-		elseif hover == "big_x" then
-			titleOverride = "Hide"
+			title_override = settings.flags.draggable and "Pin" or "Unpin"
+		elseif hover == "hide" then
+			title_override = "Hide"
 		else
-			titleOverride = note[hover] and note[hover].title or "Empty"
+			title_override = note[hover] and note[hover].title or "Empty"
 		end
-		VanaPad:text(updateBox(currentNote))
+		VanaPad:text(updateBox(current_note))
 	else
-		if hover ~= "little_x" and hoveringOver.little_x == true then
-			hoveringOver.little_x = false
-			c.little_x = color.text_header
-			VanaPad:text(updateBox(currentNote))
+		if hover ~= "delete" and hovering_over.delete == true then
+			hovering_over.delete = false
+			c.delete = color.text_header
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "edit" and hoveringOver.edit == true then
-			hoveringOver.edit = false
+		if hover ~= "edit" and hovering_over.edit == true then
+			hovering_over.edit = false
 			c.edit = color.text_header
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note0" and hoveringOver.note0 == true then
-			hoveringOver.note0 = false
+		if hover ~= "note0" and hovering_over.note0 == true then
+			hovering_over.note0 = false
 			c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note1" and hoveringOver.note1 == true then
-			hoveringOver.note1 = false
+		if hover ~= "note1" and hovering_over.note1 == true then
+			hovering_over.note1 = false
 			c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note2" and hoveringOver.note2 == true then
-			hoveringOver.note2 = false
+		if hover ~= "note2" and hovering_over.note2 == true then
+			hovering_over.note2 = false
 			c.note2 = note.note2 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note3" and hoveringOver.note3 == true then
-			hoveringOver.note3 = false
+		if hover ~= "note3" and hovering_over.note3 == true then
+			hovering_over.note3 = false
 			c.note3 = note.note3 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note4" and hoveringOver.note4 == true then
-			hoveringOver.note4 = false
+		if hover ~= "note4" and hovering_over.note4 == true then
+			hovering_over.note4 = false
 			c.note4 = note.note4 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note5" and hoveringOver.note5 == true then
-			hoveringOver.note5 = false
+		if hover ~= "note5" and hovering_over.note5 == true then
+			hovering_over.note5 = false
 			c.note5 = note.note5 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note6" and hoveringOver.note6 == true then
-			hoveringOver.note6 = false
+		if hover ~= "note6" and hovering_over.note6 == true then
+			hovering_over.note6 = false
 			c.note6 = note.note6 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note7" and hoveringOver.note7 == true then
-			hoveringOver.note7 = false
+		if hover ~= "note7" and hovering_over.note7 == true then
+			hovering_over.note7 = false
 			c.note7 = note.note7 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note8" and hoveringOver.note8 == true then
-			hoveringOver.note8 = false
+		if hover ~= "note8" and hovering_over.note8 == true then
+			hovering_over.note8 = false
 			c.note8 = note.note8 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "note9" and hoveringOver.note9 == true then
-			hoveringOver.note9 = false
+		if hover ~= "note9" and hovering_over.note9 == true then
+			hovering_over.note9 = false
 			c.note9 = note.note9 and color.btn_note_full or color.btn_note_empty
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "help" and hoveringOver.help == true then
-			hoveringOver.help = false
+		if hover ~= "help" and hovering_over.help == true then
+			hovering_over.help = false
 			c.help = color.text_header
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "underscore" and hoveringOver.underscore == true then
-			hoveringOver.underscore = false
+		if hover ~= "underscore" and hovering_over.underscore == true then
+			hovering_over.underscore = false
 			c.underscore = color.text_header
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "pin" and hoveringOver.pin == true then
-			hoveringOver.pin = false
+		if hover ~= "pin" and hovering_over.pin == true then
+			hovering_over.pin = false
 			c.pin = color.text_header
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
-		if hover ~= "big_x" and hoveringOver.big_x == true then
-			hoveringOver.big_x = false
-			c.big_x = color.text_header
-			VanaPad:text(updateBox(currentNote))
+		if hover ~= "hide" and hovering_over.hide == true then
+			hovering_over.hide = false
+			c.hide = color.text_header
+			VanaPad:text(updateBox(current_note))
 		end
 	end
 
 end
 
 -- Event handler for mouse clicks
-local function onMouseClick(type, mouseX, mouseY)
+function onMouseClick(type, mouseX, mouseY)
 
 	if type == 1 then
 		
 		local click = getMouseOnCharacter(mouseX, mouseY)
 		
-		if click == "little_x" then
-			deleteNote(currentNote)
+		if click == "delete" then
+			deleteNote(current_note)
 		elseif click == "edit" then
 			if entering_note then
 				send_command('wait .1;vanapad double_click_fix_edit_false')
@@ -683,29 +684,29 @@ local function onMouseClick(type, mouseX, mouseY)
 				send_command('wait .1;vanapad double_click_fix_pin_false')
 				settings.flags.draggable = false
 				settings:save('all')
-				VanaPad:text(updateBox(currentNote))
+				VanaPad:text(updateBox(current_note))
 			else
 				send_command('wait .1;vanapad double_click_fix_pin_true')
 				settings.flags.draggable = true
 				settings:save('all')
-				VanaPad:text(updateBox(currentNote))
+				VanaPad:text(updateBox(current_note))
 			end
-		elseif click == "big_x" then
+		elseif click == "hide" then
 			double_click_fix_hide = true
 			send_command('wait .1;vanapad double_click_fix_hide')
 		elseif click ~= "none" and click ~= "bar" then
-			currentNote = click
-			VanaPad:text(updateBox(currentNote))
+			current_note = click
+			VanaPad:text(updateBox(current_note))
 		end
 	end
 
 end
 
 -- Register the mouse click event
-windower.register_event('mouse', onMouseClick)
+register_event('mouse', onMouseClick)
 
 -- Register the mouse move event
-windower.register_event('mouse', onMouseMove)
+register_event('mouse', onMouseMove)
 
 -- On login, show the BP box if Visible is true
 function login()
@@ -720,41 +721,41 @@ function logout()
 end
 
 -- Run the login/logout functions
-windower.register_event('login', login)
-windower.register_event('logout', logout)
+register_event('login', login)
+register_event('logout', logout)
 
-windower.register_event('addon command',function(addcmd, ...)
+register_event('addon command',function(add_cmd, ...)
 
-	if addcmd == "edit" or addcmd == "e" or addcmd == "new" or addcmd == "n" then
+	if add_cmd == "edit" or add_cmd == "e" or add_cmd == "new" or add_cmd == "n" then
 		local text = table.concat({...}, " ")
 		editNote(text)
-	elseif addcmd == "show" then
+	elseif add_cmd == "show" then
 		VanaPad:show()
 		settings.visible = true
 		settings:save('all')
-	elseif addcmd == "hide" then
+	elseif add_cmd == "hide" then
 		VanaPad:hide()
 		settings.visible = false
 		settings:save('all')
-	elseif addcmd == "title" or addcmd == "t" then
+	elseif add_cmd == "title" or add_cmd == "t" then
 		local text = table.concat({...}, " ")
 		updateTitle(text)
-	elseif addcmd == nil or addcmd == "help" then
+	elseif add_cmd == nil or add_cmd == "help" then
 		displayHelp()
-	elseif addcmd == "double_click_fix_edit_true" then
+	elseif add_cmd == "double_click_fix_edit_true" then
 		if double_click_fix_edit == false then
 			enableEditMode()
 		end
-	elseif addcmd == "double_click_fix_edit_false" then
+	elseif add_cmd == "double_click_fix_edit_false" then
 		if double_click_fix_edit == true then
 			disableEditMode()
 		end
-	elseif addcmd == "double_click_fix_help" then
+	elseif add_cmd == "double_click_fix_help" then
 		if double_click_fix_help then
 			displayHelp()
 			double_click_fix_help = false
 		end
-	elseif addcmd == "double_click_fix_hide" then
+	elseif add_cmd == "double_click_fix_hide" then
 		if double_click_fix_hide then
 			if entering_note then
 				disableEditMode()
@@ -765,36 +766,36 @@ windower.register_event('addon command',function(addcmd, ...)
 			settings.visible = false
 			settings:save('all')
 		end
-	elseif addcmd == "double_click_fix_pin_true" then
+	elseif add_cmd == "double_click_fix_pin_true" then
 		double_click_fix_pin = true
-	elseif addcmd == "double_click_fix_pin_false" then
+	elseif add_cmd == "double_click_fix_pin_false" then
 		double_click_fix_pin = false
 	end
 end)
 
-windower.register_event('prerender', function()
+register_event('prerender', function()
 
 	--Fade timer
-	if os.time() > Heartbeat then
-		Heartbeat = os.time()
-		if FadeDelay > 0 then
-			FadeDelay = FadeDelay -1
-		elseif FadeDelay == 0 then
-			if currentNote == "none" then
-				Fade = true
+	if os.time() > heartbeat then
+		heartbeat = os.time()
+		if fade_delay > 0 then
+			fade_delay = fade_delay -1
+		elseif fade_delay == 0 then
+			if current_note == "none" then
+				fade = true
 			end
-			FadeDelay = -1
+			fade_delay = -1
 		end
 	end
 	
 	-- Fade away
-	if Fade then
-		if FadeNum > option.fade_bg_min then
-			FadeNum = FadeNum - option.fade_multiplier
-			VanaPad:bg_alpha(FadeNum)
-		elseif FadeNum <= option.fade_bg_min then
-			FadeNum = option.fade_bg_min
-			VanaPad:bg_alpha(FadeNum)
+	if fade then
+		if fade_num > option.fade_bg_min then
+			fade_num = fade_num - option.fade_multiplier
+			VanaPad:bg_alpha(fade_num)
+		elseif fade_num <= option.fade_bg_min then
+			fade_num = option.fade_bg_min
+			VanaPad:bg_alpha(fade_num)
 			c.note0 = color.text_header
 			c.note1 = color.text_header
 			c.note2 = color.text_header
@@ -805,7 +806,7 @@ windower.register_event('prerender', function()
 			c.note7 = color.text_header
 			c.note8 = color.text_header
 			c.note9 = color.text_header
-			VanaPad:text(updateBox(currentNote))
+			VanaPad:text(updateBox(current_note))
 		end
 	end
 
@@ -823,10 +824,10 @@ windower.register_event('prerender', function()
 
 end)
 
-windower.register_event('load', function()
+register_event('load', function()
 	initialize()
 end)
 
-windower.register_event('unload', function()
+register_event('unload', function()
 	VanaPad:destroy()
 end)
