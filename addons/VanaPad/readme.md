@@ -8,6 +8,7 @@ NotePad for Vana'diel!
 - Mouse interface!
 - Type directly into VanaPad without using the games chatlog.
 - Save up to 10 notes, organized into tabs.
+- Copy a note to the clipboard to be able to paste into your chat log or anywhere on your PC!
 - Wordwrap!
 - Save a custom title to a note if you may want to keep it around for a while.
 - Shrink down to just the bar when you don't need it.
@@ -24,6 +25,7 @@ All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)
 ## Version History
 
 Version 1.0 (Full Release)
+- Added the ability to copy the contents of a note to the clipboard.
 - Adjusted accuracy of button detection to be much more precise. Now uses the exact width of the text box to determine the spacing of buttons.
 - Code cleanup.
 
