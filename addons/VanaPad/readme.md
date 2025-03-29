@@ -22,6 +22,11 @@ All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)
  - `help` - Display a list of commands and addon info.
 
 ## Version History
+
+Version 1.0 BETA-5
+- Adjusted accuracy of button detection to be much more precise. Now uses the exact width of the text box to determine the spacing of buttons.
+- Code cleanup.
+
 Version 1.0 BETA-4
 - Adjusted Help text.
 
