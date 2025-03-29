@@ -18,7 +18,9 @@ NotePad for Vana'diel!
 ## Commands
 All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)  
 - `show/hide` - Show/hide the VanaPad window
-- `edit/e` - Edit the current note
+- `copy/c` - Copy the current note to the clipboard.
+- `edit/e` - Edit the current note.
+- `delete/d` - Delete the current note.
 - `title/t` - Add a custom title to the current note.
  - `help` - Display a list of commands and addon info.
 
@@ -26,6 +28,7 @@ All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)
 
 Version 1.0 (Full Release)
 - Added the ability to copy the contents of a note to the clipboard.
+- Added Copy and Delete text commands.
 - Adjusted accuracy of button detection to be much more precise. Now uses the exact width of the text box to determine the spacing of buttons.
 - Code cleanup.
 
