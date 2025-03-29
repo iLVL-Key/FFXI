@@ -86,7 +86,7 @@ note = settings.notes
 option = settings.options
 
 c = {}
-c.delete = color.text_header
+c.copy_delete = color.text_header
 c.edit = color.text_header
 c.note0 = note.note0 and color.btn_note_full or color.btn_note_empty
 c.note1 = note.note1 and color.btn_note_full or color.btn_note_empty
@@ -105,7 +105,7 @@ c.hide = color.text_header
 c.content = color.text_note
 
 hovering_over = {
-    delete = false,
+    copy_delete = false,
     edit = false,
     note0 = false,
     note1 = false,
@@ -148,21 +148,22 @@ entering_note = false
 temp_string = ""
 shift_down = false
 
---these help to fix a weird double-click bug in windower
+--These help to fix a weird double-click bug in windower
 double_click_fix_edit = false
 double_click_fix_pin = settings.flags.draggable
 double_click_fix_help = false
+double_click_fix_copy = false
 
--- Mapping of DirectInput key codes to characters
+--Mapping of DirectInput key codes to characters
 key_map = {
-	-- Numbers and symbols (without shift)
+	--Numbers and symbols (without shift)
 	[0x02] = '1', [0x03] = '2', [0x04] = '3', [0x05] = '4', [0x06] = '5',
 	[0x07] = '6', [0x08] = '7', [0x09] = '8', [0x0A] = '9', [0x0B] = '0',
 	[0x0C] = '-', [0x0D] = '=', [0x1A] = '[', [0x1B] = ']', [0x27] = ';',
 	[0x28] = '\'', [0x29] = '`', [0x2B] = '\\', [0x33] = ',', [0x34] = '.',
 	[0x35] = '/', [0x39] = ' ',
 
-	-- Numbers and symbols (with shift)
+	--Numbers and symbols (with shift)
 	shift = {
 		[0x02] = '!', [0x03] = '@', [0x04] = '#', [0x05] = '$', [0x06] = '%',
 		[0x07] = '^', [0x08] = '&', [0x09] = '*', [0x0A] = '(', [0x0B] = ')',
@@ -171,7 +172,7 @@ key_map = {
 		[0x35] = '?'
 	},
 
-	-- Letters (lowercase)
+	--Letters (lowercase)
 	letters = {
 		[0x10] = 'q', [0x11] = 'w', [0x12] = 'e', [0x13] = 'r', [0x14] = 't',
 		[0x15] = 'y', [0x16] = 'u', [0x17] = 'i', [0x18] = 'o', [0x19] = 'p',
@@ -181,7 +182,7 @@ key_map = {
 		[0x32] = 'm'
 	},
 
-	-- Letters (uppercase)
+	--Letters (uppercase)
 	shift_letters = {
 		[0x10] = 'Q', [0x11] = 'W', [0x12] = 'E', [0x13] = 'R', [0x14] = 'T',
 		[0x15] = 'Y', [0x16] = 'U', [0x17] = 'I', [0x18] = 'O', [0x19] = 'P',
@@ -197,10 +198,10 @@ function formatRGB(value)
 	return string.format("%03d", value)
 end
 
--- Update the VanaPad text box
+--Update the VanaPad text box
 function updateBox(display_note)
 
-	local cx = c.delete
+	local cx = c.copy_delete
 	local ce = c.edit
 	local c0 = current_note == "note0" and color.btn_note_current or c.note0
 	local c1 = current_note == "note1" and color.btn_note_current or c.note1
@@ -220,7 +221,7 @@ function updateBox(display_note)
 
 	function wordWrap(input)
 		local window_width = option.window_width - 1
-		input = input and input:gsub("%{%$new_line%}", "\n") or " "
+		input = input and input:gsub("%$%{new_line%}", "\n") or " "
 		local segments = {}
 		for segment in input:gmatch("[^\n]+") do
 			table.insert(segments, segment)
@@ -292,7 +293,7 @@ function updateBox(display_note)
 
 	local empty_note = "Click Edit (±) or type \n`//vp edit textgoeshere`"
 
-	--content of the note displayed
+	--Content of the note displayed
 	local content = ""
 
 	if display_note == "none" then
@@ -304,15 +305,18 @@ function updateBox(display_note)
 	end
 
 	local total_length = option.window_width
-	local title_max = total_length - 20 --space for the buttons
+	local title_max = total_length - 20 --Space for the buttons
 	local truncated_title = string.sub(title, 1, title_max)
 	local text_length = string.len(truncated_title)
 	local spaces_count = title_max - text_length
 	local spaces = string.rep(" ", spaces_count)
 	local pin = settings.flags.draggable and "○" or "•"
 
-	--buttons
-	local bx = entering_note and current_note ~= "none" and note[current_note] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr" or "\\cs(255,255,255) \\cr"
+	--Buttons
+	local bx = entering_note and current_note ~= "none" and note[current_note] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")×\\cr"
+	or (
+		not entering_note and current_note ~= "none" and note[current_note] and "\\cs("..formatRGB(cx.r)..","..formatRGB(cx.g)..","..formatRGB(cx.b)..")c\\cr" or "\\cs(255,255,255) \\cr"
+	)
 	local be = current_note ~= "none" and "\\cs("..formatRGB(ce.r)..","..formatRGB(ce.g)..","..formatRGB(ce.b)..")±\\cr" or "\\cs(255,255,255) \\cr"
 	local b0 = "\\cs("..formatRGB(c0.r)..","..formatRGB(c0.g)..","..formatRGB(c0.b)..")0\\cr"
 	local b1 = "\\cs("..formatRGB(c1.r)..","..formatRGB(c1.g)..","..formatRGB(c1.b)..")1\\cr"
@@ -335,7 +339,7 @@ function updateBox(display_note)
 	return truncated_title..spaces.." "..bx.." "..be.." "..b0..b1..b2..b3..b4..b5..b6..b7..b8..b9.." "..bh..bu..bp..bX..(content ~= "" and "\n\n" or (entering_note and "\n\n\n\n" or ""))..content
 end
 
--- Create the VanaPad text object
+--Create the VanaPad text object
 formatted_display = updateBox("none")
 VanaPad = texts.new(formatted_display, settings)
 if settings.visible then
@@ -351,7 +355,7 @@ function initialize()
 	VanaPad:bg_alpha(option.fade_bg_max)
 end
 
--- Delete the current note
+--Delete the current note
 function deleteNote(note)
 	if note ~= "none" then
 		settings.notes[note] = nil
@@ -363,7 +367,16 @@ function deleteNote(note)
 	VanaPad:text(updateBox(current_note))
 end
 
--- Enable Edit Mode
+--Copy the current note to the clipboard
+function copyNote(note_to_copy)
+    if note_to_copy ~= "none" then
+        local note_content = note[note_to_copy].content:gsub("%${new_line}", " ") --Replace ${new_line} with space
+        windower.copy_to_clipboard(note_content)
+        add_to_chat(8,('[VanaPad] '):color(220)..('Note copied to clipboard. Use '):color(8)..('Ctrl+V'):color(1)..(' to paste.'):color(8))
+    end
+end
+
+--Enable Edit Mode
 function enableEditMode()
 	entering_note = true
 	double_click_fix_edit = true
@@ -374,7 +387,7 @@ function enableEditMode()
 	VanaPad:text(updateBox(current_note))
 end
 
--- Disable Edit Mode
+--Disable Edit Mode
 function disableEditMode()
 	entering_note = false
 	double_click_fix_edit = false
@@ -388,37 +401,37 @@ function disableEditMode()
 	VanaPad:text(updateBox(current_note))
 end
 
--- Keyboard input
+--Keyboard input
 function keyboard_event(dik, down, flags, blocked)
 
-	-- Update shift state
-	if dik == 0x2A or dik == 0x36 then  -- 0x2A and 0x36 are Left Shift and Right Shift
+	--Update shift state
+	if dik == 0x2A or dik == 0x36 then  --0x2A and 0x36 are Left Shift and Right Shift
 		shift_down = down
 		return false
 	end
 
-	-- If entering note mode, handle input differently
+	--If entering note mode, handle input differently
 	if entering_note then
 		temp_string = note[current_note] and note[current_note].content or ""
 		if down then
-			if dik == 0x01 then  -- Escape key to finish Edit Mode
+			if dik == 0x01 then  --Escape key to finish Edit Mode
 				disableEditMode()
 				return true
-			elseif dik == 0x0E then  -- Backspace key to delete last character
-				if temp_string:sub(-11) == '{$new_line}' then
+			elseif dik == 0x0E then  --Backspace key to delete last character
+				if temp_string:sub(-11) == '${new_line}' then
 					temp_string = temp_string:sub(1, -12)
 				else
 					temp_string = temp_string:sub(1, -2)
 				end
 				editNote(temp_string)
 				return true
-			elseif dik == 0x1C then  -- Enter key to insert a new line
-				temp_string = temp_string .. '{$new_line}'
+			elseif dik == 0x1C then  --Enter key to insert a new line
+				temp_string = temp_string .. '${new_line}'
 				editNote(temp_string)
 				return true
 			end
 
-			-- Handle character input based on shift state
+			--Handle character input based on shift state
 			if key_map.letters[dik] then
 				temp_string = temp_string .. (shift_down and key_map.shift_letters[dik] or key_map.letters[dik])
 				editNote(temp_string)
@@ -430,13 +443,13 @@ function keyboard_event(dik, down, flags, blocked)
 			end
 
 		end
-		return true  -- Block all other inputs while in note-taking mode
+		return true  --Block all other inputs while in note-taking mode
 	end
 
-	return false  -- Allow all other inputs to reach the game
+	return false  --Allow all other inputs to reach the game
 end
 
--- Register the keyboard event
+--Register the keyboard event
 register_event('keyboard', keyboard_event)
 
 function shrinkPad()
@@ -446,7 +459,7 @@ function shrinkPad()
 
 end
 
--- Create a new note
+--Create a new note
 function editNote(content)
 
 	settings.notes[current_note] = {title = new_title[current_note], content = content}
@@ -455,7 +468,7 @@ function editNote(content)
 
 end
 
--- Update a notes title
+--Update the title of a note
 function updateTitle(title)
 
 	settings.notes[current_note].title = title
@@ -464,6 +477,7 @@ function updateTitle(title)
 
 end
 
+--Display help information
 function displayHelp()
 	local prefix = "//vanapad, //vp"
 	add_to_chat(8,('[VanaPad] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
@@ -474,14 +488,14 @@ function displayHelp()
 	add_to_chat(8,(' title/t '):color(36)..(' - Add a custom title to the current note.'):color(8))
 end
 
--- Return which button the mouse is hovering over
+--Return which button the mouse is hovering over
 function getMouseOnCharacter(mouseX, mouseY)
 	local box_pos = settings.pos
 	local total_width = VanaPad:extents() --Total width of the text box
 	local buttons_width = total_width - (settings.padding * 2) --Width of the buttons area (excludes padding)
 	local char_width = buttons_width / option.window_width --Width of each character in the buttons area
 	local hover_positions = {
-		{char = "delete", offset = 19},
+		{char = "copy_delete", offset = 19},
 		{char = "edit", offset = 17},
 		{char = "note0", offset = 15},
 		{char = "note1", offset = 14},
@@ -499,26 +513,26 @@ function getMouseOnCharacter(mouseX, mouseY)
 		{char = "hide", offset = 1},
 	}
 
-	-- Hovering over a button
+	--Hovering over a button
 	for _, pos in ipairs(hover_positions) do
 		if mouseX >= box_pos.x + settings.padding + buttons_width - (char_width * pos.offset) and mouseX <= box_pos.x + settings.padding + buttons_width - (char_width * (pos.offset - 1)) and mouseY >= box_pos.y and mouseY <= box_pos.y + (settings.text.size * 2.3) then
 			return pos.char
 		end
 	end
 
-	-- Not over a button, but still hovering over the bar itself
+	--Not over a button, but still hovering over the bar itself
 	if mouseX >= box_pos.x and mouseX <= box_pos.x + total_width and mouseY >= box_pos.y and mouseY <= box_pos.y + (settings.text.size * 2.3) then
 		return "bar"
 	end
 
-	-- Not hovering over the bar at all
+	--Not hovering over the bar at all
 	return "none"
 end
 
--- Event handler for mouse movements
+--Event handler for mouse movements
 function onMouseMove(type, mouseX, mouseY)
 
-	--if the box is not visible, no need to bother with checking any mouse hovering
+	--If the box is not visible, no need to bother with checking any mouse hovering
 	if not settings.visible then
 		return
 	end
@@ -555,8 +569,11 @@ function onMouseMove(type, mouseX, mouseY)
 	if hovering_over[hover] == false then
 		hovering_over[hover] = true
 		c[hover] = color.btn_hover
-		if hover == "delete" then
-			title_override = note[current_note] and "Delete" or nil
+		if hover == "copy_delete" then
+			title_override = entering_note and note[current_note] and "Delete"
+			or (
+				not entering_note and current_note ~= "none" and note[current_note] and "Copy" or nil
+			)
 		elseif hover == "edit" then
 			title_override = entering_note and "Finish" or (current_note ~= "none" and "Edit" or nil)
 		elseif hover == "help" then
@@ -572,9 +589,9 @@ function onMouseMove(type, mouseX, mouseY)
 		end
 		VanaPad:text(updateBox(current_note))
 	else
-		if hover ~= "delete" and hovering_over.delete == true then
-			hovering_over.delete = false
-			c.delete = color.text_header
+		if hover ~= "copy_delete" and hovering_over.copy_delete == true then
+			hovering_over.copy_delete = false
+			c.copy_delete = color.text_header
 			VanaPad:text(updateBox(current_note))
 		end
 		if hover ~= "edit" and hovering_over.edit == true then
@@ -656,15 +673,24 @@ function onMouseMove(type, mouseX, mouseY)
 
 end
 
--- Event handler for mouse clicks
+--Event handler for mouse clicks
 function onMouseClick(type, mouseX, mouseY)
 
 	if type == 1 then
 		
 		local click = getMouseOnCharacter(mouseX, mouseY)
 		
-		if click == "delete" then
-			deleteNote(current_note)
+		if click == "copy_delete" then
+			if entering_note and note[current_note] then
+				deleteNote(current_note)
+			elseif not entering_note and current_note ~= "none" and note[current_note] then
+				if not double_click_fix_copy then
+					double_click_fix_copy = true
+					copyNote(current_note)
+				else
+					double_click_fix_copy = false
+				end
+			end
 		elseif click == "edit" then
 			if entering_note then
 				send_command('wait .1;vanapad double_click_fix_edit_false')
@@ -702,25 +728,25 @@ function onMouseClick(type, mouseX, mouseY)
 
 end
 
--- Register the mouse click event
+--Register the mouse click event
 register_event('mouse', onMouseClick)
 
--- Register the mouse move event
+--Register the mouse move event
 register_event('mouse', onMouseMove)
 
--- On login, show the BP box if Visible is true
+--On login, show the BP box if Visible is true
 function login()
 	if settings.visible then
 		VanaPad:show()
 	end
 end
 
--- On logout, hide the BP box since we don't want it displayed on the title/character screen
+--On logout, hide the BP box since we don't want it displayed on the title/character screen
 function logout()
 	VanaPad:hide()
 end
 
--- Run the login/logout functions
+--Run the login/logout functions
 register_event('login', login)
 register_event('logout', logout)
 
@@ -788,7 +814,7 @@ register_event('prerender', function()
 		end
 	end
 	
-	-- Fade away
+	--Fade away
 	if fade then
 		if fade_num > option.fade_bg_min then
 			fade_num = fade_num - option.fade_multiplier
