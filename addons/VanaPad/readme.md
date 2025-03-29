@@ -24,8 +24,11 @@ All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)
 - `title/t` - Add a custom title to the current note.
  - `help` - Display a list of commands and addon info.
 
-## Version History
+## Limitations
+- While there is a cursor to make it easier to see your typing, you cannot move the cursor to type in the middle of a note.
+- Using the Enter Key will create a new line in your note. However, Windower seems unable to prevent the action of hitting the Enter Key from being sent to the game like it does with other keys.
 
+## Version History
 Version 1.0 (Full Release)
 - Added the ability to copy the contents of a note to the clipboard.
 - Added Copy and Delete text commands.
