@@ -1,1 +1,1 @@
-CComing Soon(tm)
+Coming Soon(tm)
