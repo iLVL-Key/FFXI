@@ -135,16 +135,23 @@ function formatRGB(value)
 end
 
 --Check if any job has been assigned
-local function isAnyJobAssigned()
-
-	for _, v in pairs(player_jobs) do
-		if v ~= nil then
-			return true
+local function isAnyJobAssigned(phone)
+	if phone then
+		local target = "ph" .. phone .. "_"
+		for _, v in pairs(player_jobs) do
+			if v and v:sub(1, #target) == target then
+				return true
+			end
+		end
+	else
+		for _, v in pairs(player_jobs) do
+			if v ~= nil then
+				return true
+			end
 		end
 	end
 
 	return false
-
 end
 
 --Check if any boss has been assigned to any phone
@@ -554,9 +561,9 @@ function updateWindow(hover)
 		table.insert(display_text_parts, formatButton("BOSSES", "bosses").." ")
 		table.insert(display_text_parts, formatButton("CLEAR", "clear", not isAnyJobAssigned() and "disable").." ")
 		table.insert(display_text_parts, formatButton("OPTIONS", "options").."                            COPY:")
-		table.insert(display_text_parts, formatButton("1", "copy_1",  not isAnyJobAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("2", "copy_2",  not isAnyJobAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("3", "copy_3",  not isAnyJobAssigned() and "disable").." SEND TO:")
+		table.insert(display_text_parts, formatButton("1", "copy_1",  not isAnyJobAssigned("1") and "disable"))
+		table.insert(display_text_parts, formatButton("2", "copy_2",  not isAnyJobAssigned("2") and "disable"))
+		table.insert(display_text_parts, formatButton("3", "copy_3",  not isAnyJobAssigned("3") and "disable").." SEND TO:")
 		table.insert(display_text_parts, formatButton("PARTY", "party",  not isAnyJobAssigned() and "disable"))
 		table.insert(display_text_parts, formatButton("PARTY W/ BP", "party_w_bp",  not isAnyJobAssigned() and "disable"))
 		row_num = row_num + 2
