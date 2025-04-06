@@ -1048,7 +1048,7 @@ function downloadAddon(github_addon_sha)
 	--Update the stored SHA after successful download
 	updateAddonSHA(github_addon_sha)
 
-	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(8))
+	add_to_chat(8,('[Helper] '):color(220)..('Helper addon updated. Reloading...'):color(6))
 	send_command('lua r helper')
 
 end
