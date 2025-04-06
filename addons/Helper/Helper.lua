@@ -2651,19 +2651,17 @@ register_event('addon command',function(addcmd, ...)
 			-- Convert the timestamp into a readable date
 			return os.date("%a, %b %d, %I:%M %p", timestamps.last_check)
 		end
-		local function getNextSparkoladeReminder()
-			if not sparkolade_reminder then
-				return "Off"
-			end
-			-- Convert the timestamp into a readable date
-			return os.date("%a, %b %d, %I:%M %p", timestamps.sparkolades)
-		end
 		local function getKeyItemReady(ki)
-			if key_item_ready[ki][string.lower(player.name)] then
-				return "Ready!"
+			if have_key_item[ki][string.lower(player.name)] then
+				local response = {text = "Have KI", color = 6}
+				return response
+			elseif key_item_ready[ki][string.lower(player.name)] then
+				local response = {text = "Ready to pickup!", color = 2}
+				return response
 			end
 			-- Convert the timestamp into a readable date
-			return os.date("%a, %b %d, %I:%M %p", timestamps[ki][string.lower(player.name)])
+			local response = {text = os.date("%a, %b %d, %I:%M %p", timestamps[ki][string.lower(player.name)]), color = 28}
+			return response
 		end
 		local last_check_date = getLastCheckDate()		
 		local prefix = "//helper"
@@ -2679,9 +2677,9 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Helper] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
-		add_to_chat(8,(' Mystical Canteen: ')..(canteen_ready):color(1))
-		add_to_chat(8,(' Moglophone: ')..(moglophone_ready):color(1))
-		add_to_chat(8,(' Ra\'Kaznarian Plate: ')..(plate_ready):color(1))
+		add_to_chat(8,(' Mystical Canteen: ')..(canteen_ready.text):color(canteen_ready.color))
+		add_to_chat(8,(' Moglophone: ')..(moglophone_ready.text):color(moglophone_ready.color))
+		add_to_chat(8,(' Ra\'Kaznarian Plate: ')..(plate_ready.text):color(plate_ready.color))
 		add_to_chat(8,voices and (' Voices Mode: '):color(8)..('On'):color(1) or (' ['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
