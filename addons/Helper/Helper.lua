@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.2.2.1'
+_addon.version = '2.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -56,6 +56,11 @@ defaults = {
 	addon_sha = nil,
 	first_run = true,
 	have_key_item = {
+		canteen = {},
+		moglophone = {},
+		plate = {},
+	},
+	key_item_ready = {
 		canteen = {},
 		moglophone = {},
 		plate = {},
@@ -265,6 +270,7 @@ c_text = nil
 addon_sha = settings.addon_sha
 first_run = settings.first_run
 have_key_item = settings.have_key_item
+key_item_ready = settings.key_item_ready
 timestamps = settings.timestamps
 
 ability_ready = settings.options.ability_ready
@@ -1419,6 +1425,10 @@ function checkKIReminderTimestamps()
 
 				--Not the first run (first run = reminder timestamp of 0) and the reminder timestamp has pased
 				if reminder_time and reminder_time ~= 0 and current_time >= reminder_time then
+
+					--KI is now ready
+					key_item_ready[key_item][string.lower(player.name)] = true
+					settings:save('all')
 
 					local selected = getHelper()
 					local text = helpers[selected.helper]['reminder_'..key_item]
@@ -2633,6 +2643,7 @@ register_event('addon command',function(addcmd, ...)
 	local arg = {...}
 
 	if addcmd == 'help' then
+		local player = get_player()
 		local function getLastCheckDate()
 			if not timestamps.last_check or timestamps.last_check == 0 then
 				return "Never"
@@ -2647,6 +2658,13 @@ register_event('addon command',function(addcmd, ...)
 			-- Convert the timestamp into a readable date
 			return os.date("%a, %b %d, %I:%M %p", timestamps.sparkolades)
 		end
+		local function getKeyItemReady(ki)
+			if key_item_ready[ki][string.lower(player.name)] then
+				return "Ready!"
+			end
+			-- Convert the timestamp into a readable date
+			return os.date("%a, %b %d, %I:%M %p", timestamps[ki][string.lower(player.name)])
+		end
 		local last_check_date = getLastCheckDate()		
 		local prefix = "//helper"
 		local helper_name = helpers[current_helper].info.name and helpers[current_helper].info.name or "Unknown"
@@ -2655,11 +2673,15 @@ register_event('addon command',function(addcmd, ...)
 		local helper_creator = helpers[current_helper].info.creator and " (Creator: "..helpers[current_helper].info.creator..")" or ""
 		local c_name = helpers[current_helper].info.name_color or 220
 		local c_text = helpers[current_helper].info.text_color or 1
-		local next_sparkolade_reminder = getNextSparkoladeReminder()
+		local canteen_ready = getKeyItemReady('canteen')
+		local moglophone_ready = getKeyItemReady('moglophone')
+		local plate_ready = getKeyItemReady('plate')
 		add_to_chat(8,('[Helper] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Last update check: '):color(8)..(last_check_date):color(1))
-		add_to_chat(8,(' Next Sparkolade reminder: ')..(next_sparkolade_reminder):color(1))
+		add_to_chat(8,(' Mystical Canteen: ')..(canteen_ready):color(1))
+		add_to_chat(8,(' Moglophone: ')..(moglophone_ready):color(1))
+		add_to_chat(8,(' Ra\'Kaznarian Plate: ')..(plate_ready):color(1))
 		add_to_chat(8,voices and (' Voices Mode: '):color(8)..('On'):color(1) or (' ['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Command '):color(36)..('[optional] '):color(53)..('<required> '):color(2)..('- Description'):color(8))
