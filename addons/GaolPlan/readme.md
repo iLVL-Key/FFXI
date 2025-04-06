@@ -12,6 +12,7 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 - Assign jobs to each boss attempt.
 - Built-in **job duplication prevention**.
 - Fully **Mouse-driven interface** for easy interaction.
+- Copy plans to clipboard or send to party chat.
 - **5 save slots** to remember your setups.
 - Designed to reduce planning time and improve group coordination.
 - Compatible with the [BattlePlan](https://github.com/iLVL-Key/FFXI/tree/main/addons/BattlePlan) addon.
