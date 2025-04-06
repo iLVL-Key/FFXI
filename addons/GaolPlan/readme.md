@@ -1,6 +1,7 @@
 # GaolPlan
+(pronounced "*jail plan*")  
 
-**GaolPlan** (pronounced "*jail plan*") is a Windower addon for Final Fantasy XI that helps players plan and optimize their approach to *Odyssey Gaol* runs. It provides a clean, mouse-driven interface for selecting bosses and assigning jobs across up to three Phones, ensuring no job is duplicated. With built-in save functionality, your most recent plans can be saved for easy reuse or adjustments, making it an ideal tool for static groups or coordinated runs.  
+Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provides a clean, mouse-driven interface for selecting bosses and assigning jobs across up to three Phones, ensuring no job is duplicated. With built-in save functionality, your most recent plans can be saved for easy reuse or adjustments, making it an ideal tool for static groups or coordinated runs.  
 
 ![GaolPlan_bosses](https://github.com/user-attachments/assets/277cccd3-6c83-4c02-b42a-10e18b1a855a)  
 ![GaolPlan_jobs](https://github.com/user-attachments/assets/ad350df5-67f0-4ea3-bdb5-fa9756e408ab)  
