@@ -13,7 +13,7 @@
 - Fully **Mouse-driven interface** for easy interaction.
 - **5 save slots** to remember your setups.
 - Designed to reduce planning time and improve group coordination.
-- Compatible with the BattlePlan addon.
+- Compatible with the [BattlePlan](https://github.com/iLVL-Key/FFXI/tree/main/addons/BattlePlan) addon.
 
 # Commands
 `//gaolplan` or `//gp` will bring up the GaolPlan window. That's it! The addon is otherwise entirely GUI-based.
