@@ -127,6 +127,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.3
+- Added Mystical Canteen, Moglophone, and Ra'Kaznarian Plate KI ready status to Help command.
+
 Version 2.2.2
 - Fixed Faceplate getting left on screen if triggered right before logging out.
 
