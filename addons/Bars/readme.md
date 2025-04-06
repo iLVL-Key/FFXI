@@ -15,7 +15,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ↑The Target, Self Action, and TP visible in action showing WS and SC damage done (old v2.0 look).
 
 ![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
-↑Bumba with Yaegasumi active before it wears off.
+↑Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
 
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
@@ -121,8 +121,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `show_target_action` | Shows the actions of the current target. |
 | `show_target_action_result` | Shows the results of the action done by the current target (damage, buffs, resists, etc.). |
 | `show_target_distance` | Shows the distance to the current target. |
+| `show_target_distance_colors` | Colorizes the distance text based on the distance to the target and other factors. |
 | `show_target_hex` | Shows the hex number of the current target. |
 | `show_target_index` | Shows the index number of the current target. |
+| `switch_focus_and_sub_positions` | Switches the horizontal positions of the focus Target and Sub-Target bars. |
 | `target_action_text_size_difference` | The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target actions. |
 | `target_text_size_difference` | The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Target. |
 | `text_vertical_offset` | The vertical offset in pixels between a bar and its text (this is what sets the text above a bar by default). |
