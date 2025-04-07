@@ -15,6 +15,13 @@
             <text_color>6</text_color>
             <type>Player</type>
         </azhur>
+        <brygid>
+            <description>Fabulously judgmental and fashion-obsessed.</description>
+            <name>Brygid</name>
+            <name_color>53</name_color>
+            <text_color>1</text_color>
+            <type>NPC</type>
+        </brygid>
         <galin>
             <description>Flirty, fun, and fueled by tequila.</description>
             <name>Galin</name>
