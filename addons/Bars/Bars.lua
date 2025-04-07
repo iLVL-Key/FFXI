@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.4.1'
+_addon.version = '3.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -35,15 +35,16 @@ res = require('resources')
 packets = require('packets')
 require 'chat'
 
-local get_mob_by_id = windower.ffxi.get_mob_by_id
-local get_player = windower.ffxi.get_player
-local add_to_chat = windower.add_to_chat
-local get_mob_by_target = windower.ffxi.get_mob_by_target
-local get_info = windower.ffxi.get_info
-local register_event = windower.register_event
-local get_mob_array = windower.ffxi.get_mob_array
-local get_mob_by_name = windower.ffxi.get_mob_by_name
-local get_position = windower.ffxi.get_position
+add_to_chat = windower.add_to_chat
+get_info = windower.ffxi.get_info
+get_items = windower.ffxi.get_items
+get_mob_array = windower.ffxi.get_mob_array
+get_mob_by_id = windower.ffxi.get_mob_by_id
+get_mob_by_name = windower.ffxi.get_mob_by_name
+get_mob_by_target = windower.ffxi.get_mob_by_target
+get_player = windower.ffxi.get_player
+get_position = windower.ffxi.get_position
+register_event = windower.register_event
 
 defaults = {
 	pos = {x = 200, y = 200},
@@ -142,8 +143,10 @@ defaults = {
 		show_target_action = true,
 		show_target_action_result = true,
 		show_target_distance = true,
+		show_target_distance_colors = true,
 		show_target_hex = false,
 		show_target_index = false,
+		switch_focus_and_sub_positions = false,
 		target_action_text_size_difference = 1,
 		target_text_size_difference = 4,
 		text_vertical_offset = -8,
@@ -207,8 +210,8 @@ defaults = {
 			quarter_3 = {r = 230, g = 255, b = 117},
 		},
 		tp = {
-			full_1k = {r = 0, g = 127, b = 255},
-			full_2k = {r = 75, g = 255, b = 75},
+			full_1k = {r = 75, g = 255, b = 75},
+			full_2k = {r = 0, g = 200, b = 255},
 			full_3k = {r = 255, g = 255, b = 50},
 			ready_to_use = {r = 25, g = 255, b = 25},
 		},
@@ -229,6 +232,15 @@ defaults = {
 			total = {r = 30, g = 144, b = 255},
 			unlucky = {r = 255, g = 50, b = 50},
 		},
+		range = {
+			out_of_range = {r = 255, g = 255, b = 255},
+			in_range = {r = 75, g = 255, b = 75},
+			hits_squarely = {r = 0, g = 200, b = 255},
+			strikes_true = {r = 255, g = 255, b = 50},
+			outer_blue_magic = {r = 0, g = 200, b = 255},
+			inner_blue_magic = {r = 255, g = 255, b = 50},
+			song_aoe = {r = 255, g = 255, b = 50},
+		},
 		result = {
 			heal = {r = 140, g = 235, b = 255},
 			damage = {r = 255, g = 200, b = 200},
@@ -238,57 +250,59 @@ defaults = {
 
 settings = config.load(defaults)
 
-local abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
-local bar_width = settings.options.bar_width
-local bars_vertical_spacing = settings.options.bars_vertical_spacing
-local char_width_multiplier = settings.options.char_width_multiplier
-local clear_action_delay = settings.options.clear_action_delay
-local color_spells = settings.options.color_spells
-local condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
-local fade_after_delay = settings.options.fade_after_delay
-local fade_delay = settings.options.fade_delay
-local fade_multiplier = settings.options.fade_multiplier
-local fade_to_alpha = settings.options.fade_to_alpha
-local focus_target_max_distance = settings.options.focus_target_max_distance
-local hide_focus_target_when_target = settings.options.hide_focus_target_when_target
-local highlight_when_sp_active = settings.options.highlight_when_sp_active
-local max_action_length = settings.options.max_action_length
-local max_name_length = settings.options.max_name_length
-local remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
-local self_action_text_size_difference = settings.options.self_action_text_size_difference
-local short_skillchain_names = settings.options.short_skillchain_names
-local show_action_status_indicators = settings.options.show_action_status_indicators
-local show_bar_markers = settings.options.show_bar_markers
-local show_bars = settings.options.z_show_player_stat_bars
-local show_commas_on_numbers = settings.options.show_commas_on_numbers
-local show_dyna_jobs = settings.options.show_dyna_jobs
-local show_fancy_rolls = settings.options.show_fancy_rolls
-local show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
-local show_pet_status = settings.options.show_pet_status
-local show_pet_distance = settings.options.show_pet_distance
-local show_pet_tp = settings.options.show_pet_tp
-local show_result_totals = settings.options.show_result_totals
-local show_roll_lucky_info = settings.options.show_roll_lucky_info
-local show_self_action = settings.options.show_self_action
-local show_self_when_targeted = settings.options.show_self_when_targeted
-local show_st_when_target = settings.options.show_st_when_target
-local show_target_action = settings.options.show_target_action
-local show_target_action_result = settings.options.show_target_action_result
-local show_target_distance = settings.options.show_target_distance
-local show_target_hex = settings.options.show_target_hex
-local show_target_index = settings.options.show_target_index
-local target_action_text_size_difference = settings.options.target_action_text_size_difference
-local target_text_size_difference = settings.options.target_text_size_difference
-local text_vertical_offset = settings.options.text_vertical_offset
+abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
+bar_width = settings.options.bar_width
+bars_vertical_spacing = settings.options.bars_vertical_spacing
+char_width_multiplier = settings.options.char_width_multiplier
+clear_action_delay = settings.options.clear_action_delay
+color_spells = settings.options.color_spells
+condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
+fade_after_delay = settings.options.fade_after_delay
+fade_delay = settings.options.fade_delay
+fade_multiplier = settings.options.fade_multiplier
+fade_to_alpha = settings.options.fade_to_alpha
+focus_target_max_distance = settings.options.focus_target_max_distance
+hide_focus_target_when_target = settings.options.hide_focus_target_when_target
+highlight_when_sp_active = settings.options.highlight_when_sp_active
+max_action_length = settings.options.max_action_length
+max_name_length = settings.options.max_name_length
+remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
+self_action_text_size_difference = settings.options.self_action_text_size_difference
+short_skillchain_names = settings.options.short_skillchain_names
+show_action_status_indicators = settings.options.show_action_status_indicators
+show_bar_markers = settings.options.show_bar_markers
+show_bars = settings.options.z_show_player_stat_bars
+show_commas_on_numbers = settings.options.show_commas_on_numbers
+show_dyna_jobs = settings.options.show_dyna_jobs
+show_fancy_rolls = settings.options.show_fancy_rolls
+show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
+show_pet_status = settings.options.show_pet_status
+show_pet_distance = settings.options.show_pet_distance
+show_pet_tp = settings.options.show_pet_tp
+show_result_totals = settings.options.show_result_totals
+show_roll_lucky_info = settings.options.show_roll_lucky_info
+show_self_action = settings.options.show_self_action
+show_self_when_targeted = settings.options.show_self_when_targeted
+show_st_when_target = settings.options.show_st_when_target
+show_target_action = settings.options.show_target_action
+show_target_action_result = settings.options.show_target_action_result
+show_target_distance = settings.options.show_target_distance
+show_target_distance_colors = settings.options.show_target_distance_colors
+show_target_hex = settings.options.show_target_hex
+show_target_index = settings.options.show_target_index
+switch_focus_and_sub_positions = settings.options.switch_focus_and_sub_positions
+target_action_text_size_difference = settings.options.target_action_text_size_difference
+target_text_size_difference = settings.options.target_text_size_difference
+text_vertical_offset = settings.options.text_vertical_offset
 
-local auto_focus_target_list = settings.auto_focus_target_list
-local bg_alpha = settings.bg.alpha
-local color = settings.colors
-local font = settings.text.font
-local text_alpha = settings.text.alpha
-local text_color = {r = settings.text.red, g = settings.text.green, b = settings.text.blue}
+auto_focus_target_list = settings.auto_focus_target_list
+bg_alpha = settings.bg.alpha
+color = settings.colors
+font = settings.text.font
+text_alpha = settings.text.alpha
+text_color = {r = settings.text.red, g = settings.text.green, b = settings.text.blue}
 
-local element_colors = {
+element_colors = {
 	[0] = { r = color.elements.fire.r, g = color.elements.fire.g, b = color.elements.fire.b },
 	[1] = { r = color.elements.ice.r, g = color.elements.ice.g, b = color.elements.ice.b },
 	[2] = { r = color.elements.wind.r, g = color.elements.wind.g, b = color.elements.wind.b },
@@ -300,7 +314,7 @@ local element_colors = {
 	[15] = { r = color.elements.none.r, g = color.elements.none.g, b = color.elements.none.b },
 }
 
-local sp_abils = {
+sp_abils = {
 	['Mighty Strikes'] = 45, ['Brazen Rush'] = 30,
 	['Hundred Fists'] = 45, ['Inner Strength'] = 30,
 	['Manafont'] = 60, ['Subtle Sorcery'] = 60,
@@ -323,97 +337,97 @@ local sp_abils = {
 	['Elemental Sforzo'] = 30,
 	}
 
-local inCS = false
-local zoning = false
-local job = ''
-local pet_tp = 0
-local current_actions = {}
-local current_sp_actions = {}
-local focus_target = nil
-local focus_target_override = nil
-local bars_bg_str = ''
-local bars_bg_str_ft_st = ''
-local bars_bg_str_hp = ''
-local bars_bg_str_tp = ''
-local index = 0
-local Heartbeat = 0
-local Fade = false
-local bg_fade_num = settings.bg.alpha
-local text_fade_num = settings.text.alpha
-local screen_test = false
-local screen_test_focus_target = {
+inCS = false
+zoning = false
+job = ''
+pet_tp = 0
+current_actions = {}
+current_sp_actions = {}
+focus_target = nil
+focus_target_override = nil
+bars_bg_str = ''
+bars_bg_str_ft_st = ''
+bars_bg_str_hp = ''
+bars_bg_str_tp = ''
+index = 0
+Heartbeat = 0
+Fade = false
+bg_fade_num = settings.bg.alpha
+text_fade_num = settings.text.alpha
+screen_test = false
+screen_test_focus_target = {
 	name = "Focus Target",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
 }
-local screen_test_sub_target = {
+screen_test_sub_target = {
 	name = "Sub Target",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
 }
-local screen_test_target = {
+screen_test_target = {
 	name = "Target",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
 }
-local sp = settings.colors.target.sp_active_glow
+sp = settings.colors.target.sp_active_glow
 
 --BACKGROUNDS
 
 --Create the Focus Target BACKGROUND text object
-local bars_bg_focus_target = texts.new()
+bars_bg_focus_target = texts.new()
 bars_bg_focus_target:font(font)
 bars_bg_focus_target:pad(-4)
 bars_bg_focus_target:bg_alpha(bg_alpha)
 bars_bg_focus_target:draggable(false)
 
 --Create the Sub-Target BACKGROUND text object
-local bars_bg_sub_target = texts.new()
+bars_bg_sub_target = texts.new()
 bars_bg_sub_target:font(font)
 bars_bg_sub_target:pad(-4)
 bars_bg_sub_target:bg_alpha(bg_alpha)
 bars_bg_sub_target:draggable(false)
 
 --Create the Target BACKGROUND text object
-local bars_bg_target = texts.new()
+bars_bg_target = texts.new()
 bars_bg_target:font(font)
 bars_bg_target:pad(-4)
 bars_bg_target:bg_alpha(bg_alpha)
 bars_bg_target:draggable(false)
 
 --Create the Self Action BACKGROUND text object
-local bars_bg_self_action = texts.new()
+bars_bg_self_action = texts.new()
 bars_bg_self_action:font(font)
 bars_bg_self_action:pad(-4)
 bars_bg_self_action:bg_alpha(bg_alpha)
 bars_bg_self_action:draggable(false)
 
 --Create the HP BACKGROUND text object
-local bars_bg_hp = texts.new()
+bars_bg_hp = texts.new()
 bars_bg_hp:font(font)
 bars_bg_hp:pad(-4)
 bars_bg_hp:bg_alpha(bg_alpha)
 bars_bg_hp:draggable(false)
 
 --Create the MP BACKGROUND text object
-local bars_bg_mp = texts.new()
+bars_bg_mp = texts.new()
 bars_bg_mp:font(font)
 bars_bg_mp:pad(-4)
 bars_bg_mp:bg_alpha(bg_alpha)
 bars_bg_mp:draggable(false)
 
 --Create the TP BACKGROUND text object
-local bars_bg_tp = texts.new()
+bars_bg_tp = texts.new()
 bars_bg_tp:font(font)
 bars_bg_tp:pad(-4)
 bars_bg_tp:bg_alpha(bg_alpha)
 bars_bg_tp:draggable(false)
 
 --Create the Pet BACKGROUND text object
-local bars_bg_pet = texts.new()
+bars_bg_pet = texts.new()
 bars_bg_pet:font(font)
 bars_bg_pet:pad(-4)
 bars_bg_pet:bg_alpha(bg_alpha)
@@ -422,28 +436,28 @@ bars_bg_pet:draggable(false)
 --METERS
 
 --Create the Focus Target METER text object
-local bars_meter_focus_target = texts.new()
+bars_meter_focus_target = texts.new()
 bars_meter_focus_target:font(font)
 bars_meter_focus_target:pad(-5)
 bars_meter_focus_target:bg_alpha(text_alpha)
 bars_meter_focus_target:draggable(false)
 
 --Create the Sub-Target METER text object
-local bars_meter_sub_target = texts.new()
+bars_meter_sub_target = texts.new()
 bars_meter_sub_target:font(font)
 bars_meter_sub_target:pad(-5)
 bars_meter_sub_target:bg_alpha(text_alpha)
 bars_meter_sub_target:draggable(false)
 
 --Create the Target METER text object
-local bars_meter_target = texts.new()
+bars_meter_target = texts.new()
 bars_meter_target:font(font)
 bars_meter_target:pad(-5)
 bars_meter_target:bg_alpha(text_alpha)
 bars_meter_target:draggable(false)
 
 --Create the Self Action METER text object
-local bars_meter_self_action = texts.new()
+bars_meter_self_action = texts.new()
 bars_meter_self_action:font(font)
 bars_meter_self_action:pad(-5)
 bars_meter_self_action:bg_alpha(text_alpha)
@@ -451,28 +465,28 @@ bars_meter_self_action:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar
 bars_meter_self_action:draggable(false)
 
 --Create the HP METER text object
-local bars_meter_hp = texts.new()
+bars_meter_hp = texts.new()
 bars_meter_hp:font(font)
 bars_meter_hp:pad(-5)
 bars_meter_hp:bg_alpha(text_alpha)
 bars_meter_hp:draggable(false)
 
 --Create the MP METER text object
-local bars_meter_mp = texts.new()
+bars_meter_mp = texts.new()
 bars_meter_mp:font(font)
 bars_meter_mp:pad(-5)
 bars_meter_mp:bg_alpha(text_alpha)
 bars_meter_mp:draggable(false)
 
 --Create the TP METER text object
-local bars_meter_tp = texts.new()
+bars_meter_tp = texts.new()
 bars_meter_tp:font(font)
 bars_meter_tp:pad(-5)
 bars_meter_tp:bg_alpha(text_alpha)
 bars_meter_tp:draggable(false)
 
 --Create the Pet METER text object
-local bars_meter_pet = texts.new()
+bars_meter_pet = texts.new()
 bars_meter_pet:font(font)
 bars_meter_pet:pad(-5)
 bars_meter_pet:bg_alpha(text_alpha)
@@ -481,14 +495,14 @@ bars_meter_pet:draggable(false)
 --MARKERS
 
 --Create the HP MARKER text object
-local bars_marker_hp = texts.new()
+bars_marker_hp = texts.new()
 bars_marker_hp:font(font)
 bars_marker_hp:pad(-4)
 bars_marker_hp:bg_alpha(0)
 bars_marker_hp:draggable(false)
 
 --Create the TP MARKER text object
-local bars_marker_tp = texts.new()
+bars_marker_tp = texts.new()
 bars_marker_tp:font(font)
 bars_marker_tp:pad(-4)
 bars_marker_tp:bg_alpha(0)
@@ -497,7 +511,7 @@ bars_marker_tp:draggable(false)
 --TEXT SHADOW
 
 --Create the Focus Target TEXT SHADOW text object
-local bars_text_shdw_focus_target = texts.new()
+bars_text_shdw_focus_target = texts.new()
 bars_text_shdw_focus_target:font(font)
 bars_text_shdw_focus_target:color(0,0,0)
 bars_text_shdw_focus_target:alpha(text_alpha)
@@ -505,7 +519,7 @@ bars_text_shdw_focus_target:bg_alpha(0)
 bars_text_shdw_focus_target:draggable(false)
 
 --Create the Focus Target Action TEXT SHADOW text object
-local bars_text_shdw_focus_target_action = texts.new()
+bars_text_shdw_focus_target_action = texts.new()
 bars_text_shdw_focus_target_action:font(font)
 bars_text_shdw_focus_target_action:color(0,0,0)
 bars_text_shdw_focus_target_action:alpha(text_alpha)
@@ -513,7 +527,7 @@ bars_text_shdw_focus_target_action:bg_alpha(0)
 bars_text_shdw_focus_target_action:draggable(false)
 
 --Create the Sub-Target TEXT SHADOW text object
-local bars_text_shdw_sub_target = texts.new()
+bars_text_shdw_sub_target = texts.new()
 bars_text_shdw_sub_target:font(font)
 bars_text_shdw_sub_target:color(0,0,0)
 bars_text_shdw_sub_target:alpha(text_alpha)
@@ -521,7 +535,7 @@ bars_text_shdw_sub_target:bg_alpha(0)
 bars_text_shdw_sub_target:draggable(false)
 
 --Create the Sub-Target Action TEXT SHADOW text object
-local bars_text_shdw_sub_target_action = texts.new()
+bars_text_shdw_sub_target_action = texts.new()
 bars_text_shdw_sub_target_action:font(font)
 bars_text_shdw_sub_target_action:color(0,0,0)
 bars_text_shdw_sub_target_action:alpha(text_alpha)
@@ -529,7 +543,7 @@ bars_text_shdw_sub_target_action:bg_alpha(0)
 bars_text_shdw_sub_target_action:draggable(false)
 
 --Create the Target TEXT SHADOW text object
-local bars_text_shdw_target = texts.new()
+bars_text_shdw_target = texts.new()
 bars_text_shdw_target:font(font)
 bars_text_shdw_target:color(0,0,0)
 bars_text_shdw_target:alpha(text_alpha)
@@ -537,7 +551,7 @@ bars_text_shdw_target:bg_alpha(0)
 bars_text_shdw_target:draggable(false)
 
 --Create the Target Action TEXT SHADOW text object
-local bars_text_shdw_target_action = texts.new()
+bars_text_shdw_target_action = texts.new()
 bars_text_shdw_target_action:font(font)
 bars_text_shdw_target_action:color(0,0,0)
 bars_text_shdw_target_action:alpha(text_alpha)
@@ -545,7 +559,7 @@ bars_text_shdw_target_action:bg_alpha(0)
 bars_text_shdw_target_action:draggable(false)
 
 --Create the Self Action TEXT SHADOW text object
-local bars_text_shdw_self_action = texts.new()
+bars_text_shdw_self_action = texts.new()
 bars_text_shdw_self_action:font(font)
 bars_text_shdw_self_action:color(0,0,0)
 bars_text_shdw_self_action:alpha(text_alpha)
@@ -553,7 +567,7 @@ bars_text_shdw_self_action:bg_alpha(0)
 bars_text_shdw_self_action:draggable(false)
 
 --Create the HP TEXT SHADOW text object
-local bars_text_shdw_hp = texts.new()
+bars_text_shdw_hp = texts.new()
 bars_text_shdw_hp:font(font)
 bars_text_shdw_hp:color(0,0,0)
 bars_text_shdw_hp:alpha(text_alpha)
@@ -561,7 +575,7 @@ bars_text_shdw_hp:bg_alpha(0)
 bars_text_shdw_hp:draggable(false)
 
 --Create the MP TEXT SHADOW text object
-local bars_text_shdw_mp = texts.new()
+bars_text_shdw_mp = texts.new()
 bars_text_shdw_mp:font(font)
 bars_text_shdw_mp:color(0,0,0)
 bars_text_shdw_mp:alpha(text_alpha)
@@ -569,7 +583,7 @@ bars_text_shdw_mp:bg_alpha(0)
 bars_text_shdw_mp:draggable(false)
 
 --Create the TP TEXT SHADOW text object
-local bars_text_shdw_tp = texts.new()
+bars_text_shdw_tp = texts.new()
 bars_text_shdw_tp:font(font)
 bars_text_shdw_tp:color(0,0,0)
 bars_text_shdw_tp:alpha(text_alpha)
@@ -577,7 +591,7 @@ bars_text_shdw_tp:bg_alpha(0)
 bars_text_shdw_tp:draggable(false)
 
 --Create the Pet TEXT SHADOW text object
-local bars_text_shdw_pet = texts.new()
+bars_text_shdw_pet = texts.new()
 bars_text_shdw_pet:font(font)
 bars_text_shdw_pet:color(0,0,0)
 bars_text_shdw_pet:alpha(text_alpha)
@@ -587,7 +601,7 @@ bars_text_shdw_pet:draggable(false)
 --TEXT
 
 --Create the Focus Target TEXT text object
-local bars_text_focus_target = texts.new()
+bars_text_focus_target = texts.new()
 bars_text_focus_target:font(font)
 bars_text_focus_target:color(text_color.r,text_color.g,text_color.b)
 bars_text_focus_target:alpha(text_alpha)
@@ -598,7 +612,7 @@ bars_text_focus_target:stroke_alpha(0)
 bars_text_focus_target:stroke_width(2.5)
 
 --Create the Focus Target Action TEXT text object
-local bars_text_focus_target_action = texts.new()
+bars_text_focus_target_action = texts.new()
 bars_text_focus_target_action:font(font)
 bars_text_focus_target_action:color(text_color.r,text_color.g,text_color.b)
 bars_text_focus_target_action:alpha(text_alpha)
@@ -606,7 +620,7 @@ bars_text_focus_target_action:bg_alpha(0)
 bars_text_focus_target_action:draggable(false)
 
 --Create the Sub-Target TEXT text object
-local bars_text_sub_target = texts.new()
+bars_text_sub_target = texts.new()
 bars_text_sub_target:font(font)
 bars_text_sub_target:color(text_color.r,text_color.g,text_color.b)
 bars_text_sub_target:alpha(text_alpha)
@@ -617,7 +631,7 @@ bars_text_sub_target:stroke_alpha(0)
 bars_text_sub_target:stroke_width(2.5)
 
 --Create the Sub-Target Action TEXT text object
-local bars_text_sub_target_action = texts.new()
+bars_text_sub_target_action = texts.new()
 bars_text_sub_target_action:font(font)
 bars_text_sub_target_action:color(text_color.r,text_color.g,text_color.b)
 bars_text_sub_target_action:alpha(text_alpha)
@@ -625,7 +639,7 @@ bars_text_sub_target_action:bg_alpha(0)
 bars_text_sub_target_action:draggable(false)
 
 --Create the Target TEXT text object
-local bars_text_target = texts.new()
+bars_text_target = texts.new()
 bars_text_target:font(font)
 bars_text_target:color(text_color.r,text_color.g,text_color.b)
 bars_text_target:alpha(text_alpha)
@@ -636,7 +650,7 @@ bars_text_target:stroke_alpha(0)
 bars_text_target:stroke_width(2.5)
 
 --Create the Target Action TEXT text object
-local bars_text_target_action = texts.new()
+bars_text_target_action = texts.new()
 bars_text_target_action:font(font)
 bars_text_target_action:color(text_color.r,text_color.g,text_color.b)
 bars_text_target_action:alpha(text_alpha)
@@ -644,7 +658,7 @@ bars_text_target_action:bg_alpha(0)
 bars_text_target_action:draggable(false)
 
 --Create the Self Action TEXT text object
-local bars_text_self_action = texts.new()
+bars_text_self_action = texts.new()
 bars_text_self_action:font(font)
 bars_text_self_action:color(text_color.r,text_color.g,text_color.b)
 bars_text_self_action:alpha(text_alpha)
@@ -652,7 +666,7 @@ bars_text_self_action:bg_alpha(0)
 bars_text_self_action:draggable(false)
 
 --Create the HP TEXT text object
-local bars_text_hp = texts.new()
+bars_text_hp = texts.new()
 bars_text_hp:font(font)
 bars_text_hp:color(text_color.r,text_color.g,text_color.b)
 bars_text_hp:alpha(text_alpha)
@@ -660,7 +674,7 @@ bars_text_hp:bg_alpha(0)
 bars_text_hp:draggable(false)
 
 --Create the MP TEXT text object
-local bars_text_mp = texts.new()
+bars_text_mp = texts.new()
 bars_text_mp:font(font)
 bars_text_mp:color(text_color.r,text_color.g,text_color.b)
 bars_text_mp:alpha(text_alpha)
@@ -668,7 +682,7 @@ bars_text_mp:bg_alpha(0)
 bars_text_mp:draggable(false)
 
 --Create the TP TEXT text object
-local bars_text_tp = texts.new()
+bars_text_tp = texts.new()
 bars_text_tp:font(font)
 bars_text_tp:color(text_color.r,text_color.g,text_color.b)
 bars_text_tp:alpha(text_alpha)
@@ -676,7 +690,7 @@ bars_text_tp:bg_alpha(0)
 bars_text_tp:draggable(false)
 
 --Create the Pet TEXT text object
-local bars_text_pet = texts.new()
+bars_text_pet = texts.new()
 bars_text_pet:font(font)
 bars_text_pet:color(text_color.r,text_color.g,text_color.b)
 bars_text_pet:alpha(text_alpha)
@@ -730,7 +744,7 @@ register_event('unload', function()
 end)
 
 --Set the bars to bold or not
-local function setBold()
+function setBold()
 
 	local bold = settings.flags.bold
 
@@ -762,7 +776,7 @@ local function setBold()
 end
 
 --Set the bars to their appropriate sizes
-local function setSize()
+function setSize()
 
 	local size = settings.text.size
 
@@ -810,13 +824,19 @@ local function setSize()
 end
 
 --Set the bars in their appropriate positions
-local function setPosition()
+function setPosition()
 
 	--Set base positions
 	local pos_target = {x = settings.pos.x, y = settings.pos.y + show_bars[job].vertical_offset}
-	local st_x_pos_adjustment = math.floor(bar_width / 2) * (settings.text.size * char_width_multiplier)
-	local pos_focus_target = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_focus_target}
-	local pos_sub_target = {x = pos_target.x + st_x_pos_adjustment, y = pos_target.y + bars_vertical_spacing.target_to_focus_target}
+	local ft_st_x_pos_adjustment = math.floor(bar_width / 2) * (settings.text.size * char_width_multiplier)
+	local pos_focus_target = {
+		x = pos_target.x + (switch_focus_and_sub_positions and 0 or ft_st_x_pos_adjustment),
+		y = pos_target.y + bars_vertical_spacing.target_to_focus_target
+	}
+	local pos_sub_target = {
+		x = pos_target.x + (switch_focus_and_sub_positions and ft_st_x_pos_adjustment or 0),
+		y = pos_target.y + bars_vertical_spacing.target_to_focus_target
+	}
 	local player_stats_1 = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_player_stats}
 	local player_stats_2 = {x = pos_target.x, y = player_stats_1.y + bars_vertical_spacing.between_player_stats}
 	local player_stats_3 = {x = pos_target.x, y = player_stats_2.y + bars_vertical_spacing.between_player_stats}
@@ -906,7 +926,7 @@ local function setPosition()
 end
 
 --Set the width of various elements based on the bar_width option
-local function setWidth()
+function setWidth()
 
 	bar_width = settings.options.bar_width
 	show_bar_markers = settings.options.show_bar_markers
@@ -962,7 +982,7 @@ local function setWidth()
 end
 
 --Hide all bars
-local function hideBars()
+function hideBars()
 
 	bars_bg_focus_target:hide()
 	bars_bg_sub_target:hide()
@@ -1008,7 +1028,7 @@ local function hideBars()
 end
 
 --Show appropriate bars
-local function showBars()
+function showBars()
 
 	if show_bars[job].hp then
 		bars_bg_hp:show()
@@ -1047,7 +1067,7 @@ local function showBars()
 end
 
 --Set what job we are currently
-local function setJob()
+function setJob()
 
 	local player = get_player()
 	job = string.lower(player.main_job)
@@ -1055,7 +1075,7 @@ local function setJob()
 end
 
 --Assign and incrememnt a new tracking index number
-local function assignIndex()
+function assignIndex()
 
 	local assignedIndex = index
 
@@ -1066,7 +1086,7 @@ local function assignIndex()
 end
 
 --Add an action to the current_actions table
-local function addToActionsTable(actor_id, action, action_shdw, status, status_shdw, result, result_shdw, index)
+function addToActionsTable(actor_id, action, action_shdw, status, status_shdw, result, result_shdw, index)
 
 	current_actions[actor_id] = {
 		action = action,
@@ -1081,7 +1101,7 @@ local function addToActionsTable(actor_id, action, action_shdw, status, status_s
 end
 
 --Update the status of an action in the current_actions table when it gets interrupted
-local function actionInterrupted(actor_id, status, status_shdw, result, result_shdw, index)
+function actionInterrupted(actor_id, status, status_shdw, result, result_shdw, index)
 	local curr_action = current_actions[actor_id]
 
 	if curr_action then
@@ -1092,7 +1112,7 @@ local function actionInterrupted(actor_id, status, status_shdw, result, result_s
 end
 
 --Remove an action from the current_actions table
-local function removeFromActionsTable(actor_id, index)
+function removeFromActionsTable(actor_id, index)
 
 	if current_actions[actor_id] and current_actions[actor_id].index == index then
 		current_actions[actor_id] = nil
@@ -1101,7 +1121,7 @@ local function removeFromActionsTable(actor_id, index)
 end
 
 --Add an SP to the current_sp_actions table
-local function addToSPTable(actor_id, sp_name)
+function addToSPTable(actor_id, sp_name)
 
 	current_sp_actions[actor_id] = {
 		sp_name = sp_name,
@@ -1111,7 +1131,7 @@ local function addToSPTable(actor_id, sp_name)
 end
 
 --Remove an SP from the current_sp_actions table
-local function removeFromSPTable(actor_id)
+function removeFromSPTable(actor_id)
 
 	if current_sp_actions[actor_id] then
 		current_sp_actions[actor_id] = nil
@@ -1120,7 +1140,7 @@ local function removeFromSPTable(actor_id)
 end
 
 --Countdown for active SP abilities
-local function decrementSPTimers()
+function decrementSPTimers()
 	for id, sp_action in pairs(current_sp_actions) do
 		local timer = sp_action.timer
 		if timer and timer > 0 then
@@ -1132,7 +1152,7 @@ local function decrementSPTimers()
 end
 
 --Clear all actions from the action tables
-local function clearActionTables()
+function clearActionTables()
 
 	current_actions = {}
 	current_sp_actions = {}
@@ -1140,7 +1160,7 @@ local function clearActionTables()
 end
 
 --Add commas to numbers to make them easier to read
-local function addCommas(number)
+function addCommas(number)
 
 	local formattedNumber = number
 	
@@ -1172,7 +1192,7 @@ local function addCommas(number)
 end
 
 --Is the target a player?
-local function isPlayer(id)
+function isPlayer(id)
 
 	local actor = get_mob_by_id(id)
 
@@ -1187,7 +1207,7 @@ local function isPlayer(id)
 end
 
 --Is this player in our party?
-local function isInParty(id)
+function isInParty(id)
 
 	local positions = {'p0', 'p1', 'p2', 'p3', 'p4', 'p5'}
 
@@ -1205,7 +1225,7 @@ local function isInParty(id)
 end
 
 --Is this player in our alliance?
-local function isInAlliance(id)
+function isInAlliance(id)
 
 	local positions = {
 		'a10', 'a11', 'a12', 'a13', 'a14', 'a15',
@@ -1226,7 +1246,7 @@ local function isInAlliance(id)
 end
 
 --Return what color the target should be based on what/who it is
-local function targetColor(target)
+function targetColor(target)
 
 	local player = get_player()
 
@@ -1271,7 +1291,7 @@ local function targetColor(target)
 end
 
 --Capitalize letters accordingly
-local function capitalize(str)
+function capitalize(str)
 
 	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
 		return string.upper(firstLetter) .. string.lower(rest)
@@ -1290,7 +1310,7 @@ local function capitalize(str)
 end
 
 --Turn the entire string into all uppercase
-local function uppercase(str)
+function uppercase(str)
 
 	local uppercased = string.gsub(str, "%a", function(letter)
 		return letter:upper()
@@ -1301,7 +1321,7 @@ local function uppercase(str)
 end
 
 --Truncate names that are too long
-local function truncateAction(action)
+function truncateAction(action)
 
 	local num = max_action_length
 
@@ -1325,7 +1345,7 @@ local function truncateAction(action)
 end
 
 --Truncate names that are too long
-local function truncateName(name)
+function truncateName(name)
 
 	local num = max_name_length
 
@@ -1344,14 +1364,14 @@ local function truncateName(name)
 end
 
 --Format RGB values with leading zeros (helps prevent an issue with the shadow text not lining up correctly)
-local function formatRGB(value)
+function formatRGB(value)
 
 	return string.format("%03d", value)
 
 end
 
 --Convert auto focus targets to save them properly
-local function convertToSave(target)
+function convertToSave(target)
 
 	target = string.lower(target) --convert target to all lowercase
 	target = string.gsub(target, " ", "_") --convert spaces to underscores
@@ -1363,7 +1383,7 @@ local function convertToSave(target)
 end
 
 --Convert auto focus targets to display them properly
-local function convertToDisplay(target)
+function convertToDisplay(target)
 
 	target = string.gsub(target, "__apos__", "'") --convert __apos__ back to apostrophes
 	target = string.gsub(target, "__dash__", "-") --convert __dash__ back to dashes
@@ -1375,7 +1395,7 @@ local function convertToDisplay(target)
 end
 
 --Add a target to the auto_focus_target_list
-local function addToAutoFocusTargetList(target)
+function addToAutoFocusTargetList(target)
 
 	--If target is a table, first convert it into a useable string
 	if type(target) == 'table' then
@@ -1404,7 +1424,7 @@ local function addToAutoFocusTargetList(target)
 end
 
 --Remove a target from the auto_focus_target_list
-local function removeFromAutoFocusTargetList(target)
+function removeFromAutoFocusTargetList(target)
 
 	--If target is a table, first convert it into a useable string
 	if type(target) == 'table' then
@@ -1437,7 +1457,7 @@ local function removeFromAutoFocusTargetList(target)
 end
 
 --What jobs are the target mob?
-local function dynaJob(mob_name)
+function dynaJob(mob_name)
 
 	local zone = res.zones[get_info().zone].en
 	local in_dyna = string.match(zone, "%[D%]$") and true or false
@@ -1505,8 +1525,206 @@ local function dynaJob(mob_name)
 	end
 end
 
+--Apply Range coloring to Distance number (most of the distance calculations come from DistancePlus)
+function colorizeDistance(text, distance, target)
+
+	--Only apply distance coloring if turned on
+	if distance and show_target_distance_colors and not (spawn_type == 2 or spawn_type == 14 or spawn_type == 34) then
+
+		local player = get_mob_by_target('me')
+		local spawn_type = target and target.spawn_type
+		local equipment = get_items().equipment or nil
+		local range = equipment and equipment.range_bag and equipment.range and get_items(equipment.range_bag, equipment.range) or nil
+		local range_type = range and range.id and res.items[range.id] and res.items[range.id].range_type or nil
+
+		--NPC or object
+		if spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
+			local max_distance = 6
+			if distance < max_distance then
+				local c = color.range.in_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+			end
+
+		--Magic
+		elseif job == 'whm' or job == 'blm' or job == 'rdm' or job == 'pld' or job == 'drk' or job == 'brd' or job == 'smn' or job == 'sch' or job == 'geo' or job == 'run' or job == 'blu' then
+
+			local sub_job = string.lower(get_player().sub_job)
+
+			local max_distance = 20
+			local song_aoe_max = 10 --Song party AOE range is 10 with a Wind instrument. String range is calulated at cast time based on skill and we can't get that reliably.
+			local outer_blue_max = 10
+			local inner_blue_max = 5
+			if target.model_size > 2 then
+				max_distance = 20.1
+			elseif math.floor(target.model_size * 10) == 44 then
+				max_distance = 20.0666
+			end
+			
+			local target_distance = max_distance + target.model_size + player.model_size
+			local outer_blue_distance = outer_blue_max + target.model_size + player.model_size
+			local inner_blue_distance = inner_blue_max + target.model_size + player.model_size
+
+			--In Range (Song AOE), party members only
+			if job == 'brd' and target.in_party and distance < song_aoe_max then
+				local c = color.range.song_aoe
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--In Range (Inner Blue Magic), only apply if monster or charmed player
+			elseif (job == 'blu' or sub_job == 'blu') and distance < inner_blue_distance
+			and (
+				target.spawn_type == 16
+				or (
+					(target.spawn_type == 1 or target.spawn_type == 9 or target.spawn_type == 13)
+					and target.charmed
+				)
+			) then
+				local c = color.range.inner_blue_magic
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--In Range (Outer Blue Magic), only apply if monster or charmed player, or party member within diffusion range
+			elseif (job == 'blu' or sub_job == 'blu')
+			and (
+				(target.in_party and distance < outer_blue_max)
+				or (
+					not target.in_party and distance < outer_blue_distance
+					and (
+						target.spawn_type == 16
+						or ((target.spawn_type == 1 or target.spawn_type == 9 or target.spawn_type == 13) and target.charmed)
+					)
+				)
+			) then
+				local c = color.range.outer_blue_magic
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--In Range
+			elseif distance < target_distance then
+				local c = color.range.in_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--Out of Range
+			else
+				local c = color.range.out_of_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+			end
+
+		--Ranged, only apply color if ranged weapon is equipped and target is monster or charmed player
+		elseif (job == 'cor' or job == 'rng' or job == 'thf' or 'sam' or 'war')
+		and range_type
+		and (target.spawn_type == 16
+			or (
+				(target.spawn_type == 1 or target.spawn_type == 9 or target.spawn_type == 13) and target.charmed)
+			) then
+
+			local max_distance = 25
+			local range_skill = range and range.id and res.items[range.id] and res.items[range.id].skill or nil
+			local square_max = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
+			local true_max = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
+			local true_min = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
+			local square_min = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
+
+			--Bow
+			if range_type == "Bow" then
+
+				local range_delay = range and range.id and res.items[range.id] and res.items[range.id].delay or nil
+
+				--Shortbow
+				if range_delay < 400 then
+					square_max = square_max + 11.3199
+					true_max = true_max + 6.3199
+					true_min = true_min + 2.82
+					square_min = square_min + 1.42
+
+				--Longbow
+				else
+					square_max = square_max + 14.5199
+					true_max = true_max + 9.5199
+					true_min = true_min + 6.02
+					square_min = square_min + 4.62
+				end
+
+			--Crossbow
+			elseif range_type == "Crossbow" then
+				square_max = square_max + 11.7199
+				true_max = true_max + 8.3999
+				true_min = true_min + 5.0007
+				square_min = square_min + 3.6199
+
+			--Gun
+			elseif range_type == "Gun" or range_type == "Cannon" then
+				square_max = square_max + 6.8199
+				true_max = true_max + 4.3189
+				true_min = true_min + 3.0209
+				square_min = square_min + 2.2219
+
+			--Throwing
+			elseif range_skill == 27 then --Throwing
+				square_max = square_max + 3.8199
+				true_max = true_max + 1.3189
+				true_min = true_min + 0.0209
+				square_min = square_min - 0.7781
+			end
+
+			--In range, no boost
+			if distance < max_distance and (distance > square_max or distance < square_min) then
+				local c = color.range.in_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--Hits Squarely
+			elseif (distance <= square_max and distance > true_max) or (distance < true_min and distance >= square_min) then
+				local c = color.range.hits_squarely
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--Strikes True
+			elseif (distance <= true_max and distance >= true_min) then
+				local c = color.range.strikes_true
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--Out of range
+			else
+				local c = color.range.out_of_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+			end
+
+		--Ninjutsu, only apply color if target is monster or charmed player
+		elseif job == 'nin'
+		and (target.spawn_type == 16
+			or (
+				(target.spawn_type == 1 or target.spawn_type == 9 or target.spawn_type == 13)
+				and target.charmed
+			)
+		) then
+
+			local max_distance = 16.1
+
+			if target.model_size > 2 then
+				max_distance = 16.2
+			end
+
+			local target_distance = max_distance + target.model_size + player.model_size
+
+			--In range
+			if distance < target_distance then
+				local c = color.range.in_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+			--Out of Range
+			else
+				local c = color.range.out_of_range
+				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+			end
+
+		end		
+	end
+
+	--Jobs without a distance type, or if disabled
+	local c = color.range.out_of_range
+	return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+
+end
+
+
 --Update the Focus Target bar
-local function updateFocusTarget()
+function updateFocusTarget()
 
 	if not (focus_target_override or focus_target) then
 		bars_bg_focus_target:hide()
@@ -1527,7 +1745,8 @@ local function updateFocusTarget()
 	local dyna_job = ft and show_dyna_jobs and dynaJob(ft.name) or false
 	local ft_dyna_job = ft and dyna_job and ' '..dyna_job or ''
 	local ft_index = ft and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
-	local ft_distance = ft and show_target_distance and ' '..(string.format("%5.2f", math.floor(ft.distance:sqrt()*100)/100)) or ''
+	local distance_raw = ft and math.floor(ft.distance:sqrt()*100)/100
+	local ft_distance = ft and show_target_distance and ' '..(string.format("%5.2f", distance_raw)) or ''
 	local ft_hpp = ft and ft.hpp or 0
 	local ft_meter = ''
 	local spaces = ft_hpp and math.floor((bar_width / 2) * (ft_hpp / 100)) or 0
@@ -1541,8 +1760,8 @@ local function updateFocusTarget()
 	local cm = ft and (Fade and text_color or targetColor(ft)) or color.target.pc_other
 	local ct = text_color
 	ft_hpp = string.format("%3s", ft_hpp)..'%'
-	local text = ft_hpp..ft_distance..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..ft_dyna_job..ft_index
-	local text_shdw = ft_hpp..ft_distance..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..ft_dyna_job..ft_index
+	local text = ft_hpp..colorizeDistance(ft_distance, distance_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..ft_dyna_job..ft_index
+	local text_shdw = ft_hpp..'\\cs(000,000,000)'..ft_distance..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..ft_dyna_job..ft_index
 	local ft_status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
 	local ft_status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
 	local ft_action = ft and current_actions[ft.id] and current_actions[ft.id].action or ''
@@ -1606,7 +1825,7 @@ local function updateFocusTarget()
 end
 
 --Update the Target bar
-local function updateTarget()
+function updateTarget()
 
 	local player = get_player()
 	local target = screen_test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
@@ -1617,7 +1836,8 @@ local function updateTarget()
 	local dyna_job = target and show_dyna_jobs and dynaJob(target.name) or false
 	local target_dyna_job = target and dyna_job and ' '..dyna_job or ''
 	local target_index = target and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", target.index) or target.index)..')' or ''
-	local target_distance = target and show_target_distance and ' '..(string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
+	local distance_raw = target and math.floor(target.distance:sqrt()*100)/100
+	local target_distance = target and show_target_distance and ' '..(string.format("%5.2f", distance_raw)) or ''
 	local target_hpp = target and target.hpp or 0
 	local target_meter = ''
 	local spaces = target_hpp and math.floor(bar_width * (target_hpp / 100)) or 0
@@ -1631,8 +1851,8 @@ local function updateTarget()
 	local cm = target and (Fade and text_color or targetColor(target)) or color.target.pc_other
 	local ct = text_color
 	target_hpp = string.format("%3s", target_hpp)..'%'
-	local text = target_hpp..target_distance..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
-	local text_shdw = target_hpp..target_distance..'\\cs(000,000,000)'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
+	local text = target_hpp..colorizeDistance(target_distance, distance_raw, target)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
+	local text_shdw = target_hpp..'\\cs(000,000,000)'..target_distance..'\\cr'..'\\cs(000,000,000)'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
 	local target_status = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status or ''
 	local target_status_shdw = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status_shdw or ''
 	local target_action = target and current_actions[target.id] and current_actions[target.id].action or ''
@@ -1683,7 +1903,7 @@ local function updateTarget()
 end
 
 --Update the Sub-Target bar
-local function updateSubTarget()
+function updateSubTarget()
 
 	local player = get_player()
 	local st = screen_test and screen_test_sub_target or get_mob_by_target('st')
@@ -1695,7 +1915,8 @@ local function updateSubTarget()
 	local dyna_job = st and show_dyna_jobs and dynaJob(st.name) or false
 	local st_dyna_job = st and dyna_job and ' '..dyna_job or ''
 	local st_index = st and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
-	local st_distance = st and show_target_distance and ' '..(string.format("%5.2f", math.floor(st.distance:sqrt()*100)/100)) or ''
+	local distance_raw = st and math.floor(st.distance:sqrt()*100)/100
+	local st_distance = st and show_target_distance and ' '..(string.format("%5.2f", distance_raw)) or ''
 	local st_hpp = st and st.hpp or 0
 	local st_meter = ''
 	local spaces = st_hpp and math.floor((bar_width / 2) * (st_hpp / 100)) or 0
@@ -1709,8 +1930,8 @@ local function updateSubTarget()
 	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
 	local ct = text_color
 	st_hpp = string.format("%3s", st_hpp)..'%'
-	local text = st_hpp..st_distance..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..st_dyna_job..st_index
-	local text_shdw = st_hpp..st_distance..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..st_dyna_job..st_index
+	local text = st_hpp..colorizeDistance(st_distance, distance_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..st_dyna_job..st_index
+	local text_shdw = st_hpp..'\\cs(000,000,000)'..st_distance..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..st_dyna_job..st_index
 	local st_status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
 	local st_status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
 	local st_action = st and current_actions[st.id] and current_actions[st.id].action or ''
@@ -1760,7 +1981,7 @@ end
 
 
 --Update the Self Action text
-local function updateSelfAction()
+function updateSelfAction()
 
 	local player = get_player()
 	local ct = text_color
@@ -1796,7 +2017,7 @@ local function updateSelfAction()
 end
 
 --Complete the Self meter to full
-local function completeSelfMeter()
+function completeSelfMeter()
 
 	local self_meter = ''
 
@@ -1811,7 +2032,7 @@ local function completeSelfMeter()
 end
 
 --Update the Self bar
-local function updateSelfBar(cast_time, index)
+function updateSelfBar(cast_time, index)
 
 	cast_time = cast_time ~= 0 and cast_time or 1
 	local player = get_player()
@@ -1861,7 +2082,7 @@ local function updateSelfBar(cast_time, index)
 end
 
 --Update the HP bar
-local function updateHPBar()
+function updateHPBar()
 
 	local player = get_player()
 	local hp = player and player.vitals.hp or 0
@@ -1924,7 +2145,7 @@ local function updateHPBar()
 end
 
 --Update the MP bar
-local function updateMPBar()
+function updateMPBar()
 
 	local player = get_player()
 	local mp = player and player.vitals.mp or 0
@@ -1987,7 +2208,7 @@ local function updateMPBar()
 end
 
 --Update the TP bar
-local function updateTPBar()
+function updateTPBar()
 
 	local player = get_player()
 	local tp = player and player.vitals.tp or 0
@@ -2018,13 +2239,13 @@ local function updateTPBar()
 		if not Fade then
 			if tp == 3000 then
 				cm = color.tp.full_3k
-				ct = color.tp.ready_to_use
+				ct = color.tp.full_3k
 			elseif tp >= 2000 then
 				cm = color.tp.full_2k
-				ct = color.tp.ready_to_use
+				ct = color.tp.full_2k
 			elseif tp >= 1000 then
 				cm = color.tp.full_1k
-				ct = color.tp.ready_to_use
+				ct = color.tp.full_1k
 			end
 		end
 
@@ -2046,12 +2267,12 @@ local function updateTPBar()
 end
 
 --Update the Pet bar
-local function updatePetBar()
+function updatePetBar()
 
 	local pet = get_mob_by_target('pet')
 	local hpp = pet and pet.hpp or 0
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
-	local distance = pet and show_pet_distance and ' '..(string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100)) or ''
+	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
 	local spaces = math.floor(bar_width * (hpp / 100))
@@ -2119,8 +2340,9 @@ local function updatePetBar()
 	local cm_g = formatRGB(cm.g)
 	local cm_b = formatRGB(cm.b)
 
-	local text = pet_name..(pet and ': \\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'%\\cr' or '')..distance..status..tp
-	local text_shdw = pet_name..(pet and ': \\cs(000,000,000)'..hpp..'%\\cr' or '')..distance..status..tp
+	hpp = ' '..string.format("%3s", hpp)..'%'
+	local text = (pet and '\\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 
 	bars_meter_pet:text(pet_meter)
 	bars_text_shdw_pet:text(Fade and text_shdw:text_strip_format() or text_shdw)
@@ -2130,7 +2352,7 @@ local function updatePetBar()
 end
 
 --List the contents of the Auto Focus Target list
-local function listAutoFocusTargets()
+function listAutoFocusTargets()
 	local sortedTargets = {}
 
 	add_to_chat(8,('[Bars] '):color(220)..('Auto Focus Targets: '):color(8))
@@ -2154,7 +2376,7 @@ local function listAutoFocusTargets()
 end
 
 --Check for matching focus targets
-local function checkForFocusTarget()
+function checkForFocusTarget()
 
 	local target = get_mob_by_target('t') or nil
 	local nearby = nil
@@ -2195,7 +2417,7 @@ local function checkForFocusTarget()
 end
 
 --Check if focus target override is still nearby
-local function checkForFocusTargetOverride()
+function checkForFocusTargetOverride()
 
 	local target = get_mob_by_target('t') or nil
 	local nearby = false
@@ -2223,7 +2445,7 @@ local function checkForFocusTargetOverride()
 end
 
 --Fade the text (alpha)
-local function setTextFade(num)
+function setTextFade(num)
 	bars_marker_hp:alpha(num)
 	bars_marker_tp:alpha(num)
 	bars_text_shdw_focus_target:alpha(num)
@@ -2251,7 +2473,7 @@ local function setTextFade(num)
 end
 
 --Fade the bars (bg_alpha)
-local function setBarFade(num)
+function setBarFade(num)
 	bars_bg_focus_target:bg_alpha(num)
 	bars_bg_sub_target:bg_alpha(num)
 	bars_bg_target:bg_alpha(num)
@@ -2279,7 +2501,7 @@ local function setBarFade(num)
 end
 
 --Reset the bars alpha/bg_alpha to normal
-local function unFade()
+function unFade()
 	text_fade_num = settings.text.alpha
 	bars_marker_hp:alpha(text_alpha)
 	bars_marker_tp:alpha(text_alpha)
@@ -2337,7 +2559,7 @@ local function unFade()
 end
 
 --Reset the fade delay timer
-local function resetFadeDelay()
+function resetFadeDelay()
 	fade_delay = settings.options.fade_delay
 	if Fade then
 		Fade = false
@@ -2346,7 +2568,7 @@ local function resetFadeDelay()
 end
 
 --Check a table if it contains a specific message number
-local function checkForMessage(tbl, msg)
+function checkForMessage(tbl, msg)
 	for _, v in ipairs(tbl) do
 		if v == msg then
 			return true
@@ -2356,7 +2578,7 @@ local function checkForMessage(tbl, msg)
 end
 
 --Show the Target, Sub Target, and Focus Target bars to test the screen layout
-local function screenTest()
+function screenTest()
 
 	screen_test = true
 	resetFadeDelay()
@@ -2453,7 +2675,7 @@ register_event('tp change', function()
 end)
 
 --Run necessarry functions at start
-local function initialize()
+function initialize()
 	setJob()
 	setWidth()
 	setBold()
@@ -2648,7 +2870,7 @@ register_event('action', function (act)
 	local rhc_g = formatRGB(color.result.heal.g)
 	local rhc_b = formatRGB(color.result.heal.b)
 
-	local function calculateInfo(act)
+	function calculateInfo(act)
 		local landed = 0
 		local amount_total = 0
 		local cure_total = false
@@ -2809,7 +3031,14 @@ register_event('action', function (act)
 		end
 
 	--Job abilities
-	elseif (act.category == 3 and (msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599 or msg == 608 or msg == 736 or msg == 746)) or act.category == 6 or act.category == 14 or act.category == 15 then
+	elseif (
+		act.category == 3
+		and (
+			msg == 110 or msg == 102 or msg == 122 or msg == 125 or msg == 129 or msg == 153 or msg == 244 or msg == 306 or msg == 318 or msg == 321 or msg == 322 or msg == 453 or msg == 593 or msg == 594 or msg == 595 or msg == 596 or msg == 597 or msg == 598 or msg == 599 or msg == 608 or msg == 736 or msg == 746 or msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602
+			or msg == 156 or msg == 323 or msg == 30 or msg == 31 or msg == 32 or msg == 158 or msg == 324 or msg == 658
+		)
+	)
+	or act.category == 6 or act.category == 14 or act.category == 15 then
 
 		local target_action = ''
 		local target_action_shdw = ''
@@ -2844,59 +3073,8 @@ register_event('action', function (act)
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
-			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
-			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-				local info = calculateInfo(act)
-				local landed = info.landed
-				local last_buff_id = info.last_buff_id
-				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
-				local damage = info.damage
-				if buff_name then
-					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
-					target_action_result = ' ('..count..buff_name..')'
-					target_action_result_shdw = ' ('..count..buff_name..')'
-				elseif damage then
-					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-					count = count == '' and '' or ' '..count
-					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
-				else
-					--Evaded
-					if msg == 282 then
-						target_action_result = ' ('..count..'Evaded)'
-						target_action_result_shdw = ' ('..count..'Evaded)'
-					--No Effect
-					elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
-						target_action_result = ' ('..count..'No Effect)'
-						target_action_result_shdw = ' ('..count..'No Effect)'
-					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
-						target_action_result = ' ('..count..'Resisted)'
-						target_action_result_shdw = ' ('..count..'Resisted)'
-					--Immunobreak
-					elseif msg == 653 or msg == 654 then
-						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
-					--Anticipated
-					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
-					--Blinked
-					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
-					--Dodged
-					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
-					--Missed
-					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
-					end
-				end
 			end
+
 		--Absorbed - job abilities
 		elseif (act.category == 3 or act.category == 6 or act.category == 14) and (msg == 102 or msg == 122 or msg == 306 or msg == 318) then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
@@ -2905,6 +3083,34 @@ register_event('action', function (act)
 		elseif act.category == 3 and msg == 110 then
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+		--No Effect
+		elseif act.category == 3 and (msg == 156 or msg == 323) then
+			target_action_result = ' ('..count..'No Effect)'
+			target_action_result_shdw = ' ('..count..'No Effect)'
+		--Anticipated
+		elseif act.category == 3 and msg == 30 then
+			target_action_result = ' ('..count..'Anticipated)'
+			target_action_result_shdw = ' ('..count..'Anticipated)'
+		--Blinked
+		elseif act.category == 3 and msg == 31 then
+			target_action_result = ' ('..count..'Blinked)'
+			target_action_result_shdw = ' ('..count..'Blinked)'
+		--Dodged
+		elseif act.category == 3 and msg == 32 then
+			target_action_result = ' ('..count..'Dodged)'
+			target_action_result_shdw = ' ('..count..'Dodged)'
+		--Missed
+		elseif act.category == 3 and (msg == 158 or msg == 324 or msg == 658) then
+			target_action_result = ' ('..count..'Missed)'
+			target_action_result_shdw = ' ('..count..'Missed)'
+		--Buff/Debuff
+		elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
+			local landed = calculateInfo(act).landed
+			count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+			local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
+			target_action_result = ' ('..count..buff_name..')'
+			target_action_result_shdw = ' ('..count..buff_name..')'
+
 		--Mug Success + HP
 		elseif msg == 129 and act.targets[1].actions[1].has_add_effect then
 			local hp_drain = act.targets[1].actions[1].add_effect_param
@@ -2924,52 +3130,52 @@ register_event('action', function (act)
 			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr HP)'
 		--Steal Success
 		elseif msg == 125 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr)'
 		--Aura Steal Absorb
 		elseif msg == 453 then
-			local aura = res.buffs[action_id].name
+			local aura = buff[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..aura..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..aura..'\\cr)'
 		--Aura Steal Dispel
 		elseif msg == 321 or msg == 322 then
-			local aura = res.buffs[action_id].name
+			local aura = buff[action_id].name
 			target_action_result = ' ('..aura..')'
 			target_action_result_shdw = ' ('..aura..')'
 		--Despoil Success + Attack Down
 		elseif msg == 593 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Att Down)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Att Down)'
 		--Despoil Success + Defense Down
 		elseif msg == 594 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Def Down)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Def Down)'
 		--Despoil Success + Magic Attack Down
 		elseif msg == 595 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MAtt Down)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MAtt Down)'
 		--Despoil Success + Magic Defense Down
 		elseif msg == 596 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MDef Down)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MDef Down)'
 		--Despoil Success + Evasion Down
 		elseif msg == 597 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Eva Down)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Eva Down)'
 		--Despoil Success + Accuracy Down
 		elseif msg == 598 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Acc Down)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Acc Down)'
 		--Despoil Success + Slow
 		elseif msg == 599 then
-			local item = res.items[action_id].name
+			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Slow)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Slow)'
 		--Steal/Despoil Fail
@@ -2980,6 +3186,58 @@ register_event('action', function (act)
 		elseif msg == 608 then
 			target_action_result = ' (TH: \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
 			target_action_result_shdw = ' (TH: \\cs(000,000,000)'..amount..'\\cr)'
+		--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
+		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+			local info = calculateInfo(act)
+			local landed = info.landed
+			local last_buff_id = info.last_buff_id
+			local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
+			local damage = info.damage
+			if buff_name then
+				--redo count to show how many landed out of the total target_count
+				count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+				target_action_result = ' ('..count..buff_name..')'
+				target_action_result_shdw = ' ('..count..buff_name..')'
+			elseif damage then
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			else
+				--Evaded
+				if msg == 282 then
+					target_action_result = ' ('..count..'Evaded)'
+					target_action_result_shdw = ' ('..count..'Evaded)'
+				--No Effect
+				elseif msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 then
+					target_action_result = ' ('..count..'No Effect)'
+					target_action_result_shdw = ' ('..count..'No Effect)'
+				--Resisted
+				elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					target_action_result = ' ('..count..'Resisted)'
+					target_action_result_shdw = ' ('..count..'Resisted)'
+				--Immunobreak
+				elseif msg == 653 or msg == 654 then
+					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
+					target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+				--Anticipated
+				elseif msg == 30 then
+					target_action_result = ' ('..count..'Anticipated)'
+					target_action_result_shdw = ' ('..count..'Anticipated)'
+				--Blinked
+				elseif msg == 31 then
+					target_action_result = ' ('..count..'Blinked)'
+					target_action_result_shdw = ' ('..count..'Blinked)'
+				--Dodged
+				elseif msg == 32 then
+					target_action_result = ' ('..count..'Dodged)'
+					target_action_result_shdw = ' ('..count..'Dodged)'
+				--Missed
+				elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
+					target_action_result = ' ('..count..'Missed)'
+					target_action_result_shdw = ' ('..count..'Missed)'
+				end
+			end
 		--Most job abilities
 		elseif act.category == 6 then
 			--Erase
@@ -3053,8 +3311,7 @@ register_event('action', function (act)
 						target_action_result_shdw = ' ('..count..'Missed)'
 					end
 				end
-
-				--Cover
+			--Cover
 			elseif msg == 311 then
 				target_action_result = ' (Cover)'
 				target_action_result_shdw = ' (Cover)'
@@ -3796,7 +4053,7 @@ register_event('action', function (act)
 		target_action_shdw = action_name_shdw..action_target_name_shdw
 
 		--The actor is our pet
-		if get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index then
+		if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index then
 
 			bars_meter_self_action:bg_color(050,255,050)
 			completeSelfMeter()
@@ -3981,7 +4238,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 end)
 
 --Unrecognized command
-local function displayUnregnizedCommand()
+function displayUnregnizedCommand()
 	add_to_chat(8,('[Bars] '):color(220)..('Unrecognized command. Type'):color(8)..(' //bars help'):color(1)..(' for a list of commands.'):color(8))
 end
 
