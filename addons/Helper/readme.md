@@ -126,6 +126,8 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 2.3.1
+- Fixed Mystical Canteen, Moglophone, and Ra'Kaznarian Plate KI ready status not resetting correctly after obtaining the KI again.
 
 Version 2.3
 - Added Mystical Canteen, Moglophone, and Ra'Kaznarian Plate KI ready status to Help command.
