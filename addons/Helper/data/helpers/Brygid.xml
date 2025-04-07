@@ -37,32 +37,32 @@
             <30>Oh, I do dye my armor to match the moon phase.</30>
             <31>Fashion faux pas? Honey, this is a battlefield.</31>
             <32>You can't spell 'haute couture' without 'hurt' - and that's what you'll feel if you wear that cape again.</32>
-            <34>Who put together your outfit? A blind Goblin?</34>
-            <35>Your DPS is decent, but your DRS - Dramatic Runway Stride - needs work.</35>
-            <36>Your boots are screaming... and not in a good way.</36>
-            <37>I once fought an Aern wearing that body piece. It died of embarrassment.</37>
-            <38>You know what else is heavy besides that armor? My disappointment.</38>
-            <39>Your fashion is so outdated, it came pre-patched.</39>
-            <40>That set may give +10 to stats, but -50 to chic.</40>
-            <41>I don't care how amazing the stats are - that belt is not making the cut.</41>
-            <42>You've got full haste... but zero taste.</42>
-            <43>If I see another adventurer in crab armor, I'll molt from secondhand shame.</43>
-            <44>You're built like a tank... but dressed like a bank robbery.</44>
-            <45>That color combination is more cursed than Dynamis-Xarcabard.</45>
-            <46>Slay your foes, yes - but slay the runway first.</46>
-            <47>I cast Protectra V - from your wardrobe choices!</47>
-            <48>Even my shadows have better coordination than that lockstyle.</48>
-            <49>I could forgive the weapon delay... but those shoulder pads? Never.</49>
-            <50>What's more terrifying than Kirin? That ensemble.</50>
-            <51>This isn't just a battlefield - it's a catwalk of destiny.</51>
-            <52>Your linkshell called. They want their dignity back.</52>
-            <53>That cape is so last expansion. Please upgrade.</53>
-            <54>If you're going to fight for your life, at least look fabulous doing it!</54>
+            <33>Who put together your outfit? A blind Goblin?</33>
+            <34>Your DPS is decent, but your DRS - Dramatic Runway Stride - needs work.</34>
+            <35>Your boots are screaming... and not in a good way.</35>
+            <36>I once fought an Aern wearing that body piece. It died of embarrassment.</36>
+            <37>You know what else is heavy besides that armor? My disappointment.</37>
+            <38>Your fashion is so outdated, it came pre-patched.</38>
+            <39>That set may give +10 to stats, but -50 to chic.</39>
+            <40>I don't care how amazing the stats are - that belt is not making the cut.</40>
+            <41>You've got full haste... but zero taste.</41>
+            <42>If I see another adventurer in crab armor, I'll molt from secondhand shame.</42>
+            <43>You're built like a tank... but dressed like a bank robbery.</43>
+            <44>That color combination is more cursed than Dynamis-Xarcabard.</44>
+            <45>Slay your foes, yes - but slay the runway first.</45>
+            <46>I cast Protectra V - from your wardrobe choices!</46>
+            <47>Even my shadows have better coordination than that lockstyle.</47>
+            <48>I could forgive the weapon delay... but those shoulder pads? Never.</48>
+            <49>What's more terrifying than Kirin? That ensemble.</49>
+            <50>This isn't just a battlefield - it's a catwalk of destiny.</50>
+            <51>Your linkshell called. They want their dignity back.</51>
+            <52>That cape is so last expansion. Please upgrade.</52>
+            <53>If you're going to fight for your life, at least look fabulous doing it!</53>
         </flavor_text>
         <food_wears_off>Your food buff expired... much like those outdated boots.</food_wears_off>
         <info>
             <description>Fabulously judgmental and fashion-obsessed.</description>
-            <introduction> I am Brygid, stylist extraordinaire, savior of silhouettes and slayer of style faux pas!</introduction>
+            <introduction>I am Brygid, stylist extraordinaire, savior of silhouettes and slayer of style faux pas!</introduction>
             <name>Brygid</name>
             <name_color>53</name_color>
             <sha></sha>
