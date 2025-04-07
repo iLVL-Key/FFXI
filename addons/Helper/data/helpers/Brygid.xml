@@ -1,0 +1,99 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>${ability} is back in season. Use it before it goes out of style.</ability_ready>
+        <capped_job_points>Your Job Points are maxed out! Now if only your fashion sense were.</capped_job_points>
+        <capped_merit_points>Maxed out on Merit Points. Now that's how you level with style.</capped_merit_points>
+        <flavor_text>
+            <1>A look without layers? Don't even joke.</1>
+            <2>If your gear isn't fabulous, why even fight?</2>
+            <3>Confidence is the best stat. Stack it generously.</3>
+            <4>Style over strength? I say—why not both!</4>
+            <5>Some call it over-accessorizing. I call it preparedness.</5>
+            <6>Armor is just fashion with defense, sweetie.</6>
+            <7>Clashing colors? That's a crime in all nations.</7>
+            <8>That body piece needs a belt and a blessing.</8>
+            <9>I just saw someone in mismatched greaves. Oh, I feel faint.</9>
+            <10>Wearing white in Valkurm? Bold. I admire the drama.</10>
+            <11>They say 'less is more' - but I say 'more is magnificent!'</11>
+            <12>Going out in that lockstyle? You're braver than I thought.</12>
+            <13>I don't care if it's Haste +5. If it's hideous, it's a no.</13>
+            <14>Nothing says 'I'm ready for battle' like coordinated dyes.</14>
+            <15>They called it glamorless. I called it 'pre-patch chic.'</15>
+            <16>Why yes, this is limited-time eventwear. Thank you for noticing.</16>
+            <17>Your enmity won't rise if your fashion doesn't shine!</17>
+            <18>If I had a gil for every unfashionable adventurer I saw... I'd buy Jeuno.</18>
+            <19>That subligar is a choice. Not a good one, but a choice.</19>
+            <20>Helms are so last season. Let the hair flow!</20>
+            <21>Enfeebling magic? More like unfashionable magic if you're wearing that.</21>
+            <22>You say artifact armor. I say artful armor.</22>
+            <23>The true endgame? Lockstyles, of course. You must look flawless at all times.</23>
+            <24>Your gear may be Rare/Ex, but is it Rare/Exquisite?</24>
+            <25>Nothing enhances evasion like elegant posture.</25>
+            <26>Fighting undead in that drab outfit? Now THAT is horror!</26>
+            <27>Even my macros are color-coordinated, sweetie.</27>
+            <28>If you're not glamming while spamming, you're doing it wrong.</28>
+            <29>That tabard? So Conquest Week 3. Please evolve.</29>
+            <30>Oh, I do dye my armor to match the moon phase.</30>
+            <31>Fashion faux pas? Honey, this is a battlefield.</31>
+            <32>You can't spell 'haute couture' without 'hurt' - and that's what you'll feel if you wear that cape again.</32>
+            <34>Who put together your outfit? A blind Goblin?</34>
+            <35>Your DPS is decent, but your DRS - Dramatic Runway Stride - needs work.</35>
+            <36>Your boots are screaming... and not in a good way.</36>
+            <37>I once fought an Aern wearing that body piece. It died of embarrassment.</37>
+            <38>You know what else is heavy besides that armor? My disappointment.</38>
+            <39>Your fashion is so outdated, it came pre-patched.</39>
+            <40>That set may give +10 to stats, but -50 to chic.</40>
+            <41>I don't care how amazing the stats are - that belt is not making the cut.</41>
+            <42>You've got full haste... but zero taste.</42>
+            <43>If I see another adventurer in crab armor, I'll molt from secondhand shame.</43>
+            <44>You're built like a tank... but dressed like a bank robbery.</44>
+            <45>That color combination is more cursed than Dynamis-Xarcabard.</45>
+            <46>Slay your foes, yes - but slay the runway first.</46>
+            <47>I cast Protectra V - from your wardrobe choices!</47>
+            <48>Even my shadows have better coordination than that lockstyle.</48>
+            <49>I could forgive the weapon delay... but those shoulder pads? Never.</49>
+            <50>What's more terrifying than Kirin? That ensemble.</50>
+            <51>This isn't just a battlefield - it's a catwalk of destiny.</51>
+            <52>Your linkshell called. They want their dignity back.</52>
+            <53>That cape is so last expansion. Please upgrade.</53>
+            <54>If you're going to fight for your life, at least look fabulous doing it!</54>
+        </flavor_text>
+        <food_wears_off>Your food buff expired... much like those outdated boots.</food_wears_off>
+        <info>
+            <description>Fabulously judgmental and fashion-obsessed.</description>
+            <introduction> I am Brygid, stylist extraordinaire, savior of silhouettes and slayer of style faux pas!</introduction>
+            <name>Brygid</name>
+            <name_color>53</name_color>
+            <sha></sha>
+            <text_color>1</text_color>
+            <type>NPC</type>
+        </info>
+        <member_joined_alliance>${member} joined the alliance - finally, someone with potential and polish.</member_joined_alliance>
+        <member_joined_party>${member} joined the party... and can you believe what they're wearing?!</member_joined_party>
+        <member_left_alliance>${member} left the alliance, but their fashion faux pas is still seared into my memory.</member_left_alliance>
+        <member_left_party>${member} left the party. Hopefully they take their mismatched gear with them.</member_left_party>
+        <mireu_popped>Mireu in ${zone}? That beast better not ruin my boots.</mireu_popped>
+        <other_party_joined_alliance>Another party's joined the alliance. Do they come with fashion sense? TBD.</other_party_joined_alliance>
+        <other_party_left_alliance>A party has left the alliance.  May their fashion sins go with them.</other_party_left_alliance>
+        <party_low_mp>Yikes! ${member} is looking rough. They could use a ${refresh} and a mirror.</party_low_mp>
+        <reminder_canteen>Your Mystical Canteen is back - hydration is the foundation of flawless skin.</reminder_canteen>
+        <reminder_mog_locker>That lease on your Mog Locker is fading faster than a discount dye job.</reminder_mog_locker>
+        <reminder_moglophone>Time to pickup another Moglophone again - don't leave it lying around like yesterday's bangles!</reminder_moglophone>
+        <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate is waiting - and so is your next dermatologist appointment.</reminder_plate>
+        <reraise_check>No Reraise? What is this, a disaster couture show?</reraise_check>
+        <reraise_wears_off>Your Reraise faded faster than a bargain-brand lipstick!</reraise_wears_off>
+        <signet_wears_off>You've lost your ${signet}? You're practically naked in the field!</signet_wears_off>
+        <sparkolade_reminder>Those Sparkolades won't spend themselves - go buy yourself something pretty!</sparkolade_reminder>
+        <sublimation_charged>Your Sublimation's ready - release it like a bold new collection!</sublimation_charged>
+        <vorseal_wearing>Your Vorseal's got about 10 minutes left - fashion fades, darling, so hurry!</vorseal_wearing>
+        <you_are_now_alliance_leader>Lead the alliance with grace and glam - and maybe a heel-click or two!</you_are_now_alliance_leader>
+        <you_are_now_party_leader>You're in charge of the party now - lead with style, but never smudge your eyeliner.</you_are_now_party_leader>
+        <you_joined_alliance>The alliance just got a fashion upgrade, courtesy of you!</you_joined_alliance>
+        <you_joined_party>The party's complete now - you're the final accessory!</you_joined_party>
+        <you_left_alliance>You've left the alliance - but you'll always be in their hearts... and their outfit inspo.</you_left_alliance>
+        <you_left_party>You've left the party. Every fashion icon needs their solo era.</you_left_party>
+        <your_party_joined_alliance>Your party joined the alliance - talk about a fashion merger!</your_party_joined_alliance>
+        <your_party_left_alliance>Your party left the alliance. They were dragging down your style anyway.</your_party_left_alliance>
+    </global>
+</settings>
