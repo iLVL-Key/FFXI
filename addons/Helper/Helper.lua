@@ -1408,6 +1408,9 @@ function checkKIReminderTimestamps()
 			local player = get_player()
 			local reminder_time = timestamps[key_item][string.lower(player.name)] or 0
 			local have_ki = have_key_item[key_item][string.lower(player.name)] or false
+			if key_item == "plate" then
+				print(reminder_time, current_time, have_ki)
+			end
 
 			--We just used the KI
 			if have_ki and not haveKeyItem(id) then
@@ -1418,6 +1421,7 @@ function checkKIReminderTimestamps()
 			--We just received the KI again
 			elseif not have_ki and haveKeyItem(id) then
 				have_key_item[key_item][string.lower(player.name)] = true
+				key_item_ready[key_item][string.lower(player.name)] = false
 				settings:save('all')
 
 			--We do not yet have the KI
