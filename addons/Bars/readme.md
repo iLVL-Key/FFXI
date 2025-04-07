@@ -137,7 +137,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
---Version 3.5
+Version 3.5
 - Added `show_target_distance_colors` option. This will colorize the distance text based on the distance to the target and other factors. Accounts for Ranged Attacks (automatically detects and adjusts "hits squarely" and "strikes true" for shortbow, longbow, crossbow, gun, and throwing), Magic, Blue Magic (there are many many ranges for Blue so this has been distilled down to an inner and outer range covering most spells), Ninjutsu, Songs, and NPCs/objects. Distance calculations from the DistancePlus addon were used as the starting point and expanded from there.
 - Added `switch_focus_and_sub_positions` option. Switches the horizontal positions of the focus target and sub-target bars. False = Sub-Target on left, Focus Target on right. True = Focus Target on left, Sub-Target on right.
 - Adjusted the Pet Bar to be formatted like the Target Bar for consistancy.
