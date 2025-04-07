@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.3'
+_addon.version = '2.3.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -1408,9 +1408,6 @@ function checkKIReminderTimestamps()
 			local player = get_player()
 			local reminder_time = timestamps[key_item][string.lower(player.name)] or 0
 			local have_ki = have_key_item[key_item][string.lower(player.name)] or false
-			if key_item == "plate" then
-				print(reminder_time, current_time, have_ki)
-			end
 
 			--We just used the KI
 			if have_ki and not haveKeyItem(id) then
