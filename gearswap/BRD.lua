@@ -138,38 +138,38 @@ inst = {
 --"All Dummy Songs" - Using specific songs to trigger the extra songs
 --Note: You only need to set these to your "extra song" instrument if you use this technique,
 --otherwise set these to whichever normal instrument you would like to use for these songs.
-	aubade		= "Daurdabla",
-	capriccio	= "Daurdabla",
-	fantasia	= "Daurdabla",
-	gavotte		= "Daurdabla",
-	operetta	= "Daurdabla",
-	pastoral	= "Daurdabla",
-	round		= "Daurdabla",
+	aubade		= "Loughnashade",
+	capriccio	= "Loughnashade",
+	fantasia	= "Loughnashade",
+	gavotte		= "Loughnashade",
+	operetta	= "Loughnashade",
+	pastoral	= "Loughnashade",
+	round		= "Loughnashade",
 
 --Potency Songs
-	ballad			= "Gjallarhorn",
-	carol			= "Gjallarhorn",
-	dirge			= "Gjallarhorn",
-	elegy			= "Gjallarhorn",
-	etude			= "Gjallarhorn",
-	finale			= "Gjallarhorn",
+	ballad			= "Loughnashade",
+	carol			= "Loughnashade",
+	dirge			= "Loughnashade",
+	elegy			= "Loughnashade",
+	etude			= "Loughnashade",
+	finale			= "Loughnashade",
 	horde_lullaby_II= "Blurred Harp +1",--Horde Lullaby II only
-	hymnus			= "Gjallarhorn",
-	lullaby			= "Gjallarhorn",	--All other lullabies
-	madrigal		= "Gjallarhorn",
-	mambo			= "Gjallarhorn",
-	march			= "Gjallarhorn",	--Excludes Honor March
+	hymnus			= "Loughnashade",
+	lullaby			= "Loughnashade",	--All other lullabies
+	madrigal		= "Loughnashade",
+	mambo			= "Loughnashade",
+	march			= "Loughnashade",	--Excludes Honor March
 	mazurka			= "Marsyas",
-	minne			= "Gjallarhorn",
-	minuet			= "Gjallarhorn",
-	nocturne		= "Gjallarhorn",
-	paeon			= "Gjallarhorn",
-	prelude			= "Gjallarhorn",
-	requiem			= "Gjallarhorn",
-	scherzo			= "Gjallarhorn",
-	sirvente		= "Gjallarhorn",
-	threnody		= "Gjallarhorn",
-	virelai			= "Gjallarhorn",
+	minne			= "Loughnashade",
+	minuet			= "Loughnashade",
+	nocturne		= "Loughnashade",
+	paeon			= "Loughnashade",
+	prelude			= "Loughnashade",
+	requiem			= "Loughnashade",
+	scherzo			= "Loughnashade",
+	sirvente		= "Loughnashade",
+	threnody		= "Loughnashade",
+	virelai			= "Loughnashade",
 }
 
 --  General Notifications  --
@@ -228,8 +228,8 @@ AddCommas		=	'On'	--[On/Off]  Adds commas to damage numbers.
 
 -- Controls what is displayed in the HUD Recast section.
 -- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
---		Sould Voice, Clarion Call, Convert, Dark Arts, Divine Seal, Light Arts, Marcato, Nightingale,
---		Pianissimo, Sublimation, Tenuto, Troubadour
+--		Sould Voice, Clarion Call, Contradance, Convert, Dark Arts, Divine Seal, Flourishes I, Flourishes II, Jigs Light Arts, Marcato, Nightingale,
+--		Pianissimo, Sambas, Steps, Sublimation, Tenuto, Troubadour
 -- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise
 -- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
 
@@ -239,7 +239,7 @@ sub = {
 		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
 		Abil02 = "Troubadour",		Abil02_sh = "",
 		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil04 = "Sambas",			Abil04_sh = "Samba",
 		Abil05 = "Soul Voice",		Abil05_sh = "",
 		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
 	},
@@ -300,8 +300,8 @@ color = {
 	Mode2	= {r = 255, g = 255, b = 125},  -- "Extra Song" Instrument
 
 	-- AFTERMATH --
-	AM1	= {r = 0, g = 127, b = 255},
-	AM2	= {r = 75, g = 255, b = 75},
+	AM1	= {r = 75, g = 255, b = 75},
+	AM2	= {r = 0, g = 200, b = 255},
 	AM3	= {r = 255, g = 255, b = 50},
 
 	-- ELEMENTS --
@@ -447,8 +447,10 @@ sets.melee = {
 	waist="Reiki Yotai",
 	left_ear="Eabani Earring",
 	right_ear="Telos Earring",
-	left_ring="Petrov Ring",
-	right_ring="Hetairoi Ring",
+	left_ring="Chirich Ring +1",
+	right_ring="Chirich Ring +1",
+	-- left_ring="Petrov Ring",
+	-- right_ring="Hetairoi Ring",
 	back={ name="Intarabus's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 }
 
@@ -779,7 +781,7 @@ sets.holy_water = {
 
 -- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
 sets.town = set_combine(sets.idle, {
-
+	range="Loughnashade",
 })
 
 -- Adoulin Town Gear
@@ -821,7 +823,7 @@ end
 
 
 
-FileVersion = '1.1'
+FileVersion = '1.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -971,18 +973,24 @@ else
 	send_command('wait 2;input /macro set 1')
 end
 
-SoulVoice = {} ClarionCall = {} Convert = {} DarkArts = {} DivineSeal = {} LightArts = {} Marcato = {} Nightingale = {} Pianissimo = {} Sublimation = {} Tenuto = {} Troubadour = {}
+SoulVoice = {} ClarionCall = {} Contradance = {} Convert = {} DarkArts = {} DivineSeal = {} FlourishesI = {} FlourishesII = {} Jigs = {} LightArts = {} Marcato = {} Nightingale = {} Pianissimo = {} Sambas = {} Steps = {} Sublimation = {} Tenuto = {} Troubadour = {}
 
 --Start true so the HUD recasts don't flash on load
 SoulVoice.flashed = true
 ClarionCall.flashed = true
+Contradance.flashed = true
 Convert.flashed = true
 DarkArts.flashed = true
 DivineSeal.flashed = true
+FlourishesI.flashed = true
+FlourishesII.flashed = true
+Jigs.flashed = true
 LightArts.flashed = true
 Marcato.flashed = true
 Nightingale.flashed = true
 Pianissimo.flashed = true
+Sambas.flashed = true
+Steps.flashed = true
 Sublimation.flashed = true
 Tenuto.flashed = true
 Troubadour.flashed = true
@@ -1726,13 +1734,19 @@ local function getRecasts()
 
 	SoulVoice.recast = ability_recast[0] and math.floor(ability_recast[0]) or nil
 	ClarionCall.recast = ability_recast[254] and math.floor(ability_recast[254]) or 0
+	Contradance.recast = ability_recast[229] and math.floor(ability_recast[229]) or nil
 	Convert.recast = ability_recast[49] and math.floor(ability_recast[49]) or nil
 	DarkArts.recast = ability_recast[232] and math.floor(ability_recast[232]) or nil
 	DivineSeal.recast = ability_recast[26] and math.floor(ability_recast[26]) or nil
+	FlourishesI.recast = ability_recast[221] and math.floor(ability_recast[221]) or nil
+	FlourishesII.recast = ability_recast[222] and math.floor(ability_recast[222]) or nil
+	Jigs.recast = ability_recast[218] and math.floor(ability_recast[218]) or nil
 	LightArts.recast = ability_recast[228] and math.floor(ability_recast[228]) or nil
 	Marcato.recast = ability_recast[48] and math.floor(ability_recast[48]) or nil
 	Nightingale.recast = ability_recast[109] and math.floor(ability_recast[109]) or nil
 	Pianissimo.recast = ability_recast[112] and math.floor(ability_recast[112]) or nil
+	Sambas.recast = ability_recast[216] and math.floor(ability_recast[216]) or nil
+	Steps.recast = ability_recast[220] and math.floor(ability_recast[220]) or nil
 	Sublimation.recast = ability_recast[234] and math.floor(ability_recast[234]) or nil
 	Tenuto.recast = ability_recast[47] and math.floor(ability_recast[47]) or nil
 	Troubadour.recast = ability_recast[110] and math.floor(ability_recast[110]) or nil
@@ -1745,10 +1759,10 @@ local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Soul Voice", "Clarion Call", "Convert", "Dark Arts", "Divine Seal", "Light Arts", "Marcato", "Nightingale", "Pianissimo", "Sublimation", "Tenuto", "Troubadour"
+		"Soul Voice", "Clarion Call", "Contradance", "Convert", "Dark Arts", "Divine Seal", "Flourishes I", "Flourishes II", "Jigs", "Light Arts", "Marcato", "Nightingale", "Pianissimo", "Sambas", "Steps", "Sublimation", "Tenuto", "Troubadour"
 	}
 
-	local ab = {} ab['Soul Voice'] = SoulVoice ab['Clarion Call'] = ClarionCall ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Divine Seal'] = DivineSeal ab['Light Arts'] = LightArts ab['Marcato'] = Marcato ab['Nightingale'] = Nightingale ab['Pianissimo'] = Pianissimo ab['Sublimation'] = Sublimation ab['Tenuto'] = Tenuto ab['Troubadour'] = Troubadour
+	local ab = {} ab['Soul Voice'] = SoulVoice ab['Clarion Call'] = ClarionCall ab['Contradance'] = Contradance ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Divine Seal'] = DivineSeal ab['Flourishes I'] = FlourishesI ab['Flourishes II'] = FlourishesII ab['Jigs'] = Jigs ab['Light Arts'] = LightArts ab['Marcato'] = Marcato ab['Nightingale'] = Nightingale ab['Pianissimo'] = Pianissimo ab['Sambas'] = Sambas ab['Steps'] = Steps ab['Sublimation'] = Sublimation ab['Tenuto'] = Tenuto ab['Troubadour'] = Troubadour
 	
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -4304,6 +4318,24 @@ windower.register_event('prerender', function()
 			textColor('Clarion Call','notfound')
 		end
 
+		if Contradance.recast then
+			if buffactive['Contradance'] then
+				textColor('Contradance','active')
+				Contradance.flashed = false
+			elseif Contradance.recast > 0 then
+				textColor('Contradance','cooldown')
+				Contradance.flashed = false
+			else
+				textColor('Contradance','ready')
+				if not Contradance.flashed then
+					flash('Contradance')
+				end
+				Contradance.flashed = true
+			end
+		else
+			textColor('Contradance','notfound')
+		end
+
 		if Convert.recast then
 			if Convert.recast > 0 then
 				textColor('Convert','cooldown')
@@ -4353,6 +4385,51 @@ windower.register_event('prerender', function()
 			end
 		else
 			textColor('Divine Seal','notfound')
+		end
+
+		if FlourishesI.recast then
+			if FlourishesI.recast > 0 then
+				textColor('Flourishes I','cooldown')
+				FlourishesI.flashed = false
+			else
+				textColor('Flourishes I','ready')
+				if not FlourishesI.flashed then
+					flash('Flourishes I')
+				end
+				FlourishesI.flashed = true
+			end
+		else
+			textColor('Flourishes I','notfound')
+		end
+
+		if FlourishesII.recast then
+			if FlourishesII.recast > 0 then
+				textColor('Flourishes II','cooldown')
+				FlourishesII.flashed = false
+			else
+				textColor('Flourishes II','ready')
+				if not FlourishesII.flashed then
+					flash('Flourishes II')
+				end
+				FlourishesII.flashed = true
+			end
+		else
+			textColor('Flourishes II','notfound')
+		end
+
+		if Jigs.recast then
+			if Jigs.recast > 0 then
+				textColor('Jigs','cooldown')
+				Jigs.flashed = false
+			else
+				textColor('Jigs','ready')
+				if not Jigs.flashed then
+					flash('Jigs')
+				end
+				Jigs.flashed = true
+			end
+		else
+			textColor('Jigs','notfound')
 		end
 
 		if LightArts.recast then
@@ -4425,6 +4502,39 @@ windower.register_event('prerender', function()
 			end
 		else
 			textColor('Pianissimo','notfound')
+		end
+
+		if Sambas.recast then
+			if buffactive['Haste Samba'] then
+				textColor('Sambas','active')
+				Sambas.flashed = false
+			elseif Sambas.recast > 0 then
+				textColor('Sambas','cooldown')
+				Sambas.flashed = false
+			else
+				textColor('Sambas','ready')
+				if not Sambas.flashed then
+					flash('Sambas')
+				end
+				Sambas.flashed = true
+			end
+		else
+			textColor('Sambas','notfound')
+		end
+
+		if Steps.recast then
+			if Steps.recast > 0 then
+				textColor('Steps','cooldown')
+				Steps.flashed = false
+			else
+				textColor('Steps','ready')
+				if not Steps.flashed then
+					flash('Steps')
+				end
+				Steps.flashed = true
+			end
+		else
+			textColor('Steps','notfound')
 		end
 
 		if Sublimation.recast then
