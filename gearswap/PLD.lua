@@ -229,13 +229,13 @@ color.DPS.b = 125
 --AFTERMATH
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -343,7 +343,7 @@ sets.tank = {
 	-- neck="Moonlight Necklace",
 	-- waist="Asklepian Belt",
 	-- left_ear="Eabani Earring",
-	-- right_ear="Chev. Earring +1",
+	-- right_ear="Chev. Earring +2",
 	-- left_ring="Shadow Ring",
 	-- right_ring="Apeile Ring +1",
 	-- back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Mag. Evasion+15',}},
@@ -527,7 +527,7 @@ sets.healing = {
 	neck="Phalaina Locket",		--4 CP		 4 CPR
 	waist="Plat. Mog. Belt",
 	left_ear="Tuisto Earring",
-	right_ear="Chev. Earring +1",	--10 CP
+	right_ear="Chev. Earring +2",	--10 CP
 	left_ring="Moonlight Ring",
 	right_ring="Defending Ring",
 	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 CP
@@ -545,7 +545,7 @@ sets.healing_sird = {
 	neck="Unmoving Collar +1",
 	waist="Plat. Mog. Belt",
 	left_ear="Mendi. Earring",	--			5 CP
-	right_ear="Chev. Earring +1",--			10 CP
+	right_ear="Chev. Earring +2",--			10 CP
 	left_ring="Moonlight Ring",
 	right_ring="Defending Ring",
 	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD, 10 CP
@@ -602,7 +602,7 @@ sets.phalanx_sird = {
 -- Phalanx Main/Sub (only define main and sub slots in this set, will combine as necessary)
 -- NOTE: Only equips when TP is under the TPThreshold number, set in the Options section.
 sets.phalanx_mainsub = {
-	main="Sakpata's Sword",
+	-- main="Sakpata's Sword",
 }
 
 -- Enhancing Magic (Enhancing Magic Duration, Enhancing Magic Skill)
@@ -818,7 +818,7 @@ end
 
 
 
-FileVersion = '14.8.4'
+FileVersion = '14.8.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
