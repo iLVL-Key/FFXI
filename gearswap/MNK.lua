@@ -235,13 +235,13 @@ color.Mode5.b = 125
 --Aftermath
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -371,7 +371,7 @@ sets.Mode3 = set_combine(sets.Mode1, {
 	neck="Null Loop",
 	waist="Moonbow Belt +1",
 	left_ear="Odr Earring",
-	right_ear="Bhikku Earring +1",
+	right_ear="Bhikku Earring +2",
 	left_ring="Ilabrat Ring",
 	right_ring="Niqmaddu Ring",
 	back="Null Shawl",
@@ -399,7 +399,7 @@ sets.Mode5 = set_combine(sets.Mode1, {
 	neck="Mnk. Nodowa +2",
 	waist="Moonbow Belt +1",
 	left_ear="Cryptic Earring",		--Counter +3
-	right_ear="Bhikku Earring +1",	--Counter +8
+	right_ear="Bhikku Earring +2",	--Counter +9
 	left_ring="Hetairoi Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','System: 1 ID: 640 Val: 4',}}, --Counter +10
@@ -488,7 +488,7 @@ sets["Final Heaven"] = set_combine(sets.weapon_skill, {
 	neck="Fotia Gorget",
 	waist="Moonbow Belt +1",
 	left_ear="Schere Earring",
-	right_ear="Bhikku Earring +1",
+	right_ear="Bhikku Earring +2",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'VIT+20','Accuracy+20 Attack+20','VIT+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
@@ -716,7 +716,7 @@ end
 
 
 
-FileVersion = '7.7.3'
+FileVersion = '7.7.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3264,7 +3264,10 @@ windower.register_event('prerender', function()
 		end
 
 		if Sambas.recast then
-			if Sambas.recast > 0 then
+			if buffactive['Haste Samba'] then
+				textColor('Sambas','active')
+				Sambas.flashed = false
+			elseif Sambas.recast > 0 then
 				textColor('Sambas','cooldown')
 				Sambas.flashed = false
 			else
