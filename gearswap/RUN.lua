@@ -306,13 +306,13 @@ color.Dark.b = 80
 --AFTERMATH
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -588,6 +588,22 @@ sets.weapon_skill = {
 	back={ name="Ogma's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Mag. Evasion+15',}},
 }
 
+-- Weapon Skill Accuracy - (Weapon Skill Accuracy, Accuracy)
+-- Combines with other Weapon Skill sets, only necessary to set the slots with specific desired stats
+sets.weapons_skill_accuracy = {
+	ammo="Amar Cluster",
+	head="Erilaz Galea +3",
+	body="Erilaz Surcoat +3",
+	hands="Erilaz Gauntlets +3",
+	legs="Eri. Leg Guards +3",
+	feet="Erilaz Greaves +3",
+	neck="Null Loop",
+	waist="Null Belt",
+	left_ear="Odr Earring",
+	right_ear={ name="Erilaz Earring +2", augments={'System: 1 ID: 1676 Val: 0','Accuracy+20','Mag. Acc.+20','Damage taken-8%','STR+15 MND+15',}},
+	back="Null Shawl",
+}
+
 -- Dimidiation (80% DEX mod, 2-hit)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Dimidiation"] = set_combine(sets.weapon_skill, {
@@ -729,7 +745,7 @@ end
 
 
 
-FileVersion = '9.8.5'
+FileVersion = '9.9'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -818,6 +834,7 @@ primeNum = 0
 AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
+active_buffs = {}
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -1429,7 +1446,7 @@ send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard sh
 -------------------------------------------
 
 --Add commas to numbers to make them easier to read
-local function addCommas(number)
+function addCommas(number)
 	--Convert the number to a string
 	local formattedNumber = tostring(number)
 
@@ -1455,7 +1472,7 @@ local function addCommas(number)
 end
 
 --Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
-local function checkProcWeapons(mainSlot, subSlot)
+function checkProcWeapons(mainSlot, subSlot)
 
 	for _, equipmentPair in pairs(AbysseaProcCycle) do
 
@@ -1470,7 +1487,7 @@ local function checkProcWeapons(mainSlot, subSlot)
 end
 
 --Are we using a two handed weapon?
-local function twoHanded()
+function twoHanded()
 
 	local weapon = player.equipment.main and items:with('name', player.equipment.main)
 
@@ -1479,7 +1496,7 @@ local function twoHanded()
 end
 
 --Color the appropriate Ability/spell recast
-local function textColor(abil,state)
+function textColor(abil,state)
 
 	local c = color.abil[state]
 
@@ -1505,7 +1522,7 @@ local function textColor(abil,state)
 end
 
 --Flash a specific text area
-local function flash(area)
+function flash(area)
 
 	if sub[subjob].Abil01 == area then
 		send_command('gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B;wait .25;gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B;wait .25;gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B;wait .25;gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B')
@@ -1534,7 +1551,7 @@ local function flash(area)
 	end
 end
 
-local function getRecasts()
+function getRecasts()
 
 	local ability_recast = windower.ffxi.get_ability_recasts()
 	local spell_recast = windower.ffxi.get_spell_recasts()
@@ -1585,7 +1602,7 @@ end
 getRecasts()
 
 -- Format abilities/spells to fit into their allotted 12 spaces
-local function formatAbils(input,input_sh)
+function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
@@ -1657,7 +1674,7 @@ local function formatAbils(input,input_sh)
 end
 
 -- Format Notifications/Debuffs to be centered in their allotted 36 spaces
-local function formatRunes(input)
+function formatRunes(input)
 
 	local maxLength = 24
 	local paddingTotalLength = maxLength - #input
@@ -1676,7 +1693,7 @@ local function formatRunes(input)
 end
 
 -- Format Notifications/Debuffs to be centered in their allotted 36 spaces
-local function format36(input)
+function format36(input)
 
 	local maxLength = 40 --add 4 since the 4 « characters count as 2 each
 	local paddingTotalLength = maxLength - #input
@@ -1695,7 +1712,7 @@ local function format36(input)
 end
 
 -- Format Weapons to be centered and allotted in their 36 spaces
-local function formatWeapons(input)
+function formatWeapons(input)
 
 	local maxLength = 38
 	local truncatedLength = maxLength - 4 --subtracting 4 to account for the « » (that each count as 2)
@@ -1717,7 +1734,7 @@ local function formatWeapons(input)
 
 end
 
-local function getHUDAbils()
+function getHUDAbils()
 
 	local abil01 = formatAbils(sub[subjob].Abil01,sub[subjob].Abil01_sh)
 	local abil02 = formatAbils(sub[subjob].Abil02,sub[subjob].Abil02_sh)
@@ -1744,7 +1761,7 @@ end
 
 getHUDAbils()
 
-local function formatAMTime(input)
+function formatAMTime(input)
 
 	local am_time_minute = math.floor(input/60)
 	local am_time_second = input - (math.floor(input/60)*60)
@@ -1753,7 +1770,7 @@ local function formatAMTime(input)
 
 end
 
-local function mythicAMUpdate(tp)
+function mythicAMUpdate(tp)
 	if tp >= 1000 and tp < 2000 then
 		pre_mythicNum = math.floor((tp / 50) + 10)
 		pre_AMTimer = 90
@@ -1765,7 +1782,7 @@ local function mythicAMUpdate(tp)
 	end
 end
 
-local function primeAMUpdate(tp)
+function primeAMUpdate(tp)
 
 	local function primeMatch(input)
 		local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
@@ -1851,7 +1868,7 @@ local function primeAMUpdate(tp)
 
 end
 
-local function checkRunes()
+function checkRunes()
 	local runes_found = false
 	local runes = {"Ignis", "Gelus", "Flabra", "Tellus", "Sulpor", "Unda", "Lux", "Tenebrae"}
 	for _, rune in ipairs(runes) do
@@ -1862,6 +1879,13 @@ local function checkRunes()
 	if not runes_found then
 		send_command('gs c ClearRunes')
 	end
+end
+
+function updateBuffs()
+    active_buffs = {}  --Reset the table
+    for _, buffId in ipairs(windower.ffxi.get_player().buffs) do
+        active_buffs[res.buffs[buffId].en] = true  --Store buff names as keys for O(1) lookup
+    end
 end
 
 -------------------------------------------
@@ -2491,10 +2515,18 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		elseif sets[spell.english] then
-			equip(sets[spell.english])
+		elseif Mode == 'DPS' then
+			if sets[spell.english] then
+				equip(sets[spell.english])
+			else
+				equip(sets.weapon_skill)
+			end
 		else
-			equip(sets.weapon_skill)
+			if sets[spell.english] then
+				equip(set_combine(sets[spell.english], sets.weapons_skill_accuracy))
+			else
+				equip(set_combine(sets.weapon_skill, sets.weapons_skill_accuracy))
+			end
 		end
 		if player.equipment.main == "Lionheart" and spell.english == "Resolution" then
 			pre_AMTimer = 181
@@ -2803,6 +2835,9 @@ end)
 -------------------------------------------
 
 windower.register_event('gain buff', function(buff)
+
+	updateBuffs()
+
 	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds == 'On' then --Aftermath
 		play_sound(Notification_Aftermath_On)
 		AMTimer = pre_AMTimer
@@ -2835,6 +2870,9 @@ windower.register_event('gain buff', function(buff)
 end)
 
 windower.register_event('lose buff', function(buff)
+
+	updateBuffs()
+
 	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds == 'On' then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
 	elseif buff == 251 and Alive == true and NotiFood == 'On' then --food wears off
@@ -3194,7 +3232,8 @@ windower.register_event('prerender', function()
 			local c = color.Dark
 			hud_debuffs:text('            «« \\cs('..c.r..','..c.g..','..c.b..')ASLEEP\\cr »»')
 		end
-	elseif buffactive['stun'] and NotiStun == 'On' then
+	elseif active_buffs['stun'] and NotiStun == 'On' then
+	-- elseif buffactive['stun'] and NotiStun == 'On' then
 		if not debuffs.Stun then
 			debuffs.Stun = true
 			hud_debuffs_shdw:text('           «« STUNNED »»')
