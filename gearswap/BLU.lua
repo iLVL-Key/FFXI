@@ -126,7 +126,7 @@ modeName.Mode4 = 'Support'
 modeName.Mode5 = 'Tank'
 
 --  General Notifications  --
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+ReraiseReminder		=	'Off'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
@@ -251,13 +251,13 @@ color.None.b = 50
 --Aftermath
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 50
-color.AM2.g = 255
-color.AM2.b = 50
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -462,10 +462,10 @@ sets.weapon_skill = {
 	waist="Sailfi Belt +1",
 	left_ear="Moonshade Earring",
 	right_ear="Hashi. Earring +2",
-	-- left_ring="Chirich Ring",
-	-- right_ring="Chirich Ring",
-	left_ring="Karieyh Ring +1",
-	right_ring="Cornelia's Ring",
+	left_ring="Chirich Ring +1",
+	right_ring="Chirich Ring +1",
+	-- left_ring="Karieyh Ring +1",
+	-- right_ring="Cornelia's Ring",
 	back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
 }
 
@@ -773,7 +773,7 @@ end
 
 
 
-FileVersion = '18.9'
+FileVersion = '18.9.1'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -3558,7 +3558,10 @@ windower.register_event('prerender', function()
 		end
 
 		if Sambas.recast then
-			if Sambas.recast > 0 then
+			if buffactive['Haste Samba'] then
+				textColor('Sambas','active')
+				Sambas.flashed = false
+			elseif Sambas.recast > 0 then
 				textColor('Sambas','cooldown')
 				Sambas.flashed = false
 			else
