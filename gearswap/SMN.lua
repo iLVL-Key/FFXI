@@ -224,13 +224,13 @@ color.lo.b = 50
 --Aftermath
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -425,7 +425,8 @@ sets.bp_rage_physical = {
 	body="Beck. Doublet +3",
 	hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 	legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
-	feet={ name="Apogee Pumps +1", augments={'MP+80','Pet: Attack+35','Blood Pact Dmg.+8',}},
+	feet="Bunzi's Sabots",
+	-- feet={ name="Apogee Pumps +1", augments={'MP+80','Pet: Attack+35','Blood Pact Dmg.+8',}},
 	neck="Smn. Collar +2",
 	waist="Incarnation Sash",
 	left_ear="Lugalbanda Earring",
@@ -444,7 +445,8 @@ sets.bp_rage_magical = {
 	body={ name="Apo. Dalmatica +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
 	hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 	legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
-	feet={ name="Apogee Pumps +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
+	feet="Bunzi's Sabots",
+	-- feet={ name="Apogee Pumps +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
 	neck="Smn. Collar +2",
 	waist="Regal Belt",
 	left_ear="Lugalbanda Earring",
@@ -463,7 +465,8 @@ sets.bp_rage_hybrid = {
 	body={ name="Apo. Dalmatica +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
 	hands={ name="Merlinic Dastanas", augments={'Pet: "Mag.Atk.Bns."+22','Blood Pact Dmg.+10','Pet: STR+8','Pet: Mag. Acc.+15',}},
 	legs={ name="Enticer's Pants", augments={'MP+30','Pet: Mag. Acc.+12','Pet: Damage taken -1%',}},
-	feet={ name="Apogee Pumps +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
+	feet="Bunzi's Sabots",
+	-- feet={ name="Apogee Pumps +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
 	neck="Smn. Collar +2",
 	waist="Regal Belt",
 	left_ear="Lugalbanda Earring",
@@ -501,7 +504,8 @@ sets.bp_ward_debuff = {
 	body="Baayami Robe +1",
 	hands="Lamassu Mitts +1",
 	legs="Beck. Spats +3",
-	feet="Baaya. Sabots +1",
+	feet="Bunzi's Sabots",
+	-- feet="Baaya. Sabots +1",
 	neck="Incanter's Torque",
 	waist="Kobo Obi",
 	left_ear="Lodurr Earring",
@@ -627,7 +631,7 @@ end
 
 
 
-FileVersion = '12.7'
+FileVersion = '12.7.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
