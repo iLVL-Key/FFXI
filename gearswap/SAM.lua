@@ -261,13 +261,13 @@ color.None.b = 50
 --Aftermath
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -788,7 +788,7 @@ end
 
 
 
-FileVersion = '15.0.3'
+FileVersion = '15.0.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3313,7 +3313,10 @@ windower.register_event('prerender', function()
 		end
 
 		if Sambas.recast then
-			if Sambas.recast > 0 then
+			if buffactive['Haste Samba'] then
+				textColor('Sambas','active')
+				Sambas.flashed = false
+			elseif Sambas.recast > 0 then
 				textColor('Sambas','cooldown')
 				Sambas.flashed = false
 			else
