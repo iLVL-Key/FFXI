@@ -150,7 +150,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
-AttackCapThreshold	=	4500	--Using a WS while your attack is above this number will use a high_buff WS set if available.
+AttackCapThreshold	=	4000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 DangerRepeat		=	5		--Maximum number of times the Danger Sound will repeat, once per second.
 RRReminderTimer		=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
@@ -269,13 +269,13 @@ color.Mode4.b = 125
 --Aftermath
 
 --Level 1
-color.AM1.r = 0
-color.AM1.g = 127
-color.AM1.b = 255
+color.AM1.r = 50
+color.AM1.g = 255
+color.AM1.b = 50
 --Level 2
-color.AM2.r = 75
-color.AM2.g = 255
-color.AM2.b = 75
+color.AM2.r = 0
+color.AM2.g = 200
+color.AM2.b = 255
 --Level 3
 color.AM3.r = 255
 color.AM3.g = 255
@@ -861,7 +861,7 @@ end
 
 
 
-FileVersion = '9.0.4'
+FileVersion = '9.0.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3440,7 +3440,10 @@ windower.register_event('prerender', function()
 		end
 
 		if Sambas.recast then
-			if Sambas.recast > 0 then
+			if buffactive['Haste Samba'] then
+				textColor('Sambas','active')
+				Sambas.flashed = false
+			elseif Sambas.recast > 0 then
 				textColor('Sambas','cooldown')
 				Sambas.flashed = false
 			else
