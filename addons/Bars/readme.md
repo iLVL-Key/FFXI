@@ -137,12 +137,15 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.5.1
+- Fixed Self Action meter showing when `show_self_action` option is disabled. (Thanks blucorp!)
+
 Version 3.5
 - Added `show_target_distance_colors` option. This will colorize the distance text based on the distance to the target and other factors. Accounts for Ranged Attacks (automatically detects and adjusts "hits squarely" and "strikes true" for shortbow, longbow, crossbow, gun, and throwing), Magic, Blue Magic (there are many many ranges for Blue so this has been distilled down to an inner and outer range covering most spells), Ninjutsu, Songs, and NPCs/objects. Distance calculations from the DistancePlus addon were used as the starting point and expanded from there.
 - Added `switch_focus_and_sub_positions` option. Switches the horizontal positions of the focus target and sub-target bars. False = Sub-Target on left, Focus Target on right. True = Focus Target on left, Sub-Target on right.
 - Adjusted the Pet Bar to be formatted like the Target Bar for consistancy.
-- Fixed missing Bounty Shot no effect result.
-- Fixed a couple more Job Abilities showing incorrectly as Weapon Skills.
+- Fixed missing Bounty Shot no effect result. (Thanks Xerus!)
+- Fixed a couple more Job Abilities showing incorrectly as Weapon Skills. (Thanks Xerus!)
 
 Version 3.4.1
 - Fixed missing Dream Shroud (Diabolos BP: Ward) results.
@@ -156,7 +159,7 @@ Version 3.4
 
 Version 3.3.1
 - Fixed Volte Dark Knight being labeled as PLD|DRG.
-- Fixed missing Bounty Shot success result.
+- Fixed missing Bounty Shot success result. (Thanks Xerus!)
 
 Version 3.3
 - Added show_pet_tp option. Shows the current TP of your pet.
@@ -172,7 +175,7 @@ Version 3.2
 - Fixed words with apostrophes having the letters after an apostrophe being capitalized.
 
 Version 3.1.1
-- Fixed missing Steal, Despoil, and Mug results.
+- Fixed missing Steal, Despoil, and Mug results. (Thanks Xerus!)
 
 Version 3.1
 - Added show_target_hex option. Shows the hex number of the current target. The Hex and Index options will override each other (only one or the other displayed at one time).
