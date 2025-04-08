@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.5'
+_addon.version = '3.5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2019,20 +2019,22 @@ end
 --Complete the Self meter to full
 function completeSelfMeter()
 
+	if not show_self_action then return end
+
 	local self_meter = ''
 
-	if show_self_action then
-		while string.len(self_meter) < bar_width do
-			self_meter = self_meter..' '
-		end
-		bars_meter_self_action:text(self_meter)
-		bars_meter_self_action:show()
+	while string.len(self_meter) < bar_width do
+		self_meter = self_meter..' '
 	end
+	bars_meter_self_action:text(self_meter)
+	bars_meter_self_action:show()
 
 end
 
 --Update the Self bar
 function updateSelfBar(cast_time, index)
+
+	if not show_self_action then return end
 
 	cast_time = cast_time ~= 0 and cast_time or 1
 	local player = get_player()
