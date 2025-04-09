@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'GaolPlan'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0'
+_addon.version = '1.1'
 _addon.commands = {'gaolplan', 'gp'}
 
 require 'logger'
@@ -40,6 +40,8 @@ get_party = windower.ffxi.get_party
 add_to_chat = windower.add_to_chat
 input = windower.chat.input
 send_command = windower.send_command
+open_url = windower.open_url
+copy_to_clipboard = windower.copy_to_clipboard
 
 defaults = {
 	pos = {x = 200, y = 300},
@@ -77,13 +79,20 @@ defaults = {
 settings = config.load(defaults)
 
 heartbeat = 0
+hover = nil --Used to determine which button is being hovered over
 current_screen = "bosses"
 previous_screen = nil
-visible = false --Flag to determine if the main grid is visible or not
+main_window_visible = false --Flag to determine if the main window is visible or not
+confirm_window_visible = false --Flag to determine if the confirmation window is visible or not
+confirm_yes = nil --Used to determine what the Yes button does in the confirmation window
+confirm_message = nil --Used to determine what the confirmation message is
 hover_effects = settings.options.hover_effects
-row_num = 0 --Used to count the number of rows in the grid to know where the buttons on the bottom of the jobs screen will be
+jobs_row_num = 0 --Used to count the number of rows in the grid to know where the buttons on the bottom of the jobs screen will be
+confirm_char_num = 0 --Used to count the number of characters in the confirmation message to determine how wide the confirmation window will be
 boss_num = 0 --Used to count the number of bosses selected to determine where the buttons for jobs will be
 double_click_fix = true --Fix a weird double-click bug in windower
+bg_alpha_num = settings.bg.alpha --Temporarily store the bg_alpha value of the main window to be used when the confirm window is closed
+text_alpha_num = settings.text.alpha --Temporarily store the text_alpha value of the main window to be used when the confirm window is closed
 
 --Define bosses list with section headers
 bosses = {
@@ -102,6 +111,19 @@ boss_map = {
 	bumba = "Bumba"
 }
 
+--Colors
+off_white = {r = 150, g = 150, b = 150}
+highlight = {r = 255, g = 255, b = 255}
+disable = {r = 200, g = 100, b = 100}
+ph1_color = {r = 75, g = 255, b = 75}
+ph2_color = {r = 0, g = 200, b = 255}
+ph3_color = {r = 255, g = 255, b = 50}
+colors = {
+	ph1 = ph1_color,
+	ph2 = ph2_color,
+	ph3 = ph3_color
+}
+
 --Initialize boss selections
 phone_selection = {nil, nil, nil}
 
@@ -109,7 +131,14 @@ phone_selection = {nil, nil, nil}
 player_jobs = {blm = nil, blu = nil, brd = nil, bst = nil, cor = nil, dnc = nil, drg = nil, drk = nil, geo = nil, mnk = nil, nin = nil, pld = nil, pup = nil, rdm = nil, rng = nil, run = nil, sam = nil, sch = nil, smn = nil, thf = nil, war = nil, whm = nil}
 
 --UI Elements
-window = texts.new(settings)
+main_window = texts.new(settings)
+confirm_window = texts.new()
+confirm_window:bg_color(settings.bg.red, settings.bg.green, settings.bg.blue, settings.bg.alpha)
+confirm_window:font(settings.text.font)
+confirm_window:size(settings.text.size)
+confirm_window:alpha(settings.text.alpha)
+confirm_window:bold(settings.flags.bold)
+confirm_window:pad(settings.padding)
 
 --Format names so they fit correctly into the Job Selection screen
 local function formatName(str)
@@ -134,8 +163,19 @@ function formatRGB(value)
 
 end
 
+--Format button text with hover effect
+function formatButton(label, hover_key, highlight_override)
+	local color = off_white
+	if highlight_override == "disable" then
+		color = disable
+	elseif highlight_override == "highlight" or hover == hover_key then
+		color = highlight
+	end
+	return "[\\cs("..color.r..","..color.g..","..color.b..")"..label.."\\cr]"
+end
+
 --Check if any job has been assigned
-local function isAnyJobAssigned(phone)
+function isAnyJobAssigned(phone)
 	if phone then
 		local target = "ph" .. phone .. "_"
 		for _, v in pairs(player_jobs) do
@@ -155,7 +195,7 @@ local function isAnyJobAssigned(phone)
 end
 
 --Check if any boss has been assigned to any phone
-local function isAnyBossAssigned()
+function isAnyBossAssigned()
 
 	local assigned = (phone_selection[1] ~= nil or phone_selection[2] ~= nil or phone_selection[3] ~= nil)
 	return assigned
@@ -163,7 +203,7 @@ local function isAnyBossAssigned()
 end
 
 --Check if save data is preset
-local function isSaveDataPresent(save_num)
+function isSaveDataPresent(save_num)
 	local selections = settings.save_data[save_num] and settings.save_data[save_num].phone_selection
 
 	if selections then
@@ -224,22 +264,70 @@ function generatePlanOutput()
 	return plan_output
 end
 
+function updateConfirmWindow()
+	local display_text_parts = {} --Use a table to store strings for faster concatenation
+	local message = confirm_message
+	message = "| "..message.." |"
+	local message_length = #message
+	confirm_char_num = message_length --Used to determine the position of the buttons
+	local confirm_title = "--Confirm"
+	confirm_title = confirm_title..string.rep("-", message_length - 9) --Fill in dashes to the right of the title
+	local empty_row = "|"..string.rep(" ", message_length - 2).."|"
+	local button_row = "|"..string.rep(" ", message_length - 12)
+	local bottom_row = string.rep("-", message_length)
+
+	table.insert(display_text_parts, confirm_title.."\n")
+	table.insert(display_text_parts, empty_row.."\n")
+	table.insert(display_text_parts, message.."\n")
+	table.insert(display_text_parts, empty_row.."\n")
+	table.insert(display_text_parts, button_row)
+	table.insert(display_text_parts, formatButton("YES", confirm_yes))
+	table.insert(display_text_parts, formatButton("NO", "confirm_no").." |\n")
+	table.insert(display_text_parts, bottom_row)
+
+	--Concatenate everything at once
+	display_text = table.concat(display_text_parts)
+	confirm_window:text(display_text)
+end
+
+function displayConfirmWindow(button, message)
+	confirm_window_visible = true
+	confirm_yes = button --Store the button that was clicked for later use
+	confirm_message = message --Store the message for later use
+
+	updateConfirmWindow()
+
+	--Show the Confirm window, dim the Main window
+	confirm_window:bg_alpha(255)
+	confirm_window:show()
+	bg_alpha_num = settings.bg.alpha --Store the current bg_alpha value of the main window
+	text_alpha_num = settings.text.alpha --Store the current text_alpha value of the main window
+	main_window:bg_alpha(settings.bg.alpha / 3)
+	main_window:alpha(settings.text.alpha / 3)
+
+	 --Delay the positioning by 0.05 seconds to allow the window to be created first
+	coroutine.schedule(function()
+		--Calculate the position of the confirmation window
+		local main_total_width, main_total_height = main_window:extents()
+		local confirm_total_width, confirm_total_height = confirm_window:extents()
+		local x = settings.pos.x + ((main_total_width / 2) - (confirm_total_width / 2))
+		local y = settings.pos.y + ((main_total_height / 2) - (confirm_total_height / 2))
+		confirm_window:pos(x,y)
+	end, .01)
+end
+
+function hideConfirmWindow()
+	confirm_window:hide()
+	confirm_window_visible = false
+	main_window:bg_alpha(bg_alpha_num) --Restore the main window's bg_alpha value
+	main_window:alpha(text_alpha_num) --Restore the main window's text_alpha value
+end
+
 --Update the combined boss and job selection display
-function updateWindow(hover)
+function updateMainWindow()
 
 	local display_text = ""
 	local pin = settings.flags.draggable and "○" or "•"
-	local off_white = {r = 150, g = 150, b = 150}
-	local highlight = {r = 255, g = 255, b = 255}
-	local disable = {r = 200, g = 100, b = 100}
-	local ph1_color = {r = 75, g = 255, b = 75}
-	local ph2_color = {r = 0, g = 200, b = 255}
-	local ph3_color = {r = 255, g = 255, b = 50}
-	local colors = {
-		ph1 = ph1_color,
-		ph2 = ph2_color,
-		ph3 = ph3_color
-	}
 
 	--Return which Phone is hovered over
 	local function getPhone(hover)
@@ -268,17 +356,6 @@ function updateWindow(hover)
 
 	local function getPlayer(hover)
 		return hover and hover:sub(5, 7)
-	end
-
-	--Format button text with hover effect
-	local function formatButton(label, hover_key, highlight_override)
-		local color = off_white
-		if highlight_override == "disable" then
-			color = disable
-		elseif highlight_override == "highlight" or hover == hover_key then
-			color = highlight
-		end
-		return "[\\cs("..color.r..","..color.g..","..color.b..")"..label.."\\cr]"
 	end
 
 	if current_screen == "bosses" then
@@ -357,7 +434,7 @@ function updateWindow(hover)
 
 		--Add the buttons at the bottom of the screen
 		table.insert(display_text_parts, "                      -------------\n")
-		table.insert(display_text_parts, formatButton("CLEAR", "clear", not isAnyBossAssigned() and "disable").." ")
+		table.insert(display_text_parts, formatButton("CLEAR", "clear_bosses", not isAnyBossAssigned() and "disable").." ")
 		table.insert(display_text_parts, formatButton("OPTIONS", "options").."            ")
 		table.insert(display_text_parts, formatButton("JOBS", "jobs", not isAnyBossAssigned() and "disable"))
 
@@ -433,31 +510,31 @@ function updateWindow(hover)
 		table.insert(display_text_parts, save_1_name)
 		table.insert(display_text_parts, formatButton("L", "load_1", not isSaveDataPresent("save_1") and "disable"))
 		table.insert(display_text_parts, formatButton("S", "save_1", not isAnyBossAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("D", "delete_1", not isSaveDataPresent("save_1") and "disable").."\n")
+		table.insert(display_text_parts, formatButton("D", "confirm_delete_1", not isSaveDataPresent("save_1") and "disable").."\n")
 
 		table.insert(display_text_parts, "2:")
 		table.insert(display_text_parts, save_2_name)
 		table.insert(display_text_parts, formatButton("L", "load_2", not isSaveDataPresent("save_2") and "disable"))
 		table.insert(display_text_parts, formatButton("S", "save_2", not isAnyBossAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("D", "delete_2", not isSaveDataPresent("save_2") and "disable").."\n")
+		table.insert(display_text_parts, formatButton("D", "confirm_delete_2", not isSaveDataPresent("save_2") and "disable").."\n")
 
 		table.insert(display_text_parts, "3:")
 		table.insert(display_text_parts, save_3_name)
 		table.insert(display_text_parts, formatButton("L", "load_3", not isSaveDataPresent("save_3") and "disable"))
 		table.insert(display_text_parts, formatButton("S", "save_3", not isAnyBossAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("D", "delete_3", not isSaveDataPresent("save_3") and "disable").."\n")
+		table.insert(display_text_parts, formatButton("D", "confirm_delete_3", not isSaveDataPresent("save_3") and "disable").."\n")
 
 		table.insert(display_text_parts, "4:")
 		table.insert(display_text_parts, save_4_name)
 		table.insert(display_text_parts, formatButton("L", "load_4", not isSaveDataPresent("save_4") and "disable"))
 		table.insert(display_text_parts, formatButton("S", "save_4", not isAnyBossAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("D", "delete_4", not isSaveDataPresent("save_4") and "disable").."\n")
+		table.insert(display_text_parts, formatButton("D", "confirm_delete_4", not isSaveDataPresent("save_4") and "disable").."\n")
 
 		table.insert(display_text_parts, "5:")
 		table.insert(display_text_parts, save_5_name)
 		table.insert(display_text_parts, formatButton("L", "load_5", not isSaveDataPresent("save_5") and "disable"))
 		table.insert(display_text_parts, formatButton("S", "save_5", not isAnyBossAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("D", "delete_5", not isSaveDataPresent("save_5") and "disable").."\n")
+		table.insert(display_text_parts, formatButton("D", "confirm_delete_5", not isSaveDataPresent("save_5") and "disable").."\n")
 		table.insert(display_text_parts, "\\cs("..c.r..","..c.g..","..c.b..")Data does not include player names\\cr\n\n")
 
 		table.insert(display_text_parts, "--ABOUT----------------------------\n\n")
@@ -469,7 +546,7 @@ function updateWindow(hover)
 		table.insert(display_text_parts, formatButton("BACK", "back").." ")
 		table.insert(display_text_parts, formatButton("GITHUB", "github").." ")
 		table.insert(display_text_parts, formatButton("DISCORD", "discord").." ")
-		table.insert(display_text_parts, formatButton("DEFAULT", "default"))
+		table.insert(display_text_parts, formatButton("DEFAULT", "confirm_default"))
 
 		--Concatenate everything at once
 		display_text = table.concat(display_text_parts)
@@ -488,7 +565,7 @@ function updateWindow(hover)
 		table.insert(display_text_parts, formatButton(pin, "pin"))
 		table.insert(display_text_parts, formatButton("X", "close").."\n")
 
-		row_num = 1
+		jobs_row_num = 1
 		boss_num = 0
 		local party_data = get_party()
 
@@ -510,7 +587,7 @@ function updateWindow(hover)
 				--Insert colored boss name
 				table.insert(display_text_parts, "\\cs("..formatRGB(boss_color.r)..","..formatRGB(boss_color.g)..","..formatRGB(boss_color.b)..")"..pre_spaces.."Phone "..boss_num.." - "..boss..post_spaces.."\\cr\n")
 				table.insert(display_text_parts, "        \\cs("..formatRGB(boss_color.r)..","..formatRGB(boss_color.g)..","..formatRGB(boss_color.b)..")|BLM|BLU|BRD|BST|COR|DNC|DRG|DRK|GEO|MNK|NIN|PLD|PUP|RDM|RNG|RUN|SAM|SCH|SMN|THF|WAR|WHM|\\cr\n")
-				row_num = row_num + 2
+				jobs_row_num = jobs_row_num + 2
 
 				for p = 1, 6 do
 
@@ -548,7 +625,7 @@ function updateWindow(hover)
 					table.insert(display_text_parts, player_job_text)
 
 					table.insert(display_text_parts, "|\n")
-					row_num = row_num + 1
+					jobs_row_num = jobs_row_num + 1
 
 				end
 			end
@@ -559,32 +636,45 @@ function updateWindow(hover)
 
 		--Add buttons at the bottom
 		table.insert(display_text_parts, formatButton("BOSSES", "bosses").." ")
-		table.insert(display_text_parts, formatButton("CLEAR", "clear", not isAnyJobAssigned() and "disable").." ")
+		table.insert(display_text_parts, formatButton("CLEAR", "clear_jobs", not isAnyJobAssigned() and "disable").." ")
 		table.insert(display_text_parts, formatButton("OPTIONS", "options").."                            COPY:")
 		table.insert(display_text_parts, formatButton("1", "copy_1",  not isAnyJobAssigned("1") and "disable"))
 		table.insert(display_text_parts, formatButton("2", "copy_2",  not isAnyJobAssigned("2") and "disable"))
 		table.insert(display_text_parts, formatButton("3", "copy_3",  not isAnyJobAssigned("3") and "disable").." SEND TO:")
 		table.insert(display_text_parts, formatButton("PARTY", "party",  not isAnyJobAssigned() and "disable"))
 		table.insert(display_text_parts, formatButton("PARTY W/ BP", "party_w_bp",  not isAnyJobAssigned() and "disable"))
-		row_num = row_num + 2
+		jobs_row_num = jobs_row_num + 2
 
 		--Concatenate everything at once
 		display_text = table.concat(display_text_parts)
 
 	end
 
-	window:text(display_text)
+	main_window:text(display_text)
 end
 
 --Return which button the mouse is hovering over
 function getMouseOnButton(mouseX, mouseY)
 	local grid_pos = settings.pos
-	local total_width, total_height = window:extents()
+	local total_width, total_height = main_window:extents()
 	local grid_width = total_width - (settings.padding * 2) --Width of the grid area (excludes padding)
 	local grid_height = total_height - (settings.padding * 2) --Height of the grid area (excludes padding)
 	local button_width = 0
 	local button_height = 0
-	if current_screen == "bosses" then
+
+	if confirm_window_visible then
+		grid_pos = {x = confirm_window:pos_x(), y = confirm_window:pos_y()}
+		total_width, total_height = confirm_window:extents()
+		grid_width = total_width - (settings.padding * 2) --Width of the grid area (excludes padding)
+		grid_height = total_height - (settings.padding * 2) --Height of the grid area (excludes padding)
+		button_width = grid_width / confirm_char_num
+		button_height = grid_height / 6
+		button_positions = {
+			{button = confirm_yes, x_begin = confirm_char_num - 10, x_end = confirm_char_num - 6, y = 5},
+			{button = "confirm_no", x_begin = confirm_char_num - 5, x_end = confirm_char_num - 2, y = 5},
+		}
+
+	elseif current_screen == "bosses" then
 		button_width = grid_width / 35
 		button_height = grid_height / 25
 		button_positions = {
@@ -641,7 +731,7 @@ function getMouseOnButton(mouseX, mouseY)
 			{button = "ph1_bumba", x_begin = 24, x_end = 26, y = 23},
 			{button = "ph2_bumba", x_begin = 28, x_end = 30, y = 23},
 			{button = "ph3_bumba", x_begin = 32, x_end = 34, y = 23},
-			{button = "clear", x_begin = 1, x_end = 7, y = 25},
+			{button = "clear_bosses", x_begin = 1, x_end = 7, y = 25},
 			{button = "options", x_begin = 9, x_end = 17, y = 25},
 			{button = "jobs", x_begin = 30, x_end = 35, y = 25},
 		}
@@ -662,39 +752,39 @@ function getMouseOnButton(mouseX, mouseY)
 			{button = "bold_off", x_begin = 31, x_end = 35, y = 9},
 			{button = "load_1", x_begin = 27, x_end = 29, y = 13},
 			{button = "save_1", x_begin = 30, x_end = 32, y = 13},
-			{button = "delete_1", x_begin = 33, x_end = 35, y = 13},
+			{button = "confirm_delete_1", x_begin = 33, x_end = 35, y = 13},
 			{button = "load_2", x_begin = 27, x_end = 29, y = 14},
 			{button = "save_2", x_begin = 30, x_end = 32, y = 14},
-			{button = "delete_2", x_begin = 33, x_end = 35, y = 14},
+			{button = "confirm_delete_2", x_begin = 33, x_end = 35, y = 14},
 			{button = "load_3", x_begin = 27, x_end = 29, y = 15},
 			{button = "save_3", x_begin = 30, x_end = 32, y = 15},
-			{button = "delete_3", x_begin = 33, x_end = 35, y = 15},
+			{button = "confirm_delete_3", x_begin = 33, x_end = 35, y = 15},
 			{button = "load_4", x_begin = 27, x_end = 29, y = 16},
 			{button = "save_4", x_begin = 30, x_end = 32, y = 16},
-			{button = "delete_4", x_begin = 33, x_end = 35, y = 16},
+			{button = "confirm_delete_4", x_begin = 33, x_end = 35, y = 16},
 			{button = "load_5", x_begin = 27, x_end = 29, y = 17},
 			{button = "save_5", x_begin = 30, x_end = 32, y = 17},
-			{button = "delete_5", x_begin = 33, x_end = 35, y = 17},
+			{button = "confirm_delete_5", x_begin = 33, x_end = 35, y = 17},
 			{button = "back", x_begin = 1, x_end = 6, y = 26},
 			{button = "github", x_begin = 8, x_end = 15, y = 26},
 			{button = "discord", x_begin = 17, x_end = 25, y = 26},
-			{button = "default", x_begin = 27, x_end = 35, y = 26},
+			{button = "confirm_default", x_begin = 27, x_end = 35, y = 26},
 		}
 
 	elseif current_screen == "jobs" then
 		button_width = grid_width / 97
-		button_height = grid_height / row_num
+		button_height = grid_height / jobs_row_num
 		button_positions = {
 			{button = "pin", x_begin = 92, x_end = 94, y = 1},
 			{button = "close", x_begin = 95, x_end = 97, y = 1},
-			{button = "bosses", x_begin = 1, x_end = 8, y = row_num},
-			{button = "clear", x_begin = 8, x_end = 14, y = row_num},
-			{button = "options", x_begin = 16, x_end = 24, y = row_num},
-			{button = "copy_1", x_begin = 60, x_end = 62, y = row_num},
-			{button = "copy_2", x_begin = 63, x_end = 65, y = row_num},
-			{button = "copy_3", x_begin = 66, x_end = 68, y = row_num},
-			{button = "party", x_begin = 78, x_end = 84, y = row_num},
-			{button = "party_w_bp", x_begin = 85, x_end = 97, y = row_num},
+			{button = "bosses", x_begin = 1, x_end = 8, y = jobs_row_num},
+			{button = "confirm_clear_jobs", x_begin = 8, x_end = 14, y = jobs_row_num},
+			{button = "options", x_begin = 16, x_end = 24, y = jobs_row_num},
+			{button = "copy_1", x_begin = 60, x_end = 62, y = jobs_row_num},
+			{button = "copy_2", x_begin = 63, x_end = 65, y = jobs_row_num},
+			{button = "copy_3", x_begin = 66, x_end = 68, y = jobs_row_num},
+			{button = "party", x_begin = 78, x_end = 84, y = jobs_row_num},
+			{button = "party_w_bp", x_begin = 85, x_end = 97, y = jobs_row_num},
 		}
 
 		--Add buttons for Phone 1
@@ -1140,7 +1230,7 @@ end
 function onMouseClick(type, mouseX, mouseY)
 
 	--Block if not visible
-	if not visible then return end
+	if not main_window_visible then return end
 
 	--Block any clicks within 0.05 seconds of the last click to prevent Windower double-click bug
 	if double_click_fix then
@@ -1216,12 +1306,15 @@ function onMouseClick(type, mouseX, mouseY)
 				adjustPhoneNumbers()
 				current_screen = "jobs"
 			end
-		elseif click == "clear" then
-			if current_screen == "bosses" then
-				phone_selection = {nil, nil, nil}
-			else
-				player_jobs = {blm = nil, blu = nil, brd = nil, bst = nil, cor = nil, dnc = nil, drg = nil, drk = nil, geo = nil, mnk = nil, nin = nil, pld = nil, pup = nil, rdm = nil, rng = nil, run = nil, sam = nil, sch = nil, smn = nil, thf = nil, war = nil, whm = nil}
+		elseif click == "confirm_clear_jobs" then
+			if isAnyJobAssigned() then
+				displayConfirmWindow("clear_jobs", "Clear all job selections?")
 			end
+		elseif click == "clear_jobs" then
+			player_jobs = {blm = nil, blu = nil, brd = nil, bst = nil, cor = nil, dnc = nil, drg = nil, drk = nil, geo = nil, mnk = nil, nin = nil, pld = nil, pup = nil, rdm = nil, rng = nil, run = nil, sam = nil, sch = nil, smn = nil, thf = nil, war = nil, whm = nil}
+			hideConfirmWindow()
+		elseif click == "clear_bosses" then
+			phone_selection = {nil, nil, nil}
 		elseif click == "back" then
 			if not isAnyJobAssigned() then
 				current_screen = "bosses"
@@ -1244,27 +1337,31 @@ function onMouseClick(type, mouseX, mouseY)
 			settings:save('all')
 		elseif click == "size_up" then
 			settings.text.size = math.min(15, settings.text.size + 1)
-			window:size(settings.text.size)
+			main_window:size(settings.text.size)
+			confirm_window:size(settings.text.size)
 			settings:save('all')
 		elseif click == "size_down" then
 			settings.text.size = math.max(5, settings.text.size - 1)
-			window:size(settings.text.size)
+			main_window:size(settings.text.size)
+			confirm_window:size(settings.text.size)
 			settings:save('all')
 		elseif click == "bg_alpha_up" then
 			settings.bg.alpha = math.min(255, settings.bg.alpha + 15)
-			window:bg_alpha(settings.bg.alpha)
+			main_window:bg_alpha(settings.bg.alpha)
 			settings:save('all')
 		elseif click == "bg_alpha_down" then
 			settings.bg.alpha = math.max(0, settings.bg.alpha - 15)
-			window:bg_alpha(settings.bg.alpha)
+			main_window:bg_alpha(settings.bg.alpha)
 			settings:save('all')
 		elseif click == "bold_on" then
 			settings.flags.bold = true
-			window:bold(true)
+			main_window:bold(true)
+			confirm_window:bold(true)
 			settings:save('all')
 		elseif click == "bold_off" then
 			settings.flags.bold = false
-			window:bold(false)
+			main_window:bold(false)
+			confirm_window:bold(false)
 			settings:save('all')
 		elseif click == "save_1" then
 			settings.save_data.save_1.phone_selection = saveBossSaveData(phone_selection)
@@ -1273,10 +1370,15 @@ function onMouseClick(type, mouseX, mouseY)
 		elseif click == "load_1" then
 			phone_selection = loadBossSaveData("save_1")
 			player_jobs = settings.save_data.save_1.player_jobs
+		elseif click == "confirm_delete_1" then
+			if isSaveDataPresent("save_1") then
+				displayConfirmWindow("delete_1", "Delete Save 1?")
+			end
 		elseif click == "delete_1" then
 			settings.save_data.save_1.phone_selection = nil
 			settings.save_data.save_1.player_jobs = nil
 			settings:save('all')
+			hideConfirmWindow()
 		elseif click == "save_2" then
 			settings.save_data.save_2.phone_selection = saveBossSaveData(phone_selection)
 			settings.save_data.save_2.player_jobs = player_jobs
@@ -1284,10 +1386,15 @@ function onMouseClick(type, mouseX, mouseY)
 		elseif click == "load_2" then
 			phone_selection = loadBossSaveData("save_2")
 			player_jobs = settings.save_data.save_2.player_jobs
+		elseif click == "confirm_delete_2" then
+			if isSaveDataPresent("save_2") then
+				displayConfirmWindow("delete_2", "Delete Save 2?")
+			end
 		elseif click == "delete_2" then
 			settings.save_data.save_2.phone_selection = nil
 			settings.save_data.save_2.player_jobs = nil
 			settings:save('all')
+			hideConfirmWindow()
 		elseif click == "save_3" then
 			settings.save_data.save_3.phone_selection = saveBossSaveData(phone_selection)
 			settings.save_data.save_3.player_jobs = player_jobs
@@ -1295,10 +1402,15 @@ function onMouseClick(type, mouseX, mouseY)
 		elseif click == "load_3" then
 			phone_selection = loadBossSaveData("save_3")
 			player_jobs = settings.save_data.save_3.player_jobs
+		elseif click == "confirm_delete_3" then
+			if isSaveDataPresent("save_3") then
+				displayConfirmWindow("delete_3", "Delete Save 3?")
+			end
 		elseif click == "delete_3" then
 			settings.save_data.save_3.phone_selection = nil
 			settings.save_data.save_3.player_jobs = nil
 			settings:save('all')
+			hideConfirmWindow()
 		elseif click == "save_4" then
 			settings.save_data.save_4.phone_selection = saveBossSaveData(phone_selection)
 			settings.save_data.save_4.player_jobs = player_jobs
@@ -1306,10 +1418,15 @@ function onMouseClick(type, mouseX, mouseY)
 		elseif click == "load_4" then
 			phone_selection = loadBossSaveData("save_4")
 			player_jobs = settings.save_data.save_4.player_jobs
+		elseif click == "confirm_delete_4" then
+			if isSaveDataPresent("save_4") then
+				displayConfirmWindow("delete_4", "Delete Save 4?")
+			end
 		elseif click == "delete_4" then
 			settings.save_data.save_4.phone_selection = nil
 			settings.save_data.save_4.player_jobs = nil
 			settings:save('all')
+			hideConfirmWindow()
 		elseif click == "save_5" then
 			settings.save_data.save_5.phone_selection = saveBossSaveData(phone_selection)
 			settings.save_data.save_5.player_jobs = player_jobs
@@ -1317,45 +1434,59 @@ function onMouseClick(type, mouseX, mouseY)
 		elseif click == "load_5" then
 			phone_selection = loadBossSaveData("save_5")
 			player_jobs = settings.save_data.save_5.player_jobs
+		elseif click == "confirm_delete_5" then
+			if isSaveDataPresent("save_5") then
+				displayConfirmWindow("delete_5", "Delete Save 5?")
+			end
 		elseif click == "delete_5" then
 			settings.save_data.save_5.phone_selection = nil
 			settings.save_data.save_5.player_jobs = nil
 			settings:save('all')
+			hideConfirmWindow()
 		elseif click == "github" then
 			local url = "https://github.com/iLVL-Key/FFXI"
-			windower.open_url(url)
-			windower.copy_to_clipboard(url)
+			open_url(url)
+			copy_to_clipboard(url)
 			add_to_chat(1,'[GaolPlan] ':color(220)..'GitHub URL Copied To Clipboard.':color(8))
 		elseif click == "discord" then
 			local url = "https://discord.gg/eKtpvjx"
-			windower.open_url(url)
-			windower.copy_to_clipboard(url)
+			open_url(url)
+			copy_to_clipboard(url)
 			add_to_chat(1,'[GaolPlan] ':color(220)..'Discord URL Copied To Clipboard.':color(8))
+		elseif click == "confirm_default" then
+			displayConfirmWindow("default", "Reset settings to defaults?")
 		elseif click == "default" then
-			settings:save('all')
 			settings.options.hover_effects = defaults.options.hover_effects
 			hover_effects = defaults.options.hover_effects
 			settings.text.size = defaults.text.size
+			settings.bg.alpha = defaults.bg.alpha
+			settings.text.alpha = defaults.text.alpha
+			bg_alpha_num = defaults.bg.alpha
+			text_alpha_num = defaults.text.alpha
 			settings.flags.bold = defaults.flags.bold
-			window:size(settings.text.size)
-			window:bold(settings.flags.bold)
+			main_window:size(defaults.text.size)
+			main_window:bg_alpha(defaults.bg.alpha)
+			main_window:bold(defaults.flags.bold)
+			confirm_window:size(defaults.text.size)
+			confirm_window:bold(defaults.flags.bold)
 			settings:save('all')
+			hideConfirmWindow()
 		elseif click == "copy_1" then
 			local text = generatePlanOutput().phone_1
 			if text then
-				windower.copy_to_clipboard(text)
+				copy_to_clipboard(text)
 				add_to_chat(1,'[GaolPlan] ':color(220)..'Phone 1 Plan Copied To Clipboard.':color(8))
 			end
 		elseif click == "copy_2" then
 			local text = generatePlanOutput().phone_2
 			if text then
-				windower.copy_to_clipboard(text)
+				copy_to_clipboard(text)
 				add_to_chat(1,'[GaolPlan] ':color(220)..'Phone 2 Plan Copied To Clipboard.':color(8))
 			end
 		elseif click == "copy_3" then
 			local text = generatePlanOutput().phone_3
 			if text then
-				windower.copy_to_clipboard(text)
+				copy_to_clipboard(text)
 				add_to_chat(1,'[GaolPlan] ':color(220)..'Phone 3 Plan Copied To Clipboard.':color(8))
 			end
 		elseif click == "party" then
@@ -1375,11 +1506,13 @@ function onMouseClick(type, mouseX, mouseY)
 				end
 			end
 		elseif click == "close" then
-			window:hide()
-			visible = false
+			main_window:hide()
+			main_window_visible = false
 		elseif click == "pin" then
 			settings.flags.draggable = not settings.flags.draggable
 			settings:save('all')
+		elseif click == "confirm_no" then
+			hideConfirmWindow()
 
 		--Handle button clicks on the Bosses screen
 		elseif current_screen == "bosses" then
@@ -1415,7 +1548,7 @@ function onMouseClick(type, mouseX, mouseY)
 			end
 		end
 
-		updateWindow()
+		updateMainWindow()
 	end
 
 end
@@ -1423,11 +1556,16 @@ end
 --Event hndler for mouse movement
 function onMouseMove(type, mouseX, mouseY)
 
-	if visible and hover_effects then
+	if main_window_visible and hover_effects then
 		--Get the mouse position relative to the grid
-		local hover = getMouseOnButton(mouseX, mouseY)
+		hover = getMouseOnButton(mouseX, mouseY)
+		-- print(hover)
 
-		updateWindow(hover)
+		if confirm_window_visible then
+			updateConfirmWindow()
+		else
+			updateMainWindow()
+		end
 	end
 
 end
@@ -1455,14 +1593,14 @@ register_event('addon command',function(add_cmd, ...)
 	else
 
 		--If the screen is already visible, hide it
-		if visible then
-			window:hide()
-			visible = false
+		if main_window_visible then
+			main_window:hide()
+			main_window_visible = false
 
 		--If the screen is not visible, show it
 		else
-			window:show()
-			visible = true
+			main_window:show()
+			main_window_visible = true
 		end
 
 	end
@@ -1473,12 +1611,12 @@ register_event('prerender', function()
 	--Once per second...
 	if os.time() > heartbeat then
 		heartbeat = os.time()
-		--Update window to adjust player name positions if party is rearranged
-		if visible and not hover_effects then
-			updateWindow()
+		--Update main_window to adjust player name positions if party is rearranged
+		if main_window_visible and not hover_effects then
+			updateMainWindow()
 		end
 	end
 
 end)
 
-updateWindow()
+updateMainWindow()
