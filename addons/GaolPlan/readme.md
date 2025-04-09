@@ -23,3 +23,12 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 # Limitations
 
 - Save data does not save specific players, only the party member positions. If you load a save, take care to either use the party menu option to rearrange party members or adjust the jobs in the list to match the players.
+
+# Changelog
+
+Version 1.1
+- Added confirmation window for certain buttons.
+- Fixed BG Alpha not being restored to default correctly.
+
+Version 1.0
+- Initial release.
