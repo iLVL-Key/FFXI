@@ -137,6 +137,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.5.2
+- Fixed `show_target_distance_colors` option throwing errors when on a character with no subjob. (Thanks KNIFEandLANTERN!)
+
 Version 3.5.1
 - Fixed Self Action meter showing when `show_self_action` option is disabled. (Thanks blucorp!)
 
