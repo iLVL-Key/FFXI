@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.5.1'
+_addon.version = '3.5.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1548,7 +1548,7 @@ function colorizeDistance(text, distance, target)
 		--Magic
 		elseif job == 'whm' or job == 'blm' or job == 'rdm' or job == 'pld' or job == 'drk' or job == 'brd' or job == 'smn' or job == 'sch' or job == 'geo' or job == 'run' or job == 'blu' then
 
-			local sub_job = string.lower(get_player().sub_job)
+			local sub_job = player and player.sub_job and string.lower(player.sub_job)
 
 			local max_distance = 20
 			local song_aoe_max = 10 --Song party AOE range is 10 with a Wind instrument. String range is calulated at cast time based on skill and we can't get that reliably.
