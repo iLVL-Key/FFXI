@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'GaolPlan'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.1'
+_addon.version = '1.2'
 _addon.commands = {'gaolplan', 'gp'}
 
 require 'logger'
@@ -586,7 +586,36 @@ function updateMainWindow()
 
 				--Insert colored boss name
 				table.insert(display_text_parts, "\\cs("..formatRGB(boss_color.r)..","..formatRGB(boss_color.g)..","..formatRGB(boss_color.b)..")"..pre_spaces.."Phone "..boss_num.." - "..boss..post_spaces.."\\cr\n")
-				table.insert(display_text_parts, "        \\cs("..formatRGB(boss_color.r)..","..formatRGB(boss_color.g)..","..formatRGB(boss_color.b)..")|BLM|BLU|BRD|BST|COR|DNC|DRG|DRK|GEO|MNK|NIN|PLD|PUP|RDM|RNG|RUN|SAM|SCH|SMN|THF|WAR|WHM|\\cr\n")
+
+				--Extract job and phone number from hover string if it matches the format
+				local hover_ph, hover_job = nil, nil
+				if hover and hover:match("^ph%d+_pl%d+_%a%a%a$") then
+					hover_ph = hover:match("^(ph%d+)_")
+					hover_job = hover:match("_(%a%a%a)$"):lower()
+				end
+
+				--Build the top job header row with color based on assignment or hover
+				local job_row_parts = {}
+				table.insert(job_row_parts, "        ")
+
+				local phone_prefix = "ph"..i --Current phone number string (e.g. "ph1")
+				local phone_color = (i == 1 and ph1_color) or (i == 2 and ph2_color) or ph3_color
+
+				for _, job in ipairs({"blm", "blu", "brd", "bst", "cor", "dnc", "drg", "drk", "geo", "mnk", "nin", "pld", "pup", "rdm", "rng", "run", "sam", "sch", "smn", "thf", "war", "whm"}) do
+					local color = off_white
+
+					if hover_ph == phone_prefix and hover_job == job then
+						color = phone_color  --Hovered over this job on this phone
+					elseif player_jobs[job] then
+						color = highlight  --Job is already assigned
+					end
+
+					table.insert(job_row_parts, "|\\cs("..formatRGB(color.r)..","..formatRGB(color.g)..","..formatRGB(color.b)..")"..job:upper().."\\cr")
+				end
+
+				table.insert(job_row_parts, "|")
+				table.insert(display_text_parts, table.concat(job_row_parts).."\n")
+
 				jobs_row_num = jobs_row_num + 2
 
 				for p = 1, 6 do
@@ -636,13 +665,13 @@ function updateMainWindow()
 
 		--Add buttons at the bottom
 		table.insert(display_text_parts, formatButton("BOSSES", "bosses").." ")
-		table.insert(display_text_parts, formatButton("CLEAR", "clear_jobs", not isAnyJobAssigned() and "disable").." ")
+		table.insert(display_text_parts, formatButton("CLEAR", "confirm_clear_jobs", not isAnyJobAssigned() and "disable").." ")
 		table.insert(display_text_parts, formatButton("OPTIONS", "options").."                            COPY:")
-		table.insert(display_text_parts, formatButton("1", "copy_1",  not isAnyJobAssigned("1") and "disable"))
-		table.insert(display_text_parts, formatButton("2", "copy_2",  not isAnyJobAssigned("2") and "disable"))
-		table.insert(display_text_parts, formatButton("3", "copy_3",  not isAnyJobAssigned("3") and "disable").." SEND TO:")
-		table.insert(display_text_parts, formatButton("PARTY", "party",  not isAnyJobAssigned() and "disable"))
-		table.insert(display_text_parts, formatButton("PARTY W/ BP", "party_w_bp",  not isAnyJobAssigned() and "disable"))
+		table.insert(display_text_parts, formatButton("1", "copy_1", not isAnyJobAssigned("1") and "disable"))
+		table.insert(display_text_parts, formatButton("2", "copy_2", not isAnyJobAssigned("2") and "disable"))
+		table.insert(display_text_parts, formatButton("3", "copy_3", not isAnyJobAssigned("3") and "disable").." SEND TO:")
+		table.insert(display_text_parts, formatButton("PARTY", "party", not isAnyJobAssigned() and "disable"))
+		table.insert(display_text_parts, formatButton("PARTY W/ BP", "party_w_bp", not isAnyJobAssigned() and "disable"))
 		jobs_row_num = jobs_row_num + 2
 
 		--Concatenate everything at once
@@ -1472,20 +1501,20 @@ function onMouseClick(type, mouseX, mouseY)
 			settings:save('all')
 			hideConfirmWindow()
 		elseif click == "copy_1" then
-			local text = generatePlanOutput().phone_1
-			if text then
+			if isAnyJobAssigned("1") then
+				local text = generatePlanOutput().phone_1
 				copy_to_clipboard(text)
 				add_to_chat(1,'[GaolPlan] ':color(220)..'Phone 1 Plan Copied To Clipboard.':color(8))
 			end
 		elseif click == "copy_2" then
-			local text = generatePlanOutput().phone_2
-			if text then
+			if isAnyJobAssigned("2") then
+				local text = generatePlanOutput().phone_2
 				copy_to_clipboard(text)
 				add_to_chat(1,'[GaolPlan] ':color(220)..'Phone 2 Plan Copied To Clipboard.':color(8))
 			end
 		elseif click == "copy_3" then
-			local text = generatePlanOutput().phone_3
-			if text then
+			if isAnyJobAssigned("3") then
+				local text = generatePlanOutput().phone_3
 				copy_to_clipboard(text)
 				add_to_chat(1,'[GaolPlan] ':color(220)..'Phone 3 Plan Copied To Clipboard.':color(8))
 			end
