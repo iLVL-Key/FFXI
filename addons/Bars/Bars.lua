@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.5.2'
+_addon.version = '3.5.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -360,18 +360,21 @@ screen_test_focus_target = {
 	hpp = 100,
 	distance = 100,
 	index = 12345,
+	model_size = 5,
 }
 screen_test_sub_target = {
 	name = "Sub Target",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
+	model_size = 5,
 }
 screen_test_target = {
 	name = "Target",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
+	model_size = 5,
 }
 sp = settings.colors.target.sp_active_glow
 
