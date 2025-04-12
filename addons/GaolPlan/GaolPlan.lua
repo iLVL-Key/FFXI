@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'GaolPlan'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.2'
+_addon.version = '1.2.1'
 _addon.commands = {'gaolplan', 'gp'}
 
 require 'logger'
@@ -112,7 +112,7 @@ boss_map = {
 }
 
 --Colors
-off_white = {r = 150, g = 150, b = 150}
+off_white = {r = 140, g = 140, b = 140}
 highlight = {r = 255, g = 255, b = 255}
 disable = {r = 200, g = 100, b = 100}
 ph1_color = {r = 75, g = 255, b = 75}
@@ -605,9 +605,9 @@ function updateMainWindow()
 					local color = off_white
 
 					if hover_ph == phone_prefix and hover_job == job then
-						color = phone_color  --Hovered over this job on this phone
+						color = phone_color --Hovered over this job on this phone
 					elseif player_jobs[job] then
-						color = highlight  --Job is already assigned
+						color = highlight --Job is already assigned
 					end
 
 					table.insert(job_row_parts, "|\\cs("..formatRGB(color.r)..","..formatRGB(color.g)..","..formatRGB(color.b)..")"..job:upper().."\\cr")
@@ -1256,7 +1256,7 @@ function getMouseOnButton(mouseX, mouseY)
 end
 
 --Event handler for mouse clicks
-function onMouseClick(type, mouseX, mouseY)
+function onMouseClick(click_type, mouseX, mouseY)
 
 	--Block if not visible
 	if not main_window_visible then return end
@@ -1271,7 +1271,7 @@ function onMouseClick(type, mouseX, mouseY)
 		return
 	end
 
-	if type == 1 then
+	if click_type == 1 then
 
 		--Get the mouse position relative to the grid
 		local click = getMouseOnButton(mouseX, mouseY)
@@ -1325,7 +1325,24 @@ function onMouseClick(type, mouseX, mouseY)
 				end
 			end
 		end
-		
+
+		--Assures saves slots are saved as copies and not references to tables
+		--(a reference would then update that save slot every time any change is made. This would wreak havoc if the user hits save on a couple different slots, leading to all of those slots being unknowingly updated/overwritten with every job selection click)
+		function deepCopy(orig)
+			local orig_type = type(orig)
+			local copy
+			if orig_type == 'table' then
+				copy = {}
+				for key, value in next, orig, nil do
+					copy[deepCopy(key)] = deepCopy(value)
+				end
+				setmetatable(copy, deepCopy(getmetatable(orig)))
+			else
+				copy = orig
+			end
+			return copy
+		end
+
 		--Handle Navigation/Action button clicks
 		if click == "none" then
 			return
@@ -1345,7 +1362,7 @@ function onMouseClick(type, mouseX, mouseY)
 		elseif click == "clear_bosses" then
 			phone_selection = {nil, nil, nil}
 		elseif click == "back" then
-			if not isAnyJobAssigned() then
+			if not isAnyBossAssigned() then
 				current_screen = "bosses"
 			else
 				current_screen = previous_screen
@@ -1393,12 +1410,12 @@ function onMouseClick(type, mouseX, mouseY)
 			confirm_window:bold(false)
 			settings:save('all')
 		elseif click == "save_1" then
-			settings.save_data.save_1.phone_selection = saveBossSaveData(phone_selection)
-			settings.save_data.save_1.player_jobs = player_jobs
+			settings.save_data.save_1.phone_selection = deepCopy(saveBossSaveData(phone_selection))
+			settings.save_data.save_1.player_jobs = deepCopy(player_jobs)
 			settings:save('all')
 		elseif click == "load_1" then
 			phone_selection = loadBossSaveData("save_1")
-			player_jobs = settings.save_data.save_1.player_jobs
+			player_jobs = deepCopy(settings.save_data.save_1.player_jobs)
 		elseif click == "confirm_delete_1" then
 			if isSaveDataPresent("save_1") then
 				displayConfirmWindow("delete_1", "Delete Save 1?")
@@ -1409,12 +1426,12 @@ function onMouseClick(type, mouseX, mouseY)
 			settings:save('all')
 			hideConfirmWindow()
 		elseif click == "save_2" then
-			settings.save_data.save_2.phone_selection = saveBossSaveData(phone_selection)
-			settings.save_data.save_2.player_jobs = player_jobs
+			settings.save_data.save_2.phone_selection = deepCopy(saveBossSaveData(phone_selection))
+			settings.save_data.save_2.player_jobs = deepCopy(player_jobs)
 			settings:save('all')
 		elseif click == "load_2" then
 			phone_selection = loadBossSaveData("save_2")
-			player_jobs = settings.save_data.save_2.player_jobs
+			player_jobs = deepCopy(settings.save_data.save_2.player_jobs)
 		elseif click == "confirm_delete_2" then
 			if isSaveDataPresent("save_2") then
 				displayConfirmWindow("delete_2", "Delete Save 2?")
@@ -1425,12 +1442,12 @@ function onMouseClick(type, mouseX, mouseY)
 			settings:save('all')
 			hideConfirmWindow()
 		elseif click == "save_3" then
-			settings.save_data.save_3.phone_selection = saveBossSaveData(phone_selection)
-			settings.save_data.save_3.player_jobs = player_jobs
+			settings.save_data.save_3.phone_selection = deepCopy(saveBossSaveData(phone_selection))
+			settings.save_data.save_3.player_jobs = deepCopy(player_jobs)
 			settings:save('all')
 		elseif click == "load_3" then
 			phone_selection = loadBossSaveData("save_3")
-			player_jobs = settings.save_data.save_3.player_jobs
+			player_jobs = deepCopy(settings.save_data.save_3.player_jobs)
 		elseif click == "confirm_delete_3" then
 			if isSaveDataPresent("save_3") then
 				displayConfirmWindow("delete_3", "Delete Save 3?")
@@ -1441,12 +1458,12 @@ function onMouseClick(type, mouseX, mouseY)
 			settings:save('all')
 			hideConfirmWindow()
 		elseif click == "save_4" then
-			settings.save_data.save_4.phone_selection = saveBossSaveData(phone_selection)
-			settings.save_data.save_4.player_jobs = player_jobs
+			settings.save_data.save_4.phone_selection = deepCopy(saveBossSaveData(phone_selection))
+			settings.save_data.save_4.player_jobs = deepCopy(player_jobs)
 			settings:save('all')
 		elseif click == "load_4" then
 			phone_selection = loadBossSaveData("save_4")
-			player_jobs = settings.save_data.save_4.player_jobs
+			player_jobs = deepCopy(settings.save_data.save_4.player_jobs)
 		elseif click == "confirm_delete_4" then
 			if isSaveDataPresent("save_4") then
 				displayConfirmWindow("delete_4", "Delete Save 4?")
@@ -1457,12 +1474,12 @@ function onMouseClick(type, mouseX, mouseY)
 			settings:save('all')
 			hideConfirmWindow()
 		elseif click == "save_5" then
-			settings.save_data.save_5.phone_selection = saveBossSaveData(phone_selection)
-			settings.save_data.save_5.player_jobs = player_jobs
+			settings.save_data.save_5.phone_selection = deepCopy(saveBossSaveData(phone_selection))
+			settings.save_data.save_5.player_jobs = deepCopy(player_jobs)
 			settings:save('all')
 		elseif click == "load_5" then
 			phone_selection = loadBossSaveData("save_5")
-			player_jobs = settings.save_data.save_5.player_jobs
+			player_jobs = deepCopy(settings.save_data.save_5.player_jobs)
 		elseif click == "confirm_delete_5" then
 			if isSaveDataPresent("save_5") then
 				displayConfirmWindow("delete_5", "Delete Save 5?")
@@ -1583,12 +1600,11 @@ function onMouseClick(type, mouseX, mouseY)
 end
 
 --Event hndler for mouse movement
-function onMouseMove(type, mouseX, mouseY)
+function onMouseMove(click_type, mouseX, mouseY)
 
 	if main_window_visible and hover_effects then
 		--Get the mouse position relative to the grid
 		hover = getMouseOnButton(mouseX, mouseY)
-		-- print(hover)
 
 		if confirm_window_visible then
 			updateConfirmWindow()
