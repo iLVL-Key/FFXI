@@ -26,6 +26,9 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 
 # Changelog
 
+Version 1.2.1
+- Fixed Save data not behaving as intended.
+
 Version 1.2
 - Adjusted job label on the job select screen to be highlighted on mouse hover matching how the names are highlighted.
 - Fixed Copy buttons copying when disabled (no jobs selected within their respective phone/boss.
