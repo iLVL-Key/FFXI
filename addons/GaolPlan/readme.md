@@ -4,7 +4,8 @@
 Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provides a clean, mouse-driven interface for selecting bosses and assigning jobs across up to three Phones, ensuring no job is duplicated. With built-in save functionality, your most recent plans can be saved for easy reuse or adjustments, making it an ideal tool for statics or pick up groups.  
 
 ![GaolPlan_bosses](https://github.com/user-attachments/assets/277cccd3-6c83-4c02-b42a-10e18b1a855a)  
-![GaolPlan_jobs](https://github.com/user-attachments/assets/ad350df5-67f0-4ea3-bdb5-fa9756e408ab)  
+![GaolPlan_jobs](https://github.com/user-attachments/assets/0a6b260b-3489-48b2-aa38-16e20157d26e)  
+
 
 # Features
 
