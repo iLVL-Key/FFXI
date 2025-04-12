@@ -26,6 +26,11 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 
 # Changelog
 
+Version 1.2
+- Adjusted job label on the job select screen to be highlighted on mouse hover matching how the names are highlighted.
+- Fixed Copy buttons copying when disabled (no jobs selected within their respective phone/boss.
+- Fixed Clear button on the job select screen not being disabled when no jobs for any phones are selected.
+
 Version 1.1
 - Added confirmation window for certain buttons.
 - Fixed BG Alpha not being restored to default correctly.
