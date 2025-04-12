@@ -137,6 +137,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.5.3
+- Fixed an error with the Screen Test introduced with the Distance Colorizing option.
+
 Version 3.5.2
 - Fixed `show_target_distance_colors` option throwing errors when on a character with no subjob. (Thanks KNIFEandLANTERN!)
 
