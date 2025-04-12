@@ -28,6 +28,7 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 
 Version 1.2.1
 - Fixed Save data not behaving as intended.
+- Fixed the Back button in the options screen from incorrectly going back to the Boss select screen instead of the Job select screen under certain circumstances.
 
 Version 1.2
 - Adjusted job label on the job select screen to be highlighted on mouse hover matching how the names are highlighted.
