@@ -101,6 +101,16 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `highlight_when_sp_active` | Highlights a target’s name when they use an SP Ability and displays the SP name and time remaining. |
 | `max_action_length` | The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space. |
 | `max_name_length` | The maximum number of characters of a target’s name displayed (target action line only). Target names longer than this number will be truncated to help save space. |
+| `party_actions` | A simplified display of the actions performed by each party/alliance member. |
+| **→ `horizontal_offset`** | Number of pixels from the right side of the screen. |
+| **→ `party1_vertical_spacing_between_players`** | Number of pixels between each party member in the users own party. |
+| **→ `party1_y`** | Number of pixels from the bottom of the screen for the users own party (Note that this is technically where the party member underneath the users character is, NOT the user themself). |
+| **→ `party2_vertical_spacing_between_players`** | Number of pixels between each party member in the top alliance party. |
+| **→ `party2_y`** | Number of pixels from the bottom of the screen for the top alliance party. |
+| **→ `party3_vertical_spacing_between_players`** | Number of pixels between each party member in the bottom alliance party. |
+| **→ `party3_y`** | Number of pixels from the bottom of the screen for the bottom alliance party. |
+| **→ `show>true`** | Show the Party Actions. |
+| **→ `text_size`** | Text size foro the Party Actions text |
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
 | `self_action_text_size_difference` | The difference between the base text size of the addon (the bars themselves as well as the "player stats" text use the base addon size) and the text size for the Self Actions. |
 | `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
@@ -136,6 +146,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | **→ `vertical_offset`** | Adjust the overall Bar vertical position specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher. |
 
 ## Changelog
+
+Version 3.6
+- Added `party_actions` option. Displays basic information about what your party/alliance members are doing.
 
 Version 3.5.3
 - Fixed an error with the Screen Test introduced with the Distance Colorizing option.
