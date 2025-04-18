@@ -17,6 +17,9 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 ![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
 ↑Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
 
+![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
+↑The Party Actions displayed next to each of your party members.
+
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
   - Bars automatically align to the top, but vertical offset can be adjusted per job if you prefer them aligned to the bottom.
@@ -31,6 +34,8 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Self Actions.
   - Dedicated to displaying your own actions.
   - Displays a casting bar based on casting time for spells and items.
+- Party Actions.
+  - A simplified display of the actions performed by each party/alliance member.
 - Focus Target.
   - Add/remove targets to a list to automatically display a focus target for.
     - Can track by name or ID.
