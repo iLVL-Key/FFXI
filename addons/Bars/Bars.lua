@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.5.3'
+_addon.version = '3.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -42,8 +42,10 @@ get_mob_array = windower.ffxi.get_mob_array
 get_mob_by_id = windower.ffxi.get_mob_by_id
 get_mob_by_name = windower.ffxi.get_mob_by_name
 get_mob_by_target = windower.ffxi.get_mob_by_target
+get_party_info = windower.ffxi.get_party_info
 get_player = windower.ffxi.get_player
 get_position = windower.ffxi.get_position
+get_windower_settings = windower.get_windower_settings
 register_event = windower.register_event
 
 defaults = {
@@ -123,6 +125,17 @@ defaults = {
 		highlight_when_sp_active = true,
 		max_action_length = 17,
 		max_name_length = 20,
+		party_actions  = {
+			show = true,
+			horizontal_offset = -360,
+			party1_vertical_spacing_between_players = 20,
+			party1_y = -124,
+			party2_vertical_spacing_between_players = 16,
+			party2_y = -400,
+			party3_vertical_spacing_between_players = 16,
+			party3_y = -297,
+			text_size = 9,
+		},
 		remove_tachi_blade_from_ws_name = true,
 		self_action_text_size_difference = 1,
 		short_skillchain_names = true,
@@ -266,6 +279,7 @@ hide_focus_target_when_target = settings.options.hide_focus_target_when_target
 highlight_when_sp_active = settings.options.highlight_when_sp_active
 max_action_length = settings.options.max_action_length
 max_name_length = settings.options.max_name_length
+party_actions_text_size = settings.options.party_actions.text_size
 remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
 self_action_text_size_difference = settings.options.self_action_text_size_difference
 short_skillchain_names = settings.options.short_skillchain_names
@@ -276,6 +290,7 @@ show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_dyna_jobs = settings.options.show_dyna_jobs
 show_fancy_rolls = settings.options.show_fancy_rolls
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
+show_party_actions = settings.options.party_actions.show
 show_pet_status = settings.options.show_pet_status
 show_pet_distance = settings.options.show_pet_distance
 show_pet_tp = settings.options.show_pet_tp
@@ -337,7 +352,7 @@ sp_abils = {
 	['Elemental Sforzo'] = 30,
 	}
 
-inCS = false
+in_cutscene = false
 zoning = false
 job = ''
 pet_tp = 0
@@ -354,6 +369,9 @@ Heartbeat = 0
 Fade = false
 bg_fade_num = settings.bg.alpha
 text_fade_num = settings.text.alpha
+num_party1_members = 0
+num_party2_members = 0
+num_party3_members = 0
 screen_test = false
 screen_test_focus_target = {
 	name = "Focus Target",
@@ -700,6 +718,176 @@ bars_text_pet:alpha(text_alpha)
 bars_text_pet:bg_alpha(0)
 bars_text_pet:draggable(false)
 
+--Create the Party 1 P1 TEXT text object
+bars_text_pt1_p1 = texts.new()
+bars_text_pt1_p1:font(font)
+bars_text_pt1_p1:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt1_p1:alpha(text_alpha)
+bars_text_pt1_p1:bg_alpha(0)
+bars_text_pt1_p1:draggable(false)
+bars_text_pt1_p1:size(party_actions_text_size)
+bars_text_pt1_p1:stroke_width(1)
+
+--Create the Party 1 P2 TEXT text object
+bars_text_pt1_p2 = texts.new()
+bars_text_pt1_p2:font(font)
+bars_text_pt1_p2:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt1_p2:alpha(text_alpha)
+bars_text_pt1_p2:bg_alpha(0)
+bars_text_pt1_p2:draggable(false)
+bars_text_pt1_p2:size(party_actions_text_size)
+bars_text_pt1_p2:stroke_width(1)
+
+--Create the Party 1 P3 TEXT text object
+bars_text_pt1_p3 = texts.new()
+bars_text_pt1_p3:font(font)
+bars_text_pt1_p3:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt1_p3:alpha(text_alpha)
+bars_text_pt1_p3:bg_alpha(0)
+bars_text_pt1_p3:draggable(false)
+bars_text_pt1_p3:size(party_actions_text_size)
+bars_text_pt1_p3:stroke_width(1)
+
+--Create the Party 1 P4 TEXT text object
+bars_text_pt1_p4 = texts.new()
+bars_text_pt1_p4:font(font)
+bars_text_pt1_p4:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt1_p4:alpha(text_alpha)
+bars_text_pt1_p4:bg_alpha(0)
+bars_text_pt1_p4:draggable(false)
+bars_text_pt1_p4:size(party_actions_text_size)
+bars_text_pt1_p4:stroke_width(1)
+
+--Create the Party 1 P5 TEXT text object
+bars_text_pt1_p5 = texts.new()
+bars_text_pt1_p5:font(font)
+bars_text_pt1_p5:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt1_p5:alpha(text_alpha)
+bars_text_pt1_p5:bg_alpha(0)
+bars_text_pt1_p5:draggable(false)
+bars_text_pt1_p5:size(party_actions_text_size)
+bars_text_pt1_p5:stroke_width(1)
+
+--Create the Party 2 P0 TEXT text object
+bars_text_pt2_p0 = texts.new()
+bars_text_pt2_p0:font(font)
+bars_text_pt2_p0:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt2_p0:alpha(text_alpha)
+bars_text_pt2_p0:bg_alpha(0)
+bars_text_pt2_p0:draggable(false)
+bars_text_pt2_p0:size(party_actions_text_size)
+bars_text_pt2_p0:stroke_width(1)
+
+--Create the Party 2 P1 TEXT text object
+bars_text_pt2_p1 = texts.new()
+bars_text_pt2_p1:font(font)
+bars_text_pt2_p1:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt2_p1:alpha(text_alpha)
+bars_text_pt2_p1:bg_alpha(0)
+bars_text_pt2_p1:draggable(false)
+bars_text_pt2_p1:size(party_actions_text_size)
+bars_text_pt2_p1:stroke_width(1)
+
+--Create the Party 2 P2 TEXT text object
+bars_text_pt2_p2 = texts.new()
+bars_text_pt2_p2:font(font)
+bars_text_pt2_p2:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt2_p2:alpha(text_alpha)
+bars_text_pt2_p2:bg_alpha(0)
+bars_text_pt2_p2:draggable(false)
+bars_text_pt2_p2:size(party_actions_text_size)
+bars_text_pt2_p2:stroke_width(1)
+
+--Create the Party 2 P3 TEXT text object
+bars_text_pt2_p3 = texts.new()
+bars_text_pt2_p3:font(font)
+bars_text_pt2_p3:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt2_p3:alpha(text_alpha)
+bars_text_pt2_p3:bg_alpha(0)
+bars_text_pt2_p3:draggable(false)
+bars_text_pt2_p3:size(party_actions_text_size)
+bars_text_pt2_p3:stroke_width(1)
+
+--Create the Party 2 P4 TEXT text object
+bars_text_pt2_p4 = texts.new()
+bars_text_pt2_p4:font(font)
+bars_text_pt2_p4:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt2_p4:alpha(text_alpha)
+bars_text_pt2_p4:bg_alpha(0)
+bars_text_pt2_p4:draggable(false)
+bars_text_pt2_p4:size(party_actions_text_size)
+bars_text_pt2_p4:stroke_width(1)
+
+--Create the Party 2 P5 TEXT text object
+bars_text_pt2_p5 = texts.new()
+bars_text_pt2_p5:font(font)
+bars_text_pt2_p5:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt2_p5:alpha(text_alpha)
+bars_text_pt2_p5:bg_alpha(0)
+bars_text_pt2_p5:draggable(false)
+bars_text_pt2_p5:size(party_actions_text_size)
+bars_text_pt2_p5:stroke_width(1)
+
+--Create the Party 3 P0 TEXT text object
+bars_text_pt3_p0 = texts.new()
+bars_text_pt3_p0:font(font)
+bars_text_pt3_p0:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt3_p0:alpha(text_alpha)
+bars_text_pt3_p0:bg_alpha(0)
+bars_text_pt3_p0:draggable(false)
+bars_text_pt3_p0:size(party_actions_text_size)
+bars_text_pt3_p0:stroke_width(1)
+
+--Create the Party 3 P1 TEXT text object
+bars_text_pt3_p1 = texts.new()
+bars_text_pt3_p1:font(font)
+bars_text_pt3_p1:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt3_p1:alpha(text_alpha)
+bars_text_pt3_p1:bg_alpha(0)
+bars_text_pt3_p1:draggable(false)
+bars_text_pt3_p1:size(party_actions_text_size)
+bars_text_pt3_p1:stroke_width(1)
+
+--Create the Party 3 P2 TEXT text object
+bars_text_pt3_p2 = texts.new()
+bars_text_pt3_p2:font(font)
+bars_text_pt3_p2:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt3_p2:alpha(text_alpha)
+bars_text_pt3_p2:bg_alpha(0)
+bars_text_pt3_p2:draggable(false)
+bars_text_pt3_p2:size(party_actions_text_size)
+bars_text_pt3_p2:stroke_width(1)
+
+--Create the Party 3 P3 TEXT text object
+bars_text_pt3_p3 = texts.new()
+bars_text_pt3_p3:font(font)
+bars_text_pt3_p3:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt3_p3:alpha(text_alpha)
+bars_text_pt3_p3:bg_alpha(0)
+bars_text_pt3_p3:draggable(false)
+bars_text_pt3_p3:size(party_actions_text_size)
+bars_text_pt3_p3:stroke_width(1)
+
+--Create the Party 3 P4 TEXT text object
+bars_text_pt3_p4 = texts.new()
+bars_text_pt3_p4:font(font)
+bars_text_pt3_p4:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt3_p4:alpha(text_alpha)
+bars_text_pt3_p4:bg_alpha(0)
+bars_text_pt3_p4:draggable(false)
+bars_text_pt3_p4:size(party_actions_text_size)
+bars_text_pt3_p4:stroke_width(1)
+
+--Create the Party 3 P5 TEXT text object
+bars_text_pt3_p5 = texts.new()
+bars_text_pt3_p5:font(font)
+bars_text_pt3_p5:color(text_color.r,text_color.g,text_color.b)
+bars_text_pt3_p5:alpha(text_alpha)
+bars_text_pt3_p5:bg_alpha(0)
+bars_text_pt3_p5:draggable(false)
+bars_text_pt3_p5:size(party_actions_text_size)
+bars_text_pt3_p5:stroke_width(1)
+
 --Destroy all the text objects when we unload the addon
 register_event('unload', function()
 
@@ -743,6 +931,23 @@ register_event('unload', function()
 	bars_text_mp:destroy()
 	bars_text_tp:destroy()
 	bars_text_pet:destroy()
+	bars_text_pt1_p1:destroy()
+	bars_text_pt1_p2:destroy()
+	bars_text_pt1_p3:destroy()
+	bars_text_pt1_p4:destroy()
+	bars_text_pt1_p5:destroy()
+	bars_text_pt2_p0:destroy()
+	bars_text_pt2_p1:destroy()
+	bars_text_pt2_p2:destroy()
+	bars_text_pt2_p3:destroy()
+	bars_text_pt2_p4:destroy()
+	bars_text_pt2_p5:destroy()
+	bars_text_pt3_p0:destroy()
+	bars_text_pt3_p1:destroy()
+	bars_text_pt3_p2:destroy()
+	bars_text_pt3_p3:destroy()
+	bars_text_pt3_p4:destroy()
+	bars_text_pt3_p5:destroy()
 
 end)
 
@@ -775,6 +980,23 @@ function setBold()
 	bars_text_mp:bold(bold)
 	bars_text_tp:bold(bold)
 	bars_text_pet:bold(bold)
+	bars_text_pt1_p1:bold(bold)
+	bars_text_pt1_p2:bold(bold)
+	bars_text_pt1_p3:bold(bold)
+	bars_text_pt1_p4:bold(bold)
+	bars_text_pt1_p5:bold(bold)
+	bars_text_pt2_p0:bold(bold)
+	bars_text_pt2_p1:bold(bold)
+	bars_text_pt2_p2:bold(bold)
+	bars_text_pt2_p3:bold(bold)
+	bars_text_pt2_p4:bold(bold)
+	bars_text_pt2_p5:bold(bold)
+	bars_text_pt3_p0:bold(bold)
+	bars_text_pt3_p1:bold(bold)
+	bars_text_pt3_p2:bold(bold)
+	bars_text_pt3_p3:bold(bold)
+	bars_text_pt3_p4:bold(bold)
+	bars_text_pt3_p5:bold(bold)
 
 end
 
@@ -928,6 +1150,59 @@ function setPosition()
 
 end
 
+--Update the positions of the Party Actions text objects
+function updatePartyActionsPos(num_party1_members, num_party2_members, num_party3_members)
+	local width = get_windower_settings().ui_x_res
+	local pos_x = width + settings.options.party_actions.horizontal_offset
+	local height = get_windower_settings().ui_y_res
+	local pt1_pos_y = height + settings.options.party_actions.party1_y
+	local pt2_pos_y = height + settings.options.party_actions.party2_y
+	local pt3_pos_y = height + settings.options.party_actions.party3_y
+	local pt1_y_offset = settings.options.party_actions.party1_vertical_spacing_between_players
+	local pt2_y_offset = settings.options.party_actions.party2_vertical_spacing_between_players
+	local pt3_y_offset = settings.options.party_actions.party3_vertical_spacing_between_players
+
+	--Define Party 1 positions
+	local pt1_positions = {
+		{x = pos_x, y = pt1_pos_y},							--position 1 (top)
+		{x = pos_x, y = pt1_pos_y + pt1_y_offset},			--position 2
+		{x = pos_x, y = pt1_pos_y + (pt1_y_offset * 2)},	--position 3
+		{x = pos_x, y = pt1_pos_y + (pt1_y_offset * 3)},	--position 4
+		{x = pos_x, y = pt1_pos_y + (pt1_y_offset * 4)},	--position 5 (bottom)
+	}
+
+	--Define Party 2 positions
+	bars_text_pt2_p0:pos(pos_x, pt2_pos_y)
+	bars_text_pt2_p1:pos(pos_x, pt2_pos_y + pt2_y_offset)
+	bars_text_pt2_p2:pos(pos_x, pt2_pos_y + (pt2_y_offset * 2))
+	bars_text_pt2_p3:pos(pos_x, pt2_pos_y + (pt2_y_offset * 3))
+	bars_text_pt2_p4:pos(pos_x, pt2_pos_y + (pt2_y_offset * 4))
+	bars_text_pt2_p5:pos(pos_x, pt2_pos_y + (pt2_y_offset * 5))
+
+	--Define Party 3 positions
+	bars_text_pt3_p0:pos(pos_x, pt3_pos_y)
+	bars_text_pt3_p1:pos(pos_x, pt3_pos_y + pt3_y_offset)
+	bars_text_pt3_p2:pos(pos_x, pt3_pos_y + (pt3_y_offset * 2))
+	bars_text_pt3_p3:pos(pos_x, pt3_pos_y + (pt3_y_offset * 3))
+	bars_text_pt3_p4:pos(pos_x, pt3_pos_y + (pt3_y_offset * 4))
+	bars_text_pt3_p5:pos(pos_x, pt3_pos_y + (pt3_y_offset * 5))
+
+	text_objects = { bars_text_pt1_p1, bars_text_pt1_p2, bars_text_pt1_p3, bars_text_pt1_p4, bars_text_pt1_p5 }
+
+	--Handle Party 1 (bottom-up layout)
+	if num_party1_members and num_party1_members > 1 then
+		for i = 1, num_party1_members - 1 do
+			local pos_index = 6 - (num_party1_members - i)
+			local obj = text_objects[i]
+			local pos = pt1_positions[pos_index]
+			if obj and pos then
+				obj:pos(pos.x, pos.y)
+			end
+		end
+	end
+
+end
+
 --Set the width of various elements based on the bar_width option
 function setWidth()
 
@@ -1027,6 +1302,23 @@ function hideBars()
 	bars_text_mp:hide()
 	bars_text_tp:hide()
 	bars_text_pet:hide()
+	bars_text_pt1_p1:hide()
+	bars_text_pt1_p2:hide()
+	bars_text_pt1_p3:hide()
+	bars_text_pt1_p4:hide()
+	bars_text_pt1_p5:hide()
+	bars_text_pt2_p0:hide()
+	bars_text_pt2_p1:hide()
+	bars_text_pt2_p2:hide()
+	bars_text_pt2_p3:hide()
+	bars_text_pt2_p4:hide()
+	bars_text_pt2_p5:hide()
+	bars_text_pt3_p0:hide()
+	bars_text_pt3_p1:hide()
+	bars_text_pt3_p2:hide()
+	bars_text_pt3_p3:hide()
+	bars_text_pt3_p4:hide()
+	bars_text_pt3_p5:hide()
 
 end
 
@@ -1065,6 +1357,26 @@ function showBars()
 		bars_meter_pet:show()
 		bars_text_shdw_pet:show()
 		bars_text_pet:show()
+	end
+
+	if show_party_actions then
+		bars_text_pt1_p1:show()
+		bars_text_pt1_p2:show()
+		bars_text_pt1_p3:show()
+		bars_text_pt1_p4:show()
+		bars_text_pt1_p5:show()
+		bars_text_pt2_p0:show()
+		bars_text_pt2_p1:show()
+		bars_text_pt2_p2:show()
+		bars_text_pt2_p3:show()
+		bars_text_pt2_p4:show()
+		bars_text_pt2_p5:show()
+		bars_text_pt3_p0:show()
+		bars_text_pt3_p1:show()
+		bars_text_pt3_p2:show()
+		bars_text_pt3_p3:show()
+		bars_text_pt3_p4:show()
+		bars_text_pt3_p5:show()
 	end
 
 end
@@ -1772,7 +2084,7 @@ function updateFocusTarget()
 	local text_ft_action = show_target_action and ' '..ft_status..ft_action or ''
 	local text_ft_action_shdw = show_target_action and ' '..ft_status_shdw..ft_action_shdw or ''
 
-	if not inCS then
+	if not in_cutscene then
 
 		if focus_target_override and hide_focus_target_when_target and target then
 			if target.id == focus_target_override.id then
@@ -1866,7 +2178,7 @@ function updateTarget()
 	local text_target_action_shdw = show_target_action and ' '..target_status_shdw..target_action_shdw..target_action_result_shdw or ''
 
 	if target and not (show_self_when_targeted == false and target.id == player.id) then
-		if not inCS then
+		if not in_cutscene then
 
 			--Fix the pad issue when 0
 			if spaces == 0 then
@@ -1943,7 +2255,7 @@ function updateSubTarget()
 	local text_st_action_shdw = show_target_action and ' '..st_status_shdw..st_action_shdw or ''
 
 	if st and not ((show_st_when_target == false and target and st.id == target.id) or (show_self_when_targeted == false and st.id == player.id)) then
-		if not inCS then
+		if not in_cutscene then
 
 			--Fix the pad issue when 0
 			if spaces == 0 then
@@ -1982,12 +2294,12 @@ function updateSubTarget()
 	end
 end
 
-
 --Update the Self Action text
 function updateSelfAction()
 
+	if not show_self_action then return end
+
 	local player = get_player()
-	local ct = text_color
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
 	local self_status_shdw = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status_shdw or ''
 	local self_action = current_actions[player.id] and current_actions[player.id].action or ''
@@ -1998,7 +2310,7 @@ function updateSelfAction()
 	local text_self_action_shdw = ' '..self_status_shdw..self_action_shdw..self_action_result_shdw
 
 	if self_status ~= '' then
-		if not inCS then
+		if not in_cutscene then
 
 			bars_bg_self_action:show()
 			bars_text_shdw_self_action:show()
@@ -2017,6 +2329,117 @@ function updateSelfAction()
 		bars_text_self_action:hide()
 
 	end
+end
+
+function updatePartyActions()
+
+	if not show_party_actions then return end
+
+	local total_width = 30 --max_action_length default is 17 but can be changed in settings, so I picked 30 here to give a little leeway
+
+	function formatPartyAction(str)
+		local raw = str:text_strip_format()
+
+		--Remove everything from " → " onward leaving just the action
+		local arrow_pos = raw:find(" → ")
+		local display_str = arrow_pos and raw:sub(1, arrow_pos - 1) or raw
+
+		--Replace ellipses in a copy for proper visual length calculation (# technically is counting bytes, ellipses is 4 bytes)
+		local length_str = display_str:gsub("…", " ")
+
+		local padding = math.max(0, total_width - #length_str)
+
+		return string.rep(" ", padding)..display_str
+	end	
+
+	--Party 1 (minus the player)
+	local p1 = get_mob_by_target('p1')
+	local p1_action = screen_test and "Party 0: Player 1" or (p1 and current_actions[p1.id] and current_actions[p1.id].action or '')
+	local text_p1_action = formatPartyAction(p1_action)
+	bars_text_pt1_p1:text(text_p1_action)
+
+	local p2 = get_mob_by_target('p2')
+	local p2_action = screen_test and "Party 0: Player 2" or (p2 and current_actions[p2.id] and current_actions[p2.id].action or '')
+	local text_p2_action = formatPartyAction(p2_action)
+	bars_text_pt1_p2:text(text_p2_action)
+
+	local p3 = get_mob_by_target('p3')
+	local p3_action = screen_test and "Party 0: Player 3" or (p3 and current_actions[p3.id] and current_actions[p3.id].action or '')
+	local text_p3_action = formatPartyAction(p3_action)
+	bars_text_pt1_p3:text(text_p3_action)
+
+	local p4 = get_mob_by_target('p4')
+	local p4_action = screen_test and "Party 0: Player 4" or (p4 and current_actions[p4.id] and current_actions[p4.id].action or '')
+	local text_p4_action = formatPartyAction(p4_action)
+	bars_text_pt1_p4:text(text_p4_action)
+
+	local p5 = get_mob_by_target('p5')
+	local p5_action = screen_test and "Party 0: Player 5" or (p5 and current_actions[p5.id] and current_actions[p5.id].action or '')
+	local text_p5_action = formatPartyAction(p5_action)
+	bars_text_pt1_p5:text(text_p5_action)
+
+	--Party 2
+	local a10 = get_mob_by_target('a10')
+	local a10_action = screen_test and "Alliance Party 1: Player 0" or (a10 and current_actions[a10.id] and current_actions[a10.id].action or '')
+	local text_a10_action = formatPartyAction(a10_action)
+	bars_text_pt2_p0:text(text_a10_action)
+
+	local a11 = get_mob_by_target('a11')
+	local a11_action = screen_test and "Alliance Party 1: Player 1" or (a11 and current_actions[a11.id] and current_actions[a11.id].action or '')
+	local text_a11_action = formatPartyAction(a11_action)
+	bars_text_pt2_p1:text(text_a11_action)
+
+	local a12 = get_mob_by_target('a12')
+	local a12_action = screen_test and "Alliance Party 1: Player 2" or (a12 and current_actions[a12.id] and current_actions[a12.id].action or '')
+	local text_a12_action = formatPartyAction(a12_action)
+	bars_text_pt2_p2:text(text_a12_action)
+
+	local a13 = get_mob_by_target('a13')
+	local a13_action = screen_test and "Alliance Party 1: Player 3" or (a13 and current_actions[a13.id] and current_actions[a13.id].action or '')
+	local text_a13_action = formatPartyAction(a13_action)
+	bars_text_pt2_p3:text(text_a13_action)
+
+	local a14 = get_mob_by_target('a14')
+	local a14_action = screen_test and "Alliance Party 1: Player 4" or (a14 and current_actions[a14.id] and current_actions[a14.id].action or '')
+	local text_a14_action = formatPartyAction(a14_action)
+	bars_text_pt2_p4:text(text_a14_action)
+
+	local a15 = get_mob_by_target('a15')
+	local a15_action = screen_test and "Alliance Party 1: Player 5" or (a15 and current_actions[a15.id] and current_actions[a15.id].action or '')
+	local text_a15_action = formatPartyAction(a15_action)
+	bars_text_pt2_p5:text(text_a15_action)
+
+	--Party 3
+	local a20 = get_mob_by_target('a20')
+	local a20_action = screen_test and "Alliance Party 2: Player 0" or (a20 and current_actions[a20.id] and current_actions[a20.id].action or '')
+	local text_a20_action = formatPartyAction(a20_action)
+	bars_text_pt3_p0:text(text_a20_action)
+
+	local a21 = get_mob_by_target('a21')
+	local a21_action = screen_test and "Alliance Party 2: Player 1" or (a21 and current_actions[a21.id] and current_actions[a21.id].action or '')
+	local text_a21_action = formatPartyAction(a21_action)
+	bars_text_pt3_p1:text(text_a21_action)
+
+	local a22 = get_mob_by_target('a22')
+	local a22_action = screen_test and "Alliance Party 2: Player 1" or (a22 and current_actions[a22.id] and current_actions[a22.id].action or '')
+	local text_a22_action = formatPartyAction(a22_action)
+	bars_text_pt3_p2:text(text_a22_action)
+
+	local a23 = get_mob_by_target('a23')
+	local a23_action = screen_test and "Alliance Party 2: Player 1" or (a23 and current_actions[a23.id] and current_actions[a23.id].action or '')
+	local text_a23_action = formatPartyAction(a23_action)
+	bars_text_pt3_p3:text(text_a23_action)
+
+	local a24 = get_mob_by_target('a24')
+	local a24_action = screen_test and "Alliance Party 2: Player 1" or (a24 and current_actions[a24.id] and current_actions[a24.id].action or '')
+	local text_a24_action = formatPartyAction(a24_action)
+	bars_text_pt3_p4:text(text_a24_action)
+
+	local a25 = get_mob_by_target('a25')
+	local a25_action = screen_test and "Alliance Party 2: Player 1" or (a25 and current_actions[a25.id] and current_actions[a25.id].action or '')
+	local text_a25_action = formatPartyAction(a25_action)
+	bars_text_pt3_p5:text(text_a25_action)
+
 end
 
 --Complete the Self meter to full
@@ -2721,13 +3144,13 @@ end)
 register_event('status change', function(status)
 
 	--In a cutscene: Hide the bars
-	if status == 4 and not inCS then
-		inCS = true
+	if status == 4 and not in_cutscene then
+		in_cutscene = true
 		hideBars()
 
 	--Out of cutscene: Show the bars
-	elseif status ~= 4 and inCS then
-		inCS = false
+	elseif status ~= 4 and in_cutscene then
+		in_cutscene = false
 		showBars()
 
 	end
@@ -2736,8 +3159,13 @@ end)
 
 register_event('prerender', function()
 
-	if get_info().logged_in and show_self_action then
+	local logged_in = get_info().logged_in
+
+	if logged_in then
+
+		updatePartyActions()
 		updateSelfAction()
+
 	end
 
 	local target = get_mob_by_target('t')
@@ -2769,7 +3197,7 @@ register_event('prerender', function()
 	end
 	updateFocusTarget()
 
-	if get_info().logged_in and show_bars[job].pet then
+	if logged_in and show_bars[job].pet then
 		updatePetBar()
 	end
 
@@ -2779,7 +3207,7 @@ register_event('prerender', function()
 		decrementSPTimers()
 
 		--Fade timer
-		if fade_after_delay and get_info().logged_in then
+		if fade_after_delay and logged_in then
 			Heartbeat = os.time()
 			local status = get_player() and get_player().status
 			local in_combat = get_player() and get_player().in_combat
@@ -2800,6 +3228,19 @@ register_event('prerender', function()
 				updateMPBar()
 				updateTPBar()
 				updatePetBar()
+			end
+		end
+
+		--Adjust Party Action positioning if the party/alliance changes
+		if show_party_actions and logged_in then
+			local party_info = get_party_info()
+			if num_party1_members ~= party_info.party1_count
+			or num_party2_members ~= party_info.party2_count
+			or num_party3_members ~= party_info.party3_count then
+				num_party1_members = party_info.party1_count
+				num_party2_members = party_info.party2_count
+				num_party3_members = party_info.party3_count
+				updatePartyActionsPos(num_party1_members,num_party2_members,num_party3_members)
 			end
 		end
 
