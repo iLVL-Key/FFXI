@@ -47,6 +47,7 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Display the Index or Hex number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Display distance to target.
+  - Colorize the distance text based on the distance to the target and other factors.
 - Highlights a targets name when they use an SP Ability and displays the SP name and time remaining.
   - NOTE: Timing for players who have gear adding additional time cannot be accounted for.
 - Display Dynamis-Divergence mob jobs.
