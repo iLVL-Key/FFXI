@@ -153,6 +153,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.6.1
+- Fixed spacing in Pet Bar.
+
 Version 3.6
 - Added `party_actions` option. Displays basic information about what your party/alliance members are doing.
 
