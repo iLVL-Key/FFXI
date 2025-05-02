@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.6'
+_addon.version = '3.6.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2768,7 +2768,7 @@ function updatePetBar()
 	local cm_g = formatRGB(cm.g)
 	local cm_b = formatRGB(cm.b)
 
-	hpp = ' '..string.format("%3s", hpp)..'%'
+	hpp = ' '..string.format("%3s", hpp)..'% '
 	local text = (pet and '\\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 
