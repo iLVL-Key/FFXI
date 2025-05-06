@@ -1,5 +1,7 @@
 # Taskbar
 
-A Windows Start Menu like way to group and use any commands you can run through Windower.
+A Windows Start Menu-like way to group and use any commands you can run through Windower.
 
-![TaskBar](https://github.com/user-attachments/assets/769fcf06-b2de-4d7d-b011-bb621f67bd4d)
+![TaskBar_Menu](https://github.com/user-attachments/assets/dfe5ced0-fb6e-4780-839a-9c73051d9f01)  
+↑ Opening the TaskBar, Blue color theme shown.
+
