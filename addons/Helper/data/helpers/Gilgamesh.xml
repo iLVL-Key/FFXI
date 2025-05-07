@@ -1,0 +1,136 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>${ability} be ready t&apos; use again. Don&apos;t waste it!</ability_ready>
+        <capped_job_points>Yer Job Points be capped. No more earnin&apos; &apos;til ye spend &apos;em.</capped_job_points>
+        <capped_merit_points>Merit Points hit the limit. Time t&apos; put &apos;em t&apos; work.</capped_merit_points>
+        <flavor_text>
+			<1>Funny how the ones who talk big fall fast. Steel don't lie, but mouths do.</1>
+			<2>A sharp blade's only as good as the hand holdin' it...</2>
+			<3>Trust's a rare coin. Spend it wrong, and ye'll be payin' fer it fer years.</3>
+			<4>A crew'll fight monsters without blinkin', but argue over who gets the chest first.</4>
+			<5>Ever notice how the best fights are the ones ye didn't start?</5>
+			<6>Seen enough heroes fall t' know: glory's got a short memory.</6>
+			<7>It's quiet out here... means trouble's thinkin' too.</7>
+			<8>Ain't nothin' more dangerous than a calm before the drop.</8>
+			<9>Gil's a funny thing. Always feels heavier leavin' than it did comin' in.</9>
+			<10>Magic's flashy, sure. But steel - steel tells the truth.</10>
+			<11>Titles don't make the leader. Guts do.</11>
+			<12>Some fights ain't worth winnin'. Some wins ain't worth the scars.</12>
+			<13>Storms pass. The sea stays. Folk could learn from that.</13>
+			<14>If yer blade don't hum in yer hand, maybe it ain't the blade.</14>
+			<15>Funny. The more I learn, the less I speak.</15>
+			<16>Ain't just monsters out there in the dark - some of 'em wear names.</16>
+			<17>Keep yer boots dry, yer blade clean, and yer regrets few.</17>
+			<18>I've seen men swing with fury and fall with pride.</18>
+			<19>Gold fades. Scars don't.</19>
+			<20>The blade's weight ain't in the metal - it's in the lives it's taken.</20>
+			<21>I stopped lookin' for peace years ago. Now I just keep it from others.</21>
+			<22>Mercy's a choice. Regret ain't.</22>
+			<23>A clean kill is a kindness. I don't always give kindness.</23>
+			<24>Some of the worst monsters I've fought didn't have fangs - they had orders.</24>
+			<25>The sea hides many things. Some of 'em still scream.</25>
+			<26>Don't talk to me 'bout honor. I've buried men who died with it.</26>
+			<27>You keep swingin' long enough, and the faces start lookin' the same.</27>
+			<28>I didn't survive this long by playin' fair.</28>
+			<29>There's silence after battle... and it's never as quiet as it should be.</29>
+			<30>If you've never questioned the job, you ain't bled enough.</30>
+			<31>You carry your mistakes longer than your trophies.</31>
+			<32>Every veteran's got a story they don't finish tellin'.</32>
+			<33>I keep a clean blade and a dirty conscience.</33>
+			<34>Some oaths are broken on purpose. Others break you.</34>
+			<35>Trust too quick and you'll see betrayal up close.</35>
+			<36>Live long enough, and even revenge starts feelin' like tradition.</36>
+			<37>Promathia tried t' end the world, but I've seen Linkshell drama do it faster.</37>
+			<38>The Zilart thought they were gods. They died like men.</38>
+			<39>Lilisette danced with fate itself. I've tripped over worse.</39>
+			<40>I once stared Odin in the eye. Blinked. Still here, ain't I?</40>
+			<41>The Emptiness ain't nothin' compared to the hole left by losin' a crewmate.</41>
+			<42>The Shadow Lord came back more times than a bad bard in Jeuno.</42>
+			<43>Seen a Tarutaru pilot a dragon once. Still less scary than a Taru black mage.</43>
+			<44>Altana cried. Promathia brooded. Me? I drink.</44>
+			<45>The past was ugly, but the present's always bleedin' out somethin' worse.</45>
+			<46>Atomos eats time like I eat grilled hare. Both end with indigestion.</46>
+			<47>Voidwatch? Aye, I watch the void... and I don't like what's starin' back.</47>
+			<48>Ygnas had a dream. So did I. Mine involved retirement and a quiet beach.</48>
+			<49>Those Eschan portals feel wrong. Like somethin's watchin'... with too many eyes.</49>
+			<50>Reisenjima's beautiful... if ye like your skies cursed and your trees murderous.</50>
+			<51>All these heroes savin' the world, and not one of 'em ever pays their bar tab.</51>
+			<52>Shantotto talks like a scholar but fights like a bloody storm. I'd wager even the gods keep their distance.</52>
+			<53>Zeid's the kinda fella who makes silence loud. Man's got more weight in his stare than most do in steel.</53>
+			<54>Ajido-Marujido once tried t' lecture me. I tried not t' nap.</54>
+			<55>Curilla's a paladin, aye - but I've seen more steel in her words than in most swords.</55>
+			<56>Volker keeps shoutin' about honor. Bet the beastmen love him for standin' still so long.</56>
+			<57>Naja Salaheem could sell yer own pants back t' ye. For double.</57>
+			<58>Lion had fire in her eyes... the kind that either lights the way or burns it down.</58>
+			<59>Trion swings big and talks bigger. Never seen a crown fit quite so loose.</59>
+			<60>Aldo's got more secrets than a pirate hold. And more knives, probably.</60>
+			<61>Prishe punches gods and then argues with 'em. That girl's got the spark.</61>
+			<62>Nashmeira danced her way through war. Grace hides a nasty blade, mark me.</62>
+			<63>Rochefogne was the smartest man t' ever blow himself up for 'progress'.</63>
+			<64>Lehko flirts like a bard and thinks like a spy. I don't trust either.</64>
+			<65>Tenzen carries the weight o' his whole nation on his back. Still walks tall, though.</65>
+			<66>Ulmia sings of peace while standin' in ruins. That takes guts... or madness.</66>
+			<67>Rahal's got loyalty in his veins. Shame it don't always reach his head.</67>
+			<68>Excenmille's too pure for politics. He'll learn, or he'll drown in it.</68>
+			<69>Cherukiki might look cute, but I once saw her threaten a demon with a cookie.</69>
+			<70>Robel-Akbel hides behind masks and shadows. Me? I use a hat and a sword. Works just fine.</70>
+			<71>Eald'narche talked like a prophet and acted like a child. Power don't make wisdom, lad.</71>
+			<72>Odin don't speak much, but when he does, someone's always losin' their head.</72>
+			<73>Promathia saw the world as broken and figured the best fix was burnin' it down. Real clever, that one.</73>
+			<74>The Shadow Lord? Strong, sure. But if broodin' was a job, he'd be king twice over.</74>
+			<75>Lilith fights for love. That's the scariest kind of reason.</75>
+			<76>Nashmeira's brother? That man had ambition so loud, it drowned out reason.</76>
+			<77>Nag'molada wore betrayal like a badge. Fancy words don't make a man less rotten.</77>
+			<78>Kam'lanaut had the smug look o' someone who never got punched enough growin' up.</78>
+			<79>If you're makin' deals with Yve'noile's ghost, ye might wanna rethink yer career path.</79>
+			<80>Lady Karababa's smile hides enough dark magic t' drown a continent.</80>
+			<81>The Mamool Ja bosses talked revolution. What they meant was 'we want more meat.'</81>
+			<82>Alexander - now there's a god who thought himself holy while stompin' the earth flat.</82>
+			<83>The Emptiness spawned all sorts o' monsters. But it's the ones what think that scare me most.</83>
+			<84>Those Beastman Generals ain't stupid. Just bitter enough t' kill anything with a flag.</84>
+			<85>When the Wyrmking gets riled, whole mountains move. So don't rile him.</85>
+			<86>Voidwatch bosses - ye'd think we'd stop pokin' holes in reality eventually. But noooo...</86>
+			<87>Melvien looks like a gentleman. Fights like a cornered rat. That's the dangerous kind.</87>
+			<88>Teodor? He's what happens when regrets grow fangs.</88>
+			<89>The Dvergr never forget. And their grudges last longer'n most kingdoms.</89>
+			<90>Ouryu once told me 'truth is a blade.' I reminded him I carry two.</90>
+        </flavor_text>
+        <food_wears_off>Yer belly magic's gone - best be eatin' somethin' again.</food_wears_off>
+        <info>
+            <description>Gruff, tough, and plenty of hidden heart.</description>
+            <introduction>Name's Gilgamesh, the one an' only! Ye look like ye could use a hand - lucky for ye, I ain't just a legend.</introduction>
+            <name>Gilgamesh</name>
+            <name_color>1</name_color>
+            <sha></sha>
+            <text_color>53</text_color>
+            <type>NPC</type>
+        </info>
+        <member_joined_alliance>${member} be joinin' the alliance. Hope they can pull their weight.</member_joined_alliance>
+        <member_joined_party>${member} just came aboard the party. Let's see what they're made of.</member_joined_party>
+        <member_left_alliance>${member} jumped ship from the alliance.</member_left_alliance>
+        <member_left_party>${member} slipped outta the party. Guess they had other seas t' sail.</member_left_party>
+        <mireu_popped>Mireu's name just echoed through ${zone}... somethin's brewin', I'd wager.</mireu_popped>
+        <other_party_joined_alliance>Another crew's joined the alliance. Hope they ain't dead weight.</other_party_joined_alliance>
+        <other_party_left_alliance>One o' the parties cut ties with the alliance. Less mouths t' feed.</other_party_left_alliance>
+        <party_low_mp>${member} looks dry on MP. Toss 'em a ${refresh} 'fore they keel over.</party_low_mp>
+        <reminder_canteen>Looks like another Mystical Canteen's ripe for the takin'.</reminder_canteen>
+        <reminder_mog_locker>Yer Mog Locker lease is runnin' short - best square up 'fore ye lose it.</reminder_mog_locker>
+        <reminder_moglophone>Another Moglophone's ready - don't let it gather dust, mate.</reminder_moglophone>
+        <reminder_plate>One more Shiny Ra'Kaznarian Plate's waitin' fer ya. Go nab it.</reminder_plate>
+        <reraise_check>Ye ain't got Reraise on. If ye drop now, it's the long nap.</reraise_check>
+        <reraise_wears_off>Reraise just wore off - yer on yer own from here, friend.</reraise_wears_off>
+        <signet_wears_off>Yer ${signet}'s gone - ye'll not get far without it, I'd wager</signet_wears_off>
+        <sparkolade_reminder>Spend them Sparkolades 'fore they start gatherin' barnacles.</sparkolade_reminder>
+        <sublimation_charged>Sublimation's all juiced up and rarin' t'go.</sublimation_charged>
+        <vorseal_wearing>Ye've got 'bout 10 minutes left on that Vorseal. Make it count.</vorseal_wearing>
+        <you_are_now_alliance_leader>Looks like ye're callin' the shots fer the whole alliance now.</you_are_now_alliance_leader>
+        <you_are_now_party_leader>Ye're leadin' this crew now - don't steer us inta the rocks!</you_are_now_party_leader>
+        <you_joined_alliance>Yer sails are now hitched t'an alliance. Let's make it worth the voyage.</you_joined_alliance>
+        <you_joined_party>Ye've joined a party. Hope they can keep up with ye.</you_joined_party>
+        <you_left_alliance>Ye've parted ways with the alliance. Fair winds t' them.</you_left_alliance>
+        <you_left_party>Ye slipped anchor from the party. Time t' chart yer own course.</you_left_party>
+        <your_party_joined_alliance>Yer party's thrown in with an alliance. Let's see if they're seaworthy.</your_party_joined_alliance>
+        <your_party_left_alliance>Yer party's left the alliance behind. Guess that ship weren't headin' yer way.</your_party_left_alliance>
+    </global>
+</settings>
