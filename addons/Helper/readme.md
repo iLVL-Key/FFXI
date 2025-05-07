@@ -14,10 +14,15 @@ The default Helper. Has no Faceplate, and uses the default sounds.
 | **Shantotto**  | **Moogle**  | **Mayakov**  |
 | Witty, rhyming, and slightly menacing. | Cheerful, helpful, and full of "kupo!" | Flamboyant, theatrical, and obthethed with perfecthion. |
 
-| ![Altana](https://github.com/user-attachments/assets/c7c91a06-5dcf-4b0e-9792-09af916987a3) | ![Promathia](https://github.com/user-attachments/assets/1c71e534-d2df-43c1-a78a-967a0dfd0294) | ![faceplate_small](https://github.com/user-attachments/assets/4751a585-8cf5-41f9-bafc-9a169941c8a4) |
-|---|---|---|
-| **Altana**  | **Promathia**  | **Brygid**  |
-| Warm, comforting, and protective. | Dark, foreboding, and indifferent to your struggles. | Fabulously judgmental and fashion-obsessed.  |
+| ![Altana](https://github.com/user-attachments/assets/c7c91a06-5dcf-4b0e-9792-09af916987a3) | ![Promathia](https://github.com/user-attachments/assets/1c71e534-d2df-43c1-a78a-967a0dfd0294) |
+|---|---|
+| **Altana**  | **Promathia**  |
+| Warm, comforting, and protective. | Dark, foreboding, and indifferent to your struggles. |
+
+| ![faceplate_small](https://github.com/user-attachments/assets/4751a585-8cf5-41f9-bafc-9a169941c8a4) | ![faceplate_small](https://github.com/user-attachments/assets/82bd8074-1fa0-405b-a27b-42c3bae6c07c) |
+|---|---|
+| **Brygid**  | **Gilgamesh**  |
+| Fabulously judgmental and fashion-obsessed.  | Gruff, tough, and plenty of hidden heart. |
 
 ### Players
 | ![Azhur](https://github.com/user-attachments/assets/38a6c564-3245-4b6b-8dea-8eb491674cf2) | ![Galin](https://github.com/user-attachments/assets/a5db9576-3123-476d-91c6-f8d97c676e4d) |
