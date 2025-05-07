@@ -29,6 +29,13 @@
             <text_color>160</text_color>
             <type>Player</type>
         </galin>
+        <gilgamesh>
+            <description>Gruff, tough, and plenty of hidden heart.</description>
+            <name>Gilgamesh</name>
+            <name_color>1</name_color>
+            <text_color>53</text_color>
+            <type>NPC</type>
+        </gilgamesh>
         <kolo>
             <description>Loud, chaotic, and full of love (and expletives).</description>
             <name>Kolo</name>
