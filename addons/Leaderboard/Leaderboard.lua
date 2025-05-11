@@ -27,9 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.2.3'
+_addon.version = '5.2.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
+
 
 require 'logger'
 require 'chat'
@@ -2531,11 +2532,6 @@ end)
 
 register_event('action',function(act)
 
-	-- local msg = act.targets[1].actions[1].message --duplicate
-	-- if act.category == 1 then
-		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name..' add_e_e: '..act.targets[1].actions[1].add_effect_effect..' add_e_p: '..act.targets[1].actions[1].add_effect_param..' s_e_message: '..act.targets[1].actions[1].add_effect_message)
-	-- end
-
 	local actor = getActor(act.actor_id)
 
 	local myName = get_mob_by_target('me').name
@@ -2546,7 +2542,7 @@ register_event('action',function(act)
 	local msg = act.targets[1].actions[1].message
 
 	local direct_damage = {
-		1, 2, 15, 63, 67, 77, 110, 157, 163, 185, 188, 252, 317, 352, 353, 379, 413, 522, 576, 577, 648, 650
+		1, 2, 15, 63, 67, 77, 110, 157, 163, 185, 188, 252, 317, 352, 353, 379, 413, 522, 576, 577, 648, 650, 802
 	}
 	local spike_damage = {
 		33, 44, 132, 536
@@ -5834,7 +5830,6 @@ register_event('addon command',function(addcmd, ...)
 			end
 		end
 		newChatMessage("/t "..rival.." "..(text):format(imBeatingText))
-
 
 	--Unknown command
 	else
