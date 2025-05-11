@@ -102,6 +102,12 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 - In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline (when they are online) resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of. This isn't an issue with Leaderboard itself, just a case of lag eating a tell to another player.
 
 ### Version History
+**5.2.4**
+- Fixed Sirens Hysteric Assault not counting towards Total Damage.
+
+**5.2.3**
+- Fixed some errors with Kart Mode.
+
 **5.2.2**
 - Fixed Typo on Magic Burst Board Party Callout
 
