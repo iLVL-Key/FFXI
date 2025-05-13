@@ -27,10 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.2.4'
+_addon.version = '5.2.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
-
 
 require 'logger'
 require 'chat'
@@ -597,7 +596,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -792,9 +791,9 @@ local function updateBox(box_display)
 				end
 				while text_width < 35 do
 					if #spaces == 0 then
-						spaces = spaces .. " "
+						spaces = spaces.." "
 					else
-						spaces = spaces .. "."
+						spaces = spaces.."."
 					end
 					text_width = text_width + 1
 				end
@@ -852,36 +851,32 @@ end
 
 --Checks that the actor is in our party/alliance and return the player table
 local function getActor(id)
-	local actor = nil
+
+	local actor = get_mob_by_id(id)
+	if not actor then return false end
+
 	local ally_pos = {
-		'p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
+		'p0', 'p1', 'p2', 'p3', 'p4', 'p5',
+		'a10', 'a11', 'a12', 'a13', 'a14', 'a15',
+		'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
 	}
 
-	--Loop through the alliance members to see if the index of the actor matches anyones pet
-	for i = 1, 18, 1 do
-		local ally_member = get_mob_by_target(ally_pos[i]) or nil
-		if get_mob_by_id(id) and get_mob_by_id(id).index and ally_member and ally_member.pet_index
-		and get_mob_by_id(id).index == ally_member.pet_index then
-			--If there is a match, return the name of the pets owner
-			actor = ally_member
-			return actor
+	--Check if the actor is a pet belonging to someone in our alliance
+	for _, pos in ipairs(ally_pos) do
+		local ally = get_mob_by_target(pos)
+		if ally and ally.pet_index == actor.index then
+			return ally
 		end
 	end
 
-	--If there is no match, check if the actor is in our alliance
-	if actor == nil then
-		local actor = get_mob_by_id(id)
-		if actor == nil or (not actor.in_alliance and not actor.in_party) then
-			--Not in our alliance, return false
-			return false
-		else
-			--In our alliance, return the name of the actor
-			return actor
-		end
+	--Check if actor is directly in our alliance/party
+	if actor.in_party or actor.in_alliance then
+		return actor
 	end
+
+	return false
 
 end
-
 
 --Checks that the target is in our party/alliance and return the player table
 local function getTarget(id)
@@ -1397,8 +1392,10 @@ local function isPlayerInAlliance(player)
 			return true
 		end
 	end
+
 	--If not, return false
 	return false
+
 end
 
 
@@ -1428,6 +1425,7 @@ end
 
 --Select a random player
 local function selectRandomPlayer(itemUser)
+
 	local names = {}
 
 	for name, _ in pairs(live.individuals.point) do
@@ -1451,6 +1449,7 @@ end
 
 --Check if the given player is in the last place on the points board
 local function isLastPlace(name)
+
 	local placeNames = {"first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth", "eighteenth"}
 
 	local playerPlace = findPlace(name, "point")
@@ -1462,6 +1461,7 @@ local function isLastPlace(name)
 	else
 		return true
 	end
+
 end
 
 
@@ -1646,7 +1646,7 @@ local function useItem(name, specifiedTarget)
 			if i == count and count > 1 then
 				targets = targets.." and "..target
 			else
-				targets = targets .. target
+				targets = targets..target
 				if i < count - 1 then
 					targets = targets..", "
 				end
