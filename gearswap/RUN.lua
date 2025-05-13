@@ -379,40 +379,40 @@ sets.tank_parry = {
 	feet="Erilaz Greaves +3",
 	neck="Unmoving Collar +1",
 	waist="Plat. Mog. Belt",
-	left_ear="Cryptic Earring",
+	left_ear="Eabani Earring",
 	right_ear="Erilaz Earring +2",
 	left_ring="Moonlight Ring",
-	right_ring="Niqmaddu Ring",
-	back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
+	right_ring="Vengeful Ring",
+	back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Parrying rate+5%',}},
 }
 
 -- Tank DT (Damage Taken-, Magic Evasion, Multi-Attack, Accuracy, DEX)
 -- This is for certain mobs or times that you cannot parry. Focus on DT- first, then fill in DPS gear around that.
 sets.tank_dt = {
-    ammo="Coiste Bodhar",
-    head="Nyame Helm",
+    ammo="Staunch Tathlum +1",
+    head="Erilaz Galea +3",
     body="Erilaz Surcoat +3",
     hands="Erilaz Gauntlets +3",
     legs="Eri. Leg Guards +3",
     feet="Erilaz Greaves +3",
     neck="Unmoving Collar +1",
     waist="Plat. Mog. Belt",
-    left_ear="Cryptic Earring",
-    right_ear="Sherida Earring",
+    left_ear="Eabani Earring",
+    right_ear="Erilaz Earring +2",
     left_ring="Moonlight Ring",
-    right_ring="Niqmaddu Ring",
-    back={ name="Ogma's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Parrying rate+5%',}},
+    right_ring="Vengeful Ring",
+    back={ name="Ogma's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Enmity+10','Parrying rate+5%',}},
 }
 
 --DPS 
 sets.dps = {
 	ammo="Coiste Bodhar",
-	head="Adhemar Bonnet +1",
-	body="Adhemar Jacket +1",
-	hands="Adhemar Wrist. +1",
-	legs="Meg. Chausses +2",
-	feet={ name="Herculean Boots", augments={'Attack+21','"Triple Atk."+3','STR+10','Accuracy+15',}},
-	neck="Ziel Charm",
+	head="Nyame Helm",
+	body="Nyame Mail",
+	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Null Loop",
 	waist="Ioskeha Belt +1",
 	left_ear="Cessance Earring",
 	right_ear="Sherida Earring",
@@ -745,7 +745,7 @@ end
 
 
 
-FileVersion = '9.9'
+FileVersion = '9.9.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -901,6 +901,10 @@ elseif SubWARPage ~= "Off" and player.sub_job == 'WAR' then
 	send_command('wait 2;input /macro set '..SubWARPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 ElementalSforzo = {} OdyllicSubterfuge = {} Aggressor = {} ArcaneCircle = {} Battuta = {} Berserk = {} Cocoon = {} ConsumeMana = {} Cover = {} Crusade = {} Defender = {} DivineSeal = {} Embolden = {} Gambit = {} Hasso = {} HolyCircle = {} LastResort = {} Liement = {} Lunge = {} Meditate = {} OneforAll = {} Pflug = {} Phalanx = {} Rayke = {} Refueling = {} Seigan = {} Sekkanoki = {} Sentinel = {} Souleater = {} Stoneskin = {} Swipe = {} Swordplay = {} ThirdEye = {} Valiance = {} Vallation = {} VivaciousPulse = {} Warcry = {} WardingCircle = {} WeaponBash = {}
@@ -4369,6 +4373,10 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
