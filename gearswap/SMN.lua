@@ -306,6 +306,12 @@ sets.avatar = set_combine(sets.idle, {
 	back={ name="Campestres's Cape", augments={'Pet: Acc.+20 Pet: R.Acc.+20 Pet: Atk.+20 Pet: R.Atk.+20','Eva.+20 /Mag. Eva.+20','Pet: Attack+10 Pet: Rng.Atk.+10','Pet: Haste+10','Pet: "Regen"+5',}},
 })
 
+-- Movement Speed
+-- Only used when an avatar is out and you have another movement speed buff up (ie Quickening from Garudas Fleet Wind)
+sets.avatar_movement_speed = {
+	feet="Herald's Gaiters",
+}
+
 -- DT Override (Damage Taken-, Magic Evasion)
 -- Will override all other gear sets but still inherit unused slots from them
 sets.dt_override = {
@@ -631,7 +637,7 @@ end
 
 
 
-FileVersion = '12.7.1'
+FileVersion = '12.8'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -777,6 +783,10 @@ if Page ~= "Off" and not pet.isvalid then
 	send_command('wait 2;input /macro set '..Page..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 AstralFlow = {} AstralConduit = {} Apogee = {} AvatarsFavor = {} BloodPactRage = {} BloodPactWard = {} Convert = {} DarkArts = {} DivineSeal = {} ElementalSiphon = {} LightArts = {} ManaCede = {} Sublimation = {} 
@@ -1919,6 +1929,8 @@ function choose_set()
 		elseif pet.isvalid == true then
 			if DTOverride == "On" then
 				equip(set_combine(sets.avatar, sets.dt_override))
+			elseif buffactive['Quickening'] or buffactive['Bolter\'s Roll'] or buffactive['Mazurka'] then
+				equip(set_combine(sets.avatar, sets.avatar_movement_speed))
 			else
 				equip(sets.avatar)
 			end
@@ -2046,7 +2058,7 @@ function precast(spell)
 				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_avatars_favor_fix')
 				return
 			end
-		else
+		elseif (spell.type == 'BloodPactRage' and BloodPactRage.recast < 2) or (spell.type == 'BloodPactWard' and BloodPactWard.recast < 2) then
 			equip(sets.bp_delay)
 		end
 	elseif spell.english == 'Astral Flow' then
@@ -3240,6 +3252,10 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
