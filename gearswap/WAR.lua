@@ -797,7 +797,7 @@ sets.steps = {
 
 -- Waltzes
 sets.waltzes = {
-
+	legs="Dashing Subligar",
 }
 
 -- Animated Flourish
@@ -861,7 +861,7 @@ end
 
 
 
-FileVersion = '9.0.5'
+FileVersion = '9.0.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -996,6 +996,10 @@ elseif SubNINPage ~= "Off" and player.sub_job == 'NIN' then
 	send_command('wait 2;input /macro set '..SubNINPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 MightyStrikes = {} BrazenRush = {} Aggressor = {} Berserk = {} BloodRage = {} Contradance = {} Defender = {} FlourishesI = {} FlourishesII = {} Hasso = {} HighJump = {} Jigs = {} Jump = {} Meditate = {} Restraint = {} Retaliation = {} Sambas = {} Seigan = {} Sekkanoki = {} Steps = {} SuperJump = {} ThirdEye = {} Tomahawk = {} Warcry = {} WardingCircle = {} WarriorsCharge = {}
@@ -1837,13 +1841,52 @@ local function primeAMUpdate(tp)
 end
 		
 local function useHachirinNoObi(ws)
+    local ws_elements = {
+        ["Burning Blade"] = "Fire",
+        ["Red Lotus Blade"] = "Fire",
+        ["Frostbite"] = "Ice",
+        ["Freezebite"] = "Ice",
+        ["Shining Blade"] = "Light",
+        ["Seraph Blade"] = "Light",
+    }
 
-	if ((ws == "Burning Blade" or ws == "Red Lotus Blade") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or ((ws == "Frostbite" or ws == "Freezebite") and (world.day_element == "Ice" or world.weather_element == "Ice") and not (world.day_element == "Fire" and world.weather_intensity == 1)) or ((ws == "Shining Blade" or ws == "Seraph Blade") and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
-		return true
-	else
-		return false
-	end
+    local opposites = {
+        Fire = "Water",
+        Water = "Lightning",
+        Lightning = "Earth",
+        Earth = "Wind",
+        Wind = "Ice",
+        Ice = "Fire",
+        Light = "Dark",
+        Dark = "Light",
+    }
 
+    local element = ws_elements[ws]
+    if not element then return false end
+
+    local day = world.day_element
+    local weather = world.weather_element
+    local intensity = world.weather_intensity
+
+    local bonus = 0
+    local penalty = 0
+
+    if day == element then
+        bonus = bonus + 10
+    end
+    if weather == element then
+        bonus = bonus + (intensity == 2 and 25 or 10)
+    end
+
+    local oppose = opposites[element]
+    if day == oppose then
+        penalty = penalty + 10
+    end
+    if weather == oppose then
+        penalty = penalty + (intensity == 2 and 25 or 10)
+    end
+
+    return bonus > penalty
 end
 
 -------------------------------------------
@@ -3660,6 +3703,10 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
