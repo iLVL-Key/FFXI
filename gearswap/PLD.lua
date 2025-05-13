@@ -367,17 +367,15 @@ sets.max_hp = set_combine(sets.tank, {
 	back="Moonlight Cape",
 })
 
--- MAX HP with SIRD (102%+ SIRD, HP-focused tank gear, inherits any leftover slots from the Tank set above)
+-- MAX HP with SIRD (102%+ SIRD (92% + 10% from merits), HP-focused tank gear, inherits any leftover slots from the Tank set above)
 -- NOTE: This set is only used when the "UseMaxHP" option is set to 'On'.
 sets.max_hp_sird = set_combine(sets.tank, {
 	ammo="Staunch Tathlum +1",		--11 SIRD
 	head="Souv. Schaller +1",		--20 SIRD
-	--body="Chev. Cuirass +3",		--20 SIRD (These are broken in Dyna-D)
-	body="Rev. Surcoat +3",
+	body="Chev. Cuirass +3",		--20 SIRD
 	hands="Souv. Handsch. +1",
 	legs="Founder's Hose",			--30 SIRD
-	--feet="Souveran Schuhs +1",
-	feet="Odyssean Greaves",		--20 SIRD
+	feet="Souveran Schuhs +1",
 	neck="Unmoving Collar +1",
 	waist="Plat. Mog. Belt",
 	left_ear="Tuisto Earring",
@@ -408,7 +406,7 @@ sets.dps = set_combine(sets.tank, {
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
 sets.oh_shit = {
 	head="Chev. Armet +3",
-	--body="Chev. Cuirass +3",
+	body="Chev. Cuirass +3",
 	hands="Chev. Gauntlets +3",
 	legs="Chev. Cuisses +3",
 	feet="Chev. Sabatons +3",
@@ -496,7 +494,7 @@ sets.enmity_spells = set_combine(sets.enmity, {
 	head="Chev. Armet +3",
 })
 
--- Enmity Spells with SIRD (102%+ SIRD, Fast Cast, will not be used to cast faster but instead to help reduce recast)
+-- Enmity Spells with SIRD (102%+ SIRD (92% + 10% from merits), Fast Cast, will not be used to cast faster but instead to help reduce recast)
 -- Combines with Enmity set
 -- Flash, Holy, Banish, BLU spells use this.
 sets.enmity_spells_sird = set_combine(sets.enmity, {
@@ -533,7 +531,7 @@ sets.healing = {
 	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 CP
 }
 
--- Healing with SIRD (102%+ SIRD, Cure Potency, HP+, Enmity)
+-- Healing with SIRD (102%+ SIRD (92% + 10% from merits), Cure Potency, HP+, Enmity)
 -- NOTE: Cure Potency cap is 50%, Cure Potency Received cap is 30%
 sets.healing_sird = {
 	ammo="Staunch Tathlum +1",	--11 SIRD
@@ -557,15 +555,13 @@ sets.enlight = {
 	right_ring="Stikini Ring +1",
 }
 
--- Enlight with SIRD (102%+ SIRD, Divine Magic Skill)
+-- Enlight with SIRD (102%+ SIRD (92% + 10% from merits), Divine Magic Skill)
 sets.enlight_sird = {
 	ammo="Staunch Tathlum +1",	--11 SIRD
 	head="Souv. Schaller +1",	--20 SIRD
-	--body="Chev. Cuirass +3",		--20 SIRD
-	body="Rev. Surcoat +3",
+	body="Chev. Cuirass +3",	--20 SIRD
 	legs="Founder's Hose",		--30 SIRD
-	--feet="Souveran Schuhs +1",
-	feet="Odyssean Greaves",	--20 SIRD
+	feet="Souveran Schuhs +1",
 	neck="Moonlight Necklace",	--15 SIRD
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
@@ -583,7 +579,7 @@ sets.phalanx = {
 	back="Weard Mantle",
 }
 
--- Phalanx with SIRD (102%+ SIRD, Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
+-- Phalanx with SIRD (102%+ SIRD (92% + 10% from merits), Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 sets.phalanx_sird = {
 	ammo="Staunch Tathlum +1",		--11 SIRD
 	head="Souv. Schaller +1",		--20 SIRD
@@ -596,7 +592,7 @@ sets.phalanx_sird = {
 	right_ear="Knightly Earring",	--9 SIRD
 	left_ring="Defending Ring",
 	right_ring="Stikini Ring +1",
-	back={ name="Rudianos's Mantle", augments={'HP+60','Eva.+20 /Mag. Eva.+20','HP+20','"Cure" potency +10%','Spell interruption rate down-10%',}},	--10 SIRD
+	back="Weard Mantle",
 }
 
 -- Phalanx Main/Sub (only define main and sub slots in this set, will combine as necessary)
@@ -618,7 +614,7 @@ sets.enhancing = {
 	right_ring="Stikini Ring +1",
 }
 
--- Enhancing Magic with SIRD (102%+ SIRD, Enhancing Magic Duration, Enhancing Magic Skill)
+-- Enhancing Magic with SIRD (102%+ SIRD (92% + 10% from merits), Enhancing Magic Duration, Enhancing Magic Skill)
 -- Crusade, Reprisal, Protect, and Shell use this.
 sets.enhancing_sird = {
 	ammo="Staunch Tathlum +1",		--11 SIRD
@@ -641,7 +637,7 @@ sets.protect_mainsub = {
 	--sub="Srivatsa",
 }
 
--- Raise (102%+ SIRD, Conserve MP)
+-- Raise (102%+ SIRD (92% + 10% from merits), Conserve MP)
 sets.raise = {
 	ammo="Staunch Tathlum +1",	--11 SIRD
 	head="Souv. Schaller +1",	--20 SIRD
@@ -818,7 +814,7 @@ end
 
 
 
-FileVersion = '14.8.5'
+FileVersion = '14.8.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -949,6 +945,10 @@ elseif SubSCHPage ~= "Off" and player.sub_job == 'SCH' then
 	send_command('wait 2;input /macro set '..SubSCHPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 Invincible = {} Intervene = {} Aggressor = {} Berserk = {} Chivalry = {} Cocoon = {} Cover = {} Crusade = {} DarkArts = {} Defender = {} DivineEmblem = {} Enlight = {} Fealty = {} HolyCircle = {} LightArts = {} Majesty = {} Palisade = {} Phalanx = {} Rampart = {} Refueling = {} Reprisal = {} Sentinel = {} Sepulcher = {} ShieldBash = {} Stoneskin = {} Sublimation = {} Warcry = {}
@@ -3823,6 +3823,10 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
