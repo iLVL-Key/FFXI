@@ -96,6 +96,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.9.2
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+
 Version 18.9.1
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
 - Fixed Sambas not colorizing correctly in the HUD when active.
@@ -466,6 +469,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.2.1
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+- Fixed an issue where switching subjobs too quickly would cause errors with the Weapon Cycler.
+
 Version 1.2
 - Added support for sub DNC abilities into the HUD recast.
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
@@ -516,6 +523,14 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.9
+- Added a Nuke Mode toggle between Free Nuke and Magic Burst. Keybind can be changed in Advanced Options. Basic Statuses in the HUD (Idle, Resting, etc.) will be colored based on current mode.
+- Added Magic Burst gear set.
+- Added Hachirin-no-obi gear set and rules to determine the appropriate day/weather combo to use it.
+- Added Enhancing Magic gear set.
+- Adjusted Indi- and Geo- spells in the HUD to be colored based on normal, extra (Blaze of Glory OR Ecliptic Attrition), boge (Blaze of Glory AND Ecliptic Attrition), or Bolster effect present on bubble.
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
 
 Version 14.8
 - Added TransportLock Option. Cancels the first cast of a transport spell and unlocks additional spells for 3 minutes or until you zone.
@@ -822,6 +837,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.7.5
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+
 Version 7.7.4
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
 - Fixed Sambas not colorizing correctly in the HUD when active.
@@ -979,6 +997,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.8.6
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
 
 Version 14.8.5
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
@@ -1295,6 +1316,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.9.1
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+
 Version 9.9
 - Added Weapon Skill Accuracy set. This set will be used first then inherit from the base Weapon Skill set when in any mode except DPS (DPS mode will go straight for the Weapon Skill set).
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
@@ -1534,6 +1558,10 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 15.0.5
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+- Updated the useHachirinNoObi function. Also fixed an error in determining whether or not to use the Hachirin-no-Obi under certain circumstances.
 
 Version 15.0.4
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
@@ -1810,6 +1838,11 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.8
+- Added `avatar_movement_speed` gear set. Intended to only have movement speed piece in it and will combine with the avatar gear set when an avatar is out and a movement speed buff is active. This allows having avatar gear still on when intending to also be moving quickly (putting Fleet Wind up with Garuda out will no longer cancel eachother out, lose movement speed gear going from idle set to avatar set but then gaining quickening from Fleet Wind)
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+- Fixed precast from switching gear when attempting to use a Blood Pact when they are not ready yet.
+
 Version 12.7.1
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
 
@@ -2050,6 +2083,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 9.0.6
+- Adjusted the ZoneGear option to now also set your gear when you change jobs.
+- Updated the useHachirinNoObi function.
 
 Version 9.0.5
 - Adjusted the default Aftermath colors. Flipped AM1 and AM2 for consitancy with Bars distance coloring (green --> blue --> yellow).
