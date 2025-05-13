@@ -126,7 +126,7 @@ modeName.Mode4 = 'Support'
 modeName.Mode5 = 'Tank'
 
 --  General Notifications  --
-ReraiseReminder		=	'Off'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
 NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
@@ -387,11 +387,11 @@ sets.Mode5.idle = set_combine(sets.Mode1.idle, {
 -- NOTE: All other Modes will use this DPS set unless gear is specified in each one. If you only care to use one DPS set, regardless of Mode, you may ignore the other DPS sets. They are only available should you wish to make use of them.
 sets.Mode1.melee = {
 	ammo="Coiste Bodhar",
-	head="Adhemar Bonnet +1",
-	body="Adhemar Jacket +1",
-	hands="Adhemar Wrist. +1",
+	head="Nyame Helm",
+	body="Gleti's Cuirass",
+	hands="Nyame Gauntlets",
 	legs="Gleti's Breeches",
-	feet={ name="Herculean Boots", augments={'Attack+21','"Triple Atk."+3','STR+10','Accuracy+15',}},
+	feet="Nyame Sollerets",
 	neck="Mirage Stole +2",
 	waist="Windbuffet Belt +1",
 	left_ear="Suppanomimi",
@@ -462,10 +462,8 @@ sets.weapon_skill = {
 	waist="Sailfi Belt +1",
 	left_ear="Moonshade Earring",
 	right_ear="Hashi. Earring +2",
-	left_ring="Chirich Ring +1",
-	right_ring="Chirich Ring +1",
-	-- left_ring="Karieyh Ring +1",
-	-- right_ring="Cornelia's Ring",
+	left_ring="Karieyh Ring +1",
+	right_ring="Cornelia's Ring",
 	back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
 }
 
@@ -501,9 +499,7 @@ sets["Requiescat"] = set_combine(sets.weapon_skill, {
 -- Chant du Cygne (80% DEX mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Chant du Gyne"] = set_combine(sets.weapon_skill, {
-	head="Adhemar Bonnet +1",
 	body="Gleti's Cuirass",
-	hands="Adhemar Wrist. +1",
 	legs="Gleti's Breeches",
 	feet="Aya. Gambieras +2",
 	waist="Fotia Belt",
@@ -773,7 +769,7 @@ end
 
 
 
-FileVersion = '18.9.1'
+FileVersion = '18.9.2'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -928,6 +924,10 @@ end
 -- Load BLUAlert addon
 if BLUAlert == 'On' then
 	send_command('lua load blualert')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 AzureLore = {} UnbridledWisdom = {} Aggressor = {} Berserk = {} BurstAffinity = {} ChainAffinity = {} Contradance = {} Convergence = {} Convert = {} DarkArts = {} Defender = {} Diffusion = {} DivineSeal = {} Efflux = {} ElementalSeal = {} FlourishesI = {} FlourishesII = {} HighJump = {} Jigs = {} Jump = {} LightArts = {} Sambas = {} Steps = {} Sublimation = {} SuperJump = {} UnbridledLearning = {} Warcry = {} Amplification = {} AnimatingWail = {} BarrierTusk = {} BatteryCharge = {} CarcharianVerve = {} Cocoon = {} Diamondhide = {} ErraticFlutter = {} FeatherBarrier = {} MagicBarrier = {} MementoMori = {} MightyGuard = {} NaturesMeditation = {} Occultation = {} OrcishCounterstance = {} PlasmaCharge = {} ReactorCool = {} Refueling = {} Regeneration = {} SalineCoat = {} TriumphantRoar = {} 
@@ -4062,6 +4062,10 @@ function sub_job_change(newSubjob, oldSubjob)
 
 	if GreetingDelay == -1 then
 		send_command('gs c ClearNotifications')
+	end
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
 	end
 
 end
