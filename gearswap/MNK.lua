@@ -328,7 +328,7 @@ function get_sets()
 -- NOTE: Think "Glass Cannon", lower-end content, pure stats, don't care about DT
 sets.Mode1 = {
 	ammo="Coiste Bodhar",
-	head="Adhemar Bonnet +1",
+	head="Ken. Jinpachi +1",
 	body="Mpaca's Doublet",
 	hands="Mpaca's Gloves",
 	legs="Mpaca's Hose",
@@ -345,16 +345,16 @@ sets.Mode1 = {
 -- Mode 2 (Multi-Attack W/ DT) (Example: A focus on Multi-Attack and Store TP, with enough DT to survive higher end content)
 sets.Mode2 = set_combine(sets.Mode1, {
 	ammo="Coiste Bodhar",
-	head="Ken. Jinpachi +1",
+	head="Null Masque",
 	body="Mpaca's Doublet",
 	hands="Mpaca's Gloves",
 	legs="Bhikku Hose +3",
-	feet="Mpaca's Boots",
+	feet="Bhikku Gaiters +3",
 	neck="Mnk. Nodowa +2",
 	waist="Moonbow Belt +1",
 	left_ear="Schere Earring",
 	right_ear="Sherida Earring",
-	left_ring="Hetairoi Ring",
+	left_ring="Defending Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 })
@@ -497,7 +497,7 @@ sets["Final Heaven"] = set_combine(sets.weapon_skill, {
 -- Ascetic's Fury (VIT, STR, crit+)
 sets["Ascetic's Fury"] = set_combine(sets.weapon_skill, {
 	ammo="Crepuscular Pebble",
-	head="Adhemar Bonnet +1",
+	head="Ken. Jinpachi +1",
 	body="Bhikku Cyclas +3",
 	hands="Bhikku Gloves +3",
 	legs="Mpaca's Hose",
@@ -637,7 +637,7 @@ sets.perfect_counter = {
 
 -- Impetus (Equipped during duration of Impetus)
 sets.impetus = {
-	body="bhikku Cyclas +3"
+	body="Bhikku Cyclas +3"
 }
 
 -- Hundred Fists
@@ -652,7 +652,7 @@ sets.steps = {
 
 -- Waltzes
 sets.waltzes = {
-
+	legs="Dashing Subligar",
 }
 
 -- Animated Flourish
@@ -716,7 +716,7 @@ end
 
 
 
-FileVersion = '7.7.4'
+FileVersion = '7.7.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -834,6 +834,10 @@ elseif SubDNCPage ~= "Off" and player.sub_job == 'DNC' then
 	send_command('wait 2;input /macro set '..SubDNCPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 HundredFists = {} InnerStrength = {} Aggressor = {} Berserk = {} Boost = {} Chakra = {} ChiBlast = {} Contradance = {} Counterstance = {} Defender = {} Dodge = {} FlourishesI = {} FlourishesII = {} Focus = {} Footwork = {} FormlessStrikes = {} HighJump = {} Impetus = {} Jigs = {} Jump = {} Mantra = {} PerfectCounter = {} Sambas = {} Steps = {} SuperJump = {} Warcry = {}
@@ -3374,6 +3378,10 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
