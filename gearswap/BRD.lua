@@ -759,7 +759,7 @@ sets.steps = {
 
 -- Waltzes
 sets.waltzes = {
-
+	legs="Dashing Subligar",
 }
 
 -- Animated Flourish
@@ -823,7 +823,7 @@ end
 
 
 
-FileVersion = '1.2'
+FileVersion = '1.2.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -909,6 +909,7 @@ max_songs = 2
 jp_gift_bonus_duration = 0
 num_lost_songs = 0
 missing_song_block = false
+set_weapon_timestamp = 0
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -971,6 +972,10 @@ elseif SubSCHPage ~= "Off" and player.sub_job == 'WHM' then
 	send_command('wait 2;input /macro set '..SubWHMPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 SoulVoice = {} ClarionCall = {} Contradance = {} Convert = {} DarkArts = {} DivineSeal = {} FlourishesI = {} FlourishesII = {} Jigs = {} LightArts = {} Marcato = {} Nightingale = {} Pianissimo = {} Sambas = {} Steps = {} Sublimation = {} Tenuto = {} Troubadour = {}
@@ -4596,6 +4601,11 @@ windower.register_event('prerender', function()
 			num_lost_songs = 0
 		end
 
+		if set_weapon_timestamp > 0 and os.time() >= set_weapon_timestamp then
+			set_weapon_timestamp = 0
+			setWeaponPair()
+		end
+
 	end
 end)
 
@@ -4656,7 +4666,12 @@ function sub_job_change(newSubjob, oldSubjob)
 	end
 	getHUDAbils()
 
-	setWeaponPair()
+	--Set/reset a timer to set the weapons again
+	set_weapon_timestamp = os.time() + 6
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
@@ -4754,26 +4769,28 @@ windower.register_event('action',function(act)
 
 				for i = 1, act.target_count do
 					local target_id = act.targets[i].id
-					local target_name = get_mob_by_id(target_id).name
+					local target_name = target_id and get_mob_by_id(target_id).name
 					local song_name = spells[act.param].en
 
 					-- Initialize the player's song list if it doesn't exist
-					if current_songs[target_name] == nil then
+					if target_name and current_songs[target_name] == nil then
 						current_songs[target_name] = {}
 					end
 
-					local player_songs = current_songs[target_name]
+					local player_songs = target_name and current_songs[target_name]
 					local song_count = 0
-					for _ in pairs(player_songs) do song_count = song_count + 1 end
+					if player_songs then
+						for _ in pairs(player_songs) do song_count = song_count + 1 end
+					end
 
-					if song_count < max_songs then
+					if player_songs and song_count < max_songs then
 						-- If the player has fewer songs than max_songs, add or update the song
 						player_songs[song_name] = {
 							duration = song_duration,
 							dummy = dummy_song,
 							soul_voice = soul_voice_song,
 						}
-					else
+					elseif player_songs then
 						-- If the player has max_songs or more, check if the song exists
 						if player_songs[song_name] then
 							-- Update the existing song duration
