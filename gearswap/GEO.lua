@@ -490,7 +490,7 @@ sets.elemental = {
 -- Magic Burst (Magic Burst Damage)
 -- Combines with Elemental Spells set, only necessary to set the slots with specific desired stats
 sets.magic_burst = {
-	body="Bagua Tunic",
+
 }
 
 -- Magic Accuracy (Magic Accuracy)
