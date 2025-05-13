@@ -358,7 +358,7 @@ function get_sets()
 -- Hasso Mode 1 (Example: Hasso+, with a focus on Multi-Attack, Zanshin, and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 sets.hasso.Mode1 = {
 	ammo="Coiste Bodhar",
-	head="Flam. Zucchetto +2",
+	head="Ken. Jinpachi +1",
 	body="Kasuga Domaru +3",
 	hands="Tatena. Gote +1",
 	legs="Kasuga Haidate +3",
@@ -724,7 +724,7 @@ sets.steps = {
 
 -- Waltzes
 sets.waltzes = {
-
+	legs="Dashing Subligar",
 }
 
 -- Animated Flourish
@@ -788,7 +788,7 @@ end
 
 
 
-FileVersion = '15.0.4'
+FileVersion = '15.0.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -911,6 +911,10 @@ elseif SubDNCPage ~= "Off" and player.sub_job == 'DNC' then
 	send_command('wait 2;input /macro set '..SubDNCPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 MeikyoShisui = {} Yaegasumi = {} Aggressor = {} Berserk = {} BladeBash = {} Contradance = {} FlourishesI = {} FlourishesII = {} Hagakure = {} Hamanoha = {} Hasso = {} HighJump = {} Jigs = {} Jump = {} Konzenittai = {} Meditate = {} Sambas = {} Seigan = {} Sekkanoki = {} Sengikori = {} Shikikoyo = {} Steps = {} SuperJump = {} ThirdEye = {} Warcry = {} WardingCircle = {}
@@ -1725,13 +1729,51 @@ local function primeAMUpdate(tp)
 end
 
 local function useHachirinNoObi(ws)
+    local ws_elements = {
+        ["Flaming Arrow"] = "Fire",
+        ["Tachi: Kagero"] = "Fire",
+        ["Tachi: Goten"] = "Lightning",
+        ["Tachi: Jinpu"] = "Wind",
+        ["Tachi: Koki"] = "Light",
+    }
 
-	if ((ws == "Flaming Arrow" or ws == "Tachi: Kagero") and (world.day_element == "Fire" or world.weather_element == "Fire") and not (world.day_element == "Water" and world.weather_intensity == 1)) or (ws == "Tachi: Goten" and (world.day_element == "Lightning" or world.weather_element == "Lightning") and not (world.day_element == "Earth" and world.weather_intensity == 1)) or (ws == "Tachi: Jinpu" and (world.day_element == "Wind" or world.weather_element == "Wind") and not (world.day_element == "Wind" and world.weather_intensity == 1)) or (ws == "Tachi: Koki" and (world.day_element == "Light" or world.weather_element == "Light") and not (world.day_element == "Dark" and world.weather_intensity == 1)) then
-		return true
-	else
-		return false
-	end
+    local opposites = {
+        Fire = "Water",
+        Water = "Lightning",
+        Lightning = "Earth",
+        Earth = "Wind",
+        Wind = "Ice",
+        Ice = "Fire",
+        Light = "Dark",
+        Dark = "Light",
+    }
 
+    local element = ws_elements[ws]
+    if not element then return false end
+
+    local day = world.day_element
+    local weather = world.weather_element
+    local weather_intensity = world.weather_intensity
+
+    local bonus = 0
+    local penalty = 0
+
+    if day == element then
+        bonus = bonus + 10
+    end
+    if weather == element then
+        bonus = bonus + (weather_intensity == 2 and 25 or 10)
+    end
+
+    local oppose = opposites[element]
+    if day == oppose then
+        penalty = penalty + 10
+    end
+    if weather == oppose then
+        penalty = penalty + (weather_intensity == 2 and 25 or 10)
+    end
+
+    return bonus > penalty
 end
 
 -------------------------------------------
@@ -3528,6 +3570,10 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
 
 end
 
