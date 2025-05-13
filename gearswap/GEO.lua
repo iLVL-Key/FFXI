@@ -12,6 +12,17 @@ ex:	/addons/GearSwap/data/sounds/
 
 --------------------
 
+To switch between Nuke Modes, use any of these three options:
+1. A macro
+	/console mode
+2. An alias command
+	//mode
+3. A keybind shortcut
+	CTRL+G
+	(Can be changed in the Advanced Options section)
+
+--------------------
+
 To activate Damage Taken Override, use any of these three options:
 1. A macro
 	/console dt
@@ -38,7 +49,7 @@ Suggested placement is center screen, just above your chat log.
 --]]
 
 --vIGNORE THESEv--
-sub = {} sub.WHM = {} sub.RDM = {} sub.BLM = {} sub.SCH = {} sub.OTH = {} color = {} color.hi = {} color.md = {} color.lo = {} color.Light = {} color.Fire = {} color.Ice = {} color.Air = {} color.Earth = {} color.Thunder = {} color.Water = {} color.Dark = {} color.abil = {} color.abil.ready = {} color.abil.active = {} color.abil.cooldown = {} color.abil.flash = {} color.abil.notfound = {}
+sub = {} sub.WHM = {} sub.RDM = {} sub.BLM = {} sub.SCH = {} sub.OTH = {} color = {} color.hi = {} color.md = {} color.lo = {} color.Light = {} color.Fire = {} color.Ice = {} color.Air = {} color.Earth = {} color.Thunder = {} color.Water = {} color.Dark = {} color.abil = {} color.abil.ready = {} color.abil.active = {} color.abil.cooldown = {} color.abil.flash = {} color.abil.notfound = {} color.mode = {} color.mode.free = {} color.mode.burst = {} color.bubble = {} color.bubble.normal = {} color.bubble.extra = {} color.bubble.boge = {} color.bubble.bolster = {}
 --^IGNORE THESE^--
 
 -------------------------------------------
@@ -106,6 +117,10 @@ NotiTerror			=	'On'	--[On/Off]	Displays a notification when you are terrorized.
 -------------------------------------------
 
 ShowHUD			=	'On'	--[On/Off]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
+StartMode		=	'Free'	--[Free/Burst]
+							--	Determines the Nuke Mode you will start in. Current Mode can be changed at any time by using any
+							--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
+ModeBind		=	'^g'	--Sets the keyboard shortcut you would like to cycle between Nuke Modes. CTRL+G (^g) is default.
 DTBind			=	'^d'	--Sets the keyboard shortcut you would like to activate the Damage Taken Override. CTRL+D (^d) is default.
 							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold	=	1000	--Below this number is considered Low HP.
@@ -228,6 +243,40 @@ color.abil.flash.b = 125
 color.abil.notfound.r = 125
 color.abil.notfound.g = 125
 color.abil.notfound.b = 125
+
+--HUD Nuke Modes
+
+--Free Nuke
+color.mode.free.r = 150
+color.mode.free.g = 255
+color.mode.free.b = 150
+
+--Magic Burst
+color.mode.burst.r = 100
+color.mode.burst.g = 200
+color.mode.burst.b = 255
+
+--HUD Bubbles
+
+--Normal
+color.bubble.normal.r = 150
+color.bubble.normal.g = 255
+color.bubble.normal.b = 150
+
+--Blaze of Glory OR Ecliptic Attrition
+color.bubble.extra.r = 100
+color.bubble.extra.g = 200
+color.bubble.extra.b = 255
+
+--Blaze of Glory AND Ecliptic Attrition
+color.bubble.boge.r = 200
+color.bubble.boge.g = 100
+color.bubble.boge.b = 255
+
+--Bolster
+color.bubble.bolster.r = 255
+color.bubble.bolster.g = 223
+color.bubble.bolster.b = 0
 
 -------------------------------------------
 --               GEAR SETS               --
@@ -363,6 +412,11 @@ sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	back="Aurist's Cape +1",
 })
 
+-- Hachirin-no-obi
+sets.hachirin_no_obi = {
+	waist="Hachirin-no-obi",
+}
+
 -- Fast Cast (cap is 80%)
 sets.fast_cast = {
 	sub="Chanter's Shield", --3%
@@ -433,9 +487,15 @@ sets.elemental = {
 	back={ name="Nantosuelta's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','"Mag.Atk.Bns."+10','Phys. dmg. taken-10%',}},
 }
 
+-- Magic Burst (Magic Burst Damage)
+-- Combines with Elemental Spells set, only necessary to set the slots with specific desired stats
+sets.magic_burst = {
+	body="Bagua Tunic",
+}
+
 -- Magic Accuracy (Magic Accuracy)
 sets.magic_accuracy = {
-	main="Bunzi's Rod",
+	main="Idris",
 	sub="Ammurapi Shield",
 	head="Azimuth Hood +3",
 	body="Azimuth Coat +3",
@@ -494,8 +554,6 @@ sets.aspir_drain = set_combine(sets.magic_accuracy, {
 -- Enfeeble (Enfeebling Magic Skill)
 -- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
 sets.enfeeble = set_combine(sets.magic_accuracy, {
-	main="Idris",
-	sub="Ammurapi Shield",
 	right_ring="Kishar Ring",
 })
 
@@ -529,13 +587,18 @@ sets.dispelga = {
 	main="Daybreak",
 }
 
+-- Enhancing Magic (Enhancing Magic Skill)
+sets.enhancing = set_combine(sets.buff, {
+
+})
+
 -- Phalanx (Phalanx+)
-sets.phalanx = set_combine(sets.buff, {
+sets.phalanx = set_combine(sets.enhancing, {
 
 })
 
 -- Aquaveil (Aquaveil+)
-sets.aquaveil = set_combine(sets.buff, {
+sets.aquaveil = set_combine(sets.enhancing, {
 
 })
 
@@ -623,7 +686,7 @@ end
 
 
 
-FileVersion = '14.8'
+FileVersion = '14.9'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -667,6 +730,7 @@ res = require('resources')
 texts = require('texts')
 weaponskills = res.weapon_skills
 spells = res.spells
+Mode = StartMode --sets the starting mode (selected in the Advanced Options)
 IndiSpell = 'None'
 GeoSpell = 'None'
 EntrustSpell = 'None'
@@ -736,6 +800,10 @@ elseif SubSCHPage ~= "Off" and player.sub_job == 'SCH' then
 	send_command('wait 2;input /macro set '..SubSCHPage..'')
 else
 	send_command('wait 2;input /macro set 1')
+end
+
+if ZoneGear ~= 'Off' then
+	send_command('wait 2;gs c Zone Gear')
 end
 
 Bolster = {} WidenedCompass = {} BlazeofGlory = {} CollimatedFervor = {} ConcentricPulse = {} Convert = {} DarkArts = {} Dematerialize = {} DivineSeal = {} EclipticAttrition = {} ElementalSeal = {} Entrust = {} FullCircle = {} LastingEmanation = {} LifeCycle = {} LightArts = {} MendingHalation = {} RadialArcana = {} Sublimation = {} TheurgicFocus = {}
@@ -1187,8 +1255,10 @@ end
 --            CUSTOM ALIASES             --
 -------------------------------------------
 
+send_command('alias mode gs c Mode') --creates the Mode alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('alias dt gs c DT') --creates the DT Override alias
+send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
 send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
 
 -------------------------------------------
@@ -1448,12 +1518,64 @@ end
 
 getHUDAbils()
 
+local function useHachirinNoObi(nuke_element)
+    local opposites = {
+        Fire = "Water",
+        Water = "Lightning",
+        Lightning = "Earth",
+        Earth = "Wind",
+        Wind = "Ice",
+        Ice = "Fire",
+        Light = "Dark",
+        Dark = "Light",
+    }
+
+    local day = world.day_element
+    local weather = world.weather_element
+    local weather_intensity = world.weather_intensity
+
+    local bonus = 0
+    local penalty = 0
+
+    --Positive bonuses
+    if day == nuke_element then
+        bonus = bonus + 10
+    end
+    if weather == nuke_element then
+        bonus = bonus + (weather_intensity == 2 and 25 or 10)
+    end
+
+    --Negative penalties from opposing element
+    local oppose = opposites[nuke_element]
+    if day == oppose then
+        penalty = penalty + 10
+    end
+    if weather == oppose then
+        penalty = penalty + (weather_intensity == 2 and 25 or 10)
+    end
+
+    --Use Obi only if the total bonus outweighs the penalty
+    return bonus > penalty
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
 
 function self_command(command)
-	if command == 'DT' then
+	if command == 'Mode' then
+		if Mode == 'Free' then
+			Mode = 'Burst'
+		elseif Mode == 'Burst' then
+			Mode = 'Free'
+		end
+		local new_mode = Mode == 'Free' and 'Free Nuke' or 'Magic Burst'
+		hud_noti_shdw:text('Nuke Mode set to '..new_mode)
+		hud_noti:text('Nuke Mode set to '..new_mode)
+		local c = Mode == 'Free' and color.mode.free or color.mode.burst
+		hud_noti:color(c.r,c.g,c.b)
+		NotiCountdown = NotiDelay
+	elseif command == 'DT' then
 		if DTOverride == 'Off' then
 			DTOverride = 'On'
 		elseif DTOverride == 'On' then
@@ -1461,10 +1583,11 @@ function self_command(command)
 		end
 		choose_set()
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
+		local c = Mode == 'Free' and color.mode.free or color.mode.burst
 		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif buffactive['Sneak'] and buffactive['Invisible'] then
 			hud_noti_shdw:text('Status: Sneak & Invisible')
 			hud_noti:text('Status: Sneak & Invisible')
@@ -1496,31 +1619,31 @@ function self_command(command)
 		elseif player.status == "Resting" and DTOverride == 'On' then
 			hud_noti_shdw:text('Status: Resting (DT Override)')
 			hud_noti:text('Status: Resting (DT Override)')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif player.status == "Resting" then
 			hud_noti_shdw:text('Status: Resting')
 			hud_noti:text('Status: Resting')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif player.status == "Engaged" and DTOverride == 'On' then
 			hud_noti_shdw:text('Status: Engaged (DT Override)')
 			hud_noti:text('Status: Engaged (DT Override)')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif player.status == "Engaged" then
 			hud_noti_shdw:text('Status: Engaged')
 			hud_noti:text('Status: Engaged')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif player.status == "Idle" and DTOverride == "On" then
 			hud_noti_shdw:text('Status: Idle (DT Override)')
 			hud_noti:text('Status: Idle (DT Override)')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif player.status == "Idle" then
 			hud_noti_shdw:text('Status: Idle')
 			hud_noti:text('Status: Idle')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif player.status == "Mount" then
 			hud_noti_shdw:text('Status: Mounted')
 			hud_noti:text('Status: Mounted')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		end
 	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
 		hud_debuffs_shdw:text('')
@@ -1706,6 +1829,7 @@ end
 -------------------------------------------
 
 function choose_set()
+	local c = Mode == 'Free' and color.mode.free or color.mode.burst
 	if player.status == "Resting" then
 		if LowHP == true then
 			hud_noti_shdw:text('«« Low HP »»')
@@ -1726,11 +1850,11 @@ function choose_set()
 		elseif DTOverride == 'On' then
 			hud_noti_shdw:text('Status: Resting (DT Override)')
 			hud_noti:text('Status: Resting (DT Override)')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		else
 			hud_noti_shdw:text('Status: Resting')
 			hud_noti:text('Status: Resting')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		end
 		if DTOverride == 'On' then
 			equip(set_combine(sets.rest, sets.dt_override))
@@ -1757,11 +1881,11 @@ function choose_set()
 		elseif DTOverride == 'On' then
 			hud_noti_shdw:text('Status: Engaged (DT Override)')
 			hud_noti:text('Status: Engaged (DT Override)')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		else
 			hud_noti_shdw:text('Status: Engaged')
 			hud_noti:text('Status: Engaged')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		end
 		if DTOverride == 'On' then
 			equip(set_combine(sets.melee, sets.dt_override))
@@ -1775,7 +1899,7 @@ function choose_set()
 		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
 			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		elseif buffactive['Sneak'] and buffactive['Invisible'] then
 			hud_noti_shdw:text('Status: Sneak & Invisible')
 			hud_noti:text('Status: Sneak & Invisible')
@@ -1807,11 +1931,11 @@ function choose_set()
 		elseif DTOverride == 'On' then
 			hud_noti_shdw:text('Status: Idle (DT Override)')
 			hud_noti:text('Status: Idle (DT Override)')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		else
 			hud_noti_shdw:text('Status: Idle')
 			hud_noti:text('Status: Idle')
-			hud_noti:color(255,255,255)
+			hud_noti:color(c.r,c.g,c.b)
 		end
 		if AdoulinZones:contains(world.area) then
 			equip(set_combine(sets.idle, sets.adoulin))
@@ -2029,8 +2153,12 @@ function midcast(spell)
 		equip(sets.phalanx)
 	elseif spell.english == 'Aquaveil' then
 		equip(sets.aquaveil)
+	elseif spell.skill == 'Enhancing Magic' then
+		equip(sets.enhancing)
 	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
-		equip(sets.elemental)
+		local magic_burst = Mode == 'Burst' and sets.magic_burst or nil
+		local hachirin_no_obi = useHachirinNoObi(spell.element) and sets.hachirin_no_obi or nil
+		equip(set_combine(sets.elemental, magic_burst, hachirin_no_obi))
 	elseif spell.skill == 'Enfeebling Magic' then
 		equip(sets.enfeeble)
 	elseif spell.type == 'Trust' then
@@ -2062,7 +2190,7 @@ function aftercast(spell)
 		end
 		
 		if string.find(spell.english,'Poison') then
-			SpellSH = 'Poison'
+			SpellSH = 'Poison -'
 			Base = 30
 			Bonus = 3
 			Suffix = '/tic'
@@ -2175,7 +2303,7 @@ function aftercast(spell)
 			SpellSH = 'Paralysis +'
 			Base = 15
 			Bonus = 1
-			Suffix = ''
+			Suffix = '%'
 		elseif string.find(spell.english,'Vex') then
 			SpellSH = 'Vex (M.Acc -'
 			Base = 65
@@ -2197,10 +2325,10 @@ function aftercast(spell)
 			Bonus = 4.6
 			Suffix = '%)'
 		elseif string.find(spell.english,'Gravity') then
-			SpellSH = 'Gravity +'
+			SpellSH = 'Gravity (Mv.Spd -'
 			Base = 19.9
 			Bonus = 1.1
-			Suffix = '%'
+			Suffix = '%)'
 		elseif string.find(spell.english,'Malaise') then
 			SpellSH = 'Malaise (M.Def -'
 			Base = 15
@@ -2245,7 +2373,8 @@ function aftercast(spell)
 				IndiSuffix = Suffix
 				hud_indi_spell_shdw:text(format24(IndiSpell..IndiTotal..IndiSuffix))
 				hud_indi_spell:text(format24(IndiSpell..IndiTotal..IndiSuffix))
-				hud_indi_spell:color(75,255,75)
+				local c = buffactive['Bolster'] and color.bubble.bolster or color.bubble.normal
+				hud_indi_spell:color(c.r,c.g,c.b)
 			end
 		elseif string.find(spell.english,'Geo-') then
 			if buffactive['Bolster'] then
@@ -2269,7 +2398,17 @@ function aftercast(spell)
 	elseif (spell.english == 'Full Circle' or spell.english == 'Concentric Pulse' or spell.english == 'Radial Arcana' or spell.english == 'Mending Halation') and not spell.interrupted then
 		hud_geo_spell_shdw:text(format24('None'))
 		hud_geo_spell:text(format24('None'))
-		hud_geo_spell:color(255,50,50)
+		local c = color.bubble.normal
+		if BolsteredBubble and buffactive['Bolster'] then
+			c = color.bubble.bolster
+		elseif EclipticActive and BlazeActive then
+			c = color.bubble.boge
+		elseif BlazeActive then
+			c = color.bubble.extra
+		elseif EclipticActive then
+			c = color.bubble.extra
+		end
+		hud_geo_spell:color(c.r,c.g,c.b)
 		LuopanActive = false
 	elseif spell.english == 'Bolster' and BolTimer == 'On' and not spell.interrupted then
 		if player.equipment.body == 'Bagua Tunic' or player.equipment.body == 'Bagua Tunic +1' or player.equipment.body == 'Bagua Tunic +2' or player.equipment.body == 'Bagua Tunic +3' then --these pieces extend Bolster by 30 seconds so we adjust accordingly
@@ -2350,7 +2489,8 @@ windower.register_event('gain buff', function(buff)
 	elseif buff == 612 then --Colure Active
 		hud_indi_spell_shdw:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(IndiTotal and IndiTotal or '')..(IndiSuffix and IndiSuffix or '')))
 		hud_indi_spell:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(IndiTotal and IndiTotal or '')..(IndiSuffix and IndiSuffix or '')))
-		hud_indi_spell:color(75,255,75)
+		local c = buffactive['Bolster'] and color.bubble.bolster or color.bubble.normal
+		hud_indi_spell:color(c.r,c.g,c.b)
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		send_command('gs c ClearNotifications')
 	elseif buff == 252 then --Mounted
@@ -2716,18 +2856,23 @@ windower.register_event('prerender', function()
 			hud_geo_label:text(format24('Luopan - '..pet.hpp..'%'))
 		end
 		local tempTotal = GeoTotal and GeoTotal or nil --used instead of GeoTotal so it doesn't just multiply itself every time below
+		local c = color.bubble.normal
 		if BolsteredBubble and buffactive['Bolster'] then
 			tempTotal = GeoTotal and (math.floor((GeoTotal * 2) * 100)) / 100
+			c = color.bubble.bolster
 		elseif EclipticActive and BlazeActive then
 			tempTotal = (math.floor((GeoTotal * 1.75) * 100)) / 100
+			c = color.bubble.boge
 		elseif BlazeActive then
 			tempTotal = (math.floor((GeoTotal * 1.50) * 100)) / 100
+			c = color.bubble.extra
 		elseif EclipticActive then
 			tempTotal = (math.floor((GeoTotal * 1.25) * 100)) / 100
+			c = color.bubble.extra
 		end
 		hud_geo_spell_shdw:text(format24((GeoSpell == 'None' and 'Unknown' or GeoSpell)..(tempTotal and tempTotal or '')..(GeoSuffix and GeoSuffix or '')))
 		hud_geo_spell:text(format24((GeoSpell == 'None' and 'Unknown' or GeoSpell)..(tempTotal and tempTotal or '')..(GeoSuffix and GeoSuffix or '')))
-		hud_geo_spell:color(0,255,0)
+		hud_geo_spell:color(c.r,c.g,c.b)
 		LuopanActive = true
 	elseif PetHPP ~= -1 then
 		PetHPP = -1 --We use -1 to avoid an issue with Luopan being killed not triggering this
@@ -2793,12 +2938,14 @@ windower.register_event('prerender', function()
 		end
 		if buffactive['Colure Active'] then
 			local tempTotal = IndiTotal and IndiTotal or nil --used instead of IndiTotal so it doesn't just double itself every second below
+			local c = color.bubble.normal
 			if buffactive['Bolster'] then
 				tempTotal = IndiTotal and (math.floor((IndiTotal * 2) * 100)) / 100
+				c = color.bubble.bolster
 			end
 			hud_indi_spell_shdw:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(tempTotal and tempTotal or '')..(IndiSuffix and IndiSuffix or '')))
 			hud_indi_spell:text(format24((IndiSpell == 'None' and 'Unknown' or IndiSpell)..(tempTotal and tempTotal or '')..(IndiSuffix and IndiSuffix or '')))
-			hud_indi_spell:color(0,255,0)
+			hud_indi_spell:color(c.r,c.g,c.b)
 		end
 		if NotiDoom == 'On' and buffactive['doom'] then
 			flash('Debuffs')
@@ -3235,6 +3382,10 @@ function sub_job_change(newSubjob, oldSubjob)
 	end
 	getHUDAbils()
 
+	if ZoneGear ~= 'Off' then
+		send_command('wait 2;gs c Zone Gear')
+	end
+
 end
 
 -------------------------------------------
@@ -3403,8 +3554,10 @@ function file_unload()
 	hud_abil04:destroy()
 	hud_abil05:destroy()
 	hud_abil06:destroy()
-	send_command('unalias hud')
+	send_command('unalias mode')
 	send_command('unalias dt')
+	send_command('unalias hud')
+	send_command('unbind '..ModeBind)
 	send_command('unbind '..DTBind)
 
 end
