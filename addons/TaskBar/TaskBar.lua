@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-3'
+_addon.version = '1.0 BETA-4'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -60,29 +60,43 @@ defaults = {
 		pos = {x = 300, y = 300}
 	},
 	options = {
-		color_theme = 'white',
-		colors = {
-			normal = {
-				white = {r = 140, g = 140, b = 140},
-				red = {r = 170, g = 0, b = 0},
-				orange = {r = 160, g = 90, b = 0},
-				yellow = {r = 140, g = 140, b = 0},
-				green = {r = 0, g = 170, b = 0},
-				blue = {r = 0, g = 100, b = 255},
-				pink = {r = 230, g = 0, b = 135},
-				purple = {r = 170, g = 0, b = 255},
+		action_logging = true,
+		color_themes = {
+			white = {
+				normal = {r = 140, g = 140, b = 140},
+				highlight = {r = 255, g = 255, b = 255},
 			},
-			highlight = {
-				white = {r = 255, g = 255, b = 255},
-				red = {r = 255, g = 30, b = 30},
-				orange = {r = 255, g = 150, b = 0},
-				yellow = {r = 255, g = 255, b = 0},
-				green = {r = 100, g = 255, b = 100},
-				blue = {r = 0, g = 200, b = 255},
-				pink = {r = 255, g = 135, b = 195},
-				purple = {r = 230, g = 140, b = 255},
+			red = {
+				normal = {r = 170, g = 0, b = 0},
+				highlight = {r = 255, g = 30, b = 30},
+			},
+			orange = {
+				normal = {r = 160, g = 90, b = 0},
+				highlight = {r = 255, g = 150, b = 0},
+			},
+			yellow = {
+				normal = {r = 140, g = 140, b = 0},
+				highlight = {r = 255, g = 255, b = 0},
+			},
+			green = {
+				normal = {r = 0, g = 170, b = 0},
+				highlight = {r = 100, g = 255, b = 100},
+			},
+			blue = {
+				normal = {r = 0, g = 100, b = 255},
+				highlight = {r = 0, g = 200, b = 255},
+			},
+			pink = {
+				normal = {r = 230, g = 0, b = 135},
+				highlight = {r = 255, g = 135, b = 195},
+			},
+			purple = {
+				normal = {r = 170, g = 0, b = 255},
+				highlight = {r = 230, g = 140, b = 255},
 			},
 		},
+		current_color_theme = 'white',
+		right_click_menu_bg = {r = 20, g = 20, b = 20},
 		menu_size = 14,
 		window_size = 11,
 	},
@@ -119,6 +133,7 @@ main_menu_defaults = {
 		["Abdhaljs Items"]="find abdhaljs",
 		["Etched Memories"]="find etched memory",
 		["Moglophones"] = "find moglophone;wait 1;find moogle amplifier",
+		["Omen Beads"] = "find s bead",
 		["Primer Vol. One"] = "find Ambuscade Primer Volume One",
 		["Vagary Key Items"]="find prototype pearl;wait 1;find prototype sigil pearl",
 	},
@@ -217,10 +232,16 @@ main_menu_defaults = {
 	},
 }
 
---Location of the file that is used to create the menu
-menu_file = files.new('data\\menu.lua')
+pins_defaults = {}
 
-help_msg = '--Add, remove, rename, and edit categories and commands by right-clicking anywhere on the menu in-game.\n--You can still customize the menu here in this file if you wish to.\n--Commands can be anything that Windower will accept directly into the console, no need to use the double-slashes "//" at the start.\n--String multiple Windower commands together with a semi-colon ";" between them.\n--Add a pause between commands with "wait #".\n--Send text to the games chat log using "input"\n--Example:\n--input /wave;wait 1;input /s Hello!\n\n'
+--Location of the menu and pins files
+menu_file = files.new('data\\menu.lua')
+pins_file = files.new('data\\pins.lua')
+
+--Help messages that get commented into the top of the menu and pins files
+menu_help_msg = '--Add, remove, rename, and edit categories and commands by right-clicking anywhere on the menu in-game.\n--You can still customize the menu here in this file if you wish to.\n--Commands can be anything that Windower will accept directly into the console, no need to use the double-slashes "//" at the start.\n--String multiple Windower commands together with a semi-colon ";" between them.\n--Add a pause between commands with "wait #".\n--Send text to the games chat log using "input"\n--Example:\n--input /wave;wait 1;input /s Hello!\n\n'
+
+pins_help_msg = '--Instead of manually changing this file, right-click on a command in the menu and use "Pin Command"\n\n'
 
 --If the data\menu.lua file doesn't exist, create it and say a little something to the user
 if not menu_file:exists() then
@@ -228,18 +249,26 @@ if not menu_file:exists() then
 		add_to_chat(8,('[TaskBar] ':color(220))..('Right-click anywhere on the menu to bring up customization options.'):color(8))
 		add_to_chat(8,('[TaskBar] ':color(220))..('Thanks for using TaskBar. Enjoy!  -Key'):color(8))
 	end, 1)
-	menu_file:write(help_msg..'return '..T(main_menu_defaults):tovstring())
+	menu_file:write(menu_help_msg..'return '..T(main_menu_defaults):tovstring())
 end
 
---Load the menu from the data\menu.lua file
+--If the data\pins.lua file doesn't exist, create it
+if not pins_file:exists() then
+	pins_file:write(pins_help_msg..'return '..T(pins_defaults):tovstring())
+end
+
+--Load the menu and pins from the data\menu.lua and data\pins.lua files
 main_menu_data = require('data.menu')
+pins_data = require('data.pins')
 
 mouse_is_on = nil --Used to determine where the mouse is.
 max_label_characters = 20 --Maximum number of characters a label can have. (Note that labels added via directly editing the menu.lua file that exceed this limit will automatically be truncated in the menu)
 max_command_characters = 100 --Maximum number of characters a command can have. (Note that commands added via directly editing the menu.lua file can exceed this limit with no issue)
-zoning = false --Used to toggle back and forth to hide the TashBar button when zoning
+zoning = false --Used to toggle back and forth to hide the TaskBar when zoning
+taskbar_positions = {} --Stores the main TASKBAR button as well as any pinned buttons.
 main_menu_button_positions = {} --Stores Main menu buttons created from the settings file.
 sub_menu_button_positions = {} --Stores Sub menu buttons created from the settings file.
+taskbar_char_num = 0 --Used to count the number of total characters in the taskbar including all pinned commands to help determine where buttons are.
 active_sub_menu = nil --Stores which sub menu is currently displayed.
 menu_button_right_clicked_on = nil --Stores which menu button we right-clicked on for the Right-click menu.
 active_right_click_button = nil --Stores which Right-click menu button we clicked on.
@@ -252,7 +281,7 @@ shift_down = false --Is the Shift key held down?
 confirm_yes = nil --Stores what the Yes button does in the confirmation window.
 confirm_message = nil --Stores what the confirmation message is.
 confirm_char_num = 0 --Used to count the number of characters in the confirmation message to determine how wide the confirmation window will be.
-pos_adjust_map = {} --Originally needed when the right-click menu had a different number of options depending on whether you clicked on the main or sub menu. The right-click menu still has different options but now its the same total number of options so the y position adjustment is the same. Leaving this in here in case I ever change the options and it differs again.
+pos_adjust_map = {} --The right-click menu has a different number of options depending on whether you clicked on the taskbar, main menu, or sub menu, so it needs to be adjusted upwards a different amount to line up the bottom option with the mouse.
 calculating_dimensions = false --Prevents a strange bug where if the mouse is moving while the setupMenu function is running and trying to calculate the dimensions of the main_menu it will not calculate correctly, instead returning a height and width of either 10 or sometimes 11. Moving the mouse while setupMenu runs immediately after load does not affect it, but when running it after doing things like closing the Options window it will do it. This makes no sense whatsoever. But sure, why not.
 
 --Mapping of DirectInput key codes to characters, used to translate keyboard key presses into characters in the text input window
@@ -296,18 +325,18 @@ key_map = {
 
 --UI Elements--
 
---TaskBar button
-taskbar_button = texts.new()
-taskbar_button:color(settings.text.red, settings.text.green, settings.text.blue, settings.text.alpha)
-taskbar_button:bg_color(settings.bg.red, settings.bg.green, settings.bg.blue, settings.bg.alpha)
-taskbar_button:font(settings.text.font)
-taskbar_button:size(settings.text.size)
-taskbar_button:alpha(settings.text.alpha)
-taskbar_button:bold(settings.flags.bold)
-taskbar_button:pad(0)
-taskbar_button:pos(settings.pos.x, settings.pos.y)
-taskbar_button:draggable(false)
-taskbar_button:show()
+--TaskBar
+taskbar = texts.new()
+taskbar:color(settings.text.red, settings.text.green, settings.text.blue, settings.text.alpha)
+taskbar:bg_color(settings.bg.red, settings.bg.green, settings.bg.blue, settings.bg.alpha)
+taskbar:font(settings.text.font)
+taskbar:size(settings.text.size)
+taskbar:alpha(settings.text.alpha)
+taskbar:bold(settings.flags.bold)
+taskbar:pad(0)
+taskbar:pos(settings.pos.x, settings.pos.y)
+taskbar:draggable(false)
+taskbar:show()
 
 --Menu categories
 main_menu = texts.new()
@@ -331,10 +360,10 @@ sub_menu:bold(settings.flags.bold)
 sub_menu:pad(settings.padding)
 sub_menu:draggable(false)
 
---Right-click Menu
+--Right-click Menu (uses its own separate bg_color to make it stand out a little since it overlaps the menu but the same alpha as the other windows)
 right_click_menu = texts.new()
 right_click_menu:color(settings.text.red, settings.text.green, settings.text.blue, settings.text.alpha)
-right_click_menu:bg_color(settings.bg.red, settings.bg.green, settings.bg.blue, settings.bg.alpha)
+right_click_menu:bg_color(settings.options.right_click_menu_bg.r, settings.options.right_click_menu_bg.g, settings.options.right_click_menu_bg.b, settings.bg.alpha)
 right_click_menu:font(settings.text.font)
 right_click_menu:size(settings.options.menu_size)
 right_click_menu:alpha(settings.text.alpha)
@@ -388,14 +417,14 @@ end
 --Format button text with hover effect
 function formatButton(label, hover_key, highlight_override, add_brackets)
 
-	local color = settings.options.colors.normal[settings.options.color_theme]
+	local color = settings.options.color_themes[settings.options.current_color_theme].normal
 
 	local is_hovered = (mouse_is_on == hover_key)
 	local main_menu_index = hover_key:match("^main_menu_(%d+)")
 	local is_active_menu = main_menu_index and tonumber(main_menu_index) == active_sub_menu
 
 	if highlight_override or is_hovered or is_active_menu or (hover_key == "open_taskbar" and main_menu:visible()) then
-		color = settings.options.colors.highlight[settings.options.color_theme]
+		color = settings.options.color_themes[settings.options.current_color_theme].highlight
 	end
 
 	if add_brackets then
@@ -406,12 +435,142 @@ function formatButton(label, hover_key, highlight_override, add_brackets)
 
 end
 
+--Update the TaskBar as the mouse moves to display highlights when hovering over buttons
+function updateTaskBar()
+
+	if not taskbar_positions then return end
+
+	local taskbar_text = ""
+
+	for i, pos in ipairs(taskbar_positions) do
+		local is_hovered = (mouse_over_button == pos.button)
+		local button_text = formatButton(pos.label, pos.button, is_hovered, pos.button == "open_taskbar" and true or false)
+
+		--Add a pipe separator between the pinned buttons
+		if i > 2 then
+			taskbar_text = taskbar_text.."│" --•│∙
+		end
+		
+		--Add spaces around pinned buttons (remember the first button is actually the TASKBAR button)
+		if i == 1 then
+			taskbar_text = taskbar_text..button_text
+		else
+			taskbar_text = taskbar_text.." "..button_text.." "
+		end
+	end
+
+	taskbar:text(taskbar_text)
+
+end
+
+--Setup the TaskBar. Not to be confused with the menus, which are setup below
+function setupTaskBar()
+
+	taskbar_positions = {}
+
+	local pinned_buttons = {}
+	local taskbar_char_count = 0
+
+	--Add the static TASKBAR button
+	local taskbar_label = "TASKBAR"
+	local taskbar_button = formatButton(taskbar_label, "open_taskbar", false, true)
+	local taskbar_button_length = #taskbar_label + 2 --include the brackets
+
+	table.insert(taskbar_positions, {
+		button = "open_taskbar",
+		label = taskbar_label,
+		x_begin = taskbar_char_count + 1,
+		x_end = taskbar_char_count + taskbar_button_length,
+		y = 1,
+	})
+	table.insert(pinned_buttons, taskbar_button)
+	taskbar_char_count = taskbar_char_count + taskbar_button_length
+
+	--Add pinned commands from pins_data
+	if pins_data then
+		local pinned_items = {}
+
+		for category_label, commands in pairs(pins_data) do
+			local sub_menu = main_menu_data[category_label]
+			if sub_menu then
+				local main_index
+				--Find the main_index from main_menu_button_positions
+				for i, pos in ipairs(main_menu_button_positions) do
+					if pos.label == category_label then
+						main_index = i
+						break
+					end
+				end
+
+				local button_key = "main_menu_"..main_index
+				local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
+
+				if main_index and sorted_labels then
+					--Sort the command labels for consistent order
+					local command_labels = {}
+					for command_label in pairs(commands) do
+						table.insert(command_labels, command_label)
+					end
+					table.sort(command_labels)
+
+					for _, command_label in ipairs(command_labels) do
+						--Find sub_index
+						local sub_index
+						for j, label in ipairs(sorted_labels) do
+							if label == command_label then
+								sub_index = j
+								break
+							end
+						end
+
+						if sub_index then
+							table.insert(pinned_items, {
+								category = category_label,
+								label = command_label,
+								button = string.format("sub_menu_%d_%d", main_index, sub_index),
+							})
+						end
+					end
+				end
+			end
+		end
+
+		--Sort by category label first, then command label
+		table.sort(pinned_items, function(a, b)
+			if a.category == b.category then
+				return a.label:lower() < b.label:lower()
+			else
+				return a.category < b.category
+			end
+		end)
+
+		--Insert into taskbar_positions
+		for _, item in ipairs(pinned_items) do
+			local button_length = #item.label + 2 --includes space before and after
+			table.insert(taskbar_positions, {
+				button = item.button,
+				label = item.label,
+				x_begin = taskbar_char_count + 1,
+				x_end = taskbar_char_count + button_length,
+				y = 1,
+			})
+			taskbar_char_count = taskbar_char_count + button_length + 1
+		end
+	end
+
+	taskbar_char_num = taskbar_char_count
+
+	updateTaskBar()
+
+end
+
 --Setup all the button and sub menu positions. This gets done right off the bat when the addon loads and when the menu is modified so the menus snap into place instantly instead of being calculated on the fly a split second after they appear, preventing the menu from visually "jumping". A text object has to first be visible on-screen in order to get it's dimensions to then be able to calculate where it should be placed on the screen, so we temporarily show it off-screen to do the calculations ahead of time with the user being none the wiser.
 function setupMenu()
 	
 	calculating_dimensions = true
 	main_menu_rows = 0
 	sub_menu_rows = {}
+	taskbar_positions = {}
 	main_menu_button_positions = {}
 	sub_menu_button_positions = {}
 	sub_menu_positions = {}
@@ -453,12 +612,13 @@ function setupMenu()
 	coroutine.sleep(0.1)
 
 	main_menu_total_width, main_menu_total_height = main_menu:extents()
+	main_menu_total_height = main_menu_total_height - (settings.padding * 2)
 
 	local row_height = main_menu_total_height / menu_index
 
 	pos_adjust_map = {
 		["main_menu_"] = row_height * 5, --pixel height of a row times number of rows in the right-click menu
-		["sub_menu_"] = row_height * 5
+		["sub_menu_"] = row_height * 6
 	}
 
 	--Loop again for positions and submenu setup
@@ -525,6 +685,8 @@ function setupMenu()
 	sub_menu:hide()
 	calculating_dimensions = false
 
+	setupTaskBar()
+
 end
 setupMenu() --Immediately run on addon load
 
@@ -533,11 +695,13 @@ function createNewCategory()
 	main_menu_data[keyboard_input] = {}
 
 	--Update the file
-	local file_contents = help_msg
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(keyboard_input):color(1)..(' created.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(keyboard_input):color(1)..(' created.'):color(8))
+	end
 
 	--Close the Text Input window
 	closeTextInput()
@@ -548,6 +712,7 @@ function createNewCategory()
 end
 
 function deleteCategory()
+
 	if not menu_button_right_clicked_on then return end
 
 	local index = menu_button_right_clicked_on:match("main_menu_(%d+)")
@@ -566,15 +731,18 @@ function deleteCategory()
 	table.remove(main_menu_button_positions, index)
 
 	--Update the file
-	local file_contents = help_msg
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(label):color(1)..(' deleted.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(label):color(1)..(' deleted.'):color(8))
+	end
 
 end
 
 function renameCategory()
+
 	if not menu_button_right_clicked_on then return end
 
 	local index = menu_button_right_clicked_on:match("main_menu_(%d+)")
@@ -586,19 +754,39 @@ function renameCategory()
 
 	local old_label = pos.label
 
-	--Rename in the data table
+	--Rename in the main menu data table
 	main_menu_data[keyboard_input] = main_menu_data[old_label]
 	main_menu_data[old_label] = nil
 
 	--Update the button label
 	main_menu_button_positions[index].label = keyboard_input
 
-	--Save changes to file
-	local file_contents = help_msg
+	--Rename any pinned entries for the old category
+	if pins_data[old_label] then
+		pins_data[keyboard_input] = pins_data[keyboard_input] or {}
+
+		--Move each pinned command under the new category name
+		for cmd_label, _ in pairs(pins_data[old_label]) do
+			pins_data[keyboard_input][cmd_label] = true
+		end
+
+		--Remove the old category
+		pins_data[old_label] = nil
+
+		--Save the updated pins file
+		local pins_file_contents = pins_help_msg
+		pins_file_contents = pins_file_contents..'return '..T(pins_data):tovstring()
+		pins_file:write(pins_file_contents)
+	end
+
+	--Save the updated main menu file
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(old_label):color(1)..(' renamed to '):color(8)..('%s'):format(keyboard_input):color(1)..('.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(old_label):color(1)..(' renamed to '):color(8)..('%s'):format(keyboard_input):color(1)..('.'):color(8))
+	end
 
 	--Close the Text Input window
 	closeTextInput()
@@ -608,17 +796,20 @@ function renameCategory()
 
 end
 
+--Check if a category with the same name already exists
 function categoryLabelexists()
 
-	-- Check if a category with the same name already exists
 	if main_menu_data[keyboard_input] then
 		return true
 	else
 		return false
 	end
+
 end
 
+--Check if a command with the same name already exists, if it does then return which category we're looking in
 function commandLabelexists()
+
 	if not menu_button_right_clicked_on then return end
 
 	--Which category are we in?
@@ -635,9 +826,12 @@ function commandLabelexists()
 	else
 		return false
 	end
+
 end
 
+--Save the new Command to the menu.lua file
 function createNewCommand()
+
 	if not menu_button_right_clicked_on then return end
 
 	--Which category are we in?
@@ -654,11 +848,13 @@ function createNewCommand()
 	main_menu_data[category_name][active_command_label] = keyboard_input
 
 	--Update the file
-	local file_contents = help_msg
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(active_command_label):color(1)..(' added to category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(active_command_label):color(1)..(' added to category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(8))
+	end
 
 	--Close the Text Input window
 	closeTextInput()
@@ -668,7 +864,9 @@ function createNewCommand()
 
 end
 
+--Delete this command
 function deleteCommand()
+
 	if not menu_button_right_clicked_on then return end
 
 	--Extract indexes from the clicked button
@@ -695,14 +893,19 @@ function deleteCommand()
 	sub_menu[label] = nil
 
 	--Update the file
-	local file_contents = help_msg
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(label):color(1)..(' deleted from category '):color(8)..('%s'):format(category_label):color(1)..('.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(label):color(1)..(' deleted from category '):color(8)..('%s'):format(category_label):color(1)..('.'):color(8))
+	end
+
 end
 
+--Rename the command
 function renameCommand()
+
 	if not menu_button_right_clicked_on then return end
 
 	--Extract indexes from active context menu button
@@ -715,11 +918,12 @@ function renameCommand()
 	local menu_pos = main_menu_button_positions[main_index]
 	if not menu_pos or not menu_pos.label then return end
 
-	local sub_menu = main_menu_data[menu_pos.label]
+	local category_label = menu_pos.label
+	local sub_menu = main_menu_data[category_label]
 	if not sub_menu then return end
 
 	local button_key = "main_menu_"..main_index
-	local sorted_labels = sub_menu_button_positions[button_key].sorted_labels
+	local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
 	if not sorted_labels then return end
 
 	local old_label = sorted_labels[sub_index]
@@ -732,12 +936,25 @@ function renameCommand()
 	sub_menu[old_label] = nil
 	sub_menu[keyboard_input] = command
 
-	--Update the file
-	local file_contents = help_msg
+	--Update pins_data if the old label was pinned
+	if pins_data[category_label] and pins_data[category_label][old_label] then
+		pins_data[category_label][keyboard_input] = true
+		pins_data[category_label][old_label] = nil
+
+		--Save pins_data using Windower's write
+		local file_contents = pins_help_msg
+		file_contents = file_contents..'return '..T(pins_data):tovstring()
+		pins_file:write(file_contents)
+	end
+
+	--Update the main menu data file
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(old_label):color(1)..(' renamed to '):color(8)..('%s'):format(keyboard_input):color(1)..('.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(old_label):color(1)..(' renamed to '):color(8)..('%s'):format(keyboard_input):color(1)..('.'):color(8))
+	end
 
 	--Close the Text Input window
 	closeTextInput()
@@ -747,7 +964,9 @@ function renameCommand()
 
 end
 
+--Save the edits to a current command
 function editCommand()
+
 	if not menu_button_right_clicked_on then return end
 
 	--Extract indexes from active context menu button
@@ -774,11 +993,13 @@ function editCommand()
 	sub_menu[label] = keyboard_input
 
 	--Update the file
-	local file_contents = help_msg
+	local file_contents = menu_help_msg
 	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
 	menu_file:write(file_contents)
 
-	add_to_chat(8, ('[TaskBar] ':color(220))..('Command text for '):color(8)..('%s'):format(label):color(1)..(' updated.'):color(8))
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] ':color(220))..('Command text for '):color(8)..('%s'):format(label):color(1)..(' updated.'):color(8))
+	end
 
 	--Close the Text Input window
 	closeTextInput()
@@ -788,19 +1009,104 @@ function editCommand()
 
 end
 
-function updateTaskBar()
-	taskbar_button:text(formatButton("TASKBAR", "open_taskbar", false, true))
+--Save a new pinned command to the pins.lua file
+function addPin(button)
+
+	local main_index, sub_index = button:match("pin_command_sub_menu_(%d+)_(%d+)")
+
+	main_index = tonumber(main_index)
+	sub_index = tonumber(sub_index)
+
+	local menu_pos = main_menu_button_positions[main_index]
+
+	local category = menu_pos.label
+	local sub_menu = main_menu_data[category]
+
+	local button_key = "main_menu_"..main_index
+	local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
+
+	local command_label = sorted_labels[sub_index]
+
+	-- Add to pins_data
+	pins_data[category] = pins_data[category] or {}
+	pins_data[category][command_label] = true
+
+	-- Write updated pins_data to data/pins.lua
+	local pins_file = io.open(windower.addon_path..'data/pins.lua', 'w')
+	if pins_file then
+		local file_contents = pins_help_msg..'return '..T(pins_data):tovstring()
+		pins_file:write(file_contents)
+	end
+
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] '):color(220)..('Command '):color(8)..('%s'):format(command_label):color(1)..(' pinned to the TaskBar.'):color(8))
+	end
+
+	--Reload the TaskBar layout (without closing the menus)
+	setupTaskBar()
+
 end
 
+--Remove a pinned command
+function removePin(button)
+
+	--Extract the pin key from the button name
+	local main_index, sub_index = button:match("unpin_command_sub_menu_(%d+)_(%d+)")
+	main_index = tonumber(main_index)
+	sub_index = tonumber(sub_index)
+
+	if not main_index or not sub_index then return end
+
+	--Get the category and command labels
+	local menu_pos = main_menu_button_positions[main_index]
+	if not menu_pos or not menu_pos.label then return end
+
+	local category_label = menu_pos.label
+	local sub_menu = main_menu_data[category_label]
+	local button_key = "main_menu_"..main_index
+	local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
+	if not sub_menu or not sorted_labels then return end
+
+	local command_label = sorted_labels[sub_index]
+	if not command_label then return end
+
+	--Remove the pin from pins_data
+	if pins_data[category_label] then
+		pins_data[category_label][command_label] = nil
+
+		--If no more commands are pinned in this category, remove the category
+		if next(pins_data[category_label]) == nil then
+			pins_data[category_label] = nil
+		end
+	end
+
+	--Save the updated pins_data to pins.lua
+	local pins_file = files.new('data\\pins.lua')
+	pins_file:write('return '..T(pins_data):tovstring())
+
+	if settings.options.action_logging then
+		add_to_chat(8, ('[TaskBar] '):color(220)..('Command '):color(8)..('%s'):format(command_label):color(1)..(' unpinned from the TaskBar.'):color(8))
+	end
+
+	--Reload the TaskBar layout (without closing the menus)
+	setupTaskBar()
+
+end
+
+--Close the Confirm window (Origianlly made this thinking there would be other stuff to do here but apparently not :shrug:)
 function closeConfirmWindow()
+
 	confirm_window:hide()
+
 end
 
+--Update the Confirm window as the mouse moves to display highlights when hovering over buttons
 function updateConfirmWindow()
+
 	local display_text_parts = {}
 	
-	local cn = settings.options.colors.normal[settings.options.color_theme]
-	local ch = settings.options.colors.highlight[settings.options.color_theme]
+	local cn = settings.options.color_themes[settings.options.current_color_theme].normal
+	local ch = settings.options.color_themes[settings.options.current_color_theme].highlight
 
 	local message = " \\cs("..cn.r..","..cn.g..","..cn.b..")"..confirm_message.."\\cr"
 	local message_row_length = #confirm_message
@@ -818,7 +1124,6 @@ function updateConfirmWindow()
 
 	local bottom_row = string.rep("─", message_row_length + 2)
 
-
 	--Assemble full window text
 	table.insert(display_text_parts, confirm_title.."\n\n")
 	table.insert(display_text_parts, message.."\n\n")
@@ -827,9 +1132,12 @@ function updateConfirmWindow()
 
 	display_text = table.concat(display_text_parts)
 	confirm_window:text(display_text)
+
 end
 
+--Display the Confirm window
 function displayConfirmWindow(button, message)
+
 	confirm_yes = button --Store the button that was clicked for later use
 	confirm_message = message:text_strip_format() --Srip any formatting and store the message for later use
 
@@ -839,16 +1147,21 @@ function displayConfirmWindow(button, message)
 
 end
 
+--Close the Text Input window and reset stuff back to nil state for next time
 function closeTextInput()
+
 	text_input_message = nil
 	text_input_accept = nil
 	text_input_char_num = 0
 	keyboard_input = ""
 	active_command_label = ""
 	text_input_window:hide()
+
 end
 
+--Update the Text Inpu window as the mouse moves to display highlights when hovering over buttons
 function updateTextInputWindow()
+
 	local display_text_parts = {}
 
 	--Set the minimum width of the window (category/command labels are shorter, while commands can be much longer)
@@ -857,8 +1170,8 @@ function updateTextInputWindow()
 		min_window_width = max_command_characters
 	end
 
-	local cn = settings.options.colors.normal[settings.options.color_theme]
-	local ch = settings.options.colors.highlight[settings.options.color_theme]
+	local cn = settings.options.color_themes[settings.options.current_color_theme].normal
+	local ch = settings.options.color_themes[settings.options.current_color_theme].highlight
 
 	local text_input_message_length = math.max(#text_input_message, min_window_width)
 	local padding = math.floor((text_input_message_length - #text_input_message) / 2)
@@ -893,9 +1206,12 @@ function updateTextInputWindow()
 
 	display_text = table.concat(display_text_parts)
 	text_input_window:text(display_text)
+
 end
 
+--Display the Text Input window
 function displayTextInputWindow(accept_button, message)
+
 	text_input_accept = accept_button --Store the button that was clicked for later use
 	text_input_message = message:text_strip_format() --Srip any formatting and store the message for later use
 
@@ -905,21 +1221,23 @@ function displayTextInputWindow(accept_button, message)
 
 end
 
+--Update the Options window as the mouse moves to display highlights when hovering over buttons
 function updateOptionsWindow()
+
 	local display_text_parts = {}
-	local cn = settings.options.colors.normal[settings.options.color_theme]
-	local ch = settings.options.colors.highlight[settings.options.color_theme]
+	local cn = settings.options.color_themes[settings.options.current_color_theme].normal
+	local ch = settings.options.color_themes[settings.options.current_color_theme].highlight
 
 	table.insert(display_text_parts, "\\cs("..ch.r..","..ch.g..","..ch.b..")TaskBar - Options\\cr                ")
 	table.insert(display_text_parts, formatButton("X", "close_options_window", false, true).."\n\n")
 
 	table.insert(display_text_parts, "──\\cs("..ch.r..","..ch.g..","..ch.b..")SETTINGS\\cr──────────────────────────\n\n")
 
-	table.insert(display_text_parts, " \\cs("..cn.r..","..cn.g..","..cn.b..")TaskBar Button Size:\\cr  ")
-	local current_taskbar_button_size = "\\cs("..ch.r..","..ch.g..","..ch.b..")"..string.format("%2d", settings.text.size).."\\cr "
-	table.insert(display_text_parts, current_taskbar_button_size)
-	table.insert(display_text_parts, formatButton("UP", "taskbar_button_size_up", false, true))
-	table.insert(display_text_parts, formatButton("DWN", "taskbar_button_size_down", false, true).."\n")
+	table.insert(display_text_parts, " \\cs("..cn.r..","..cn.g..","..cn.b..")TaskBar Size:\\cr         ")
+	local current_taskbar_size = "\\cs("..ch.r..","..ch.g..","..ch.b..")"..string.format("%2d", settings.text.size).."\\cr "
+	table.insert(display_text_parts, current_taskbar_size)
+	table.insert(display_text_parts, formatButton("UP", "taskbar_size_up", false, true))
+	table.insert(display_text_parts, formatButton("DWN", "taskbar_size_down", false, true).."\n")
 
 	table.insert(display_text_parts, " \\cs("..cn.r..","..cn.g..","..cn.b..")Menu Size:\\cr            ")
 	local current_menu_size = "\\cs("..ch.r..","..ch.g..","..ch.b..")"..string.format("%2d", settings.options.menu_size).."\\cr "
@@ -942,11 +1260,16 @@ function updateOptionsWindow()
 	local bold = settings.flags.bold
 	table.insert(display_text_parts, " \\cs("..cn.r..","..cn.g..","..cn.b..")Bold:\\cr                    ")
 	table.insert(display_text_parts, formatButton("ON", "bold_on", bold and true, true))
-	table.insert(display_text_parts, formatButton("OFF", "bold_off", not bold and true, true).."\n\n")
+	table.insert(display_text_parts, formatButton("OFF", "bold_off", not bold and true, true).."\n")
+
+	local chatlog = settings.options.action_logging
+	table.insert(display_text_parts, " \\cs("..cn.r..","..cn.g..","..cn.b..")Action Logging:\\cr          ")
+	table.insert(display_text_parts, formatButton("ON", "action_logging_on", chatlog and true, true))
+	table.insert(display_text_parts, formatButton("OFF", "action_logging_off", not chatlog and true, true).."\n\n")
 
 	table.insert(display_text_parts, "──\\cs("..ch.r..","..ch.g..","..ch.b..")COLOR THEME\\cr───────────────────────\n\n")
 
-	local color_theme = settings.options.color_theme
+	local color_theme = settings.options.current_color_theme
 	table.insert(display_text_parts, "  ")
 	table.insert(display_text_parts, formatButton("WHITE", "color_theme_white", color_theme == "white" and true, true).." ")
 	table.insert(display_text_parts, formatButton("RED", "color_theme_red", color_theme == "red" and true, true).." ")
@@ -965,7 +1288,7 @@ function updateOptionsWindow()
 	local author_padding = string.rep(" ", 26 - #_addon.author)
 	table.insert(display_text_parts, " \\cs("..cn.r..","..cn.g..","..cn.b..")Author: ".._addon.author..author_padding.."\\cr\n\n")
 
-	local c = settings.options.colors.normal[settings.options.color_theme]
+	local c = settings.options.color_themes[settings.options.current_color_theme].normal
 	table.insert(display_text_parts, "\\cs("..cn.r..","..cn.g..","..cn.b..")")
 	table.insert(display_text_parts, " Commands can be anything Windower\n")
 	table.insert(display_text_parts, " accepts directly into the console,\n")
@@ -983,18 +1306,25 @@ function updateOptionsWindow()
 
 	display_text = table.concat(display_text_parts)
 	options_window:text(display_text)
+
 end
 
+--Display the Options window
 function displayOptionsWindow()
+
 	updateOptionsWindow()
 	options_window:show()
+
 end
 
+--Close the Options window
 function closeOptionsWindow()
+
 	options_window:hide()
+
 end
 
---Update the Main menu
+--Update the Main menu (categories) as the mouse moves to display highlights when hovering over buttons
 function updateMainMenu()
 	local display_text_parts = {}
 
@@ -1017,9 +1347,10 @@ function updateMainMenu()
 
 	display_text = table.concat(display_text_parts)
 	main_menu:text(display_text)
+
 end
 
---Update the Sub menu
+--Update the Sub menu (commands) as the mouse moves to display highlights when hovering over buttons
 function updateSubMenu()
 	if not active_sub_menu then return end
 
@@ -1030,7 +1361,7 @@ function updateSubMenu()
 	if not sub_menu_data then return end
 
 	local button_key = "main_menu_"..active_sub_menu
-	local sorted_labels = sub_menu_button_positions[button_key].sorted_labels
+	local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
 	if not sorted_labels then return end
 
 	local display_text_parts = {}
@@ -1048,8 +1379,14 @@ function updateSubMenu()
 			formatted_label = formatted_label..string.rep(" ", max_label_characters - #formatted_label)
 		end
 
+		--Determine prefix based on pinned status
+		local prefix_char = "│"
+		if pins_data[menu_pos.label] and pins_data[menu_pos.label][label] then
+			prefix_char = "•" --∙•
+		end
+
 		local button_text = formatButton(formatted_label, button_name)
-		table.insert(display_text_parts, "│"..button_text.."\n")
+		table.insert(display_text_parts, prefix_char..button_text.."\n")
 	end
 
 	sub_menu:text(table.concat(display_text_parts))
@@ -1060,10 +1397,13 @@ function updateSubMenu()
 	if pos_data then
 		sub_menu:pos(anchor_x + pos_data.x_offset, anchor_y + pos_data.y_offset)
 	end
+
 end
 
+--Activate the command when its clicked on
 function handleSubMenuClick(button_name)
-	-- Extract indexes from button name
+
+	--Extract indexes from button name
 	local main_index, sub_index = button_name:match("sub_menu_(%d+)_(%d+)")
 	main_index = tonumber(main_index)
 	sub_index = tonumber(sub_index)
@@ -1087,16 +1427,22 @@ function handleSubMenuClick(button_name)
 	if command then
 		send_command(command)
 	end
+
 end
 
+--Update the Right-click menu as the mouse moves to display highlights when hovering over buttons
 function updateRightClickMenu(button_name)
+
 	if not menu_button_right_clicked_on then return end
 
 	local display_text_parts = {}
 
 	if menu_button_right_clicked_on:match("main_menu_") then
 		--Strip the prefix first so its not added to each button
-		button_name = button_name:gsub("^text_input_rename_category_", ""):gsub("^confirm_delete_category_", ""):gsub("^text_input_add_command_", "")
+		button_name = button_name:gsub("^text_input_rename_category_", "")
+		:gsub("^confirm_delete_category_", "")
+		:gsub("^text_input_add_command_", "")
+
 		table.insert(display_text_parts, "│"..formatButton("Rename Category", "text_input_rename_category_"..button_name).."\n")
 		table.insert(display_text_parts, "│"..formatButton("Delete Category", "confirm_delete_category_"..button_name).."\n")
 		table.insert(display_text_parts, "│"..formatButton("Add New Category", "text_input_add_category").."\n")
@@ -1104,8 +1450,40 @@ function updateRightClickMenu(button_name)
 		table.insert(display_text_parts, "│"..formatButton("Options", "open_options_window"))
 
 	elseif menu_button_right_clicked_on:match("sub_menu_") then
-		--Strip the prefix first so its not added to each button
-		button_name = button_name:gsub("^text_input_rename_command_", ""):gsub("^text_input_edit_command_", ""):gsub("^confirm_delete_command_", ""):gsub("^text_input_add_command_", "")
+		--Strip the prefix first so it's not added to each button
+		button_name = button_name:gsub("^pin_command_", "")
+			:gsub("^unpin_command_", "")
+			:gsub("^text_input_rename_command_", "")
+			:gsub("^text_input_edit_command_", "")
+			:gsub("^confirm_delete_command_", "")
+			:gsub("^text_input_add_command_", "")
+
+		--Extract main and sub index from the button name
+		local main_index, sub_index = menu_button_right_clicked_on:match("sub_menu_(%d+)_(%d+)")
+		main_index = tonumber(main_index)
+		sub_index = tonumber(sub_index)
+
+		local is_pinned = false
+		if main_index and sub_index then
+			local menu_pos = main_menu_button_positions[main_index]
+			if menu_pos and menu_pos.label then
+				local category_label = menu_pos.label
+				local button_key = "main_menu_"..main_index
+				local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
+				local command_label = sorted_labels and sorted_labels[sub_index]
+				if command_label and pins_data[category_label] and pins_data[category_label][command_label] then
+					is_pinned = true
+				end
+			end
+		end
+
+		--Is the command pinned?
+		if is_pinned then
+			table.insert(display_text_parts, "│"..formatButton("Unpin Command", "unpin_command_"..button_name).."\n")
+		else
+			table.insert(display_text_parts, "│"..formatButton("Pin Command", "pin_command_"..button_name).."\n")
+		end
+
 		table.insert(display_text_parts, "│"..formatButton("Rename Command", "text_input_rename_command_"..button_name).."\n")
 		table.insert(display_text_parts, "│"..formatButton("Edit Command", "text_input_edit_command_"..button_name).."\n")
 		table.insert(display_text_parts, "│"..formatButton("Delete Command", "confirm_delete_command_"..button_name).."\n")
@@ -1186,14 +1564,20 @@ function handleRightClickMenuClick(button)
 		displayTextInputWindow("add_category", "New category name:")
 
 	elseif button:match("confirm_delete_category_") then
-		local category_name = getCategoryLabel()
+		local category_label = getCategoryLabel()
 		active_right_click_button = "delete_category"
-		displayConfirmWindow("delete_category", string.format('Delete category "%s" and ALL COMMANDS within?', category_name))
+		displayConfirmWindow("delete_category", string.format('Delete category "%s" and ALL COMMANDS within?', category_label))
 
 	elseif button:match("text_input_rename_category_") then
 		keyboard_input = getCategoryLabel() --pre-fill the category name into the text input area
 		active_right_click_button = "rename_category"
 		displayTextInputWindow("rename_category", "Rename category:")
+
+	elseif button:match("unpin_command_") then
+		removePin(button)
+		
+	elseif button:match("pin_command_") then
+		addPin(button)
 
 	elseif button:match("text_input_add_command_") then
 		active_right_click_button = "text_input_add_command_text"
@@ -1210,11 +1594,12 @@ function handleRightClickMenuClick(button)
 		displayTextInputWindow("rename_command", "Rename command:")
 
 	elseif button:match("text_input_edit_command_") then
+		local category_label = getCategoryLabel()
 		local command_label = getCommandLabel()
 		active_command_label = command_label
 		keyboard_input = getCommandText() --pre-fill the command text into the text input area
 		active_right_click_button = "edit_command"
-		displayTextInputWindow("edit_command", string.format('Edit command text for "%s" (Windower will directly execute this text when clicked):', command_label))
+		displayTextInputWindow("edit_command", string.format('Edit command text for "%s > %s" (Windower will directly execute this text):', category_label, command_label))
 
 	elseif button == "open_options_window" then
 		displayOptionsWindow()
@@ -1225,28 +1610,6 @@ end
 
 --Return which button the mouse is hovering over
 function getMouseOnButton(mouse_x, mouse_y)
-
-	local taskbar_button_position = {
-		{button = "open_taskbar"},
-	}
-
-	--TaskBar button
-	--No need to math out how wide each button is since the entire width is the button area
-	local taskbar_grid_pos = {x = taskbar_button:pos_x(), y = taskbar_button:pos_y()}
-	local taskbar_total_width, taskbar_total_height = taskbar_button:extents()
-	local taskbar_grid_width = taskbar_total_width and taskbar_total_width or 0
-	local taskbar_grid_height = taskbar_total_height and taskbar_total_height or 0
-
-	--Determine which button the mouse is over
-	for _, pos in ipairs(taskbar_button_position) do
-		local x_start = taskbar_grid_pos.x
-		local x_end = taskbar_grid_pos.x + taskbar_grid_width
-		local y_start = taskbar_grid_pos.y
-		local y_end = taskbar_grid_pos.y + taskbar_grid_height
-		if mouse_x >= x_start and mouse_x <= x_end and mouse_y >= y_start and mouse_y <= y_end then
-			return pos.button
-		end
-	end
 
 	--Confirm Window buttons
 	if confirm_window:visible() then
@@ -1303,11 +1666,11 @@ function getMouseOnButton(mouse_x, mouse_y)
 		local options_grid_width = options_total_width and options_total_width - (settings.padding * 2) --Width of the grid area (excludes padding)
 		local options_grid_height = options_total_height and options_total_height - (settings.padding * 2) --Height of the grid area (excludes padding)
 		local options_button_width = options_grid_width and options_grid_width / 36 or 0
-		local options_button_height = options_grid_height and options_grid_height / 30 or 0
+		local options_button_height = options_grid_height and options_grid_height / 31 or 0
 		local options_button_positions = {
 			{button = "close_options_window", x_begin = 34, x_end = 36, y = 1},
-			{button = "taskbar_button_size_up", x_begin = 27, x_end = 30, y = 5},
-			{button = "taskbar_button_size_down", x_begin = 31, x_end = 35, y = 5},
+			{button = "taskbar_size_up", x_begin = 27, x_end = 30, y = 5},
+			{button = "taskbar_size_down", x_begin = 31, x_end = 35, y = 5},
 			{button = "menu_size_up", x_begin = 27, x_end = 30, y = 6},
 			{button = "menu_size_down", x_begin = 31, x_end = 35, y = 6},
 			{button = "window_size_up", x_begin = 27, x_end = 30, y = 7},
@@ -1316,17 +1679,19 @@ function getMouseOnButton(mouse_x, mouse_y)
 			{button = "bg_alpha_down", x_begin = 31, x_end = 35, y = 8},
 			{button = "bold_on", x_begin = 27, x_end = 30, y = 9},
 			{button = "bold_off", x_begin = 31, x_end = 35, y = 9},
-			{button = "color_theme_white", x_begin = 3, x_end = 9, y = 13},
-			{button = "color_theme_red", x_begin = 11, x_end = 15, y = 13},
-			{button = "color_theme_orange", x_begin = 17, x_end = 24, y = 13},
-			{button = "color_theme_yellow", x_begin = 26, x_end = 33, y = 13},
-			{button = "color_theme_green", x_begin = 3, x_end = 9, y = 14},
-			{button = "color_theme_blue", x_begin = 11, x_end = 16, y = 14},
-			{button = "color_theme_pink", x_begin = 19, x_end = 24, y = 14},
-			{button = "color_theme_purple", x_begin = 26, x_end = 33, y = 14},
-			{button = "github", x_begin = 1, x_end = 8, y = 30},
-			{button = "discord", x_begin = 10, x_end = 18, y = 30},
-			{button = "confirm_default", x_begin = 28, x_end = 36, y = 30},
+			{button = "action_logging_on", x_begin = 27, x_end = 30, y = 10},
+			{button = "action_logging_off", x_begin = 31, x_end = 35, y = 10},
+			{button = "color_theme_white", x_begin = 3, x_end = 9, y = 14},
+			{button = "color_theme_red", x_begin = 11, x_end = 15, y = 14},
+			{button = "color_theme_orange", x_begin = 17, x_end = 24, y = 14},
+			{button = "color_theme_yellow", x_begin = 26, x_end = 33, y = 14},
+			{button = "color_theme_green", x_begin = 3, x_end = 9, y = 15},
+			{button = "color_theme_blue", x_begin = 11, x_end = 16, y = 15},
+			{button = "color_theme_pink", x_begin = 19, x_end = 24, y = 15},
+			{button = "color_theme_purple", x_begin = 26, x_end = 33, y = 15},
+			{button = "github", x_begin = 1, x_end = 8, y = 31},
+			{button = "discord", x_begin = 10, x_end = 18, y = 31},
+			{button = "confirm_default", x_begin = 28, x_end = 36, y = 31},
 		}
 
 		--Determine which button the mouse is over
@@ -1362,13 +1727,36 @@ function getMouseOnButton(mouse_x, mouse_y)
 			}
 
 		elseif menu_button_right_clicked_on:match("sub_menu_") then
-			right_click_menu_button_height = right_click_menu_grid_height and right_click_menu_grid_height / 5 or 0
+			right_click_menu_button_height = right_click_menu_grid_height and right_click_menu_grid_height / 6 or 0
+
+			--Parse main and sub indexes
+			local main_index, sub_index = menu_button_right_clicked_on:match("sub_menu_(%d+)_(%d+)")
+			main_index = tonumber(main_index)
+			sub_index = tonumber(sub_index)
+
+			local is_pinned = false
+			if main_index and sub_index then
+				local menu_pos = main_menu_button_positions[main_index]
+				if menu_pos and menu_pos.label then
+					local category_label = menu_pos.label
+					local button_key = "main_menu_"..main_index
+					local sorted_labels = sub_menu_button_positions[button_key] and sub_menu_button_positions[button_key].sorted_labels
+					local command_label = sorted_labels and sorted_labels[sub_index]
+					if command_label and pins_data[category_label] and pins_data[category_label][command_label] then
+						is_pinned = true
+					end
+				end
+			end
+
+			local pin_button = (is_pinned and "unpin_command_" or "pin_command_")..menu_button_right_clicked_on
+
 			right_click_menu_button_positions = {
-				{button = "text_input_rename_command_"..menu_button_right_clicked_on, y = 1},
-				{button = "text_input_edit_command_"..menu_button_right_clicked_on, y = 2},
-				{button = "confirm_delete_command_"..menu_button_right_clicked_on, y = 3},
-				{button = "text_input_add_command_"..menu_button_right_clicked_on, y = 4},
-				{button = "open_options_window", y = 5},
+				{button = pin_button, y = 1},
+				{button = "text_input_rename_command_"..menu_button_right_clicked_on, y = 2},
+				{button = "text_input_edit_command_"..menu_button_right_clicked_on, y = 3},
+				{button = "confirm_delete_command_"..menu_button_right_clicked_on, y = 4},
+				{button = "text_input_add_command_"..menu_button_right_clicked_on, y = 5},
+				{button = "open_options_window", y = 6},
 			}
 
 		end
@@ -1384,13 +1772,34 @@ function getMouseOnButton(mouse_x, mouse_y)
 			end
 		end
 
+	else
+
+		--TaskBar
+		local taskbar_grid_pos = {x = taskbar:pos_x(), y = taskbar:pos_y() - settings.padding}
+		local taskbar_total_width, taskbar_total_height = taskbar:extents()
+		local taskbar_grid_width = taskbar_total_width and taskbar_total_width --Width of the grid area
+		local taskbar_grid_height = taskbar_total_height and taskbar_total_height --Height of the grid area
+		local taskbar_button_width = taskbar_grid_width and taskbar_grid_width / taskbar_char_num or 0
+		local taskbar_button_height = taskbar_grid_height and taskbar_grid_height or 0
+
+		--Determine which button the mouse is over
+		for _, pos in ipairs(taskbar_positions) do
+			local x_start = taskbar_grid_pos.x + (taskbar_button_width * (pos.x_begin - 1))
+			local x_end = taskbar_grid_pos.x +  + (taskbar_button_width * pos.x_end)
+			local y_start = taskbar_grid_pos.y + settings.padding + (taskbar_button_height * (pos.y - 1))
+			local y_end = taskbar_grid_pos.y + settings.padding + (taskbar_button_height * pos.y)
+			if mouse_x >= x_start and mouse_x <= x_end and mouse_y >= y_start and mouse_y <= y_end then
+				return pos.button
+			end
+		end
+
 	end
 
 	--Main menu buttons
 	--No need to math out how wide each button is since the entire width is the button area
 	if main_menu:visible() and not right_click_menu:visible() then
 		local main_menu_grid_pos = {x = main_menu:pos_x(), y = main_menu:pos_y() + settings.padding}
-		local main_menu_grid_width = main_menu_total_width and main_menu_total_width --Width of the grid area
+		local main_menu_grid_width = main_menu_total_width and main_menu_total_width + (settings.padding * 2) --Width of the grid area (have to add padding to this, I think extents() includes padding for y but not for x?)
 		local main_menu_grid_height = main_menu_total_height and main_menu_total_height - (settings.padding * 2) --Height of the grid area (excludes padding)
 		local main_menu_button_height = main_menu_grid_height and main_menu_grid_height / main_menu_rows or 0
 
@@ -1458,12 +1867,14 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
 	-- print(mouse_is_on)
 
+	updateTaskBar()
+
 	--Activate/show main menu when hovering over task bar
 	if mouse_is_on == "open_taskbar" and not (main_menu:visible() or right_click_menu:visible() or text_input_window:visible() or confirm_window:visible()) then
 		main_menu:show()
 		coroutine.schedule(function()
 			main_menu_total_width, main_menu_total_height = main_menu:extents()
-			local pos = {x = taskbar_button:pos_x(), y = taskbar_button:pos_y() - main_menu_total_height}
+			local pos = {x = taskbar:pos_x(), y = taskbar:pos_y() - main_menu_total_height}
 			main_menu:pos(pos.x, pos.y)
 		end, 0.05)
 		updateTaskBar()
@@ -1483,15 +1894,15 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				closeOptionsWindow()
 				setupMenu()
 
-			elseif mouse_is_on == "taskbar_button_size_up" then
+			elseif mouse_is_on == "taskbar_size_up" then
 				settings.text.size = math.min(20, settings.text.size + 1)
-				taskbar_button:size(settings.text.size)
+				taskbar:size(settings.text.size)
 				updateOptionsWindow()
 				settings:save('all')
 
-			elseif mouse_is_on == "taskbar_button_size_down" then
+			elseif mouse_is_on == "taskbar_size_down" then
 				settings.text.size = math.max(5, settings.text.size - 1)
-				taskbar_button:size(settings.text.size)
+				taskbar:size(settings.text.size)
 				updateOptionsWindow()
 				settings:save('all')
 
@@ -1529,7 +1940,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 			elseif mouse_is_on == "bg_alpha_up" then
 				settings.bg.alpha = math.min(255, settings.bg.alpha + 15)
-				taskbar_button:bg_alpha(settings.bg.alpha)
+				taskbar:bg_alpha(settings.bg.alpha)
 				main_menu:bg_alpha(settings.bg.alpha)
 				sub_menu:bg_alpha(settings.bg.alpha)
 				right_click_menu:bg_alpha(settings.bg.alpha)
@@ -1541,7 +1952,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 			elseif mouse_is_on == "bg_alpha_down" then
 				settings.bg.alpha = math.max(0, settings.bg.alpha - 15)
-				taskbar_button:bg_alpha(settings.bg.alpha)
+				taskbar:bg_alpha(settings.bg.alpha)
 				main_menu:bg_alpha(settings.bg.alpha)
 				sub_menu:bg_alpha(settings.bg.alpha)
 				right_click_menu:bg_alpha(settings.bg.alpha)
@@ -1553,7 +1964,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 			elseif mouse_is_on == "bold_on" then
 				settings.flags.bold = true
-				taskbar_button:bold(settings.flags.bold)
+				taskbar:bold(settings.flags.bold)
 				main_menu:bold(settings.flags.bold)
 				sub_menu:bold(settings.flags.bold)
 				right_click_menu:bold(settings.flags.bold)
@@ -1565,7 +1976,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 			elseif mouse_is_on == "bold_off" then
 				settings.flags.bold = false
-				taskbar_button:bold(settings.flags.bold)
+				taskbar:bold(settings.flags.bold)
 				main_menu:bold(settings.flags.bold)
 				sub_menu:bold(settings.flags.bold)
 				right_click_menu:bold(settings.flags.bold)
@@ -1575,8 +1986,18 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				updateOptionsWindow()
 				settings:save('all')
 
+			elseif mouse_is_on == "action_logging_on" then
+				settings.options.action_logging = true
+				updateOptionsWindow()
+				settings:save('all')
+
+			elseif mouse_is_on == "action_logging_off" then
+				settings.options.action_logging = false
+				updateOptionsWindow()
+				settings:save('all')
+
 			elseif mouse_is_on == "color_theme_white" then
-				settings.options.color_theme = "white"
+				settings.options.current_color_theme = "white"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1584,7 +2005,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_red" then
-				settings.options.color_theme = "red"
+				settings.options.current_color_theme = "red"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1592,7 +2013,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_orange" then
-				settings.options.color_theme = "orange"
+				settings.options.current_color_theme = "orange"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1600,7 +2021,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_yellow" then
-				settings.options.color_theme = "yellow"
+				settings.options.current_color_theme = "yellow"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1608,7 +2029,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_green" then
-				settings.options.color_theme = "green"
+				settings.options.current_color_theme = "green"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1616,7 +2037,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_blue" then
-				settings.options.color_theme = "blue"
+				settings.options.current_color_theme = "blue"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1624,7 +2045,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_pink" then
-				settings.options.color_theme = "pink"
+				settings.options.current_color_theme = "pink"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1632,7 +2053,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings:save('all')
 
 			elseif mouse_is_on == "color_theme_purple" then
-				settings.options.color_theme = "purple"
+				settings.options.current_color_theme = "purple"
 				updateOptionsWindow()
 				updateTaskBar()
 				updateMainMenu()
@@ -1703,22 +2124,22 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				settings.options.window_size = defaults.options.window_size
 				settings.bg.alpha = defaults.bg.alpha
 				settings.flags.bold = defaults.flags.bold
-				settings.options.color_theme = defaults.options.color_theme
-				taskbar_button:size(defaults.text.size)
+				settings.options.current_color_theme = defaults.options.color_theme
+				taskbar:size(defaults.text.size)
 				main_menu:size(defaults.options.menu_size)
 				sub_menu:size(defaults.options.menu_size)
 				right_click_menu:size(defaults.options.menu_size)
 				text_input_window:size(defaults.options.window_size)
 				confirm_window:size(defaults.options.window_size)
 				options_window:size(defaults.options.window_size)
-				taskbar_button:bg_alpha(defaults.bg.alpha)
+				taskbar:bg_alpha(defaults.bg.alpha)
 				main_menu:bg_alpha(defaults.bg.alpha)
 				sub_menu:bg_alpha(defaults.bg.alpha)
 				right_click_menu:bg_alpha(defaults.bg.alpha)
 				text_input_window:bg_alpha(defaults.bg.alpha)
 				confirm_window:bg_alpha(defaults.bg.alpha)
 				options_window:bg_alpha(defaults.bg.alpha)
-				taskbar_button:bold(defaults.flags.bold)
+				taskbar:bold(defaults.flags.bold)
 				main_menu:bold(defaults.flags.bold)
 				sub_menu:bold(defaults.flags.bold)
 				right_click_menu:bold(defaults.flags.bold)
@@ -1747,6 +2168,20 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 	elseif text_input_window:visible() then
 		updateTextInputWindow()
 
+		local function getCategoryName()
+			if not menu_button_right_clicked_on then return end
+
+			local index = menu_button_right_clicked_on:match("menu_(%d+)")
+			if not index then return end
+
+			index = tonumber(index)
+			local pos = main_menu_button_positions[index]
+			if not pos or not pos.label then return end
+
+			local label = pos.label
+			return label
+		end
+
 		if mouse_type == 1 then --leftmousedown
 			if mouse_is_on ~= "none" then
 				return true --blocked from reaching game
@@ -1767,9 +2202,10 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(28))
 					displayTextInputWindow("text_input_add_command_text", "New command name:")
 				else
+					local category_name = getCategoryName()
 					active_command_label = keyboard_input
 					keyboard_input = ""
-					displayTextInputWindow("add_command", string.format('New command text for "%s" (Windower will directly execute this text when clicked):', active_command_label))
+					displayTextInputWindow("add_command", string.format('New command text for "%s > %s" (Windower will directly execute this text):', category_name, active_command_label))
 				end
 
 			elseif mouse_is_on == "rename_command" then
@@ -1811,16 +2247,20 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 			elseif mouse_is_on == "add_command" then
 				if keyboard_input == "" then
+					--Get the name of the category we're in
+					local category_name = getCategoryName()
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Command text must not be empty.'):color(28))
-					displayTextInputWindow("add_command", string.format('New command text for "%s" (Windower will directly execute this text when clicked):', active_command_label))
+					displayTextInputWindow("add_command", string.format('New command text for "% > %s" (Windower will directly execute this text):', category_name, active_command_label))
 				else
 					createNewCommand()
 				end
 
 			elseif mouse_is_on == "edit_command" then
 				if keyboard_input == "" then
+					--Get the name of the category we're in
+					local category_name = getCategoryName()
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Command text must not be empty.'):color(28))
-					displayTextInputWindow("add_command", string.format('New command text for "%s" (Windower will directly execute this text when clicked):', active_command_label))
+					displayTextInputWindow("add_command", string.format('Edit command text for "%s > %s" (Windower will directly execute this text):', category_name, active_command_label))
 				else
 					editCommand()
 				end
@@ -1854,7 +2294,12 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 			else
 				--Clicked on a Sub menu button, Do The Thing and also close the menus
 				handleRightClickMenuClick(mouse_is_on)
-				closeMenus()
+				if not (mouse_is_on:match("^unpin_command") or mouse_is_on:match("^pin_command")) then
+					closeMenus()
+				else
+					right_click_menu:hide()
+					updateSubMenu()
+				end
 			end
 
 			return true --blocked from reaching game
@@ -1947,9 +2392,43 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 	end
 
+	--Pinned buttons
+	if not main_menu:visible() then
+		if mouse_is_on:match("sub_menu_") then
+			if mouse_type == 2 then --leftmouseup
+				handleSubMenuClick(mouse_is_on)
+			elseif mouse_type == 5 then --rightmouseup
+				--Store the button we right-clicked on so we can use it later
+				menu_button_right_clicked_on = mouse_is_on
+
+				local pos_adjust = 0
+				pos_adjust = pos_adjust_map["sub_menu_"]
+				right_click_menu:pos(mouse_x, mouse_y - pos_adjust)
+				right_click_menu:show()
+				updateRightClickMenu(mouse_is_on)
+
+			end
+			return true --blocked from reaching game
+		end
+	end
+
 end)
 
 register_event('keyboard', function(dik, down, flags, blocked)
+
+	local function getCategoryName()
+		if not menu_button_right_clicked_on then return end
+
+		local index = menu_button_right_clicked_on:match("menu_(%d+)")
+		if not index then return end
+
+		index = tonumber(index)
+		local pos = main_menu_button_positions[index]
+		if not pos or not pos.label then return end
+
+		local label = pos.label
+		return label
+	end
 
 	--Update shift key state
 	if dik == 0x2A or dik == 0x36 then --Left Shift and Right Shift
@@ -1985,9 +2464,10 @@ register_event('keyboard', function(dik, down, flags, blocked)
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(28))
 						displayTextInputWindow("text_input_add_command_text", "New command name:")
 					else
+						local category_name = getCategoryName()
 						active_command_label = keyboard_input
 						keyboard_input = ""
-						displayTextInputWindow("add_command", string.format('New command text for "%s" (Windower will directly execute this text when clicked):', active_command_label))
+						displayTextInputWindow("add_command", string.format('New command text for "%s > %s" (Windower will directly execute this text):', category_name, active_command_label))
 					end
 
 				elseif active_right_click_button == "rename_command" and active_command_label == "" then
@@ -2004,7 +2484,7 @@ register_event('keyboard', function(dik, down, flags, blocked)
 					end
 	
 				elseif active_right_click_button == "add_category" and active_command_label == "" then
-					-- Check if a category with the same name already exists
+					--Check if a category with the same name already exists
 					if keyboard_input == "" then
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Category name must not be empty.'):color(28))
 						displayTextInputWindow("add_category", "New category name:")
@@ -2016,7 +2496,7 @@ register_event('keyboard', function(dik, down, flags, blocked)
 					end
 
 				elseif active_right_click_button == "rename_category" and active_command_label == "" then
-					-- Check if a category with the same name already exists
+					--Check if a category with the same name already exists
 					if keyboard_input == "" then
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Category name must not be empty.'):color(28))
 						displayTextInputWindow("rename_category", "Rename category:")
@@ -2029,16 +2509,20 @@ register_event('keyboard', function(dik, down, flags, blocked)
 
 				elseif text_input_accept == "add_command" then
 					if keyboard_input == "" then
+						--Get the name of the category we're in
+						local category_name = getCategoryName()
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Command text must not be empty.'):color(28))
-						displayTextInputWindow("add_command", string.format('New command text for "%s" (Windower will directly execute this text when clicked):', active_command_label))
+						displayTextInputWindow("add_command", string.format('New command text for "%s > %s" (Windower will directly execute this text):', category_name, active_command_label))
 					else
 						createNewCommand()
 					end
 
 				elseif text_input_accept == "edit_command" then
 					if keyboard_input == "" then
+						--Get the name of the category we're in
+						local category_name = getCategoryName()
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Command text must not be empty.'):color(28))
-						displayTextInputWindow("add_command", string.format('New command text for "%s" (Windower will directly execute this text when clicked):', active_command_label))
+						displayTextInputWindow("add_command", string.format('New command text for "%s > %s" (Windower will directly execute this text):', category_name, active_command_label))
 					else
 						editCommand()
 					end
@@ -2082,10 +2566,10 @@ register_event('prerender', function()
 	local pos = get_position()
 	if pos == "(?-?)" and not zoning then
 		zoning = true
-		taskbar_button:hide()
+		taskbar:hide()
 	elseif pos ~= "(?-?)" and zoning then
 		zoning = false
-		taskbar_button:show()
+		taskbar:show()
 	end
 
 end)
@@ -2094,7 +2578,7 @@ register_event('addon command',function(add_cmd)
 
 	add_to_chat(8,('[TaskBar] ':color(220))..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220))
 	add_to_chat(8,' ')
-	add_to_chat(8,('Right-click on the menu to bring up different options.'):color(8))
+	add_to_chat(8,('Right-click anywhere on the menu to bring up customization options.'):color(8))
 	add_to_chat(8,' ')
 	add_to_chat(8,('This addon has no keyboard commands. Have a great day :)'):color(8))
 
