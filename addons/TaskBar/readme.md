@@ -1,6 +1,6 @@
 # Taskbar
 
-TaskBar is a quality-of-life Windower addon for Final Fantasy XI that adds a customizable, in-game Windows Start Menu-style interface for quick access to commonly used addon commands. It features a static "TASKBAR" button that opens up the menu, alongside user-defined pinned commands from any sub-menu, allowing players to execute key actions with minimal navigation. The taskbar updates dynamically when pins are added or removed and supports hover highlighting for easier selection. Designed to streamline gameplay and reduce menu clutter, TaskBar enhances efficiency without sacrificing immersion.
+TaskBar is a quality-of-life Windower addon for Final Fantasy XI that adds a customizable, in-game Windows Start Menu-style interface for quick access to commonly used addon commands. It features a static "TASKBAR" button that opens up the menu, alongside user-defined pinned commands from any sub-menu, allowing players to execute key actions with minimal navigation. The taskbar updates dynamically when pins are added or removed and supports hover highlighting for easier selection. Designed to streamline gameplay and reduce menu clutter, TaskBar enhances efficiency without sacrificing immersion.  
 
 ![TaskBar_menu](https://github.com/user-attachments/assets/8b238787-4784-4e96-959e-fd1bbfebd414)  
 ↑ Opening the TaskBar, Blue color theme shown.
@@ -41,3 +41,5 @@ TaskBar is a quality-of-life Windower addon for Final Fantasy XI that adds a cus
 
 - **None!**
 
+## Please Note
+Taskbar is only a mouse/menu based UI for running pre-defined, customizable Windower commands. It does not add the functionality of any of the default commands included. You will need to already have them loaded in order to function (i.e. If you do not have SuperWarp loaded, the "Travel" commands will do nothing). You may freely delete any categories/commands you do not have addons for, they are included only as examples and to get you started.
