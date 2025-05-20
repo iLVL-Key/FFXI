@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.2.5'
+_addon.version = '5.2.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -2177,24 +2177,24 @@ end
 
 --Incoming chat message - NOTE: these are checking incoming packets, messages originating from yourself will not trigger them
 --(tells work though because they go out to the server first then back to you as the receiver)
-register_event('chat message', function(message, sender, mode)
+register_event('chat message', function(message, sender, chat_mode)
 
 	local l_name = string.lower(sender)
 
 	--Ignore if the message sender sent another command within the
 	--flood_delay timeframe, and limit to tells(3) and party chat(4)
-	if flood_delay[l_name] or not (mode == 3 or mode == 4) then
+	if flood_delay[l_name] or not (chat_mode == 3 or chat_mode == 4) then
 		return
 	end
 
 
 	--Send a score update to the message sender
-	if message:lower():match("^report") and mode == 3 then
+	if message:lower():match("^report") and chat_mode == 3 then
 		reportPlayerScores(l_name)
 		return
 
 	--Add/remove the message sender to the Optout list
-	elseif message:lower():match("^optout") and mode == 3 then
+	elseif message:lower():match("^optout") and chat_mode == 3 then
 		if settings.optout[l_name] then
 			removeFromOptout(l_name)
 			newChatMessage('/t '..sender..' [LB] You have been removed from the Optout list.')
@@ -2289,7 +2289,7 @@ register_event('chat message', function(message, sender, mode)
 	end
 
 	--Mog Kart Mode commands (limited to tells(3))
-	if mode == 'Mog Kart' and mode == 3 then
+	if mode == 'Mog Kart' and chat_mode == 3 then
 
 		--Use an item
 		if message:lower():match("^item") then
