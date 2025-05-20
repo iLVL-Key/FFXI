@@ -103,6 +103,9 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 
 ### Version History
 
+**5.2.6**
+- Fixed an error introduced in version 5.1 that broke Mog Kart from activating items or returning an items info when a player sends a tell with those commands.
+
 **5.2.5**
 - Adjusted the getActor function to be more efficient. This function runs every time an action happens to determine if it was a player, or pet of a player, we are tracking and returns the appropriate data table.
 
