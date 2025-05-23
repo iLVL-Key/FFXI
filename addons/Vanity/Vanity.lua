@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '3.1.1'
+_addon.version = '3.1.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -162,14 +162,16 @@ local function getLocation()
 	--Check special locations
 	if zone_name:find("^Dynamis") then
 		return 'dynamis'
-	elseif zone_name == "Walk of Echoes [P1]" then
+	elseif zone_name:find("^Walk of Echoes") and prev_zone_name == "Rabao" then
 		return 'odyssey'
 	elseif zone_name == "Reisenjima Henge" then
 		return 'omen'
-	elseif zone_name == "Outer Ra'Kaznar [U2]" then
-		return 'sortie'
-	elseif zone_name == "Outer Ra'Kaznar [U1]" then
-		return 'vagary'
+	elseif zone_name:find("^Outer Ra'Kaznar") then
+		if prev_zone_name == "Kamihr Drifts" then
+			return 'sortie'
+		elseif prev_zone_name == "Outer Ra'Kaznar" then
+			return 'vagary'
+		end
 	elseif settings.town_zones:contains(zone_name) or win.get_info().mog_house then
 		return 'town'
 	end
