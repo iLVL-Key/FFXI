@@ -54,6 +54,9 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 3.1.2
+- Fixed an issue with Sortie and Vagary zones not being identified correctly.
+
 Version 3.1.1
 - Fixed a saving issue with multiple characters. (Thanks again Mekaider!)
 
