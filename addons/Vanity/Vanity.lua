@@ -67,17 +67,6 @@ town_zones = settings.town_zones
 Heartbeat = 0
 job_change_timestamp = 0
 
---Turn the entire string into all uppercase
-function uppercase(str)
-
-	local uppercased = string.gsub(str, "%a", function(letter)
-		return letter:upper()
-	end)
-
-	return uppercased
-
-end
-
 --Determine what type of location we are in
 function getLocation(old_zone_id)
 	
@@ -265,7 +254,7 @@ function listAllLockstyles()
 
 		--Only print if at least one lockstyle category is enabled
 		if #parts > 0 then
-			add_to_chat(8, (uppercase(job)):color(1).." - "..table.concat(parts, "  "))
+			add_to_chat(8, (job):color(1).." - "..table.concat(parts, "  "))
 		end
 	end
 end
@@ -292,7 +281,7 @@ function displayLockstyles(job, location)
 	local loc = location == "combat" and " Combat" or " Town"
 
 	add_to_chat(8, ('[Vanity] '):color(220)..
-		(uppercase(job)..loc):color(1)..
+		(job..loc):color(1)..
 		(' %s: '):format(num_count == 1 and 'lockstyle' or 'lockstyles'):color(8)..
 		(list):color(list == 'x' and 39 or 1)..
 		(list == 'x' and ' (Disabled)' or ''):color(8)..
