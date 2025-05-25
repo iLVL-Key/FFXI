@@ -54,6 +54,10 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.0
+- Overhauled how lockstyle data is saved. No longer saved inside the settings file but instead in it's own data/lockstyles.lua file.
+- Added ability to specify main/sub and main/range combos by name or skill (ex. sword + sword, sword + shield, sword + gun, dagger + gun)
+
 Version 3.1.2
 - Fixed an issue with Sortie and Vagary zones not being identified correctly.
 
