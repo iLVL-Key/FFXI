@@ -337,8 +337,7 @@ function addLockstyle(job, location, lockstyle_num)
 	lockstyles_data[player_name][job] = new_str
 
 	--Write updated lockstyles_data back to file
-	local file_contents = lockstyles_help_msg..'return '..T(lockstyles_data):tovstring()
-	lockstyles_file:write(file_contents)
+	lockstyles_file:write(lockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
 
 	--Display the updated changes to the player
 	displayLockstyles(job, location)
@@ -388,8 +387,7 @@ function removeLockstyle(job, location, lockstyle_num)
 	lockstyles_data[player_name][job] = new_str
 
 	--Write updated lockstyles_data back to file
-	local file_contents = lockstyles_help_msg..'return '..T(lockstyles_data):tovstring()
-	lockstyles_file:write(file_contents)
+	lockstyles_file:write(lockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
 
 	--Display the updated changes to the player
 	displayLockstyles(job, location)
@@ -659,8 +657,7 @@ function initialize()
 		end
 
 		--Save old lockstyle data to lockstyles.lua file
-		local file_contents = lockstyles_help_msg..'return '..T(lockstyles_data):tovstring()
-		lockstyles_file:write(file_contents)
+		lockstyles_file:write(lockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
 
 		add_to_chat(8, ('[Vanity] '):color(220)..('Migration of old lockstyle data complete for '):color(8)..(player_name):color(1)..('.'):color(8))
 		add_to_chat(8, ('[Vanity] '):color(220)..('You may safely delete lockstyle data for '):color(8)..(player_name):color(1)..(' in '):color(8)..('data/settings.xml '):color(1)..('if you wish.'):color(8))
@@ -673,8 +670,7 @@ function initialize()
 		if not migrated then
 			lockstyles_data = default_lockstyles
 			add_to_chat(8, ('[Vanity] '):color(220)..('Created default lockstyle data for '):color(8)..(player_name):color(1)..('.'):color(8))
-			local file_contents = lockstyles_help_msg..'return '..T(lockstyles_data):tovstring()
-			lockstyles_file:write(file_contents)
+			lockstyles_file:write(flockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
 		end
 	else
 		--File already exists, load it
@@ -686,8 +682,7 @@ function initialize()
 			if not migrated then
 				lockstyles_data[player_name] = default_lockstyles[player_name]
 				add_to_chat(8, ('[Vanity] '):color(220)..('Created default lockstyle data for '):color(8)..(player_name):color(1)..('.'):color(8))
-				local file_contents = lockstyles_help_msg..'return '..T(lockstyles_data):tovstring()
-				lockstyles_file:write(file_contents)
+				lockstyles_file:write(lockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
 			end
 		end
 	end
