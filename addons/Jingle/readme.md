@@ -32,7 +32,7 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
 - Added `//jin` as a command prefix.
 - Added the ability to add and remove a target using the current cursor target. Simply target something and type `//jin a` to add the current targets name to the Target list, `//jin r` to remove it.
 - Added `flood_delay` option. Determines how much time after a target goes out of range before it can be considered "nearby" again.
-- Adjusted code for checking for nearby targets to be much more effecient, reducing a bunch of redundancies.
+- Adjusted code for checking for nearby targets to be much more efficient, reducing a bunch of redundancies.
 
 1.2
 - Added ability to search by id and hex id as well as by name.
