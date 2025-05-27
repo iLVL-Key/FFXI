@@ -16,11 +16,12 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
 ## Commands ##
 All commands must be preceded with `//jingle`   (ex: `//jingle list`)  
 `[optional] <required>`
- - `add/a` \<target> \[sound_file_name] - Add a target with an optional sound file.
+ - `add/a` \[target] \[sound_file_name] - Add a target with an optional sound file.
    - Valid targets: Names (ex: Oseem), IDs (ex: 17809550), Hex IDs (ex: 08E).
    - Use quotes to surround an NPC/mob name that contains spaces.
-   - Do not include the extension in the sound file name.
- - `remove/r` \<target> - Remove a target.
+   - If no target supplied, the current cursor target name will be used with the default sound.
+   - Do not include the extension (.wav) in the sound file name.
+ - `remove/r` \[target] - Remove a target.
  - `list/l` - Show the list of targets and sounds associated.
  - `distance/d` <#1-50> - Set the detection distance.
  - `test/t` \<sound_file_name> - Test a sound file. Do not include the extension.
