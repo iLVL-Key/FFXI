@@ -101,7 +101,30 @@ targets_data = {}
 if not targets_file:exists() then
 
 	--Migrate legacy targets from settings file to new targets_data format
-	function migrateTargetsFromSettings()
+	local function migrateTargetsFromSettings()
+		local function convertToDisplay(target)
+			local function capitalize(str)
+				-- Check if we think the string is a hex id
+				local containsNumbers = string.match(str, "%d") ~= nil
+				local isSpecialCase = #str == 3 and not string.match(str, "[G-Zg-z]")
+				-- Hex ids get all their letters capitalized
+				if containsNumbers or isSpecialCase then
+					local capitalized = string.gsub(str, "(%a+)", function(word)
+						return string.upper(word)
+					end)
+					return capitalized
+				-- Otherwise we assume it's a name and capitalize it as such
+				else
+					local capitalized = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
+						return string.upper(firstLetter)..string.lower(rest)
+					end)
+					return capitalized
+				end
+			end
+			target = capitalize(target) -- capitalize names
+			target = string.gsub(target, "_", " ") --convert underscores to spaces
+			return target
+		end
 		local migrated_targets = {}
 		--Check if an old targets table exists in the settings file
 		if settings.targets then
@@ -109,9 +132,7 @@ if not targets_file:exists() then
 			for key, value in pairs(settings.targets) do
 				local readable_key = convertToDisplay(key)
 				if not migrated_targets[readable_key] then
-					migrated_targets[readable_key] = {
-						soundfile = value.soundfile or ''
-					}
+					migrated_targets[readable_key] = value.soundfile or 'default'
 				end
 			end
 			add_to_chat(8,('[Jingle] '):color(220)..('Migration of old target data complete.'):color(36))
