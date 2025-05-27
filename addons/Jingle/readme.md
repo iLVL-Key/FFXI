@@ -6,7 +6,9 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
 
 ## Features ##
  - Plays only once until the target moves out of range again.
+   - Flood Delay setting so a Target right at the edge of nearby distance won't spam.
  - Will work using names, IDs, or Hex IDs (great for NM placeholders).
+   - Leave blank to use your current cursor target.
  - Can specify a sound to play for each target.
    - Not including a specific sound to play will set to the default.wav sound.
  - Will play any .wav file you save to the /data/sounds folder.
