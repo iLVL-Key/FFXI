@@ -25,64 +25,14 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
    - New sounds added to the /data/sounds folder must be .wav format.
  - `help` - Display a list of commands and addon info.
 
-## Sortie targets ##
-Copy the following into your settings file (inside the targets) for all the Sortie targets. The top 8 sets of numbers are the IDs for the 4 exit bitzers in the basement, for some reason using the name for the as a target does not work correctly, and there are multiple sets.
-<details>
-<summary>Sortie Targets</summary>
- 
-```
-            <21005124>
-                <soundfile>default</soundfile>
-            </21005124>
-            <21005125>
-                <soundfile>default</soundfile>
-            </21005125>
-            <21005126>
-                <soundfile>default</soundfile>
-            </21005126>
-            <21005127>
-                <soundfile>default</soundfile>
-            </21005127>
-            <21001028>
-                <soundfile>default</soundfile>
-            </21001028>
-            <21001029>
-                <soundfile>default</soundfile>
-            </21001029>
-            <21001030>
-                <soundfile>default</soundfile>
-            </21001030>
-            <21001031>
-                <soundfile>default</soundfile>
-            </21001031>
-            <abject_obdella>
-                <soundfile>default</soundfile>
-            </abject_obdella>
-            <biune_porxie>
-                <soundfile>default</soundfile>
-            </biune_porxie>
-            <cachaemic_bhoot>
-                <soundfile>default</soundfile>
-            </cachaemic_bhoot>
-            <demisang_deleterious>
-                <soundfile>default</soundfile>
-            </demisang_deleterious>
-            <esurient_botulus>
-                <soundfile>default</soundfile>
-            </esurient_botulus>
-            <fetid_ixion>
-                <soundfile>default</soundfile>
-            </fetid_ixion>
-            <gyvewrapped_naraka>
-                <soundfile>default</soundfile>
-            </gyvewrapped_naraka>
-            <haughty_tulittia>
-                <soundfile>default</soundfile>
-            </haughty_tulittia>
-```
-</details>
-
 ## Version History ##
+
+2.0
+- Overhauled how target data is saved. Now saves as a lua table in separate targets.lua file instead of saving as xml data inside the settings file. This approach allows for much easier handling of target names. No need to convert names with spaces and apostrophes to a format that xml can parse, instead saved as a direct string key exactly how it should be spelled.
+- Added `//jin` as a command prefix.
+- Added the ability to add and remove a target using the current cursor target. Simply target something and type `//jin a` to add the current targets name to the Target list, `//jin r` to remove it.
+- Added `flood_delay` option. Determines how much time after a target goes out of range before it can be considered "nearby" again.
+- Adjusted code for checking for nearby targets to be much more effecient, reducing a bunch of redundancies.
 
 1.2
 - Added ability to search by id and hex id as well as by name.
