@@ -51,7 +51,6 @@ settings = config.load(defaults)
 --Default/example targets to pre-populate the targets.lua file
 default_targets = {
 	["Abject Obdella"] = "default",
-	["Agatsum"] = "default",
 	["Aurix"] = "default",
 	["Biune Porxie"] = "default",
 	["Cachaemic Bhoot"] = "default",
