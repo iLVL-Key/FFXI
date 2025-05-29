@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.1'
+_addon.version = '5.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -38,7 +38,7 @@ res = require('resources')
 defaults = {}
 
 defaults.first_load = true
-local default_layout = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
+default_layout = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
@@ -156,26 +156,26 @@ defaults.food = {}
 
 settings = config.load(defaults)
 
-local use_colors = settings.options.colors
-local options = settings.options
-local colors = settings.colors
-local food = settings.food
-local flags = settings.flags
+use_colors = settings.options.colors
+options = settings.options
+colors = settings.colors
+food = settings.food
+flags = settings.flags
 
-local get_info = windower.ffxi.get_info
-local add_to_chat = windower.add_to_chat
-local get_map_data = windower.ffxi.get_map_data
-local register_event = windower.register_event
-local get_player = windower.ffxi.get_player
-local get_items = windower.ffxi.get_items
-local get_bag_info = windower.ffxi.get_bag_info
-local get_mob_by_target = windower.ffxi.get_mob_by_target
-local get_position = windower.ffxi.get_position
-local get_mob_by_id = windower.ffxi.get_mob_by_id
+get_info = windower.ffxi.get_info
+add_to_chat = windower.add_to_chat
+get_map_data = windower.ffxi.get_map_data
+register_event = windower.register_event
+get_player = windower.ffxi.get_player
+get_items = windower.ffxi.get_items
+get_bag_info = windower.ffxi.get_bag_info
+get_mob_by_target = windower.ffxi.get_mob_by_target
+get_position = windower.ffxi.get_position
+get_mob_by_id = windower.ffxi.get_mob_by_id
 
-local informer_main = texts.new('${current_string}', settings)
+informer_main = texts.new('${current_string}', settings)
 
-local informer_sub1 = texts.new('${current_string}')
+informer_sub1 = texts.new('${current_string}')
 informer_sub1:alpha(options.sub1.alpha)
 informer_sub1:bg_alpha(options.sub1.bg_alpha)
 informer_sub1:draggable(false)
@@ -183,9 +183,9 @@ informer_sub1:font(settings.text.font)
 informer_sub1:right_justified(options.sub1.right_aligned)
 informer_sub1:pos(options.sub1.pos_x, options.sub1.pos_y)
 informer_sub1:size(options.sub1.size)
-local sub1_visible = false
+sub1_visible = false
 
-local informer_sub2 = texts.new('${current_string}')
+informer_sub2 = texts.new('${current_string}')
 informer_sub2:alpha(options.sub2.alpha)
 informer_sub2:bg_alpha(options.sub2.bg_alpha)
 informer_sub2:draggable(false)
@@ -193,35 +193,37 @@ informer_sub2:font(settings.text.font)
 informer_sub2:right_justified(options.sub2.right_aligned)
 informer_sub2:pos(options.sub2.pos_x, options.sub2.pos_y)
 informer_sub2:size(options.sub2.size)
-local sub2_visible = false
+sub2_visible = false
 
-local last_item_used = nil
-local master_level = nil
-local loading_inv = false
-local login_loading = false
-local loading_check = false
-local zoning = true
-local layout_main = ''
-local layout_sub1 = ''
-local layout_sub2 = ''
-local zone_name = ''
-local region_name = ''
-local game_day = ''
-local game_time = ''
-local earth_time_raw = os.time()
-local earth_time = ''
-local earth_date = ''
-local earth_day = ''
-local weather = ''
-local inventory = ''
-local food = "No Food"
-local reraise = 'No Reraise'
-local name = ''
-local job = ''
-local tp = ''
-local gil = '0'
-local moon_phase = ''
-local moon_percent = '0'
+last_item_used = nil
+master_level = nil
+loading_inv = false
+login_loading = false
+loading_check = false
+zoning = true
+layout_main = ''
+layout_sub1 = ''
+layout_sub2 = ''
+zone_name = ''
+region_name = ''
+game_day = ''
+game_time = ''
+earth_time_raw = os.time()
+earth_time = ''
+earth_date = ''
+earth_day = ''
+weather = ''
+inventory = ''
+food = "No Food"
+reraise = 'No Reraise'
+name = ''
+job = ''
+tp = ''
+gil = '0'
+moon_phase = "Waiting for moon update..."
+moon_percent = nil
+last_moon_value = nil
+moon_direction = nil
 
 function firstLoadMessage()
 	add_to_chat(220,'[Informer] '..('First load detected.'):color(8))
@@ -284,7 +286,7 @@ function foodActive()
 end
 
 -- Replace ${track:Item Name}
-local function updateTrackItems(loading)
+function updateTrackItems(loading)
 
 	-- Count the number of given item and return the number and the color
 	local function countItem(item_id)
@@ -372,7 +374,7 @@ local function updateTrackItems(loading)
 end
 
 -- Update Zone
-local function updateZone()
+function updateZone()
 	local zone_id = get_info().zone
 	local zone = res.zones[zone_id].name
 	local zone_width = options.min_width.zone
@@ -459,7 +461,7 @@ local function updateZone()
 end
 
 -- Update Game Day
-local function updateGameDay()
+function updateGameDay()
 	local day_width = options.min_width.day
 	local day = string.format("%-"..day_width.."s", res.days[get_info().day].name)
 	local game_day_color = colors.none
@@ -470,7 +472,7 @@ local function updateGameDay()
 end
 
 -- Update Game Time
-local function updateGameTime()
+function updateGameTime()
 	local game = get_info()
 	local game_time_hour = math.floor(game.time/60)
 	local game_time_minute = game.time - (math.floor(game.time/60)*60)
@@ -491,14 +493,14 @@ local function updateGameTime()
 end
 
 -- Update Earth Time
-local function updateEarthData()
+function updateEarthData()
 	earth_date = os.date(options.earth_date_format)
 	earth_day = os.date(options.earth_day_format)
 	earth_time = os.date(options.earth_time_format)
 end
 
 -- Update Weather
-local function updateWeather()
+function updateWeather()
 	local weather_width = options.min_width.weather
 	local formatted_weather = string.format("%-"..weather_width.."s", res.weather[get_info().weather].name)
 	local weather_color = colors.none
@@ -509,7 +511,7 @@ local function updateWeather()
 end
 
 -- Update Inventory
-local function updateInventory(loading)
+function updateInventory(loading)
 	local inventory_color = colors.none
 	local inv = ''
 
@@ -531,7 +533,7 @@ local function updateInventory(loading)
 end
 
 -- Update Food
-local function updateFood()
+function updateFood()
 	local player = get_player()
 	local food_width = options.min_width.food
 	local formatted_food = "No Food"
@@ -551,7 +553,7 @@ local function updateFood()
 end
 
 -- Update Reraise
-local function updateReraise()
+function updateReraise()
 
 	-- Check if we have reraise active
 	local function reraiseActive()
@@ -582,18 +584,18 @@ local function updateReraise()
 end
 
 -- Update Player Name
-local function updatePlayerName()
+function updatePlayerName()
 	name = get_player().name
 end
 
 -- Update Player Job
-local function updatePlayerJob()
+function updatePlayerJob()
 	local player = get_player()
 	job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
 end
 
 -- Update TP
-local function updateTP(player_tp)
+function updateTP(player_tp)
 	local tp_width = options.min_width.tp
 	local player = get_player()
 	player_tp = player and player.vitals.tp or 0
@@ -606,7 +608,7 @@ local function updateTP(player_tp)
 end
 
 -- Update Gil
-local function updateGil(player_tp)
+function updateGil(player_tp)
 	local gil_width = options.min_width.gil
 	local player_gil = get_items().gil
 	player_gil = addCommas(player_gil)
@@ -614,7 +616,7 @@ local function updateGil(player_tp)
 end
 
 -- Get Direction
-local function getDirection()
+function getDirection()
 	local player = get_mob_by_target('me')
 	local facing = player and player.facing or 10
 	local pi = math.pi
@@ -640,7 +642,7 @@ local function getDirection()
 end
 
 -- Get Target
-local function getTarget(name_type)
+function getTarget(name_type)
 	local player = get_player()
 	local target_width = options.min_width.target
 	local target = get_mob_by_target('st') or get_mob_by_target('t')
@@ -681,10 +683,51 @@ local function getTarget(name_type)
 	end
 end
 
-local function updateMoon()
-	local moon = get_info()
-	moon_percent = tostring(moon.moon)
-	moon_phase = res.moon_phases[moon.moon_phase].en
+function updateMoon()
+
+	local moon_phases_by_range = {
+		{min = 0, max = 5, dir = "up", phase = "New Moon"},
+		{min = 6, max = 38, dir = "up", phase = "Waxing Crescent"},
+		{min = 39, max = 55, dir = "up", phase = "First Quarter Moon"},
+		{min = 56, max = 88, dir = "up", phase = "Waxing Gibbous"},
+		{min = 89, max = 100, dir = "up", phase = "Full Moon"},
+		{min = 95, max = 100, dir = "down", phase = "Full Moon"},
+		{min = 94, max = 62, dir = "down", phase = "Waning Gibbous"},
+		{min = 61, max = 43, dir = "down", phase = "Last Quarter Moon"},
+		{min = 25, max = 12, dir = "down", phase = "Waning Crescent"},
+		{min = 11, max = 0, dir = "down", phase = "New Moon"},
+	}
+
+	local info = get_info()
+	local current = info.moon
+
+	moon_percent = tostring(current)
+
+	--Determine direction
+	if last_moon_value then
+		if current > last_moon_value then
+			moon_direction = "up"
+		elseif current < last_moon_value then
+			moon_direction = "down"
+		end
+	end
+
+	--Determine moon phase once we know the direction
+	if moon_direction then
+		for _, phase_info in ipairs(moon_phases_by_range) do
+			if moon_direction == phase_info.dir then
+				--Check if current % falls within this phase's range
+				if current >= math.min(phase_info.min, phase_info.max) and current <= math.max(phase_info.min, phase_info.max) then
+					moon_phase = phase_info.phase
+					break
+				end
+			end
+		end
+	end
+
+	--Update last value
+	last_moon_value = current
+
 end
 
 function updateInformerMain()
@@ -797,7 +840,7 @@ function addCommas(number)
 		end
 
 		while insertIndex < length do
-			formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+			formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 			insertIndex = insertIndex + 4
 			length = length + 1
 		end
@@ -1103,7 +1146,7 @@ register_event('addon command',function(addcmd, ...)
 	-- Update the font size
 	elseif addcmd == 'size' or addcmd == 'fontsize' then
 		local size = {...}
-		
+
 		-- If there are no parameters then output the current size and remind how to update
 		if #size < 1 then
 			add_to_chat(220,'[Informer] '..('Font size:'):color(36)..(' '..settings.text.size):color(200))
