@@ -103,6 +103,10 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 
 ### Version History
 
+Version 5.3
+- Overhauled how live data is saved. Now saved as lua tables in data/live.lua instead of xml format in data/live.xml. This approach allows for much easier handling of actor names. No need to internally convert names with spaces or apostrophes to a format that xml can parse (Looking at you, Selh'teus), instead saved as a direct string key exactly how it should be spelled. Not a major version update since this file is nothing the user should be interacting with anyway.
+- Added a number of code efficiency improvements under the hood.
+
 **5.2.6**
 - Fixed an error introduced in version 5.1 that broke Mog Kart from activating items or returning an items info when a player sends a tell with those commands.
 
