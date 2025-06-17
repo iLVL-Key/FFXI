@@ -30,7 +30,7 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
 
 ## Version History ##
 
-Version 2.1
+2.1
 - Added `temp/t` command. Will add a new temporary target to be tracked. Automatically removed when the player zones. Can also be removed like normal with the `remove` command.
 - Adjusted the `add` and `test` commands to remove any extension in the name of the sound file provided by the user. Files must still be in the .wav format in order to work, but now the commands no longer care if an extension is included in the command or not.
 - Removed the `t` shorthand alias from the `test` command, it has been repurposed for the `temp` command.
