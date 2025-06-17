@@ -367,6 +367,7 @@ color = {
 WeaponCycle = {
 	{"Carnwenhan", "Genmei Shield"},
 	{"Naegling", "Genmei Shield"},
+	{"Mpu Gandring", "Genmei Shield"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -375,6 +376,9 @@ WeaponCycle = {
 DualWieldCycle = {
 	{"Carnwenhan", "Gleti's Knife"},
 	{"Naegling", "Centovente"},
+	{"Naegling", "Gleti's Knife"},
+	{"Mpu Gandring", "Centovente"},
+	{"Mpu Gandring", "Gleti's Knife"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -397,7 +401,7 @@ function get_sets()
 -- NOTE: Do not use weapons in this set or it will override your Weapon Cycle choice every time you disengage.
 sets.idle = {
 	head="Fili Calot +3",
-	body="Nyame Mail",
+	body="Ashera Harness",
 	hands="Nyame Gauntlets",
 	legs="Nyame Flanchard",
 	feet="Fili Cothurnes +3",
@@ -438,8 +442,8 @@ sets.rest = {
 -- Melee (Accuracy, Multi Attack, DEX, Store TP, Attack)
 sets.melee = {
 	range={ name="Linos", augments={'Accuracy+14','"Dbl.Atk."+2','Quadruple Attack +2',}},
-	head="Nyame Helm",
-	body="Nyame Mail",
+	head="Bunzi's Hat",
+	body="Ashera Harness",
 	hands="Nyame Gauntlets",
 	legs="Nyame Flanchard",
 	feet="Nyame Sollerets",
@@ -733,8 +737,8 @@ sets.cursna = {
 	legs="Vanya Slops",
 	feet="Vanya Clogs",
 	neck="Nicander's Necklace",
-	ring1="Haoma's Ring",
-	ring2="Haoma's Ring",
+	left_ring="Haoma's Ring",
+	right_ring="Haoma's Ring",
 }
 
 -- Soul Voice (Enhances Soul Voice gear)
@@ -752,14 +756,27 @@ sets.troubadour = {
 	body="Bihu Justaucorps",
 }
 
--- Steps
+-- Steps (physical accuracy)
 sets.steps = {
-
+	head="Fili Calot +3",
+	body="Fili Hongreline +3",
+	hands="Fili Manchettes +3",
+	legs="Fili Rhingrave +3",
+	feet="Fili Cothurnes +3",
+	neck="Null Loop",
+	waist="Null Belt",
+	left_ear="Digni. Earring",
+	right_ear="Fili Earring +2",
+	left_ring="Chirich Ring +1",
+	right_ring="Chirich Ring +1",
+	back="Null Shawl",
 }
 
 -- Waltzes
 sets.waltzes = {
+	range={ name="Linos", augments={'Mag. Evasion+14','"Waltz" potency +3%',}},
 	legs="Dashing Subligar",
+	left_ring="Valseur's Ring",
 }
 
 -- Animated Flourish
@@ -775,8 +792,8 @@ sets.violent_flourish = {
 -- Holy Water (Holy Water+)
 sets.holy_water = {
 	neck="Nicander's Necklace",
-	ring1="Blenmot's Ring +1",
-	ring2="Blenmot's Ring +1",
+	left_ring="Blenmot's Ring +1",
+	right_ring="Blenmot's Ring +1",
 }
 
 -- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
@@ -823,7 +840,7 @@ end
 
 
 
-FileVersion = '1.2.1'
+FileVersion = '1.2.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -881,7 +898,6 @@ Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 announceAlive = false --simple flip when we raise to make sure the AliveDelay command and notification text is only done once
 DangerCountdown = 0
 NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
-WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
 EquipMain = ''
 EquipSub = ''
 EquipRange = ''
@@ -1615,7 +1631,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -1646,6 +1662,7 @@ end
 
 --Set the initial main/sub weapon pair
 local function setWeaponPair()
+	WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
 	if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
 		if hasDualWield() then
 			pair = DualWieldCyclePlusAbyssea[WeaponCycleIndex]
@@ -1654,7 +1671,7 @@ local function setWeaponPair()
 		end
 	else --otherwise, use just the basic WeaponCycle table
 		if hasDualWield() then
-			pair = WeaponCycle[WeaponCycleIndex]
+			pair = DualWieldCycle[WeaponCycleIndex]
 		else
 			pair = WeaponCycle[WeaponCycleIndex]
 		end
@@ -2244,7 +2261,7 @@ local function getSongDuration(spell)
 		multiplier = multiplier + .11
 	elseif player.equipment.feet == "Brioso Slippers +2" then
 		multiplier = multiplier + .13
-	elseif player.equipment.feet == "Brioso Slippers +3" then
+	elseif player.equipment.feet == "Brioso Slippers +3" or player.equipment.feet == "Brioso Slippers +4" then
 		multiplier = multiplier + .15
 	end
 
@@ -2304,7 +2321,7 @@ local function getSongDuration(spell)
 	elseif string.find(spell,'Paeon') then
 		if player.equipment.head == "Brioso Roundlet" or player.equipment.head == "Brioso Roundlet +1" or player.equipment.head == "Brioso Roundlet +2" then
 			multiplier = multiplier + .1
-		elseif player.equipment.head == "Brioso Roundlet +3" then
+		elseif player.equipment.head == "Brioso Roundlet +3" or player.equipment.head == "Brioso Roundlet +4" then
 			multiplier = multiplier + .2
 		end
 	elseif spell == "Sentinel's Scherzo" then
@@ -2384,7 +2401,7 @@ local function getCurrentSongList()
 
 	--Store party members' names based on their position
 	for i = 0, 5 do
-		local position = 'p' .. i
+		local position = 'p'..i
 		if party[position] and party[position].name then
 			table.insert(party_order, party[position].name)
 		end
@@ -2739,7 +2756,7 @@ function self_command(command)
 			hud_noti_shdw:text('Status: Weakness')
 			hud_noti:text('Status: Weakness')
 			hud_noti:color(205,133,63)
-		elseif player.mpp <= 20 then
+		elseif subJobWithMP() and player.mpp <= 20 then
 			hud_noti_shdw:text('«« Low MP »»')
 			hud_noti:text('«« Low MP »»')
 			hud_noti:color(255,50,50)
@@ -3042,7 +3059,7 @@ function choose_set()
 			hud_noti_shdw:text('Status: Weak')
 			hud_noti:text('Status: Weak')
 			hud_noti:color(205,133,63)
-		elseif player.mpp <= 20 then
+		elseif subJobWithMP() and player.mpp <= 20 then
 			hud_noti_shdw:text('«« Low MP »»')
 			hud_noti:text('«« Low MP »»')
 			hud_noti:color(255,50,50)
@@ -3073,7 +3090,7 @@ function choose_set()
 			hud_noti_shdw:text('Status: Weak')
 			hud_noti:text('Status: Weak')
 			hud_noti:color(205,133,63)
-		elseif player.mpp <= 20 then
+		elseif subJobWithMP() and player.mpp <= 20 then
 			hud_noti_shdw:text('«« Low MP »»')
 			hud_noti:text('«« Low MP »»')
 			hud_noti:color(255,50,50)
@@ -3124,7 +3141,7 @@ function choose_set()
 			hud_noti_shdw:text('Status: Weak')
 			hud_noti:text('Status: Weak')
 			hud_noti:color(205,133,63)
-		elseif player.mpp <= 20 then
+		elseif subJobWithMP() and player.mpp <= 20 then
 			hud_noti_shdw:text('«« Low MP »»')
 			hud_noti:text('«« Low MP »»')
 			hud_noti:color(205,133,63)
