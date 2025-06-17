@@ -469,6 +469,11 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.2.2
+- Added support for the Limbus +4 gear for song duration.
+- Fixed Low MP warning triggering on subjobs with no MP.
+- Fixed initializing with the single wield weapon cycles sets when you are dual wielding (cycling through the sets after the initialization would still cycle through the correct sets).
+
 Version 1.2.1
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
 - Fixed an issue where switching subjobs too quickly would cause errors with the Weapon Cycler.
