@@ -30,6 +30,12 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
 
 ## Version History ##
 
+Version 2.1
+- Added `temp/t` command. Will add a new temporary target to be tracked. Automatically removed when the player zones. Can also be removed like normal with the `remove` command.
+- Adjusted the `add` and `test` commands to remove any extension in the name of the sound file provided by the user. Files must still be in the .wav format in order to work, but now the commands no longer care if an extension is included in the command or not.
+- Removed the `t` shorthand alias from the `test` command, it has been repurposed for the `temp` command.
+- Removed leftover targets list that is no longer used but was still being created in the settings file.
+
 2.0
 - Overhauled how target data is saved. Now saves as a lua table in separate targets.lua file instead of saving as xml data inside the settings file. This approach allows for much easier handling of target names. No need to convert names with spaces and apostrophes to a format that xml can parse, instead saved as a direct string key exactly how it should be spelled.
 - Added `//jin` as a command prefix.
