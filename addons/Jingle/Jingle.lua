@@ -61,6 +61,7 @@ default_targets = {
 	["Grimslight"] = "default",
 	["Gyvewrapped Naraka"] = "default",
 	["Haughty Tulittia"] = "default",
+	["Mog-Tablet"] = "default",
 }
 
 --Location of the targets file
