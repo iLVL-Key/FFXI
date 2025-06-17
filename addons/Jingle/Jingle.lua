@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.0'
+_addon.version = '2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -41,7 +41,6 @@ play_sound = windower.play_sound
 register_event = windower.register_event
 
 defaults = {
-	targets = {}, --the main list of targets we're searching for
 	distance = 50, --determines distance the target needs to be within before being "detected" (Note: Hard max is 50)
 	flood_delay = 5, --how much time after a target goes out or range before it can be considered "nearby" again
 }
@@ -105,18 +104,18 @@ if not targets_file:exists() then
 		local function convertToDisplay(target)
 			local function capitalize(str)
 				-- Check if we think the string is a hex id
-				local containsNumbers = string.match(str, "%d") ~= nil
-				local isSpecialCase = #str == 3 and not string.match(str, "[G-Zg-z]")
+				local contains_numbers = string.match(str, "%d") ~= nil
+				local is_special_case = #str == 3 and not string.match(str, "[G-Zg-z]")
 				-- Hex ids get all their letters capitalized
-				if containsNumbers or isSpecialCase then
+				if contains_numbers or is_special_case then
 					local capitalized = string.gsub(str, "(%a+)", function(word)
 						return string.upper(word)
 					end)
 					return capitalized
 				-- Otherwise we assume it's a name and capitalize it as such
 				else
-					local capitalized = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
-						return string.upper(firstLetter)..string.lower(rest)
+					local capitalized = string.gsub(str, "(%w)(%w*)", function(first_letter, rest)
+						return string.upper(first_letter)..string.lower(rest)
 					end)
 					return capitalized
 				end
@@ -155,16 +154,17 @@ end
 
 announced = T{}
 last_seen = T{}
+temp_targets = {}
 
 --Convert an index to a hex id
 function convertToHexId(num)
 
-	local hexChars = "0123456789ABCDEF"
+	local hex_chars = "0123456789ABCDEF"
 	local result = ""
 
 	while num > 0 do
 		local remainder = num % 16
-		result = string.sub(hexChars, remainder+1, remainder+1)..result
+		result = string.sub(hex_chars, remainder+1, remainder+1)..result
 		num = math.floor(num / 16)
 	end
 	
@@ -179,70 +179,110 @@ function convertToHexId(num)
 end
 
 --Add a target and sound file to the external targets_data table
-function addTarget(target, soundfile)
+function addTarget(target, sound_file)
 
-	targets_data[target] = soundfile
+	--Remove file extension if present
+	sound_file = string.match(sound_file, '^[^%.]+') or sound_file
+
+	targets_data[target] = sound_file
 
 	--Save the updated targets_data back to the file
 	targets_file:write(targets_help_msg..'return {\n'..sortedTableString(targets_data, '    ')..'\n}')
 
-	add_to_chat(8,('[Jingle] '):color(220)..('Added: '):color(36)..(target..' ('..soundfile..')'):color(1))
+	add_to_chat(8,('[Jingle] '):color(220)..('Target added: '):color(36)..(target):color(1)..(' ('):color(8)..(sound_file):color(1)..(' sound file)'):color(8))
 
 end
 
---Remove a target from the external targets_data table (case-insensitive)
-function removeName(target)
+--Add a temporary target and sound file to the internal temp_targets table
+function addTempTarget(target, sound_file)
+
+	--Remove file extension if present
+	sound_file = string.match(sound_file, '^[^%.]+') or sound_file
+
+	temp_targets[target] = sound_file
+
+	add_to_chat(8,('[Jingle] '):color(220)..('Temp. Target added: '):color(36)..(target):color(1)..(' ('):color(8)..(sound_file):color(1)..(' sound file)'):color(8))
+
+end
+
+--Remove a target from targets_data or temp_targets
+function removeTarget(target)
 
 	local target_lower = target:lower()
 	local matched_key = nil
+	local source_table = nil
 
-	--Search for a case-insensitive match
+	--Search in permanent targets
 	for key, _ in pairs(targets_data) do
 		if key:lower() == target_lower then
 			matched_key = key
+			source_table = "permanent"
 			break
 		end
 	end
 
-	if matched_key then
+	--If not found, search in temporary targets
+	if not matched_key then
+		for key, _ in pairs(temp_targets) do
+			if key:lower() == target_lower then
+				matched_key = key
+				source_table = "temporary"
+				break
+			end
+		end
+	end
 
-		--Delete the target and save the updated targets_data back to the file
-		targets_data[matched_key] = nil
-		targets_file:write(targets_help_msg..'return {\n'..sortedTableString(targets_data, '    ')..'\n}')
+	if matched_key and source_table then
+		if source_table == "permanent" then
+			targets_data[matched_key] = nil
+			targets_file:write(targets_help_msg..'return {\n'..sortedTableString(targets_data, '    ')..'\n}')
+		elseif source_table == "temporary" then
+			temp_targets[matched_key] = nil
+		end
 
-		add_to_chat(8,('[Jingle] '):color(220)..('Removed: '):color(36)..(matched_key):color(1))
-
+		add_to_chat(8, '[Jingle] '..('Removed: '):color(36)..matched_key:color(1)..('%s'):format(source_table == "temporary" and ' (Temp. Target)' or ''):color(8))
 	else
-
-		add_to_chat(8,('[Jingle] '):color(220)..(target):color(1)..(' was not found.'):color(39))
-		add_to_chat(8,('[Jingle] '):color(220)..('Type '):color(8)..('//jin list'):color(1)..(' to see stored targets.'):color(8))
-
+		add_to_chat(8, '[Jingle] '..target:color(1)..' was not found.':color(28))
+		add_to_chat(8, '[Jingle] '..'Type '..'//jin list':color(1)..' to see stored targets.':color(8))
 	end
 end
 
 --List the targets in the external targets_data table
 function listTargets()
+	local permanent = {}
+	local temporary = {}
 
-	local sortedTargets = {}
+	add_to_chat(8,('[Jingle] '):color(220)..('Targets: '):color(36))
 
-	add_to_chat(8,('[Jingle] '):color(220)..('Targets: '):color(8))
-
-	--Copy and sort the target keys alphabetically
+	--Separate permanent and temporary targets
 	for target in pairs(targets_data) do
-		table.insert(sortedTargets, target)
+		table.insert(permanent, target)
 	end
-	table.sort(sortedTargets, function(a, b) return a:lower() < b:lower() end)
+	for target in pairs(temp_targets) do
+		table.insert(temporary, target)
+	end
 
-	--Show [Empty] if there are no targets
-	if #sortedTargets == 0 then
+	--Sort both alphabetically (case-insensitive)
+	table.sort(permanent, function(a, b) return a:lower() < b:lower() end)
+	table.sort(temporary, function(a, b) return a:lower() < b:lower() end)
+
+	--Display permanent targets
+	if #permanent == 0 then
 		add_to_chat(1,(' - '):color(8)..'[Empty]')
-		return
+	else
+		for _, target in ipairs(permanent) do
+			local sound = targets_data[target]
+			add_to_chat(1,(' - '):color(8)..target..' ('..sound..')')
+		end
 	end
 
-	--Output sorted list
-	for _, target in ipairs(sortedTargets) do
-		local sound = targets_data[target]
-		add_to_chat(1,(' - '):color(8)..target..' ('..sound..')')
+	--Display temporary targets only if they exist
+	if #temporary > 0 then
+		add_to_chat(8,('[Jingle] '):color(220)..('Temporary Targets:'):color(36))
+		for _, target in ipairs(temporary) do
+			local sound = temp_targets[target]
+			add_to_chat(1,(' - '):color(8)..target..' ('..sound..')')
+		end
 	end
 end
 
@@ -273,10 +313,10 @@ function checkForTarget()
 			--Loop through the above keys
 			for _, key in ipairs(keys) do
 
-				local soundfile = targets_data[key]
+				local sound_file = targets_data[key] or temp_targets[key]
 
 				--Does this key have an entry in targets_data?
-				if soundfile then
+				if sound_file then
 
 					--Add this target to the list of nearby mobs
 					table.insert(nearby, key)
@@ -287,7 +327,7 @@ function checkForTarget()
 					if not announced:contains(key) and (current_time - last_seen_time > settings.flood_delay) then
 
 						local displayName = (key == convertToHexId(mob.index)) and (mob.name..' ('..key..')') or mob.name
-						play_sound(addon_path..'data/sounds/'..soundfile..'.wav')
+						play_sound(addon_path..'data/sounds/'..sound_file..'.wav')
 						add_to_chat(8,('[Jingle] '):color(220)..displayName:color(1)..' is nearby.':color(8))
 						table.insert(announced, key)
 
@@ -330,47 +370,62 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' Command '):color(36)..('<required>'):color(2)..(' [optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' add/a '):color(36)..('[target]'):color(53)..(' [sound_file_name]'):color(53)..(' - Add a target with an optional sound file.'):color(8))
+		add_to_chat(8,(' temp/t '):color(36)..('[target]'):color(53)..(' [sound_file_name]'):color(53)..(' - Add a temporary target with an optional sound file.'):color(8))
 		add_to_chat(8,('   - Valid targets: Names (ex: Oseem), IDs (ex: 17809550), Hex IDs (ex: 08E).'):color(8))
-		add_to_chat(8,('   - Use quotes to surround an NPC/mob name that contains spaces.'):color(8))
+		add_to_chat(8,('   - Use quotes to surround an NPC/mob name that contains spaces or an apostrophe.'):color(8))
 		add_to_chat(8,('   - If no target supplied, the current cursor target name will be used with the default sound.'):color(8))
-		add_to_chat(8,('   - Do not include the extension (.wav) in the sound file name.'):color(8))
+		add_to_chat(8,('   - Temporary targets will be removed after zoning.'):color(8))
 		add_to_chat(8,(' remove/r '):color(36)..('[target]'):color(53)..(' - Remove a target.'):color(8))
 		add_to_chat(8,(' list/l'):color(36)..(' - Show the list of targets and sounds associated.'):color(8))
 		add_to_chat(8,(' distance/d '):color(36)..('<#1-50>'):color(2)..(' - Set the detection distance. ['):color(8)..(''..currDist):color(200)..(']'):color(8))
-		add_to_chat(8,(' test/t '):color(36)..('<sound_file_name>'):color(2)..(' - Test a sound file. Do not include the extension.'):color(8))
+		add_to_chat(8,(' test '):color(36)..('<sound_file_name>'):color(2)..(' - Test a sound file.'):color(8))
 		add_to_chat(8,('   - New sounds added to the /data/sounds folder must be .wav format.'):color(8))
 
 	elseif addcmd == 'add' or addcmd == 'a' then
 		local target = arg1 or (get_mob_by_target('t') or {}).name
-		local soundfile = arg2 or "default"
+		local sound_file = arg2 or "default"
 
 		if target then
-			addTarget(target, soundfile)
+			addTarget(target, sound_file)
 		else
-			add_to_chat(8,('[Jingle] '):color(220)..('Please highlight or specify a target to be added (name, id, or hex id).'):color(39))
+			add_to_chat(8,('[Jingle] '):color(220)..('Please highlight or specify a target to be added (name, id, or hex id).'):color(28))
+		end
+
+	elseif addcmd == 'temp' or addcmd == 't' then
+		local target = arg1 or (get_mob_by_target('t') or {}).name
+		local sound_file = arg2 or "default"
+
+		if target then
+			addTempTarget(target, sound_file)
+		else
+			add_to_chat(8,('[Jingle] '):color(220)..('Please highlight or specify a target to be added (name, id, or hex id).'):color(28))
 		end
 
 	elseif addcmd == 'remove' or addcmd == 'rem' or addcmd == 'rmv' or addcmd == 'r' then
 		local target = arg1 or (get_mob_by_target('t') or {}).name
 		if target then
-			removeName(target)
+			removeTarget(target)
 		else
-			add_to_chat(8,('[Jingle] '):color(220)..('Please highlight or specify a target to be removed (name, ID, or Hex ID).'):color(39))
+			add_to_chat(8,('[Jingle] '):color(220)..('Please highlight or specify a target to be removed (name, ID, or Hex ID).'):color(28))
 		end
 
 	elseif addcmd == 'list' or addcmd == 'l' then
 		listTargets()
 
-	elseif addcmd == 'test' or addcmd == 't' then
+	elseif addcmd == 'test' then
 		if arg1 == nil then
-			add_to_chat(8,('[Jingle] '):color(220)..('Please specify a sound file name to be tested. Do not include the file extension.'):color(39))
+			add_to_chat(8,('[Jingle] '):color(220)..('Please specify a sound file name to be tested.'):color(28))
 			add_to_chat(8,('[Jingle] '):color(220)..('Example: '):color(8)..(' //jin test default'):color(1))
 			return
 		end
 		
-		local soundFile = arg1
-		play_sound(addon_path..'data/sounds/'..soundFile..'.wav')
-		add_to_chat(8,('[Jingle] '):color(220)..('Testing file: '):color(8)..('addons/Jingle/data/sounds/'..soundFile..'.wav'):color(1))
+		local sound_file = arg1
+
+		--Remove file extension if present
+		sound_file = string.match(sound_file, '^[^%.]+') or sound_file
+
+		play_sound(addon_path..'data/sounds/'..sound_file..'.wav')
+		add_to_chat(8,('[Jingle] '):color(220)..('Testing file: '):color(8)..('addons/Jingle/data/sounds/'..sound_file..'.wav'):color(1))
 		add_to_chat(8,('[Jingle] '):color(220)..('If you do not hear the sound, make sure the file is in the correct folder and is in the .wav format.'):color(8))
 
 	elseif addcmd == 'distance' or addcmd == 'dist' or addcmd == 'd' then
@@ -385,15 +440,30 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('[Jingle] '):color(220)..('Detection distance set to:'):color(36)..(' '..distance):color(200))
 
 		else
-			add_to_chat(8,('[Jingle] '):color(220)..('Detection distance must be a number between 1 and 50.'):color(39))
+			add_to_chat(8,('[Jingle] '):color(220)..('Detection distance must be a number between 1 and 50.'):color(28))
 		end
 
 	else
-		add_to_chat(8,('[Jingle] '):color(220)..('Unrecognized command. Type'):color(39)..(' //jin help'):color(1)..(' if you need help.'):color(39))
+		add_to_chat(8,('[Jingle] '):color(220)..('Unrecognized command. Type'):color(28)..(' //jin help'):color(1)..(' if you need help.'):color(28))
 
 	end
 end)
 
 register_event('prerender', function()
 	checkForTarget()
+end)
+
+windower.register_event('zone change', function()
+
+	--Clear temporary targets after zone
+	if next(temp_targets) ~= nil then
+
+		temp_targets = {}
+
+		coroutine.schedule(function()
+			add_to_chat(8, ('[Jingle] '):color(220)..('Temporary targets cleared on zone change.'):color(8))
+		end, 5)
+
+	end
+
 end)
