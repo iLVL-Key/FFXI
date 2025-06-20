@@ -27,6 +27,9 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 
 # Changelog
 
+Version 1.3.1
+- Fixed an occasional error when clearing jobs.
+
 Version 1.3
 - Added the name of the Save Slot (boss names summary) to the Delete Save Slot confirmation window.
 - Added confirmation screens to the Load and Save buttons as well as the Clear button on the Boss selection screen, since all of those actions could overwrite/delete other data/selections.
