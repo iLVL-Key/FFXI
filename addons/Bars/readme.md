@@ -1,25 +1,24 @@
 # Bars
-Displays bars for player HP, MP, TP, Target, and Focus Target, as well as Actions for Targets, Focus Targets, and Player.  
-Can display anwhere from all bars at once, to all the way down to just the target bar.
-
-![Screen_Test](https://github.com/user-attachments/assets/7929f77d-224e-4528-8124-70fbfc37b411)  
-↑All bars visible at the same time. The Screen Test pops up when using any command that adjusts the look of the Bars.
-
-![Volt_strike](https://github.com/user-attachments/assets/0b8223ca-2912-4f6f-9db6-95172b6301a2)  
-↑Ramuh laying the smack down on a fearsome Sylvestre. Here the HP, MP, and TP bars are disabled.
-
+Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Stats (HP, MP, TP, Pet).  
+<br><br>
+![Bars_ui_positions](https://github.com/user-attachments/assets/6f85f5c8-4298-442f-a302-2771380d9bf6)  
+↑ The `//bars ui` command triggers the Screen Test where you can drag any of the highlighted bars.
+<br><br><br>
 ![Bars_BLU](https://github.com/user-attachments/assets/c3c99ca5-4ec6-48e8-aceb-bee383615e0b)  
-↑The Target and Self Action bars visible and in action showing how many targets were hit and the total of all damage done.
-
-![Bars_SAM-ezgif com-resize](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
-↑The Target, Self Action, and TP visible in action showing WS and SC damage done (old v2.0 look).
-
+↑ The Target and Self Action bars visible and in action showing how many targets were hit and the total of all damage done.
+<br><br><br>
+![Bars_SAM](https://github.com/user-attachments/assets/1bdcd6af-90fc-434b-a101-08491735a7f0)  
+↑ The Target, Self Action, and TP visible in action showing WS and SC damage done (old v2.0 look).
+<br><br><br>
 ![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
-↑Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
-
+↑ Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
+<br><br><br>
 ![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
-↑The Party Actions displayed next to each of your party members.
-
+↑ The Party Actions displayed next to each of your party members.
+<br><br><br>
+![Bars_pulse_floating_tp](https://github.com/user-attachments/assets/0fbe640f-b810-4d87-9c10-3ac2cdf13ca3)  
+↑ The "Floating TP" option shown, as well as the "Bar Pulse" option for the TP bar.
+<br><br>
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
 - Names and bars colored based on type (NPC, Party member, mob claimed by someone else, etc.).
@@ -45,8 +44,8 @@ Can display anwhere from all bars at once, to all the way down to just the targe
 - Display distance to target.
   - Colorize the distance text based on the distance to the target and other factors.
 - Displays SP abilities and time remaining.
+  - Accounts for an SP ability being stolen with Larceny.
   - NOTE: Timing for players who have gear adding additional time cannot be accounted for.
-  - Accounts for an SP ability being stolen with Larceny though.
 - Display Dynamis-Divergence mob jobs.
 - Markers on the TP bar for 1k/2k, and on the HP bar for yellow HP.
 - Fades away after a set time of inactivity.
@@ -104,8 +103,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `tp` | Display the TP bar while on this job. |
 | `vertical_offsets`<br> → `focus_target`<br> → `player_stats`<br> → `self_action`<br> → `sub_target`<br> → `target` | Adjust vertical positions of these bars specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher. |
 | <ins>**Options**</ins> |
-| `abbreviate_common_mob_names` | Common mob names will be abbreviated to save space (ex. Sweetwater → Swt.). Does not apply to the main name on the Target bar. |
-| `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 4.5). |
+| `abbreviate_common_mob_names` | Common mob names will be abbreviated to save space (ex. Sweetwater Rabbit → Swt. Rabbit). Does not apply to the main name on the Target bar. |
+| `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 5.5). |
 | `color_spells` | Colorize the names of spells to match their element. |
 | `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
