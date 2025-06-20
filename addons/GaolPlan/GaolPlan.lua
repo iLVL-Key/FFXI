@@ -177,8 +177,8 @@ end
 --Check if any job has been assigned
 function isAnyJobAssigned(phone)
 	--If a phone # is given, check for just that specific one
-	if phone then
-		local target = "ph" .. phone .. "_"
+	if phone and player_jobs then
+		local target = "ph"..phone.."_"
 		--Loop to check each of the jobs
 		for _, v in pairs(player_jobs) do
 			if v and v:sub(1, #target) == target then
@@ -186,7 +186,7 @@ function isAnyJobAssigned(phone)
 			end
 		end
 	--No phone number is provided, loop to check each of the jobs for any
-	else
+	elseif player_jobs then
 		for _, v in pairs(player_jobs) do
 			if v ~= nil then
 				return true
