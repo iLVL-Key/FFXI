@@ -123,6 +123,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `pulse_multiplier` | Number the pulse alpha is reduced per frame during pulse. Higher number pulses faster. |
 | `pulse_name_when_target_sp_active` | Pulses a target’s name when they use an SP Ability. |
 | `pulse_pet_low` | Pulses the Pet bar when pet HP is critically low (<=25%). |
+| `pulse_tp_meter_only` | The pulse effect from the `pulse_tp_ready` option only applies to the TP meter, not the whole bar. |
 | `pulse_tp_ready` | Pulses the TP bar when TP is ready to use. (>=1,000). |
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
 | `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
