@@ -192,7 +192,7 @@ Version 4.0
 - Added `bar_bg` options under `colors`. Can now adjust the color of the background bar (`normal`). Also added colorizing the background bar when the target is dead (`dead`).
 - Removed a number of commands that are either no longer needed (ie pos) or have been split into multiple sections (ie bold). Positions for the different bars have been split out into their own sections and can now be modified via drag and drop with the `ui` command. Bold and other settings are also split into each section now and can be modified in the settings file.
 - Adjusted the meter bar resolution/granularity. Number of steps increased by 10 times, much more accurate meter bar lengths now.
-- Adjusted the Self Action bar update polling from 10 to 100 times per second. Combined with the 10x meter bar steps adjustment this creates a noticeably smoother bar animation.
+- Adjusted the Self Action bar update polling from 10 to 50 times per second. Combined with the 10x meter bar steps adjustment this creates a noticeably smoother bar animation.
 - Adjusted Target, Focus Target, and Sub Targets to no longer show active SP abilities once the target dies.
 - Adjusted display of active SP ability on a mob to cancel if it is removed via Larceny.
 - Adjusted the Fade option to not activate when player is dead.
