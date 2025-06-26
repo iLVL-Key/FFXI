@@ -3,6 +3,7 @@
 Various callouts for endgame things.
 
 ## Current Callouts:
+- **Abyssea:** Red and Blue Procs
 - **Ambuscade:** Bozzetto Autarch Mijin Gakure countdown, Bozzetto Crusader hate reset
 - **Charm:** Party/Alliance members who get charmed
 - **Dynamis:** Halphas hate reset, Aurix pop/run/warp
@@ -16,7 +17,7 @@ Various callouts for endgame things.
 All commands must be preceded with `//callouts` or `//co` (ex: `//co mode`)  
 `[optional] <required>`
 - `chatmode/chat/mode` - Switch between Echo and Party chat modes (addon default is echo)
-- `ambuscade/charm/dynamis/odyssey/omen/ou/sortie/vagary` - Turn individual callouts on or off
+- `abyssea/ambuscade/charm/dynamis/odyssey/omen/ou/sortie/vagary` - Turn individual callouts on or off
 - `callnum/call/num` - Update the call number used for Party chat mode.
 - `list` - List the current callouts and their ON/OFF state
 - `help` - Display a list of commands and addon info.
