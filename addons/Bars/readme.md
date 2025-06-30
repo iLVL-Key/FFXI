@@ -1,6 +1,3 @@
-# UPDATE 4.0 IN PROGRESS
-**Commands and Settings below are for the upcoming 4.0 update**  
-**Readme is being updated ahead of time to be ready for release**
 # Bars
 Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Stats (HP, MP, TP, Pet).  
 <br><br>
