@@ -4,6 +4,9 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ![Bars_ui_positions](https://github.com/user-attachments/assets/6f85f5c8-4298-442f-a302-2771380d9bf6)  
 ↑ The `//bars ui` command triggers the Screen Test where you can drag any of the highlighted bars.
 <br><br><br>
+![Bars_drain](https://github.com/user-attachments/assets/01955128-6341-4823-9211-8a225417f13e)  
+↑ New animations Bar Drain, Bar Pulse, and Floating TP shown.
+<br><br><br>
 ![Bars_BLU](https://github.com/user-attachments/assets/c3c99ca5-4ec6-48e8-aceb-bee383615e0b)  
 ↑ The Target and Self Action bars visible and in action showing how many targets were hit and the total of all damage done.
 <br><br><br>
@@ -15,9 +18,6 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 <br><br><br>
 ![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
 ↑ The Party Actions displayed next to each of your party members.
-<br><br><br>
-![Bars_pulse_floating_tp](https://github.com/user-attachments/assets/0fbe640f-b810-4d87-9c10-3ac2cdf13ca3)  
-↑ The "Floating TP" option shown, as well as the "Bar Pulse" option for the TP bar.
 <br><br>
 ## Features
 - Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
