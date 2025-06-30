@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '3.6.1'
+_addon.version = '4.0'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -33,6 +33,7 @@ config = require('config')
 texts = require('texts')
 res = require('resources')
 packets = require('packets')
+files = require('files')
 require 'chat'
 
 add_to_chat = windower.add_to_chat
@@ -49,146 +50,340 @@ get_windower_settings = windower.get_windower_settings
 register_event = windower.register_event
 
 defaults = {
-	pos = {x = 200, y = 200},
 	bg = {alpha = 190, red = 0, green = 0, blue = 0},
-	text = {alpha = 255, blue = 255, green = 255, red = 255, font = 'Consolas', size = 10},
-	flags = {draggable = false, italic = false, bold = true, right = false, bottom = false},
-	auto_focus_target_list = {
-		aurix = true,
-		dealan__dash__dhe = true,
-		sgili = true,
-		u_bnai = true,
-		gogmagog = true,
-		aristaeus = true,
-		raskovniche = true,
-		marmorkrebs = true,
-		gigelorum = true,
-		procne = true,
-		henwen = true,
-		xevioso = true,
-		ngai = true,
-		kalunga = true,
-		ongo = true,
-		mboze = true,
-		arebati = true,
-		bumba = true,
-		glassy_craver = true,
-		glassy_gorger = true,
-		glassy_thinker = true,
-		fu = true,
-		kyou = true,
-		kei = true,
-		gin = true,
-		kin = true,
-		ou = true,
-		abject_obdella = true,
-		biune_porxie = true,
-		cachaemic_bhoot = true,
-		demisang_deleterious = true,
-		esurient_botulus = true,
-		fetid_ixion = true,
-		gyvewrapped_naraka = true,
-		haughty_tulittia = true,
-		ghatjot = true,
-		leshonn = true,
-		skomora = true,
-		degei = true,
-		dhartok = true,
-		gartell = true,
-		triboulex = true,
-		aita = true,
-		aminon = true,
-		palloritus = true,
-		plouton = true,
-		putraxia = true,
-		perfidien = true,
-		rancibus = true,
-		azi_dahaka = true,
-		naga_raja = true,
-		quetzalcoatl = true,
-		mireu = true,
+	text = {alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas'},
+	icons = {
+		casting = "≈",
+		cancelled = "×",
+		completed = "√",
+		number_of_targets_hit = "●",
+		targeting = "→",
+		target_lock_left = "»",
+		target_lock_right = "«",
+	},
+	first_run = true,
+	job_specific = {
+		brd = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		blm = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		blu = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		bst = {hp = false, mp = false, pet = true, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		cor = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		dnc = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		drg = {hp = false, mp = false, pet = true, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		drk = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		geo = {hp = false, mp = false, pet = true, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		mnk = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		nin = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		pld = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		pup = {hp = false, mp = false, pet = true, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		rdm = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		rng = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		run = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		sam = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		sch = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		smn = {hp = false, mp = false, pet = true, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		thf = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		war = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		whm = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
 	},
 	options = {
 		abbreviate_common_mob_names = true,
-		bar_width = 100,
-		bars_vertical_spacing = {target_to_focus_target = -40, target_to_player_stats = 45, between_player_stats = 23},
-		char_width_multiplier = 0.77,
+		animations = {
+			drain_brightness = 6,
+			drain_hp_bar = true,
+			drain_mp_bar = true,
+			drain_speed = 5,
+			drain_pet_bar = true,
+			drain_target_bars = true,
+			drain_tp_bar = true,
+			fade_after_a_delay = true,
+			fade_down_to_alpha = 0,
+			fade_delay = 60,
+			fade_speed = 2,
+			floating_tp_number = false,
+			pulse_brightness = 150,
+			pulse_bar_when_target_sp_active = true,
+			pulse_name_when_target_sp_active = true,
+			pulse_speed = 5,
+			pulse_tp_meter_only = false,
+			pulse_when_hp_low = true,
+			pulse_when_mp_low = true,
+			pulse_when_pet_low = true,
+			pulse_when_tp_ready = true,
+		},
 		clear_action_delay = 5.5,
-		color_spells = true,
+		colorize_spells = true,
 		condense_target_and_subtarget_bars = false,
-		fade_after_delay = true,
-		fade_delay = 60,
-		fade_multiplier = 2,
-		fade_to_alpha = 0,
+		condense_target_name_and_sp_name = {
+			focus_target = true,
+			sub_target = true,
+			target = true,
+		},
 		focus_target_max_distance = 40,
-		hide_focus_target_when_target = true,
-		highlight_when_sp_active = true,
 		max_action_length = 17,
 		max_name_length = 20,
-		party_actions  = {
-			show = true,
-			horizontal_offset = -360,
-			party1_vertical_spacing_between_players = 20,
-			party1_y = -124,
-			party2_vertical_spacing_between_players = 16,
-			party2_y = -400,
-			party3_vertical_spacing_between_players = 16,
-			party3_y = -297,
-			text_size = 9,
-		},
 		remove_tachi_blade_from_ws_name = true,
-		self_action_text_size_difference = 1,
 		short_skillchain_names = true,
 		show_action_status_indicators = true,
-		show_bar_markers = true,
 		show_commas_on_numbers = true,
 		show_dyna_jobs = true,
 		show_fancy_rolls = true,
+		show_focus_target_when_targeted = false,
+		show_hp_tp_markers = true,
 		show_max_hp_mp_on_bar = true,
 		show_pet_distance = true,
 		show_pet_status = true,
 		show_pet_tp = true,
 		show_result_totals = true,
 		show_roll_lucky_info = true,
-		show_self_action = true,
+		show_self_action_result = true,
+		show_self_when_sub_targeted = true,
 		show_self_when_targeted = false,
-		show_st_when_target = false,
+		show_sub_target_when_targeted = true,
 		show_target_action = true,
 		show_target_action_result = true,
 		show_target_distance = true,
 		show_target_distance_colors = true,
 		show_target_hex = false,
 		show_target_index = false,
-		switch_focus_and_sub_positions = false,
-		target_action_text_size_difference = 1,
-		target_text_size_difference = 4,
-		text_vertical_offset = -8,
-		z_show_player_stat_bars = {
-			brd = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			blm = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			blu = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			bst = {hp = false, mp = false, pet = true, tp = false, vertical_offset = 0},
-			cor = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			dnc = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			drg = {hp = false, mp = false, pet = true, tp = false, vertical_offset = 0},
-			drk = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			geo = {hp = false, mp = false, pet = true, tp = false, vertical_offset = 0},
-			mnk = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			nin = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			pld = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			pup = {hp = false, mp = false, pet = true, tp = false, vertical_offset = 0},
-			rdm = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			rng = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			run = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			sam = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			sch = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			smn = {hp = false, mp = false, pet = true, tp = false, vertical_offset = 0},
-			thf = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			war = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
-			whm = {hp = false, mp = false, pet = false, tp = false, vertical_offset = 0},
+		show_target_lock = true,
+	},
+	sections = {
+		focus_target = {
+			bar_size = 10,
+			bar_width = 50,
+			bold = true,
+			font = 'Consolas',
+			italic = false,
+			pos = {x = 576, y = 200},
+			spaces_between_text_parts = 1,
+			sub_text_offset = 6,
+			sub_text_shadow_offset = 2,
+			sub_text_size = 10,
+			text_offset = -15,
+			text_shadow_offset = 2,
+			text_size = 10,
+		},
+		party_1_actions = {
+			bold = true,
+			font = "Consolas",
+			italic = false,
+			pos = {
+				x = -155,
+				y = get_windower_settings().ui_y_res - 144,
+			},
+			right_align = true,
+			show = true,
+			show_self = true,
+			stroke_color = {
+				r = 0,
+				g = 0,
+				b = 0,
+			},
+			text_color = {
+				r = 255,
+				g = 255,
+				b = 255,
+			},
+			text_size = 9,
+			vertical_spacing_between_players = 20,
+		},
+		party_2_actions = {
+			bold = true,
+			font = "Consolas",
+			italic = false,
+			pos = {
+				x = -155,
+				y = get_windower_settings().ui_y_res - 400,
+			},
+			show = true,
+			stroke_color = {
+				r = 0,
+				g = 0,
+				b = 0,
+			},
+			text_color = {
+				r = 255,
+				g = 255,
+				b = 255,
+			},
+			text_size = 9,
+			vertical_spacing_between_players = 16,
+			right_align = true,
+		},
+		party_3_actions = {
+			bold = true,
+			font = "Consolas",
+			italic = false,
+			pos = {
+				x = -155,
+				y = get_windower_settings().ui_y_res - 297,
+			},
+			right_align = true,
+			show = true,
+			stroke_color = {
+				r = 0,
+				g = 0,
+				b = 0,
+			},
+			text_color = {
+				r = 255,
+				g = 255,
+				b = 255,
+			},
+			text_size = 9,
+			vertical_spacing_between_players = 16,
+		},
+		player_stats = {
+			bold = true,
+			font = 'Consolas',
+			italic = false,
+			bar_size = 10,
+			bar_width = 100,
+			pos = {x = 200, y = 330},
+			text_offset = -15,
+			text_shadow_offset = 2,
+			text_size = 10,
+			vertical_spacing_between_player_stats = 23,
+		},
+		self_action = {
+			bar_size = 10,
+			bar_width = 100,
+			bold = true,
+			font = 'Consolas',
+			italic = false,
+			pos = {x = 200, y = 300},
+			show = true,
+			text_shadow_offset = 2,
+			text_size = 11,
+			text_offset = -17,
+		},
+		sub_target = {
+			bar_size = 10,
+			bar_width = 50,
+			bold = true,
+			font = 'Consolas',
+			italic = false,
+			pos = {x = 200, y = 200},
+			spaces_between_text_parts = 1,
+			sub_text_offset = 6,
+			sub_text_shadow_offset = 2,
+			sub_text_size = 10,
+			text_offset = -15,
+			text_shadow_offset = 2,
+			text_size = 10,
+		},
+		target= {
+			bar_width = 100,
+			bar_size = 10,
+			bold = true,
+			font = 'Consolas',
+			italic = false,
+			pos = {x = 200, y = 250},
+			spaces_between_text_parts = 1,
+			sub_text_offset = 6,
+			sub_text_shadow_offset = 2,
+			sub_text_size = 11,
+			target_lock_icon_size = 40,
+			target_lock_underline_pixel_width = 2.5,
+			text_offset = -21,
+			text_shadow_offset = 2,
+			text_size = 14,
 		},
 	},
 	colors = {
+		bar_bg = {
+			normal = {r = 0, g = 0, b = 0},
+			dead = {r = 150, g = 30, b = 30},
+		},
 		target = {
 			monster_passive = {r = 247, g = 237, b = 141},
 			monster_claimed_party = {r = 255, g = 50, b = 50},
@@ -199,7 +394,11 @@ defaults = {
 			pc_other = {r = 255, g = 255, b = 255},
 			pc_party = {r = 69, g = 199, b = 255},
 			pc_self = {r = 66, g = 135, b = 245},
-			sp_active_glow = {a = 75, r = 255, g = 225, b = 75},
+			sp_active_glow = {r = 100, g = 100, b = 25},
+		},
+		target_lock = {
+			text = {r = 255, g = 75, b = 25},
+			stroke = {r = 0, g = 0, b = 0},
 		},
 		self = {
 			bar = {r = 240, g = 240, b = 240},
@@ -263,59 +462,260 @@ defaults = {
 
 settings = config.load(defaults)
 
+--Default/example targets to pre-populate the auto_focus_targets.lua file
+default_auto_focus_targets = {
+	['Aurix'] = true,
+	['Dealan-dhe'] = true,
+	['Sgili'] = true,
+	['U Bnai'] = true,
+	['Gogmagog'] = true,
+	['Aristaeus'] = true,
+	['Raskovniche'] = true,
+	['Marmorkrebs'] = true,
+	['Gigelorum'] = true,
+	['Procne'] = true,
+	['Henwen'] = true,
+	['Xevioso'] = true,
+	['Ngai'] = true,
+	['Kalunga'] = true,
+	['Ongo'] = true,
+	['Mboze'] = true,
+	['Arebati'] = true,
+	['Bumba'] = true,
+	['Glassy Craver'] = true,
+	['Glassy Gorger'] = true,
+	['Glassy Thinker'] = true,
+	['Fu'] = true,
+	['Kyou'] = true,
+	['Kei'] = true,
+	['Gin'] = true,
+	['Kin'] = true,
+	['Ou'] = true,
+	['Abject Obdella'] = true,
+	['Biune Porxie'] = true,
+	['Cachaemic Bhoot'] = true,
+	['Demisang Deleterious'] = true,
+	['Esurient Botulus'] = true,
+	['Fetid Ixion'] = true,
+	['Gyvewrapped Naraka'] = true,
+	['Haughty Tulittia'] = true,
+	['Ghatjot'] = true,
+	['Leshonn'] = true,
+	['Skomora'] = true,
+	['Degei'] = true,
+	['Dhartok'] = true,
+	['Gartell'] = true,
+	['Triboulex'] = true,
+	['Aita'] = true,
+	['Aminon'] = true,
+	['Palloritus'] = true,
+	['Plouton'] = true,
+	['Putraxia'] = true,
+	['Perfidien'] = true,
+	['Rancibus'] = true,
+	['Azi Dahaka'] = true,
+	['Naga Raja'] = true,
+	['Quetzalcoatl'] = true,
+	['Mireu'] = true,
+}
+
+--Location of the targets file
+auto_focus_targets_file = files.new('data\\auto_focus_targets.lua')
+
+auto_focus_targets_help_msg = "--This file is used to store the names, IDs, and Hex IDs for Auto Focus Targets that Bars is looking for.\n\n"
+
+function sortedTableString(tbl, indent)
+	indent = indent or ""
+	local lines = {}
+	local keys = {}
+
+	for k in pairs(tbl) do
+		table.insert(keys, k)
+	end
+	table.sort(keys, function(a, b) return tostring(a):lower() < tostring(b):lower() end)
+
+	for _, k in ipairs(keys) do
+		local v = tbl[k]
+		local formatted_key = type(k) == "string" and string.format("[%q]", k) or string.format("[%s]", tostring(k))
+		if type(v) == "table" then
+			table.insert(lines, indent..formatted_key.."={")
+			table.insert(lines, sortedTableString(v, indent.."    "))
+			table.insert(lines, indent.."},")
+		else
+			local formatted_val = type(v) == "string" and string.format("%q", v) or tostring(v)
+			table.insert(lines, indent..formatted_key.."="..formatted_val..",")
+		end
+	end
+
+	return table.concat(lines, "\n")
+end
+
+--Capitalize accordingly
+function capitalize(str)
+
+	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
+		return string.upper(firstLetter)..string.lower(rest)
+	end)
+
+	-- Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
+	str = string.gsub(str, " Ii$", " II")
+
+	-- Ensure letters after an apostrophe are not capitalized
+	str = string.gsub(str, "('%w)", function(apostropheLetter)
+		return string.lower(apostropheLetter)
+	end)
+
+	return str
+
+end
+
+auto_focus_targets_data = {}
+
+--If the data\auto_focus_targets.lua file doesn't exist, create it
+if not auto_focus_targets_file:exists() then
+
+	--Migrate legacy targets from settings file to new auto_focus_targets_data format
+	local function migrateTargetsFromSettings()
+		local function convertToDisplay(target)
+			target = string.gsub(target, "__apos__", "'") --convert __apos__ back to apostrophes
+			target = string.gsub(target, "__dash__", "-") --convert __dash__ back to dashes
+			target = capitalize(target) --capitalize names
+			target = string.gsub(target, "_", " ") --convert underscores to spaces
+			return target
+		end
+		local migrated_targets = {}
+		--Check if an old auto_focus_target_list table exists in the settings file
+		if settings.auto_focus_target_list then
+			--Loop through all the targets in it
+			for key, value in pairs(settings.auto_focus_target_list) do
+				local readable_key = convertToDisplay(key)
+				if not migrated_targets[readable_key] then
+					migrated_targets[readable_key] = true
+				end
+			end
+			add_to_chat(8,('[Bars] '):color(220)..('Migration of old Auto Focus Target data complete.'):color(36))
+			add_to_chat(8,('[Bars] '):color(220)..('You may safely delete '):color(8)..('auto_focus_target_list '):color(1)..('data in '):color(8)..('data/settings.xml '):color(1)..('if you wish.'):color(8))
+			return migrated_targets
+		else
+			return nil
+		end
+	end
+
+	local migrated = migrateTargetsFromSettings()
+	auto_focus_targets_data = migrated and migrated or default_auto_focus_targets
+
+	auto_focus_targets_file:write(auto_focus_targets_help_msg..'return {\n'..sortedTableString(auto_focus_targets_data, '    ')..'\n}')
+
+else
+	--File already exists, load it
+	auto_focus_targets_data = require('data.auto_focus_targets')
+end
+
+bg_alpha = settings.bg.alpha
+text_alpha = settings.text.alpha
+
 abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
-bar_width = settings.options.bar_width
-bars_vertical_spacing = settings.options.bars_vertical_spacing
-char_width_multiplier = settings.options.char_width_multiplier
 clear_action_delay = settings.options.clear_action_delay
-color_spells = settings.options.color_spells
+colorize_spells = settings.options.colorize_spells
 condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
-fade_after_delay = settings.options.fade_after_delay
-fade_delay = settings.options.fade_delay
-fade_multiplier = settings.options.fade_multiplier
-fade_to_alpha = settings.options.fade_to_alpha
+condense_focus_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.focus_target
+condense_sub_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.sub_target
+condense_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.target
+drain_decay = (settings.options.animations.drain_speed / 10)
+drain_bg_alpha = bg_alpha * (settings.options.animations.drain_brightness / 10)
+drain_hp_bar = settings.options.animations.drain_hp_bar
+drain_mp_bar = settings.options.animations.drain_mp_bar
+drain_pet_bar = settings.options.animations.drain_pet_bar
+drain_target_bars = settings.options.animations.drain_target_bars
+drain_tp_bar = settings.options.animations.drain_tp_bar
+fade_after_a_delay = settings.options.animations.fade_after_a_delay
+fade_down_to_alpha = settings.options.animations.fade_down_to_alpha
+fade_bg_num = settings.bg.alpha
+fade_delay = settings.options.animations.fade_delay
+fade_speed = settings.options.animations.fade_speed
+fade_text_num = settings.text.alpha
+floating_tp_number = settings.options.animations.floating_tp_number
 focus_target_max_distance = settings.options.focus_target_max_distance
-hide_focus_target_when_target = settings.options.hide_focus_target_when_target
-highlight_when_sp_active = settings.options.highlight_when_sp_active
+job_specific = settings.job_specific
 max_action_length = settings.options.max_action_length
 max_name_length = settings.options.max_name_length
-party_actions_text_size = settings.options.party_actions.text_size
+pulse_brightness = settings.options.animations.pulse_brightness
+pulse_bar_when_target_sp_active = settings.options.animations.pulse_bar_when_target_sp_active
+pulse_when_hp_low = settings.options.animations.pulse_when_hp_low
+pulse_when_mp_low = settings.options.animations.pulse_when_mp_low
+pulse_speed = settings.options.animations.pulse_speed
+pulse_name_when_target_sp_active = settings.options.animations.pulse_name_when_target_sp_active
+pulse_when_pet_low = settings.options.animations.pulse_when_pet_low
+pulse_tp_meter_only = settings.options.animations.pulse_tp_meter_only
+pulse_when_tp_ready = settings.options.animations.pulse_when_tp_ready
 remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
-self_action_text_size_difference = settings.options.self_action_text_size_difference
 short_skillchain_names = settings.options.short_skillchain_names
 show_action_status_indicators = settings.options.show_action_status_indicators
-show_bar_markers = settings.options.show_bar_markers
-show_bars = settings.options.z_show_player_stat_bars
+show_hp_tp_markers = settings.options.show_hp_tp_markers
 show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_dyna_jobs = settings.options.show_dyna_jobs
 show_fancy_rolls = settings.options.show_fancy_rolls
+show_focus_target_when_targeted = settings.options.show_focus_target_when_targeted
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
-show_party_actions = settings.options.party_actions.show
 show_pet_status = settings.options.show_pet_status
 show_pet_distance = settings.options.show_pet_distance
 show_pet_tp = settings.options.show_pet_tp
 show_result_totals = settings.options.show_result_totals
 show_roll_lucky_info = settings.options.show_roll_lucky_info
-show_self_action = settings.options.show_self_action
+show_self_action = settings.sections.self_action.show
+show_self_action_result = settings.options.show_self_action_result
+show_self_when_sub_targeted = settings.options.show_self_when_sub_targeted
 show_self_when_targeted = settings.options.show_self_when_targeted
-show_st_when_target = settings.options.show_st_when_target
+show_sub_target_when_targeted = settings.options.show_sub_target_when_targeted
 show_target_action = settings.options.show_target_action
 show_target_action_result = settings.options.show_target_action_result
 show_target_distance = settings.options.show_target_distance
 show_target_distance_colors = settings.options.show_target_distance_colors
 show_target_hex = settings.options.show_target_hex
 show_target_index = settings.options.show_target_index
-switch_focus_and_sub_positions = settings.options.switch_focus_and_sub_positions
-target_action_text_size_difference = settings.options.target_action_text_size_difference
-target_text_size_difference = settings.options.target_text_size_difference
-text_vertical_offset = settings.options.text_vertical_offset
+show_target_lock = settings.options.show_target_lock
 
-auto_focus_target_list = settings.auto_focus_target_list
-bg_alpha = settings.bg.alpha
+focus_target_bar_width = settings.sections.focus_target.bar_width
+sub_target_bar_width = settings.sections.sub_target.bar_width
+target_bar_width = settings.sections.target.bar_width
+self_action_bar_width = settings.sections.self_action.bar_width
+player_stats_bar_width = settings.sections.player_stats.bar_width
+
+focus_target_bar_size = settings.sections.focus_target.bar_size
+sub_target_bar_size = settings.sections.sub_target.bar_size
+target_bar_size = settings.sections.target.bar_size
+self_action_bar_size = settings.sections.self_action.bar_size
+player_stats_bar_size = settings.sections.player_stats.bar_size
+
+focus_target_text_size = settings.sections.focus_target.text_size
+sub_target_text_size = settings.sections.sub_target.text_size
+target_text_size = settings.sections.target.text_size
+self_action_text_size = settings.sections.self_action.text_size
+player_stats_text_size = settings.sections.player_stats.text_size
+
+focus_target_sub_text_size = settings.sections.focus_target.sub_text_size
+sub_target_sub_text_size = settings.sections.sub_target.sub_text_size
+target_sub_text_size = settings.sections.target.sub_text_size
+
+party_1_actions = settings.sections.party_1_actions
+party_2_actions = settings.sections.party_2_actions
+party_3_actions = settings.sections.party_3_actions
+
+casting_icon = settings.icons.casting
+cancelled_icon = settings.icons.cancelled
+completed_icon = settings.icons.completed
+targeting_icon = settings.icons.targeting
+num_hit_icon = settings.icons.number_of_targets_hit
+
 color = settings.colors
 font = settings.text.font
-text_alpha = settings.text.alpha
 text_color = {r = settings.text.red, g = settings.text.green, b = settings.text.blue}
+pt1_text_color = {r = party_1_actions.text_color.r, g = party_1_actions.text_color.g, b = party_1_actions.text_color.b}
+pt2_text_color = {r = party_2_actions.text_color.r, g = party_2_actions.text_color.g, b = party_2_actions.text_color.b}
+pt3_text_color = {r = party_3_actions.text_color.r, g = party_3_actions.text_color.g, b = party_3_actions.text_color.b}
+pt1_stroke_color = {r = party_1_actions.stroke_color.r, g = party_1_actions.stroke_color.g, b = party_1_actions.stroke_color.b}
+pt2_stroke_color = {r = party_2_actions.stroke_color.r, g = party_2_actions.stroke_color.g, b = party_2_actions.stroke_color.b}
+pt3_stroke_color = {r = party_3_actions.stroke_color.r, g = party_3_actions.stroke_color.g, b = party_3_actions.stroke_color.b}
 
 element_colors = {
 	[0] = { r = color.elements.fire.r, g = color.elements.fire.g, b = color.elements.fire.b },
@@ -348,8 +748,42 @@ sp_abils = {
 	['Overdrive'] = 60,
 	['Trance'] = 60, ['Grand Pas'] = 30,
 	['Tabula Rasa'] = 180,
-	['Bolster'] = 180, ['Widened Compas'] = 60,
+	['Bolster'] = 180, ['Widened Compass'] = 60,
 	['Elemental Sforzo'] = 30,
+	}
+
+sp_shorter_names = {
+	['Mighty Strikes'] = 'M. Strikes',
+	['Brazen Rush'] = 'Brzn. Rush',
+	['Hundred Fists'] = 'Hnd. Fists',
+	['Inner Strength'] = 'Inner Str.',
+	['Manafont'] = 'Manafont',
+	['Subtle Sorcery'] = 'Sbtl. Src.',
+	['Chainspell'] = 'Chainspell',
+	['Perfect Dodge'] = 'Prf. Dodge',
+	['Invincible'] = 'Invincible',
+	['Blood Weapon'] = 'Bl. Weapon',
+	['Soul Enslavement'] = 'Soul Ensl.',
+	['Unleash'] = 'Unleash',
+	['Soul Voice'] = 'Soul Voice',
+	['Clarion Call'] = 'Clar. Call',
+	['Overkill'] = 'Overkill',
+	['Meikyo Shisui'] = 'Mk. Shisui',
+	['Yaegasumi'] = 'Yaegasumi',
+	['Mikage'] = 'Mikage',
+	['Spirit Surge'] = 'Spr. Surge',
+	['Fly High'] = 'Fly High',
+	['Astral Flow'] = 'Ast. Flow',
+	['Astral Conduit'] = 'Ast. Cond.',
+	['Azure Lore'] = 'Azure Lore',
+	['Unbridled Wisdom'] = 'Un. Wisdom',
+	['Overdrive'] = 'Overdrive',
+	['Trance'] = 'Trance',
+	['Grand Pas'] = 'Grand Pas',
+	['Tabula Rasa'] = 'Tab. Rasa',
+	['Bolster'] = 'Bolster',
+	['Widened Compass'] = 'W. Compass',
+	['Elemental Sforzo'] = 'El. Sforzo',
 	}
 
 in_cutscene = false
@@ -360,21 +794,64 @@ current_actions = {}
 current_sp_actions = {}
 focus_target = nil
 focus_target_override = nil
-bars_bg_str = ''
-bars_bg_str_ft_st = ''
-bars_bg_str_hp = ''
-bars_bg_str_tp = ''
+focus_target_bar_width_str = ''
+player_stats_bar_width_str = ''
+sub_target_bar_width_str = ''
+self_action_bar_width_str = ''
+target_bar_width_str = ''
+player_stats_top_bar = ''
 index = 0
 Heartbeat = 0
+drain_previous_ft_id = nil
+drain_previous_st_id = nil
+drain_previous_t_id = nil
+drain_ft_hpp = 100
+drain_st_hpp = 100
+drain_t_hpp = 100
+drain_ps_hpp = 100
+drain_ps_mpp = 100
+drain_ps_tp = 0
+drain_ps_pet = 100
 Fade = false
-bg_fade_num = settings.bg.alpha
-text_fade_num = settings.text.alpha
+Pulse_HP = false
+Pulse_MP = false
+Pulse_TP = false
+Pulse_Pet = false
+Pulse_Focus_Target_Bar = false
+Pulse_Sub_Target_Bar = false
+Pulse_Target_Bar = false
+Pulse_Focus_Target_Name = false
+Pulse_Sub_Target_Name = false
+Pulse_Target_Name = false
+pulse_hp_alpha_num = settings.bg.alpha
+pulse_mp_alpha_num = settings.bg.alpha
+pulse_tp_alpha_num = settings.bg.alpha
+pulse_pet_alpha_num = settings.bg.alpha
+pulse_focus_target_alpha_num = settings.bg.alpha
+pulse_sub_target_alpha_num = settings.bg.alpha
+pulse_target_alpha_num = settings.bg.alpha
+pulse_hp_directio_up = true
+pulse_mp_direction_up = true
+pulse_tp_direction_up = true
+pulse_pet_direction_up = true
+pulse_focus_target_direction_up = true
+pulse_sub_target_direction_up = true
+pulse_target_direction_up = true
+ft_spaces = string.rep(' ', settings.sections.focus_target.spaces_between_text_parts)
+st_spaces = string.rep(' ', settings.sections.sub_target.spaces_between_text_parts)
+t_spaces = string.rep(' ', settings.sections.target.spaces_between_text_parts)
+target_lock_icon_pixel_width = 0
+target_lock_icon_pixel_height = 0
+target_lock_underline_pixel_width = 0
+target_bar_pixel_width = 0
+target_bar_pixel_height = 0
 num_party1_members = 0
 num_party2_members = 0
 num_party3_members = 0
-screen_test = false
+Screen_Test = false
 screen_test_focus_target = {
 	name = "Focus Target",
+	action = "Focus Target Action",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
@@ -382,6 +859,7 @@ screen_test_focus_target = {
 }
 screen_test_sub_target = {
 	name = "Sub Target",
+	action = "Sub Target Action",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
@@ -389,810 +867,1198 @@ screen_test_sub_target = {
 }
 screen_test_target = {
 	name = "Target",
+	action = "Target Action",
 	hpp = 100,
 	distance = 100,
 	index = 12345,
 	model_size = 5,
 }
-sp = settings.colors.target.sp_active_glow
+sp_active_glow = settings.colors.target.sp_active_glow
+text_outline = {r = 0, g = 0, b = 0}
 
---BACKGROUNDS
+--TARGET LOCK
 
---Create the Focus Target BACKGROUND text object
-bars_bg_focus_target = texts.new()
-bars_bg_focus_target:font(font)
-bars_bg_focus_target:pad(-4)
-bars_bg_focus_target:bg_alpha(bg_alpha)
-bars_bg_focus_target:draggable(false)
+--Create the TARGET LOCK Left text object
+target_bar_lock_left = texts.new()
+target_bar_lock_left:text(settings.icons.target_lock_left)
+target_bar_lock_left:font(font)
+target_bar_lock_left:color(color.target_lock.text.r,color.target_lock.text.g,color.target_lock.text.b)
+target_bar_lock_left:alpha(text_alpha)
+target_bar_lock_left:bg_alpha(0)
+target_bar_lock_left:stroke_color(color.target_lock.stroke.r,color.target_lock.stroke.g,color.target_lock.stroke.b)
+target_bar_lock_left:stroke_width(1)
+target_bar_lock_left:bold(true)
+target_bar_lock_left:draggable(false)
+target_bar_lock_left:size(settings.sections.target.target_lock_icon_size)
 
---Create the Sub-Target BACKGROUND text object
-bars_bg_sub_target = texts.new()
-bars_bg_sub_target:font(font)
-bars_bg_sub_target:pad(-4)
-bars_bg_sub_target:bg_alpha(bg_alpha)
-bars_bg_sub_target:draggable(false)
+--Create the TARGET LOCK Right text object
+target_bar_lock_right = texts.new()
+target_bar_lock_right:text(settings.icons.target_lock_right)
+target_bar_lock_right:font(font)
+target_bar_lock_right:color(color.target_lock.text.r,color.target_lock.text.g,color.target_lock.text.b)
+target_bar_lock_right:alpha(text_alpha)
+target_bar_lock_right:bg_alpha(0)
+target_bar_lock_right:stroke_color(color.target_lock.stroke.r,color.target_lock.stroke.g,color.target_lock.stroke.b)
+target_bar_lock_right:stroke_width(1)
+target_bar_lock_right:bold(true)
+target_bar_lock_right:draggable(false)
+target_bar_lock_right:size(settings.sections.target.target_lock_icon_size)
 
---Create the Target BACKGROUND text object
-bars_bg_target = texts.new()
-bars_bg_target:font(font)
-bars_bg_target:pad(-4)
-bars_bg_target:bg_alpha(bg_alpha)
-bars_bg_target:draggable(false)
+--Create the TARGET LOCK Underline text object
+target_bar_lock_underline = texts.new()
+target_bar_lock_underline:font(font)
+target_bar_lock_underline:pad(-(focus_target_bar_size - settings.sections.target.target_lock_underline_pixel_width))
+target_bar_lock_underline:bg_alpha(bg_alpha)
+target_bar_lock_underline:bg_color(color.target_lock.text.r,color.target_lock.text.g,color.target_lock.text.b)
+target_bar_lock_underline:draggable(false)
+target_bar_lock_underline:size(focus_target_bar_size)
 
---Create the Self Action BACKGROUND text object
-bars_bg_self_action = texts.new()
-bars_bg_self_action:font(font)
-bars_bg_self_action:pad(-4)
-bars_bg_self_action:bg_alpha(bg_alpha)
-bars_bg_self_action:draggable(false)
+--BAR BACKGROUNDS
 
---Create the HP BACKGROUND text object
-bars_bg_hp = texts.new()
-bars_bg_hp:font(font)
-bars_bg_hp:pad(-4)
-bars_bg_hp:bg_alpha(bg_alpha)
-bars_bg_hp:draggable(false)
+--Create the Focus Target BAR BACKGROUND text object
+focus_target_bar_bg = texts.new()
+focus_target_bar_bg:font(font)
+focus_target_bar_bg:pad(-4)
+focus_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+focus_target_bar_bg:bg_alpha(bg_alpha)
+focus_target_bar_bg:draggable(false)
+focus_target_bar_bg:size(focus_target_bar_size)
 
---Create the MP BACKGROUND text object
-bars_bg_mp = texts.new()
-bars_bg_mp:font(font)
-bars_bg_mp:pad(-4)
-bars_bg_mp:bg_alpha(bg_alpha)
-bars_bg_mp:draggable(false)
+--Create the Sub Target BAR BACKGROUND text object
+sub_target_bar_bg = texts.new()
+sub_target_bar_bg:font(font)
+sub_target_bar_bg:pad(-4)
+sub_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+sub_target_bar_bg:bg_alpha(bg_alpha)
+sub_target_bar_bg:draggable(false)
+sub_target_bar_bg:size(sub_target_bar_size)
 
---Create the TP BACKGROUND text object
-bars_bg_tp = texts.new()
-bars_bg_tp:font(font)
-bars_bg_tp:pad(-4)
-bars_bg_tp:bg_alpha(bg_alpha)
-bars_bg_tp:draggable(false)
+--Create the Target BAR BACKGROUND text object
+target_bar_bg = texts.new()
+target_bar_bg:font(font)
+target_bar_bg:pad(-4)
+target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+target_bar_bg:bg_alpha(bg_alpha)
+target_bar_bg:draggable(false)
+target_bar_bg:size(target_bar_size)
 
---Create the Pet BACKGROUND text object
-bars_bg_pet = texts.new()
-bars_bg_pet:font(font)
-bars_bg_pet:pad(-4)
-bars_bg_pet:bg_alpha(bg_alpha)
-bars_bg_pet:draggable(false)
+--Create the Self Action BAR BACKGROUND text object
+self_action_bar_bg = texts.new()
+self_action_bar_bg:font(font)
+self_action_bar_bg:pad(-4)
+self_action_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+self_action_bar_bg:bg_alpha(bg_alpha)
+self_action_bar_bg:draggable(false)
+self_action_bar_bg:size(self_action_bar_size)
 
---METERS
+--Create the Player Stats HP BAR BACKGROUND text object
+player_stats_hp_bar_bg = texts.new()
+player_stats_hp_bar_bg:font(font)
+player_stats_hp_bar_bg:pad(-4)
+player_stats_hp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+player_stats_hp_bar_bg:bg_alpha(bg_alpha)
+player_stats_hp_bar_bg:draggable(false)
+player_stats_hp_bar_bg:size(player_stats_bar_size)
 
---Create the Focus Target METER text object
-bars_meter_focus_target = texts.new()
-bars_meter_focus_target:font(font)
-bars_meter_focus_target:pad(-5)
-bars_meter_focus_target:bg_alpha(text_alpha)
-bars_meter_focus_target:draggable(false)
+--Create the Player Stats MP BAR BACKGROUND text object
+player_stats_mp_bar_bg = texts.new()
+player_stats_mp_bar_bg:font(font)
+player_stats_mp_bar_bg:pad(-4)
+player_stats_mp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+player_stats_mp_bar_bg:bg_alpha(bg_alpha)
+player_stats_mp_bar_bg:draggable(false)
+player_stats_mp_bar_bg:size(player_stats_bar_size)
 
---Create the Sub-Target METER text object
-bars_meter_sub_target = texts.new()
-bars_meter_sub_target:font(font)
-bars_meter_sub_target:pad(-5)
-bars_meter_sub_target:bg_alpha(text_alpha)
-bars_meter_sub_target:draggable(false)
+--Create the Player Stats TP BAR BACKGROUND text object
+player_stats_tp_bar_bg = texts.new()
+player_stats_tp_bar_bg:font(font)
+player_stats_tp_bar_bg:pad(-4)
+player_stats_tp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+player_stats_tp_bar_bg:bg_alpha(bg_alpha)
+player_stats_tp_bar_bg:draggable(false)
+player_stats_tp_bar_bg:size(player_stats_bar_size)
 
---Create the Target METER text object
-bars_meter_target = texts.new()
-bars_meter_target:font(font)
-bars_meter_target:pad(-5)
-bars_meter_target:bg_alpha(text_alpha)
-bars_meter_target:draggable(false)
+--Create the Player Stats Pet BAR BACKGROUND text object
+player_stats_pet_bar_bg = texts.new()
+player_stats_pet_bar_bg:font(font)
+player_stats_pet_bar_bg:pad(-4)
+player_stats_pet_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+player_stats_pet_bar_bg:bg_alpha(bg_alpha)
+player_stats_pet_bar_bg:draggable(false)
+player_stats_pet_bar_bg:size(player_stats_bar_size)
 
---Create the Self Action METER text object
-bars_meter_self_action = texts.new()
-bars_meter_self_action:font(font)
-bars_meter_self_action:pad(-5)
-bars_meter_self_action:bg_alpha(text_alpha)
-bars_meter_self_action:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
-bars_meter_self_action:draggable(false)
+--BAR PULSE
 
---Create the HP METER text object
-bars_meter_hp = texts.new()
-bars_meter_hp:font(font)
-bars_meter_hp:pad(-5)
-bars_meter_hp:bg_alpha(text_alpha)
-bars_meter_hp:draggable(false)
+--Create the Player Stats HP BAR PULSE text object
+player_stats_hp_bar_pulse = texts.new()
+player_stats_hp_bar_pulse:font(font)
+player_stats_hp_bar_pulse:pad(-4)
+player_stats_hp_bar_pulse:bg_alpha(0)
+player_stats_hp_bar_pulse:draggable(false)
+player_stats_hp_bar_pulse:size(player_stats_bar_size)
 
---Create the MP METER text object
-bars_meter_mp = texts.new()
-bars_meter_mp:font(font)
-bars_meter_mp:pad(-5)
-bars_meter_mp:bg_alpha(text_alpha)
-bars_meter_mp:draggable(false)
+--Create the Player Stats MP BAR PULSE text object
+player_stats_mp_bar_pulse = texts.new()
+player_stats_mp_bar_pulse:font(font)
+player_stats_mp_bar_pulse:pad(-4)
+player_stats_mp_bar_pulse:bg_alpha(0)
+player_stats_mp_bar_pulse:draggable(false)
+player_stats_mp_bar_pulse:size(player_stats_bar_size)
 
---Create the TP METER text object
-bars_meter_tp = texts.new()
-bars_meter_tp:font(font)
-bars_meter_tp:pad(-5)
-bars_meter_tp:bg_alpha(text_alpha)
-bars_meter_tp:draggable(false)
+--Create the Player Stats TP BAR PULSE text object
+player_stats_tp_bar_pulse = texts.new()
+player_stats_tp_bar_pulse:font(font)
+player_stats_tp_bar_pulse:pad(-4)
+player_stats_tp_bar_pulse:bg_alpha(0)
+player_stats_tp_bar_pulse:draggable(false)
+player_stats_tp_bar_pulse:size(pulse_tp_meter_only and player_stats_bar_size / 10 or player_stats_bar_size)
 
---Create the Pet METER text object
-bars_meter_pet = texts.new()
-bars_meter_pet:font(font)
-bars_meter_pet:pad(-5)
-bars_meter_pet:bg_alpha(text_alpha)
-bars_meter_pet:draggable(false)
+--Create the Player Stats PET BAR PULSE text object
+player_stats_pet_bar_pulse = texts.new()
+player_stats_pet_bar_pulse:font(font)
+player_stats_pet_bar_pulse:pad(-4)
+player_stats_pet_bar_pulse:bg_alpha(0)
+player_stats_pet_bar_pulse:draggable(false)
+player_stats_pet_bar_pulse:size(player_stats_bar_size)
+
+--Create the Focus Target BAR PULSE text object
+focus_target_bar_pulse = texts.new()
+focus_target_bar_pulse:font(font)
+focus_target_bar_pulse:pad(-4)
+focus_target_bar_pulse:bg_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
+focus_target_bar_pulse:bg_alpha(0)
+focus_target_bar_pulse:draggable(false)
+focus_target_bar_pulse:size(focus_target_bar_size)
+
+--Create the Sub Target BAR PULSE text object
+sub_target_bar_pulse = texts.new()
+sub_target_bar_pulse:font(font)
+sub_target_bar_pulse:pad(-4)
+sub_target_bar_pulse:bg_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
+sub_target_bar_pulse:bg_alpha(0)
+sub_target_bar_pulse:draggable(false)
+sub_target_bar_pulse:size(sub_target_bar_size)
+
+--Create the Target BAR PULSE text object
+target_bar_pulse = texts.new()
+target_bar_pulse:font(font)
+target_bar_pulse:pad(-4)
+target_bar_pulse:bg_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
+target_bar_pulse:bg_alpha(0)
+target_bar_pulse:draggable(false)
+target_bar_pulse:size(target_bar_size)
+
+--BAR DRAIN METERS
+
+--Create the Focus Target BAR DRAIN METER text object
+focus_target_bar_drain_meter = texts.new()
+focus_target_bar_drain_meter:font(font)
+focus_target_bar_drain_meter:pad(-5)
+focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+focus_target_bar_drain_meter:draggable(false)
+focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
+
+--Create the Sub Target BAR DRAIN METER text object
+sub_target_bar_drain_meter = texts.new()
+sub_target_bar_drain_meter:font(font)
+sub_target_bar_drain_meter:pad(-5)
+sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+sub_target_bar_drain_meter:draggable(false)
+sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
+
+--Create the Target BAR DRAIN METER text object
+target_bar_drain_meter = texts.new()
+target_bar_drain_meter:font(font)
+target_bar_drain_meter:pad(-5)
+target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+target_bar_drain_meter:draggable(false)
+target_bar_drain_meter:size(target_bar_size / 10)
+
+--Create the HP BAR DRAIN METER text object
+player_stats_hp_bar_drain_meter = texts.new()
+player_stats_hp_bar_drain_meter:font(font)
+player_stats_hp_bar_drain_meter:pad(-5)
+player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_hp_bar_drain_meter:draggable(false)
+player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
+
+--Create the MP BAR DRAIN METER text object
+player_stats_mp_bar_drain_meter = texts.new()
+player_stats_mp_bar_drain_meter:font(font)
+player_stats_mp_bar_drain_meter:pad(-5)
+player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_mp_bar_drain_meter:draggable(false)
+player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
+
+--Create the TP BAR DRAIN METER text object
+player_stats_tp_bar_drain_meter = texts.new()
+player_stats_tp_bar_drain_meter:font(font)
+player_stats_tp_bar_drain_meter:pad(-5)
+player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_tp_bar_drain_meter:draggable(false)
+player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
+
+--Create the Pet BAR DRAIN METER text object
+player_stats_pet_bar_drain_meter = texts.new()
+player_stats_pet_bar_drain_meter:font(font)
+player_stats_pet_bar_drain_meter:pad(-5)
+player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_pet_bar_drain_meter:draggable(false)
+player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
+
+--BAR METERS
+
+--Create the Focus Target BAR METER text object
+focus_target_bar_meter = texts.new()
+focus_target_bar_meter:font(font)
+focus_target_bar_meter:pad(-5)
+focus_target_bar_meter:bg_alpha(bg_alpha)
+focus_target_bar_meter:draggable(false)
+focus_target_bar_meter:size(focus_target_bar_size / 10)
+
+--Create the Sub Target BAR METER text object
+sub_target_bar_meter = texts.new()
+sub_target_bar_meter:font(font)
+sub_target_bar_meter:pad(-5)
+sub_target_bar_meter:bg_alpha(bg_alpha)
+sub_target_bar_meter:draggable(false)
+sub_target_bar_meter:size(sub_target_bar_size / 10)
+
+--Create the Target BAR METER text object
+target_bar_meter = texts.new()
+target_bar_meter:font(font)
+target_bar_meter:pad(-5)
+target_bar_meter:bg_alpha(bg_alpha)
+target_bar_meter:draggable(false)
+target_bar_meter:size(target_bar_size / 10)
+
+--Create the Self Action BAR METER text object
+self_action_bar_meter = texts.new()
+self_action_bar_meter:font(font)
+self_action_bar_meter:pad(-5)
+self_action_bar_meter:bg_alpha(bg_alpha)
+self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
+self_action_bar_meter:draggable(false)
+self_action_bar_meter:size(self_action_bar_size / 10)
+
+--Create the HP BAR METER text object
+player_stats_hp_bar_meter = texts.new()
+player_stats_hp_bar_meter:font(font)
+player_stats_hp_bar_meter:pad(-5)
+player_stats_hp_bar_meter:bg_alpha(bg_alpha)
+player_stats_hp_bar_meter:draggable(false)
+player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
+
+--Create the MP BAR METER text object
+player_stats_mp_bar_meter = texts.new()
+player_stats_mp_bar_meter:font(font)
+player_stats_mp_bar_meter:pad(-5)
+player_stats_mp_bar_meter:bg_alpha(bg_alpha)
+player_stats_mp_bar_meter:draggable(false)
+player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
+
+--Create the TP BAR METER text object
+player_stats_tp_bar_meter = texts.new()
+player_stats_tp_bar_meter:font(font)
+player_stats_tp_bar_meter:pad(-5)
+player_stats_tp_bar_meter:bg_alpha(bg_alpha)
+player_stats_tp_bar_meter:draggable(false)
+player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
+
+--Create the Pet BAR METER text object
+player_stats_pet_bar_meter = texts.new()
+player_stats_pet_bar_meter:font(font)
+player_stats_pet_bar_meter:pad(-5)
+player_stats_pet_bar_meter:bg_alpha(bg_alpha)
+player_stats_pet_bar_meter:draggable(false)
+player_stats_pet_bar_meter:size(player_stats_bar_size / 10)
 
 --MARKERS
 
 --Create the HP MARKER text object
-bars_marker_hp = texts.new()
-bars_marker_hp:font(font)
-bars_marker_hp:pad(-4)
-bars_marker_hp:bg_alpha(0)
-bars_marker_hp:draggable(false)
+player_stats_hp_marker = texts.new()
+player_stats_hp_marker:font(font)
+player_stats_hp_marker:pad(-5)
+player_stats_hp_marker:alpha(255)
+player_stats_hp_marker:bg_alpha(0)
+player_stats_hp_marker:draggable(false)
+player_stats_hp_marker:bold(settings.sections.player_stats.bold)
+player_stats_hp_marker:size(player_stats_bar_size / 5) --Only shrinking by 5x so as not to make the marker too small to see
 
 --Create the TP MARKER text object
-bars_marker_tp = texts.new()
-bars_marker_tp:font(font)
-bars_marker_tp:pad(-4)
-bars_marker_tp:bg_alpha(0)
-bars_marker_tp:draggable(false)
+player_stats_tp_marker = texts.new()
+player_stats_tp_marker:font(font)
+player_stats_tp_marker:pad(-5)
+player_stats_tp_marker:alpha(255)
+player_stats_tp_marker:bg_alpha(0)
+player_stats_tp_marker:draggable(false)
+player_stats_tp_marker:bold(settings.sections.player_stats.bold)
+player_stats_tp_marker:size(player_stats_bar_size / 5) --Only shrinking by 5x so as not to make the marker too small to see
 
 --TEXT SHADOW
 
 --Create the Focus Target TEXT SHADOW text object
-bars_text_shdw_focus_target = texts.new()
-bars_text_shdw_focus_target:font(font)
-bars_text_shdw_focus_target:color(0,0,0)
-bars_text_shdw_focus_target:alpha(text_alpha)
-bars_text_shdw_focus_target:bg_alpha(0)
-bars_text_shdw_focus_target:draggable(false)
+focus_target_text_shadow = texts.new()
+focus_target_text_shadow:font(settings.sections.focus_target.font)
+focus_target_text_shadow:color(0,0,0)
+focus_target_text_shadow:alpha(text_alpha)
+focus_target_text_shadow:bg_alpha(0)
+focus_target_text_shadow:draggable(false)
+focus_target_text_shadow:bold(settings.sections.focus_target.bold)
+focus_target_text_shadow:italic(settings.sections.focus_target.italic)
+focus_target_text_shadow:size(settings.sections.focus_target.text_size)
 
 --Create the Focus Target Action TEXT SHADOW text object
-bars_text_shdw_focus_target_action = texts.new()
-bars_text_shdw_focus_target_action:font(font)
-bars_text_shdw_focus_target_action:color(0,0,0)
-bars_text_shdw_focus_target_action:alpha(text_alpha)
-bars_text_shdw_focus_target_action:bg_alpha(0)
-bars_text_shdw_focus_target_action:draggable(false)
+focus_target_action_text_shadow = texts.new()
+focus_target_action_text_shadow:font(settings.sections.focus_target.font)
+focus_target_action_text_shadow:color(0,0,0)
+focus_target_action_text_shadow:alpha(text_alpha)
+focus_target_action_text_shadow:bg_alpha(0)
+focus_target_action_text_shadow:draggable(false)
+focus_target_action_text_shadow:bold(settings.sections.focus_target.bold)
+focus_target_action_text_shadow:italic(settings.sections.focus_target.italic)
+focus_target_action_text_shadow:size(settings.sections.focus_target.sub_text_size)
 
---Create the Sub-Target TEXT SHADOW text object
-bars_text_shdw_sub_target = texts.new()
-bars_text_shdw_sub_target:font(font)
-bars_text_shdw_sub_target:color(0,0,0)
-bars_text_shdw_sub_target:alpha(text_alpha)
-bars_text_shdw_sub_target:bg_alpha(0)
-bars_text_shdw_sub_target:draggable(false)
+--Create the Sub Target TEXT SHADOW text object
+sub_target_text_shadow = texts.new()
+sub_target_text_shadow:font(settings.sections.sub_target.font)
+sub_target_text_shadow:color(0,0,0)
+sub_target_text_shadow:alpha(text_alpha)
+sub_target_text_shadow:bg_alpha(0)
+sub_target_text_shadow:draggable(false)
+sub_target_text_shadow:bold(settings.sections.sub_target.bold)
+sub_target_text_shadow:italic(settings.sections.sub_target.italic)
+sub_target_text_shadow:size(settings.sections.sub_target.text_size)
 
---Create the Sub-Target Action TEXT SHADOW text object
-bars_text_shdw_sub_target_action = texts.new()
-bars_text_shdw_sub_target_action:font(font)
-bars_text_shdw_sub_target_action:color(0,0,0)
-bars_text_shdw_sub_target_action:alpha(text_alpha)
-bars_text_shdw_sub_target_action:bg_alpha(0)
-bars_text_shdw_sub_target_action:draggable(false)
+--Create the Sub Target Action TEXT SHADOW text object
+sub_target_action_text_shadow = texts.new()
+sub_target_action_text_shadow:font(settings.sections.sub_target.font)
+sub_target_action_text_shadow:color(0,0,0)
+sub_target_action_text_shadow:alpha(text_alpha)
+sub_target_action_text_shadow:bg_alpha(0)
+sub_target_action_text_shadow:draggable(false)
+sub_target_action_text_shadow:bold(settings.sections.sub_target.bold)
+sub_target_action_text_shadow:italic(settings.sections.sub_target.italic)
+sub_target_action_text_shadow:size(settings.sections.sub_target.sub_text_size)
 
 --Create the Target TEXT SHADOW text object
-bars_text_shdw_target = texts.new()
-bars_text_shdw_target:font(font)
-bars_text_shdw_target:color(0,0,0)
-bars_text_shdw_target:alpha(text_alpha)
-bars_text_shdw_target:bg_alpha(0)
-bars_text_shdw_target:draggable(false)
+target_text_shadow = texts.new()
+target_text_shadow:font(settings.sections.target.font)
+target_text_shadow:color(0,0,0)
+target_text_shadow:alpha(text_alpha)
+target_text_shadow:bg_alpha(0)
+target_text_shadow:draggable(false)
+target_text_shadow:bold(settings.sections.target.bold)
+target_text_shadow:italic(settings.sections.target.italic)
+target_text_shadow:size(settings.sections.target.text_size)
 
 --Create the Target Action TEXT SHADOW text object
-bars_text_shdw_target_action = texts.new()
-bars_text_shdw_target_action:font(font)
-bars_text_shdw_target_action:color(0,0,0)
-bars_text_shdw_target_action:alpha(text_alpha)
-bars_text_shdw_target_action:bg_alpha(0)
-bars_text_shdw_target_action:draggable(false)
+target_action_text_shadow = texts.new()
+target_action_text_shadow:font(settings.sections.target.font)
+target_action_text_shadow:color(0,0,0)
+target_action_text_shadow:alpha(text_alpha)
+target_action_text_shadow:bg_alpha(0)
+target_action_text_shadow:draggable(false)
+target_action_text_shadow:bold(settings.sections.target.bold)
+target_action_text_shadow:italic(settings.sections.target.italic)
+target_action_text_shadow:size(settings.sections.target.sub_text_size)
 
 --Create the Self Action TEXT SHADOW text object
-bars_text_shdw_self_action = texts.new()
-bars_text_shdw_self_action:font(font)
-bars_text_shdw_self_action:color(0,0,0)
-bars_text_shdw_self_action:alpha(text_alpha)
-bars_text_shdw_self_action:bg_alpha(0)
-bars_text_shdw_self_action:draggable(false)
+self_action_text_shadow = texts.new()
+self_action_text_shadow:font(settings.sections.self_action.font)
+self_action_text_shadow:color(0,0,0)
+self_action_text_shadow:alpha(text_alpha)
+self_action_text_shadow:bg_alpha(0)
+self_action_text_shadow:draggable(false)
+self_action_text_shadow:bold(settings.sections.self_action.bold)
+self_action_text_shadow:italic(settings.sections.self_action.italic)
+self_action_text_shadow:size(settings.sections.self_action.text_size)
 
---Create the HP TEXT SHADOW text object
-bars_text_shdw_hp = texts.new()
-bars_text_shdw_hp:font(font)
-bars_text_shdw_hp:color(0,0,0)
-bars_text_shdw_hp:alpha(text_alpha)
-bars_text_shdw_hp:bg_alpha(0)
-bars_text_shdw_hp:draggable(false)
+--Create the Player Stats HP TEXT SHADOW text object
+player_stats_hp_text_shadow = texts.new()
+player_stats_hp_text_shadow:font(settings.sections.player_stats.font)
+player_stats_hp_text_shadow:color(0,0,0)
+player_stats_hp_text_shadow:alpha(text_alpha)
+player_stats_hp_text_shadow:bg_alpha(0)
+player_stats_hp_text_shadow:draggable(false)
+player_stats_hp_text_shadow:bold(settings.sections.player_stats.bold)
+player_stats_hp_text_shadow:italic(settings.sections.player_stats.italic)
+player_stats_hp_text_shadow:size(settings.sections.player_stats.text_size)
 
---Create the MP TEXT SHADOW text object
-bars_text_shdw_mp = texts.new()
-bars_text_shdw_mp:font(font)
-bars_text_shdw_mp:color(0,0,0)
-bars_text_shdw_mp:alpha(text_alpha)
-bars_text_shdw_mp:bg_alpha(0)
-bars_text_shdw_mp:draggable(false)
+--Create the Player Stats MP TEXT SHADOW text object
+player_stats_mp_text_shadow = texts.new()
+player_stats_mp_text_shadow:font(settings.sections.player_stats.font)
+player_stats_mp_text_shadow:color(0,0,0)
+player_stats_mp_text_shadow:alpha(text_alpha)
+player_stats_mp_text_shadow:bg_alpha(0)
+player_stats_mp_text_shadow:draggable(false)
+player_stats_mp_text_shadow:bold(settings.sections.player_stats.bold)
+player_stats_mp_text_shadow:italic(settings.sections.player_stats.italic)
+player_stats_mp_text_shadow:size(settings.sections.player_stats.text_size)
 
---Create the TP TEXT SHADOW text object
-bars_text_shdw_tp = texts.new()
-bars_text_shdw_tp:font(font)
-bars_text_shdw_tp:color(0,0,0)
-bars_text_shdw_tp:alpha(text_alpha)
-bars_text_shdw_tp:bg_alpha(0)
-bars_text_shdw_tp:draggable(false)
+--Create the Player Stats TP TEXT SHADOW text object
+player_stats_tp_text_shadow = texts.new()
+player_stats_tp_text_shadow:font(settings.sections.player_stats.font)
+player_stats_tp_text_shadow:color(0,0,0)
+player_stats_tp_text_shadow:alpha(text_alpha)
+player_stats_tp_text_shadow:bg_alpha(0)
+player_stats_tp_text_shadow:draggable(false)
+player_stats_tp_text_shadow:bold(settings.sections.player_stats.bold)
+player_stats_tp_text_shadow:italic(settings.sections.player_stats.italic)
+player_stats_tp_text_shadow:size(settings.sections.player_stats.text_size)
 
---Create the Pet TEXT SHADOW text object
-bars_text_shdw_pet = texts.new()
-bars_text_shdw_pet:font(font)
-bars_text_shdw_pet:color(0,0,0)
-bars_text_shdw_pet:alpha(text_alpha)
-bars_text_shdw_pet:bg_alpha(0)
-bars_text_shdw_pet:draggable(false)
+--Create the Player Stats Pet TEXT SHADOW text object
+player_stats_pet_text_shadow = texts.new()
+player_stats_pet_text_shadow:font(settings.sections.player_stats.font)
+player_stats_pet_text_shadow:color(0,0,0)
+player_stats_pet_text_shadow:alpha(text_alpha)
+player_stats_pet_text_shadow:bg_alpha(0)
+player_stats_pet_text_shadow:draggable(false)
+player_stats_pet_text_shadow:bold(settings.sections.player_stats.bold)
+player_stats_pet_text_shadow:italic(settings.sections.player_stats.italic)
+player_stats_pet_text_shadow:size(settings.sections.player_stats.text_size)
 
 --TEXT
 
 --Create the Focus Target TEXT text object
-bars_text_focus_target = texts.new()
-bars_text_focus_target:font(font)
-bars_text_focus_target:color(text_color.r,text_color.g,text_color.b)
-bars_text_focus_target:alpha(text_alpha)
-bars_text_focus_target:bg_alpha(0)
-bars_text_focus_target:draggable(false)
-bars_text_focus_target:stroke_color(sp.r,sp.g,sp.b)
-bars_text_focus_target:stroke_alpha(0)
-bars_text_focus_target:stroke_width(2.5)
+focus_target_text = texts.new()
+focus_target_text:font(settings.sections.focus_target.font)
+focus_target_text:color(text_color.r,text_color.g,text_color.b)
+focus_target_text:alpha(text_alpha)
+focus_target_text:bg_alpha(0)
+focus_target_text:draggable(false)
+focus_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+focus_target_text:stroke_alpha(text_alpha)
+focus_target_text:stroke_width(0.5)
+focus_target_text:bold(settings.sections.focus_target.bold)
+focus_target_text:italic(settings.sections.focus_target.italic)
+focus_target_text:size(settings.sections.focus_target.text_size)
 
 --Create the Focus Target Action TEXT text object
-bars_text_focus_target_action = texts.new()
-bars_text_focus_target_action:font(font)
-bars_text_focus_target_action:color(text_color.r,text_color.g,text_color.b)
-bars_text_focus_target_action:alpha(text_alpha)
-bars_text_focus_target_action:bg_alpha(0)
-bars_text_focus_target_action:draggable(false)
+focus_target_action_text = texts.new()
+focus_target_action_text:font(settings.sections.focus_target.font)
+focus_target_action_text:color(text_color.r,text_color.g,text_color.b)
+focus_target_action_text:alpha(text_alpha)
+focus_target_action_text:bg_alpha(0)
+focus_target_action_text:draggable(false)
+focus_target_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+focus_target_action_text:stroke_alpha(text_alpha)
+focus_target_action_text:stroke_width(0.5)
+focus_target_action_text:bold(settings.sections.focus_target.bold)
+focus_target_action_text:italic(settings.sections.focus_target.italic)
+focus_target_action_text:size(settings.sections.focus_target.sub_text_size)
 
---Create the Sub-Target TEXT text object
-bars_text_sub_target = texts.new()
-bars_text_sub_target:font(font)
-bars_text_sub_target:color(text_color.r,text_color.g,text_color.b)
-bars_text_sub_target:alpha(text_alpha)
-bars_text_sub_target:bg_alpha(0)
-bars_text_sub_target:draggable(false)
-bars_text_sub_target:stroke_color(sp.r,sp.g,sp.b)
-bars_text_sub_target:stroke_alpha(0)
-bars_text_sub_target:stroke_width(2.5)
+--Create the Sub Target TEXT text object
+sub_target_text = texts.new()
+sub_target_text:font(settings.sections.sub_target.font)
+sub_target_text:color(text_color.r,text_color.g,text_color.b)
+sub_target_text:alpha(text_alpha)
+sub_target_text:bg_alpha(0)
+sub_target_text:draggable(false)
+sub_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+sub_target_text:stroke_alpha(text_alpha)
+sub_target_text:stroke_width(0.5)
+sub_target_text:bold(settings.sections.sub_target.bold)
+sub_target_text:italic(settings.sections.sub_target.italic)
+sub_target_text:size(settings.sections.sub_target.text_size)
 
---Create the Sub-Target Action TEXT text object
-bars_text_sub_target_action = texts.new()
-bars_text_sub_target_action:font(font)
-bars_text_sub_target_action:color(text_color.r,text_color.g,text_color.b)
-bars_text_sub_target_action:alpha(text_alpha)
-bars_text_sub_target_action:bg_alpha(0)
-bars_text_sub_target_action:draggable(false)
+--Create the Sub Target Action TEXT text object
+sub_target_action_text = texts.new()
+sub_target_action_text:font(settings.sections.sub_target.font)
+sub_target_action_text:color(text_color.r,text_color.g,text_color.b)
+sub_target_action_text:alpha(text_alpha)
+sub_target_action_text:bg_alpha(0)
+sub_target_action_text:draggable(false)
+sub_target_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+sub_target_action_text:stroke_alpha(text_alpha)
+sub_target_action_text:stroke_width(0.5)
+sub_target_action_text:bold(settings.sections.sub_target.bold)
+sub_target_action_text:italic(settings.sections.sub_target.italic)
+sub_target_action_text:size(settings.sections.sub_target.sub_text_size)
 
 --Create the Target TEXT text object
-bars_text_target = texts.new()
-bars_text_target:font(font)
-bars_text_target:color(text_color.r,text_color.g,text_color.b)
-bars_text_target:alpha(text_alpha)
-bars_text_target:bg_alpha(0)
-bars_text_target:draggable(false)
-bars_text_target:stroke_color(sp.r,sp.g,sp.b)
-bars_text_target:stroke_alpha(0)
-bars_text_target:stroke_width(2.5)
+target_text = texts.new()
+target_text:font(settings.sections.target.font)
+target_text:color(text_color.r,text_color.g,text_color.b)
+target_text:alpha(text_alpha)
+target_text:bg_alpha(0)
+target_text:draggable(false)
+target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+target_text:stroke_alpha(text_alpha)
+target_text:stroke_width(0.5)
+target_text:bold(settings.sections.target.bold)
+target_text:italic(settings.sections.target.italic)
+target_text:size(settings.sections.target.text_size)
 
 --Create the Target Action TEXT text object
-bars_text_target_action = texts.new()
-bars_text_target_action:font(font)
-bars_text_target_action:color(text_color.r,text_color.g,text_color.b)
-bars_text_target_action:alpha(text_alpha)
-bars_text_target_action:bg_alpha(0)
-bars_text_target_action:draggable(false)
+target_action_text = texts.new()
+target_action_text:font(settings.sections.target.font)
+target_action_text:color(text_color.r,text_color.g,text_color.b)
+target_action_text:alpha(text_alpha)
+target_action_text:bg_alpha(0)
+target_action_text:draggable(false)
+target_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+target_action_text:stroke_alpha(text_alpha)
+target_action_text:stroke_width(0.5)
+target_action_text:bold(settings.sections.target.bold)
+target_action_text:italic(settings.sections.target.italic)
+target_action_text:size(settings.sections.target.sub_text_size)
 
 --Create the Self Action TEXT text object
-bars_text_self_action = texts.new()
-bars_text_self_action:font(font)
-bars_text_self_action:color(text_color.r,text_color.g,text_color.b)
-bars_text_self_action:alpha(text_alpha)
-bars_text_self_action:bg_alpha(0)
-bars_text_self_action:draggable(false)
+self_action_text = texts.new()
+self_action_text:font(settings.sections.self_action.font)
+self_action_text:color(text_color.r,text_color.g,text_color.b)
+self_action_text:alpha(text_alpha)
+self_action_text:bg_alpha(0)
+self_action_text:draggable(false)
+self_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+self_action_text:stroke_alpha(text_alpha)
+self_action_text:stroke_width(0.5)
+self_action_text:bold(settings.sections.self_action.bold)
+self_action_text:italic(settings.sections.self_action.italic)
+self_action_text:size(settings.sections.self_action.text_size)
 
---Create the HP TEXT text object
-bars_text_hp = texts.new()
-bars_text_hp:font(font)
-bars_text_hp:color(text_color.r,text_color.g,text_color.b)
-bars_text_hp:alpha(text_alpha)
-bars_text_hp:bg_alpha(0)
-bars_text_hp:draggable(false)
+--Create the Player Stats HP TEXT text object
+player_stats_hp_text = texts.new()
+player_stats_hp_text:font(settings.sections.player_stats.font)
+player_stats_hp_text:color(text_color.r,text_color.g,text_color.b)
+player_stats_hp_text:alpha(text_alpha)
+player_stats_hp_text:bg_alpha(0)
+player_stats_hp_text:draggable(false)
+player_stats_hp_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+player_stats_hp_text:stroke_alpha(text_alpha)
+player_stats_hp_text:stroke_width(0.5)
+player_stats_hp_text:bold(settings.sections.player_stats.bold)
+player_stats_hp_text:italic(settings.sections.player_stats.italic)
+player_stats_hp_text:size(settings.sections.player_stats.text_size)
 
---Create the MP TEXT text object
-bars_text_mp = texts.new()
-bars_text_mp:font(font)
-bars_text_mp:color(text_color.r,text_color.g,text_color.b)
-bars_text_mp:alpha(text_alpha)
-bars_text_mp:bg_alpha(0)
-bars_text_mp:draggable(false)
+--Create the Player Stats MP TEXT text object
+player_stats_mp_text = texts.new()
+player_stats_mp_text:font(settings.sections.player_stats.font)
+player_stats_mp_text:color(text_color.r,text_color.g,text_color.b)
+player_stats_mp_text:alpha(text_alpha)
+player_stats_mp_text:bg_alpha(0)
+player_stats_mp_text:draggable(false)
+player_stats_mp_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+player_stats_mp_text:stroke_alpha(text_alpha)
+player_stats_mp_text:stroke_width(0.5)
+player_stats_mp_text:bold(settings.sections.player_stats.bold)
+player_stats_mp_text:italic(settings.sections.player_stats.italic)
+player_stats_mp_text:size(settings.sections.player_stats.text_size)
 
---Create the TP TEXT text object
-bars_text_tp = texts.new()
-bars_text_tp:font(font)
-bars_text_tp:color(text_color.r,text_color.g,text_color.b)
-bars_text_tp:alpha(text_alpha)
-bars_text_tp:bg_alpha(0)
-bars_text_tp:draggable(false)
+--Create the Player Stats TP TEXT text object
+player_stats_tp_text = texts.new()
+player_stats_tp_text:font(settings.sections.player_stats.font)
+player_stats_tp_text:color(text_color.r,text_color.g,text_color.b)
+player_stats_tp_text:alpha(text_alpha)
+player_stats_tp_text:bg_alpha(0)
+player_stats_tp_text:draggable(false)
+player_stats_tp_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+player_stats_tp_text:stroke_alpha(text_alpha)
+player_stats_tp_text:stroke_width(0.5)
+player_stats_tp_text:bold(settings.sections.player_stats.bold)
+player_stats_tp_text:italic(settings.sections.player_stats.italic)
+player_stats_tp_text:size(settings.sections.player_stats.text_size)
 
---Create the Pet TEXT text object
-bars_text_pet = texts.new()
-bars_text_pet:font(font)
-bars_text_pet:color(text_color.r,text_color.g,text_color.b)
-bars_text_pet:alpha(text_alpha)
-bars_text_pet:bg_alpha(0)
-bars_text_pet:draggable(false)
+--Create the Player Stats Pet TEXT text object
+player_stats_pet_text = texts.new()
+player_stats_pet_text:font(settings.sections.player_stats.font)
+player_stats_pet_text:color(text_color.r,text_color.g,text_color.b)
+player_stats_pet_text:alpha(text_alpha)
+player_stats_pet_text:bg_alpha(0)
+player_stats_pet_text:draggable(false)
+player_stats_pet_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+player_stats_pet_text:stroke_alpha(text_alpha)
+player_stats_pet_text:stroke_width(0.5)
+player_stats_pet_text:bold(settings.sections.player_stats.bold)
+player_stats_pet_text:italic(settings.sections.player_stats.italic)
+player_stats_pet_text:size(settings.sections.player_stats.text_size)
+
+--Create the Party 1 P0 TEXT text object
+party_actions_pt1_p0_text = texts.new()
+party_actions_pt1_p0_text:font(party_1_actions.font)
+party_actions_pt1_p0_text:color(pt1_text_color.r,pt1_text_color.g,pt1_text_color.b)
+party_actions_pt1_p0_text:alpha(text_alpha)
+party_actions_pt1_p0_text:italic(party_1_actions.italic)
+party_actions_pt1_p0_text:bg_alpha(0)
+party_actions_pt1_p0_text:draggable(false)
+party_actions_pt1_p0_text:size(party_1_actions.text_size)
+party_actions_pt1_p0_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
+party_actions_pt1_p0_text:stroke_width(1)
+party_actions_pt1_p0_text:right_justified(party_1_actions.right_align)
+party_actions_pt1_p0_text:bold(party_1_actions.bold)
 
 --Create the Party 1 P1 TEXT text object
-bars_text_pt1_p1 = texts.new()
-bars_text_pt1_p1:font(font)
-bars_text_pt1_p1:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt1_p1:alpha(text_alpha)
-bars_text_pt1_p1:bg_alpha(0)
-bars_text_pt1_p1:draggable(false)
-bars_text_pt1_p1:size(party_actions_text_size)
-bars_text_pt1_p1:stroke_width(1)
+party_actions_pt1_p1_text = texts.new()
+party_actions_pt1_p1_text:font(party_1_actions.font)
+party_actions_pt1_p1_text:color(pt1_text_color.r,pt1_text_color.g,pt1_text_color.b)
+party_actions_pt1_p1_text:alpha(text_alpha)
+party_actions_pt1_p1_text:italic(party_1_actions.italic)
+party_actions_pt1_p1_text:bg_alpha(0)
+party_actions_pt1_p1_text:draggable(false)
+party_actions_pt1_p1_text:size(party_1_actions.text_size)
+party_actions_pt1_p1_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
+party_actions_pt1_p1_text:stroke_width(1)
+party_actions_pt1_p1_text:right_justified(party_1_actions.right_align)
+party_actions_pt1_p1_text:bold(party_1_actions.bold)
 
 --Create the Party 1 P2 TEXT text object
-bars_text_pt1_p2 = texts.new()
-bars_text_pt1_p2:font(font)
-bars_text_pt1_p2:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt1_p2:alpha(text_alpha)
-bars_text_pt1_p2:bg_alpha(0)
-bars_text_pt1_p2:draggable(false)
-bars_text_pt1_p2:size(party_actions_text_size)
-bars_text_pt1_p2:stroke_width(1)
+party_actions_pt1_p2_text = texts.new()
+party_actions_pt1_p2_text:font(party_1_actions.font)
+party_actions_pt1_p2_text:color(pt1_text_color.r,pt1_text_color.g,pt1_text_color.b)
+party_actions_pt1_p2_text:alpha(text_alpha)
+party_actions_pt1_p2_text:italic(party_1_actions.italic)
+party_actions_pt1_p2_text:bg_alpha(0)
+party_actions_pt1_p2_text:draggable(false)
+party_actions_pt1_p2_text:size(party_1_actions.text_size)
+party_actions_pt1_p2_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
+party_actions_pt1_p2_text:stroke_width(1)
+party_actions_pt1_p2_text:right_justified(party_1_actions.right_align)
+party_actions_pt1_p2_text:bold(party_1_actions.bold)
+
 
 --Create the Party 1 P3 TEXT text object
-bars_text_pt1_p3 = texts.new()
-bars_text_pt1_p3:font(font)
-bars_text_pt1_p3:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt1_p3:alpha(text_alpha)
-bars_text_pt1_p3:bg_alpha(0)
-bars_text_pt1_p3:draggable(false)
-bars_text_pt1_p3:size(party_actions_text_size)
-bars_text_pt1_p3:stroke_width(1)
+party_actions_pt1_p3_text = texts.new()
+party_actions_pt1_p3_text:font(party_1_actions.font)
+party_actions_pt1_p3_text:color(pt1_text_color.r,pt1_text_color.g,pt1_text_color.b)
+party_actions_pt1_p3_text:alpha(text_alpha)
+party_actions_pt1_p3_text:italic(party_1_actions.italic)
+party_actions_pt1_p3_text:bg_alpha(0)
+party_actions_pt1_p3_text:draggable(false)
+party_actions_pt1_p3_text:size(party_1_actions.text_size)
+party_actions_pt1_p3_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
+party_actions_pt1_p3_text:stroke_width(1)
+party_actions_pt1_p3_text:right_justified(party_1_actions.right_align)
+party_actions_pt1_p3_text:bold(party_1_actions.bold)
 
 --Create the Party 1 P4 TEXT text object
-bars_text_pt1_p4 = texts.new()
-bars_text_pt1_p4:font(font)
-bars_text_pt1_p4:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt1_p4:alpha(text_alpha)
-bars_text_pt1_p4:bg_alpha(0)
-bars_text_pt1_p4:draggable(false)
-bars_text_pt1_p4:size(party_actions_text_size)
-bars_text_pt1_p4:stroke_width(1)
+party_actions_pt1_p4_text = texts.new()
+party_actions_pt1_p4_text:font(party_1_actions.font)
+party_actions_pt1_p4_text:color(pt1_text_color.r,pt1_text_color.g,pt1_text_color.b)
+party_actions_pt1_p4_text:alpha(text_alpha)
+party_actions_pt1_p4_text:italic(party_1_actions.italic)
+party_actions_pt1_p4_text:bg_alpha(0)
+party_actions_pt1_p4_text:draggable(false)
+party_actions_pt1_p4_text:size(party_1_actions.text_size)
+party_actions_pt1_p4_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
+party_actions_pt1_p4_text:stroke_width(1)
+party_actions_pt1_p4_text:right_justified(party_1_actions.right_align)
+party_actions_pt1_p4_text:bold(party_1_actions.bold)
 
 --Create the Party 1 P5 TEXT text object
-bars_text_pt1_p5 = texts.new()
-bars_text_pt1_p5:font(font)
-bars_text_pt1_p5:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt1_p5:alpha(text_alpha)
-bars_text_pt1_p5:bg_alpha(0)
-bars_text_pt1_p5:draggable(false)
-bars_text_pt1_p5:size(party_actions_text_size)
-bars_text_pt1_p5:stroke_width(1)
+party_actions_pt1_p5_text = texts.new()
+party_actions_pt1_p5_text:font(party_1_actions.font)
+party_actions_pt1_p5_text:color(pt1_text_color.r,pt1_text_color.g,pt1_text_color.b)
+party_actions_pt1_p5_text:alpha(text_alpha)
+party_actions_pt1_p5_text:italic(party_1_actions.italic)
+party_actions_pt1_p5_text:bg_alpha(0)
+party_actions_pt1_p5_text:draggable(false)
+party_actions_pt1_p5_text:size(party_1_actions.text_size)
+party_actions_pt1_p5_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
+party_actions_pt1_p5_text:stroke_width(1)
+party_actions_pt1_p5_text:right_justified(party_1_actions.right_align)
+party_actions_pt1_p5_text:bold(party_1_actions.bold)
 
 --Create the Party 2 P0 TEXT text object
-bars_text_pt2_p0 = texts.new()
-bars_text_pt2_p0:font(font)
-bars_text_pt2_p0:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt2_p0:alpha(text_alpha)
-bars_text_pt2_p0:bg_alpha(0)
-bars_text_pt2_p0:draggable(false)
-bars_text_pt2_p0:size(party_actions_text_size)
-bars_text_pt2_p0:stroke_width(1)
+party_actions_pt2_p0_text = texts.new()
+party_actions_pt2_p0_text:font(party_2_actions.font)
+party_actions_pt2_p0_text:color(pt2_text_color.r,pt2_text_color.g,pt2_text_color.b)
+party_actions_pt2_p0_text:alpha(text_alpha)
+party_actions_pt2_p0_text:italic(party_2_actions.italic)
+party_actions_pt2_p0_text:bg_alpha(0)
+party_actions_pt2_p0_text:draggable(false)
+party_actions_pt2_p0_text:size(party_2_actions.text_size)
+party_actions_pt2_p0_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
+party_actions_pt2_p0_text:stroke_width(1)
+party_actions_pt2_p0_text:right_justified(party_2_actions.right_align)
+party_actions_pt2_p0_text:bold(party_2_actions.bold)
 
 --Create the Party 2 P1 TEXT text object
-bars_text_pt2_p1 = texts.new()
-bars_text_pt2_p1:font(font)
-bars_text_pt2_p1:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt2_p1:alpha(text_alpha)
-bars_text_pt2_p1:bg_alpha(0)
-bars_text_pt2_p1:draggable(false)
-bars_text_pt2_p1:size(party_actions_text_size)
-bars_text_pt2_p1:stroke_width(1)
+party_actions_pt2_p1_text = texts.new()
+party_actions_pt2_p1_text:font(party_2_actions.font)
+party_actions_pt2_p1_text:color(pt2_text_color.r,pt2_text_color.g,pt2_text_color.b)
+party_actions_pt2_p1_text:alpha(text_alpha)
+party_actions_pt2_p1_text:italic(party_2_actions.italic)
+party_actions_pt2_p1_text:bg_alpha(0)
+party_actions_pt2_p1_text:draggable(false)
+party_actions_pt2_p1_text:size(party_2_actions.text_size)
+party_actions_pt2_p1_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
+party_actions_pt2_p1_text:stroke_width(1)
+party_actions_pt2_p1_text:right_justified(party_2_actions.right_align)
+party_actions_pt2_p1_text:bold(party_2_actions.bold)
 
 --Create the Party 2 P2 TEXT text object
-bars_text_pt2_p2 = texts.new()
-bars_text_pt2_p2:font(font)
-bars_text_pt2_p2:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt2_p2:alpha(text_alpha)
-bars_text_pt2_p2:bg_alpha(0)
-bars_text_pt2_p2:draggable(false)
-bars_text_pt2_p2:size(party_actions_text_size)
-bars_text_pt2_p2:stroke_width(1)
+party_actions_pt2_p2_text = texts.new()
+party_actions_pt2_p2_text:font(party_2_actions.font)
+party_actions_pt2_p2_text:color(pt2_text_color.r,pt2_text_color.g,pt2_text_color.b)
+party_actions_pt2_p2_text:alpha(text_alpha)
+party_actions_pt2_p2_text:italic(party_2_actions.italic)
+party_actions_pt2_p2_text:bg_alpha(0)
+party_actions_pt2_p2_text:draggable(false)
+party_actions_pt2_p2_text:size(party_2_actions.text_size)
+party_actions_pt2_p2_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
+party_actions_pt2_p2_text:stroke_width(1)
+party_actions_pt2_p2_text:right_justified(party_2_actions.right_align)
+party_actions_pt2_p2_text:bold(party_2_actions.bold)
 
 --Create the Party 2 P3 TEXT text object
-bars_text_pt2_p3 = texts.new()
-bars_text_pt2_p3:font(font)
-bars_text_pt2_p3:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt2_p3:alpha(text_alpha)
-bars_text_pt2_p3:bg_alpha(0)
-bars_text_pt2_p3:draggable(false)
-bars_text_pt2_p3:size(party_actions_text_size)
-bars_text_pt2_p3:stroke_width(1)
+party_actions_pt2_p3_text = texts.new()
+party_actions_pt2_p3_text:font(party_2_actions.font)
+party_actions_pt2_p3_text:color(pt2_text_color.r,pt2_text_color.g,pt2_text_color.b)
+party_actions_pt2_p3_text:alpha(text_alpha)
+party_actions_pt2_p3_text:italic(party_2_actions.italic)
+party_actions_pt2_p3_text:bg_alpha(0)
+party_actions_pt2_p3_text:draggable(false)
+party_actions_pt2_p3_text:size(party_2_actions.text_size)
+party_actions_pt2_p3_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
+party_actions_pt2_p3_text:stroke_width(1)
+party_actions_pt2_p3_text:right_justified(party_2_actions.right_align)
+party_actions_pt2_p3_text:bold(party_2_actions.bold)
 
 --Create the Party 2 P4 TEXT text object
-bars_text_pt2_p4 = texts.new()
-bars_text_pt2_p4:font(font)
-bars_text_pt2_p4:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt2_p4:alpha(text_alpha)
-bars_text_pt2_p4:bg_alpha(0)
-bars_text_pt2_p4:draggable(false)
-bars_text_pt2_p4:size(party_actions_text_size)
-bars_text_pt2_p4:stroke_width(1)
+party_actions_pt2_p4_text = texts.new()
+party_actions_pt2_p4_text:font(party_2_actions.font)
+party_actions_pt2_p4_text:color(pt2_text_color.r,pt2_text_color.g,pt2_text_color.b)
+party_actions_pt2_p4_text:alpha(text_alpha)
+party_actions_pt2_p4_text:italic(party_2_actions.italic)
+party_actions_pt2_p4_text:bg_alpha(0)
+party_actions_pt2_p4_text:draggable(false)
+party_actions_pt2_p4_text:size(party_2_actions.text_size)
+party_actions_pt2_p4_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
+party_actions_pt2_p4_text:stroke_width(1)
+party_actions_pt2_p4_text:right_justified(party_2_actions.right_align)
+party_actions_pt2_p4_text:bold(party_2_actions.bold)
 
 --Create the Party 2 P5 TEXT text object
-bars_text_pt2_p5 = texts.new()
-bars_text_pt2_p5:font(font)
-bars_text_pt2_p5:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt2_p5:alpha(text_alpha)
-bars_text_pt2_p5:bg_alpha(0)
-bars_text_pt2_p5:draggable(false)
-bars_text_pt2_p5:size(party_actions_text_size)
-bars_text_pt2_p5:stroke_width(1)
+party_actions_pt2_p5_text = texts.new()
+party_actions_pt2_p5_text:font(party_2_actions.font)
+party_actions_pt2_p5_text:color(pt2_text_color.r,pt2_text_color.g,pt2_text_color.b)
+party_actions_pt2_p5_text:alpha(text_alpha)
+party_actions_pt2_p5_text:italic(party_2_actions.italic)
+party_actions_pt2_p5_text:bg_alpha(0)
+party_actions_pt2_p5_text:draggable(false)
+party_actions_pt2_p5_text:size(party_2_actions.text_size)
+party_actions_pt2_p5_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
+party_actions_pt2_p5_text:stroke_width(1)
+party_actions_pt2_p5_text:right_justified(party_2_actions.right_align)
+party_actions_pt2_p5_text:bold(party_2_actions.bold)
 
 --Create the Party 3 P0 TEXT text object
-bars_text_pt3_p0 = texts.new()
-bars_text_pt3_p0:font(font)
-bars_text_pt3_p0:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt3_p0:alpha(text_alpha)
-bars_text_pt3_p0:bg_alpha(0)
-bars_text_pt3_p0:draggable(false)
-bars_text_pt3_p0:size(party_actions_text_size)
-bars_text_pt3_p0:stroke_width(1)
+party_actions_pt3_p0_text = texts.new()
+party_actions_pt3_p0_text:font(party_3_actions.font)
+party_actions_pt3_p0_text:color(pt3_text_color.r,pt3_text_color.g,pt3_text_color.b)
+party_actions_pt3_p0_text:alpha(text_alpha)
+party_actions_pt3_p0_text:italic(party_3_actions.italic)
+party_actions_pt3_p0_text:bg_alpha(0)
+party_actions_pt3_p0_text:draggable(false)
+party_actions_pt3_p0_text:size(party_3_actions.text_size)
+party_actions_pt3_p0_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
+party_actions_pt3_p0_text:stroke_width(1)
+party_actions_pt3_p0_text:right_justified(party_3_actions.right_align)
+party_actions_pt3_p0_text:bold(party_3_actions.bold)
 
 --Create the Party 3 P1 TEXT text object
-bars_text_pt3_p1 = texts.new()
-bars_text_pt3_p1:font(font)
-bars_text_pt3_p1:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt3_p1:alpha(text_alpha)
-bars_text_pt3_p1:bg_alpha(0)
-bars_text_pt3_p1:draggable(false)
-bars_text_pt3_p1:size(party_actions_text_size)
-bars_text_pt3_p1:stroke_width(1)
+party_actions_pt3_p1_text = texts.new()
+party_actions_pt3_p1_text:font(party_3_actions.font)
+party_actions_pt3_p1_text:color(pt3_text_color.r,pt3_text_color.g,pt3_text_color.b)
+party_actions_pt3_p1_text:alpha(text_alpha)
+party_actions_pt3_p1_text:italic(party_3_actions.italic)
+party_actions_pt3_p1_text:bg_alpha(0)
+party_actions_pt3_p1_text:draggable(false)
+party_actions_pt3_p1_text:size(party_3_actions.text_size)
+party_actions_pt3_p1_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
+party_actions_pt3_p1_text:stroke_width(1)
+party_actions_pt3_p1_text:right_justified(party_3_actions.right_align)
+party_actions_pt3_p1_text:bold(party_3_actions.bold)
 
 --Create the Party 3 P2 TEXT text object
-bars_text_pt3_p2 = texts.new()
-bars_text_pt3_p2:font(font)
-bars_text_pt3_p2:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt3_p2:alpha(text_alpha)
-bars_text_pt3_p2:bg_alpha(0)
-bars_text_pt3_p2:draggable(false)
-bars_text_pt3_p2:size(party_actions_text_size)
-bars_text_pt3_p2:stroke_width(1)
+party_actions_pt3_p2_text = texts.new()
+party_actions_pt3_p2_text:font(party_3_actions.font)
+party_actions_pt3_p2_text:color(pt3_text_color.r,pt3_text_color.g,pt3_text_color.b)
+party_actions_pt3_p2_text:alpha(text_alpha)
+party_actions_pt3_p2_text:italic(party_3_actions.italic)
+party_actions_pt3_p2_text:bg_alpha(0)
+party_actions_pt3_p2_text:draggable(false)
+party_actions_pt3_p2_text:size(party_3_actions.text_size)
+party_actions_pt3_p2_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
+party_actions_pt3_p2_text:stroke_width(1)
+party_actions_pt3_p2_text:right_justified(party_3_actions.right_align)
+party_actions_pt3_p2_text:bold(party_3_actions.bold)
 
 --Create the Party 3 P3 TEXT text object
-bars_text_pt3_p3 = texts.new()
-bars_text_pt3_p3:font(font)
-bars_text_pt3_p3:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt3_p3:alpha(text_alpha)
-bars_text_pt3_p3:bg_alpha(0)
-bars_text_pt3_p3:draggable(false)
-bars_text_pt3_p3:size(party_actions_text_size)
-bars_text_pt3_p3:stroke_width(1)
+party_actions_pt3_p3_text = texts.new()
+party_actions_pt3_p3_text:font(party_3_actions.font)
+party_actions_pt3_p3_text:color(pt3_text_color.r,pt3_text_color.g,pt3_text_color.b)
+party_actions_pt3_p3_text:alpha(text_alpha)
+party_actions_pt3_p3_text:italic(party_3_actions.italic)
+party_actions_pt3_p3_text:bg_alpha(0)
+party_actions_pt3_p3_text:draggable(false)
+party_actions_pt3_p3_text:size(party_3_actions.text_size)
+party_actions_pt3_p3_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
+party_actions_pt3_p3_text:stroke_width(1)
+party_actions_pt3_p3_text:right_justified(party_3_actions.right_align)
+party_actions_pt3_p3_text:bold(party_3_actions.bold)
 
 --Create the Party 3 P4 TEXT text object
-bars_text_pt3_p4 = texts.new()
-bars_text_pt3_p4:font(font)
-bars_text_pt3_p4:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt3_p4:alpha(text_alpha)
-bars_text_pt3_p4:bg_alpha(0)
-bars_text_pt3_p4:draggable(false)
-bars_text_pt3_p4:size(party_actions_text_size)
-bars_text_pt3_p4:stroke_width(1)
+party_actions_pt3_p4_text = texts.new()
+party_actions_pt3_p4_text:font(party_3_actions.font)
+party_actions_pt3_p4_text:color(pt3_text_color.r,pt3_text_color.g,pt3_text_color.b)
+party_actions_pt3_p4_text:alpha(text_alpha)
+party_actions_pt3_p4_text:italic(party_3_actions.italic)
+party_actions_pt3_p4_text:bg_alpha(0)
+party_actions_pt3_p4_text:draggable(false)
+party_actions_pt3_p4_text:size(party_3_actions.text_size)
+party_actions_pt3_p4_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
+party_actions_pt3_p4_text:stroke_width(1)
+party_actions_pt3_p4_text:right_justified(party_3_actions.right_align)
+party_actions_pt3_p4_text:bold(party_3_actions.bold)
 
 --Create the Party 3 P5 TEXT text object
-bars_text_pt3_p5 = texts.new()
-bars_text_pt3_p5:font(font)
-bars_text_pt3_p5:color(text_color.r,text_color.g,text_color.b)
-bars_text_pt3_p5:alpha(text_alpha)
-bars_text_pt3_p5:bg_alpha(0)
-bars_text_pt3_p5:draggable(false)
-bars_text_pt3_p5:size(party_actions_text_size)
-bars_text_pt3_p5:stroke_width(1)
+party_actions_pt3_p5_text = texts.new()
+party_actions_pt3_p5_text:font(party_3_actions.font)
+party_actions_pt3_p5_text:color(pt3_text_color.r,pt3_text_color.g,pt3_text_color.b)
+party_actions_pt3_p5_text:alpha(text_alpha)
+party_actions_pt3_p5_text:italic(party_3_actions.italic)
+party_actions_pt3_p5_text:bg_alpha(0)
+party_actions_pt3_p5_text:draggable(false)
+party_actions_pt3_p5_text:size(party_3_actions.text_size)
+party_actions_pt3_p5_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
+party_actions_pt3_p5_text:stroke_width(1)
+party_actions_pt3_p5_text:right_justified(party_3_actions.right_align)
+party_actions_pt3_p5_text:bold(party_3_actions.bold)
 
 --Destroy all the text objects when we unload the addon
 register_event('unload', function()
 
-	bars_bg_focus_target:destroy()
-	bars_bg_sub_target:destroy()
-	bars_bg_target:destroy()
-	bars_bg_self_action:destroy()
-	bars_bg_hp:destroy()
-	bars_bg_mp:destroy()
-	bars_bg_tp:destroy()
-	bars_bg_pet:destroy()
-	bars_meter_focus_target:destroy()
-	bars_meter_sub_target:destroy()
-	bars_meter_target:destroy()
-	bars_meter_self_action:destroy()
-	bars_meter_hp:destroy()
-	bars_meter_mp:destroy()
-	bars_meter_tp:destroy()
-	bars_meter_pet:destroy()
-	bars_marker_hp:destroy()
-	bars_marker_tp:destroy()
-	bars_text_shdw_focus_target:destroy()
-	bars_text_shdw_focus_target_action:destroy()
-	bars_text_shdw_sub_target:destroy()
-	bars_text_shdw_sub_target_action:destroy()
-	bars_text_shdw_target:destroy()
-	bars_text_shdw_target_action:destroy()
-	bars_text_shdw_self_action:destroy()
-	bars_text_shdw_hp:destroy()
-	bars_text_shdw_mp:destroy()
-	bars_text_shdw_tp:destroy()
-	bars_text_shdw_pet:destroy()
-	bars_text_focus_target:destroy()
-	bars_text_focus_target_action:destroy()
-	bars_text_sub_target:destroy()
-	bars_text_sub_target_action:destroy()
-	bars_text_target:destroy()
-	bars_text_target_action:destroy()
-	bars_text_self_action:destroy()
-	bars_text_hp:destroy()
-	bars_text_mp:destroy()
-	bars_text_tp:destroy()
-	bars_text_pet:destroy()
-	bars_text_pt1_p1:destroy()
-	bars_text_pt1_p2:destroy()
-	bars_text_pt1_p3:destroy()
-	bars_text_pt1_p4:destroy()
-	bars_text_pt1_p5:destroy()
-	bars_text_pt2_p0:destroy()
-	bars_text_pt2_p1:destroy()
-	bars_text_pt2_p2:destroy()
-	bars_text_pt2_p3:destroy()
-	bars_text_pt2_p4:destroy()
-	bars_text_pt2_p5:destroy()
-	bars_text_pt3_p0:destroy()
-	bars_text_pt3_p1:destroy()
-	bars_text_pt3_p2:destroy()
-	bars_text_pt3_p3:destroy()
-	bars_text_pt3_p4:destroy()
-	bars_text_pt3_p5:destroy()
+	focus_target_bar_meter:destroy()
+	focus_target_bar_drain_meter:destroy()
+	focus_target_bar_bg:destroy()
+	focus_target_bar_pulse:destroy()
+	focus_target_text:destroy()
+	focus_target_text_shadow:destroy()
+	focus_target_action_text:destroy()
+	focus_target_action_text_shadow:destroy()
+
+	sub_target_bar_meter:destroy()
+	sub_target_bar_drain_meter:destroy()
+	sub_target_bar_bg:destroy()
+	sub_target_bar_pulse:destroy()
+	sub_target_text:destroy()
+	sub_target_text_shadow:destroy()
+	sub_target_action_text:destroy()
+	sub_target_action_text_shadow:destroy()
+
+	target_bar_meter:destroy()
+	target_bar_drain_meter:destroy()
+	target_bar_bg:destroy()
+	target_bar_pulse:destroy()
+	target_bar_lock_left:destroy()
+	target_bar_lock_right:destroy()
+	target_bar_lock_underline:destroy()
+	target_text:destroy()
+	target_text_shadow:destroy()
+	target_action_text:destroy()
+	target_action_text_shadow:destroy()
+
+	self_action_bar_meter:destroy()
+	self_action_bar_bg:destroy()
+	self_action_text:destroy()
+	self_action_text_shadow:destroy()
+
+	player_stats_hp_bar_meter:destroy()
+	player_stats_hp_bar_drain_meter:destroy()
+	player_stats_hp_bar_bg:destroy()
+	player_stats_hp_bar_pulse:destroy()
+	player_stats_hp_marker:destroy()
+	player_stats_hp_text:destroy()
+	player_stats_hp_text_shadow:destroy()
+
+	player_stats_mp_bar_meter:destroy()
+	player_stats_mp_bar_drain_meter:destroy()
+	player_stats_mp_bar_bg:destroy()
+	player_stats_mp_bar_pulse:destroy()
+	player_stats_mp_text:destroy()
+	player_stats_mp_text_shadow:destroy()
+
+	player_stats_tp_bar_meter:destroy()
+	player_stats_tp_bar_drain_meter:destroy()
+	player_stats_tp_bar_bg:destroy()
+	player_stats_tp_bar_pulse:destroy()
+	player_stats_tp_marker:destroy()
+	player_stats_tp_text:destroy()
+	player_stats_tp_text_shadow:destroy()
+
+	player_stats_pet_bar_meter:destroy()
+	player_stats_pet_bar_drain_meter:destroy()
+	player_stats_pet_bar_bg:destroy()
+	player_stats_pet_bar_pulse:destroy()
+	player_stats_pet_text:destroy()
+	player_stats_pet_text_shadow:destroy()
+
+	party_actions_pt1_p0_text:destroy()
+	party_actions_pt1_p1_text:destroy()
+	party_actions_pt1_p2_text:destroy()
+	party_actions_pt1_p3_text:destroy()
+	party_actions_pt1_p4_text:destroy()
+	party_actions_pt1_p5_text:destroy()
+
+	party_actions_pt2_p0_text:destroy()
+	party_actions_pt2_p1_text:destroy()
+	party_actions_pt2_p2_text:destroy()
+	party_actions_pt2_p3_text:destroy()
+	party_actions_pt2_p4_text:destroy()
+	party_actions_pt2_p5_text:destroy()
+
+	party_actions_pt3_p0_text:destroy()
+	party_actions_pt3_p1_text:destroy()
+	party_actions_pt3_p2_text:destroy()
+	party_actions_pt3_p3_text:destroy()
+	party_actions_pt3_p4_text:destroy()
+	party_actions_pt3_p5_text:destroy()
 
 end)
 
---Set the bars to bold or not
-function setBold()
+--Setup Target Lock positions
+function setTargetLockPositions()
 
-	local bold = settings.flags.bold
+	--Prevent prerender from hiding the target lock text objects while we use extents
+	calculating_dimensions = true
 
-	bars_marker_hp:bold(bold)
-	bars_marker_tp:bold(bold)
-	bars_text_shdw_focus_target:bold(bold)
-	bars_text_shdw_focus_target_action:bold(bold)
-	bars_text_shdw_sub_target:bold(bold)
-	bars_text_shdw_sub_target_action:bold(bold)
-	bars_text_shdw_target:bold(bold)
-	bars_text_shdw_target_action:bold(bold)
-	bars_text_shdw_self_action:bold(bold)
-	bars_text_shdw_hp:bold(bold)
-	bars_text_shdw_mp:bold(bold)
-	bars_text_shdw_tp:bold(bold)
-	bars_text_shdw_pet:bold(bold)
-	bars_text_focus_target:bold(bold)
-	bars_text_focus_target_action:bold(bold)
-	bars_text_sub_target:bold(bold)
-	bars_text_sub_target_action:bold(bold)
-	bars_text_target:bold(bold)
-	bars_text_target_action:bold(bold)
-	bars_text_self_action:bold(bold)
-	bars_text_hp:bold(bold)
-	bars_text_mp:bold(bold)
-	bars_text_tp:bold(bold)
-	bars_text_pet:bold(bold)
-	bars_text_pt1_p1:bold(bold)
-	bars_text_pt1_p2:bold(bold)
-	bars_text_pt1_p3:bold(bold)
-	bars_text_pt1_p4:bold(bold)
-	bars_text_pt1_p5:bold(bold)
-	bars_text_pt2_p0:bold(bold)
-	bars_text_pt2_p1:bold(bold)
-	bars_text_pt2_p2:bold(bold)
-	bars_text_pt2_p3:bold(bold)
-	bars_text_pt2_p4:bold(bold)
-	bars_text_pt2_p5:bold(bold)
-	bars_text_pt3_p0:bold(bold)
-	bars_text_pt3_p1:bold(bold)
-	bars_text_pt3_p2:bold(bold)
-	bars_text_pt3_p3:bold(bold)
-	bars_text_pt3_p4:bold(bold)
-	bars_text_pt3_p5:bold(bold)
+	--Place Target Lock objects off screen
+	--A text object needs to be visible in order to use extents to calculate it's dimensions, so we put them way off screen so the user never sees it.
+	target_bar_bg:pos(-1000,-1000)
+	target_bar_bg:show()
+	target_bar_lock_left:pos(-1000,-1000)
+	target_bar_lock_left:show()
+	target_bar_lock_right:pos(-1000,-1000)
+	target_bar_lock_underline:pos(-1000,-1000)
+	target_bar_lock_underline:show()
 
-end
+	--Wait 0.1 seconds to give time for text objects to display on screen so extents has something to calculate with
+	coroutine.schedule(function()
 
---Set the bars to their appropriate sizes
-function setSize()
+		--Calculate dimensions of objects
 
-	local size = settings.text.size
+		target_bar_pixel_width, target_bar_pixel_height = target_bar_bg:extents()
+		target_lock_icon_pixel_width, target_lock_icon_pixel_height = target_bar_lock_left:extents()
+		target_lock_underline_pixel_width = target_bar_lock_underline:extents()
 
-	bars_bg_focus_target:size(size)
-	bars_bg_sub_target:size(size)
-	bars_bg_target:size(size)
-	bars_bg_self_action:size(size)
-	bars_bg_hp:size(size)
-	bars_bg_mp:size(size)
-	bars_bg_tp:size(size)
-	bars_bg_pet:size(size)
-	bars_meter_focus_target:size(size)
-	bars_meter_sub_target:size(size)
-	bars_meter_target:size(size)
-	bars_meter_self_action:size(size)
-	bars_meter_hp:size(size)
-	bars_meter_mp:size(size)
-	bars_meter_tp:size(size)
-	bars_meter_pet:size(size)
-	bars_marker_hp:size(size)
-	bars_marker_tp:size(size)
-	bars_text_shdw_focus_target:size(size)
-	bars_text_shdw_focus_target_action:size(size)
-	bars_text_shdw_sub_target:size(size)
-	bars_text_shdw_sub_target_action:size(size)
-	bars_text_shdw_target:size(size+target_text_size_difference)
-	bars_text_shdw_target_action:size(size+target_action_text_size_difference)
-	bars_text_shdw_self_action:size(size+self_action_text_size_difference)
-	bars_text_shdw_hp:size(size)
-	bars_text_shdw_mp:size(size)
-	bars_text_shdw_tp:size(size)
-	bars_text_shdw_pet:size(size)
-	bars_text_focus_target:size(size)
-	bars_text_focus_target_action:size(size)
-	bars_text_sub_target:size(size)
-	bars_text_sub_target_action:size(size)
-	bars_text_target:size(size+target_text_size_difference)
-	bars_text_target_action:size(size+target_action_text_size_difference)
-	bars_text_self_action:size(size+self_action_text_size_difference)
-	bars_text_hp:size(size)
-	bars_text_mp:size(size)
-	bars_text_tp:size(size)
-	bars_text_pet:size(size)
+		--Done with extent calculations
+		calculating_dimensions = false
+
+		--Determine positioning of Target Lock objects
+		local t_pos = {x = settings.sections.target.pos.x, y = settings.sections.target.pos.y + job_specific[job].vertical_offsets.target}
+		local icon_left_x = t_pos.x - target_lock_icon_pixel_width
+		local icon_y = t_pos.y - (target_lock_icon_pixel_height / 2)
+		local icon_right_x = t_pos.x + target_bar_pixel_width + 2
+		local underline_x = t_pos.x + (target_bar_pixel_width / 2) - (target_lock_underline_pixel_width / 2)
+		local underline_y = t_pos.y + target_bar_pixel_height
+
+		--Hide objects then move them into correct positions
+		target_bar_bg:hide()
+		target_bar_bg:pos(t_pos.x, t_pos.y)
+		target_bar_lock_left:hide()
+		target_bar_lock_left:pos(icon_left_x,icon_y)
+		target_bar_lock_right:hide()
+		target_bar_lock_right:pos(icon_right_x,icon_y)
+		target_bar_lock_underline:hide()
+		target_bar_lock_underline:pos(underline_x, underline_y)
+
+	end, 0.1)
 
 end
 
 --Set the bars in their appropriate positions
-function setPosition()
+function setPositions()
 
-	--Set base positions
-	local pos_target = {x = settings.pos.x, y = settings.pos.y + show_bars[job].vertical_offset}
-	local ft_st_x_pos_adjustment = math.floor(bar_width / 2) * (settings.text.size * char_width_multiplier)
-	local pos_focus_target = {
-		x = pos_target.x + (switch_focus_and_sub_positions and 0 or ft_st_x_pos_adjustment),
-		y = pos_target.y + bars_vertical_spacing.target_to_focus_target
-	}
-	local pos_sub_target = {
-		x = pos_target.x + (switch_focus_and_sub_positions and ft_st_x_pos_adjustment or 0),
-		y = pos_target.y + bars_vertical_spacing.target_to_focus_target
-	}
-	local player_stats_1 = {x = pos_target.x, y = pos_target.y + bars_vertical_spacing.target_to_player_stats}
-	local player_stats_2 = {x = pos_target.x, y = player_stats_1.y + bars_vertical_spacing.between_player_stats}
-	local player_stats_3 = {x = pos_target.x, y = player_stats_2.y + bars_vertical_spacing.between_player_stats}
-	local player_stats_4 = {x = pos_target.x, y = player_stats_3.y + bars_vertical_spacing.between_player_stats}
-	local player_stats_5 = {x = pos_target.x, y = player_stats_4.y + bars_vertical_spacing.between_player_stats}
-	local pos_self = player_stats_1
+	--Section spacing/offsets
+	local ft_text_offset = settings.sections.focus_target.text_offset
+	local ft_text_shadow_offset = settings.sections.focus_target.text_shadow_offset
+	local ft_sub_text_offset = settings.sections.focus_target.sub_text_offset
+	local ft_sub_text_shadow_offset = settings.sections.focus_target.sub_text_shadow_offset
 
-	--Adjust base position for player stats if self-action is displayed
-	local base_stat = player_stats_1
-	if show_self_action then
-		base_stat = player_stats_2
-	end
+	local st_text_offset = settings.sections.sub_target.text_offset
+	local st_text_shadow_offset = settings.sections.sub_target.text_shadow_offset
+	local st_sub_text_offset = settings.sections.sub_target.sub_text_offset
+	local st_sub_text_shadow_offset = settings.sections.sub_target.sub_text_shadow_offset
+
+	local t_text_offset = settings.sections.target.text_offset
+	local t_text_shadow_offset = settings.sections.target.text_shadow_offset
+	local t_sub_text_offset = settings.sections.target.sub_text_offset
+	local t_sub_text_shadow_offset = settings.sections.target.sub_text_shadow_offset
+
+	local sa_text_offset = settings.sections.self_action.text_offset
+	local sa_text_shadow_offset = settings.sections.self_action.text_shadow_offset
+	
+	local ps_vertical_spacing_between_player_stats = settings.sections.player_stats.vertical_spacing_between_player_stats
+	local ps_text_offset = settings.sections.player_stats.text_offset
+	local ps_text_shadow_offset = settings.sections.player_stats.text_shadow_offset
+
+	--Set section anchor positions
+	local ft_pos = {x = settings.sections.focus_target.pos.x, y = settings.sections.focus_target.pos.y + job_specific[job].vertical_offsets.focus_target}
+	local st_pos = {x = settings.sections.sub_target.pos.x, y = settings.sections.sub_target.pos.y + job_specific[job].vertical_offsets.sub_target}
+	local t_pos = {x = settings.sections.target.pos.x, y = settings.sections.target.pos.y + job_specific[job].vertical_offsets.target}
+	local sa_pos = {x = settings.sections.self_action.pos.x, y = settings.sections.self_action.pos.y + job_specific[job].vertical_offsets.self_action}
+	local ps_pos = {x = settings.sections.player_stats.pos.x, y = settings.sections.player_stats.pos.y + job_specific[job].vertical_offsets.player_stats}
+
+	local player_stats_1 = {x = ps_pos.x, y = ps_pos.y}
+	local player_stats_2 = {x = t_pos.x, y = player_stats_1.y + ps_vertical_spacing_between_player_stats}
+	local player_stats_3 = {x = t_pos.x, y = player_stats_2.y + ps_vertical_spacing_between_player_stats}
+	local player_stats_4 = {x = t_pos.x, y = player_stats_3.y + ps_vertical_spacing_between_player_stats}
 
 	--Assign positions
-	local function assign_positions(base_stat, bars)
+	local function assign_positions(bars)
 		local positions = {}
 		local offset_y = 0
 
 		if bars.hp then
-			positions.hp = {x = base_stat.x, y = base_stat.y + offset_y}
-			offset_y = offset_y + bars_vertical_spacing.between_player_stats
+			positions.hp = {x = player_stats_1.x, y = player_stats_1.y + offset_y}
+			offset_y = offset_y + ps_vertical_spacing_between_player_stats
 		end
 
 		if bars.mp then
-			positions.mp = {x = base_stat.x, y = base_stat.y + offset_y}
-			offset_y = offset_y + bars_vertical_spacing.between_player_stats
+			positions.mp = {x = player_stats_1.x, y = player_stats_1.y + offset_y}
+			offset_y = offset_y + ps_vertical_spacing_between_player_stats
 		end
 
 		if bars.tp then
-			positions.tp = {x = base_stat.x, y = base_stat.y + offset_y}
-			offset_y = offset_y + bars_vertical_spacing.between_player_stats
+			positions.tp = {x = player_stats_1.x, y = player_stats_1.y + offset_y}
+			offset_y = offset_y + ps_vertical_spacing_between_player_stats
 		end
 
-		positions.pet = {x = base_stat.x, y = base_stat.y + offset_y}
+		positions.pet = {x = player_stats_1.x, y = player_stats_1.y + offset_y}
 		return positions
 	end
 
 	--Determine positions based on which bars are displayed
-	local positions = assign_positions(base_stat, show_bars[job])
-	local pos_hp = positions.hp or player_stats_2
-	local pos_mp = positions.mp or player_stats_3
-	local pos_tp = positions.tp or player_stats_4
-	local pos_pet = positions.pet or player_stats_5
+	local positions = assign_positions(job_specific[job])
+	local pos_hp = positions.hp or player_stats_1
+	local pos_mp = positions.mp or player_stats_2
+	local pos_tp = positions.tp or player_stats_3
+	local pos_pet = positions.pet or player_stats_4
 
 	--Set bar positions
-	bars_bg_focus_target:pos(pos_focus_target.x, pos_focus_target.y + 8)
-	bars_bg_sub_target:pos(pos_sub_target.x, pos_sub_target.y + 8)
-	bars_bg_target:pos(pos_target.x, pos_target.y + 8)
-	bars_bg_self_action:pos(pos_self.x, pos_self.y + 8)
-	bars_bg_hp:pos(pos_hp.x, pos_hp.y + 8)
-	bars_bg_mp:pos(pos_mp.x, pos_mp.y + 8)
-	bars_bg_tp:pos(pos_tp.x, pos_tp.y + 8)
-	bars_bg_pet:pos(pos_pet.x, pos_pet.y + 8)
-	bars_meter_focus_target:pos(pos_focus_target.x + 1, pos_focus_target.y + 9)
-	bars_meter_sub_target:pos(pos_sub_target.x + 1, pos_sub_target.y + 9)
-	bars_meter_target:pos(pos_target.x + 1, pos_target.y + 9)
-	bars_meter_self_action:pos(pos_self.x + 1, pos_self.y + 9)
-	bars_meter_hp:pos(pos_hp.x + 1, pos_hp.y + 9)
-	bars_meter_mp:pos(pos_mp.x + 1, pos_mp.y + 9)
-	bars_meter_tp:pos(pos_tp.x + 1, pos_tp.y + 9)
-	bars_meter_pet:pos(pos_pet.x + 1, pos_pet.y + 9)
-	bars_marker_hp:pos(pos_hp.x, pos_hp.y + 7)
-	bars_marker_tp:pos(pos_tp.x, pos_tp.y + 7)
-	bars_text_shdw_focus_target:pos(pos_focus_target.x + 1.5, pos_focus_target.y + text_vertical_offset + 1.5)
-	bars_text_shdw_focus_target_action:pos(pos_focus_target.x + 1.5, pos_focus_target.y + 13 + 1.5)
-	bars_text_shdw_sub_target:pos(pos_sub_target.x + 1.5, pos_sub_target.y + text_vertical_offset + 1.5)
-	bars_text_shdw_sub_target_action:pos(pos_sub_target.x + 1.5, pos_sub_target.y + 13 + 1.5)
-	bars_text_shdw_target:pos(pos_target.x + 1.5, pos_target.y + text_vertical_offset - target_text_size_difference + 1.5)
-	bars_text_shdw_target_action:pos(pos_target.x + 1.5, pos_target.y + 1.5 + 13)
-	bars_text_shdw_self_action:pos(pos_self.x + 1.5, pos_self.y + text_vertical_offset - self_action_text_size_difference + 1.5)
-	bars_text_shdw_hp:pos(pos_hp.x + 1.5, pos_hp.y + text_vertical_offset + 1.5)
-	bars_text_shdw_mp:pos(pos_mp.x + 1.5, pos_mp.y + text_vertical_offset + 1.5)
-	bars_text_shdw_tp:pos(pos_tp.x + 1.5, pos_tp.y + text_vertical_offset + 1.5)
-	bars_text_shdw_pet:pos(pos_pet.x + 1.5, pos_pet.y + text_vertical_offset + 1.5)
-	bars_text_focus_target:pos(pos_focus_target.x - 2.5, pos_focus_target.y + text_vertical_offset - 2.5)
-	bars_text_focus_target_action:pos(pos_focus_target.x, pos_focus_target.y + 13)
-	bars_text_sub_target:pos(pos_sub_target.x - 2.5, pos_sub_target.y + text_vertical_offset - 2.5)
-	bars_text_sub_target_action:pos(pos_sub_target.x, pos_sub_target.y + 13)
-	bars_text_target:pos(pos_target.x - 2.5, pos_target.y + text_vertical_offset - target_text_size_difference - 2.5)
-	bars_text_target_action:pos(pos_target.x, pos_target.y + 13)
-	bars_text_self_action:pos(pos_self.x, pos_self.y + text_vertical_offset - self_action_text_size_difference)
-	bars_text_hp:pos(pos_hp.x, pos_hp.y + text_vertical_offset)
-	bars_text_mp:pos(pos_mp.x, pos_mp.y + text_vertical_offset)
-	bars_text_tp:pos(pos_tp.x, pos_tp.y + text_vertical_offset)
-	bars_text_pet:pos(pos_pet.x, pos_pet.y + text_vertical_offset)
+	focus_target_bar_meter:pos(ft_pos.x + 1, ft_pos.y + 1)
+	focus_target_bar_drain_meter:pos(ft_pos.x + 1, ft_pos.y + 1)
+	focus_target_bar_bg:pos(ft_pos.x, ft_pos.y)
+	focus_target_bar_pulse:pos(ft_pos.x, ft_pos.y)
+	focus_target_text:pos(ft_pos.x, ft_pos.y + ft_text_offset)
+	focus_target_text_shadow:pos(ft_pos.x + ft_text_shadow_offset, ft_pos.y + ft_text_offset + ft_text_shadow_offset)
+	focus_target_action_text:pos(ft_pos.x, ft_pos.y + ft_sub_text_offset)
+	focus_target_action_text_shadow:pos(ft_pos.x + ft_sub_text_shadow_offset, ft_pos.y + ft_sub_text_offset + ft_sub_text_shadow_offset)
+
+	sub_target_bar_meter:pos(st_pos.x + 1, st_pos.y + 1)
+	sub_target_bar_drain_meter:pos(st_pos.x + 1, st_pos.y + 1)
+	sub_target_bar_bg:pos(st_pos.x, st_pos.y)
+	sub_target_bar_pulse:pos(st_pos.x, st_pos.y)
+	sub_target_text:pos(st_pos.x, st_pos.y + st_text_offset)
+	sub_target_text_shadow:pos(st_pos.x + st_text_shadow_offset, st_pos.y + st_text_offset + st_text_shadow_offset)
+	sub_target_action_text:pos(st_pos.x, st_pos.y + st_sub_text_offset)
+	sub_target_action_text_shadow:pos(st_pos.x + st_sub_text_shadow_offset, st_pos.y + st_sub_text_offset + st_sub_text_shadow_offset)
+
+	target_bar_meter:pos(t_pos.x + 1, t_pos.y + 1)
+	target_bar_drain_meter:pos(t_pos.x + 1, t_pos.y + 1)
+	--target_bar_bg pos gets set below since we need to borrow it rq to caluclate where to put the Target Lock
+	target_bar_pulse:pos(t_pos.x, t_pos.y)
+	target_text:pos(t_pos.x, t_pos.y + t_text_offset)
+	target_text_shadow:pos(t_pos.x + t_text_shadow_offset, t_pos.y + t_text_offset + t_text_shadow_offset)
+	target_action_text:pos(t_pos.x, t_pos.y + t_sub_text_offset)
+	target_action_text_shadow:pos(t_pos.x + t_sub_text_shadow_offset, t_pos.y + t_sub_text_offset + t_sub_text_shadow_offset)
+
+	self_action_bar_meter:pos(sa_pos.x + 1, sa_pos.y + 1)
+	self_action_bar_bg:pos(sa_pos.x, sa_pos.y)
+	self_action_text:pos(sa_pos.x, sa_pos.y + sa_text_offset)
+	self_action_text_shadow:pos(sa_pos.x + sa_text_shadow_offset, sa_pos.y + sa_text_offset + sa_text_shadow_offset)
+
+	player_stats_hp_bar_meter:pos(pos_hp.x + 1, pos_hp.y + 1)
+	player_stats_hp_bar_drain_meter:pos(pos_hp.x + 1, pos_hp.y + 1)
+	player_stats_hp_bar_bg:pos(pos_hp.x, pos_hp.y)
+	player_stats_hp_bar_pulse:pos(pos_hp.x, pos_hp.y)
+	player_stats_hp_marker:pos(pos_hp.x, pos_hp.y - 1)
+	player_stats_hp_text:pos(pos_hp.x, pos_hp.y + ps_text_offset)
+	player_stats_hp_text_shadow:pos(pos_hp.x + ps_text_shadow_offset, pos_hp.y + ps_text_offset + ps_text_shadow_offset)
+
+	player_stats_mp_bar_drain_meter:pos(pos_mp.x + 1, pos_mp.y + 1)
+	player_stats_mp_bar_meter:pos(pos_mp.x + 1, pos_mp.y + 1)
+	player_stats_mp_bar_bg:pos(pos_mp.x, pos_mp.y)
+	player_stats_mp_bar_pulse:pos(pos_mp.x, pos_mp.y)
+	player_stats_mp_text:pos(pos_mp.x, pos_mp.y + ps_text_offset)
+	player_stats_mp_text_shadow:pos(pos_mp.x + ps_text_shadow_offset, pos_mp.y + ps_text_offset + ps_text_shadow_offset)
+
+	player_stats_tp_bar_meter:pos(pos_tp.x + 1, pos_tp.y + 1)
+	player_stats_tp_bar_drain_meter:pos(pos_tp.x + 1, pos_tp.y + 1)
+	player_stats_tp_bar_bg:pos(pos_tp.x, pos_tp.y)
+	player_stats_tp_bar_pulse:pos(pos_tp.x, pos_tp.y)
+	player_stats_tp_marker:pos(pos_tp.x, pos_tp.y - 1)
+	player_stats_tp_text:pos(pos_tp.x, pos_tp.y + ps_text_offset)
+	player_stats_tp_text_shadow:pos(pos_tp.x + ps_text_shadow_offset, pos_tp.y + ps_text_offset + ps_text_shadow_offset)
+
+	player_stats_pet_bar_meter:pos(pos_pet.x + 1, pos_pet.y + 1)
+	player_stats_pet_bar_drain_meter:pos(pos_pet.x + 1, pos_pet.y + 1)
+	player_stats_pet_bar_bg:pos(pos_pet.x, pos_pet.y)
+	player_stats_pet_bar_pulse:pos(pos_pet.x, pos_pet.y)
+	player_stats_pet_text:pos(pos_pet.x, pos_pet.y + ps_text_offset)
+	player_stats_pet_text_shadow:pos(pos_pet.x + ps_text_shadow_offset, pos_pet.y + ps_text_offset + ps_text_shadow_offset)
+
+	--Determine which Player Stat is at the top Player Stat bar position
+	if positions.hp and positions.hp.y == player_stats_1.y then
+		player_stats_top_bar = 'hp'
+	elseif positions.mp and positions.mp.y == player_stats_1.y then
+		player_stats_top_bar = 'mp'
+	elseif positions.tp and positions.tp.y == player_stats_1.y then
+		player_stats_top_bar = 'tp'
+	elseif positions.pet and positions.pet.y == player_stats_1.y then
+		player_stats_top_bar = 'pet'
+	end
+
+	setTargetLockPositions()
 
 end
 
 --Update the positions of the Party Actions text objects
 function updatePartyActionsPos(num_party1_members, num_party2_members, num_party3_members)
-	local width = get_windower_settings().ui_x_res
-	local pos_x = width + settings.options.party_actions.horizontal_offset
-	local height = get_windower_settings().ui_y_res
-	local pt1_pos_y = height + settings.options.party_actions.party1_y
-	local pt2_pos_y = height + settings.options.party_actions.party2_y
-	local pt3_pos_y = height + settings.options.party_actions.party3_y
-	local pt1_y_offset = settings.options.party_actions.party1_vertical_spacing_between_players
-	local pt2_y_offset = settings.options.party_actions.party2_vertical_spacing_between_players
-	local pt3_y_offset = settings.options.party_actions.party3_vertical_spacing_between_players
+	local pt1_pos_x = party_1_actions.pos.x
+	local pt1_pos_y = party_1_actions.pos.y
+	local pt1_y_spacing = party_1_actions.vertical_spacing_between_players
+	local pt2_pos_x = party_2_actions.pos.x
+	local pt2_pos_y = party_2_actions.pos.y
+	local pt2_y_spacing = party_2_actions.vertical_spacing_between_players
+	local pt3_pos_x = party_3_actions.pos.x
+	local pt3_pos_y = party_3_actions.pos.y
+	local pt3_y_spacing = party_3_actions.vertical_spacing_between_players
 
 	--Define Party 1 positions
 	local pt1_positions = {
-		{x = pos_x, y = pt1_pos_y},							--position 1 (top)
-		{x = pos_x, y = pt1_pos_y + pt1_y_offset},			--position 2
-		{x = pos_x, y = pt1_pos_y + (pt1_y_offset * 2)},	--position 3
-		{x = pos_x, y = pt1_pos_y + (pt1_y_offset * 3)},	--position 4
-		{x = pos_x, y = pt1_pos_y + (pt1_y_offset * 4)},	--position 5 (bottom)
+		{x = pt1_pos_x, y = pt1_pos_y},							--position 1 (top)
+		{x = pt1_pos_x, y = pt1_pos_y + pt1_y_spacing},			--position 2
+		{x = pt1_pos_x, y = pt1_pos_y + (pt1_y_spacing * 2)},	--position 3
+		{x = pt1_pos_x, y = pt1_pos_y + (pt1_y_spacing * 3)},	--position 4
+		{x = pt1_pos_x, y = pt1_pos_y + (pt1_y_spacing * 4)},	--position 5
+		{x = pt1_pos_x, y = pt1_pos_y + (pt1_y_spacing * 5)},	--position 6 (bottom)
 	}
 
 	--Define Party 2 positions
-	bars_text_pt2_p0:pos(pos_x, pt2_pos_y)
-	bars_text_pt2_p1:pos(pos_x, pt2_pos_y + pt2_y_offset)
-	bars_text_pt2_p2:pos(pos_x, pt2_pos_y + (pt2_y_offset * 2))
-	bars_text_pt2_p3:pos(pos_x, pt2_pos_y + (pt2_y_offset * 3))
-	bars_text_pt2_p4:pos(pos_x, pt2_pos_y + (pt2_y_offset * 4))
-	bars_text_pt2_p5:pos(pos_x, pt2_pos_y + (pt2_y_offset * 5))
+	party_actions_pt2_p0_text:pos(pt2_pos_x, pt2_pos_y)
+	party_actions_pt2_p1_text:pos(pt2_pos_x, pt2_pos_y + pt2_y_spacing)
+	party_actions_pt2_p2_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 2))
+	party_actions_pt2_p3_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 3))
+	party_actions_pt2_p4_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 4))
+	party_actions_pt2_p5_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 5))
 
 	--Define Party 3 positions
-	bars_text_pt3_p0:pos(pos_x, pt3_pos_y)
-	bars_text_pt3_p1:pos(pos_x, pt3_pos_y + pt3_y_offset)
-	bars_text_pt3_p2:pos(pos_x, pt3_pos_y + (pt3_y_offset * 2))
-	bars_text_pt3_p3:pos(pos_x, pt3_pos_y + (pt3_y_offset * 3))
-	bars_text_pt3_p4:pos(pos_x, pt3_pos_y + (pt3_y_offset * 4))
-	bars_text_pt3_p5:pos(pos_x, pt3_pos_y + (pt3_y_offset * 5))
+	party_actions_pt3_p0_text:pos(pt3_pos_x, pt3_pos_y)
+	party_actions_pt3_p1_text:pos(pt3_pos_x, pt3_pos_y + pt3_y_spacing)
+	party_actions_pt3_p2_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 2))
+	party_actions_pt3_p3_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 3))
+	party_actions_pt3_p4_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 4))
+	party_actions_pt3_p5_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 5))
 
-	text_objects = { bars_text_pt1_p1, bars_text_pt1_p2, bars_text_pt1_p3, bars_text_pt1_p4, bars_text_pt1_p5 }
+	text_objects = { party_actions_pt1_p0_text, party_actions_pt1_p1_text, party_actions_pt1_p2_text, party_actions_pt1_p3_text, party_actions_pt1_p4_text, party_actions_pt1_p5_text }
 
 	--Handle Party 1 (bottom-up layout)
-	if num_party1_members and num_party1_members > 1 then
-		for i = 1, num_party1_members - 1 do
-			local pos_index = 6 - (num_party1_members - i)
+	if num_party1_members and num_party1_members > 0 then
+		for i = 1, num_party1_members do
+			local pos_index = 7 - (num_party1_members - (i - 1))
 			local obj = text_objects[i]
 			local pos = pt1_positions[pos_index]
 			if obj and pos then
@@ -1203,180 +2069,226 @@ function updatePartyActionsPos(num_party1_members, num_party2_members, num_party
 
 end
 
---Set the width of various elements based on the bar_width option
+--Set the width of the different sections based on the bar_width options
 function setWidth()
 
-	bar_width = settings.options.bar_width
-	show_bar_markers = settings.options.show_bar_markers
-	bars_bg_str = ''
-	bars_bg_str_ft_st = ''
-	bars_bg_str_hp = ''
-	bars_bg_str_tp = ''
-
-	--Sets the width for most of the bg elements
-	while string.len(bars_bg_str) < bar_width do
-		bars_bg_str = bars_bg_str..' '
-	end
-
-	--Sets the width for the focus target bg element
-	while string.len(bars_bg_str_ft_st) < math.floor(bar_width / 2) do
-		bars_bg_str_ft_st = bars_bg_str_ft_st..' '
-	end
-
-	--Sets the width and yellow HP marker for the HP bar BG
-	local marker_position = math.floor(bar_width * 0.75)
-
-	for i = 1, bar_width do
-		if i == marker_position then
-			bars_bg_str_hp = bars_bg_str_hp..'·'
-		else
-			bars_bg_str_hp = bars_bg_str_hp..' '
+	local function generateMarkerString(bar_width, marker_positions)
+		local marker_str = {}
+		for i = 1, (bar_width * 10) do
+			if marker_positions[i] then
+				table.insert(marker_str, '█') --·█│■●║
+			else
+				table.insert(marker_str, ' ')
+			end
 		end
+		return table.concat(marker_str)
 	end
 
-	--Sets the width and 1k/2k markers for the TP bar BG
-	local first_marker_position = math.floor(bar_width * 0.33)
-	local second_marker_position = math.floor(bar_width * 0.66)
-
-	for i = 1, bar_width do
-		if i == first_marker_position or i == second_marker_position then
-			bars_bg_str_tp = bars_bg_str_tp..'·'
-		else
-			bars_bg_str_tp = bars_bg_str_tp..' '
-		end
+	local function generateWidthString(width)
+		return string.rep(' ', width)
 	end
 
-	bars_bg_focus_target:text(bars_bg_str_ft_st)
-	bars_bg_sub_target:text(bars_bg_str_ft_st)
-	bars_bg_target:text(bars_bg_str)
-	bars_bg_self_action:text(bars_bg_str)
-	bars_bg_hp:text(bars_bg_str)
-	bars_bg_mp:text(bars_bg_str)
-	bars_bg_tp:text(bars_bg_str)
-	bars_bg_pet:text(bars_bg_str)
-	bars_marker_hp:text(show_bar_markers and bars_bg_str_hp or bars_bg_str)
-	bars_marker_tp:text(show_bar_markers and bars_bg_str_tp or bars_bg_str)
+	--Marker positions
+	local hp_marker_index = math.floor((player_stats_bar_width * 5) * 0.75)
+	local tp_marker_indices = {
+		[math.floor((player_stats_bar_width * 5) * 0.33)] = true,
+		[math.floor((player_stats_bar_width * 5) * 0.66)] = true,
+	}
+	local hp_markers_str = generateMarkerString(player_stats_bar_width, { [hp_marker_index] = true })
+	local tp_markers_str = generateMarkerString(player_stats_bar_width, tp_marker_indices)
+	player_stats_hp_marker:text(show_hp_tp_markers and '\n\n'..hp_markers_str or '')
+	player_stats_tp_marker:text(show_hp_tp_markers and '\n\n'..tp_markers_str or '')
+
+	--Apply width strings
+	local width_config = {
+		{ var = "focus_target_bar_width",	target = focus_target_bar_bg },
+		{ var = "focus_target_bar_width",	target = focus_target_bar_pulse },
+		{ var = "sub_target_bar_width",		target = sub_target_bar_bg },
+		{ var = "sub_target_bar_width",		target = sub_target_bar_pulse },
+		{ var = "target_bar_width",			target = target_bar_bg },
+		{ var = "target_bar_width",			target = target_bar_pulse },
+		{ var = "target_bar_width",			target = target_bar_lock_underline },
+		{ var = "self_action_bar_width",	target = self_action_bar_bg },
+		{ var = "player_stats_bar_width",	target = player_stats_hp_bar_bg },
+		{ var = "player_stats_bar_width",	target = player_stats_hp_bar_pulse },
+		{ var = "player_stats_bar_width",	target = player_stats_mp_bar_bg },
+		{ var = "player_stats_bar_width",	target = player_stats_mp_bar_pulse },
+		{ var = "player_stats_bar_width",	target = player_stats_tp_bar_bg },
+		{ var = "player_stats_bar_width",	target = player_stats_tp_bar_pulse },
+		{ var = "player_stats_bar_width",	target = player_stats_pet_bar_bg },
+		{ var = "player_stats_bar_width",	target = player_stats_pet_bar_pulse },
+	}
+
+	for _, item in ipairs(width_config) do
+		item.target:text(generateWidthString(_G[item.var]))
+	end
 
 end
 
 --Hide all bars
 function hideBars()
 
-	bars_bg_focus_target:hide()
-	bars_bg_sub_target:hide()
-	bars_bg_target:hide()
-	bars_bg_self_action:hide()
-	bars_bg_hp:hide()
-	bars_bg_mp:hide()
-	bars_bg_tp:hide()
-	bars_bg_pet:hide()
-	bars_meter_focus_target:hide()
-	bars_meter_sub_target:hide()
-	bars_meter_target:hide()
-	bars_meter_self_action:hide()
-	bars_meter_hp:hide()
-	bars_meter_mp:hide()
-	bars_meter_tp:hide()
-	bars_meter_pet:hide()
-	bars_marker_hp:hide()
-	bars_marker_tp:hide()
-	bars_text_shdw_focus_target:hide()
-	bars_text_shdw_focus_target_action:hide()
-	bars_text_shdw_sub_target:hide()
-	bars_text_shdw_sub_target_action:hide()
-	bars_text_shdw_target:hide()
-	bars_text_shdw_target_action:hide()
-	bars_text_shdw_self_action:hide()
-	bars_text_shdw_hp:hide()
-	bars_text_shdw_mp:hide()
-	bars_text_shdw_tp:hide()
-	bars_text_shdw_pet:hide()
-	bars_text_focus_target:hide()
-	bars_text_focus_target_action:hide()
-	bars_text_sub_target:hide()
-	bars_text_sub_target_action:hide()
-	bars_text_target:hide()
-	bars_text_target_action:hide()
-	bars_text_self_action:hide()
-	bars_text_hp:hide()
-	bars_text_mp:hide()
-	bars_text_tp:hide()
-	bars_text_pet:hide()
-	bars_text_pt1_p1:hide()
-	bars_text_pt1_p2:hide()
-	bars_text_pt1_p3:hide()
-	bars_text_pt1_p4:hide()
-	bars_text_pt1_p5:hide()
-	bars_text_pt2_p0:hide()
-	bars_text_pt2_p1:hide()
-	bars_text_pt2_p2:hide()
-	bars_text_pt2_p3:hide()
-	bars_text_pt2_p4:hide()
-	bars_text_pt2_p5:hide()
-	bars_text_pt3_p0:hide()
-	bars_text_pt3_p1:hide()
-	bars_text_pt3_p2:hide()
-	bars_text_pt3_p3:hide()
-	bars_text_pt3_p4:hide()
-	bars_text_pt3_p5:hide()
+	focus_target_bar_meter:hide()
+	focus_target_bar_drain_meter:hide()
+	focus_target_bar_bg:hide()
+	focus_target_bar_pulse:hide()
+	focus_target_text:hide()
+	focus_target_text_shadow:hide()
+	focus_target_action_text:hide()
+	focus_target_action_text_shadow:hide()
+
+	sub_target_bar_meter:hide()
+	sub_target_bar_drain_meter:hide()
+	sub_target_bar_bg:hide()
+	sub_target_bar_pulse:hide()
+	sub_target_text:hide()
+	sub_target_text_shadow:hide()
+	sub_target_action_text:hide()
+	sub_target_action_text_shadow:hide()
+
+	--These 3 need to be visible when calculating their dimensions so we can set the Target Lock objects correctly
+	if not calculating_dimensions then
+		target_bar_bg:hide()
+		target_bar_lock_left:hide()
+		target_bar_lock_underline:hide()
+	end
+	target_bar_meter:hide()
+	target_bar_drain_meter:hide()
+	target_bar_pulse:hide()
+	target_bar_lock_right:hide()
+	target_text:hide()
+	target_text_shadow:hide()
+	target_action_text:hide()
+	target_action_text_shadow:hide()
+
+	self_action_bar_meter:hide()
+	self_action_bar_bg:hide()
+	self_action_text:hide()
+	self_action_text_shadow:hide()
+
+	player_stats_hp_bar_meter:hide()
+	player_stats_hp_bar_drain_meter:hide()
+	player_stats_hp_bar_bg:hide()
+	player_stats_hp_bar_pulse:hide()
+	player_stats_hp_marker:hide()
+	player_stats_hp_text:hide()
+	player_stats_hp_text_shadow:hide()
+
+	player_stats_mp_bar_meter:hide()
+	player_stats_mp_bar_drain_meter:hide()
+	player_stats_mp_bar_bg:hide()
+	player_stats_mp_bar_pulse:hide()
+	player_stats_mp_text:hide()
+	player_stats_mp_text_shadow:hide()
+
+	player_stats_tp_bar_meter:hide()
+	player_stats_tp_bar_drain_meter:hide()
+	player_stats_tp_bar_bg:hide()
+	player_stats_tp_bar_pulse:hide()
+	player_stats_tp_marker:hide()
+	player_stats_tp_text:hide()
+	player_stats_tp_text_shadow:hide()
+
+	player_stats_pet_bar_meter:hide()
+	player_stats_pet_bar_drain_meter:hide()
+	player_stats_pet_bar_bg:hide()
+	player_stats_pet_bar_pulse:hide()
+	player_stats_pet_text:hide()
+	player_stats_pet_text_shadow:hide()
+
+	party_actions_pt1_p0_text:hide()
+	party_actions_pt1_p1_text:hide()
+	party_actions_pt1_p2_text:hide()
+	party_actions_pt1_p3_text:hide()
+	party_actions_pt1_p4_text:hide()
+	party_actions_pt1_p5_text:hide()
+
+	party_actions_pt2_p0_text:hide()
+	party_actions_pt2_p1_text:hide()
+	party_actions_pt2_p2_text:hide()
+	party_actions_pt2_p3_text:hide()
+	party_actions_pt2_p4_text:hide()
+	party_actions_pt2_p5_text:hide()
+
+	party_actions_pt3_p0_text:hide()
+	party_actions_pt3_p1_text:hide()
+	party_actions_pt3_p2_text:hide()
+	party_actions_pt3_p3_text:hide()
+	party_actions_pt3_p4_text:hide()
+	party_actions_pt3_p5_text:hide()
 
 end
 
 --Show appropriate bars
 function showBars()
 
-	if show_bars[job].hp then
-		bars_bg_hp:show()
-		bars_meter_hp:show()
-		if show_bar_markers then
-			bars_marker_hp:show()
+	if job_specific[job].hp then
+		player_stats_hp_bar_meter:show()
+		player_stats_hp_bar_drain_meter:show()
+		player_stats_hp_bar_bg:show()
+		player_stats_hp_bar_pulse:show()
+		if show_hp_tp_markers then
+			player_stats_hp_marker:show()
 		end
-		bars_text_shdw_hp:show()
-		bars_text_hp:show()
+		player_stats_hp_text:show()
+		player_stats_hp_text_shadow:show()
 	end
 
-	if show_bars[job].mp then
-		bars_bg_mp:show()
-		bars_meter_mp:show()
-		bars_text_shdw_mp:show()
-		bars_text_mp:show()
+	if job_specific[job].mp then
+		player_stats_mp_bar_meter:show()
+		player_stats_mp_bar_drain_meter:show()
+		player_stats_mp_bar_bg:show()
+		player_stats_mp_bar_pulse:show()
+		player_stats_mp_text:show()
+		player_stats_mp_text_shadow:show()
 	end
 
-	if show_bars[job].tp then
-		bars_bg_tp:show()
-		bars_meter_tp:show()
-		if show_bar_markers then
-			bars_marker_tp:show()
+	if job_specific[job].tp then
+		player_stats_tp_bar_meter:show()
+		player_stats_tp_bar_drain_meter:show()
+		player_stats_tp_bar_bg:show()
+		player_stats_tp_bar_pulse:show()
+		if show_hp_tp_markers then
+			player_stats_tp_marker:show()
 		end
-		bars_text_shdw_tp:show()
-		bars_text_tp:show()
+		player_stats_tp_text:show()
+		player_stats_tp_text_shadow:show()
 	end
 
-	if show_bars[job].pet then
-		bars_bg_pet:show()
-		bars_meter_pet:show()
-		bars_text_shdw_pet:show()
-		bars_text_pet:show()
+	if job_specific[job].pet then
+		player_stats_pet_bar_meter:show()
+		player_stats_pet_bar_drain_meter:show()
+		player_stats_pet_bar_bg:show()
+		player_stats_pet_bar_pulse:show()
+		player_stats_pet_text:show()
+		player_stats_pet_text_shadow:show()
 	end
 
-	if show_party_actions then
-		bars_text_pt1_p1:show()
-		bars_text_pt1_p2:show()
-		bars_text_pt1_p3:show()
-		bars_text_pt1_p4:show()
-		bars_text_pt1_p5:show()
-		bars_text_pt2_p0:show()
-		bars_text_pt2_p1:show()
-		bars_text_pt2_p2:show()
-		bars_text_pt2_p3:show()
-		bars_text_pt2_p4:show()
-		bars_text_pt2_p5:show()
-		bars_text_pt3_p0:show()
-		bars_text_pt3_p1:show()
-		bars_text_pt3_p2:show()
-		bars_text_pt3_p3:show()
-		bars_text_pt3_p4:show()
-		bars_text_pt3_p5:show()
+	if party_1_actions.show then
+		party_actions_pt1_p0_text:show()
+		party_actions_pt1_p1_text:show()
+		party_actions_pt1_p2_text:show()
+		party_actions_pt1_p3_text:show()
+		party_actions_pt1_p4_text:show()
+		party_actions_pt1_p5_text:show()
+	end
+
+	if party_2_actions.show then
+		party_actions_pt2_p0_text:show()
+		party_actions_pt2_p1_text:show()
+		party_actions_pt2_p2_text:show()
+		party_actions_pt2_p3_text:show()
+		party_actions_pt2_p4_text:show()
+		party_actions_pt2_p5_text:show()
+	end
+
+	if party_3_actions.show then
+		party_actions_pt3_p0_text:show()
+		party_actions_pt3_p1_text:show()
+		party_actions_pt3_p2_text:show()
+		party_actions_pt3_p3_text:show()
+		party_actions_pt3_p4_text:show()
+		party_actions_pt3_p5_text:show()
 	end
 
 end
@@ -1456,14 +2368,19 @@ end
 
 --Countdown for active SP abilities
 function decrementSPTimers()
+
 	for id, sp_action in pairs(current_sp_actions) do
+
 		local timer = sp_action.timer
+
 		if timer and timer > 0 then
 			sp_action.timer = timer - 1
 		elseif timer and timer <= 0 then
 			removeFromSPTable(id)
 		end
+
 	end
+
 end
 
 --Clear all actions from the action tables
@@ -1494,7 +2411,7 @@ function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -1605,25 +2522,6 @@ function targetColor(target)
 
 end
 
---Capitalize letters accordingly
-function capitalize(str)
-
-	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
-		return string.upper(firstLetter) .. string.lower(rest)
-	end)
-
-	-- Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
-	str = string.gsub(str, " Ii$", " II")
-
-	-- Ensure letters after an apostrophe are not capitalized
-	str = string.gsub(str, "('%w)", function(apostropheLetter)
-		return string.lower(apostropheLetter)
-	end)
-
-	return str
-
-end
-
 --Turn the entire string into all uppercase
 function uppercase(str)
 
@@ -1685,87 +2583,65 @@ function formatRGB(value)
 
 end
 
---Convert auto focus targets to save them properly
-function convertToSave(target)
+function saveToAutoFocusTargetFile()
 
-	target = string.lower(target) --convert target to all lowercase
-	target = string.gsub(target, " ", "_") --convert spaces to underscores
-	target = string.gsub(target, "'", "__apos__") --convert apostrophes to __apos__
-	target = string.gsub(target, "-", "__dash__") --convert dashes to __dash__
-
-	return target
+	coroutine.schedule(function()
+		auto_focus_targets_file:write(auto_focus_targets_help_msg..'return {\n'..sortedTableString(auto_focus_targets_data, '    ')..'\n}')
+	end, 0)
 
 end
 
---Convert auto focus targets to display them properly
-function convertToDisplay(target)
-
-	target = string.gsub(target, "__apos__", "'") --convert __apos__ back to apostrophes
-	target = string.gsub(target, "__dash__", "-") --convert __dash__ back to dashes
-	target = capitalize(target) -- capitalize names
-	target = string.gsub(target, "_", " ") --convert underscores to spaces
-
-	return target
-
-end
-
---Add a target to the auto_focus_target_list
+--Add a target to the auto_focus_targets_data
 function addToAutoFocusTargetList(target)
 
 	--If target is a table, first convert it into a useable string
 	if type(target) == 'table' then
 		local concatenated_target = table.concat(target, ' ')
-		target = concatenated_target
+		target = capitalize(string.lower(concatenated_target))
 	end
 
-	if target == '' or target == '<t>' then
+	if target == '' then
 		target = get_mob_by_target('t')
 		if target then
 			target = target.name
 		else
-			add_to_chat(8,('[Bars] '):color(220)..('Please either target a player/npc, or specify a target to be added (name or id).'):color(8))
+			add_to_chat(8,('[Bars] '):color(220)..('Please highlight or specify a target to be added (name or id).'):color(28))
 			return
 		end
-	elseif string.find(target, "[<>]") then
-		add_to_chat(8,('[Bars] '):color(220)..('Target cannot contain "<" or ">" characters.'):color(8))
-		return
 	end
 
-	auto_focus_target_list[convertToSave(target)] = true
-	settings:save('all')
-	
-	add_to_chat(8,('[Bars] '):color(220)..('Added to Auto Focus Target list: '):color(36)..(capitalize(target)):color(1))
+	auto_focus_targets_data[target] = true
+	saveToAutoFocusTargetFile()
+	add_to_chat(8,('[Bars] '):color(220)..('Added to Auto Focus Target list: '):color(36)..(target):color(1))
 
 end
 
---Remove a target from the auto_focus_target_list
+--Remove a target from the auto_focus_targets_data
 function removeFromAutoFocusTargetList(target)
 
 	--If target is a table, first convert it into a useable string
 	if type(target) == 'table' then
 		local concatenated_target = table.concat(target, ' ')
-		target = concatenated_target
+		target = capitalize(string.lower(concatenated_target))
 	end
 
-	if target == '' or target == '<t>' then
+	if target == '' then
 		target = get_mob_by_target('t')
 		if target then
 			target = target.name
 		else
-			add_to_chat(8,('[Bars] '):color(220)..('Please either target a player/npc, or specify a target to be removed (name or id).'):color(8))
+			add_to_chat(8,('[Bars] '):color(220)..('Please highlight or specify a target to be removed (name or id).'):color(28))
 			return
 		end
 	end
 
-	local savedTarget = convertToSave(target)
-
-	if auto_focus_target_list[savedTarget] then
-		auto_focus_target_list[savedTarget] = nil
-		add_to_chat(8,('[Bars] '):color(220)..('Removed from Auto Focus Target list: '):color(36)..(capitalize(target)):color(1))
-		settings:save('all')
+	if auto_focus_targets_data[target] then
+		auto_focus_targets_data[target] = nil
+		saveToAutoFocusTargetFile()
+		add_to_chat(8,('[Bars] '):color(220)..('Removed from Auto Focus Target list: '):color(36)..(target):color(1))
 
 	else
-		add_to_chat(8,('[Bars] '):color(220)..(capitalize(target)):color(1)..(' was not found.'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..(target):color(1)..(' was not found.'):color(28))
 		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars list'):color(1)..(' to see stored targets.'):color(8))
 
 	end
@@ -1826,7 +2702,7 @@ function dynaJob(mob_name)
 		--Next, use pattern matching for the job designators
 		for job, designators in pairs(job_designators) do
 			for _, designator in ipairs(designators) do
-				if string.find(mob_name, designator) and mob_name ~= "Volte Dark Knight" then
+				if string.find(mob_name, designator) and mob_name ~= "Volte Dark Knight" then --Make sure we don't count the Volte Dark KNIGHT as a "PLD|DRG"
 					return job
 				end
 			end
@@ -1853,7 +2729,7 @@ function colorizeDistance(text, distance, target)
 		local range_type = range and range.id and res.items[range.id] and res.items[range.id].range_type or nil
 
 		--NPC or object
-		if spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
+		if  spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
 			local max_distance = 6
 			if distance < max_distance then
 				local c = color.range.in_range
@@ -1861,7 +2737,7 @@ function colorizeDistance(text, distance, target)
 			end
 
 		--Magic
-		elseif job == 'whm' or job == 'blm' or job == 'rdm' or job == 'pld' or job == 'drk' or job == 'brd' or job == 'smn' or job == 'sch' or job == 'geo' or job == 'run' or job == 'blu' then
+		elseif player and job == 'whm' or job == 'blm' or job == 'rdm' or job == 'pld' or job == 'drk' or job == 'brd' or job == 'smn' or job == 'sch' or job == 'geo' or job == 'run' or job == 'blu' then
 
 			local sub_job = player and player.sub_job and string.lower(player.sub_job)
 
@@ -1923,7 +2799,7 @@ function colorizeDistance(text, distance, target)
 			end
 
 		--Ranged, only apply color if ranged weapon is equipped and target is monster or charmed player
-		elseif (job == 'cor' or job == 'rng' or job == 'thf' or 'sam' or 'war')
+		elseif player and (job == 'cor' or job == 'rng' or job == 'thf' or 'sam' or 'war')
 		and range_type
 		and (target.spawn_type == 16
 			or (
@@ -2001,7 +2877,7 @@ function colorizeDistance(text, distance, target)
 			end
 
 		--Ninjutsu, only apply color if target is monster or charmed player
-		elseif job == 'nin'
+		elseif player and job == 'nin'
 		and (target.spawn_type == 16
 			or (
 				(target.spawn_type == 1 or target.spawn_type == 9 or target.spawn_type == 13)
@@ -2041,404 +2917,434 @@ end
 --Update the Focus Target bar
 function updateFocusTarget()
 
-	if not (focus_target_override or focus_target) then
-		bars_bg_focus_target:hide()
-		bars_meter_focus_target:hide()
-		bars_text_shdw_focus_target:hide()
-		bars_text_shdw_focus_target_action:hide()
-		bars_text_focus_target:hide()
-		bars_text_focus_target_action:hide()
+	local target = get_mob_by_target('t') or nil
+
+	--Hide the Focus Target bar if there is no Focus Target to display, or the Focus Target is targeted
+	if not (focus_target_override or focus_target)
+	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
+		if focus_target_bar_bg:visible() then
+			focus_target_bar_meter:hide()
+			focus_target_bar_drain_meter:hide()
+			focus_target_bar_bg:hide()
+			focus_target_bar_pulse:hide()
+			focus_target_text:hide()
+			focus_target_text_shadow:hide()
+			focus_target_action_text:hide()
+			focus_target_action_text_shadow:hide()
+		end
 		return
 	end
 
-	local target = get_mob_by_target('t') or nil
 	local ft = focus_target_override and focus_target_override or focus_target
-	local ft_sp_active = ft and current_sp_actions[ft.id]
-	local ft_sp_timer = ft_sp_active and ' '..string.format("%d:%02d", math.floor(current_sp_actions[ft.id].timer / 60), current_sp_actions[ft.id].timer % 60)
-	local ft_sp_name = ft_sp_active and ' '..current_sp_actions[ft.id].sp_name
-	local ft_name = ft and (ft_sp_active and Heartbeat % 2 == 0 and ft_sp_timer..ft_sp_name or ' '..ft.name) or ''
-	local dyna_job = ft and show_dyna_jobs and dynaJob(ft.name) or false
-	local ft_dyna_job = ft and dyna_job and ' '..dyna_job or ''
-	local ft_index = ft and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
-	local distance_raw = ft and math.floor(ft.distance:sqrt()*100)/100
-	local ft_distance = ft and show_target_distance and ' '..(string.format("%5.2f", distance_raw)) or ''
-	local ft_hpp = ft and ft.hpp or 0
-	local ft_meter = ''
-	local spaces = ft_hpp and math.floor((bar_width / 2) * (ft_hpp / 100)) or 0
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and ft_hpp ~= 0 then
-		spaces = 1
+	local hpp_raw = ft and ft.hpp or 0
+	drain_ft_hpp = fts and drain_previous_ft_id == ft.id and hpp_raw < drain_ft_hpp and drain_ft_hpp - drain_decay or hpp_raw
+	local sp_active = ft and hpp_raw ~= 0 and current_sp_actions[ft.id]
+	local sp_timer = sp_active and ft_spaces..string.format("%d:%02d", math.floor(current_sp_actions[ft.id].timer / 60), current_sp_actions[ft.id].timer % 60)
+	local sp_name = sp_active and current_sp_actions[ft.id].sp_name
+	local ft_name = ft and ft.name or ''
+	if sp_active then
+		if condense_focus_target_name_and_sp_name then
+			ft_name = sp_timer..' '..(Heartbeat % 2 == 0 and sp_name or ft.name)
+		else
+			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+		end
 	end
-	while string.len(ft_meter) < spaces do
-		ft_meter = ft_meter..' '
-	end
+	ft_name = ft_spaces..ft_name
+	local dyna_job_raw = ft and show_dyna_jobs and dynaJob(ft.name) or false
+	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
+	local ft_index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
+	local dist_raw = ft and math.floor(ft.distance:sqrt()*100)/100
+	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local meter = ''
+	local drain_meter = ''
+	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
+	local drain_spaces = drain_ft_hpp and math.floor((focus_target_bar_width * 10) * (drain_ft_hpp / 100)) or 0
 	local cm = ft and (Fade and text_color or targetColor(ft)) or color.target.pc_other
 	local ct = text_color
-	ft_hpp = string.format("%3s", ft_hpp)..'%'
-	local text = ft_hpp..colorizeDistance(ft_distance, distance_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..ft_dyna_job..ft_index
-	local text_shdw = ft_hpp..'\\cs(000,000,000)'..ft_distance..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..ft_dyna_job..ft_index
-	local ft_status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
-	local ft_status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
-	local ft_action = ft and current_actions[ft.id] and current_actions[ft.id].action or ''
-	local ft_action_shdw = ft and current_actions[ft.id] and current_actions[ft.id].action_shdw or ''
-	local text_ft_action = show_target_action and ' '..ft_status..ft_action or ''
-	local text_ft_action_shdw = show_target_action and ' '..ft_status_shdw..ft_action_shdw or ''
+	local hpp = string.format("%3s", hpp_raw)..'%'
+	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..dyna_job..ft_index_hex
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..dyna_job..ft_index_hex
+	local status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
+	local status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
+	local action = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action or '')
+	local action_shdw = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action_shdw or '')
+	local text_action = show_target_action and ' '..status..action or ''
+	local text_action_shdw = show_target_action and ' '..status_shdw..action_shdw or ''
 
-	if not in_cutscene then
-
-		if focus_target_override and hide_focus_target_when_target and target then
-			if target.id == focus_target_override.id then
-				bars_bg_focus_target:hide()
-				bars_meter_focus_target:hide()
-				bars_text_shdw_focus_target:hide()
-				bars_text_shdw_focus_target_action:hide()
-				bars_text_focus_target:hide()
-				bars_text_focus_target_action:hide()
-			else
-
-				--Fix the pad issue when 0
-				if spaces == 0 then
-					bars_meter_focus_target:hide()
-				else
-					bars_meter_focus_target:show()
-				end
-
-				bars_bg_focus_target:show()
-				bars_text_shdw_focus_target:show()
-				bars_text_shdw_focus_target_action:show()
-				bars_text_focus_target:show()
-				bars_text_focus_target_action:show()
-			end
-		else
-
-			--Fix the pad issue when 0
-			if spaces == 0 then
-				bars_meter_focus_target:hide()
-			else
-				bars_meter_focus_target:show()
-			end
-
-			bars_bg_focus_target:show()
-			bars_text_shdw_focus_target:show()
-			bars_text_shdw_focus_target_action:show()
-			bars_text_focus_target:show()
-			bars_text_focus_target_action:show()
+	--Fix the pad issue when 0
+	if spaces == 0 then
+		focus_target_bar_meter:hide()
+		focus_target_bar_bg:bg_color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
+	else
+		focus_target_bar_meter:show()
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces < 13 and hpp_raw > 0 then
+			spaces = 13
 		end
-
+		while string.len(meter) < spaces do
+			meter = meter..' '
+		end
+		if not Screen_Test then
+			focus_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+		end
 	end
 
-	bars_meter_focus_target:text(ft_meter)
-	bars_meter_focus_target:bg_color(cm.r,cm.g,cm.b)
-	bars_text_shdw_focus_target:text(Fade and text:text_strip_format() or text_shdw)
-	bars_text_shdw_focus_target_action:text(Fade and text_ft_action_shdw:text_strip_format() or text_ft_action_shdw)
-	bars_text_focus_target:text(Fade and text:text_strip_format() or text)
-	bars_text_focus_target_action:text(Fade and text_ft_action:text_strip_format() or text_ft_action)
-	bars_text_focus_target:color(ct.r,ct.g,ct.b)
-	bars_text_focus_target_action:color(ct.r,ct.g,ct.b)
-	bars_text_focus_target:stroke_alpha(not Fade and ft_sp_active and sp.a or 0)
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		focus_target_bar_drain_meter:hide()
+	elseif drain_target_bars then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_ft_hpp > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		focus_target_bar_drain_meter:show()
+	end
+
+	--Show the Focus Target text objects
+	focus_target_bar_bg:show()
+	focus_target_bar_pulse:show()
+	focus_target_text:show()
+	focus_target_text_shadow:show()
+	focus_target_action_text:show()
+	focus_target_action_text_shadow:show()
+
+	--Update the Focus Target text objects
+	focus_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
+	focus_target_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	focus_target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	focus_target_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
+	focus_target_text:text(Fade and text:text_strip_format() or text)
+	focus_target_text:color(ct.r,ct.g,ct.b)
+	focus_target_text_shadow:text(Fade and text:text_strip_format() or text_shdw)
+	focus_target_action_text:text(Fade and text_action:text_strip_format() or text_action)
+	focus_target_action_text:color(ct.r,ct.g,ct.b)
+	focus_target_action_text_shadow:text(Fade and text_action_shdw:text_strip_format() or text_action_shdw)
+
+	--Pulse/Glow Focus Target when SP active
+	Pulse_Focus_Target_Bar = pulse_bar_when_target_sp_active and sp_active
+	if sp_active and not Pulse_Focus_Target_Name then
+		Pulse_Focus_Target_Name = true
+		focus_target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
+		focus_target_text:stroke_width(1)
+	elseif Pulse_Focus_Target_Name and not sp_active then
+		Pulse_Focus_Target_Name = false
+		focus_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+		focus_target_text:stroke_width(0.5)
+	end
+
+	--Update the previous focus target id
+	drain_previous_ft_id = ft and ft.id or nil
+
+end
+
+--Update the Sub Target bar
+function updateSubTarget()
+
+	local player = get_player()
+	local st = Screen_Test and screen_test_sub_target or get_mob_by_target('st')
+	local target = get_mob_by_target('t')
+
+	--Hide the Sub Target bar if there is no Sub Target to display, the Sub Target is targeted, or the Sub Target is ourselves
+	if not st
+	or (show_sub_target_when_targeted == false and target and st.id == target.id)
+	or (show_self_when_sub_targeted == false and st.id == player.id) then
+		if sub_target_bar_bg:visible() then
+			sub_target_bar_meter:hide()
+			sub_target_bar_drain_meter:hide()
+			sub_target_bar_bg:hide()
+			sub_target_bar_pulse:hide()
+			sub_target_text:hide()
+			sub_target_text_shadow:hide()
+			sub_target_action_text:hide()
+			sub_target_action_text_shadow:hide()
+		end
+		return
+	end
+
+	local hpp_raw = st and st.hpp or 0
+	drain_st_hpp = st and drain_previous_st_id == st.id and hpp_raw < drain_st_hpp and drain_st_hpp - drain_decay or hpp_raw
+	local sp_active = st and hpp_raw ~= 0 and current_sp_actions[st.id]
+	local sp_timer = sp_active and st_spaces..string.format("%d:%02d", math.floor(current_sp_actions[st.id].timer / 60), current_sp_actions[st.id].timer % 60)
+	local sp_name = sp_active and current_sp_actions[st.id].sp_name
+	local st_name = st and st.name or ''
+	if sp_active then
+		if condense_sub_target_name_and_sp_name then
+			st_name = sp_timer..' '..(Heartbeat % 2 == 0 and sp_name or st.name)
+		else
+			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+		end
+	end
+	st_name = st_spaces..st_name
+	local dyna_job_raw = st and show_dyna_jobs and dynaJob(st.name) or false
+	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
+	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
+	local dist_raw = st and math.floor(st.distance:sqrt()*100)/100
+	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local meter = ''
+	local drain_meter = ''
+	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
+	local drain_spaces = drain_st_hpp and math.floor((sub_target_bar_width * 10) * (drain_st_hpp / 100)) or 0
+	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
+	local ct = text_color
+	local hpp = string.format("%3s", hpp_raw)..'%'
+	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..dyna_job..index_hex
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..dyna_job..index_hex
+	local status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
+	local status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
+	local action = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action or '')
+	local action_shdw = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action_shdw or '')
+	local text_action = show_target_action and ' '..status..action or ''
+	local text_action_shdw = show_target_action and ' '..status_shdw..action_shdw or ''
+
+	--Fix the pad issue when 0
+	if spaces == 0 then
+		sub_target_bar_meter:hide()
+		sub_target_bar_bg:bg_color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
+	else
+		sub_target_bar_meter:show()
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces < 13 and hpp_raw > 0 then
+			spaces = 13
+		end
+		while string.len(meter) < spaces do
+			meter = meter..' '
+		end
+		if not Screen_Test then
+			sub_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+		end
+	end
+
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		sub_target_bar_drain_meter:hide()
+	elseif drain_target_bars then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_t_hpp > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		sub_target_bar_drain_meter:show()
+	end
+
+	--Show the Sub Target text objects
+	sub_target_bar_bg:show()
+	sub_target_bar_pulse:show()
+	sub_target_text:show()
+	sub_target_text_shadow:show()
+	sub_target_action_text:show()
+	sub_target_action_text_shadow:show()
+
+	--Update the Sub Target text objects
+	sub_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
+	sub_target_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	sub_target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	sub_target_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
+	sub_target_text:text(Fade and text:text_strip_format() or text)
+	sub_target_text:color(ct.r,ct.g,ct.b)
+	sub_target_text_shadow:text(Fade and text:text_strip_format() or text_shdw)
+	sub_target_action_text:text(Fade and text_action:text_strip_format() or text_action)
+	sub_target_action_text:color(ct.r,ct.g,ct.b)
+	sub_target_action_text_shadow:text(Fade and text_action_shdw:text_strip_format() or text_action_shdw)
+
+	--Pulse/Glow Sub Target when SP active
+	Pulse_Sub_Target_Bar = pulse_bar_when_target_sp_active and sp_active
+	if sp_active and not Pulse_Sub_Target_Name then
+		Pulse_Sub_Target_Name = true
+		sub_target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
+		sub_target_text:stroke_width(1)
+	elseif Pulse_Sub_Target_Name and not sp_active then
+		Pulse_Sub_Target_Name = false
+		sub_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+		sub_target_text:stroke_width(0.5)
+	end
+
+	--Update the previous sub target id
+	drain_previous_st_id = st and st.id or nil
 
 end
 
 --Update the Target bar
 function updateTarget()
 
-	local player = get_player()
-	local target = screen_test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
-	local target_sp_active = target and current_sp_actions[target.id]
-	local target_sp_timer = target_sp_active and ' '..string.format("%d:%02d", math.floor(current_sp_actions[target.id].timer / 60), current_sp_actions[target.id].timer % 60) or ''
-	local target_sp_name = target_sp_active and ' '..current_sp_actions[target.id].sp_name
-	local target_name = target and (target_sp_active and Heartbeat % 2 == 0 and target_sp_name or ' '..target.name) or ''
-	local dyna_job = target and show_dyna_jobs and dynaJob(target.name) or false
-	local target_dyna_job = target and dyna_job and ' '..dyna_job or ''
-	local target_index = target and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", target.index) or target.index)..')' or ''
-	local distance_raw = target and math.floor(target.distance:sqrt()*100)/100
-	local target_distance = target and show_target_distance and ' '..(string.format("%5.2f", distance_raw)) or ''
-	local target_hpp = target and target.hpp or 0
-	local target_meter = ''
-	local spaces = target_hpp and math.floor(bar_width * (target_hpp / 100)) or 0
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and target_hpp ~= 0 then
-		spaces = 1
-	end
-	while string.len(target_meter) < spaces do
-		target_meter = target_meter..' '
-	end
-	local cm = target and (Fade and text_color or targetColor(target)) or color.target.pc_other
-	local ct = text_color
-	target_hpp = string.format("%3s", target_hpp)..'%'
-	local text = target_hpp..colorizeDistance(target_distance, distance_raw, target)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
-	local text_shdw = target_hpp..'\\cs(000,000,000)'..target_distance..'\\cr'..'\\cs(000,000,000)'..target_sp_timer..target_name..'\\cr'..target_dyna_job..target_index
-	local target_status = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status or ''
-	local target_status_shdw = show_action_status_indicators and target and current_actions[target.id] and current_actions[target.id].status_shdw or ''
-	local target_action = target and current_actions[target.id] and current_actions[target.id].action or ''
-	local target_action_shdw = target and current_actions[target.id] and current_actions[target.id].action_shdw or ''
-	local target_action_result = target and current_actions[target.id] and current_actions[target.id].result or ''
-	local target_action_result_shdw = target and current_actions[target.id] and current_actions[target.id].result_shdw or ''
-	local text_target_action = show_target_action and ' '..target_status..target_action..target_action_result or ''
-	local text_target_action_shdw = show_target_action and ' '..target_status_shdw..target_action_shdw..target_action_result_shdw or ''
-
-	if target and not (show_self_when_targeted == false and target.id == player.id) then
-		if not in_cutscene then
-
-			--Fix the pad issue when 0
-			if spaces == 0 then
-				bars_meter_target:hide()
-			else
-				bars_meter_target:show()
-			end
-
-			bars_bg_target:show()
-			bars_text_shdw_target:show()
-			bars_text_shdw_target_action:show()
-			bars_text_target:show()
-			bars_text_target_action:show()
-
-		end
-
-		bars_meter_target:text(target_meter)
-		bars_meter_target:bg_color(cm.r,cm.g,cm.b)
-		bars_text_shdw_target:text(Fade and text:text_strip_format() or text_shdw)
-		bars_text_shdw_target_action:text(Fade and text_target_action_shdw:text_strip_format() or text_target_action_shdw)
-		bars_text_target:text(Fade and text:text_strip_format() or text)
-		bars_text_target_action:text(Fade and text_target_action:text_strip_format() or text_target_action)
-		bars_text_target:color(ct.r,ct.g,ct.b)
-		bars_text_target_action:color(ct.r,ct.g,ct.b)
-		bars_text_target:stroke_alpha(not Fade and target_sp_active and sp.a or 0)
-
-	else
-
-		bars_bg_target:hide()
-		bars_meter_target:hide()
-		bars_text_shdw_target:hide()
-		bars_text_shdw_target_action:hide()
-		bars_text_target:hide()
-		bars_text_target_action:hide()
-
-	end
-end
-
---Update the Sub-Target bar
-function updateSubTarget()
+	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
 	local player = get_player()
-	local st = screen_test and screen_test_sub_target or get_mob_by_target('st')
-	local target = get_mob_by_target('t')
-	local st_sp_active = st and current_sp_actions[st.id]
-	local st_sp_timer = st_sp_active and ' '..string.format("%d:%02d", math.floor(current_sp_actions[st.id].timer / 60), current_sp_actions[st.id].timer % 60)
-	local st_sp_name = st_sp_active and ' '..current_sp_actions[st.id].sp_name
-	local st_name = st and (st_sp_active and Heartbeat % 2 == 0 and st_sp_timer..st_sp_name or ' '..st.name) or ''
-	local dyna_job = st and show_dyna_jobs and dynaJob(st.name) or false
-	local st_dyna_job = st and dyna_job and ' '..dyna_job or ''
-	local st_index = st and (show_target_index or show_target_hex) and ' ('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
-	local distance_raw = st and math.floor(st.distance:sqrt()*100)/100
-	local st_distance = st and show_target_distance and ' '..(string.format("%5.2f", distance_raw)) or ''
-	local st_hpp = st and st.hpp or 0
-	local st_meter = ''
-	local spaces = st_hpp and math.floor((bar_width / 2) * (st_hpp / 100)) or 0
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and st_hpp ~= 0 then
-		spaces = 1
-	end
-	while string.len(st_meter) < spaces do
-		st_meter = st_meter..' '
-	end
-	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
-	local ct = text_color
-	st_hpp = string.format("%3s", st_hpp)..'%'
-	local text = st_hpp..colorizeDistance(st_distance, distance_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..st_dyna_job..st_index
-	local text_shdw = st_hpp..'\\cs(000,000,000)'..st_distance..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..st_dyna_job..st_index
-	local st_status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
-	local st_status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
-	local st_action = st and current_actions[st.id] and current_actions[st.id].action or ''
-	local st_action_shdw = st and current_actions[st.id] and current_actions[st.id].action_shdw or ''
-	local text_st_action = show_target_action and ' '..st_status..st_action or ''
-	local text_st_action_shdw = show_target_action and ' '..st_status_shdw..st_action_shdw or ''
+	local t = Screen_Test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
 
-	if st and not ((show_st_when_target == false and target and st.id == target.id) or (show_self_when_targeted == false and st.id == player.id)) then
-		if not in_cutscene then
-
-			--Fix the pad issue when 0
-			if spaces == 0 then
-				bars_meter_sub_target:hide()
-			else
-				bars_meter_sub_target:show()
-			end
-
-			bars_bg_sub_target:show()
-			bars_text_shdw_sub_target:show()
-			bars_text_shdw_sub_target_action:show()
-			bars_text_sub_target:show()
-			bars_text_sub_target_action:show()
-
+	--Hide the Target bar if there is no Target to display, or the Target is ourselves
+	if not t or (show_self_when_targeted == false and t.id == player.id) then
+		if target_bar_bg:visible() then
+			target_bar_meter:hide()
+			target_bar_drain_meter:hide()
+			target_bar_bg:hide()
+			target_bar_pulse:hide()
+			target_text:hide()
+			target_text_shadow:hide()
+			target_action_text:hide()
+			target_action_text_shadow:hide()
 		end
-
-		bars_meter_sub_target:text(st_meter)
-		bars_meter_sub_target:bg_color(cm.r,cm.g,cm.b)
-		bars_text_shdw_sub_target:text(Fade and text:text_strip_format() or text_shdw)
-		bars_text_shdw_sub_target_action:text(Fade and text_st_action_shdw:text_strip_format() or text_st_action_shdw)
-		bars_text_sub_target:text(Fade and text:text_strip_format() or text)
-		bars_text_sub_target_action:text(Fade and text_st_action:text_strip_format() or text_st_action)
-		bars_text_sub_target:color(ct.r,ct.g,ct.b)
-		bars_text_sub_target_action:color(ct.r,ct.g,ct.b)
-		bars_text_sub_target:stroke_alpha(not Fade and st_sp_active and sp.a or 0)
-
-	else
-
-		bars_bg_sub_target:hide()
-		bars_meter_sub_target:hide()
-		bars_text_shdw_sub_target:hide()
-		bars_text_shdw_sub_target_action:hide()
-		bars_text_sub_target:hide()
-		bars_text_sub_target_action:hide()
-
+		return
 	end
+
+	local hpp_raw = t and t.hpp or 0
+	local hpp_diff = drain_t_hpp - hpp_raw
+	local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
+	drain_t_hpp = t and drain_previous_t_id == t.id and hpp_raw < drain_t_hpp and drain_t_hpp - current_decay or hpp_raw
+	local sp_active = t and hpp_raw > 0 and current_sp_actions[t.id]
+	local sp_timer = sp_active and string.format("%d:%02d", math.floor(current_sp_actions[t.id].timer / 60), current_sp_actions[t.id].timer % 60) or ''
+	local sp_name = sp_active and current_sp_actions[t.id].sp_name
+	local t_name = t and t.name or ''
+	if sp_active then
+		if condense_target_name_and_sp_name then
+			t_name = sp_timer..' '..(Heartbeat % 2 == 0 and sp_name or t.name)
+		else
+			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+		end
+	end
+	t_name = t_spaces..t_name
+	local dyna_job_raw = t and show_dyna_jobs and dynaJob(t.name) or false
+	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
+	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
+	local dist_raw = t and math.floor(t.distance:sqrt()*100)/100
+	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local meter = ''
+	local drain_meter = ''
+	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
+	local drain_spaces = drain_t_hpp and math.floor((target_bar_width * 10) * (drain_t_hpp / 100)) or 0
+	local cm = t and (Fade and text_color or targetColor(t)) or color.t.pc_other
+	local ct = text_color
+	local hpp = string.format("%3s", hpp_raw)..'%'
+	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..dyna_job..index_hex
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..dyna_job..index_hex
+	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
+	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
+	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
+	local action_shdw = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action_shdw or '')
+	local action_result = t and show_target_action_result and current_actions[t.id] and current_actions[t.id].result or ''
+	local action_result_shdw = t and show_target_action_result and current_actions[t.id] and current_actions[t.id].result_shdw or ''
+	local text_action = show_target_action and ' '..status..action..action_result or ''
+	local text_action_shdw = show_target_action and ' '..status_shdw..action_shdw..action_result_shdw or ''
+
+	--Fix the pad issue when 0
+	if spaces == 0 then
+		target_bar_meter:hide()
+		target_bar_bg:bg_color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
+	else
+		target_bar_meter:show()
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces < 13 and hpp_raw > 0 then
+			spaces = 13
+		end
+		while string.len(meter) < spaces do
+			meter = meter..' '
+		end
+		if not Screen_Test then
+			target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+		end
+	end
+
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		target_bar_drain_meter:hide()
+	elseif drain_target_bars then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_t_hpp > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		target_bar_drain_meter:show()
+	end
+
+	--Show the Target text objects
+	target_bar_bg:show()
+	target_bar_pulse:show()
+	target_text:show()
+	target_action_text:show()
+	target_text_shadow:show()
+	target_action_text_shadow:show()
+
+	--Show Target Lock
+	if show_target_lock and player and player.target_locked and not target_bar_lock_left:visible() then
+		target_bar_lock_left:show()
+		target_bar_lock_right:show()
+		target_bar_lock_underline:show()
+	elseif player and not player.target_locked and target_bar_lock_left:visible() then
+		target_bar_lock_left:hide()
+		target_bar_lock_right:hide()
+		target_bar_lock_underline:hide()
+	end
+
+	--Update the Target text objects
+	target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
+	target_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	target_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
+	target_text:text(Fade and text:text_strip_format() or text)
+	target_text:color(ct.r,ct.g,ct.b)
+	target_text_shadow:text(Fade and text:text_strip_format() or text_shdw)
+	target_action_text:text(Fade and text_action:text_strip_format() or text_action)
+	target_action_text:color(ct.r,ct.g,ct.b)
+	target_action_text_shadow:text(Fade and text_action_shdw:text_strip_format() or text_action_shdw)
+
+	--Pulse/Glow Target when SP active
+	Pulse_Target_Bar = pulse_bar_when_target_sp_active and sp_active
+	if sp_active and not Pulse_Target_Name then
+		Pulse_Target_Name = true
+		target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
+		target_text:stroke_width(1)
+	elseif Pulse_Target_Name and not sp_active then
+		Pulse_Target_Name = false
+		target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
+		target_text:stroke_width(0.5)
+	end
+
+	--Update the previous target id
+	drain_previous_t_id = t and t.id or nil
+
 end
 
 --Update the Self Action text
 function updateSelfAction()
 
-	if not show_self_action then return end
-
 	local player = get_player()
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
+
+	--Hide the Self Action bar disabled, we are in a cutscene, or no actions
+	if not show_self_action
+	or in_cutscene
+	or self_status == '' then
+		if self_action_bar_bg:visible() then
+			self_action_bar_meter:hide()
+			self_action_bar_bg:hide()
+			self_action_text:hide()
+			self_action_text_shadow:hide()
+		end
+		return
+	end
+
 	local self_status_shdw = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status_shdw or ''
 	local self_action = current_actions[player.id] and current_actions[player.id].action or ''
 	local self_action_shdw = current_actions[player.id] and current_actions[player.id].action_shdw or ''
-	local self_action_result = current_actions[player.id] and current_actions[player.id].result or ''
-	local self_action_result_shdw = current_actions[player.id] and current_actions[player.id].result_shdw or ''
+	local self_action_result = show_self_action_result and current_actions[player.id] and current_actions[player.id].result or ''
+	local self_action_result_shdw = show_self_action_result and current_actions[player.id] and current_actions[player.id].result_shdw or ''
 	local text_self_action = ' '..self_status..self_action..self_action_result
 	local text_self_action_shdw = ' '..self_status_shdw..self_action_shdw..self_action_result_shdw
 
-	if self_status ~= '' then
-		if not in_cutscene then
+	--Show Self Action text objects
+	self_action_bar_bg:show()
+	self_action_text:show()
+	self_action_text_shadow:show()
 
-			bars_bg_self_action:show()
-			bars_text_shdw_self_action:show()
-			bars_text_self_action:show()
-
-		end
-
-		bars_text_shdw_self_action:text(Fade and text_self_action_shdw:text_strip_format() or text_self_action_shdw)
-		bars_text_self_action:text(Fade and text_self_action:text_strip_format() or text_self_action)
-
-	else
-
-		bars_bg_self_action:hide()
-		bars_meter_self_action:hide()
-		bars_text_shdw_self_action:hide()
-		bars_text_self_action:hide()
-
-	end
-end
-
-function updatePartyActions()
-
-	if not show_party_actions then return end
-
-	local total_width = 30 --max_action_length default is 17 but can be changed in settings, so I picked 30 here to give a little leeway
-
-	function formatPartyAction(str)
-		local raw = str:text_strip_format()
-
-		--Remove everything from " → " onward leaving just the action
-		local arrow_pos = raw:find(" → ")
-		local display_str = arrow_pos and raw:sub(1, arrow_pos - 1) or raw
-
-		--Replace ellipses in a copy for proper visual length calculation (# technically is counting bytes, ellipses is 4 bytes)
-		local length_str = display_str:gsub("…", " ")
-
-		local padding = math.max(0, total_width - #length_str)
-
-		return string.rep(" ", padding)..display_str
-	end	
-
-	--Party 1 (minus the player)
-	local p1 = get_mob_by_target('p1')
-	local p1_action = screen_test and "Party 0: Player 1" or (p1 and current_actions[p1.id] and current_actions[p1.id].action or '')
-	local text_p1_action = formatPartyAction(p1_action)
-	bars_text_pt1_p1:text(text_p1_action)
-
-	local p2 = get_mob_by_target('p2')
-	local p2_action = screen_test and "Party 0: Player 2" or (p2 and current_actions[p2.id] and current_actions[p2.id].action or '')
-	local text_p2_action = formatPartyAction(p2_action)
-	bars_text_pt1_p2:text(text_p2_action)
-
-	local p3 = get_mob_by_target('p3')
-	local p3_action = screen_test and "Party 0: Player 3" or (p3 and current_actions[p3.id] and current_actions[p3.id].action or '')
-	local text_p3_action = formatPartyAction(p3_action)
-	bars_text_pt1_p3:text(text_p3_action)
-
-	local p4 = get_mob_by_target('p4')
-	local p4_action = screen_test and "Party 0: Player 4" or (p4 and current_actions[p4.id] and current_actions[p4.id].action or '')
-	local text_p4_action = formatPartyAction(p4_action)
-	bars_text_pt1_p4:text(text_p4_action)
-
-	local p5 = get_mob_by_target('p5')
-	local p5_action = screen_test and "Party 0: Player 5" or (p5 and current_actions[p5.id] and current_actions[p5.id].action or '')
-	local text_p5_action = formatPartyAction(p5_action)
-	bars_text_pt1_p5:text(text_p5_action)
-
-	--Party 2
-	local a10 = get_mob_by_target('a10')
-	local a10_action = screen_test and "Alliance Party 1: Player 0" or (a10 and current_actions[a10.id] and current_actions[a10.id].action or '')
-	local text_a10_action = formatPartyAction(a10_action)
-	bars_text_pt2_p0:text(text_a10_action)
-
-	local a11 = get_mob_by_target('a11')
-	local a11_action = screen_test and "Alliance Party 1: Player 1" or (a11 and current_actions[a11.id] and current_actions[a11.id].action or '')
-	local text_a11_action = formatPartyAction(a11_action)
-	bars_text_pt2_p1:text(text_a11_action)
-
-	local a12 = get_mob_by_target('a12')
-	local a12_action = screen_test and "Alliance Party 1: Player 2" or (a12 and current_actions[a12.id] and current_actions[a12.id].action or '')
-	local text_a12_action = formatPartyAction(a12_action)
-	bars_text_pt2_p2:text(text_a12_action)
-
-	local a13 = get_mob_by_target('a13')
-	local a13_action = screen_test and "Alliance Party 1: Player 3" or (a13 and current_actions[a13.id] and current_actions[a13.id].action or '')
-	local text_a13_action = formatPartyAction(a13_action)
-	bars_text_pt2_p3:text(text_a13_action)
-
-	local a14 = get_mob_by_target('a14')
-	local a14_action = screen_test and "Alliance Party 1: Player 4" or (a14 and current_actions[a14.id] and current_actions[a14.id].action or '')
-	local text_a14_action = formatPartyAction(a14_action)
-	bars_text_pt2_p4:text(text_a14_action)
-
-	local a15 = get_mob_by_target('a15')
-	local a15_action = screen_test and "Alliance Party 1: Player 5" or (a15 and current_actions[a15.id] and current_actions[a15.id].action or '')
-	local text_a15_action = formatPartyAction(a15_action)
-	bars_text_pt2_p5:text(text_a15_action)
-
-	--Party 3
-	local a20 = get_mob_by_target('a20')
-	local a20_action = screen_test and "Alliance Party 2: Player 0" or (a20 and current_actions[a20.id] and current_actions[a20.id].action or '')
-	local text_a20_action = formatPartyAction(a20_action)
-	bars_text_pt3_p0:text(text_a20_action)
-
-	local a21 = get_mob_by_target('a21')
-	local a21_action = screen_test and "Alliance Party 2: Player 1" or (a21 and current_actions[a21.id] and current_actions[a21.id].action or '')
-	local text_a21_action = formatPartyAction(a21_action)
-	bars_text_pt3_p1:text(text_a21_action)
-
-	local a22 = get_mob_by_target('a22')
-	local a22_action = screen_test and "Alliance Party 2: Player 1" or (a22 and current_actions[a22.id] and current_actions[a22.id].action or '')
-	local text_a22_action = formatPartyAction(a22_action)
-	bars_text_pt3_p2:text(text_a22_action)
-
-	local a23 = get_mob_by_target('a23')
-	local a23_action = screen_test and "Alliance Party 2: Player 1" or (a23 and current_actions[a23.id] and current_actions[a23.id].action or '')
-	local text_a23_action = formatPartyAction(a23_action)
-	bars_text_pt3_p3:text(text_a23_action)
-
-	local a24 = get_mob_by_target('a24')
-	local a24_action = screen_test and "Alliance Party 2: Player 1" or (a24 and current_actions[a24.id] and current_actions[a24.id].action or '')
-	local text_a24_action = formatPartyAction(a24_action)
-	bars_text_pt3_p4:text(text_a24_action)
-
-	local a25 = get_mob_by_target('a25')
-	local a25_action = screen_test and "Alliance Party 2: Player 1" or (a25 and current_actions[a25.id] and current_actions[a25.id].action or '')
-	local text_a25_action = formatPartyAction(a25_action)
-	bars_text_pt3_p5:text(text_a25_action)
+	--Update Self Action text objects
+	self_action_text:text(Fade and text_self_action:text_strip_format() or text_self_action)
+	self_action_text_shadow:text(Fade and text_self_action_shdw:text_strip_format() or text_self_action_shdw)
 
 end
 
@@ -2449,11 +3355,11 @@ function completeSelfMeter()
 
 	local self_meter = ''
 
-	while string.len(self_meter) < bar_width do
+	while string.len(self_meter) < self_action_bar_width * 10 do
 		self_meter = self_meter..' '
 	end
-	bars_meter_self_action:text(self_meter)
-	bars_meter_self_action:show()
+	self_action_bar_meter:text('\n\n\n\n\n\n\n'..self_meter)
+	self_action_bar_meter:show()
 
 end
 
@@ -2466,8 +3372,9 @@ function updateSelfBar(cast_time, index)
 	local player = get_player()
 	local self_meter = ''
 	local spaces = 0
-	local divisor = cast_time / 0.1 --Bar length gets updated every tenth of a second
-	local increment = bar_width / divisor
+	local multiplier = 0.02 --Bar length gets updated 50 times per second
+	local divisor = cast_time / multiplier
+	local increment = (self_action_bar_width * 10) / divisor
 
 	--Loop to update the bar length over time
 	for i = 1, divisor do
@@ -2475,26 +3382,28 @@ function updateSelfBar(cast_time, index)
 		local curr_index = current_actions[player.id]
 
 		--Cancel if a spell has finished early
-		if (current_actions[player.id] and (current_actions[player.id].status == '\\cs(050,255,050)√\\cr' or current_actions[player.id].status == '\\cs(255,050,050)×\\cr') and not screen_test) or curr_index and index ~= curr_index.index then
+		local status = current_actions[player.id] and current_actions[player.id].status
+		if (status and (status:find(completed_icon, 1, true) or status:find(cancelled_icon, 1, true)) and not Screen_Test)
+			or curr_index and index ~= curr_index.index then
 			break
 		end
 
 		--Make sure the meter hits exactly 100% when finished
 		if i == divisor then
-			spaces = bar_width
+			spaces = self_action_bar_width * 10
 		end
 
 		--Update the bar length
 		while string.len(self_meter) < spaces do
 			self_meter = self_meter..' '
 		end
-		bars_meter_self_action:text(self_meter)
+		self_action_bar_meter:text('\n\n\n\n\n\n\n'..self_meter)
 
-		--Fix the pad issue when 0
-		if spaces ~= 0 and current_actions[player.id] then
-			bars_meter_self_action:show()
-		elseif spaces == 0 or not current_actions[player.id] then
-			bars_meter_self_action:hide()
+		--Fix the pad issue when under 13
+		if spaces >= 13 and current_actions[player.id] then
+			self_action_bar_meter:show()
+		elseif spaces < 13 or not current_actions[player.id] then
+			self_action_bar_meter:hide()
 		end
 
 		--Incremement spaces for the next go round
@@ -2502,8 +3411,8 @@ function updateSelfBar(cast_time, index)
 			spaces = spaces + increment
 		end
 
-		--Pause for a tenth of a second before running the loop again
-		coroutine.sleep(.1)
+		--Pause before running the loop again
+		coroutine.sleep(multiplier)
 
 	end
 
@@ -2516,31 +3425,46 @@ function updateHPBar()
 	local hp = player and player.vitals.hp or 0
 	local max_hp = player and player.vitals.max_hp or 0
 	local hpp = player and player.vitals.hpp or 0
+	drain_ps_hpp = hpp and hpp < drain_ps_hpp and drain_ps_hpp - drain_decay or hpp
 	local hp_meter = ''
-	local spaces = math.floor(bar_width * (hpp / 100))
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and hpp ~= 0 then
-		spaces = 1
-	end
+	local drain_meter = ''
+	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
+	local drain_spaces = drain_ps_hpp and math.floor((player_stats_bar_width * 10) * (drain_ps_hpp / 100)) or 0
 	local ct = text_color
 	local cm = Fade and text_color or color.hp.bar
 
 	--Fix the pad issue when 0
 	if spaces == 0 then
-		bars_meter_hp:bg_alpha(0)
+		player_stats_hp_bar_meter:bg_alpha(0)
 	else
-		if not Fade then
-			bars_meter_hp:bg_alpha(bg_alpha)
+		player_stats_hp_bar_meter:bg_alpha(not Fade and bg_alpha)
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces < 13 and hp > 0 then
+			spaces = 13
 		end
 		while string.len(hp_meter) < spaces do
 			hp_meter = hp_meter..' '
 		end
 	end
 
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		player_stats_hp_bar_drain_meter:bg_alpha(0)
+	elseif drain_hp_bar then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_ps_hpp > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		player_stats_hp_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
+	end
+
 	--Add the max hp to the right-side of the bar
 	local center_padding = ''
 	if show_max_hp_mp_on_bar then
-		local center_spaces = bar_width - string.len(tostring(hp)) - string.len(tostring(max_hp)) - 5
+		local center_spaces = player_stats_bar_width - string.len(tostring(hp)) - string.len(tostring(max_hp)) - 5
 		while string.len(center_padding) < center_spaces do
 			center_padding = center_padding..' '
 		end
@@ -2562,13 +3486,24 @@ function updateHPBar()
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
 
+	--Pulse HP when its critically low (and not dead)
+	if pulse_when_hp_low and hpp > 0 and hpp <= 25 and not Pulse_HP then
+		Pulse_HP = true
+	elseif Pulse_HP and (hpp == 0 or hpp > 25) then
+		player_stats_hp_bar_pulse:bg_alpha(0)
+		Pulse_HP = false
+	end
+	player_stats_hp_bar_pulse:bg_color(ct_r,ct_g,ct_b)
+
+	--Format the text output
 	local text = 'HP: \\cs('..ct_r..','..ct_g..','..ct_b..')'..hp..'\\cr'..max_hp
 	local text_shdw = 'HP: '..hp..max_hp
-
-	bars_meter_hp:text(hp_meter)
-	bars_meter_hp:bg_color(cm.r,cm.g,cm.b)
-	bars_text_shdw_hp:text(text_shdw)
-	bars_text_hp:text(Fade and text:text_strip_format() or text)
+	player_stats_hp_bar_meter:text('\n\n\n\n\n\n\n'..hp_meter)
+	player_stats_hp_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	player_stats_hp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	player_stats_hp_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
+	player_stats_hp_text:text(Fade and text:text_strip_format() or text)
+	player_stats_hp_text_shadow:text(text_shdw)
 
 end
 
@@ -2579,25 +3514,41 @@ function updateMPBar()
 	local mp = player and player.vitals.mp or 0
 	local max_mp = player and player.vitals.max_mp or 0
 	local mpp = player and player.vitals.mpp or 0
+	drain_ps_mpp = mpp and mpp < drain_ps_mpp and drain_ps_mpp - drain_decay or mpp
+	local hpp = player and player.vitals.hpp or 0
 	local mp_meter = ''
-	local spaces = math.floor(bar_width * (mpp / 100))
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and mpp ~= 0 then
-		spaces = 1
-	end
+	local drain_meter = ''
+	local spaces = math.floor((player_stats_bar_width * 10) * (mpp / 100))
+	local drain_spaces = drain_ps_mpp and math.floor((player_stats_bar_width * 10) * (drain_ps_mpp / 100)) or 0
 	local ct = text_color
 	local cm = Fade and text_color or color.mp.bar
 
 	--Fix the pad issue when 0
 	if spaces == 0 then
-		bars_meter_mp:bg_alpha(0)
+		player_stats_mp_bar_drain_meter:bg_alpha(0)
 	else
-		if not Fade then
-			bars_meter_mp:bg_alpha(bg_alpha)
+		player_stats_mp_bar_meter:bg_alpha(not Fade and bg_alpha)
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces < 13 and mp > 0 then
+			spaces = 13
 		end
 		while string.len(mp_meter) < spaces do
 			mp_meter = mp_meter..' '
 		end
+	end
+
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		player_stats_mp_bar_drain_meter:bg_alpha(0)
+	elseif drain_mp_bar then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_ps_mpp > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		player_stats_mp_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
 	end
 
 	--Set the color for the text based on MP percentage
@@ -2616,7 +3567,7 @@ function updateMPBar()
 	--Add the max mp to the right-side of the bar
 	local center_padding = ''
 	if show_max_hp_mp_on_bar then
-		local center_spaces = bar_width - string.len(tostring(mp)) - string.len(tostring(max_mp)) - 5
+		local center_spaces = player_stats_bar_width - string.len(tostring(mp)) - string.len(tostring(max_mp)) - 5
 		while string.len(center_padding) < center_spaces do
 			center_padding = center_padding..' '
 		end
@@ -2625,13 +3576,24 @@ function updateMPBar()
 		max_mp = ''
 	end
 
+	--Pulse MP when its critically low (and not dead)
+	if pulse_when_mp_low and hpp > 0 and mpp <= 25 and not Pulse_MP then
+		Pulse_MP = true
+	elseif Pulse_MP and (hpp == 0 or mpp > 25) then
+		player_stats_mp_bar_pulse:bg_alpha(0)
+		Pulse_MP = false
+	end
+	player_stats_mp_bar_pulse:bg_color(ct_r,ct_g,ct_b)
+
+	--Format the text output
 	local text = 'MP: \\cs('..ct_r..','..ct_g..','..ct_b..')'..mp..'\\cr'..max_mp
 	local text_shdw = 'MP: '..mp..max_mp
-
-	bars_meter_mp:text(mp_meter)
-	bars_meter_mp:bg_color(cm.r,cm.g,cm.b)
-	bars_text_shdw_mp:text(text_shdw)
-	bars_text_mp:text(Fade and text:text_strip_format() or text)
+	player_stats_mp_bar_meter:text('\n\n\n\n\n\n\n'..mp_meter)
+	player_stats_mp_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	player_stats_mp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	player_stats_mp_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
+	player_stats_mp_text:text(Fade and text:text_strip_format() or text)
+	player_stats_mp_text_shadow:text(text_shdw)
 
 end
 
@@ -2640,57 +3602,87 @@ function updateTPBar()
 
 	local player = get_player()
 	local tp = player and player.vitals.tp or 0
+	local tp_diff = drain_ps_tp - tp
+	local current_decay = math.min(tp_diff * 0.1, drain_decay * 120)
+	drain_ps_tp = tp and tp < drain_ps_tp and drain_ps_tp - current_decay or tp
+
+	local hpp = player and player.vitals.hpp or 0
 	local tp_meter = ''
-	local spaces = 0
-	spaces = math.floor(bar_width * (tp / 3000))
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and tp ~= 0 then
-		spaces = 1
+	local drain_meter = ''
+	local spaces = math.floor((player_stats_bar_width * 10) * (tp / 3000))
+	local drain_spaces = drain_ps_tp and math.floor((player_stats_bar_width * 10) * (drain_ps_tp / 3000)) or 0
+	local floating_tp_spaces = math.floor(player_stats_bar_width * (tp / 3000))
+	local floating_tp = ''
+	local tp_spaces = floating_tp_number and math.max(math.min(floating_tp_spaces - (tp < 1000 and 8 or 9), player_stats_bar_width - 9), 0) or 0
+	while string.len(floating_tp) < tp_spaces do
+		floating_tp = floating_tp..' '
 	end
-	while string.len(tp_meter) < spaces do
-		tp_meter = tp_meter..' '
-	end
-	local ct = text_color
+	local cm = text_color
 
 	--Fix the pad issue when 0
 	if spaces == 0 then
-		bars_meter_tp:bg_alpha(0)
-
+		player_stats_tp_bar_meter:bg_alpha(0)
 	else
-		if not Fade then
-			bars_meter_tp:bg_alpha(bg_alpha)
+		player_stats_tp_bar_meter:bg_alpha(not Fade and bg_alpha)
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces < 13 and tp > 0 then
+			spaces = 13
 		end
-
-		--Set the color for the bar based on TP percentage
-		local cm = text_color
-
-		if not Fade then
-			if tp == 3000 then
-				cm = color.tp.full_3k
-				ct = color.tp.full_3k
-			elseif tp >= 2000 then
-				cm = color.tp.full_2k
-				ct = color.tp.full_2k
-			elseif tp >= 1000 then
-				cm = color.tp.full_1k
-				ct = color.tp.full_1k
-			end
+		while string.len(tp_meter) < spaces do
+			tp_meter = tp_meter..' '
 		end
-
-		bars_meter_tp:bg_color(cm.r,cm.g,cm.b)
-
 	end
 
-	local r = formatRGB(ct.r)
-	local g = formatRGB(ct.g)
-	local b = formatRGB(ct.b)
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		player_stats_tp_bar_drain_meter:bg_alpha(0)
+	elseif drain_tp_bar then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_ps_tp > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		player_stats_tp_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
+	end
 
-	local text = 'TP: \\cs('..r..','..g..','..b..')'..tp..'\\cr'
-	local text_shdw = 'TP: '..tp
+	--Set the color for the bar based on TP percentage
+	if not Fade then
+		if tp == 3000 then
+			cm = color.tp.full_3k
+		elseif tp >= 2000 then
+			cm = color.tp.full_2k
+		elseif tp >= 1000 then
+			cm = color.tp.full_1k
+		end
+	end
 
-	bars_text_shdw_tp:text(text_shdw)
-	bars_text_tp:text(Fade and text:text_strip_format() or text)
-	bars_meter_tp:text(tp_meter)
+	local cm_r = formatRGB(cm.r)
+	local cm_g = formatRGB(cm.g)
+	local cm_b = formatRGB(cm.b)
+
+	--Pulse TP when its ready to use (and not dead)
+	if pulse_when_tp_ready and hpp > 0 and tp >= 1000 and not Pulse_TP and not Screen_Test then
+		Pulse_TP = true
+	elseif (Pulse_TP and (hpp == 0 or tp < 1000)) or Screen_Test then
+		player_stats_tp_bar_pulse:bg_alpha(0)
+		Pulse_TP = false
+	end
+	player_stats_tp_bar_pulse:bg_color(cm_r,cm_g,cm_b)
+
+	--Format the text output
+	local text = 'TP: '..floating_tp..'\\cs('..cm_r..','..cm_g..','..cm_b..')'..tp..'\\cr'
+	local text_shdw = 'TP: '..floating_tp..''..tp
+	player_stats_tp_bar_meter:text('\n\n\n\n\n\n\n'..tp_meter)
+	player_stats_tp_bar_meter:bg_color(cm_r,cm_g,cm_b)
+	player_stats_tp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	player_stats_tp_bar_drain_meter:bg_color(cm_r,cm_g,cm_b)
+	if pulse_tp_meter_only then
+		player_stats_tp_bar_pulse:text('\n\n\n\n\n\n\n'..tp_meter)
+	end
+	player_stats_tp_text:text(Fade and text:text_strip_format() or text)
+	player_stats_tp_text_shadow:text(text_shdw)
 
 end
 
@@ -2699,15 +3691,14 @@ function updatePetBar()
 
 	local pet = get_mob_by_target('pet')
 	local hpp = pet and pet.hpp or 0
+	drain_ps_pet = pet and hpp < drain_ps_pet and drain_ps_pet - drain_decay or hpp
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
-	local spaces = math.floor(bar_width * (hpp / 100))
-	--fix for the math flooring this to 0 when its not exactly 0
-	if spaces == 0 and hpp ~= 0 then
-		spaces = 1
-	end
+	local drain_meter = ''
+	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
+	local drain_spaces = drain_ps_pet and math.floor((player_stats_bar_width * 10) * (drain_ps_pet / 100)) or 0
 	local ct = color.hp
 
 	local pet_name = pet and 'Pet' or 'No Pet'
@@ -2719,14 +3710,30 @@ function updatePetBar()
 
 	--Fix the pad issue when 0
 	if spaces == 0 then
-		bars_meter_pet:bg_alpha(0)
+		player_stats_pet_bar_meter:bg_alpha(0)
 	else
-		if not Fade then
-			bars_meter_pet:bg_alpha(bg_alpha)
+		player_stats_pet_bar_meter:bg_alpha(bg_alpha)
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if spaces == 0 and hpp > 0 then
+			spaces = 13
 		end
-		while string.len(pet_meter) < spaces and string.len(pet_meter) < bar_width do
+		while string.len(pet_meter) < spaces and string.len(pet_meter) < (player_stats_bar_width * 10) do
 			pet_meter = pet_meter..' '
 		end
+	end
+
+	--Fix the pad issue when 0
+	if drain_spaces <= 0 then
+		player_stats_pet_bar_drain_meter:bg_alpha(0)
+	elseif drain_pet_bar then
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		if drain_spaces < 13 and drain_ps_pet > 0 then
+			drain_spaces = 13
+		end
+		while string.len(drain_meter) < drain_spaces do
+			drain_meter = drain_meter..' '
+		end
+		player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
 
 	--Set the color for the text based on hp percentage
@@ -2768,14 +3775,149 @@ function updatePetBar()
 	local cm_g = formatRGB(cm.g)
 	local cm_b = formatRGB(cm.b)
 
+	--Pulse Pet when its critically low
+	if pulse_when_pet_low and pet and hpp <= 25 and not Pulse_Pet then
+		Pulse_Pet = true
+	elseif Pulse_Pet and (hpp > 25 or not pet) then
+		player_stats_pet_bar_pulse:bg_alpha(0)
+		Pulse_Pet = false
+	end
+	player_stats_pet_bar_pulse:bg_color(cm_r,cm_g,cm_b)
+
+	--Format the text output
 	hpp = ' '..string.format("%3s", hpp)..'% '
 	local text = (pet and '\\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
+	player_stats_pet_bar_meter:bg_color(cm_r,cm_g,cm_b)
+	player_stats_pet_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+	player_stats_pet_bar_drain_meter:bg_color(cm_r,cm_g,cm_b)
+	player_stats_pet_text:text(Fade and text:text_strip_format() or text)
+	player_stats_pet_text_shadow:text(Fade and text_shdw:text_strip_format() or text_shdw)
 
-	bars_meter_pet:text(pet_meter)
-	bars_text_shdw_pet:text(Fade and text_shdw:text_strip_format() or text_shdw)
-	bars_text_pet:text(Fade and text:text_strip_format() or text)
-	bars_meter_pet:bg_color(cm_r,cm_g,cm_b)
+end
+
+function updatePartyActions()
+
+	local show_party_1 = party_1_actions.show
+	local show_party_2 = party_2_actions.show
+	local show_party_3 = party_3_actions.show
+
+	if not show_party_1 and not show_party_2 and not show_party_3 then return end
+
+	local function formatPartyAction(str)
+		local raw = str:text_strip_format()
+
+		--Remove everything from the tageting icon onward leaving just the action
+		local arrow_pos = raw:find(' '..targeting_icon..' ')
+		local display_str = arrow_pos and raw:sub(1, arrow_pos - 1) or raw
+
+		return display_str
+	end	
+
+	--Party 1
+	if show_party_1 then
+
+		if party_1_actions.show_self then
+			local p0 = get_mob_by_target('p0')
+			local p0_action = Screen_Test and "Party 1: Player 0" or (p0 and current_actions[p0.id] and current_actions[p0.id].action or '')
+			local text_p0_action = formatPartyAction(p0_action)
+			party_actions_pt1_p0_text:text(text_p0_action)
+		end
+
+		local p1 = get_mob_by_target('p1')
+		local p1_action = Screen_Test and "Party 1: Player 1" or (p1 and current_actions[p1.id] and current_actions[p1.id].action or '')
+		local text_p1_action = formatPartyAction(p1_action)
+		party_actions_pt1_p1_text:text(text_p1_action)
+
+		local p2 = get_mob_by_target('p2')
+		local p2_action = Screen_Test and "Party 1: Player 2" or (p2 and current_actions[p2.id] and current_actions[p2.id].action or '')
+		local text_p2_action = formatPartyAction(p2_action)
+		party_actions_pt1_p2_text:text(text_p2_action)
+
+		local p3 = get_mob_by_target('p3')
+		local p3_action = Screen_Test and "Party 1: Player 3" or (p3 and current_actions[p3.id] and current_actions[p3.id].action or '')
+		local text_p3_action = formatPartyAction(p3_action)
+		party_actions_pt1_p3_text:text(text_p3_action)
+
+		local p4 = get_mob_by_target('p4')
+		local p4_action = Screen_Test and "Party 1: Player 4" or (p4 and current_actions[p4.id] and current_actions[p4.id].action or '')
+		local text_p4_action = formatPartyAction(p4_action)
+		party_actions_pt1_p4_text:text(text_p4_action)
+
+		local p5 = get_mob_by_target('p5')
+		local p5_action = Screen_Test and "Party 1: Player 5" or (p5 and current_actions[p5.id] and current_actions[p5.id].action or '')
+		local text_p5_action = formatPartyAction(p5_action)
+		party_actions_pt1_p5_text:text(text_p5_action)
+	end
+
+	--Party 2
+	if show_party_2 then
+
+		local a10 = get_mob_by_target('a10')
+		local a10_action = Screen_Test and "Party 2: Player 0" or (a10 and current_actions[a10.id] and current_actions[a10.id].action or '')
+		local text_a10_action = formatPartyAction(a10_action)
+		party_actions_pt2_p0_text:text(text_a10_action)
+
+		local a11 = get_mob_by_target('a11')
+		local a11_action = Screen_Test and "Party 2: Player 1" or (a11 and current_actions[a11.id] and current_actions[a11.id].action or '')
+		local text_a11_action = formatPartyAction(a11_action)
+		party_actions_pt2_p1_text:text(text_a11_action)
+
+		local a12 = get_mob_by_target('a12')
+		local a12_action = Screen_Test and "Party 2: Player 2" or (a12 and current_actions[a12.id] and current_actions[a12.id].action or '')
+		local text_a12_action = formatPartyAction(a12_action)
+		party_actions_pt2_p2_text:text(text_a12_action)
+
+		local a13 = get_mob_by_target('a13')
+		local a13_action = Screen_Test and "Party 2: Player 3" or (a13 and current_actions[a13.id] and current_actions[a13.id].action or '')
+		local text_a13_action = formatPartyAction(a13_action)
+		party_actions_pt2_p3_text:text(text_a13_action)
+
+		local a14 = get_mob_by_target('a14')
+		local a14_action = Screen_Test and "Party 2: Player 4" or (a14 and current_actions[a14.id] and current_actions[a14.id].action or '')
+		local text_a14_action = formatPartyAction(a14_action)
+		party_actions_pt2_p4_text:text(text_a14_action)
+
+		local a15 = get_mob_by_target('a15')
+		local a15_action = Screen_Test and "Party 2: Player 5" or (a15 and current_actions[a15.id] and current_actions[a15.id].action or '')
+		local text_a15_action = formatPartyAction(a15_action)
+		party_actions_pt2_p5_text:text(text_a15_action)
+	end
+
+	--Party 3
+	if show_party_3 then
+
+		local a20 = get_mob_by_target('a20')
+		local a20_action = Screen_Test and "Party 3: Player 0" or (a20 and current_actions[a20.id] and current_actions[a20.id].action or '')
+		local text_a20_action = formatPartyAction(a20_action)
+		party_actions_pt3_p0_text:text(text_a20_action)
+
+		local a21 = get_mob_by_target('a21')
+		local a21_action = Screen_Test and "Party 3: Player 1" or (a21 and current_actions[a21.id] and current_actions[a21.id].action or '')
+		local text_a21_action = formatPartyAction(a21_action)
+		party_actions_pt3_p1_text:text(text_a21_action)
+
+		local a22 = get_mob_by_target('a22')
+		local a22_action = Screen_Test and "Party 3: Player 2" or (a22 and current_actions[a22.id] and current_actions[a22.id].action or '')
+		local text_a22_action = formatPartyAction(a22_action)
+		party_actions_pt3_p2_text:text(text_a22_action)
+
+		local a23 = get_mob_by_target('a23')
+		local a23_action = Screen_Test and "Party 3: Player 3" or (a23 and current_actions[a23.id] and current_actions[a23.id].action or '')
+		local text_a23_action = formatPartyAction(a23_action)
+		party_actions_pt3_p3_text:text(text_a23_action)
+
+		local a24 = get_mob_by_target('a24')
+		local a24_action = Screen_Test and "Party 3: Player 4" or (a24 and current_actions[a24.id] and current_actions[a24.id].action or '')
+		local text_a24_action = formatPartyAction(a24_action)
+		party_actions_pt3_p4_text:text(text_a24_action)
+
+		local a25 = get_mob_by_target('a25')
+		local a25_action = Screen_Test and "Party 3: Player 5" or (a25 and current_actions[a25.id] and current_actions[a25.id].action or '')
+		local text_a25_action = formatPartyAction(a25_action)
+		party_actions_pt3_p5_text:text(text_a25_action)
+	end
 
 end
 
@@ -2786,7 +3928,7 @@ function listAutoFocusTargets()
 	add_to_chat(8,('[Bars] '):color(220)..('Auto Focus Targets: '):color(8))
 
 	--Copy targets and sort them alphabetically
-	for target in pairs(auto_focus_target_list) do
+	for target in pairs(auto_focus_targets_data) do
 		table.insert(sortedTargets, target)
 	end
 	table.sort(sortedTargets)
@@ -2798,7 +3940,7 @@ function listAutoFocusTargets()
 
 	--Add sorted targets to chat
 	for _, target in ipairs(sortedTargets) do
-		add_to_chat(8,' - '..(convertToDisplay(target)):color(1))
+		add_to_chat(8,' - '..(target):color(1))
 	end
 
 end
@@ -2817,18 +3959,18 @@ function checkForFocusTarget()
 		local nearby_mob_by_name = get_mob_by_name(v.name)
 
 		--Does an id nearby match an entry in our auto focus target list?
-		if nearby_mob_by_id and auto_focus_target_list[convertToSave(v.id)] 
+		if nearby_mob_by_id and auto_focus_targets_data[v.id] 
 		and v.valid_target and distance <= tonumber(focus_target_max_distance) 
-		and not (hide_focus_target_when_target and target and target.id == nearby_mob_by_id.id) 
+		and (show_focus_target_when_targeted or not (target and target.id == nearby_mob_by_id.id)) 
 		--Fix bug where when a target on the list first enters memory, it has a distance of 0 for a split second, making it show up on the Focus Target Bar for a frame before it actually enters the focus_target_max_distance range. This will ofc make it disappear if you manage to stand exactly on top of it, but gl doing that.
 		and not (tonumber(focus_target_max_distance) < 50 and distance == 0) then
 
 			nearby = nearby_mob_by_id
 
 		--Does a name nearby match an entry in our auto focus target list?
-		elseif nearby_mob_by_name and auto_focus_target_list[convertToSave(v.name)] 
+		elseif nearby_mob_by_name and auto_focus_targets_data[v.name] 
 		and v.valid_target and distance <= tonumber(focus_target_max_distance) 
-		and not (hide_focus_target_when_target and target and target.id == nearby_mob_by_name.id) 
+		and (show_focus_target_when_targeted or not (target and target.id == nearby_mob_by_name.id)) 
 		and not (tonumber(focus_target_max_distance) < 50 and distance == 0) then
 
 			nearby = nearby_mob_by_name
@@ -2837,7 +3979,7 @@ function checkForFocusTarget()
 
 	end
 
-	--Update focus_target if its new, will remove/nil if nothing in the auto_focus_target_list
+	--Update focus_target if its new, will remove/nil if nothing in the auto_focus_targets_data
 	if focus_target ~= nearby then
 		focus_target = nearby
 	end
@@ -2862,8 +4004,8 @@ function checkForFocusTargetOverride()
 	end
 
 	--Update their data if they are still nearby
-	if nearby or screen_test then
-		focus_target_override = screen_test and screen_test_focus_target or get_mob_by_id(focus_target_override.id)
+	if nearby or Screen_Test then
+		focus_target_override = Screen_Test and screen_test_focus_target or get_mob_by_id(focus_target_override.id)
 	--Remove the Focus Target Override if they are no longer nearby
 	else
 		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
@@ -2874,123 +4016,197 @@ end
 
 --Fade the text (alpha)
 function setTextFade(num)
-	bars_marker_hp:alpha(num)
-	bars_marker_tp:alpha(num)
-	bars_text_shdw_focus_target:alpha(num)
-	bars_text_shdw_focus_target_action:alpha(num)
-	bars_text_shdw_sub_target:alpha(num)
-	bars_text_shdw_sub_target_action:alpha(num)
-	bars_text_shdw_target:alpha(num)
-	bars_text_shdw_target_action:alpha(num)
-	bars_text_shdw_self_action:alpha(num)
-	bars_text_shdw_hp:alpha(num)
-	bars_text_shdw_mp:alpha(num)
-	bars_text_shdw_tp:alpha(num)
-	bars_text_shdw_pet:alpha(num)
-	bars_text_focus_target:alpha(num)
-	bars_text_focus_target_action:alpha(num)
-	bars_text_sub_target:alpha(num)
-	bars_text_sub_target_action:alpha(num)
-	bars_text_target:alpha(num)
-	bars_text_target_action:alpha(num)
-	bars_text_self_action:alpha(num)
-	bars_text_hp:alpha(num)
-	bars_text_mp:alpha(num)
-	bars_text_tp:alpha(num)
-	bars_text_pet:alpha(num)
+
+	focus_target_text:alpha(num)
+	focus_target_text:stroke_alpha(num)
+	focus_target_text_shadow:alpha(num)
+	focus_target_action_text:alpha(num)
+	focus_target_action_text:stroke_alpha(num)
+	focus_target_action_text_shadow:alpha(num)
+
+	sub_target_text:alpha(num)
+	sub_target_text:stroke_alpha(num)
+	sub_target_text_shadow:alpha(num)
+	sub_target_action_text:alpha(num)
+	sub_target_action_text:stroke_alpha(num)
+	sub_target_action_text_shadow:alpha(num)
+
+	target_bar_lock_left:alpha(num)
+	target_bar_lock_right:alpha(num)
+	target_text:alpha(num)
+	target_text:stroke_alpha(num)
+	target_text_shadow:alpha(num)
+	target_action_text:alpha(num)
+	target_action_text:stroke_alpha(num)
+	target_action_text_shadow:alpha(num)
+
+	player_stats_hp_text:alpha(num)
+	player_stats_hp_text:stroke_alpha(num)
+	player_stats_hp_text_shadow:alpha(num)
+	player_stats_hp_marker:alpha(num)
+
+	player_stats_mp_text:alpha(num)
+	player_stats_mp_text:stroke_alpha(num)
+	player_stats_mp_text_shadow:alpha(num)
+
+	player_stats_tp_text:alpha(num)
+	player_stats_tp_text:stroke_alpha(num)
+	player_stats_tp_text_shadow:alpha(num)
+	player_stats_tp_marker:alpha(num)
+
+	player_stats_pet_text:alpha(num)
+	player_stats_pet_text:stroke_alpha(num)
+	player_stats_pet_text_shadow:alpha(num)
+
+	self_action_text:alpha(num)
+	self_action_text:stroke_alpha(num)
+	self_action_text_shadow:alpha(num)
+
 end
 
 --Fade the bars (bg_alpha)
 function setBarFade(num)
-	bars_bg_focus_target:bg_alpha(num)
-	bars_bg_sub_target:bg_alpha(num)
-	bars_bg_target:bg_alpha(num)
-	bars_bg_self_action:bg_alpha(num)
-	bars_bg_hp:bg_alpha(num)
-	bars_bg_mp:bg_alpha(num)
-	bars_bg_tp:bg_alpha(num)
-	bars_bg_pet:bg_alpha(num)
-	bars_meter_focus_target:bg_alpha(num)
-	bars_meter_sub_target:bg_alpha(num)
-	bars_meter_target:bg_alpha(num)
-	bars_meter_self_action:bg_alpha(num)
-	if get_player() and get_player().vitals.hp ~= 0 then
-		bars_meter_hp:bg_alpha(num)
+
+	local player = get_player()
+	local pet = get_mob_by_target('pet')
+
+	focus_target_bar_meter:bg_alpha(num)
+	focus_target_bar_drain_meter:bg_alpha(0)
+	focus_target_bar_bg:bg_alpha(num)
+
+	sub_target_bar_meter:bg_alpha(num)
+	sub_target_bar_drain_meter:bg_alpha(0)
+	sub_target_bar_bg:bg_alpha(num)
+
+	target_bar_meter:bg_alpha(num)
+	target_bar_drain_meter:bg_alpha(0)
+	target_bar_bg:bg_alpha(num)
+	target_bar_lock_underline:bg_alpha(num)
+
+	self_action_bar_meter:bg_alpha(num)
+	self_action_bar_bg:bg_alpha(num)
+
+	if player and player.vitals.hp > 0 then
+		player_stats_hp_bar_meter:bg_alpha(num)
+		player_stats_hp_bar_drain_meter:bg_alpha(0)
 	end
-	if get_player() and get_player().vitals.mp ~= 0 then
-		bars_meter_mp:bg_alpha(num)
+	player_stats_hp_bar_bg:bg_alpha(num)
+
+	if player and player.vitals.mp > 0 then
+		player_stats_mp_bar_meter:bg_alpha(num)
+		player_stats_mp_bar_drain_meter:bg_alpha(0)
 	end
-	if get_player() and get_player().vitals.tp ~= 0 then
-		bars_meter_tp:bg_alpha(num)
+	player_stats_mp_bar_bg:bg_alpha(num)
+
+	if player and player.vitals.tp > 0 then
+		player_stats_tp_bar_meter:bg_alpha(num)
+		player_stats_tp_bar_drain_meter:bg_alpha(0)
 	end
-	if get_mob_by_target('pet') and get_mob_by_target('pet').hpp ~= 0 then
-		bars_meter_pet:bg_alpha(num)
+	player_stats_tp_bar_bg:bg_alpha(num)
+
+	if pet and pet.hpp > 0 then
+		player_stats_pet_bar_meter:bg_alpha(num)
+		player_stats_pet_bar_drain_meter:bg_alpha(0)
 	end
+	player_stats_pet_bar_bg:bg_alpha(num)
+
 end
 
 --Reset the bars alpha/bg_alpha to normal
 function unFade()
-	text_fade_num = settings.text.alpha
-	bars_marker_hp:alpha(text_alpha)
-	bars_marker_tp:alpha(text_alpha)
-	bars_text_shdw_focus_target:alpha(text_alpha)
-	bars_text_shdw_focus_target_action:alpha(text_alpha)
-	bars_text_shdw_sub_target:alpha(text_alpha)
-	bars_text_shdw_sub_target_action:alpha(text_alpha)
-	bars_text_shdw_target:alpha(text_alpha)
-	bars_text_shdw_target_action:alpha(text_alpha)
-	bars_text_shdw_self_action:alpha(text_alpha)
-	bars_text_shdw_hp:alpha(text_alpha)
-	bars_text_shdw_mp:alpha(text_alpha)
-	bars_text_shdw_tp:alpha(text_alpha)
-	bars_text_shdw_pet:alpha(text_alpha)
-	bars_text_focus_target:alpha(text_alpha)
-	bars_text_focus_target_action:alpha(text_alpha)
-	bars_text_sub_target:alpha(text_alpha)
-	bars_text_sub_target_action:alpha(text_alpha)
-	bars_text_target:alpha(text_alpha)
-	bars_text_target_action:alpha(text_alpha)
-	bars_text_self_action:alpha(text_alpha)
-	bars_text_hp:alpha(text_alpha)
-	bars_text_mp:alpha(text_alpha)
-	bars_text_tp:alpha(text_alpha)
-	bars_text_pet:alpha(text_alpha)
-	bg_fade_num = settings.bg.alpha
-	bars_bg_focus_target:bg_alpha(bg_alpha)
-	bars_bg_sub_target:bg_alpha(bg_alpha)
-	bars_bg_target:bg_alpha(bg_alpha)
-	bars_bg_self_action:bg_alpha(bg_alpha)
-	bars_bg_hp:bg_alpha(bg_alpha)
-	bars_bg_mp:bg_alpha(bg_alpha)
-	bars_bg_tp:bg_alpha(bg_alpha)
-	bars_bg_pet:bg_alpha(bg_alpha)
-	bars_meter_focus_target:bg_alpha(bg_alpha)
-	bars_meter_sub_target:bg_alpha(bg_alpha)
-	bars_meter_target:bg_alpha(bg_alpha)
-	bars_meter_self_action:bg_alpha(bg_alpha)
-	if get_player() and get_player().vitals.hp ~= 0 then
-		bars_meter_hp:bg_alpha(bg_alpha)
+
+	local player = get_player()
+	local pet = get_mob_by_target('pet')
+
+	focus_target_bar_meter:bg_alpha(bg_alpha)
+	focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+	focus_target_bar_bg:bg_alpha(bg_alpha)
+	focus_target_text:alpha(text_alpha)
+	focus_target_text:stroke_alpha(text_alpha)
+	focus_target_text_shadow:alpha(text_alpha)
+	focus_target_action_text:alpha(text_alpha)
+	focus_target_action_text:stroke_alpha(text_alpha)
+	focus_target_action_text_shadow:alpha(text_alpha)
+
+	sub_target_bar_meter:bg_alpha(bg_alpha)
+	sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+	sub_target_bar_bg:bg_alpha(bg_alpha)
+	sub_target_text:alpha(text_alpha)
+	sub_target_text:stroke_alpha(text_alpha)
+	sub_target_text_shadow:alpha(text_alpha)
+	sub_target_action_text:alpha(text_alpha)
+	sub_target_action_text:stroke_alpha(text_alpha)
+	sub_target_action_text_shadow:alpha(text_alpha)
+
+	target_bar_meter:bg_alpha(bg_alpha)
+	target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+	target_bar_bg:bg_alpha(bg_alpha)
+	target_bar_lock_left:alpha(text_alpha)
+	target_bar_lock_right:alpha(text_alpha)
+	target_bar_lock_underline:bg_alpha(bg_alpha)
+	target_text:alpha(text_alpha)
+	target_text:stroke_alpha(text_alpha)
+	target_text_shadow:alpha(text_alpha)
+	target_action_text:alpha(text_alpha)
+	target_action_text:stroke_alpha(text_alpha)
+	target_action_text_shadow:alpha(text_alpha)
+
+	if player and player.vitals.hp > 0 then
+		player_stats_hp_bar_meter:bg_alpha(bg_alpha)
+		player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
-	if get_player() and get_player().vitals.mp ~= 0 then
-		bars_meter_mp:bg_alpha(bg_alpha)
+	player_stats_hp_bar_meter:bg_color(color.hp.bar.r,color.hp.bar.g,color.hp.bar.b)
+	player_stats_hp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_hp_marker:alpha(text_alpha)
+	player_stats_hp_text:alpha(text_alpha)
+	player_stats_hp_text:stroke_alpha(text_alpha)
+	player_stats_hp_text_shadow:alpha(text_alpha)
+
+	if player and player.vitals.mp > 0 then
+		player_stats_mp_bar_meter:bg_alpha(bg_alpha)
+		player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
-	if get_player() and get_player().vitals.tp ~= 0 then
-		bars_meter_tp:bg_alpha(bg_alpha)
+	player_stats_mp_bar_meter:bg_color(color.mp.bar.r,color.mp.bar.g,color.mp.bar.b)
+	player_stats_mp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_mp_text:alpha(text_alpha)
+	player_stats_mp_text:stroke_alpha(text_alpha)
+	player_stats_mp_text_shadow:alpha(text_alpha)
+
+	if player and player.vitals.tp > 0 then
+		player_stats_tp_bar_meter:bg_alpha(bg_alpha)
+		player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
-	if get_mob_by_target('pet') and get_mob_by_target('pet').hpp ~= 0 then
-		bars_meter_pet:bg_alpha(bg_alpha)
+	player_stats_tp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_tp_marker:alpha(text_alpha)
+	player_stats_tp_text:alpha(text_alpha)
+	player_stats_tp_text:stroke_alpha(text_alpha)
+	player_stats_tp_text_shadow:alpha(text_alpha)
+
+	if pet and pet.hpp > 0 then
+		player_stats_pet_bar_meter:bg_alpha(bg_alpha)
+		player_stats_pet_bar_meter:bg_alpha(drain_bg_alpha)
 	end
-	bars_meter_hp:bg_color(color.hp.bar.r,color.hp.bar.g,color.hp.bar.b)
-	bars_meter_mp:bg_color(color.mp.bar.r,color.mp.bar.g,color.mp.bar.b)
-	updateTPBar() --the other Player Stat bars are always the same color, this one needs to be figured out based on current TP
-	bars_meter_pet:bg_color(color.pet.bar.r,color.pet.bar.g,color.pet.bar.b)
+	player_stats_pet_bar_meter:bg_color(color.pet.bar.r,color.pet.bar.g,color.pet.bar.b)
+	player_stats_pet_bar_bg:bg_alpha(bg_alpha)
+	player_stats_pet_text:alpha(text_alpha)
+	player_stats_pet_text:stroke_alpha(text_alpha)
+	player_stats_pet_text_shadow:alpha(text_alpha)
+
+	self_action_bar_meter:bg_alpha(bg_alpha)
+	self_action_bar_bg:bg_alpha(bg_alpha)
+	self_action_text:alpha(text_alpha)
+	self_action_text:stroke_alpha(text_alpha)
+	self_action_text_shadow:alpha(text_alpha)
+
 end
 
 --Reset the fade delay timer
 function resetFadeDelay()
-	fade_delay = settings.options.fade_delay
+	fade_delay = settings.options.animations.fade_delay
 	if Fade then
 		Fade = false
+		fade_bg_num = settings.bg.alpha
+		fade_text_num = settings.text.alpha
 		unFade()
 	end
 end
@@ -3008,11 +4224,25 @@ end
 --Show the Target, Sub Target, and Focus Target bars to test the screen layout
 function screenTest()
 
-	screen_test = true
-	resetFadeDelay()
+	--If already active, cancel test
+	if Screen_Test then
 
-	--Setup the self action bar
+		Screen_Test = false
+		focus_target_override = nil
+		updateTarget()
+		removeFromActionsTable(get_player().id, screen_test_tracking_index)
+		resetFadeDelay()
+
+		return
+	end
+
+	--Activate test mode
+	Screen_Test = true
+
+	--Setup the Self Action bar
 	local trackingIndex = assignIndex()
+	screen_test_tracking_index = trackingIndex  --Save so we can remove it later
+
 	local c = text_color
 	local c_r = formatRGB(c.r)
 	local c_g = formatRGB(c.g)
@@ -3021,36 +4251,24 @@ function screenTest()
 	local ct_r = formatRGB(ct.r)
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
-	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Screen Test →\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
-	local target_action_shdw = ' \\cs(000,000,000)Screen Test →\\cr \\cs(000,000,000)'..get_player().name..'\\cr'
-	local target_action_status = '\\cs(245,164,066)≈\\cr'
-	local target_action_status_shdw = '\\cs(000,000,000)≈\\cr'
+
+	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Screen Test '..targeting_icon..'\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
+	local target_action_shdw = ' \\cs(000,000,000)Screen Test '..targeting_icon..'\\cr \\cs(000,000,000)'..get_player().name..'\\cr'
+	local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
+	local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
 	local target_action_result = ''
 	local target_action_result_shdw = ''
-	addToActionsTable(get_player().id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
-	bars_meter_self_action:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
 
-	--Setup the focus target bar
+	addToActionsTable(get_player().id, target_action, target_action_shdw, target_action_status, target_action_status_shdw, target_action_result, target_action_result_shdw, trackingIndex)
+
+	self_action_bar_meter:bg_color(color.self.bar.r, color.self.bar.g, color.self.bar.b)
+
+	--Setup the Focus Target bar (if not already overridden)
 	if not (focus_target_override or focus_target) then
-
 		focus_target_override = screen_test_focus_target
-
-		--Wait 5 seconds then remove the focus target override
-		coroutine.schedule(function()
-			focus_target_override = nil
-		end, 5)
-
 	end
 
-	--Wait 5 seconds then remove the target and sub target bars
-	coroutine.schedule(function()
-		screen_test = false
-		updateTarget()
-		removeFromActionsTable(get_player().id,trackingIndex)
-	end, 5)
-
-	--Use the self action bar to show the screen test timer (timing adjust slightly lower to make sure the meter shows reaching the end, just looks better)
-	updateSelfBar(4.5,trackingIndex)
+	self_action_bar_bg:show()
 
 end
 
@@ -3058,7 +4276,7 @@ end
 register_event('job change', function()
 	hideBars()
 	setJob()
-	setPosition()
+	setPositions()
 	showBars()
 	resetFadeDelay()
 end)
@@ -3074,41 +4292,31 @@ end)
 
 --HP Changing
 register_event('hp change', function(new_hp,old_hp)
-	updateHPBar()
 	if new_hp < old_hp then
 		resetFadeDelay()
 	end
 end)
-register_event('hpp change', function()
-	updateHPBar()
-end)
-register_event('hpmax change', function()
-	updateHPBar()
-end)
 
---MP Changing
-register_event('mp change', function()
-	updateMPBar()
-end)
-register_event('mpp change', function()
-	updateMPBar()
-end)
-register_event('mpmax change', function()
-	updateMPBar()
-end)
+--Greet the player on the first run of the addon
+function greeting()
 
---TP Changing
-register_event('tp change', function()
-	updateTPBar()
-end)
+	if settings.first_run then
+		add_to_chat(8,('[Bars] '):color(220)..('Welcome to Bars '.._addon.version.."!"):color(36))
+		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars ui '):color(1)..('to unlock and drag the UI sections around.'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars help '):color(1)..('for a list of other commands.'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('More detailed settings can be found in the '):color(8)..('Bars/data/settings.xml '):color(1)..('file.'):color(8))
+		settings.first_run = false
+		settings:save('all')
+	end
+
+end
 
 --Run necessarry functions at start
 function initialize()
+	greeting()
 	setJob()
+	setPositions()
 	setWidth()
-	setBold()
-	setSize()
-	setPosition()
 	showBars()
 	updateTarget()
 	updateSubTarget()
@@ -3120,6 +4328,7 @@ function initialize()
 		updateHPBar()
 		updateMPBar()
 		updateTPBar()
+		setTargetLockPositions()
 	end, 2)
 end
 
@@ -3138,6 +4347,7 @@ end)
 
 --Logout
 register_event('logout', function()
+	hideBars()
 	resetFadeDelay()
 end)
 
@@ -3161,32 +4371,47 @@ register_event('prerender', function()
 
 	local logged_in = get_info().logged_in
 
-	if logged_in then
+	if not logged_in then return end
 
-		updatePartyActions()
-		updateSelfAction()
+	local player = get_player()
 
+	updatePartyActions()
+	updateSelfAction()
+	updateHPBar()
+	updateMPBar()
+	updateTPBar()
+	if job and job_specific[job].pet then
+		updatePetBar()
 	end
 
 	local target = get_mob_by_target('t')
 	local sub_target = get_mob_by_target('st')
 	if condense_target_and_subtarget_bars then
-		if target or sub_target or screen_test then
+		if target or sub_target or Screen_Test then
 			updateTarget()
+		elseif target_bar_lock_left:visible() and not calculating_dimensions then
+			target_bar_lock_left:hide()
+			target_bar_lock_right:hide()
+			target_bar_lock_underline:hide()
 		end
 	else
-		if target or screen_test then
+		if target or Screen_Test then
 			updateTarget()
+		elseif target_bar_lock_left:visible() and not calculating_dimensions then
+			target_bar_lock_left:hide()
+			target_bar_lock_right:hide()
+			target_bar_lock_underline:hide()
 		end
-		if sub_target or screen_test then
+		if sub_target or Screen_Test then
 			updateSubTarget()
 		else
-			bars_bg_sub_target:hide()
-			bars_meter_sub_target:hide()
-			bars_text_shdw_sub_target:hide()
-			bars_text_shdw_sub_target_action:hide()
-			bars_text_sub_target:hide()
-			bars_text_sub_target_action:hide()
+			sub_target_bar_bg:hide()
+			sub_target_bar_meter:hide()
+			sub_target_bar_drain_meter:hide()
+			sub_target_text_shadow:hide()
+			sub_target_action_text_shadow:hide()
+			sub_target_text:hide()
+			sub_target_action_text:hide()
 		end
 	end
 
@@ -3197,70 +4422,219 @@ register_event('prerender', function()
 	end
 	updateFocusTarget()
 
-	if logged_in and show_bars[job].pet then
-		updatePetBar()
-	end
-
 	if os.time() > Heartbeat then
+
+		Heartbeat = os.time()
 
 		--Countdown for active SP Abilities
 		decrementSPTimers()
 
 		--Fade timer
-		if fade_after_delay and logged_in then
-			Heartbeat = os.time()
-			local status = get_player() and get_player().status
-			local in_combat = get_player() and get_player().in_combat
-			local player = get_player()
+		if fade_after_a_delay and player.vitals.hp ~= 0 and not Screen_Test then
+
+			local status = player and player.status
+			local in_combat = player and player.in_combat
 			local target = get_mob_by_target('st','t')
 			local has_target = target and target.id ~= player.id and true or false
+
 			if fade_delay > 0 and status ~= 1 and not (in_combat or has_target) then
+
 				fade_delay = fade_delay -1
+
 			elseif fade_delay == 0 then
+
 				Fade = true
 				fade_delay = -1
-				--Update so the color stripping happens before the fade
-				updateFocusTarget()
-				updateTarget()
-				updateSubTarget()
-				updateSelfAction()
-				updateHPBar()
-				updateMPBar()
-				updateTPBar()
-				updatePetBar()
+
+				--Turn Pulse off
+				Pulse_TP = false
+				player_stats_hp_bar_pulse:bg_alpha(0)
+				player_stats_mp_bar_pulse:bg_alpha(0)
+				player_stats_tp_bar_pulse:bg_alpha(0)
+				player_stats_pet_bar_pulse:bg_alpha(0)
+
 			end
 		end
 
+		local party_info = get_party_info()
+		
 		--Adjust Party Action positioning if the party/alliance changes
-		if show_party_actions and logged_in then
-			local party_info = get_party_info()
-			if num_party1_members ~= party_info.party1_count
-			or num_party2_members ~= party_info.party2_count
-			or num_party3_members ~= party_info.party3_count then
-				num_party1_members = party_info.party1_count
-				num_party2_members = party_info.party2_count
-				num_party3_members = party_info.party3_count
-				updatePartyActionsPos(num_party1_members,num_party2_members,num_party3_members)
-			end
+		if num_party1_members ~= party_info.party1_count
+		or num_party2_members ~= party_info.party2_count
+		or num_party3_members ~= party_info.party3_count then
+
+			num_party1_members = party_info.party1_count
+			num_party2_members = party_info.party2_count
+			num_party3_members = party_info.party3_count
+			updatePartyActionsPos(num_party1_members,num_party2_members,num_party3_members)
+
 		end
 
 	end
 
-	--Fade away
-	if Fade then
-		if bg_fade_num > fade_to_alpha then
-			bg_fade_num = bg_fade_num - fade_multiplier
-			setBarFade(bg_fade_num)
-		elseif bg_fade_num <= fade_to_alpha then
-			bg_fade_num = fade_to_alpha
-			setBarFade(bg_fade_num)
+	--Pulse the HP bar (but not when the bar is fading/faded)
+	if Pulse_HP and not (Fade or Screen_Test) then
+		if pulse_hp_direction_up and pulse_hp_alpha_num < pulse_brightness then
+			pulse_hp_alpha_num = pulse_hp_alpha_num + pulse_speed
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+		elseif pulse_hp_direction_up and pulse_hp_alpha_num >= pulse_brightness then
+			pulse_hp_alpha_num = pulse_brightness
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+			pulse_hp_direction_up = false
+		elseif not pulse_hp_direction_up and pulse_hp_alpha_num > 10 then
+			pulse_hp_alpha_num = pulse_hp_alpha_num - pulse_speed
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+		elseif not pulse_hp_direction_up and pulse_hp_alpha_num <= 10 then
+			pulse_hp_alpha_num = 10
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+			pulse_hp_direction_up = true
 		end
-		if text_fade_num > (fade_to_alpha + fade_multiplier) then
-			text_fade_num = text_fade_num - fade_multiplier
-			setTextFade(text_fade_num)
-		elseif text_fade_num <= fade_to_alpha then
-			text_fade_num = fade_to_alpha
-			setTextFade(text_fade_num)
+	end
+
+	--Pulse the MP bar (but not when the bar is fading/faded)
+	if Pulse_MP and not (Fade or Screen_Test) then
+		if pulse_mp_direction_up and pulse_mp_alpha_num < pulse_brightness then
+			pulse_mp_alpha_num = pulse_mp_alpha_num + pulse_speed
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+		elseif pulse_mp_direction_up and pulse_mp_alpha_num >= pulse_brightness then
+			pulse_mp_alpha_num = pulse_brightness
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+			pulse_mp_direction_up = false
+		elseif not pulse_mp_direction_up and pulse_mp_alpha_num > 10 then
+			pulse_mp_alpha_num = pulse_mp_alpha_num - pulse_speed
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+		elseif not pulse_mp_direction_up and pulse_mp_alpha_num <= 10 then
+			pulse_mp_alpha_num = 10
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+			pulse_mp_direction_up = true
+		end
+	end
+
+	--Pulse the TP bar (but not when the bar is fading/faded)
+	if Pulse_TP and not (Fade or Screen_Test) then
+		if pulse_tp_direction_up and pulse_tp_alpha_num < pulse_brightness then
+			pulse_tp_alpha_num = pulse_tp_alpha_num + pulse_speed
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+		elseif pulse_tp_direction_up and pulse_tp_alpha_num >= pulse_brightness then
+			pulse_tp_alpha_num = pulse_brightness
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+			pulse_tp_direction_up = false
+		elseif not pulse_tp_direction_up and pulse_tp_alpha_num > 10 then
+			pulse_tp_alpha_num = pulse_tp_alpha_num - pulse_speed
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+		elseif not pulse_tp_direction_up and pulse_tp_alpha_num <= 10 then
+			pulse_tp_alpha_num = 10
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+			pulse_tp_direction_up = true
+		end
+	end
+
+	--Pulse the Pet bar (but not when the bar is fading/faded)
+	if Pulse_Pet and not (Fade or Screen_Test) then
+		if pulse_pet_direction_up and pulse_pet_alpha_num < pulse_brightness then
+			pulse_pet_alpha_num = pulse_pet_alpha_num + pulse_speed
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+		elseif pulse_pet_direction_up and pulse_pet_alpha_num >= pulse_brightness then
+			pulse_pet_alpha_num = pulse_brightness
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+			pulse_pet_direction_up = false
+		elseif not pulse_pet_direction_up and pulse_pet_alpha_num > 10 then
+			pulse_pet_alpha_num = pulse_pet_alpha_num - pulse_speed
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+		elseif not pulse_pet_direction_up and pulse_pet_alpha_num <= 10 then
+			pulse_pet_alpha_num = 10
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+			pulse_pet_direction_up = true
+		end
+	end
+
+	--Pulse the Focus Target bar (but not when the bar is fading/faded)
+	if Pulse_Focus_Target_Bar and focus_target_bar_bg:visible() and not (Fade or Screen_Test) then
+		if pulse_focus_target_direction_up and pulse_focus_target_alpha_num < pulse_brightness then
+			pulse_focus_target_alpha_num = pulse_focus_target_alpha_num + pulse_speed
+		elseif pulse_focus_target_direction_up and pulse_focus_target_alpha_num >= pulse_brightness then
+			pulse_focus_target_alpha_num = pulse_brightness
+			pulse_focus_target_direction_up = false
+		elseif not pulse_focus_target_direction_up and pulse_focus_target_alpha_num > 10 then
+			pulse_focus_target_alpha_num = pulse_focus_target_alpha_num - pulse_speed
+		elseif not pulse_focus_target_direction_up and pulse_focus_target_alpha_num <= 10 then
+			pulse_focus_target_alpha_num = 10
+			pulse_focus_target_direction_up = true
+		end
+		if Pulse_Focus_Target_Bar then
+			focus_target_bar_pulse:bg_alpha(pulse_focus_target_alpha_num)
+		end
+		if Pulse_Focus_Target_Name then
+			focus_target_text:stroke_alpha(pulse_focus_target_alpha_num)
+		end
+	else
+		focus_target_bar_pulse:hide()
+		focus_target_bar_pulse:bg_alpha(0)
+	end
+
+	--Pulse the Sub Target bar (but not when the bar is fading/faded)
+	if (Pulse_Sub_Target_Bar or Pulse_Sub_Target_Name) and sub_target_bar_bg:visible() and not (Fade or Screen_Test) then
+		if pulse_sub_target_direction_up and pulse_sub_target_alpha_num < pulse_brightness then
+			pulse_sub_target_alpha_num = pulse_sub_target_alpha_num + pulse_speed
+		elseif pulse_sub_target_direction_up and pulse_sub_target_alpha_num >= pulse_brightness then
+			pulse_sub_target_alpha_num = pulse_brightness
+			pulse_sub_target_direction_up = false
+		elseif not pulse_sub_target_direction_up and pulse_sub_target_alpha_num > 10 then
+			pulse_sub_target_alpha_num = pulse_sub_target_alpha_num - pulse_speed
+		elseif not pulse_sub_target_direction_up and pulse_sub_target_alpha_num <= 10 then
+			pulse_sub_target_alpha_num = 10
+			pulse_sub_target_direction_up = true
+		end
+		if Pulse_Sub_Target_Bar then
+			sub_target_bar_pulse:bg_alpha(pulse_sub_target_alpha_num)
+		end
+		if Pulse_Sub_Target_Name then
+			sub_target_text:stroke_alpha(pulse_sub_target_alpha_num)
+		end
+	else
+		sub_target_bar_pulse:hide()
+		sub_target_bar_pulse:bg_alpha(0)
+	end
+
+	--Pulse the Target bar (but not when the bar is fading/faded)
+	if (Pulse_Target_Bar or Pulse_Target_Name) and target_bar_bg:visible() and not (Fade or Screen_Test) then
+		if pulse_target_direction_up and pulse_target_alpha_num < pulse_brightness then
+			pulse_target_alpha_num = pulse_target_alpha_num + pulse_speed
+		elseif pulse_target_direction_up and pulse_target_alpha_num >= pulse_brightness then
+			pulse_target_alpha_num = pulse_brightness
+			pulse_target_direction_up = false
+		elseif not pulse_target_direction_up and pulse_target_alpha_num > 10 then
+			pulse_target_alpha_num = pulse_target_alpha_num - pulse_speed
+		elseif not pulse_target_direction_up and pulse_target_alpha_num <= 10 then
+			pulse_target_alpha_num = 10
+			pulse_target_direction_up = true
+		end
+		if Pulse_Target_Bar then
+			target_bar_pulse:bg_alpha(pulse_target_alpha_num)
+		end
+		if Pulse_Target_Name then
+			target_text:stroke_alpha(pulse_target_alpha_num)
+		end
+	else
+		target_bar_pulse:hide()
+		target_bar_pulse:bg_alpha(0)
+	end
+
+	--Fade away (but not if the Screen Test is active)
+	if Fade and not Screen_Test then
+		if fade_bg_num > fade_down_to_alpha then
+			fade_bg_num = fade_bg_num - fade_speed
+			setBarFade(fade_bg_num)
+		elseif fade_bg_num <= fade_down_to_alpha then
+			fade_bg_num = fade_down_to_alpha
+			setBarFade(fade_bg_num)
+		end
+		if fade_text_num > (fade_down_to_alpha + fade_speed) then
+			fade_text_num = fade_text_num - fade_speed
+			setTextFade(fade_text_num)
+		elseif fade_text_num <= fade_down_to_alpha then
+			fade_text_num = fade_down_to_alpha
+			setTextFade(fade_text_num)
 		end
 	end
 
@@ -3270,6 +4644,9 @@ register_event('prerender', function()
 		zoning = true
 		hideBars()
 		clearActionTables() --flush the action tables to keep them clean
+		if Screen_Test then
+			screenTest()
+		end
 	elseif pos ~= "(?-?)" and zoning then
 		zoning = false
 		showBars()
@@ -3291,8 +4668,8 @@ register_event('action', function (act)
 	local ct_r = formatRGB(ct.r)
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
-	local action_target_name = action_target_id and ' → \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncateName(action_target.name)..'\\cr' or ''
-	local action_target_name_shdw = action_target_id and ' → \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
+	local action_target_name = action_target_id and ' '..targeting_icon..' \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncateName(action_target.name)..'\\cr' or ''
+	local action_target_name_shdw = action_target_id and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
 	local target_action = ''
 	local target_action_shdw = ''
 	local target_action_result = ''
@@ -3307,7 +4684,7 @@ register_event('action', function (act)
 	local nm_auto_tp = monster_abil[act.param] and monster_abil[act.param].en and (string.find(monster_abil[act.param].en,'Autoattack') or string.find(monster_abil[act.param].en,'Auto Attack') or string.find(monster_abil[act.param].en,'Ranged') or string.find(monster_abil[act.param].en,'Vulture') or string.find(monster_abil[act.param].en,'Sabotender')) and true or false
 	local target_count = act.target_count
 	local amount = addCommas(act.targets[1].actions[1].param)
-	local count = show_result_totals and target_count > 1 and target_count..'●' or ''
+	local count = show_result_totals and target_count > 1 and target_count..num_hit_icon or ''
 
 	local rdc_r = formatRGB(color.result.damage.r)
 	local rdc_g = formatRGB(color.result.damage.g)
@@ -3369,8 +4746,8 @@ register_event('action', function (act)
 	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) then
 
 		local trackingIndex = assignIndex()
-		local target_action_status = '\\cs(255,050,050)×\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)×\\cr'
+		local target_action_status = '\\cs(255,050,050)'..cancelled_icon..'\\cr'
+		local target_action_status_shdw = '\\cs(000,000,000)'..cancelled_icon..'\\cr'
 
 		if msg == 78 then
 			target_action_result = ' (Too Far!)'
@@ -3380,7 +4757,7 @@ register_event('action', function (act)
 		actionInterrupted(act.actor_id,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
 		if player.id == act.actor_id then
-			bars_meter_self_action:bg_color(255,050,050)
+			self_action_bar_meter:bg_color(255,050,050)
 			completeSelfMeter()
 		end
 
@@ -3395,8 +4772,8 @@ register_event('action', function (act)
 	--Begin weapon skill(7), TP move(7), or spell(8), or item(9)
 	if action_id and (act.category == 7 or act.category == 8 or act.category == 9) then
 
-		local target_action_status = '\\cs(245,164,066)≈\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)≈\\cr'
+		local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
+		local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
 
 		--Weapon skill or TP move
 		if act.category == 7 then
@@ -3405,8 +4782,8 @@ register_event('action', function (act)
 			local r = formatRGB(c.r)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
-			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
-			action_target_name_shdw = (action_target_id and action_target_id ~= act.actor_id) and ' → \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
+			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' '..targeting_icon..' \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
+			action_target_name_shdw = (action_target_id and action_target_id ~= act.actor_id) and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
 
 			--Players
 			if isPlayer(actor.id) then
@@ -3418,7 +4795,8 @@ register_event('action', function (act)
 				return
 
 			--Pets (& Synergy Furnaces)
-			elseif get_mob_by_id(actor.id) and get_mob_by_id(actor.id).spawn_type == 2 then
+			elseif actor and actor.spawn_type == 2 then
+			-- elseif get_mob_by_id(actor.id) and get_mob_by_id(actor.id).spawn_type == 2 then
 				action_name = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 				action_name_shdw = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 
@@ -3433,7 +4811,7 @@ register_event('action', function (act)
 		elseif act.category == 8 then
 
 			local element = spell[action_id] and spell[action_id].element or 15 --15 is 'no element/none'
-			local c = color_spells and element_colors[element] or text_color
+			local c = colorize_spells and element_colors[element] or text_color
 			local r = formatRGB(c.r)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
@@ -3464,7 +4842,7 @@ register_event('action', function (act)
 			addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
 			if player.id == act.actor_id then
-				bars_meter_self_action:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
+				self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
 				updateSelfBar(cast_time,trackingIndex)
 				resetFadeDelay()
 			end
@@ -3488,12 +4866,14 @@ register_event('action', function (act)
 
 		local target_action = ''
 		local target_action_shdw = ''
-		local target_action_status = '\\cs(050,255,050)√\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)√\\cr'
+		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
 		local abil_id = act.param
 		local abil_name = ''
 		if act.category == 6 and actor.spawn_type == 16 then
 		 	abil_name = monster_abil[abil_id] and monster_abil[abil_id].name or '[REDACTED]'
+		elseif act.category == 3 and actor.spawn_type == 16 then
+		 	abil_name = wep_skill[abil_id] and wep_skill[abil_id].name or '[REDACTED]'
 		else
 			abil_name = job_abil[abil_id] and job_abil[abil_id].name or '[REDACTED]'
 		end
@@ -3515,7 +4895,7 @@ register_event('action', function (act)
 			--Buff/Debuff
 			elseif msg == 319 or msg == 320 or msg == 668 or msg == 670 or msg == 671 or msg == 672 then
 				local landed = calculateInfo(act).landed
-				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
@@ -3552,7 +4932,7 @@ register_event('action', function (act)
 		--Buff/Debuff
 		elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
 			local landed = calculateInfo(act).landed
-			count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+			count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 			local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 			target_action_result = ' ('..count..buff_name..')'
 			target_action_result_shdw = ' ('..count..buff_name..')'
@@ -3582,6 +4962,10 @@ register_event('action', function (act)
 		--Aura Steal Absorb
 		elseif msg == 453 then
 			local aura = buff[action_id].name
+			local stolen_sp = sp_abils[aura]
+			if stolen_sp then --if the ability stolen was an SP ability, cancel it for that mob
+				removeFromSPTable(act.targets[1].id)
+			end
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..aura..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..aura..'\\cr)'
 		--Aura Steal Dispel
@@ -3641,7 +5025,7 @@ register_event('action', function (act)
 			local damage = info.damage
 			if buff_name then
 				--redo count to show how many landed out of the total target_count
-				count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			elseif damage then
@@ -3714,7 +5098,7 @@ register_event('action', function (act)
 				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+					count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
 				elseif damage then
@@ -3764,7 +5148,7 @@ register_event('action', function (act)
 			--Buff/Debuff
 			elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
 				local landed = calculateInfo(act).landed
-				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
@@ -3924,9 +5308,10 @@ register_event('action', function (act)
 				target_action_result_shdw = ' (Party Enmity Transferred)'
 			end
 
-			if highlight_when_sp_active and abil_name ~= "[REDACTED]" then
-				local time = sp_abils[abil_name]
-				if time then
+			if abil_name ~= "[REDACTED]" then
+				--check if the ability used was an SP ability
+				local sp_abil = sp_abils[abil_name]
+				if sp_abil then
 					addToSPTable(act.actor_id, abil_name)
 				end
 			end
@@ -3943,7 +5328,7 @@ register_event('action', function (act)
 			--Buff/Debuff
 			elseif msg == 127 then
 				local landed = calculateInfo(act).landed
-				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
@@ -3956,7 +5341,7 @@ register_event('action', function (act)
 				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+					count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
 				elseif damage then
@@ -4021,7 +5406,7 @@ register_event('action', function (act)
 			addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
 			if player.id == act.actor_id then
-				bars_meter_self_action:bg_color(050,255,050)
+				self_action_bar_meter:bg_color(050,255,050)
 				completeSelfMeter()
 			end
 
@@ -4035,8 +5420,8 @@ register_event('action', function (act)
 	elseif act.category == 3 or act.category == 5 or act.category == 13 or (act.category == 4 and not ((msg == 0 or msg == 29 or msg == 84 or msg == 106) and act.param == 0)) then
 
 		local trackingIndex = assignIndex()
-		local target_action_status = '\\cs(050,255,050)√\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)√\\cr'
+		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
 		local sc = {}
 		if short_skillchain_names then
 			sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
@@ -4091,7 +5476,7 @@ register_event('action', function (act)
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
@@ -4103,7 +5488,7 @@ register_event('action', function (act)
 				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+					count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
 				elseif damage then
@@ -4159,7 +5544,7 @@ register_event('action', function (act)
 		elseif act.category == 4 then
 			local action_id = act.param
 			local element = spell[action_id] and spell[action_id].element or 15 --15 is 'no element/none'
-			local c = color_spells and element_colors[element] or text_color
+			local c = colorize_spells and element_colors[element] or text_color
 			local r = formatRGB(c.r)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
@@ -4174,7 +5559,7 @@ register_event('action', function (act)
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Absorbed and creates a Skillchain
@@ -4232,7 +5617,7 @@ register_event('action', function (act)
 			elseif msg == 230 or msg == 236 or msg == 237 or msg == 268 or msg == 271 then
 				local landed = calculateInfo(act).landed
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
-				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' ('..((msg == 268 or msg == 271) and 'Magic Burst! ' or '')..count..buff_name..')'
 				target_action_result_shdw = ' ('..((msg == 268 or msg == 271) and 'Magic Burst! ' or '')..count..buff_name..')'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
@@ -4244,7 +5629,7 @@ register_event('action', function (act)
 				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+					count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
 				elseif damage then
@@ -4329,7 +5714,7 @@ register_event('action', function (act)
 			--Buff/Debuff
 			elseif msg == 375 then
 				local landed = calculateInfo(act).landed
-				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Dispel/Erase
@@ -4348,7 +5733,7 @@ register_event('action', function (act)
 				local buff_name = last_buff_id and buff[last_buff_id] and capitalize(buff[last_buff_id].name)
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+					count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
 				else
@@ -4387,7 +5772,7 @@ register_event('action', function (act)
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			--Cures
@@ -4409,7 +5794,7 @@ register_event('action', function (act)
 			elseif msg == 319 or msg == 320 then
 				local landed = calculateInfo(act).landed
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
-				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Erase/Dispel
@@ -4426,7 +5811,7 @@ register_event('action', function (act)
 				local damage = info.damage
 				if buff_name then
 					--redo count to show how many landed out of the total target_count
-					count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+					count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 					target_action_result = ' ('..count..buff_name..')'
 					target_action_result_shdw = ' ('..count..buff_name..')'
 				elseif damage then
@@ -4501,7 +5886,7 @@ register_event('action', function (act)
 		--The actor is our pet
 		if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index then
 
-			bars_meter_self_action:bg_color(050,255,050)
+			self_action_bar_meter:bg_color(050,255,050)
 			completeSelfMeter()
 
 			addToActionsTable(player.id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
@@ -4518,7 +5903,7 @@ register_event('action', function (act)
 		else
 
 			if player.id == act.actor_id then
-				bars_meter_self_action:bg_color(050,255,050)
+				self_action_bar_meter:bg_color(050,255,050)
 				completeSelfMeter()
 			end
 
@@ -4536,8 +5921,8 @@ register_event('action', function (act)
 	--Finish Monster TP move(11)
 	elseif act and act.category == 11 and not nm_auto_tp then
 
-		local target_action_status = '\\cs(050,255,050)√\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)√\\cr'
+		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
 		local abil_id = act.param
 		local abil_name = monster_abil[abil_id] and monster_abil[abil_id].name or '[REDACTED]'
 		action_name = ' '..truncateAction(abil_name)
@@ -4554,7 +5939,7 @@ register_event('action', function (act)
 		elseif msg == 186 or msg == 194 or msg == 243 then
 			local landed = calculateInfo(act).landed
 			local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
-			count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+			count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 			target_action_result = ' ('..count..buff_name..')'
 			target_action_result_shdw = ' ('..count..buff_name..')'
 		--Plain Damage
@@ -4562,7 +5947,7 @@ register_event('action', function (act)
 			local info = calculateInfo(act)
 			local landed = info.landed
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
-			count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..'●' or ''
+			count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 		--Drain
@@ -4581,7 +5966,7 @@ register_event('action', function (act)
 			local damage = info.damage
 			if buff_name then
 				--redo count to show how many landed out of the total target_count
-				count = show_result_totals and target_count > 1 and landed..'/'..target_count..'●' or ''
+				count = show_result_totals and target_count > 1 and landed..'/'..target_count..num_hit_icon or ''
 				target_action_result = ' ('..count..buff_name..')'
 				target_action_result_shdw = ' ('..count..buff_name..')'
 				elseif damage then
@@ -4663,9 +6048,10 @@ register_event('action', function (act)
 
 		end
 
-		if highlight_when_sp_active and abil_name ~= "[REDACTED]" then
-			local time = sp_abils[abil_name]
-			if time then
+		if abil_name ~= "[REDACTED]" then
+			--Check if the ability used was an SP ability
+			local sp_abil = sp_abils[abil_name]
+			if sp_abil then
 				addToSPTable(act.actor_id, abil_name)
 			end
 		end
@@ -4685,178 +6071,423 @@ end)
 
 --Unrecognized command
 function displayUnregnizedCommand()
-	add_to_chat(8,('[Bars] '):color(220)..('Unrecognized command. Type'):color(8)..(' //bars help'):color(1)..(' for a list of commands.'):color(8))
+	add_to_chat(8,('[Bars] '):color(220)..('Unrecognized command. Type'):color(28)..(' //bars help'):color(1)..(' for a list of commands.'):color(28))
 end
 
 register_event('addon command',function(addcmd, ...)
 
-	--Update the bar position
-	if addcmd == 'pos' or addcmd == 'position' or addcmd == 'p' then
-		local pos = {...}
-
-		--If there are not enough parameters then output the current position and remind how to update
-		if #pos < 2 then
-			add_to_chat(8,('[Bars] '):color(220)..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding X and Y coordinates (ex. '):color(8)..('//bars pos 100 200'):color(1)..(')'):color(8))
-
-		--X and Y coordinates are provided
-		else
-			--Take the provided string parameters and turn them into numbers
-			settings.pos.x = tonumber(pos[1])
-			settings.pos.y = tonumber(pos[2])
-			
-			--Position must be numbers
-			if settings.pos.x == nil or settings.pos.y == nil then
-				displayUnregnizedCommand()
-				return
-				
-			--Save the new setting, update the position, then alert the user
-			else
-				settings:save('all')
-				add_to_chat(8,('[Bars] '):color(220)..('Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
-				setPosition()
-
-			end
-		end
-		screenTest()
-
-	--Update the bar width
-	elseif addcmd == 'width' or addcmd == 'w' then
-		local width = {...}
-		local new_width = nil
-
-		--If there are no parameters then output the current bar width and remind how to update
-		if #width < 1 then
-			add_to_chat(8,('[Bars] '):color(220)..('Width:'):color(36)..(' '..settings.options.bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars width 73'):color(1)..(')'):color(8))
-
-		--Size number is provided
-		else
-			--Take the provided string parameter and turn it into a number
-			new_width = tonumber(width[1])
-					
-			--Save the new setting, update the width, then alert the user
-			if new_width == nil then
-				displayUnregnizedCommand()
-				return
-
-			else
-				settings.options.bar_width = new_width
-				settings:save('all')
-				add_to_chat(8,('[Bars] '):color(220)..('Width:'):color(36)..(' '..settings.options.bar_width):color(200))
-				hideBars()
-				setWidth()
-				setPosition()
-				updateHPBar()
-				updateMPBar()
-				updateTPBar()
-				showBars()
-
-			end
-		end
-		screenTest()
-
 	--Toggle the HP bar display setting for the current job
-	elseif addcmd == 'hp' then
+	if addcmd == 'hp' then
 
-		show_bars[job].hp = not show_bars[job].hp
-		settings:save('all')
-		hideBars()
-		setPosition()
-		showBars()
-		add_to_chat(8,('[Bars] '):color(220)..('HP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(show_bars[job].hp and 'ON' or 'OFF')):color(200))
+		if Screen_Test then
+			add_to_chat(8,('[Bars] '):color(220)..('Please lock the UI with '):color(28)..('//bars lock '):color(1)..('before using the '):color(28)..(addcmd):color(1)..(' command.'):color(28))
+		else
+			job_specific[job].hp = not job_specific[job].hp
+			settings:save('all')
+			hideBars()
+			setPositions()
+			showBars()
+			add_to_chat(8,('[Bars] '):color(220)..('HP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].hp and 'ON' or 'OFF')):color(200))
+		end
 
 	--Toggle the MP bar display setting for the current job
 	elseif addcmd == 'mp' then
 
-		show_bars[job].mp = not show_bars[job].mp
-		settings:save('all')
-		hideBars()
-		setPosition()
-		showBars()
-		add_to_chat(8,('[Bars] '):color(220)..('MP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(show_bars[job].mp and 'ON' or 'OFF')):color(200))
+		if Screen_Test then
+			add_to_chat(8,('[Bars] '):color(220)..('Please lock the UI with '):color(28)..('//bars lock '):color(1)..('before using the '):color(28)..(addcmd):color(1)..(' command.'):color(28))
+		else
+			job_specific[job].mp = not job_specific[job].mp
+			settings:save('all')
+			hideBars()
+			setPositions()
+			showBars()
+			add_to_chat(8,('[Bars] '):color(220)..('MP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].mp and 'ON' or 'OFF')):color(200))
+		end
 
 	--Toggle the TP bar display setting for the current job
 	elseif addcmd == 'tp' then
 
-		show_bars[job].tp = not show_bars[job].tp
-		settings:save('all')
-		hideBars()
-		setPosition()
-		showBars()
-		add_to_chat(8,('[Bars] '):color(220)..('TP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(show_bars[job].tp and 'ON' or 'OFF')):color(200))
+		if Screen_Test then
+			add_to_chat(8,('[Bars] '):color(220)..('Please lock the UI with '):color(28)..('//bars lock '):color(1)..('before using the '):color(28)..(addcmd):color(1)..(' command.'):color(28))
+		else
+			job_specific[job].tp = not job_specific[job].tp
+			settings:save('all')
+			hideBars()
+			setPositions()
+			showBars()
+			add_to_chat(8,('[Bars] '):color(220)..('TP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].tp and 'ON' or 'OFF')):color(200))
+		end
 
 	--Toggle the Pet bar display setting for the current job
 	elseif addcmd == 'pet' then
 
-		show_bars[job].pet = not show_bars[job].pet
-		settings:save('all')
-		hideBars()
-		setPosition()
-		showBars()
-		add_to_chat(8,('[Bars] '):color(220)..('Pet bar display for '..uppercase(job)..':'):color(36)..(' %s':format(show_bars[job].pet and 'ON' or 'OFF')):color(200))
-
-	--Update the vertical offset for the current job
-	elseif addcmd == 'offset' or addcmd == 'o' then
-		local offset = {...}
-		local new_offset = nil
-
-		--If there are no parameters then output the current offset and remind how to update
-		if #offset < 1 then
-			add_to_chat(8,('[Bars] '):color(220)..('Vertical Offset for '..uppercase(job)..':'):color(36)..(' '..show_bars[job].vertical_offset):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars offset 29'):color(1)..(')'):color(8))
-
-		--Size number is provided
+		if Screen_Test then
+			add_to_chat(8,('[Bars] '):color(220)..('Please lock the UI with '):color(28)..('//bars lock '):color(1)..('before using the '):color(28)..(addcmd):color(1)..(' command.'):color(28))
 		else
-			--Take the provided string parameter and turn it into a number
-			new_offset = tonumber(offset[1])
-
-			--Save the new setting, update the offset, then alert the user
-			if new_offset == nil then
-				displayUnregnizedCommand()
-				return
-
-			else
-				show_bars[job].vertical_offset = new_offset
-				settings:save('all')
-				add_to_chat(8,('[Bars] '):color(220)..('Vertical Offset for '..uppercase(job)..':'):color(36)..(' '..show_bars[job].vertical_offset):color(200))
-				hideBars()
-				setPosition()
-				showBars()
-
-			end
+			job_specific[job].pet = not job_specific[job].pet
+			settings:save('all')
+			hideBars()
+			setPositions()
+			showBars()
+			add_to_chat(8,('[Bars] '):color(220)..('Pet bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].pet and 'ON' or 'OFF')):color(200))
 		end
-		screenTest()
 
-	--Update the size
+	--Update the Focus Target bar widths
+	elseif addcmd == 'width' or addcmd == 'w' then
+		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200)..(' ('):color(8)..('//bars ftbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200)..(' ('):color(8)..('//bars stbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200)..(' ('):color(8)..('//bars tbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200)..(' ('):color(8)..('//bars psbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200)..(' ('):color(8)..('//bars sabw #'):color(1)..(')'):color(8))
+
+	--Update the Focus Target bar width
+	elseif addcmd == 'ftbw' then
+		local args = {...}
+		local new_width = tonumber(args[1])
+
+		if new_width then
+			settings.sections.focus_target.bar_width = new_width
+			focus_target_bar_width = new_width
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..new_width):color(200))
+			setWidth()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
+		end
+
+	--Update the Sub Target bar width
+	elseif addcmd == 'stbw' then
+		local args = {...}
+		local new_width = tonumber(args[1])
+
+		if new_width then
+			settings.sections.sub_target.bar_width = new_width
+			sub_target_bar_width = new_width
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..new_width):color(200))
+			setWidth()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
+		end
+
+	--Update the Target bar width
+	elseif addcmd == 'tbw' then
+		local args = {...}
+		local new_width = tonumber(args[1])
+
+		if new_width then
+			settings.sections.target.bar_width = new_width
+			target_bar_width = new_width
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..new_width):color(200))
+			setWidth()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+		end
+
+	--Update the Player Stats bar width
+	elseif addcmd == 'psbw' then
+		local args = {...}
+		local new_width = tonumber(args[1])
+
+		if new_width then
+			settings.sections.player_stats.bar_width = new_width
+			player_stats_bar_width = new_width
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..new_width):color(200))
+			setWidth()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+		end
+
+	--Update the Self Action bar width
+	elseif addcmd == 'sabw' then
+		local args = {...}
+		local new_width = tonumber(args[1])
+
+		if new_width then
+			settings.sections.self_action.bar_width = new_width
+			self_action_bar_width = new_width
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..new_width):color(200))
+			setWidth()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+		end
+
+	--Update the Focus Target bar sizes
 	elseif addcmd == 'size' or addcmd == 's' then
-		local size = {...}
-		local new_size = nil
+		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200)..(' ('):color(8)..('//bars ftbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200)..(' ('):color(8)..('//bars stbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200)..(' ('):color(8)..('//bars tbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200)..(' ('):color(8)..('//bars psbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200)..(' ('):color(8)..('//bars sabs #'):color(1)..(')'):color(8))
 
-		--If there are no parameters then output the current size and remind how to update
-		if #size < 1 then
-			add_to_chat(8,('[Bars] '):color(220)..('Size:'):color(36)..(' '..settings.text.size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars size 10'):color(1)..(')'):color(8))
+	--Update the Focus Target bar size
+	elseif addcmd == 'ftbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
 
-		--Size number is provided
+		if new_size then
+			settings.sections.focus_target.bar_size = new_size
+			focus_target_bar_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..new_size):color(200))
+			focus_target_bar_bg:size(new_size)
+			focus_target_bar_meter:size(new_size)
+			focus_target_bar_pulse:size(new_size)
 		else
-			--Take the provided string parameter and turn it into a number
-			new_size = tonumber(size[1])
-					
-			--Save the new setting, update the size, then alert the user
-			if new_size == nil then
-				displayUnregnizedCommand()
-				return
-
-			else
-				settings.text.size = new_size
-				settings:save('all')
-				add_to_chat(8,('[Bars] '):color(220)..('Size:'):color(36)..(' '..settings.text.size):color(200))
-				setSize()
-
-			end
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
-		screenTest()
+
+	--Update the Sub Target bar size
+	elseif addcmd == 'stbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.sub_target.bar_size = new_size
+			sub_target_bar_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..new_size):color(200))
+			sub_target_bar_bg:size(new_size)
+			sub_target_bar_meter:size(new_size)
+			sub_target_bar_pulse:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Target bar size
+	elseif addcmd == 'tbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.target.bar_size = new_size
+			target_bar_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..new_size):color(200))
+			target_bar_bg:size(new_size)
+			target_bar_meter:size(new_size)
+			target_bar_drain_meter:size(new_size)
+			target_bar_pulse:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Player Stats bar size
+	elseif addcmd == 'psbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.player_stats.bar_size = new_size
+			player_stats_bar_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..new_size):color(200))
+			player_stats_hp_bar_bg:size(new_size)
+			player_stats_hp_bar_meter:size(new_size)
+			player_stats_hp_bar_drain_meter:size(new_size)
+			player_stats_hp_bar_pulse:size(new_size)
+			player_stats_hp_marker:size(new_size)
+			player_stats_mp_bar_bg:size(new_size)
+			player_stats_mp_bar_meter:size(new_size)
+			player_stats_mp_bar_drain_meter:size(new_size)
+			player_stats_mp_bar_pulse:size(new_size)
+			player_stats_tp_bar_bg:size(new_size)
+			player_stats_tp_bar_meter:size(new_size)
+			player_stats_tp_bar_drain_meter:size(new_size)
+			player_stats_tp_bar_pulse:size(new_size)
+			player_stats_tp_marker:size(new_size)
+			player_stats_pet_bar_bg:size(new_size)
+			player_stats_pet_bar_meter:size(new_size)
+			player_stats_pet_bar_drain_meter:size(new_size)
+			player_stats_pet_bar_pulse:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Self Action bar size
+	elseif addcmd == 'sabs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.self_action.bar_size = new_size
+			self_action_bar_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..new_size):color(200))
+			self_action_bar_bg:size(new_size)
+			self_action_bar_meter:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Focus Target text sizes
+	elseif addcmd == 'text' or addcmd == 't' then
+		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200)..(' ('):color(8)..('//bars ftts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200)..(' ('):color(8)..('//bars stts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..target_text_size):color(200)..(' ('):color(8)..('//bars tts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200)..(' ('):color(8)..('//bars psts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200)..(' ('):color(8)..('//bars sats #'):color(1)..(')'):color(8))
+
+	--Update the Focus Target text size
+	elseif addcmd == 'ftts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.focus_target.text_size = new_size
+			focus_target_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..new_size):color(200))
+			focus_target_text:size(new_size)
+			focus_target_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Sub Target text size
+	elseif addcmd == 'stts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.sub_target.text_size = new_size
+			sub_target_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..new_size):color(200))
+			sub_target_text:size(new_size)
+			sub_target_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Target text size
+	elseif addcmd == 'tts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.target.text_size = new_size
+			target_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..new_size):color(200))
+			target_text:size(new_size)
+			target_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..target_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 14'):color(1)..(')'):color(8))
+		end
+
+	--Update the Player Stats text size
+	elseif addcmd == 'psts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.player_stats.text_size = new_size
+			player_stats_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..new_size):color(200))
+			player_stats_hp_text:size(new_size)
+			player_stats_hp_text_shadow:size(new_size)
+			player_stats_mp_text:size(new_size)
+			player_stats_mp_text_shadow:size(new_size)
+			player_stats_tp_text:size(new_size)
+			player_stats_tp_text_shadow:size(new_size)
+			player_stats_pet_text:size(new_size)
+			player_stats_pet_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Self Action text size
+	elseif addcmd == 'sats' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.self_action.text_size = new_size
+			self_action_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..new_size):color(200))
+			self_action_text:size(new_size)
+			self_action_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+		end
+
+	--Update the Focus Target sub text sizes
+	elseif addcmd == 'subtext' or addcmd == 'st' then
+		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ftsts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ststs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200)..(' ('):color(8)..('//bars tsts #'):color(1)..(')'):color(8))
+
+	--Update the Focus Target sub text size
+	elseif addcmd == 'ftsts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.focus_target.sub_text_size = new_size
+			focus_target_sub_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..new_size):color(200))
+			focus_target_action_text:size(new_size)
+			focus_target_action_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Sub Target sub text size
+	elseif addcmd == 'ststs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.sub_target.sub_text_size = new_size
+			sub_target_sub_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..new_size):color(200))
+			sub_target_action_text:size(new_size)
+			sub_target_action_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Target sub text size
+	elseif addcmd == 'tsts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.target.sub_text_size = new_size
+			target_text_sub_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..new_size):color(200))
+			target_action_text:size(new_size)
+			target_action_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+		end
 
 	--Toggle the target distance setting
 	elseif addcmd == 'distance' or addcmd == 'dist' or addcmd == 'd' then
@@ -4869,9 +6500,9 @@ register_event('addon command',function(addcmd, ...)
 	--Toggle the markers setting
 	elseif addcmd == 'marker' or addcmd == 'markers' or addcmd == 'm' then
 
-		settings.options.show_bar_markers = not settings.options.show_bar_markers
+		settings.options.show_hp_tp_markers = not settings.options.show_hp_tp_markers
 		settings:save('all')
-		add_to_chat(8,('[Bars] '):color(220)..('Markers:'):color(36)..(' %s':format(settings.options.show_bar_markers and 'ON' or 'OFF')):color(200))
+		add_to_chat(8,('[Bars] '):color(220)..('Markers:'):color(36)..(' %s':format(settings.options.show_hp_tp_markers and 'ON' or 'OFF')):color(200))
 		hideBars()
 		setWidth()
 		showBars()
@@ -4897,15 +6528,6 @@ register_event('addon command',function(addcmd, ...)
 		settings:save('all')
 		add_to_chat(8,('[Bars] '):color(220)..('Index:'):color(36)..(' %s':format(settings.options.show_target_index and 'ON' or 'OFF')):color(200))
 		updateTarget()
-
-	--Toggle the bold setting
-	elseif addcmd == 'bold' or addcmd == 'b' then
-
-		settings.flags.bold = not settings.flags.bold
-		settings:save('all')
-		add_to_chat(8,('[Bars] '):color(220)..('Bold:'):color(36)..(' %s':format(settings.flags.bold and 'ON' or 'OFF')):color(200))
-		setBold()
-		screenTest()
 
 	--Add a target to the Auto Focus Target list
 	elseif addcmd == 'add' or addcmd == 'a' then
@@ -4938,58 +6560,147 @@ register_event('addon command',function(addcmd, ...)
 				focus_target_override = target
 				local currFTMDist = settings.options.focus_target_max_distance
 				add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Added: '):color(36)..(focus_target_override.name):color(1))
-				add_to_chat(8,('[Bars] '):color(220)..('Override removed when out of range ('):color(8)..(''..currFTMDist):color(200)..(') or by typing '):color(8)..('//bars focus'):color(1)..(' again.'):color(8))
+				add_to_chat(8,('[Bars] '):color(220)..('Override removed when out of range ('):color(8)..(''..currFTMDist):color(200)..(') or by typing '):color(8)..('//bars '..addcmd):color(1)..(' again.'):color(8))
 			else
-				add_to_chat(8,('[Bars] '):color(220)..('Please select a target with your cursor and try again.'):color(8))
+				add_to_chat(8,('[Bars] '):color(220)..('Please highlight a target and try again.'):color(28))
 			end
+		end
+
+	elseif addcmd == "ui" or addcmd == "lock" or addcmd == "unlock" then
+
+		resetFadeDelay()
+		screenTest()
+		local r = 0
+		local g = Screen_Test and 255 or 0
+		local b = 0
+		local player_stat_bars = {
+			hp = player_stats_hp_bar_bg,
+			mp = player_stats_mp_bar_bg,
+			tp = player_stats_tp_bar_bg,
+			pet = player_stats_pet_bar_bg,
+		}
+
+		target_bar_bg:draggable(Screen_Test)
+		target_bar_bg:bg_color(r,g,b)
+		focus_target_bar_bg:draggable(Screen_Test)
+		focus_target_bar_bg:bg_color(r,g,b)
+		sub_target_bar_bg:draggable(Screen_Test)
+		sub_target_bar_bg:bg_color(r,g,b)
+		self_action_bar_bg:draggable(Screen_Test)
+		self_action_bar_bg:bg_color(r,g,b)
+		player_stat_bars[player_stats_top_bar]:draggable(Screen_Test)
+		player_stat_bars[player_stats_top_bar]:bg_color(r,g,b)
+
+		if Screen_Test then
+			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Dragging enabled for highlighted bars.'):color(36))
+			add_to_chat(8,('[Bars] '):color(220)..('NOTICE: May not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
+			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
+			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
+			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
+			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust sub text sizes: '):color(8)..('//bars subtext'):color(1))
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('UI editing locked.'):color(36))
 		end
 
 	--Display help text
 	elseif addcmd == 'help' then
 
-		local currPos = settings.pos
-		local currHP = show_bars[job].hp
-		local currMP = show_bars[job].mp
-		local currTP = show_bars[job].tp
-		local currPet = show_bars[job].pet
-		local currWidth = settings.options.bar_width
+		local currHP = job_specific[job].hp
+		local currMP = job_specific[job].mp
+		local currTP = job_specific[job].tp
+		local currPet = job_specific[job].pet
 		local currDistance = settings.options.show_target_distance
-		local currMarker = settings.options.show_bar_markers
+		local currMarker = settings.options.show_hp_tp_markers
 		local currHex = settings.options.show_target_hex
 		local currIndex = settings.options.show_target_index
 		local currJob = uppercase(job)
-		local currOffset = show_bars[job].vertical_offset
-		local currSize = settings.text.size
-		local currBold = settings.flags.bold
 		local currFTMDist = settings.options.focus_target_max_distance
 
 		local prefix = "//bars"
 		add_to_chat(8,('[Bars] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
-		add_to_chat(8,(' pos/p '):color(36)..('[x y]'):color(53)..(' - Update overall Position. ['):color(8)..(currPos.x..' '..currPos.y):color(200)..(']'):color(8))
 		add_to_chat(8,(' hp/mp/tp/pet'):color(36)..(' - Toggle HP/MP/TP/Pet bar display setting for current job.'):color(8))
 		add_to_chat(8,('   ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(' Pet: '):color(8)..('%s':format(currPet and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' width/w '):color(36)..('[#]'):color(53)..(' - Update the bar Width. ['):color(8)..(''..currWidth):color(200)..(']'):color(8))
+		add_to_chat(8,(' width/w '):color(36)..(' - Display bar widths and how to update them.'):color(8))
+		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
+		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
+		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
 		add_to_chat(8,(' distance/d '):color(36)..(' - Toggle the target Distance option. ['):color(8)..('%s':format(currDistance and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' marker/m '):color(36)..(' - Toggle the HP/TP Marker option. ['):color(8)..('%s':format(currMarker and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' hex/h '):color(36)..(' - Toggle the target Hex option (overrides Index). ['):color(8)..('%s':format(currHex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index option (overrides Hex). ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' offset/o '):color(36)..('[#]'):color(53)..(' - Update the vertical Offset for the current job. ['..currJob..': '):color(8)..(''..currOffset):color(200)..(']'):color(8))
 		add_to_chat(8,(' add/a '):color(36)..('[target]'):color(53)..(' - Add a target to the Auto Focus Target list.'):color(8))
-		add_to_chat(8,('   - Valid targets: Names, IDs, <t>, or current highlighted target.'):color(8))
+		add_to_chat(8,('   - Valid targets: Names, IDs or current cursor target.'):color(8))
 		add_to_chat(8,('   - Use quotes to surround names with spaces.'):color(8))
 		add_to_chat(8,(' remove/r '):color(36)..('[target]'):color(53)..(' - Remove a target from the Auto Focus Target list.'):color(8))
-		add_to_chat(8,(' focus/f '):color(36)..(' - Temporarily override the Auto Focus Target with the current cursor target.'):color(8))
+		add_to_chat(8,(' focus/f '):color(36)..(' - Temporarily override the Auto Focus Target with current cursor target.'):color(8))
 		add_to_chat(8,('   - Type again to remove the override.'):color(8))
-		add_to_chat(8,('   - Automatically removed when target moves out of range. ['):color(8)..(''..currFTMDist):color(200)..(']'):color(8))
+		add_to_chat(8,('   - Automatically removed when target moves out of range ('):color(8)..(tostring(currFTMDist)):color(200)..(').'):color(8))
 		add_to_chat(8,(' list/l'):color(36)..(' - Show the Auto Focus Target list.'):color(8))
-		add_to_chat(8,(' size/s '):color(36)..('[#]':color(53))..(' - Update font Size. ['):color(8)..(''..currSize):color(200)..(']'):color(8))
-		add_to_chat(8,(' bold/b'):color(36)..(' - Toggle the Bold setting. ['):color(8)..('%s':format(currBold and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' ui/lock/unlock'):color(36)..(' - Toggle Screen Test to drag sections of the UI around.'):color(8))
 
 	else
 
 		displayUnregnizedCommand()
 
 	end
+end)
+
+--Handle mouse events
+register_event('mouse',function(mouse_type, mouse_x, mouse_y)
+
+	if mouse_type == 2 and Screen_Test then --leftmouseup
+
+		local player_stat_bars = {
+			hp = player_stats_hp_bar_bg,
+			mp = player_stats_mp_bar_bg,
+			tp = player_stats_tp_bar_bg,
+			pet = player_stats_pet_bar_bg,
+		}
+
+		--Save Bar positions after dragged
+		local focus_target_x = focus_target_bar_bg:pos_x()
+		local focus_target_y = focus_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.focus_target
+
+		local sub_target_x = sub_target_bar_bg:pos_x()
+		local sub_target_y = sub_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.sub_target
+
+		local target_x = target_bar_bg:pos_x()
+		local target_y = target_bar_bg:pos_y() - job_specific[job].vertical_offsets.target
+
+		local self_action_x = self_action_bar_bg:pos_x()
+		local self_action_y = self_action_bar_bg:pos_y() - job_specific[job].vertical_offsets.self_action
+
+		local player_stats_x = player_stat_bars[player_stats_top_bar]:pos_x()
+		local player_stats_y = player_stat_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
+
+		if settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
+			settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
+			settings:save('all')
+			setPositions()
+
+		elseif settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
+			settings.sections.sub_target.pos = {x = sub_target_x, y = sub_target_y}
+			settings:save('all')
+			setPositions()
+
+		elseif settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
+			settings.sections.target.pos = {x = target_x, y = target_y}
+			settings:save('all')
+			setPositions()
+
+		elseif settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
+			settings.sections.self_action.pos = {x = self_action_x, y = self_action_y}
+			settings:save('all')
+			setPositions()
+
+		elseif settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
+			settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
+			settings:save('all')
+			setPositions()
+
+		end
+	end
+
 end)
