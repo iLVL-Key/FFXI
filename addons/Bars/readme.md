@@ -30,7 +30,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - Displays number of targets hit and totals for AoE cures/damage.
   - Displays casting, completed, and interrupted icons.
   - Tracks every player/mob within range as they perform actions, so you can tab around to different targets and see what they are doing.
-  - Spells are colored based on their element.
+  - Spells colored based on their element.
 - Self Actions.
   - Dedicated to displaying your own actions.
   - Displays a casting bar based on casting time for spells and items.
@@ -50,14 +50,17 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - Accounts for an SP ability being stolen with Larceny.
   - NOTE: Timing for players who have gear adding additional time cannot be accounted for.
 - Display Dynamis-Divergence mob jobs.
-- Markers on the TP bar for 1k/2k, and on the HP bar for yellow HP.
-- Fades away after a set time of inactivity.
+- Target Lock display for when your camera is locked to your current target.
+- Animations!
+  - Bar Fade - fades away after a set time of inactivity.
+  - Bar Pulse - pulses the bar under certain circumstance (SP ability active, TP is reaady, critical HP, etc.).
+  - Bar Drain - bar meter updates immediately, while the newly "missing" part of the bar smoothly drains away.
 - Nearly every feature can be turned on/off or adjusted via settings file or in-game commands.
 
 ## How To Setup
 1. Load the addon with `//lua load bars`.
 2. Type `//bars ui` and follow the guide from there.
-3. Once you have the bar positions settled, you can add or remove any of the Player Stats bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to add/remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are on.
+3. Once you have the bar positions settled, you can add or remove any of the Player Stats bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to add/remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are currently on.
 
 #### Extra
 4. You can type `//bars help` at any time to display the list of in game commands the addon supports. See **Commands** below.
@@ -65,7 +68,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 6. Explore the `data/settings.xml` file to see the full list of options that are available to tweak. See **Options** below.
 
 ## Commands
-All commands must be preceded with `//bars` (ex: `//bars pos`)  
+All commands must be preceded with `//bars` (ex: `//bars focus`)  
 `[optional]`
 
 | Command | Description |
@@ -89,9 +92,9 @@ All commands must be preceded with `//bars` (ex: `//bars pos`)
 ## Settings
 Open the `/bars/data/settings.xml` file to adjust these settings.  
 
+### Icons
 | **Setting** | **Description** |
 |------------|----------------|
-| <ins>**Icons**</ins> |
 | `casting` | Icon displayed while the target is casting. |
 | `cancelled` | Icon displayed if the target's casting is cancelled or interrupted. |
 | `completed` | Icon displayed when the target's casting is completed. |
@@ -99,35 +102,49 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `target_lock_left` | Icon displayed on the left of the target when the camera is locked-on. |
 | `target_lock_right` | Icon displayed on the right of the target when the camera is locked-on. |
 | `targeting` | Icon separating the action from the target of the action. |
-| <ins>**Job Specific**</ins> |
-| → `hp` | Display the HP bar while on this job. |
-| → `mp` | Display the MP bar while on this job. |
-| → `pet` | Display the Pet bar while on this job. |
-| → `tp` | Display the TP bar while on this job. |
+
+### Job Specific
+| **Setting** | **Description** |
+|------------|----------------|
+| `hp` | Display the HP bar while on this job. |
+| `mp` | Display the MP bar while on this job. |
+| `pet` | Display the Pet bar while on this job. |
+| `tp` | Display the TP bar while on this job. |
 | `vertical_offsets`<br> → `focus_target`<br> → `player_stats`<br> → `self_action`<br> → `sub_target`<br> → `target` | Adjust vertical positions of these bars specifically for this job. Useful for having different player stat bars visible on different jobs and you want them to be bottom-aligned. Positive numbers will move Bars lower, negative numbers will move Bars higher. |
-| <ins>**Options**</ins> |
+
+### Options
+| **Setting** | **Description** |
+|------------|----------------|
 | `abbreviate_common_mob_names` | Common mob names will be abbreviated to save space (ex. Sweetwater Rabbit → Swt. Rabbit). Does not apply to the main name on the Target bar. |
+| `animations` | Controls various aspects of the different types of animations. |
+| → `drain_brightness` | Brightness (alpha) of the Bar Drain effect.<br># 1-10<br>1 = 10% of the meters alpha<br> 10 = 100% of the meters alpha |
+| → `drain_hp_bar` | Display the Bar Drain effect for the Player Stats **HP** bar. |
+| → `drain_mp_bar` | Display the Bar Drain effect for the Player Stats **MP** bar. |
+| → `drain_pet_bar` | Display the Bar Drain effect for the Player Stats **PET** bar. |
+| → `drain_speed` | Speed of the Bar Drain effect.<br># >= 1<br>Higher = faster |
+| → `drain_target_bars` | Display the Bar Drain effect on the Focus Target, Sub Target, and Target bars. |
+| → `drain_tp_bar` | Display the Bar Drain effect for the Player Stats **TP** bar. |
+| → `fade_after_a_delay` | Fades all bars out of view after a set time delay of inaction. |
+| → `fade_delay` | Time in seconds to delay fade. |
+| → `fade_down_to_alpha` | Number the alpha will stop at after fading.<br>0 = completely invisible<br>255 = completely visible |
+| → `fade_speed` | Speed of the Bar Fade effect.<br># >= 1<br>Higher = faster |
+| → `floating_tp_number` | The TP number for the TP bar floats along with the end of the TP meter. |
+| → `pulse_bar_when_target_sp_active` | Pulses a target’s bar when they use an SP Ability. |
+| → `pulse_brightness` | Maximum brightness (alpha) the Bar Pulse effect reaches. |
+| → `pulse_name_when_target_sp_active` | Pulses a target’s name when they use an SP Ability. |
+| → `pulse_speed` | Speed of the Bar Pulse effect.<br># >= 1<br>Higher = faster |
+| → `pulse_when_hp_low` | Pulses the HP bar when critically low. |
+| → `pulse_when_mp_low` | Pulses the MP bar when critically low. |
+| → `pulse_when_pet_low` | Pulses the Pet bar when pet HP is critically low. |
+| → `pulse_when_tp_ready` | Pulses the TP bar when TP is ready to use. |
+| → `pulse_tp_meter_only` | The pulse effect from the `pulse_tp_ready` option only applies to the TP meter, not the whole bar. |
 | `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 5.5). |
 | `color_spells` | Colorize the names of spells to match their element. |
 | `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
-| `fade_after_a_delay` | Fades all bars out of view after a set time delay of inaction. |
-| `fade_alpha_min` | Number the alpha will stop at after fading. 0 = completely invisible, 255 = completely visible. |
-| `fade_delay` | Time in seconds to delay fade. |
-| `fade_multiplier` | Number the fade alpha is reduced per frame during fade. Higher number fades faster. |
-| `floating_tp_number` | The TP number for the TP bar floats along with the end of the TP meter. |
 | `focus_target_max_distance` | The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed. |
 | `max_action_length` | The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space. |
 | `max_name_length` | The maximum number of characters of a target’s name displayed (target action line only). Target names longer than this number will be truncated to help save space. |
-| `pulse_alpha_max` | Max alpha for the pulse effects (max brightness). |
-| `pulse_bar_when_target_sp_active` | Pulses a target’s bar when they use an SP Ability. |
-| `pulse_hp_low` | Pulses the HP bar when critically low (<=25%). |
-| `pulse_mp_low` | Pulses the MP bar when critically low (<=25%). |
-| `pulse_multiplier` | Number the pulse alpha is reduced per frame during pulse. Higher number pulses faster. |
-| `pulse_name_when_target_sp_active` | Pulses a target’s name when they use an SP Ability. |
-| `pulse_pet_low` | Pulses the Pet bar when pet HP is critically low (<=25%). |
-| `pulse_tp_meter_only` | The pulse effect from the `pulse_tp_ready` option only applies to the TP meter, not the whole bar. |
-| `pulse_tp_ready` | Pulses the TP bar when TP is ready to use. (>=1,000). |
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
 | `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
 | `show_action_status_indicators` | Shows icons depicting when a spell/ability is casting, completed, or interrupted. |
@@ -152,7 +169,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `show_target_distance_colors` | Colorizes the distance text based on the distance to the target and other factors. |
 | `show_target_hex` | Shows the hex number of the current target. |
 | `show_target_index` | Shows the index number of the current target. |
-| <ins>**Sections**</ins> |
+| `show_target_lock` | Shows the Target Lock icons when your camera is locked on your current target. |
+
+### Sections
+| **Setting** | **Description** |
+|------------|----------------|
 | `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target` | These sections are for the 5 bars.<br>Player Stats and Self Actions do not have sub text. |
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
@@ -160,6 +181,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
 | → `pos` | X and Y position of the bar. |
+| `show` | (Self Action only) Show the Self Action section. |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `sub_text_offset` | Horizontal offset for the sub/action text (centered on the bar, positive moves downward, negative moves upward). |
 | → `sub_text_shadow_offset` | Diagonal offset for the shadow of the sub/action text (positive moves down-right, negative moves up-left). |
@@ -184,7 +206,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 Version 4.0
 - Overhauled how Auto Focus target data is saved. Now saves as a lua table in separate `data/auto_focus_targets.lua` file instead of saving as xml data inside the settings file. This approach allows for much easier handling of target names. No need to convert names with spaces and apostrophes to a format that xml can parse, instead saved as a direct string key exactly how it should be spelled.
 - Overhauled many of the options in the settings file. Many names adjusted for clarity. New settings added for things that used to be hard-coded. Some settings have had their structure/layout adjusted.
-- Added Bar Pulse options (`pulse_hp_low`, `pulse_mp_low`, `pulse_tp_ready`, `pulse_pet_low`, and `pulse_bar_when_target_sp_active`). Will pulse the bar when HP, MP, or your Pets HP are critically low (<=25%), when TP is ready to use (>=1000TP), or when a target, focus target, or sub target has an SP ability active.
+- Added Bar Pulse animation options. Will pulse the bar when HP, MP, or your Pets HP are critically low (<=25%), when TP is ready to use (>=1000TP), or when a Target, Focus Target, or Sub Target has an SP ability active.
+- Added Bar Drain animation options. Bar meter updates immediately as normal, while the newly "missing" part of the bar smoothly drains away.
 - Added `show_target_lock` option. Indicates when you have your camera locked to your current target.
 - Added `floating_tp_number` option. The TP number for the TP bar floats along with the end of the TP meter.
 - Added `condense_target_name_and_sp_name` options. Rotates the name of the target and the SP ability name when a Target has an SP ability active, showing one at a time. Setting this to false will display the SP ability name after the target name.
@@ -193,9 +216,10 @@ Version 4.0
 - Added `icons` settings to change the different status icons.
 - Added `italic` option for each section.
 - Added `bar_bg` options under `colors`. Can now adjust the color of the background bar (`normal`). Also added colorizing the background bar when the target is dead (`dead`).
+- Added a slight stroke/outline to all text to improve readability.
 - Removed a number of commands that are either no longer needed (ie pos) or have been split into multiple sections (ie bold). Positions for the different bars have been split out into their own sections and can now be modified via drag and drop with the `ui` command. Bold and other settings are also split into each section now and can be modified in the settings file.
 - Adjusted the meter bar resolution/granularity. Number of steps increased by 10 times, much more accurate meter bar lengths now.
-- Adjusted the Self Action bar update polling from 10 to 50 times per second. Combined with the 10x meter bar steps adjustment this creates a noticeably smoother bar animation.
+- Adjusted the Self Action bar update polling from 10 to 50 times per second. Combined with the 10x meter bar steps adjustment this results in a noticeably smoother bar animation.
 - Adjusted Target, Focus Target, and Sub Targets to no longer show active SP abilities once the target dies.
 - Adjusted display of active SP ability on a mob to cancel if it is removed via Larceny.
 - Adjusted the Fade option to not activate when player is dead.
@@ -203,6 +227,8 @@ Version 4.0
 - Fixed the SP Ability "Widened Compass" from not showing as activated.
 - Fixed the name of a "player" weapon skill used by an enemy (ex. a Dyna Volte mob using Tachi: Fudo) being blinked/anticipated by a player being incorrectly labeled as a job ability.
 - Known Issue: The name of a weapon skill used by a player being blinked by an enemy will be displayed incorrectly as a job ability.
+- Known Issue: Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the window's title bar is included when Windower returns the position of the mouse, but is not included when placing a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
+- Known Issue: The Target Lock icons/line very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.
 
 Version 3.6.1
 - Fixed spacing in Pet Bar.
