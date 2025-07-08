@@ -198,6 +198,13 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `text_size` | Font size of the text within this section. |
 | → `vertical_spacing_between_players` | Number of pixels between each party member in the party. |
 
+## Know Issues
+- The name of a weapon skill used by a player being blinked by an enemy will be displayed incorrectly as a job ability.
+- Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the window's title bar is included when Windower returns the position of the mouse, but is not included when placing a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
+- The Target Lock icons/underline very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.  
+![Bars_known_issue_1](https://github.com/user-attachments/assets/71e98977-4589-4501-841e-adbe3819294d)
+
+
 ## Changelog
 
 Version 4.0
