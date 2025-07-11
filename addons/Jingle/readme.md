@@ -17,6 +17,7 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
 All commands must be preceded with `//jingle`   (ex: `//jingle list`)  
 `[optional] <required>`
  - `add/a` \[target] \[sound_file_name] - Add a target with an optional sound file.
+ - `zone/z` \[target] \[sound_file_name] - Add a target with an optional sound file for the current zone only.
  - `temp/t` \[target] \[sound_file_name] - Add a temporary target with an optional sound file.
    - Valid targets: Names (ex: Oseem), IDs (ex: 17809550), Hex IDs (ex: 08E).
    - Use quotes to surround an NPC/mob name that contains spaces.
@@ -30,6 +31,11 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
  - `help` - Display a list of commands and addon info.
 
 ## Version History ##
+
+2.2
+- Added `zone` command. Adds a target that will only be found as "nearby" while in the zone you are currently in. You can also manually add zone targets directly to the data/targets.lua file using the format "Target Name|Zone name" for the target name.
+- Adjusted all addon notifications to be sent to the say channel by default. This should make sure all "nearby" notifications should be sent to whichever log window you have your chat sent to.
+- Adjusted the temp command to save to the data/targets.lua file like other targets. Temporary targets get "|temporary" appended to the end of the target name and are still cleared on zoning as before.
 
 2.1
 - Added `temp/t` command. Will add a new temporary target to be tracked. Automatically removed when the player zones. Can also be removed like normal with the `remove` command.
