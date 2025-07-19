@@ -90,8 +90,8 @@ default_targets = {
 	["Gyvewrapped Naraka"] = "default",
 	["Haughty Tulittia"] = "default",
 	["Mog-Tablet"] = "default",
-	["???||Temenos"] = "default",
-	["???||Apollyon"] = "default",
+	["???|Temenos"] = "default",
+	["???|Apollyon"] = "default",
 }
 
 --Location of the targets file
