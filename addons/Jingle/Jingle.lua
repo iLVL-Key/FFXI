@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.2'
+_addon.version = '2.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -38,7 +38,9 @@ add_to_chat = windower.add_to_chat
 addon_path = windower.addon_path
 get_info = windower.ffxi.get_info
 get_mob_array = windower.ffxi.get_mob_array
+get_mob_by_index = windower.ffxi.get_mob_by_index
 get_mob_by_target = windower.ffxi.get_mob_by_target
+get_player = windower.ffxi.get_player
 play_sound = windower.play_sound
 register_event = windower.register_event
 
@@ -366,13 +368,43 @@ function checkForTarget()
 	local current_zone_id = windower.ffxi.get_info().zone
 	local current_zone_name = res.zones[current_zone_id] and res.zones[current_zone_id].name or "Unknown"
 
+	--Get angle in degrees between player and target (thanks Genoxd!)
+	function getAngle(player, target)
+		local dx = target.x - player.x
+		local dy = target.y - player.y
+		local angle = math.atan2(dy, dx) -- returns radians
+		local degrees = math.deg(angle) -- convert to degrees
+		return (degrees + 360) % 360 -- normalize to 0-360
+	end
+
+	--Convert angle in degrees to compass direction
+	function getDirection(degrees)
+		if degrees >= 337.5 or degrees < 22.5 then
+			return 'East'
+		elseif degrees < 67.5 then
+			return 'North-East'
+		elseif degrees < 112.5 then
+			return 'North'
+		elseif degrees < 157.5 then
+			return 'North-West'
+		elseif degrees < 202.5 then
+			return 'West'
+		elseif degrees < 247.5 then
+			return 'South-West'
+		elseif degrees < 292.5 then
+			return 'South'
+		elseif degrees < 337.5 then
+			return 'South-East'
+		end
+	end
+
 	--Loop through all mobs in memory
 	for _, mob in pairs(mob_array) do
 
 		local distance = math.floor(mob.distance:sqrt() * 100) / 100
 
 		--Mob is a valid_target and is within our determined distance
-		if mob.valid_target and distance <= max_distance then
+		if mob.valid_target and distance ~= 0 and distance <= max_distance then
 
 			--Keys to match this mob to (in order)
 			local keys = {
@@ -400,11 +432,17 @@ function checkForTarget()
 					--Notify player if not already announced or flood delay has passed
 					if not announced:contains(key) and (current_time - last_seen_time > settings.flood_delay) then
 
-						local displayName = (key == convertToHexId(mob.index))
-							and (mob.name..' ('..key..')') or mob.name
+						local displayName = (key == convertToHexId(mob.index)) and (mob.name..' ('..key..')') or mob.name
+						local player = get_mob_by_index(get_player().index)
+						local degrees = getAngle(player, mob)
+						local direction = getDirection(degrees)
 
+						if direction then
+							add_to_chat(1,'[Jingle] ':color(220)..displayName:color(1)..' detected ':color(8)..distance..'y':color(1)..' to the ':color(8)..direction:color(1)..'.':color(8))
+						else
+							add_to_chat(1,'[Jingle] ':color(220)..displayName..' is nearby.':color(8))
+						end
 						play_sound(addon_path..'data/sounds/'..sound_file..'.wav')
-						add_to_chat(1,'[Jingle] ':color(220)..displayName..' is nearby.':color(8))
 						table.insert(announced, key)
 					end
 
