@@ -5,6 +5,7 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
 ![Jingle_Oseem](https://github.com/iLVL-Key/FFXI/assets/101156258/5ed6b45b-e798-4e1e-92dc-27d7490fcca1)
 
 ## Features ##
+ - Tells you distance and direction to target when found.
  - Plays only once until the target moves out of range again.
    - Flood Delay setting so a Target right at the edge of nearby distance won't spam.
  - Will work using names, IDs, or Hex IDs (great for NM placeholders).
@@ -31,6 +32,9 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
  - `help` - Display a list of commands and addon info.
 
 ## Version History ##
+
+2.3
+- Adjusted target callout to include target distance and direction (thanks Genoxd!)
 
 2.2
 - Added `zone` command. Adds a target that will only be found as "nearby" while in the zone you are currently in. You can also manually add zone targets directly to the data/targets.lua file using the format "Target Name|Zone name" for the target name.
