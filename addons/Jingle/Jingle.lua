@@ -438,6 +438,7 @@ function checkForTarget()
 						local direction = getDirection(degrees)
 
 						if direction then
+							distance = math.floor(distance + 0.5)
 							add_to_chat(1,'[Jingle] ':color(220)..displayName:color(1)..' detected ':color(8)..distance..'y':color(1)..' to the ':color(8)..direction:color(1)..'.':color(8))
 						else
 							add_to_chat(1,'[Jingle] ':color(220)..displayName..' is nearby.':color(8))
