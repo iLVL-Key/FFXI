@@ -35,6 +35,9 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
 
 ## Version History ##
 
+2.3.1
+- Adjusted the distance to only show the full number, no decimal places.
+
 2.3
 - Adjusted target callout to include target distance and direction (thanks Genoxd!)
 
