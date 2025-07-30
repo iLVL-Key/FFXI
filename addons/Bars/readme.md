@@ -1,5 +1,5 @@
 # Bars
-Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Stats (HP, MP, TP, Pet).  
+Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Stats (HP, MP, TP, Pet), plus a boat-load of other things.  
 <br><br>
 ![Bars_ui_positions](https://github.com/user-attachments/assets/6f85f5c8-4298-442f-a302-2771380d9bf6)  
 ↑ The `//bars ui` command triggers the Screen Test where you can drag any of the highlighted bars.
@@ -16,12 +16,12 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
 ↑ Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
 <br><br><br>
+<img width="238" height="144" alt="Bars_debuffs" src="https://github.com/user-attachments/assets/52280a58-bc21-40cf-be3d-06907d707da5" />  
+↑ The Debuff Icons and Timers displayed above a target.<br><br><br>
 ![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
 ↑ The Party Actions displayed next to each of your party members.
 <br><br>
 ## Features
-- Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
-- Names and bars colored based on type (NPC, Party member, mob claimed by someone else, etc.).
 - Target Actions.
   - Displays results of completed actions (damage, buffs, resists, etc.).
   - Displays number of targets hit and totals for AoE cures/damage.
@@ -39,6 +39,11 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 - Focus Target Override.
   - Designate the current cursor target as a Focus Target taking priority over the Auto Focus Target list.
   - Focus will persist until subject moves out of range, dies, or is disabled manually.
+- Display Debuffs on Monsters.
+  - Shows the tiers of the debuffs (Frazzle 3, Dia 4, Slow 2, etc.)
+  - Will show a best guess timer for each.
+  - Removes the icon only when the debuff is known to be removed/off (ie Benediction or "wears off" message), otherwise displays "??" if unsure.
+- Display Monster levels.
 - Display the Index or Hex number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
 - Display distance to target.
@@ -52,6 +57,8 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - Bar Fade - fades away after a set time of inactivity.
   - Bar Pulse - pulses the bar under certain circumstance (SP ability active, TP is reaady, critical HP, etc.).
   - Bar Drain - bar meter updates immediately, while the newly "missing" part of the bar smoothly drains away.
+- Player Stats (HP/MP/TP/Pet) can be turned on/off individually per job (ie SAM could show only TP, while PLD shows HP, MP, and TP)
+- Names and bars colored based on type (NPC, Party member, mob claimed by someone else, etc.).
 - Nearly every feature can be turned on/off or adjusted via settings file or in-game commands.
 
 ## How To Setup
@@ -99,6 +106,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `target_lock_left` | Icon displayed on the left of the target when the camera is locked-on. |
 | `target_lock_right` | Icon displayed on the right of the target when the camera is locked-on. |
 | `targeting` | Icon separating the action from the target of the action. |
+| `truncate` | Icon used to truncate long text. |
 
 ### Job Specific
 | **Setting** | **Description** |
@@ -130,16 +138,21 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `pulse_brightness` | Maximum brightness (alpha) the Bar Pulse effect reaches. |
 | → `pulse_name_when_target_sp_active` | Pulses a target’s name when they use an SP Ability. |
 | → `pulse_speed` | Speed of the Bar Pulse effect.<br># >= 1<br>Higher = faster |
+| → `pulse_tp_meter_only` | The pulse effect from the `pulse_when_tp_ready` option only applies to the TP meter, not the whole bar. |
 | → `pulse_when_hp_low` | Pulses the HP bar when critically low. |
 | → `pulse_when_mp_low` | Pulses the MP bar when critically low. |
 | → `pulse_when_pet_low` | Pulses the Pet bar when pet HP is critically low. |
 | → `pulse_when_tp_ready` | Pulses the TP bar when TP is ready to use. |
-| → `pulse_tp_meter_only` | The pulse effect from the `pulse_tp_ready` option only applies to the TP meter, not the whole bar. |
 | `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 5.5). |
-| `color_spells` | Colorize the names of spells to match their element. |
+| `colorize_spells` | Colorize the names of spells to match their element. |
 | `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
+| `debuffs` | Overall debuff options |
+| → `blacklist` | Determines what type of list is used.<br>`true` = Buffs in the list will be excluded from showing.<br>`false` = Buffs in the list will be the only ones shown. |
+| → `list` | Comma-separated list of buffs to either exclude or show. |
 | `focus_target_max_distance` | The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed. |
+| `hide_pet_bar_when_no_pet` | Hide the pet bar when set to be displayed but no pet is present. |
+| `hide_player_stats_bars_when_no_target` | Hide any Player Stat bars set to be displayed when there is no current target. |
 | `max_action_length` | The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space. |
 | `max_name_length` | The maximum number of characters of a target’s name displayed (target action line only). Target names longer than this number will be truncated to help save space. |
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
@@ -151,6 +164,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `show_focus_target_when_targeted` | Show the Auto Focus Target bar when the subject of it has been targeted. False prevents a target being on both at the same time. |
 | `show_hp_tp_markers` | Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP. |
 | `show_max_hp_mp_on_bars` | Shows the current maximum HP and MP on their respective bars. |
+| `show_monster_level` | Show the level of the current monster target.  |
 | `show_pet_distance` | Show the distance between you and your pet. |
 | `show_pet_status` | Show the current status of your pet (Idle, Engaged, etc.). |
 | `show_pet_tp` | Show the current TP of your pet. |
@@ -175,17 +189,30 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
 | → `bold` | Text within this section is bold. |
+| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). |
+| → `debuff_icon_size` | Size in pixels of the debuff icons (this number is used for both height and width), |
+| → `debuff_icon_spacing` | Number of pixels between each debuff icon. |
+| → `debuff_icons` | Show the debuff icons for monsters. |
+| → `debuff_max_icons` | Maximum number of debuffs displayed on this bar, capped at 32. |
+| → `debuff_timer_offset` | Horizontal offset for the debuff timers (centered on the bar, positive moves downward, negative moves upward). |
+| → `debuff_timer_size` | Font size of the debuff timers text. |
+| → `debuff_timers` | Show the debuff timers for monsters. Requires `debuff_icons` to be `true`. |
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
 | → `pos` | X and Y position of the bar. |
 | `show` | (Self Action only) Show the Self Action section. |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
+| → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
+| → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
+| → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
 | → `sub_text_offset` | Horizontal offset for the sub/action text (centered on the bar, positive moves downward, negative moves upward). |
 | → `sub_text_shadow_offset` | Diagonal offset for the shadow of the sub/action text (positive moves down-right, negative moves up-left). |
 | → `sub_text_size` | Font size of the sub/action text. |
 | → `text_offset` | Horizontal offset for the text (centered on the bar, positive moves downward, negative moves upward). |
 | → `text_shadow_offset` | Diagonal offset for the shadow of the text (positive moves down-right, negative moves up-left). |
 | → `text_size` | Font size of the text within this section. |
+| → `ui_bg` | Display the gradient shadow behind the text in this section. |
+| → `ui_bg_alpha` | Opacity level for the gradient shadow behind the text in this section (0-255). |
 | `party_1_actions`<br>`party_2_actions`<br>`party_3_actions` | These sections do not have bars, but are a simplified display of the actions of each party member. |
 | → `bold` | Text within this section is bold. |
 | → `font` | Font of the text within this section. |
@@ -198,7 +225,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `text_size` | Font size of the text within this section. |
 | → `vertical_spacing_between_players` | Number of pixels between each party member in the party. |
 
-## Know Issues
+## Known Issues
 - The name of a weapon skill used by a player being blinked by an enemy will be displayed incorrectly as a job ability.
 - Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the window's title bar is included when Windower returns the position of the mouse, but is not included when placing a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
 - The Target Lock icons/underline very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.  
@@ -206,6 +233,30 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.1
+- Added `debuff_icons` and `debuff_timers` options. Will display icons/timers for debuffs on monsters.
+  - This feature IS NOT 100% accurate. There is currently no way to directly see and track buffs/debuffs on monsters.
+  - Timers are based on minimum durations and will turn into a "??" once it reaches zero and we have not received a "debuff wears off" message.
+  - You will not receive a "debuff wears off" message for debuffs that another player has landed on a monster.
+  - There is no way to account for any duration gear that other players have when they land debuffs.
+- Added `show_monster_level` option. Shows a monster's level on the Focus Target, Sub Target, and Target bars. Shares space with Dynamis Jobs which takes priority. Uses Wide Scan to retrieve monster levels and will scan at a random interval between every 30 and 60 seconds only when the player is active (determined by changing targets). In regards to Limbus mobs and their adjusting levels, keep in mind mobs will adjust their level immediately when they are aggroed, but the level displayed in Bars will only update once the scan happens again.
+  - Tracking a target via the in-game Wide Scan function will prevent further Wide Scans for monster levels until either the tracked target dies or the track is removed.
+- Added `ui_bg` options to the Focus Target, Sub Target, Target, and Self Action sections. Adds a gradient shadow behind the text for these bars to help readability.
+- Added the `bottom_up` option to the `party_1_actions` section. Determines if the party list goes from the bottom up (true) or top down(false) as members are added to the party. Added for those who use the XIVParty addon and have their party list go from top down. (thanks xenodeus!)
+- Added `truncate` icon option.
+- Added a number of `stroke_alpha`, `stroke_width`, and `stroke_color` settings to the different bar sections.
+- Added `hide_pet_bar_when_no_pet` option. Hides the pet bar when set to be displayed but no pet is present.
+- Added `hide_player_stats_bars_when_no_target` option. Hides any Player Stat bars set to be displayed when there is no current target.
+- Adjusted how the `abbreviate_common_mob_names` option works. Now pulls the names and their abbreviations from the `data/mob_abbreviations.lua` file. This allows the user to edit, add, or remove abbreviations as they see fit.
+- Added Temenos and Apollyon mobs to the default list of common names abbreviated by the `abbreviate_common_mob_names` option.
+- Added additional checks to help prevent the Target Lock and UI BG from displaying incorrectly.
+- Adjusted the bg_alpha of the bar meters and bar drain meters so that their combined alpha equals the actual bg_alpha number in settings (since they are overlapped).
+- Adjusted the Target Lock coloring to match the target color.
+- Fixed an issue with the Bar Drain effect for the Pet bar not going back to the correct alpha after Bar Fade.
+- Fixed an issue with the Pet bar flickering when faded.
+- Fixed Focus Target, Sub Target, Player Stats HP, Player Stats MP, and Player Stats Pet Bar Drain animation not working as intended.
+- Fixed issues with zoning while Screen Test is active
+- Fixed an issue with using Food when already full resulting in the Self Action "action failed" meter showing by itself and getting stuck until the player performs another action.
 
 Version 4.0
 - Overhauled how Auto Focus target data is saved. Now saves as a lua table in separate `data/auto_focus_targets.lua` file instead of saving as xml data inside the settings file. This approach allows for much easier handling of target names. No need to convert names with spaces and apostrophes to a format that xml can parse, instead saved as a direct string key exactly how it should be spelled.
