@@ -25,18 +25,20 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.0'
+_addon.version = '4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
 config = require('config')
-texts = require('texts')
-res = require('resources')
-packets = require('packets')
 files = require('files')
+images = require('images')
+packets = require('packets')
+res = require('resources')
+texts = require('texts')
 require 'chat'
 
 add_to_chat = windower.add_to_chat
+file_exists = windower.file_exists
 get_info = windower.ffxi.get_info
 get_items = windower.ffxi.get_items
 get_mob_array = windower.ffxi.get_mob_array
@@ -48,18 +50,20 @@ get_player = windower.ffxi.get_player
 get_position = windower.ffxi.get_position
 get_windower_settings = windower.get_windower_settings
 register_event = windower.register_event
+windower_path = windower.windower_path
 
 defaults = {
-	bg = {alpha = 190, red = 0, green = 0, blue = 0},
+	bg = {alpha = 240, red = 0, green = 0, blue = 0},
 	text = {alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas'},
 	icons = {
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
 		number_of_targets_hit = "●",
-		targeting = "→",
 		target_lock_left = "»",
 		target_lock_right = "«",
+		targeting = "→",
+		truncate = "…",
 	},
 	first_run = true,
 	job_specific = {
@@ -180,17 +184,17 @@ defaults = {
 			drain_brightness = 6,
 			drain_hp_bar = true,
 			drain_mp_bar = true,
-			drain_speed = 5,
 			drain_pet_bar = true,
+			drain_speed = 5,
 			drain_target_bars = true,
 			drain_tp_bar = true,
 			fade_after_a_delay = true,
-			fade_down_to_alpha = 0,
 			fade_delay = 60,
+			fade_down_to_alpha = 0,
 			fade_speed = 2,
 			floating_tp_number = false,
-			pulse_brightness = 150,
 			pulse_bar_when_target_sp_active = true,
+			pulse_brightness = 150,
 			pulse_name_when_target_sp_active = true,
 			pulse_speed = 5,
 			pulse_tp_meter_only = false,
@@ -207,7 +211,13 @@ defaults = {
 			sub_target = true,
 			target = true,
 		},
+		debuffs = {
+			blacklist = true,
+			list = S{},
+		},
 		focus_target_max_distance = 40,
+		hide_pet_bar_when_no_pet = true,
+		hide_player_stats_bars_when_no_target = false,
 		max_action_length = 17,
 		max_name_length = 20,
 		remove_tachi_blade_from_ws_name = true,
@@ -219,6 +229,7 @@ defaults = {
 		show_focus_target_when_targeted = false,
 		show_hp_tp_markers = true,
 		show_max_hp_mp_on_bar = true,
+		show_monster_level = true,
 		show_pet_distance = true,
 		show_pet_status = true,
 		show_pet_tp = true,
@@ -241,19 +252,33 @@ defaults = {
 			bar_size = 10,
 			bar_width = 50,
 			bold = true,
+			debuff_icon_offset = -37,
+			debuff_icon_size = 18,
+			debuff_icon_spacing = 2,
+			debuff_icons = true,
+			debuff_max_icons = 12,
+			debuff_timer_offset = -26, 
+			debuff_timer_size = 8,
+			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 576, y = 200},
 			spaces_between_text_parts = 1,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 0.5,
 			sub_text_offset = 6,
 			sub_text_shadow_offset = 2,
 			sub_text_size = 10,
-			text_offset = -15,
+			text_offset = -16,
 			text_shadow_offset = 2,
 			text_size = 10,
+			ui_bg = true,
+			ui_bg_alpha = 100,
 		},
 		party_1_actions = {
 			bold = true,
+			bottom_up = true,
 			font = "Consolas",
 			italic = false,
 			pos = {
@@ -263,16 +288,10 @@ defaults = {
 			right_align = true,
 			show = true,
 			show_self = true,
-			stroke_color = {
-				r = 0,
-				g = 0,
-				b = 0,
-			},
-			text_color = {
-				r = 255,
-				g = 255,
-				b = 255,
-			},
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 1,
+			text_color = {r = 255, g = 255, b = 255,},
 			text_size = 9,
 			vertical_spacing_between_players = 20,
 		},
@@ -285,16 +304,10 @@ defaults = {
 				y = get_windower_settings().ui_y_res - 400,
 			},
 			show = true,
-			stroke_color = {
-				r = 0,
-				g = 0,
-				b = 0,
-			},
-			text_color = {
-				r = 255,
-				g = 255,
-				b = 255,
-			},
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 1,
+			text_color = {r = 255, g = 255, b = 255,},
 			text_size = 9,
 			vertical_spacing_between_players = 16,
 			right_align = true,
@@ -309,26 +322,23 @@ defaults = {
 			},
 			right_align = true,
 			show = true,
-			stroke_color = {
-				r = 0,
-				g = 0,
-				b = 0,
-			},
-			text_color = {
-				r = 255,
-				g = 255,
-				b = 255,
-			},
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 1,
+			text_color = {r = 255, g = 255, b = 255,},
 			text_size = 9,
 			vertical_spacing_between_players = 16,
 		},
 		player_stats = {
+			bar_size = 10,
+			bar_width = 100,
 			bold = true,
 			font = 'Consolas',
 			italic = false,
-			bar_size = 10,
-			bar_width = 100,
 			pos = {x = 200, y = 330},
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 0.5,
 			text_offset = -15,
 			text_shadow_offset = 2,
 			text_size = 10,
@@ -342,41 +352,75 @@ defaults = {
 			italic = false,
 			pos = {x = 200, y = 300},
 			show = true,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 0.5,
 			text_shadow_offset = 2,
 			text_size = 11,
 			text_offset = -17,
+			ui_bg = true,
+			ui_bg_alpha = 100,
 		},
 		sub_target = {
 			bar_size = 10,
 			bar_width = 50,
 			bold = true,
+			debuff_icon_offset = -37,
+			debuff_icon_size = 18,
+			debuff_icon_spacing = 2,
+			debuff_icons = true,
+			debuff_max_icons = 12,
+			debuff_timer_offset = -26, 
+			debuff_timer_size = 8,
+			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 200, y = 200},
 			spaces_between_text_parts = 1,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 0.5,
 			sub_text_offset = 6,
 			sub_text_shadow_offset = 2,
 			sub_text_size = 10,
-			text_offset = -15,
+			text_offset = -16,
 			text_shadow_offset = 2,
 			text_size = 10,
+			ui_bg = true,
+			ui_bg_alpha = 100,
 		},
 		target= {
-			bar_width = 100,
 			bar_size = 10,
+			bar_width = 100,
 			bold = true,
+			debuff_icon_offset = -44,
+			debuff_icon_size = 20,
+			debuff_icon_spacing = 2,
+			debuff_icons = true,
+			debuff_max_icons = 12,
+			debuff_timer_offset = -31, 
+			debuff_timer_size = 9,
+			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 200, y = 250},
 			spaces_between_text_parts = 1,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 0.5,
 			sub_text_offset = 6,
 			sub_text_shadow_offset = 2,
 			sub_text_size = 11,
 			target_lock_icon_size = 40,
+			target_lock_icon_stroke_alpha = 255,
+			target_lock_icon_stroke_color = {r = 0, g = 0, b = 0,},
+			target_lock_icon_stroke_width = 1,
 			target_lock_underline_pixel_width = 2.5,
 			text_offset = -21,
 			text_shadow_offset = 2,
 			text_size = 14,
+			ui_bg = true,
+			ui_bg_alpha = 100,
 		},
 	},
 	colors = {
@@ -395,10 +439,6 @@ defaults = {
 			pc_party = {r = 69, g = 199, b = 255},
 			pc_self = {r = 66, g = 135, b = 245},
 			sp_active_glow = {r = 100, g = 100, b = 25},
-		},
-		target_lock = {
-			text = {r = 255, g = 75, b = 25},
-			stroke = {r = 0, g = 0, b = 0},
 		},
 		self = {
 			bar = {r = 240, g = 240, b = 240},
@@ -457,10 +497,16 @@ defaults = {
 			heal = {r = 140, g = 235, b = 255},
 			damage = {r = 255, g = 200, b = 200},
 		},
+		debuffs = {
+			critical_low = {r = 255, g = 77, b = 77},
+			low = {r = 255, g = 139, b = 56},
+			normal = {r = 255, g = 255, b = 255},
+		}
 	},
 }
 
 settings = config.load(defaults)
+settings:save('all') --only useful for when Bars gets updated, will automatically add in any new default settings.
 
 --Default/example targets to pre-populate the auto_focus_targets.lua file
 default_auto_focus_targets = {
@@ -611,6 +657,53 @@ else
 	auto_focus_targets_data = require('data.auto_focus_targets')
 end
 
+default_mob_abbreviations = {
+	["Apex"] = "A.",
+	["Locus"] = "L.",
+	["Bozzetto"] = "Bz.",
+	["Sweetwater"] = "Swt.",
+	["Transcended"] = "Trn.",
+	["Nostos"] = "N.",
+	["Abject"] = "A.",
+	["Biune"] = "B.",
+	["Cachaemic"] = "C.",
+	["Demisang"] = "D.",
+	["Esurient"] = "E.",
+	["Fetid"] = "F.",
+	["Gyvewrapped"] = "G.",
+	["Haughty"] = "H.",
+	["Squadron"] = "Sqd.",
+	["Regiment"] = "Rgm.",
+	["Vanguard"] = "Vng.",
+	["Awoken"] = "A.",
+	["Azi Dahaka's"] = "Azi's",
+	["Naga Raja's"] = "Naga's",
+	["Quetzalcoatl's"] = "Quetz's",
+	["Commander"] = "Cmdr.",
+	["Leader"] = "Ldr.",
+	["Temenos"] = "T.",
+	["Apollyon"] = "A.",
+}
+
+--Location of the mob abbreviations file
+mob_abbreviations_file = files.new('data\\mob_abbreviations.lua')
+
+mob_abbreviations_help_msg = "--This file is used to store the mob names and their abbreviations used by the `abbreviate_common_mob_names` option in Bars.\n--Please note the name to be replaced is case-sensitive but does not have to be the complete mob name, only the part of the name you wish to be replaced.\n\n"
+
+mob_abbreviations_data = {}
+
+--If the data\mob_abbreviations.lua file doesn't exist, create it
+if not mob_abbreviations_file:exists() then
+
+	mob_abbreviations_data = default_mob_abbreviations
+
+	mob_abbreviations_file:write(mob_abbreviations_help_msg..'return {\n'..sortedTableString(mob_abbreviations_data, '    ')..'\n}')
+
+else
+	--File already exists, load it
+	mob_abbreviations_data = require('data.mob_abbreviations')
+end
+
 bg_alpha = settings.bg.alpha
 text_alpha = settings.text.alpha
 
@@ -622,7 +715,9 @@ condense_focus_target_name_and_sp_name = settings.options.condense_target_name_a
 condense_sub_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.sub_target
 condense_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.target
 drain_decay = (settings.options.animations.drain_speed / 10)
-drain_bg_alpha = bg_alpha * (settings.options.animations.drain_brightness / 10)
+drain_brightness = math.max(1, math.min(10, settings.options.animations.drain_brightness))
+drain_bg_alpha = bg_alpha * (drain_brightness / 10)
+meter_bg_alpha = bg_alpha * ((10 - drain_brightness) / 10)
 drain_hp_bar = settings.options.animations.drain_hp_bar
 drain_mp_bar = settings.options.animations.drain_mp_bar
 drain_pet_bar = settings.options.animations.drain_pet_bar
@@ -634,8 +729,12 @@ fade_bg_num = settings.bg.alpha
 fade_delay = settings.options.animations.fade_delay
 fade_speed = settings.options.animations.fade_speed
 fade_text_num = settings.text.alpha
+fade_icon_num = 255
+fade_bg_ui_num = settings.sections.focus_target.ui_bg_alpha
 floating_tp_number = settings.options.animations.floating_tp_number
 focus_target_max_distance = settings.options.focus_target_max_distance
+hide_pet_bar_when_no_pet = settings.options.hide_pet_bar_when_no_pet
+hide_player_stats_bars_when_no_target = settings.options.hide_player_stats_bars_when_no_target
 job_specific = settings.job_specific
 max_action_length = settings.options.max_action_length
 max_name_length = settings.options.max_name_length
@@ -657,6 +756,7 @@ show_dyna_jobs = settings.options.show_dyna_jobs
 show_fancy_rolls = settings.options.show_fancy_rolls
 show_focus_target_when_targeted = settings.options.show_focus_target_when_targeted
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
+show_monster_level = settings.options.show_monster_level
 show_pet_status = settings.options.show_pet_status
 show_pet_distance = settings.options.show_pet_distance
 show_pet_tp = settings.options.show_pet_tp
@@ -675,37 +775,59 @@ show_target_hex = settings.options.show_target_hex
 show_target_index = settings.options.show_target_index
 show_target_lock = settings.options.show_target_lock
 
-focus_target_bar_width = settings.sections.focus_target.bar_width
-sub_target_bar_width = settings.sections.sub_target.bar_width
-target_bar_width = settings.sections.target.bar_width
-self_action_bar_width = settings.sections.self_action.bar_width
-player_stats_bar_width = settings.sections.player_stats.bar_width
-
 focus_target_bar_size = settings.sections.focus_target.bar_size
-sub_target_bar_size = settings.sections.sub_target.bar_size
-target_bar_size = settings.sections.target.bar_size
-self_action_bar_size = settings.sections.self_action.bar_size
-player_stats_bar_size = settings.sections.player_stats.bar_size
-
-focus_target_text_size = settings.sections.focus_target.text_size
-sub_target_text_size = settings.sections.sub_target.text_size
-target_text_size = settings.sections.target.text_size
-self_action_text_size = settings.sections.self_action.text_size
-player_stats_text_size = settings.sections.player_stats.text_size
-
+focus_target_bar_width = settings.sections.focus_target.bar_width
+focus_target_stroke_alpha = settings.sections.focus_target.stroke_alpha
+focus_target_stroke_color = settings.sections.focus_target.stroke_color
+focus_target_stroke_width = settings.sections.focus_target.stroke_width
 focus_target_sub_text_size = settings.sections.focus_target.sub_text_size
+focus_target_text_size = settings.sections.focus_target.text_size
+
+sub_target_bar_size = settings.sections.sub_target.bar_size
+sub_target_bar_width = settings.sections.sub_target.bar_width
+sub_target_stroke_alpha = settings.sections.sub_target.stroke_alpha
+sub_target_stroke_color = settings.sections.sub_target.stroke_color
+sub_target_stroke_width = settings.sections.sub_target.stroke_width
 sub_target_sub_text_size = settings.sections.sub_target.sub_text_size
+sub_target_text_size = settings.sections.sub_target.text_size
+
+target_bar_size = settings.sections.target.bar_size
+target_bar_width = settings.sections.target.bar_width
+target_stroke_alpha = settings.sections.target.stroke_alpha
+target_stroke_color = settings.sections.target.stroke_color
+target_stroke_width = settings.sections.target.stroke_width
 target_sub_text_size = settings.sections.target.sub_text_size
+target_text_size = settings.sections.target.text_size
+
+self_action_bar_size = settings.sections.self_action.bar_size
+self_action_bar_width = settings.sections.self_action.bar_width
+self_action_stroke_alpha = settings.sections.self_action.stroke_alpha
+self_action_stroke_color = settings.sections.self_action.stroke_color
+self_action_stroke_width = settings.sections.self_action.stroke_width
+self_action_text_size = settings.sections.self_action.text_size
+
+player_stats_bar_size = settings.sections.player_stats.bar_size
+player_stats_bar_width = settings.sections.player_stats.bar_width
+player_stats_stroke_alpha = settings.sections.player_stats.stroke_alpha
+player_stats_stroke_color = settings.sections.player_stats.stroke_color
+player_stats_stroke_width = settings.sections.player_stats.stroke_width
+player_stats_text_size = settings.sections.player_stats.text_size
 
 party_1_actions = settings.sections.party_1_actions
 party_2_actions = settings.sections.party_2_actions
 party_3_actions = settings.sections.party_3_actions
+
+target_lock_icon_stroke_alpha = settings.sections.target.target_lock_icon_stroke_alpha
+target_lock_icon_stroke_color = settings.sections.target.target_lock_icon_stroke_color
+target_lock_icon_stroke_width = settings.sections.target.target_lock_icon_stroke_width
+target_lock_icon_size = settings.sections.target.target_lock_icon_size
 
 casting_icon = settings.icons.casting
 cancelled_icon = settings.icons.cancelled
 completed_icon = settings.icons.completed
 targeting_icon = settings.icons.targeting
 num_hit_icon = settings.icons.number_of_targets_hit
+truncate_icon = settings.icons.truncate
 
 color = settings.colors
 font = settings.text.font
@@ -792,6 +914,9 @@ job = ''
 pet_tp = 0
 current_actions = {}
 current_sp_actions = {}
+current_debuffs = {}
+current_levels = {}
+next_wide_scan_time = os.time() + math.random(30, 45)
 focus_target = nil
 focus_target_override = nil
 focus_target_bar_width_str = ''
@@ -802,11 +927,13 @@ target_bar_width_str = ''
 player_stats_top_bar = ''
 index = 0
 Heartbeat = 0
+in_dyna = false
+wide_scan_locked = false
 drain_previous_ft_id = nil
 drain_previous_st_id = nil
 drain_previous_t_id = nil
-drain_ft_hpp = 100
-drain_st_hpp = 100
+drain_ft_hpp = 0
+drain_st_hpp = 0
 drain_t_hpp = 100
 drain_ps_hpp = 100
 drain_ps_mpp = 100
@@ -843,6 +970,7 @@ t_spaces = string.rep(' ', settings.sections.target.spaces_between_text_parts)
 target_lock_icon_pixel_width = 0
 target_lock_icon_pixel_height = 0
 target_lock_underline_pixel_width = 0
+self_action_bar_pixel_width = 0
 target_bar_pixel_width = 0
 target_bar_pixel_height = 0
 num_party1_members = 0
@@ -852,29 +980,205 @@ Screen_Test = false
 screen_test_focus_target = {
 	name = "Focus Target",
 	action = "Focus Target Action",
-	hpp = 100,
+	hpp = 50,
 	distance = 100,
+	id = 99999,
 	index = 12345,
 	model_size = 5,
 }
 screen_test_sub_target = {
 	name = "Sub Target",
 	action = "Sub Target Action",
-	hpp = 100,
+	hpp = 50,
 	distance = 100,
+	id = 99999,
 	index = 12345,
 	model_size = 5,
 }
 screen_test_target = {
 	name = "Target",
 	action = "Target Action",
-	hpp = 100,
+	hpp = 50,
 	distance = 100,
+	id = 99999,
 	index = 12345,
 	model_size = 5,
 }
+screen_test_debuffs = {
+	focus_target = {},
+	sub_target = {},
+	target = {},
+}
+for section, section_table in pairs(screen_test_debuffs) do
+	local max_icons = math.max(0, math.min(settings.sections[section].debuff_max_icons, 32))
+	for i = 1, max_icons do
+		section_table[i] = math.random(0, 640)
+	end
+end
+
 sp_active_glow = settings.colors.target.sp_active_glow
-text_outline = {r = 0, g = 0, b = 0}
+
+ft_text_stroke = {
+	a = focus_target_stroke_alpha,
+	r = focus_target_stroke_color.r,
+	g = focus_target_stroke_color.g,
+	b = focus_target_stroke_color.b,
+	w = focus_target_stroke_width,
+}
+st_text_stroke = {
+	a = sub_target_stroke_alpha,
+	r = sub_target_stroke_color.r,
+	g = sub_target_stroke_color.g,
+	b = sub_target_stroke_color.b,
+	w = sub_target_stroke_width,
+}
+t_text_stroke = {
+	a = target_stroke_alpha,
+	r = target_stroke_color.r,
+	g = target_stroke_color.g,
+	b = target_stroke_color.b,
+	w = target_stroke_width,
+}
+sa_text_stroke = {
+	a = self_action_stroke_alpha,
+	r = self_action_stroke_color.r,
+	g = self_action_stroke_color.g,
+	b = self_action_stroke_color.b,
+	w = self_action_stroke_width,
+}
+ps_text_stroke = {
+	a = player_stats_stroke_alpha,
+	r = player_stats_stroke_color.r,
+	g = player_stats_stroke_color.g,
+	b = player_stats_stroke_color.b,
+	w = player_stats_stroke_width,
+}
+
+wide_scan_exclude_zones = S{
+	"Western Adoulin","Eastern Adoulin","Celennia Memorial Library","Silver Knife","Bastok Markets","Bastok Mines","Metalworks","Port Bastok","Chateau d'Oraguille","Northern San d'Oria","Port San d'Oria","Southern San d'Oria","Heavens Tower","Port Windurst","Windurst Walls","Windurst Waters","Windurst Woods","Lower Jeuno","Port Jeuno","Ru'Lude Gardens","Upper Jeuno","Aht Urhgan Whitegate","The Colosseum","Tavnazian Safehold","Southern San d'Oria [S]","Bastok Markets [S]","Windurst Waters [S]","Mhaura","Selbina","Rabao","Kazham","Norg","Nashmau","Mog Garden","Leafallia","Chocobo Circuit"
+}
+
+--CREATE IMAGE/TEXT OBJECTS
+
+--Create the UI BG LEFT image objects
+
+ui_bg_left = {
+	focus_target = {},
+	sub_target = {},
+	target = {},
+	self_action = {},
+}
+
+for section in pairs(ui_bg_left) do
+	local file = section == 'self_action' and 'ui_bg_half_left' or 'ui_bg_left'
+	ui_bg_left[section] = images.new({
+		color = {alpha = settings.sections[section].ui_bg_alpha},
+		texture = {
+			path = windower_path..'addons/Bars/data/ui/'..file..'.png',
+			fit = false,
+		},
+		draggable = false,
+	})
+end
+
+--Create the UI BG MIDDLE image objects
+
+ui_bg_middle = {
+	focus_target = {},
+	sub_target = {},
+	target = {},
+	self_action = {},
+}
+
+for section in pairs(ui_bg_middle) do
+	local file = section == 'self_action' and 'ui_bg_half_middle' or 'ui_bg_middle'
+	ui_bg_middle[section] = images.new({
+		color = {alpha = settings.sections[section].ui_bg_alpha},
+		texture = {
+			path = windower_path..'addons/Bars/data/ui/'..file..'.png',
+			fit = false,
+		},
+		draggable = false,
+	})
+end
+
+--Create the UI BG RIGHT image objects
+
+ui_bg_right = {
+	focus_target = {},
+	sub_target = {},
+	target = {},
+	self_action = {},
+}
+
+for section in pairs(ui_bg_right) do
+	local file = section == 'self_action' and 'ui_bg_half_right' or 'ui_bg_right'
+	ui_bg_right[section] = images.new({
+		color = {alpha = settings.sections[section].ui_bg_alpha},
+		texture = {
+			path = windower_path..'addons/Bars/data/ui/'..file..'.png',
+			fit = false,
+		},
+		draggable = false,
+	})
+end
+
+--Create the DEBUFF ICON image objects
+
+debuff_icons = {
+	focus_target = {},
+	sub_target = {},
+	target = {}
+}
+
+for section, section_table in pairs(debuff_icons) do
+	local section_settings = settings.sections[section]
+
+	--Make sure Debuff Icons are enabled for each section
+	if section_settings.debuff_icons then
+		local max_icons = math.max(0, math.min(section_settings.debuff_max_icons, 32))
+		for i = 1, max_icons do
+			section_table[i] = images.new({
+				color = {alpha = 255},
+				texture = {fit = false},
+				draggable = false,
+				size = {height = section_settings.debuff_icon_size, width = section_settings.debuff_icon_size},
+			})
+		end
+	end
+end
+
+--Create the DEBUFF TIMER text objects
+
+debuff_timers = {
+	focus_target = {},
+	sub_target = {},
+	target = {}
+}
+
+for section, section_table in pairs(debuff_timers) do
+	local section_settings = settings.sections[section]
+
+	--Make sure Debuff Icons and Timers are both enabled for each section
+	if section_settings.debuff_icons and section_settings.debuff_timers then
+		local max_icons = math.max(0, math.min(section_settings.debuff_max_icons, 32))
+		for i = 1, max_icons do
+			section_table[i] = texts.new({
+				text = {
+					alpha = 255,
+					font = font,
+					size = section_settings.debuff_timer_size,
+					stroke = {alpha = 255, width = 1},
+				},
+				bg = {alpha = 0},
+				flags = {
+					draggable = false,
+					bold = true,
+				},
+			})
+		end
+	end
+end
 
 --TARGET LOCK
 
@@ -882,34 +1186,33 @@ text_outline = {r = 0, g = 0, b = 0}
 target_bar_lock_left = texts.new()
 target_bar_lock_left:text(settings.icons.target_lock_left)
 target_bar_lock_left:font(font)
-target_bar_lock_left:color(color.target_lock.text.r,color.target_lock.text.g,color.target_lock.text.b)
 target_bar_lock_left:alpha(text_alpha)
 target_bar_lock_left:bg_alpha(0)
-target_bar_lock_left:stroke_color(color.target_lock.stroke.r,color.target_lock.stroke.g,color.target_lock.stroke.b)
-target_bar_lock_left:stroke_width(1)
+target_bar_lock_left:stroke_width(target_lock_icon_stroke_width)
+target_bar_lock_left:stroke_color(target_lock_icon_stroke_color.r,target_lock_icon_stroke_color.g,target_lock_icon_stroke_color.b)
+target_bar_lock_left:stroke_alpha(target_lock_icon_stroke_alpha)
 target_bar_lock_left:bold(true)
 target_bar_lock_left:draggable(false)
-target_bar_lock_left:size(settings.sections.target.target_lock_icon_size)
+target_bar_lock_left:size(target_lock_icon_size)
 
 --Create the TARGET LOCK Right text object
 target_bar_lock_right = texts.new()
 target_bar_lock_right:text(settings.icons.target_lock_right)
 target_bar_lock_right:font(font)
-target_bar_lock_right:color(color.target_lock.text.r,color.target_lock.text.g,color.target_lock.text.b)
 target_bar_lock_right:alpha(text_alpha)
 target_bar_lock_right:bg_alpha(0)
-target_bar_lock_right:stroke_color(color.target_lock.stroke.r,color.target_lock.stroke.g,color.target_lock.stroke.b)
-target_bar_lock_right:stroke_width(1)
+target_bar_lock_right:stroke_width(target_lock_icon_stroke_width)
+target_bar_lock_right:stroke_color(target_lock_icon_stroke_color.r,target_lock_icon_stroke_color.g,target_lock_icon_stroke_color.b)
+target_bar_lock_right:stroke_alpha(target_lock_icon_stroke_alpha)
 target_bar_lock_right:bold(true)
 target_bar_lock_right:draggable(false)
-target_bar_lock_right:size(settings.sections.target.target_lock_icon_size)
+target_bar_lock_right:size(target_lock_icon_size)
 
 --Create the TARGET LOCK Underline text object
 target_bar_lock_underline = texts.new()
 target_bar_lock_underline:font(font)
 target_bar_lock_underline:pad(-(focus_target_bar_size - settings.sections.target.target_lock_underline_pixel_width))
 target_bar_lock_underline:bg_alpha(bg_alpha)
-target_bar_lock_underline:bg_color(color.target_lock.text.r,color.target_lock.text.g,color.target_lock.text.b)
 target_bar_lock_underline:draggable(false)
 target_bar_lock_underline:size(focus_target_bar_size)
 
@@ -1112,7 +1415,7 @@ player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 focus_target_bar_meter = texts.new()
 focus_target_bar_meter:font(font)
 focus_target_bar_meter:pad(-5)
-focus_target_bar_meter:bg_alpha(bg_alpha)
+focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 focus_target_bar_meter:draggable(false)
 focus_target_bar_meter:size(focus_target_bar_size / 10)
 
@@ -1120,7 +1423,7 @@ focus_target_bar_meter:size(focus_target_bar_size / 10)
 sub_target_bar_meter = texts.new()
 sub_target_bar_meter:font(font)
 sub_target_bar_meter:pad(-5)
-sub_target_bar_meter:bg_alpha(bg_alpha)
+sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 sub_target_bar_meter:draggable(false)
 sub_target_bar_meter:size(sub_target_bar_size / 10)
 
@@ -1128,7 +1431,7 @@ sub_target_bar_meter:size(sub_target_bar_size / 10)
 target_bar_meter = texts.new()
 target_bar_meter:font(font)
 target_bar_meter:pad(-5)
-target_bar_meter:bg_alpha(bg_alpha)
+target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 target_bar_meter:draggable(false)
 target_bar_meter:size(target_bar_size / 10)
 
@@ -1145,7 +1448,7 @@ self_action_bar_meter:size(self_action_bar_size / 10)
 player_stats_hp_bar_meter = texts.new()
 player_stats_hp_bar_meter:font(font)
 player_stats_hp_bar_meter:pad(-5)
-player_stats_hp_bar_meter:bg_alpha(bg_alpha)
+player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
 player_stats_hp_bar_meter:draggable(false)
 player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1153,7 +1456,7 @@ player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_mp_bar_meter = texts.new()
 player_stats_mp_bar_meter:font(font)
 player_stats_mp_bar_meter:pad(-5)
-player_stats_mp_bar_meter:bg_alpha(bg_alpha)
+player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
 player_stats_mp_bar_meter:draggable(false)
 player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1161,7 +1464,7 @@ player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_tp_bar_meter = texts.new()
 player_stats_tp_bar_meter:font(font)
 player_stats_tp_bar_meter:pad(-5)
-player_stats_tp_bar_meter:bg_alpha(bg_alpha)
+player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
 player_stats_tp_bar_meter:draggable(false)
 player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1169,7 +1472,7 @@ player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_pet_bar_meter = texts.new()
 player_stats_pet_bar_meter:font(font)
 player_stats_pet_bar_meter:pad(-5)
-player_stats_pet_bar_meter:bg_alpha(bg_alpha)
+player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
 player_stats_pet_bar_meter:draggable(false)
 player_stats_pet_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1327,9 +1630,9 @@ focus_target_text:color(text_color.r,text_color.g,text_color.b)
 focus_target_text:alpha(text_alpha)
 focus_target_text:bg_alpha(0)
 focus_target_text:draggable(false)
-focus_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-focus_target_text:stroke_alpha(text_alpha)
-focus_target_text:stroke_width(0.5)
+focus_target_text:stroke_color(ft_text_stroke.r,ft_text_stroke.g,ft_text_stroke.b)
+focus_target_text:stroke_alpha(ft_text_stroke.a)
+focus_target_text:stroke_width(ft_text_stroke.w)
 focus_target_text:bold(settings.sections.focus_target.bold)
 focus_target_text:italic(settings.sections.focus_target.italic)
 focus_target_text:size(settings.sections.focus_target.text_size)
@@ -1341,9 +1644,9 @@ focus_target_action_text:color(text_color.r,text_color.g,text_color.b)
 focus_target_action_text:alpha(text_alpha)
 focus_target_action_text:bg_alpha(0)
 focus_target_action_text:draggable(false)
-focus_target_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-focus_target_action_text:stroke_alpha(text_alpha)
-focus_target_action_text:stroke_width(0.5)
+focus_target_action_text:stroke_color(ft_text_stroke.r,ft_text_stroke.g,ft_text_stroke.b)
+focus_target_action_text:stroke_alpha(ft_text_stroke.a)
+focus_target_action_text:stroke_width(ft_text_stroke.w)
 focus_target_action_text:bold(settings.sections.focus_target.bold)
 focus_target_action_text:italic(settings.sections.focus_target.italic)
 focus_target_action_text:size(settings.sections.focus_target.sub_text_size)
@@ -1355,9 +1658,9 @@ sub_target_text:color(text_color.r,text_color.g,text_color.b)
 sub_target_text:alpha(text_alpha)
 sub_target_text:bg_alpha(0)
 sub_target_text:draggable(false)
-sub_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-sub_target_text:stroke_alpha(text_alpha)
-sub_target_text:stroke_width(0.5)
+sub_target_text:stroke_color(st_text_stroke.r,st_text_stroke.g,st_text_stroke.b)
+sub_target_text:stroke_alpha(st_text_stroke.a)
+sub_target_text:stroke_width(st_text_stroke.w)
 sub_target_text:bold(settings.sections.sub_target.bold)
 sub_target_text:italic(settings.sections.sub_target.italic)
 sub_target_text:size(settings.sections.sub_target.text_size)
@@ -1369,9 +1672,9 @@ sub_target_action_text:color(text_color.r,text_color.g,text_color.b)
 sub_target_action_text:alpha(text_alpha)
 sub_target_action_text:bg_alpha(0)
 sub_target_action_text:draggable(false)
-sub_target_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-sub_target_action_text:stroke_alpha(text_alpha)
-sub_target_action_text:stroke_width(0.5)
+sub_target_action_text:stroke_color(st_text_stroke.r,st_text_stroke.g,st_text_stroke.b)
+sub_target_action_text:stroke_alpha(st_text_stroke.a)
+sub_target_action_text:stroke_width(st_text_stroke.w)
 sub_target_action_text:bold(settings.sections.sub_target.bold)
 sub_target_action_text:italic(settings.sections.sub_target.italic)
 sub_target_action_text:size(settings.sections.sub_target.sub_text_size)
@@ -1383,9 +1686,9 @@ target_text:color(text_color.r,text_color.g,text_color.b)
 target_text:alpha(text_alpha)
 target_text:bg_alpha(0)
 target_text:draggable(false)
-target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-target_text:stroke_alpha(text_alpha)
-target_text:stroke_width(0.5)
+target_text:stroke_color(t_text_stroke.r,t_text_stroke.g,t_text_stroke.b)
+target_text:stroke_alpha(t_text_stroke.a)
+target_text:stroke_width(t_text_stroke.w)
 target_text:bold(settings.sections.target.bold)
 target_text:italic(settings.sections.target.italic)
 target_text:size(settings.sections.target.text_size)
@@ -1397,9 +1700,9 @@ target_action_text:color(text_color.r,text_color.g,text_color.b)
 target_action_text:alpha(text_alpha)
 target_action_text:bg_alpha(0)
 target_action_text:draggable(false)
-target_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-target_action_text:stroke_alpha(text_alpha)
-target_action_text:stroke_width(0.5)
+target_action_text:stroke_color(t_text_stroke.r,t_text_stroke.g,t_text_stroke.b)
+target_action_text:stroke_alpha(t_text_stroke.a)
+target_action_text:stroke_width(t_text_stroke.w)
 target_action_text:bold(settings.sections.target.bold)
 target_action_text:italic(settings.sections.target.italic)
 target_action_text:size(settings.sections.target.sub_text_size)
@@ -1411,9 +1714,9 @@ self_action_text:color(text_color.r,text_color.g,text_color.b)
 self_action_text:alpha(text_alpha)
 self_action_text:bg_alpha(0)
 self_action_text:draggable(false)
-self_action_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-self_action_text:stroke_alpha(text_alpha)
-self_action_text:stroke_width(0.5)
+self_action_text:stroke_color(sa_text_stroke.r,sa_text_stroke.g,sa_text_stroke.b)
+self_action_text:stroke_alpha(sa_text_stroke.a)
+self_action_text:stroke_width(sa_text_stroke.w)
 self_action_text:bold(settings.sections.self_action.bold)
 self_action_text:italic(settings.sections.self_action.italic)
 self_action_text:size(settings.sections.self_action.text_size)
@@ -1425,9 +1728,9 @@ player_stats_hp_text:color(text_color.r,text_color.g,text_color.b)
 player_stats_hp_text:alpha(text_alpha)
 player_stats_hp_text:bg_alpha(0)
 player_stats_hp_text:draggable(false)
-player_stats_hp_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-player_stats_hp_text:stroke_alpha(text_alpha)
-player_stats_hp_text:stroke_width(0.5)
+player_stats_hp_text:stroke_color(ps_text_stroke.r,ps_text_stroke.g,ps_text_stroke.b)
+player_stats_hp_text:stroke_alpha(ps_text_stroke.a)
+player_stats_hp_text:stroke_width(ps_text_stroke.w)
 player_stats_hp_text:bold(settings.sections.player_stats.bold)
 player_stats_hp_text:italic(settings.sections.player_stats.italic)
 player_stats_hp_text:size(settings.sections.player_stats.text_size)
@@ -1439,9 +1742,9 @@ player_stats_mp_text:color(text_color.r,text_color.g,text_color.b)
 player_stats_mp_text:alpha(text_alpha)
 player_stats_mp_text:bg_alpha(0)
 player_stats_mp_text:draggable(false)
-player_stats_mp_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-player_stats_mp_text:stroke_alpha(text_alpha)
-player_stats_mp_text:stroke_width(0.5)
+player_stats_mp_text:stroke_color(ps_text_stroke.r,ps_text_stroke.g,ps_text_stroke.b)
+player_stats_mp_text:stroke_alpha(ps_text_stroke.a)
+player_stats_mp_text:stroke_width(ps_text_stroke.w)
 player_stats_mp_text:bold(settings.sections.player_stats.bold)
 player_stats_mp_text:italic(settings.sections.player_stats.italic)
 player_stats_mp_text:size(settings.sections.player_stats.text_size)
@@ -1453,9 +1756,9 @@ player_stats_tp_text:color(text_color.r,text_color.g,text_color.b)
 player_stats_tp_text:alpha(text_alpha)
 player_stats_tp_text:bg_alpha(0)
 player_stats_tp_text:draggable(false)
-player_stats_tp_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-player_stats_tp_text:stroke_alpha(text_alpha)
-player_stats_tp_text:stroke_width(0.5)
+player_stats_tp_text:stroke_color(ps_text_stroke.r,ps_text_stroke.g,ps_text_stroke.b)
+player_stats_tp_text:stroke_alpha(ps_text_stroke.a)
+player_stats_tp_text:stroke_width(ps_text_stroke.w)
 player_stats_tp_text:bold(settings.sections.player_stats.bold)
 player_stats_tp_text:italic(settings.sections.player_stats.italic)
 player_stats_tp_text:size(settings.sections.player_stats.text_size)
@@ -1467,9 +1770,9 @@ player_stats_pet_text:color(text_color.r,text_color.g,text_color.b)
 player_stats_pet_text:alpha(text_alpha)
 player_stats_pet_text:bg_alpha(0)
 player_stats_pet_text:draggable(false)
-player_stats_pet_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-player_stats_pet_text:stroke_alpha(text_alpha)
-player_stats_pet_text:stroke_width(0.5)
+player_stats_pet_text:stroke_color(ps_text_stroke.r,ps_text_stroke.g,ps_text_stroke.b)
+player_stats_pet_text:stroke_alpha(ps_text_stroke.a)
+player_stats_pet_text:stroke_width(ps_text_stroke.w)
 player_stats_pet_text:bold(settings.sections.player_stats.bold)
 player_stats_pet_text:italic(settings.sections.player_stats.italic)
 player_stats_pet_text:size(settings.sections.player_stats.text_size)
@@ -1483,8 +1786,9 @@ party_actions_pt1_p0_text:italic(party_1_actions.italic)
 party_actions_pt1_p0_text:bg_alpha(0)
 party_actions_pt1_p0_text:draggable(false)
 party_actions_pt1_p0_text:size(party_1_actions.text_size)
+party_actions_pt1_p0_text:stroke_alpha(party_1_actions.stroke_alpha)
 party_actions_pt1_p0_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
-party_actions_pt1_p0_text:stroke_width(1)
+party_actions_pt1_p0_text:stroke_width(party_1_actions.stroke_width)
 party_actions_pt1_p0_text:right_justified(party_1_actions.right_align)
 party_actions_pt1_p0_text:bold(party_1_actions.bold)
 
@@ -1497,8 +1801,9 @@ party_actions_pt1_p1_text:italic(party_1_actions.italic)
 party_actions_pt1_p1_text:bg_alpha(0)
 party_actions_pt1_p1_text:draggable(false)
 party_actions_pt1_p1_text:size(party_1_actions.text_size)
+party_actions_pt1_p1_text:stroke_alpha(party_1_actions.stroke_alpha)
 party_actions_pt1_p1_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
-party_actions_pt1_p1_text:stroke_width(1)
+party_actions_pt1_p1_text:stroke_width(party_1_actions.stroke_width)
 party_actions_pt1_p1_text:right_justified(party_1_actions.right_align)
 party_actions_pt1_p1_text:bold(party_1_actions.bold)
 
@@ -1511,8 +1816,9 @@ party_actions_pt1_p2_text:italic(party_1_actions.italic)
 party_actions_pt1_p2_text:bg_alpha(0)
 party_actions_pt1_p2_text:draggable(false)
 party_actions_pt1_p2_text:size(party_1_actions.text_size)
+party_actions_pt1_p2_text:stroke_alpha(party_1_actions.stroke_alpha)
 party_actions_pt1_p2_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
-party_actions_pt1_p2_text:stroke_width(1)
+party_actions_pt1_p2_text:stroke_width(party_1_actions.stroke_width)
 party_actions_pt1_p2_text:right_justified(party_1_actions.right_align)
 party_actions_pt1_p2_text:bold(party_1_actions.bold)
 
@@ -1526,8 +1832,9 @@ party_actions_pt1_p3_text:italic(party_1_actions.italic)
 party_actions_pt1_p3_text:bg_alpha(0)
 party_actions_pt1_p3_text:draggable(false)
 party_actions_pt1_p3_text:size(party_1_actions.text_size)
+party_actions_pt1_p3_text:stroke_alpha(party_1_actions.stroke_alpha)
 party_actions_pt1_p3_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
-party_actions_pt1_p3_text:stroke_width(1)
+party_actions_pt1_p3_text:stroke_width(party_1_actions.stroke_width)
 party_actions_pt1_p3_text:right_justified(party_1_actions.right_align)
 party_actions_pt1_p3_text:bold(party_1_actions.bold)
 
@@ -1540,8 +1847,9 @@ party_actions_pt1_p4_text:italic(party_1_actions.italic)
 party_actions_pt1_p4_text:bg_alpha(0)
 party_actions_pt1_p4_text:draggable(false)
 party_actions_pt1_p4_text:size(party_1_actions.text_size)
+party_actions_pt1_p4_text:stroke_alpha(party_1_actions.stroke_alpha)
 party_actions_pt1_p4_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
-party_actions_pt1_p4_text:stroke_width(1)
+party_actions_pt1_p4_text:stroke_width(party_1_actions.stroke_width)
 party_actions_pt1_p4_text:right_justified(party_1_actions.right_align)
 party_actions_pt1_p4_text:bold(party_1_actions.bold)
 
@@ -1554,8 +1862,9 @@ party_actions_pt1_p5_text:italic(party_1_actions.italic)
 party_actions_pt1_p5_text:bg_alpha(0)
 party_actions_pt1_p5_text:draggable(false)
 party_actions_pt1_p5_text:size(party_1_actions.text_size)
+party_actions_pt1_p5_text:stroke_alpha(party_1_actions.stroke_alpha)
 party_actions_pt1_p5_text:stroke_color(pt1_stroke_color.r,pt1_stroke_color.g,pt1_stroke_color.b)
-party_actions_pt1_p5_text:stroke_width(1)
+party_actions_pt1_p5_text:stroke_width(party_1_actions.stroke_width)
 party_actions_pt1_p5_text:right_justified(party_1_actions.right_align)
 party_actions_pt1_p5_text:bold(party_1_actions.bold)
 
@@ -1568,8 +1877,9 @@ party_actions_pt2_p0_text:italic(party_2_actions.italic)
 party_actions_pt2_p0_text:bg_alpha(0)
 party_actions_pt2_p0_text:draggable(false)
 party_actions_pt2_p0_text:size(party_2_actions.text_size)
+party_actions_pt2_p0_text:stroke_alpha(party_2_actions.stroke_alpha)
 party_actions_pt2_p0_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
-party_actions_pt2_p0_text:stroke_width(1)
+party_actions_pt2_p0_text:stroke_width(party_2_actions.stroke_width)
 party_actions_pt2_p0_text:right_justified(party_2_actions.right_align)
 party_actions_pt2_p0_text:bold(party_2_actions.bold)
 
@@ -1582,8 +1892,9 @@ party_actions_pt2_p1_text:italic(party_2_actions.italic)
 party_actions_pt2_p1_text:bg_alpha(0)
 party_actions_pt2_p1_text:draggable(false)
 party_actions_pt2_p1_text:size(party_2_actions.text_size)
+party_actions_pt2_p1_text:stroke_alpha(party_2_actions.stroke_alpha)
 party_actions_pt2_p1_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
-party_actions_pt2_p1_text:stroke_width(1)
+party_actions_pt2_p1_text:stroke_width(party_2_actions.stroke_width)
 party_actions_pt2_p1_text:right_justified(party_2_actions.right_align)
 party_actions_pt2_p1_text:bold(party_2_actions.bold)
 
@@ -1596,8 +1907,9 @@ party_actions_pt2_p2_text:italic(party_2_actions.italic)
 party_actions_pt2_p2_text:bg_alpha(0)
 party_actions_pt2_p2_text:draggable(false)
 party_actions_pt2_p2_text:size(party_2_actions.text_size)
+party_actions_pt2_p2_text:stroke_alpha(party_2_actions.stroke_alpha)
 party_actions_pt2_p2_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
-party_actions_pt2_p2_text:stroke_width(1)
+party_actions_pt2_p2_text:stroke_width(party_2_actions.stroke_width)
 party_actions_pt2_p2_text:right_justified(party_2_actions.right_align)
 party_actions_pt2_p2_text:bold(party_2_actions.bold)
 
@@ -1610,8 +1922,9 @@ party_actions_pt2_p3_text:italic(party_2_actions.italic)
 party_actions_pt2_p3_text:bg_alpha(0)
 party_actions_pt2_p3_text:draggable(false)
 party_actions_pt2_p3_text:size(party_2_actions.text_size)
+party_actions_pt2_p3_text:stroke_alpha(party_2_actions.stroke_alpha)
 party_actions_pt2_p3_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
-party_actions_pt2_p3_text:stroke_width(1)
+party_actions_pt2_p3_text:stroke_width(party_2_actions.stroke_width)
 party_actions_pt2_p3_text:right_justified(party_2_actions.right_align)
 party_actions_pt2_p3_text:bold(party_2_actions.bold)
 
@@ -1624,8 +1937,9 @@ party_actions_pt2_p4_text:italic(party_2_actions.italic)
 party_actions_pt2_p4_text:bg_alpha(0)
 party_actions_pt2_p4_text:draggable(false)
 party_actions_pt2_p4_text:size(party_2_actions.text_size)
+party_actions_pt2_p4_text:stroke_alpha(party_2_actions.stroke_alpha)
 party_actions_pt2_p4_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
-party_actions_pt2_p4_text:stroke_width(1)
+party_actions_pt2_p4_text:stroke_width(party_2_actions.stroke_width)
 party_actions_pt2_p4_text:right_justified(party_2_actions.right_align)
 party_actions_pt2_p4_text:bold(party_2_actions.bold)
 
@@ -1638,8 +1952,9 @@ party_actions_pt2_p5_text:italic(party_2_actions.italic)
 party_actions_pt2_p5_text:bg_alpha(0)
 party_actions_pt2_p5_text:draggable(false)
 party_actions_pt2_p5_text:size(party_2_actions.text_size)
+party_actions_pt2_p5_text:stroke_alpha(party_2_actions.stroke_alpha)
 party_actions_pt2_p5_text:stroke_color(pt2_stroke_color.r,pt2_stroke_color.g,pt2_stroke_color.b)
-party_actions_pt2_p5_text:stroke_width(1)
+party_actions_pt2_p5_text:stroke_width(party_2_actions.stroke_width)
 party_actions_pt2_p5_text:right_justified(party_2_actions.right_align)
 party_actions_pt2_p5_text:bold(party_2_actions.bold)
 
@@ -1652,8 +1967,9 @@ party_actions_pt3_p0_text:italic(party_3_actions.italic)
 party_actions_pt3_p0_text:bg_alpha(0)
 party_actions_pt3_p0_text:draggable(false)
 party_actions_pt3_p0_text:size(party_3_actions.text_size)
+party_actions_pt3_p0_text:stroke_alpha(party_3_actions.stroke_alpha)
 party_actions_pt3_p0_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
-party_actions_pt3_p0_text:stroke_width(1)
+party_actions_pt3_p0_text:stroke_width(party_3_actions.stroke_width)
 party_actions_pt3_p0_text:right_justified(party_3_actions.right_align)
 party_actions_pt3_p0_text:bold(party_3_actions.bold)
 
@@ -1666,8 +1982,9 @@ party_actions_pt3_p1_text:italic(party_3_actions.italic)
 party_actions_pt3_p1_text:bg_alpha(0)
 party_actions_pt3_p1_text:draggable(false)
 party_actions_pt3_p1_text:size(party_3_actions.text_size)
+party_actions_pt3_p1_text:stroke_alpha(party_3_actions.stroke_alpha)
 party_actions_pt3_p1_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
-party_actions_pt3_p1_text:stroke_width(1)
+party_actions_pt3_p1_text:stroke_width(party_3_actions.stroke_width)
 party_actions_pt3_p1_text:right_justified(party_3_actions.right_align)
 party_actions_pt3_p1_text:bold(party_3_actions.bold)
 
@@ -1680,8 +1997,9 @@ party_actions_pt3_p2_text:italic(party_3_actions.italic)
 party_actions_pt3_p2_text:bg_alpha(0)
 party_actions_pt3_p2_text:draggable(false)
 party_actions_pt3_p2_text:size(party_3_actions.text_size)
+party_actions_pt3_p2_text:stroke_alpha(party_3_actions.stroke_alpha)
 party_actions_pt3_p2_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
-party_actions_pt3_p2_text:stroke_width(1)
+party_actions_pt3_p2_text:stroke_width(party_3_actions.stroke_width)
 party_actions_pt3_p2_text:right_justified(party_3_actions.right_align)
 party_actions_pt3_p2_text:bold(party_3_actions.bold)
 
@@ -1694,8 +2012,9 @@ party_actions_pt3_p3_text:italic(party_3_actions.italic)
 party_actions_pt3_p3_text:bg_alpha(0)
 party_actions_pt3_p3_text:draggable(false)
 party_actions_pt3_p3_text:size(party_3_actions.text_size)
+party_actions_pt3_p3_text:stroke_alpha(party_3_actions.stroke_alpha)
 party_actions_pt3_p3_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
-party_actions_pt3_p3_text:stroke_width(1)
+party_actions_pt3_p3_text:stroke_width(party_3_actions.stroke_width)
 party_actions_pt3_p3_text:right_justified(party_3_actions.right_align)
 party_actions_pt3_p3_text:bold(party_3_actions.bold)
 
@@ -1708,8 +2027,9 @@ party_actions_pt3_p4_text:italic(party_3_actions.italic)
 party_actions_pt3_p4_text:bg_alpha(0)
 party_actions_pt3_p4_text:draggable(false)
 party_actions_pt3_p4_text:size(party_3_actions.text_size)
+party_actions_pt3_p4_text:stroke_alpha(party_3_actions.stroke_alpha)
 party_actions_pt3_p4_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
-party_actions_pt3_p4_text:stroke_width(1)
+party_actions_pt3_p4_text:stroke_width(party_3_actions.stroke_width)
 party_actions_pt3_p4_text:right_justified(party_3_actions.right_align)
 party_actions_pt3_p4_text:bold(party_3_actions.bold)
 
@@ -1722,147 +2042,140 @@ party_actions_pt3_p5_text:italic(party_3_actions.italic)
 party_actions_pt3_p5_text:bg_alpha(0)
 party_actions_pt3_p5_text:draggable(false)
 party_actions_pt3_p5_text:size(party_3_actions.text_size)
+party_actions_pt3_p5_text:stroke_alpha(party_3_actions.stroke_alpha)
 party_actions_pt3_p5_text:stroke_color(pt3_stroke_color.r,pt3_stroke_color.g,pt3_stroke_color.b)
-party_actions_pt3_p5_text:stroke_width(1)
+party_actions_pt3_p5_text:stroke_width(party_3_actions.stroke_width)
 party_actions_pt3_p5_text:right_justified(party_3_actions.right_align)
 party_actions_pt3_p5_text:bold(party_3_actions.bold)
 
---Destroy all the text objects when we unload the addon
-register_event('unload', function()
+--Setup UI object positions
+function setUIPositions()
 
-	focus_target_bar_meter:destroy()
-	focus_target_bar_drain_meter:destroy()
-	focus_target_bar_bg:destroy()
-	focus_target_bar_pulse:destroy()
-	focus_target_text:destroy()
-	focus_target_text_shadow:destroy()
-	focus_target_action_text:destroy()
-	focus_target_action_text_shadow:destroy()
-
-	sub_target_bar_meter:destroy()
-	sub_target_bar_drain_meter:destroy()
-	sub_target_bar_bg:destroy()
-	sub_target_bar_pulse:destroy()
-	sub_target_text:destroy()
-	sub_target_text_shadow:destroy()
-	sub_target_action_text:destroy()
-	sub_target_action_text_shadow:destroy()
-
-	target_bar_meter:destroy()
-	target_bar_drain_meter:destroy()
-	target_bar_bg:destroy()
-	target_bar_pulse:destroy()
-	target_bar_lock_left:destroy()
-	target_bar_lock_right:destroy()
-	target_bar_lock_underline:destroy()
-	target_text:destroy()
-	target_text_shadow:destroy()
-	target_action_text:destroy()
-	target_action_text_shadow:destroy()
-
-	self_action_bar_meter:destroy()
-	self_action_bar_bg:destroy()
-	self_action_text:destroy()
-	self_action_text_shadow:destroy()
-
-	player_stats_hp_bar_meter:destroy()
-	player_stats_hp_bar_drain_meter:destroy()
-	player_stats_hp_bar_bg:destroy()
-	player_stats_hp_bar_pulse:destroy()
-	player_stats_hp_marker:destroy()
-	player_stats_hp_text:destroy()
-	player_stats_hp_text_shadow:destroy()
-
-	player_stats_mp_bar_meter:destroy()
-	player_stats_mp_bar_drain_meter:destroy()
-	player_stats_mp_bar_bg:destroy()
-	player_stats_mp_bar_pulse:destroy()
-	player_stats_mp_text:destroy()
-	player_stats_mp_text_shadow:destroy()
-
-	player_stats_tp_bar_meter:destroy()
-	player_stats_tp_bar_drain_meter:destroy()
-	player_stats_tp_bar_bg:destroy()
-	player_stats_tp_bar_pulse:destroy()
-	player_stats_tp_marker:destroy()
-	player_stats_tp_text:destroy()
-	player_stats_tp_text_shadow:destroy()
-
-	player_stats_pet_bar_meter:destroy()
-	player_stats_pet_bar_drain_meter:destroy()
-	player_stats_pet_bar_bg:destroy()
-	player_stats_pet_bar_pulse:destroy()
-	player_stats_pet_text:destroy()
-	player_stats_pet_text_shadow:destroy()
-
-	party_actions_pt1_p0_text:destroy()
-	party_actions_pt1_p1_text:destroy()
-	party_actions_pt1_p2_text:destroy()
-	party_actions_pt1_p3_text:destroy()
-	party_actions_pt1_p4_text:destroy()
-	party_actions_pt1_p5_text:destroy()
-
-	party_actions_pt2_p0_text:destroy()
-	party_actions_pt2_p1_text:destroy()
-	party_actions_pt2_p2_text:destroy()
-	party_actions_pt2_p3_text:destroy()
-	party_actions_pt2_p4_text:destroy()
-	party_actions_pt2_p5_text:destroy()
-
-	party_actions_pt3_p0_text:destroy()
-	party_actions_pt3_p1_text:destroy()
-	party_actions_pt3_p2_text:destroy()
-	party_actions_pt3_p3_text:destroy()
-	party_actions_pt3_p4_text:destroy()
-	party_actions_pt3_p5_text:destroy()
-
-end)
-
---Setup Target Lock positions
-function setTargetLockPositions()
-
-	--Prevent prerender from hiding the target lock text objects while we use extents
+	--Prevent prerender from hiding the UI objects while we use extents
 	calculating_dimensions = true
 
-	--Place Target Lock objects off screen
+	--Place UI objects off screen
 	--A text object needs to be visible in order to use extents to calculate it's dimensions, so we put them way off screen so the user never sees it.
+	focus_target_bar_bg:pos(-1000,-1000)
+	focus_target_bar_bg:show()
+
+	sub_target_bar_bg:pos(-1000,-1000)
+	sub_target_bar_bg:show()
+
 	target_bar_bg:pos(-1000,-1000)
 	target_bar_bg:show()
+
 	target_bar_lock_left:pos(-1000,-1000)
 	target_bar_lock_left:show()
 	target_bar_lock_right:pos(-1000,-1000)
 	target_bar_lock_underline:pos(-1000,-1000)
 	target_bar_lock_underline:show()
 
+	self_action_bar_bg:pos(-1000,-1000)
+	self_action_bar_bg:show()
+
+	player_stats_hp_bar_bg:pos(-1000,-1000)
+	player_stats_hp_bar_bg:show()
+
 	--Wait 0.1 seconds to give time for text objects to display on screen so extents has something to calculate with
 	coroutine.schedule(function()
 
-		--Calculate dimensions of objects
-
+		--Calculate dimensions of UI objects
+		focus_target_bar_pixel_width, focus_target_bar_pixel_height = focus_target_bar_bg:extents()
+		sub_target_bar_pixel_width, sub_target_bar_pixel_height = sub_target_bar_bg:extents()
 		target_bar_pixel_width, target_bar_pixel_height = target_bar_bg:extents()
 		target_lock_icon_pixel_width, target_lock_icon_pixel_height = target_bar_lock_left:extents()
 		target_lock_underline_pixel_width = target_bar_lock_underline:extents()
+		self_action_bar_pixel_width, self_action_bar_pixel_height = self_action_bar_bg:extents()
+		player_stats_bars_pixel_width, player_stats_bars_pixel_height = player_stats_hp_bar_bg:extents()
 
 		--Done with extent calculations
 		calculating_dimensions = false
 
-		--Determine positioning of Target Lock objects
+		--Position of bar sections
+		local ft_pos = {x = settings.sections.focus_target.pos.x, y = settings.sections.focus_target.pos.y + job_specific[job].vertical_offsets.focus_target}
+		local st_pos = {x = settings.sections.sub_target.pos.x, y = settings.sections.sub_target.pos.y + job_specific[job].vertical_offsets.sub_target}
 		local t_pos = {x = settings.sections.target.pos.x, y = settings.sections.target.pos.y + job_specific[job].vertical_offsets.target}
+		local sa_pos = {x = settings.sections.self_action.pos.x, y = settings.sections.self_action.pos.y + job_specific[job].vertical_offsets.self_action}
+		local ps_pos = {x = settings.sections.player_stats.pos.x, y = settings.sections.player_stats.pos.y + job_specific[job].vertical_offsets.player_stats}
+		
+		--Determine positioning of UI objects
 		local icon_left_x = t_pos.x - target_lock_icon_pixel_width
 		local icon_y = t_pos.y - (target_lock_icon_pixel_height / 2)
 		local icon_right_x = t_pos.x + target_bar_pixel_width + 2
 		local underline_x = t_pos.x + (target_bar_pixel_width / 2) - (target_lock_underline_pixel_width / 2)
 		local underline_y = t_pos.y + target_bar_pixel_height
 
+		local ui_bg_ft_l_x = ft_pos.x
+		local ui_bg_ft_m_x = ft_pos.x + 10
+		local ui_bg_ft_r_x = ft_pos.x + (focus_target_bar_pixel_width - 10)
+		local ui_bg_ft_y = ft_pos.y + (focus_target_bar_pixel_height / 2) - 25
+
+		local ui_bg_st_l_x = st_pos.x
+		local ui_bg_st_m_x = st_pos.x + 10
+		local ui_bg_st_r_x = st_pos.x + (sub_target_bar_pixel_width - 10)
+		local ui_bg_st_y = st_pos.y + (sub_target_bar_pixel_height / 2) - 25
+
+		local ui_bg_t_l_x = t_pos.x
+		local ui_bg_t_m_x = t_pos.x + 10
+		local ui_bg_t_r_x = t_pos.x + (target_bar_pixel_width - 10)
+		local ui_bg_t_y = t_pos.y + (target_bar_pixel_height / 2) - 25
+
+		local ui_bg_sa_l_x = sa_pos.x
+		local ui_bg_sa_m_x = sa_pos.x + 10
+		local ui_bg_sa_r_x = sa_pos.x + (self_action_bar_pixel_width - 10)
+		local ui_bg_sa_y = sa_pos.y + (self_action_bar_pixel_height / 2) - 25
+
 		--Hide objects then move them into correct positions
+		focus_target_bar_bg:hide()
+		focus_target_bar_bg:pos(ft_pos.x, ft_pos.y)
+
+		sub_target_bar_bg:hide()
+		sub_target_bar_bg:pos(st_pos.x, st_pos.y)
+
 		target_bar_bg:hide()
 		target_bar_bg:pos(t_pos.x, t_pos.y)
+
+		self_action_bar_bg:hide()
+		self_action_bar_bg:pos(sa_pos.x, sa_pos.y)
+
+		player_stats_hp_bar_bg:hide()
+		player_stats_hp_bar_bg:pos(ps_pos.x, ps_pos.y)
+
 		target_bar_lock_left:hide()
 		target_bar_lock_left:pos(icon_left_x,icon_y)
 		target_bar_lock_right:hide()
 		target_bar_lock_right:pos(icon_right_x,icon_y)
 		target_bar_lock_underline:hide()
 		target_bar_lock_underline:pos(underline_x, underline_y)
+
+		ui_bg_left.focus_target:pos(ui_bg_ft_l_x,ui_bg_ft_y)
+		ui_bg_left.focus_target:size(10,50)
+		ui_bg_middle.focus_target:pos(ui_bg_ft_m_x,ui_bg_ft_y)
+		ui_bg_middle.focus_target:size(focus_target_bar_pixel_width - 20,50)
+		ui_bg_right.focus_target:pos(ui_bg_ft_r_x,ui_bg_ft_y)
+		ui_bg_right.focus_target:size(10,50)
+
+		ui_bg_left.sub_target:pos(ui_bg_st_l_x,ui_bg_st_y)
+		ui_bg_left.sub_target:size(10,50)
+		ui_bg_middle.sub_target:pos(ui_bg_st_m_x,ui_bg_st_y)
+		ui_bg_middle.sub_target:size(sub_target_bar_pixel_width - 20,50)
+		ui_bg_right.sub_target:pos(ui_bg_st_r_x,ui_bg_st_y)
+		ui_bg_right.sub_target:size(10,50)
+
+		ui_bg_left.target:pos(ui_bg_t_l_x,ui_bg_t_y)
+		ui_bg_left.target:size(10,50)
+		ui_bg_middle.target:pos(ui_bg_t_m_x,ui_bg_t_y)
+		ui_bg_middle.target:size(target_bar_pixel_width - 20,50)
+		ui_bg_right.target:pos(ui_bg_t_r_x,ui_bg_t_y)
+		ui_bg_right.target:size(10,50)
+
+		ui_bg_left.self_action:pos(ui_bg_sa_l_x,ui_bg_sa_y)
+		ui_bg_left.self_action:size(10,25)
+		ui_bg_middle.self_action:pos(ui_bg_sa_m_x,ui_bg_sa_y)
+		ui_bg_middle.self_action:size(self_action_bar_pixel_width - 20,25)
+		ui_bg_right.self_action:pos(ui_bg_sa_r_x,ui_bg_sa_y)
+		ui_bg_right.self_action:size(10,25)
 
 	end, 0.1)
 
@@ -1930,7 +2243,7 @@ function setPositions()
 		return positions
 	end
 
-	--Determine positions based on which bars are displayed
+	--Determine Player Stats bars positions based on which bars are displayed
 	local positions = assign_positions(job_specific[job])
 	local pos_hp = positions.hp or player_stats_1
 	local pos_mp = positions.mp or player_stats_2
@@ -2011,12 +2324,37 @@ function setPositions()
 		player_stats_top_bar = 'pet'
 	end
 
-	setTargetLockPositions()
+	--Set Debuff Icons image object positions
+	for section, section_table in pairs(debuff_icons) do
+		local spacing = 0
+		local section_settings = settings.sections[section]
+
+		for i, icon in ipairs(section_table) do
+			icon:pos(section_settings.pos.x + spacing, section_settings.pos.y + job_specific[job].vertical_offsets[section] + section_settings.debuff_icon_offset)
+
+			spacing = spacing + section_settings.debuff_icon_size + section_settings.debuff_icon_spacing
+		end
+	end
+
+	--Set Debuff Timers text object positions
+	for section, section_table in pairs(debuff_timers) do
+		local spacing = 0
+		local section_settings = settings.sections[section]
+
+		for i, timer in ipairs(section_table) do
+			timer:pos(section_settings.pos.x + spacing, section_settings.pos.y + job_specific[job].vertical_offsets[section] + section_settings.debuff_timer_offset)
+
+			spacing = spacing + section_settings.debuff_icon_size + section_settings.debuff_icon_spacing
+		end
+	end
+
+	setUIPositions()
 
 end
 
 --Update the positions of the Party Actions text objects
 function updatePartyActionsPos(num_party1_members, num_party2_members, num_party3_members)
+	local pt1_bottom_up = party_1_actions.bottom_up
 	local pt1_pos_x = party_1_actions.pos.x
 	local pt1_pos_y = party_1_actions.pos.y
 	local pt1_y_spacing = party_1_actions.vertical_spacing_between_players
@@ -2055,10 +2393,10 @@ function updatePartyActionsPos(num_party1_members, num_party2_members, num_party
 
 	text_objects = { party_actions_pt1_p0_text, party_actions_pt1_p1_text, party_actions_pt1_p2_text, party_actions_pt1_p3_text, party_actions_pt1_p4_text, party_actions_pt1_p5_text }
 
-	--Handle Party 1 (bottom-up layout)
+	--Handle Party 1
 	if num_party1_members and num_party1_members > 0 then
 		for i = 1, num_party1_members do
-			local pos_index = 7 - (num_party1_members - (i - 1))
+			local pos_index = pt1_bottom_up and (7 - (num_party1_members - (i - 1))) or i
 			local obj = text_objects[i]
 			local pos = pt1_positions[pos_index]
 			if obj and pos then
@@ -2136,6 +2474,9 @@ function hideBars()
 	focus_target_text_shadow:hide()
 	focus_target_action_text:hide()
 	focus_target_action_text_shadow:hide()
+	ui_bg_left.focus_target:hide()
+	ui_bg_middle.focus_target:hide()
+	ui_bg_right.focus_target:hide()
 
 	sub_target_bar_meter:hide()
 	sub_target_bar_drain_meter:hide()
@@ -2145,12 +2486,18 @@ function hideBars()
 	sub_target_text_shadow:hide()
 	sub_target_action_text:hide()
 	sub_target_action_text_shadow:hide()
+	ui_bg_left.sub_target:hide()
+	ui_bg_middle.sub_target:hide()
+	ui_bg_right.sub_target:hide()
 
-	--These 3 need to be visible when calculating their dimensions so we can set the Target Lock objects correctly
+	--These need to be visible when calculating their dimensions so we can set the UI image objects correctly
 	if not calculating_dimensions then
+		focus_target_bar_bg:hide()
+		sub_target_bar_bg:hide()
 		target_bar_bg:hide()
 		target_bar_lock_left:hide()
 		target_bar_lock_underline:hide()
+		self_action_bar_bg:hide()
 	end
 	target_bar_meter:hide()
 	target_bar_drain_meter:hide()
@@ -2160,11 +2507,16 @@ function hideBars()
 	target_text_shadow:hide()
 	target_action_text:hide()
 	target_action_text_shadow:hide()
+	ui_bg_left.target:hide()
+	ui_bg_middle.target:hide()
+	ui_bg_right.target:hide()
 
 	self_action_bar_meter:hide()
-	self_action_bar_bg:hide()
 	self_action_text:hide()
 	self_action_text_shadow:hide()
+	ui_bg_left.self_action:hide()
+	ui_bg_middle.self_action:hide()
+	ui_bg_right.self_action:hide()
 
 	player_stats_hp_bar_meter:hide()
 	player_stats_hp_bar_drain_meter:hide()
@@ -2383,11 +2735,13 @@ function decrementSPTimers()
 
 end
 
---Clear all actions from the action tables
-function clearActionTables()
+--Clear all tables to keep them clean
+function clearTables()
 
 	current_actions = {}
 	current_sp_actions = {}
+	current_debuffs = {}
+	current_levels = {}
 
 end
 
@@ -2420,6 +2774,21 @@ function addCommas(number)
 
 	--Return the number (albeit as a string, we're not doing any math on it at this point)
 	return formattedNumber
+
+end
+
+--Is the target a monster?
+function isMonster(id)
+
+	local actor = get_mob_by_id(id)
+
+	--Is a monster (not in_party to exclude trusts)
+	if actor and actor.spawn_type == 16 and not actor.in_party then
+		return true
+	--Is not a monster
+	else
+		return false
+	end
 
 end
 
@@ -2550,7 +2919,7 @@ function truncateAction(action)
 	--Check if the string length is greater than max_action_length
 	if #action > num then
 		--Truncate and add an ellipsis
-		action = string.sub(action, 1, num-1).."…"
+		action = string.sub(action, 1, num-1)..truncate_icon
 	end
 
 	return action
@@ -2562,15 +2931,17 @@ function truncateName(name)
 
 	local num = max_name_length
 
-	--Abbreviate common names
+	--Abbreviate common names (from the mob_abbreviations.lua file)
 	if abbreviate_common_mob_names then
-		name = name:gsub("Apex", "A."):gsub("Locus", "L."):gsub("Bozzetto", "Bz."):gsub("Sweetwater", "Swt."):gsub("Transcended", "Trn."):gsub("Nostos", "N."):gsub("Abject", "A."):gsub("Biune", "B."):gsub("Cachaemic", "C."):gsub("Demisang", "D."):gsub("Esurient", "E."):gsub("Fetid", "F."):gsub("Gyvewrapped", "G."):gsub("Haughty", "H."):gsub("Squadron", "Sqd."):gsub("Regiment", "Rgm."):gsub("Vanguard", "Vng."):gsub("Awoken", "A."):gsub("Azi Dahaka's", "Azi's"):gsub("Naga Raja's", "Naga's"):gsub("Quetzalcoatl's", "Quetz's"):gsub("Commander", "Cmdr."):gsub("Leader", "Ldr.")
+		for key, abbreviation in pairs(mob_abbreviations_data) do
+			name = name:gsub(key, abbreviation, 1)
+		end
 	end
 
 	--Check if the string length is greater than max_name_length
 	if #name > num then
 		--Truncate and add an ellipsis
-		name = string.sub(name, 1, num-1).."…"
+		name = string.sub(name, 1, num-1)..truncate_icon
 	end
 
 	return name
@@ -2647,73 +3018,73 @@ function removeFromAutoFocusTargetList(target)
 	end
 end
 
+--Are we in Dyna-[D]?
+function inDyna()
+	local zone = res.zones[get_info().zone].en
+	in_dyna = string.match(zone, "%[D%]$") and true or false
+end
+
 --What jobs are the target mob?
 function dynaJob(mob_name)
 
-	local zone = res.zones[get_info().zone].en
-	local in_dyna = string.match(zone, "%[D%]$") and true or false
-	if in_dyna then
-		--Volte NMs: Exact name-to-job mapping
-		local volte_nms = {
-			["Volte Cleaver"] = "WAR",
-			["Volte Fistfighter"] = "MNK",
-			["Volte Incanter"] = "BLM",
-			["Volte Priest"] = "WHM",
-			["Volte Duelist"] = "RUN",
-			["Volte Vagabond"] = "THF",
-			["Volte Crusader"] = "PLD",
-			["Volte Reaper"] = "DRK",
-			["Volte Trainer"] = "BST",
-			["Volte Conductor"] = "BRD",
-			["Volte Sniper"] = "RNG",
-			["Volte Mononofu"] = "SAM",
-			["Volte Shinobi"] = "NIN",
-			["Volte Highwind"] = "DRG",
-			["Volte Controller"] = "SMN",
-			["Volte Joiner"] = "BLU",
-			["Volte Sailor"] = "COR",
-			["Volte Manipulator"] = "PUP",
-			["Volte Twirler"] = "DNC",
-			["Volte Erudite"] = "SCH",
-			["Volte Communer"] = "GEO",
-			["Volte Illusionist"] = "RDM"
-		}
+	--Volte NMs: Exact name-to-job mapping
+	local volte_nms = {
+		["Volte Cleaver"] = "WAR",
+		["Volte Fistfighter"] = "MNK",
+		["Volte Incanter"] = "BLM",
+		["Volte Priest"] = "WHM",
+		["Volte Duelist"] = "RUN",
+		["Volte Vagabond"] = "THF",
+		["Volte Crusader"] = "PLD",
+		["Volte Reaper"] = "DRK",
+		["Volte Trainer"] = "BST",
+		["Volte Conductor"] = "BRD",
+		["Volte Sniper"] = "RNG",
+		["Volte Mononofu"] = "SAM",
+		["Volte Shinobi"] = "NIN",
+		["Volte Highwind"] = "DRG",
+		["Volte Controller"] = "SMN",
+		["Volte Joiner"] = "BLU",
+		["Volte Sailor"] = "COR",
+		["Volte Manipulator"] = "PUP",
+		["Volte Twirler"] = "DNC",
+		["Volte Erudite"] = "SCH",
+		["Volte Communer"] = "GEO",
+		["Volte Illusionist"] = "RDM"
+	}
 
-		--Squadron, Regiment, Leader, and Commander: Pattern-matching
-		local job_designators = {
-			["WAR|DRK"] = {"Berserker", "Skullcrusher", "Ravager", "Weaponmaster", "Fighter", "Hoplite"},
-			["MNK|PUP"] = {"Fistfighter", "Pugilist", "Mendicant", "Combatant", "Brother", "Ascetic"},
-			["THF|DNC"] = {"Vandal", "Fleetfoot", "Cutpurse", "Trickster", "Pickpocket", "Ruffian"},
-			["BLM|GEO"] = {"Arcanomancer", "Evoker", "Invoker", "Magister", "Magus", "Magian"},
-			["RDM|RUN"] = {"Defiler", "Enchanter", "Warlock", "Magician", "Shaman", "Prognosticator"},
-			["PLD|DRG"] = {"Banneret", "Knight", "Stalwart", "Cavalier", "Chevalier", "Champion"},
-			["BST|RNG"] = {"Animist", "Tamer", "Hunter", "Harnesser", "Domesticator", "Empath"},
-			["WHM|SMN"] = {"Vivifier", "Medic", "Priest", "Mender", "Healer", "Orisha"},
-			["BRD|SAM"] = {"Flautist", "Troubador", "Minstrel", "Balladeer", "Joculator", "Minnesinger"},
-			["NIN|BLU"] = {"Operative", "Shinobi", "Kagemusha", "Shadowstalker", "Assassin", "Spy"},
-			["COR|SCH"] = {"Buccaneer", "Pirate", "Canoneer", "Scallywag", "Freebooter", "Privateer"}
-		}
+	--Squadron, Regiment, Leader, and Commander: Pattern-matching
+	local job_designators = {
+		["WAR|DRK"] = {"Berserker", "Skullcrusher", "Ravager", "Weaponmaster", "Fighter", "Hoplite"},
+		["MNK|PUP"] = {"Fistfighter", "Pugilist", "Mendicant", "Combatant", "Brother", "Ascetic"},
+		["THF|DNC"] = {"Vandal", "Fleetfoot", "Cutpurse", "Trickster", "Pickpocket", "Ruffian"},
+		["BLM|GEO"] = {"Arcanomancer", "Evoker", "Invoker", "Magister", "Magus", "Magian"},
+		["RDM|RUN"] = {"Defiler", "Enchanter", "Warlock", "Magician", "Shaman", "Prognosticator"},
+		["PLD|DRG"] = {"Banneret", "Knight", "Stalwart", "Cavalier", "Chevalier", "Champion"},
+		["BST|RNG"] = {"Animist", "Tamer", "Hunter", "Harnesser", "Domesticator", "Empath"},
+		["WHM|SMN"] = {"Vivifier", "Medic", "Priest", "Mender", "Healer", "Orisha"},
+		["BRD|SAM"] = {"Flautist", "Troubador", "Minstrel", "Balladeer", "Joculator", "Minnesinger"},
+		["NIN|BLU"] = {"Operative", "Shinobi", "Kagemusha", "Shadowstalker", "Assassin", "Spy"},
+		["COR|SCH"] = {"Buccaneer", "Pirate", "Canoneer", "Scallywag", "Freebooter", "Privateer"}
+	}
 
-		--First, check for an exact match for Volte NMs
-		if volte_nms[mob_name] then
-			return volte_nms[mob_name]
-		end
+	--First, check for an exact match for Volte NMs
+	if volte_nms[mob_name] then
+		return volte_nms[mob_name]
+	end
 
-		--Next, use pattern matching for the job designators
-		for job, designators in pairs(job_designators) do
-			for _, designator in ipairs(designators) do
-				if string.find(mob_name, designator) and mob_name ~= "Volte Dark Knight" then --Make sure we don't count the Volte Dark KNIGHT as a "PLD|DRG"
-					return job
-				end
+	--Next, use pattern matching for the job designators
+	for job, designators in pairs(job_designators) do
+		for _, designator in ipairs(designators) do
+			if string.find(mob_name, designator) and mob_name ~= "Volte Dark Knight" then --Make sure we don't count the Volte Dark KNIGHT as a "PLD|DRG"
+				return job
 			end
 		end
-
-		--No match is found
-		return false
-
-	else
-		return false
 	end
+
+	--Not in Dyna, or no matches
+	return false
+
 end
 
 --Apply Range coloring to Distance number (most of the distance calculations come from DistancePlus)
@@ -2913,11 +3284,82 @@ function colorizeDistance(text, distance, target)
 
 end
 
+--Format the Debuff timers
+function formatTimer(num)
+	local formatted_num = ''
+	local c = settings.colors.debuffs.normal
+	if num > 3600 then
+		local hr = math.floor(num / 3600)
+		formatted_num = hr..'h'
+	elseif num > 60 then
+		local min = math.floor(num / 60)
+		formatted_num = min..'m'
+	elseif num > 0 then
+		if num <= 10 then
+			c = settings.colors.debuffs.critical_low
+		elseif num <= 30 then
+			c = settings.colors.debuffs.low
+		end
+		num = tostring(math.floor(num))
+		formatted_num = string.format("%2s", num)
+	else
+		c = settings.colors.debuffs.critical_low
+		formatted_num = '??'
+	end
+	return '\\cs('..c.r..','..c.g..','..c.b..')'..formatted_num..'\\cr'
+end
+
+--Get the proper Icon File to display based on the spell cast
+function getIconFile(spell_name, debuff_id)
+	local icon_path_base = windower_path..'addons/Bars/data/icons/'
+	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv"}
+	local helix_names = {
+		'pyrohelix', 'cryohelix', 'anemohelix', 'geohelix',
+		'ionohelix', 'hydrohelix', 'luminohelix', 'noctohelix'
+	}
+
+	spell_name = spell_name:lower()
+	local icon_file = debuff_id
+
+	--Check for helix prefix
+	for _, helix in ipairs(helix_names) do
+		if spell_name:sub(1, #helix) == helix then
+			icon_file = helix
+			break
+		end
+	end
+
+	for suffix, roman_num in pairs(roman_numerals) do
+		if spell_name:sub(-#suffix) == suffix:lower() then
+			local roman_num_file = icon_file..roman_num..'.png'
+			local roman_num_path = icon_path_base..roman_num_file
+			local debuff_id_file = icon_file..'.png'
+			local debuff_id_path = icon_path_base..debuff_id_file
+
+			--Check if the icon file exists
+			if file_exists(roman_num_path) then
+				icon_file = icon_file..roman_num
+			elseif not file_exists(debuff_id_path) then
+				icon_file = nil
+			end
+
+			break
+		end
+	end
+
+	return icon_file
+end
 
 --Update the Focus Target bar
 function updateFocusTarget()
 
+	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
+
 	local target = get_mob_by_target('t') or nil
+	local ft_settings = settings.sections.focus_target
+	local max_icons = ft_settings.debuff_icons and math.max(0, math.min(ft_settings.debuff_max_icons, 32)) or 0
+	local icon_set = debuff_icons.focus_target
+	local timer_set = debuff_timers.focus_target
 
 	--Hide the Focus Target bar if there is no Focus Target to display, or the Focus Target is targeted
 	if not (focus_target_override or focus_target)
@@ -2931,13 +3373,22 @@ function updateFocusTarget()
 			focus_target_text_shadow:hide()
 			focus_target_action_text:hide()
 			focus_target_action_text_shadow:hide()
+			ui_bg_left.focus_target:hide()
+			ui_bg_middle.focus_target:hide()
+			ui_bg_right.focus_target:hide()
+			for k = 1, max_icons do
+				icon_set[k]:hide()
+				timer_set[k]:hide()
+			end
 		end
 		return
 	end
 
 	local ft = focus_target_override and focus_target_override or focus_target
 	local hpp_raw = ft and ft.hpp or 0
-	drain_ft_hpp = fts and drain_previous_ft_id == ft.id and hpp_raw < drain_ft_hpp and drain_ft_hpp - drain_decay or hpp_raw
+	local hpp_diff = drain_ft_hpp - hpp_raw
+	local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
+	drain_ft_hpp = ft and drain_previous_ft_id == ft.id and hpp_raw < drain_ft_hpp and drain_ft_hpp - current_decay or hpp_raw
 	local sp_active = ft and hpp_raw ~= 0 and current_sp_actions[ft.id]
 	local sp_timer = sp_active and ft_spaces..string.format("%d:%02d", math.floor(current_sp_actions[ft.id].timer / 60), current_sp_actions[ft.id].timer % 60)
 	local sp_name = sp_active and current_sp_actions[ft.id].sp_name
@@ -2950,11 +3401,12 @@ function updateFocusTarget()
 		end
 	end
 	ft_name = ft_spaces..ft_name
-	local dyna_job_raw = ft and show_dyna_jobs and dynaJob(ft.name) or false
+	local dyna_job_raw = ft and show_dyna_jobs and in_dyna and dynaJob(ft.name) or false
 	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
-	local ft_index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
+	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
 	local dist_raw = ft and math.floor(ft.distance:sqrt()*100)/100
 	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local level = ft and show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ' Lv '..current_levels[ft.index] or '') or ''
 	local meter = ''
 	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -2962,8 +3414,8 @@ function updateFocusTarget()
 	local cm = ft and (Fade and text_color or targetColor(ft)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
-	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..dyna_job..ft_index_hex
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..dyna_job..ft_index_hex
+	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level
 	local status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
 	local status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
 	local action = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action or '')
@@ -3010,6 +3462,11 @@ function updateFocusTarget()
 	focus_target_text_shadow:show()
 	focus_target_action_text:show()
 	focus_target_action_text_shadow:show()
+	if settings.sections.focus_target.ui_bg then
+		ui_bg_left.focus_target:show()
+		ui_bg_middle.focus_target:show()
+		ui_bg_right.focus_target:show()
+	end
 
 	--Update the Focus Target text objects
 	focus_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
@@ -3028,11 +3485,86 @@ function updateFocusTarget()
 	if sp_active and not Pulse_Focus_Target_Name then
 		Pulse_Focus_Target_Name = true
 		focus_target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
-		focus_target_text:stroke_width(1)
+		focus_target_text:stroke_width(ft_text_stroke.w < 1 and 1 or ft_text_stroke.w)
 	elseif Pulse_Focus_Target_Name and not sp_active then
 		Pulse_Focus_Target_Name = false
-		focus_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-		focus_target_text:stroke_width(0.5)
+		focus_target_text:stroke_color(ft_text_stroke.r,ft_text_stroke.g,ft_text_stroke.b)
+		focus_target_text:stroke_width(ft_text_stroke.w)
+	end
+
+	--Show current debuffs
+	local debuff_list = current_debuffs[ft.id]
+	local i = 1
+	if Screen_Test then
+		for k = 1, max_icons do
+			local num = screen_test_debuffs.focus_target[k]
+			local timer = formatTimer(num)
+			icon_set[k]:path(windower_path..'addons/Bars/data/icons/'..num..'.png')
+			icon_set[k]:show()
+			timer_set[k]:text(timer)
+			timer_set[k]:show()
+			i = i + 1
+		end
+	elseif debuff_list then
+		--Sort debuff IDs numerically
+		local sorted_keys = {}
+		for k in pairs(debuff_list) do
+			table.insert(sorted_keys, tonumber(k))
+		end
+		table.sort(sorted_keys)
+
+		--Show debuffs up to max_icons
+		for _, debuff_id in ipairs(sorted_keys) do
+			if i > max_icons then break end
+
+			local spell_data = debuff_list[debuff_id]
+			local spell = res.spells[spell_data.id]
+			local name = spell and spell.name or "???"
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+
+			--Determine whether to show debuff icon/timer
+			local show_debuff = false
+			if settings.options.debuffs.blacklist then
+				show_debuff = not settings.options.debuffs.list:contains(name)
+			else
+				show_debuff = settings.options.debuffs.list:contains(name)
+			end
+
+			if show_debuff then
+				local text = ''
+				if ft_settings.debuff_timers then
+					text = formatTimer(time_remaining)
+				end
+				local icon_file = getIconFile(name, debuff_id)
+				if icon_file then
+					icon_set[i]:path(windower_path..'addons/Bars/data/icons/'..icon_file..'.png')
+					icon_set[i]:show()
+					timer_set[i]:text(Fade and text:text_strip_format() or text)
+					timer_set[i]:show()
+					i = i + 1
+				end
+			end
+		end
+
+		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
+		local moved = false
+		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
+		if debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 3 or math.abs(debuff_list.pos.y - ft.y) > 3) then
+			moved = true
+		end
+		if moved then
+			local watch_effects = {2, 7, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+	end
+
+	--Hide remaining unused slots
+	for k = i, max_icons do
+		icon_set[k]:hide()
+		timer_set[k]:hide()
 	end
 
 	--Update the previous focus target id
@@ -3043,9 +3575,15 @@ end
 --Update the Sub Target bar
 function updateSubTarget()
 
+	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
+
 	local player = get_player()
 	local st = Screen_Test and screen_test_sub_target or get_mob_by_target('st')
 	local target = get_mob_by_target('t')
+	local st_settings = settings.sections.sub_target
+	local max_icons = st_settings.debuff_icons and math.max(0, math.min(st_settings.debuff_max_icons, 32)) or 0
+	local icon_set = debuff_icons.sub_target
+	local timer_set = debuff_timers.sub_target
 
 	--Hide the Sub Target bar if there is no Sub Target to display, the Sub Target is targeted, or the Sub Target is ourselves
 	if not st
@@ -3060,12 +3598,21 @@ function updateSubTarget()
 			sub_target_text_shadow:hide()
 			sub_target_action_text:hide()
 			sub_target_action_text_shadow:hide()
+			ui_bg_left.sub_target:hide()
+			ui_bg_middle.sub_target:hide()
+			ui_bg_right.sub_target:hide()
+			for k = 1, max_icons do
+				icon_set[k]:hide()
+				timer_set[k]:hide()
+			end
 		end
 		return
 	end
 
 	local hpp_raw = st and st.hpp or 0
-	drain_st_hpp = st and drain_previous_st_id == st.id and hpp_raw < drain_st_hpp and drain_st_hpp - drain_decay or hpp_raw
+	local hpp_diff = drain_st_hpp - hpp_raw
+	local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
+	drain_st_hpp = st and drain_previous_st_id == st.id and hpp_raw < drain_st_hpp and drain_st_hpp - current_decay or hpp_raw
 	local sp_active = st and hpp_raw ~= 0 and current_sp_actions[st.id]
 	local sp_timer = sp_active and st_spaces..string.format("%d:%02d", math.floor(current_sp_actions[st.id].timer / 60), current_sp_actions[st.id].timer % 60)
 	local sp_name = sp_active and current_sp_actions[st.id].sp_name
@@ -3078,11 +3625,12 @@ function updateSubTarget()
 		end
 	end
 	st_name = st_spaces..st_name
-	local dyna_job_raw = st and show_dyna_jobs and dynaJob(st.name) or false
+	local dyna_job_raw = st and show_dyna_jobs and in_dyna and dynaJob(st.name) or false
 	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
 	local dist_raw = st and math.floor(st.distance:sqrt()*100)/100
 	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local level = st and show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and ' Lv '..current_levels[st.index] or '') or ''
 	local meter = ''
 	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -3090,8 +3638,8 @@ function updateSubTarget()
 	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
-	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..dyna_job..index_hex
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..dyna_job..index_hex
+	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level
 	local status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
 	local status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
 	local action = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action or '')
@@ -3122,7 +3670,7 @@ function updateSubTarget()
 		sub_target_bar_drain_meter:hide()
 	elseif drain_target_bars then
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_t_hpp > 0 then
+		if drain_spaces < 13 and drain_st_hpp > 0 then
 			drain_spaces = 13
 		end
 		while string.len(drain_meter) < drain_spaces do
@@ -3138,6 +3686,11 @@ function updateSubTarget()
 	sub_target_text_shadow:show()
 	sub_target_action_text:show()
 	sub_target_action_text_shadow:show()
+	if settings.sections.sub_target.ui_bg then
+		ui_bg_left.sub_target:show()
+		ui_bg_middle.sub_target:show()
+		ui_bg_right.sub_target:show()
+	end
 
 	--Update the Sub Target text objects
 	sub_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
@@ -3156,11 +3709,86 @@ function updateSubTarget()
 	if sp_active and not Pulse_Sub_Target_Name then
 		Pulse_Sub_Target_Name = true
 		sub_target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
-		sub_target_text:stroke_width(1)
+		sub_target_text:stroke_width(st_text_stroke.w < 1 and 1 or st_text_stroke.w)
 	elseif Pulse_Sub_Target_Name and not sp_active then
 		Pulse_Sub_Target_Name = false
-		sub_target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-		sub_target_text:stroke_width(0.5)
+		sub_target_text:stroke_color(st_text_stroke.r,st_text_stroke.g,st_text_stroke.b)
+		sub_target_text:stroke_width(st_text_stroke.w)
+	end
+
+	--Show current debuffs
+	local debuff_list = current_debuffs[st.id]
+	local i = 1
+	if Screen_Test then
+		for k = 1, max_icons do
+			local num = screen_test_debuffs.sub_target[k]
+			local timer = formatTimer(num)
+			icon_set[k]:path(windower_path..'addons/Bars/data/icons/'..num..'.png')
+			icon_set[k]:show()
+			timer_set[k]:text(timer)
+			timer_set[k]:show()
+			i = i + 1
+		end
+	elseif debuff_list then
+		--Sort debuff IDs numerically
+		local sorted_keys = {}
+		for k in pairs(debuff_list) do
+			table.insert(sorted_keys, tonumber(k))
+		end
+		table.sort(sorted_keys)
+
+		--Show debuffs up to max_icons
+		for _, debuff_id in ipairs(sorted_keys) do
+			if i > max_icons then break end
+
+			local spell_data = debuff_list[debuff_id]
+			local spell = res.spells[spell_data.id]
+			local name = spell and spell.name or "???"
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+
+			--Determine whether to show debuff icon/timer
+			local show_debuff = false
+			if settings.options.debuffs.blacklist then
+				show_debuff = not settings.options.debuffs.list:contains(name)
+			else
+				show_debuff = settings.options.debuffs.list:contains(name)
+			end
+
+			if show_debuff then
+				local text = ''
+				if st_settings.debuff_timers then
+					text = formatTimer(time_remaining)
+				end
+				local icon_file = getIconFile(name, debuff_id)
+				if icon_file then
+					icon_set[i]:path(windower_path..'addons/Bars/data/icons/'..icon_file..'.png')
+					icon_set[i]:show()
+					timer_set[i]:text(text)
+					timer_set[i]:show()
+					i = i + 1
+				end
+			end
+		end
+
+		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
+		local moved = false
+		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
+		if debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 3 or math.abs(debuff_list.pos.y - st.y) > 3) then
+			moved = true
+		end
+		if moved then
+			local watch_effects = {2, 7, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+	end
+
+	--Hide remaining unused slots
+	for k = i, max_icons do
+		icon_set[k]:hide()
+		timer_set[k]:hide()
 	end
 
 	--Update the previous sub target id
@@ -3175,6 +3803,10 @@ function updateTarget()
 
 	local player = get_player()
 	local t = Screen_Test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
+	local t_settings = settings.sections.target
+	local max_icons = t_settings.debuff_icons and math.max(0, math.min(t_settings.debuff_max_icons, 32)) or 0
+	local icon_set = debuff_icons.target
+	local timer_set = debuff_timers.target
 
 	--Hide the Target bar if there is no Target to display, or the Target is ourselves
 	if not t or (show_self_when_targeted == false and t.id == player.id) then
@@ -3187,6 +3819,13 @@ function updateTarget()
 			target_text_shadow:hide()
 			target_action_text:hide()
 			target_action_text_shadow:hide()
+			ui_bg_left.target:hide()
+			ui_bg_middle.target:hide()
+			ui_bg_right.target:hide()
+			for k = 1, max_icons do
+				icon_set[k]:hide()
+				timer_set[k]:hide()
+			end
 		end
 		return
 	end
@@ -3207,11 +3846,12 @@ function updateTarget()
 		end
 	end
 	t_name = t_spaces..t_name
-	local dyna_job_raw = t and show_dyna_jobs and dynaJob(t.name) or false
+	local dyna_job_raw = t and show_dyna_jobs and in_dyna and dynaJob(t.name) or false
 	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
 	local dist_raw = t and math.floor(t.distance:sqrt()*100)/100
 	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local level = t and show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and ' Lv '..current_levels[t.index] or '') or ''
 	local meter = ''
 	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -3219,8 +3859,8 @@ function updateTarget()
 	local cm = t and (Fade and text_color or targetColor(t)) or color.t.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
-	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..dyna_job..index_hex
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..dyna_job..index_hex
+	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level
 	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
 	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
 	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
@@ -3233,7 +3873,11 @@ function updateTarget()
 	--Fix the pad issue when 0
 	if spaces == 0 then
 		target_bar_meter:hide()
+		target_text:stroke_color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
 		target_bar_bg:bg_color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
+		target_bar_lock_left:color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
+		target_bar_lock_right:color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
+		target_bar_lock_underline:bg_color(color.bar_bg.dead.r,color.bar_bg.dead.g,color.bar_bg.dead.b)
 	else
 		target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
@@ -3244,7 +3888,11 @@ function updateTarget()
 			meter = meter..' '
 		end
 		if not Screen_Test then
+			target_text:stroke_color(t_text_stroke.r,t_text_stroke.g,t_text_stroke.b)
 			target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+			target_bar_lock_left:color(cm.r,cm.g,cm.b)
+			target_bar_lock_right:color(cm.r,cm.g,cm.b)
+			target_bar_lock_underline:bg_color(cm.r,cm.g,cm.b)
 		end
 	end
 
@@ -3269,6 +3917,11 @@ function updateTarget()
 	target_action_text:show()
 	target_text_shadow:show()
 	target_action_text_shadow:show()
+	if settings.sections.target.ui_bg then
+		ui_bg_left.target:show()
+		ui_bg_middle.target:show()
+		ui_bg_right.target:show()
+	end
 
 	--Show Target Lock
 	if show_target_lock and player and player.target_locked and not target_bar_lock_left:visible() then
@@ -3298,11 +3951,86 @@ function updateTarget()
 	if sp_active and not Pulse_Target_Name then
 		Pulse_Target_Name = true
 		target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
-		target_text:stroke_width(1)
+		target_text:stroke_width(t_text_stroke.w < 1 and 1 or t_text_stroke.w)
 	elseif Pulse_Target_Name and not sp_active then
 		Pulse_Target_Name = false
-		target_text:stroke_color(text_outline.r,text_outline.g,text_outline.b)
-		target_text:stroke_width(0.5)
+		target_text:stroke_color(t_text_stroke.r,t_text_stroke.g,t_text_stroke.b)
+		target_text:stroke_width(t_text_stroke.w)
+	end
+
+	--Show current debuffs
+	local debuff_list = current_debuffs[t.id]
+	local i = 1
+	if Screen_Test then
+		for k = 1, max_icons do
+			local num = screen_test_debuffs.target[k]
+			local timer = formatTimer(num)
+			icon_set[k]:path(windower_path..'addons/Bars/data/icons/'..num..'.png')
+			icon_set[k]:show()
+			timer_set[k]:text(timer)
+			timer_set[k]:show()
+			i = i + 1
+		end
+	elseif debuff_list then
+		--Sort debuff IDs numerically
+		local sorted_keys = {}
+		for k in pairs(debuff_list) do
+			table.insert(sorted_keys, tonumber(k))
+		end
+		table.sort(sorted_keys)
+
+		--Show debuffs up to max_icons
+		for _, debuff_id in ipairs(sorted_keys) do
+			if i > max_icons then break end
+
+			local spell_data = debuff_list[debuff_id]
+			local spell = res.spells[spell_data.id]
+			local name = spell and spell.name or "???"
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+
+			--Determine whether to show debuff icon/timer
+			local show_debuff = false
+			if settings.options.debuffs.blacklist then
+				show_debuff = not settings.options.debuffs.list:contains(name)
+			else
+				show_debuff = settings.options.debuffs.list:contains(name)
+			end
+
+			if show_debuff then
+				local text = ''
+				if t_settings.debuff_timers then
+					text = formatTimer(time_remaining)
+				end
+				local icon_file = getIconFile(name, debuff_id)
+				if icon_file then
+					icon_set[i]:path(windower_path..'addons/Bars/data/icons/'..icon_file..'.png')
+					icon_set[i]:show()
+					timer_set[i]:text(text)
+					timer_set[i]:show()
+					i = i + 1
+				end
+			end
+		end
+
+		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
+		local moved = false
+		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
+		if debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 3 or math.abs(debuff_list.pos.y - t.y) > 3) then
+			moved = true
+		end
+		if moved then
+			local watch_effects = {2, 7, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+	end
+
+	--Hide remaining unused slots
+	for k = i, max_icons do
+		icon_set[k]:hide()
+		timer_set[k]:hide()
 	end
 
 	--Update the previous target id
@@ -3320,11 +4048,14 @@ function updateSelfAction()
 	if not show_self_action
 	or in_cutscene
 	or self_status == '' then
-		if self_action_bar_bg:visible() then
+		if self_action_bar_bg:visible() and not calculating_dimensions then
 			self_action_bar_meter:hide()
 			self_action_bar_bg:hide()
 			self_action_text:hide()
 			self_action_text_shadow:hide()
+			ui_bg_left.self_action:hide()
+			ui_bg_middle.self_action:hide()
+			ui_bg_right.self_action:hide()
 		end
 		return
 	end
@@ -3341,6 +4072,11 @@ function updateSelfAction()
 	self_action_bar_bg:show()
 	self_action_text:show()
 	self_action_text_shadow:show()
+	if settings.sections.self_action.ui_bg then
+		ui_bg_left.self_action:show()
+		ui_bg_middle.self_action:show()
+		ui_bg_right.self_action:show()
+	end
 
 	--Update Self Action text objects
 	self_action_text:text(Fade and text_self_action:text_strip_format() or text_self_action)
@@ -3425,7 +4161,9 @@ function updateHPBar()
 	local hp = player and player.vitals.hp or 0
 	local max_hp = player and player.vitals.max_hp or 0
 	local hpp = player and player.vitals.hpp or 0
-	drain_ps_hpp = hpp and hpp < drain_ps_hpp and drain_ps_hpp - drain_decay or hpp
+	local hp_diff = drain_ps_hpp - hpp
+	local current_decay = math.min(hp_diff * 0.1, drain_decay * 120)
+	drain_ps_hpp = hpp and hpp < drain_ps_hpp and drain_ps_hpp - current_decay or hpp
 	local hp_meter = ''
 	local drain_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
@@ -3437,7 +4175,7 @@ function updateHPBar()
 	if spaces == 0 then
 		player_stats_hp_bar_meter:bg_alpha(0)
 	else
-		player_stats_hp_bar_meter:bg_alpha(not Fade and bg_alpha)
+		player_stats_hp_bar_meter:bg_alpha(not Fade and (drain_hp_bar and meter_bg_alpha or bg_alpha))
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and hp > 0 then
 			spaces = 13
@@ -3514,7 +4252,9 @@ function updateMPBar()
 	local mp = player and player.vitals.mp or 0
 	local max_mp = player and player.vitals.max_mp or 0
 	local mpp = player and player.vitals.mpp or 0
-	drain_ps_mpp = mpp and mpp < drain_ps_mpp and drain_ps_mpp - drain_decay or mpp
+	local mp_diff = drain_ps_mpp - mpp
+	local current_decay = math.min(mp_diff * 0.1, drain_decay * 120)
+	drain_ps_mpp = mpp and mpp < drain_ps_mpp and drain_ps_mpp - current_decay or mpp
 	local hpp = player and player.vitals.hpp or 0
 	local mp_meter = ''
 	local drain_meter = ''
@@ -3527,7 +4267,7 @@ function updateMPBar()
 	if spaces == 0 then
 		player_stats_mp_bar_drain_meter:bg_alpha(0)
 	else
-		player_stats_mp_bar_meter:bg_alpha(not Fade and bg_alpha)
+		player_stats_mp_bar_meter:bg_alpha(not Fade and (drain_mp_bar and meter_bg_alpha or bg_alpha))
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and mp > 0 then
 			spaces = 13
@@ -3605,7 +4345,6 @@ function updateTPBar()
 	local tp_diff = drain_ps_tp - tp
 	local current_decay = math.min(tp_diff * 0.1, drain_decay * 120)
 	drain_ps_tp = tp and tp < drain_ps_tp and drain_ps_tp - current_decay or tp
-
 	local hpp = player and player.vitals.hpp or 0
 	local tp_meter = ''
 	local drain_meter = ''
@@ -3623,7 +4362,7 @@ function updateTPBar()
 	if spaces == 0 then
 		player_stats_tp_bar_meter:bg_alpha(0)
 	else
-		player_stats_tp_bar_meter:bg_alpha(not Fade and bg_alpha)
+		player_stats_tp_bar_meter:bg_alpha(not Fade and (drain_tp_bar and meter_bg_alpha or bg_alpha))
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and tp > 0 then
 			spaces = 13
@@ -3691,7 +4430,9 @@ function updatePetBar()
 
 	local pet = get_mob_by_target('pet')
 	local hpp = pet and pet.hpp or 0
-	drain_ps_pet = pet and hpp < drain_ps_pet and drain_ps_pet - drain_decay or hpp
+	local pet_diff = drain_ps_pet - hpp
+	local current_decay = math.min(pet_diff * 0.1, drain_decay * 120)
+	drain_ps_pet = hpp and hpp < drain_ps_pet and drain_ps_pet - current_decay or hpp
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
@@ -3700,6 +4441,23 @@ function updatePetBar()
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
 	local drain_spaces = drain_ps_pet and math.floor((player_stats_bar_width * 10) * (drain_ps_pet / 100)) or 0
 	local ct = color.hp
+
+	--Hide the Pet bar if the option is turned on and there is no pet
+	if hide_pet_bar_when_no_pet and not pet then
+		player_stats_pet_bar_bg:hide()
+		player_stats_pet_bar_pulse:hide()
+		player_stats_pet_bar_drain_meter:hide()
+		player_stats_pet_bar_meter:hide()
+		player_stats_pet_text_shadow:hide()
+		player_stats_pet_text:hide()
+	else
+		player_stats_pet_bar_bg:show()
+		player_stats_pet_bar_pulse:show()
+		player_stats_pet_bar_drain_meter:show()
+		player_stats_pet_bar_meter:show()
+		player_stats_pet_text_shadow:show()
+		player_stats_pet_text:show()
+	end
 
 	local pet_name = pet and 'Pet' or 'No Pet'
 	if job == 'bst' then pet_name = pet and pet.name or 'No Pet' end
@@ -3712,7 +4470,7 @@ function updatePetBar()
 	if spaces == 0 then
 		player_stats_pet_bar_meter:bg_alpha(0)
 	else
-		player_stats_pet_bar_meter:bg_alpha(bg_alpha)
+		player_stats_pet_bar_meter:bg_alpha(not Fade and (drain_pet_bar and meter_bg_alpha or bg_alpha))
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces == 0 and hpp > 0 then
 			spaces = 13
@@ -3733,7 +4491,7 @@ function updatePetBar()
 		while string.len(drain_meter) < drain_spaces do
 			drain_meter = drain_meter..' '
 		end
-		player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_pet_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
 	end
 
 	--Set the color for the text based on hp percentage
@@ -3785,7 +4543,7 @@ function updatePetBar()
 	player_stats_pet_bar_pulse:bg_color(cm_r,cm_g,cm_b)
 
 	--Format the text output
-	hpp = ' '..string.format("%3s", hpp)..'% '
+	hpp = string.format("%3s", hpp)..'% '
 	local text = (pet and '\\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
@@ -4112,91 +4870,151 @@ function setBarFade(num)
 
 end
 
+--Fade the icons
+function setIconFade(num)
+
+	for section, section_table in pairs(debuff_icons) do
+
+		local section_settings = settings.sections[section]
+		local max_icons = section_settings.debuff_icons and math.max(0, math.min(section_settings.debuff_max_icons, 32)) or 0
+		local icon_set = debuff_icons[section]
+		local timer_set = debuff_timers[section]
+
+		for k = 1, max_icons do
+			icon_set[k]:alpha(255)
+			timer_set[k]:alpha(255)
+			timer_set[k]:stroke_alpha(255)
+		end
+
+	end
+
+end
+
+--Fade the BG UI images
+function setBGUIFade(num)
+
+	for section, section_table in pairs(ui_bg_left) do
+
+		ui_bg_left[section]:alpha(num)
+		ui_bg_middle[section]:alpha(num)
+		ui_bg_right[section]:alpha(num)
+
+	end
+
+end
+
+
 --Reset the bars alpha/bg_alpha to normal
 function unFade()
 
 	local player = get_player()
 	local pet = get_mob_by_target('pet')
 
-	focus_target_bar_meter:bg_alpha(bg_alpha)
+	focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 	focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	focus_target_bar_bg:bg_alpha(bg_alpha)
 	focus_target_text:alpha(text_alpha)
-	focus_target_text:stroke_alpha(text_alpha)
+	focus_target_text:stroke_alpha(ft_text_stroke.a)
 	focus_target_text_shadow:alpha(text_alpha)
 	focus_target_action_text:alpha(text_alpha)
-	focus_target_action_text:stroke_alpha(text_alpha)
+	focus_target_action_text:stroke_alpha(ft_text_stroke.a)
 	focus_target_action_text_shadow:alpha(text_alpha)
 
-	sub_target_bar_meter:bg_alpha(bg_alpha)
+	sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 	sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	sub_target_bar_bg:bg_alpha(bg_alpha)
 	sub_target_text:alpha(text_alpha)
-	sub_target_text:stroke_alpha(text_alpha)
+	sub_target_text:stroke_alpha(st_text_stroke.a)
 	sub_target_text_shadow:alpha(text_alpha)
 	sub_target_action_text:alpha(text_alpha)
-	sub_target_action_text:stroke_alpha(text_alpha)
+	sub_target_action_text:stroke_alpha(st_text_stroke.a)
 	sub_target_action_text_shadow:alpha(text_alpha)
 
-	target_bar_meter:bg_alpha(bg_alpha)
+	target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 	target_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	target_bar_bg:bg_alpha(bg_alpha)
 	target_bar_lock_left:alpha(text_alpha)
 	target_bar_lock_right:alpha(text_alpha)
 	target_bar_lock_underline:bg_alpha(bg_alpha)
 	target_text:alpha(text_alpha)
-	target_text:stroke_alpha(text_alpha)
+	target_text:stroke_alpha(t_text_stroke.a)
 	target_text_shadow:alpha(text_alpha)
 	target_action_text:alpha(text_alpha)
-	target_action_text:stroke_alpha(text_alpha)
+	target_action_text:stroke_alpha(t_text_stroke.a)
 	target_action_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.hp > 0 then
-		player_stats_hp_bar_meter:bg_alpha(bg_alpha)
+		player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
 		player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
 	player_stats_hp_bar_meter:bg_color(color.hp.bar.r,color.hp.bar.g,color.hp.bar.b)
 	player_stats_hp_bar_bg:bg_alpha(bg_alpha)
 	player_stats_hp_marker:alpha(text_alpha)
 	player_stats_hp_text:alpha(text_alpha)
-	player_stats_hp_text:stroke_alpha(text_alpha)
+	player_stats_hp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_hp_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.mp > 0 then
-		player_stats_mp_bar_meter:bg_alpha(bg_alpha)
+		player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
 		player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
 	player_stats_mp_bar_meter:bg_color(color.mp.bar.r,color.mp.bar.g,color.mp.bar.b)
 	player_stats_mp_bar_bg:bg_alpha(bg_alpha)
 	player_stats_mp_text:alpha(text_alpha)
-	player_stats_mp_text:stroke_alpha(text_alpha)
+	player_stats_mp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_mp_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.tp > 0 then
-		player_stats_tp_bar_meter:bg_alpha(bg_alpha)
+		player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
 		player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
 	player_stats_tp_bar_bg:bg_alpha(bg_alpha)
 	player_stats_tp_marker:alpha(text_alpha)
 	player_stats_tp_text:alpha(text_alpha)
-	player_stats_tp_text:stroke_alpha(text_alpha)
+	player_stats_tp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_tp_text_shadow:alpha(text_alpha)
 
 	if pet and pet.hpp > 0 then
-		player_stats_pet_bar_meter:bg_alpha(bg_alpha)
-		player_stats_pet_bar_meter:bg_alpha(drain_bg_alpha)
+		player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
+		player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
 	end
 	player_stats_pet_bar_meter:bg_color(color.pet.bar.r,color.pet.bar.g,color.pet.bar.b)
 	player_stats_pet_bar_bg:bg_alpha(bg_alpha)
 	player_stats_pet_text:alpha(text_alpha)
-	player_stats_pet_text:stroke_alpha(text_alpha)
+	player_stats_pet_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_pet_text_shadow:alpha(text_alpha)
 
 	self_action_bar_meter:bg_alpha(bg_alpha)
 	self_action_bar_bg:bg_alpha(bg_alpha)
 	self_action_text:alpha(text_alpha)
-	self_action_text:stroke_alpha(text_alpha)
+	self_action_text:stroke_alpha(sa_text_stroke.a)
 	self_action_text_shadow:alpha(text_alpha)
+
+	for section, _ in pairs(debuff_icons) do
+
+		local section_settings = settings.sections[section]
+		local max_icons = section_settings.debuff_icons and math.max(0, math.min(section_settings.debuff_max_icons, 32)) or 0
+		local icon_set = debuff_icons[section]
+		local timer_set = debuff_timers[section]
+
+		for k = 1, max_icons do
+			icon_set[k]:alpha(255)
+			timer_set[k]:alpha(255)
+			timer_set[k]:stroke_alpha(255)
+		end
+
+	end
+
+	for section, _ in pairs(ui_bg_left) do
+
+		ui_bg_left[section]:alpha(settings.sections[section].ui_bg_alpha)
+		ui_bg_middle[section]:alpha(settings.sections[section].ui_bg_alpha)
+		ui_bg_right[section]:alpha(settings.sections[section].ui_bg_alpha)
+
+	end
+
+	--Run Wide Scan immediately after coming back from Fade
+	runWideScan()
 
 end
 
@@ -4207,6 +5025,8 @@ function resetFadeDelay()
 		Fade = false
 		fade_bg_num = settings.bg.alpha
 		fade_text_num = settings.text.alpha
+		fade_icon_num = 255
+		fade_bg_ui_num = settings.sections.focus_target.ui_bg_alpha
 		unFade()
 	end
 end
@@ -4229,6 +5049,8 @@ function screenTest()
 
 		Screen_Test = false
 		focus_target_override = nil
+		updateFocusTarget()
+		updateSubTarget()
 		updateTarget()
 		removeFromActionsTable(get_player().id, screen_test_tracking_index)
 		resetFadeDelay()
@@ -4272,29 +5094,74 @@ function screenTest()
 
 end
 
+--Run Wide Scan
+function runWideScan()
+
+	local in_town = wide_scan_exclude_zones:contains(zone_name)
+	local in_mh = get_info().mog_house
+
+	--Cancel if the option is turned off, currently locked, or user is zoning, in a cutscene, in town, or in their Mog House
+	if not show_monster_level or wide_scan_locked or zoning or in_cutscene or in_town or in_mh then return end
+
+	local zone_name = res.zones[get_info().zone].name
+	local packet = packets.new('outgoing', 0xF4, {
+        ['Flags'] = 1,
+        ['_unknown1'] = 0,
+        ['_unknown2'] = 0,
+    })
+
+	--Send the Wide Scan request
+	packets.inject(packet)
+
+    --Schedule the next Wide Scan attempt for 30 to 60 seconds from now
+    next_wide_scan_time = os.time() + math.random(30, 60)
+
+	--Lock Wide Scan again
+	wide_scan_locked = true
+
+end
+
 --Job Changing
 register_event('job change', function()
+
 	hideBars()
 	setJob()
 	setPositions()
 	showBars()
 	resetFadeDelay()
+
 end)
 
 --Target Changing
 register_event('target change', function()
+
 	updateTarget()
 	if not condense_target_and_subtarget_bars then
 		updateSubTarget()
 	end
 	resetFadeDelay()
+
+	wide_scan_locked = false --Unlock to enable another Wide Scan since we're actively targeting things
+
+	if target_bar_pixel_width <= 20
+	or target_lock_underline_pixel_width <= 20
+	or self_action_bar_pixel_width <= 20 then
+		setUIPositions()
+	end
+
+	--Reset so the bars don't drain by simply targeting something else
+	drain_st_hpp = 0
+	drain_ft_hpp = 0
+
 end)
 
 --HP Changing
 register_event('hp change', function(new_hp,old_hp)
+
 	if new_hp < old_hp then
 		resetFadeDelay()
 	end
+
 end)
 
 --Greet the player on the first run of the addon
@@ -4313,6 +5180,7 @@ end
 
 --Run necessarry functions at start
 function initialize()
+
 	greeting()
 	setJob()
 	setPositions()
@@ -4323,32 +5191,42 @@ function initialize()
 	updateHPBar()
 	updateMPBar()
 	updateTPBar()
+	runWideScan()
+
 	--Wait 2 sec then repeat since values are 0 when first logging into a character
 	coroutine.schedule(function()
 		updateHPBar()
 		updateMPBar()
 		updateTPBar()
-		setTargetLockPositions()
+		setUIPositions()
 	end, 2)
+
 end
 
 --Load
 register_event('load', function()
+
 	if get_info().logged_in then
 		initialize()
 	end
+
 end)
 
 --Login
 register_event('login', function()
+
 	initialize()
 	resetFadeDelay()
+
 end)
 
 --Logout
 register_event('logout', function()
+
 	hideBars()
 	resetFadeDelay()
+	clearTables()
+
 end)
 
 register_event('status change', function(status)
@@ -4374,18 +5252,85 @@ register_event('prerender', function()
 	if not logged_in then return end
 
 	local player = get_player()
+	local target = get_mob_by_target('t')
+	local sub_target = get_mob_by_target('st')
 
 	updatePartyActions()
 	updateSelfAction()
-	updateHPBar()
-	updateMPBar()
-	updateTPBar()
-	if job and job_specific[job].pet then
-		updatePetBar()
+
+	if hide_player_stats_bars_when_no_target and not target then
+
+		player_stats_hp_text:hide()
+		player_stats_hp_text_shadow:hide()
+		player_stats_hp_bar_bg:hide()
+		player_stats_hp_bar_pulse:hide()
+		player_stats_hp_bar_drain_meter:hide()
+		player_stats_hp_bar_meter:hide()
+		player_stats_hp_marker:hide()
+
+		player_stats_mp_text:hide()
+		player_stats_mp_text_shadow:hide()
+		player_stats_mp_bar_bg:hide()
+		player_stats_mp_bar_pulse:hide()
+		player_stats_mp_bar_drain_meter:hide()
+		player_stats_mp_bar_meter:hide()
+
+		player_stats_tp_text:hide()
+		player_stats_tp_text_shadow:hide()
+		player_stats_tp_bar_bg:hide()
+		player_stats_tp_bar_pulse:hide()
+		player_stats_tp_bar_drain_meter:hide()
+		player_stats_tp_bar_meter:hide()
+		player_stats_tp_marker:hide()
+
+		player_stats_pet_text:hide()
+		player_stats_pet_text_shadow:hide()
+		player_stats_pet_bar_bg:hide()
+		player_stats_pet_bar_pulse:hide()
+		player_stats_pet_bar_drain_meter:hide()
+		player_stats_pet_bar_meter:hide()
+
+	elseif not (in_cutscene or zoning) then
+		if job and job_specific[job].hp then
+			player_stats_hp_text:show()
+			player_stats_hp_text_shadow:show()
+			player_stats_hp_bar_bg:show()
+			player_stats_hp_bar_pulse:show()
+			player_stats_hp_bar_drain_meter:show()
+			player_stats_hp_bar_meter:show()
+			player_stats_hp_marker:show()
+			updateHPBar()
+		end
+		if job and job_specific[job].mp then
+			player_stats_mp_text:show()
+			player_stats_mp_text_shadow:show()
+			player_stats_mp_bar_bg:show()
+			player_stats_mp_bar_pulse:show()
+			player_stats_mp_bar_drain_meter:show()
+			player_stats_mp_bar_meter:show()
+			updateMPBar()
+		end
+		if job and job_specific[job].tp then
+			player_stats_tp_text:show()
+			player_stats_tp_text_shadow:show()
+			player_stats_tp_bar_bg:show()
+			player_stats_tp_bar_pulse:show()
+			player_stats_tp_bar_drain_meter:show()
+			player_stats_tp_bar_meter:show()
+			player_stats_tp_marker:show()
+			updateTPBar()
+		end
+		if job and job_specific[job].pet then
+			player_stats_pet_text:show()
+			player_stats_pet_text_shadow:show()
+			player_stats_pet_bar_bg:show()
+			player_stats_pet_bar_pulse:show()
+			player_stats_pet_bar_drain_meter:show()
+			player_stats_pet_bar_meter:show()
+			updatePetBar()
+		end
 	end
 
-	local target = get_mob_by_target('t')
-	local sub_target = get_mob_by_target('st')
 	if condense_target_and_subtarget_bars then
 		if target or sub_target or Screen_Test then
 			updateTarget()
@@ -4404,14 +5349,6 @@ register_event('prerender', function()
 		end
 		if sub_target or Screen_Test then
 			updateSubTarget()
-		else
-			sub_target_bar_bg:hide()
-			sub_target_bar_meter:hide()
-			sub_target_bar_drain_meter:hide()
-			sub_target_text_shadow:hide()
-			sub_target_action_text_shadow:hide()
-			sub_target_text:hide()
-			sub_target_action_text:hide()
 		end
 	end
 
@@ -4425,6 +5362,15 @@ register_event('prerender', function()
 	if os.time() > Heartbeat then
 
 		Heartbeat = os.time()
+
+		--Determine if we are in Dynamis-D
+		--Do this here because I would rather run this check once per second than possibly up to 3 times per frame (Focus, Sub, and Target bars)
+		inDyna()		
+
+		--Run Wide Scan after next time has passed
+		if Heartbeat >= next_wide_scan_time then
+			runWideScan()
+		end
 
 		--Countdown for active SP Abilities
 		decrementSPTimers()
@@ -4570,6 +5516,9 @@ register_event('prerender', function()
 	else
 		focus_target_bar_pulse:hide()
 		focus_target_bar_pulse:bg_alpha(0)
+		if not Fade then
+			focus_target_text:stroke_alpha(ft_text_stroke.a)
+		end
 	end
 
 	--Pulse the Sub Target bar (but not when the bar is fading/faded)
@@ -4594,6 +5543,9 @@ register_event('prerender', function()
 	else
 		sub_target_bar_pulse:hide()
 		sub_target_bar_pulse:bg_alpha(0)
+		if not Fade then
+			sub_target_text:stroke_alpha(st_text_stroke.a)
+		end
 	end
 
 	--Pulse the Target bar (but not when the bar is fading/faded)
@@ -4618,6 +5570,9 @@ register_event('prerender', function()
 	else
 		target_bar_pulse:hide()
 		target_bar_pulse:bg_alpha(0)
+		if not Fade then
+			target_text:stroke_alpha(t_text_stroke.a)
+		end
 	end
 
 	--Fade away (but not if the Screen Test is active)
@@ -4636,6 +5591,20 @@ register_event('prerender', function()
 			fade_text_num = fade_down_to_alpha
 			setTextFade(fade_text_num)
 		end
+		if fade_icon_num > (fade_down_to_alpha + fade_speed) then
+			fade_icon_num = fade_icon_num - fade_speed
+			setIconFade(fade_icon_num)
+		elseif fade_icon_num <= fade_down_to_alpha then
+			fade_icon_num = fade_down_to_alpha
+			setIconFade(fade_icon_num)
+		end
+		if fade_bg_ui_num > (fade_down_to_alpha + fade_speed) then
+			fade_bg_ui_num = fade_bg_ui_num - fade_speed
+			setBGUIFade(fade_bg_ui_num)
+		elseif fade_bg_ui_num <= fade_down_to_alpha then
+			fade_bg_ui_num = fade_down_to_alpha
+			setBGUIFade(fade_bg_ui_num)
+		end
 	end
 
 	--Hide while zoning
@@ -4643,9 +5612,9 @@ register_event('prerender', function()
 	if pos == "(?-?)" and not zoning then
 		zoning = true
 		hideBars()
-		clearActionTables() --flush the action tables to keep them clean
+		clearTables()
 		if Screen_Test then
-			screenTest()
+			windower.send_command('bars ui')
 		end
 	elseif pos ~= "(?-?)" and zoning then
 		zoning = false
@@ -4732,15 +5701,23 @@ register_event('action', function (act)
 		return info
 	end
 
+	--If a target is doing an action (except having an action interupted), remove Sleep/Petrify debuff
+	if act.param ~= 28787 and current_debuffs[act.actor_id] then
+		current_debuffs[act.actor_id][2] = nil
+		current_debuffs[act.actor_id][7] = nil
+		current_debuffs[act.actor_id][19] = nil
+	end
+
 	--Ignore regular melee and ranged attacks
 	if msg == 1 or msg == 15 or msg == 373 or msg == 352 or msg == 353 or msg == 354 or msg == 382 or not actor then
 		return
 	end
 
 	--Debug Stuff
-	-- if actor.name == player.name then
-	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
-	-- end
+	if actor.name == player.name then
+		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
+		-- add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
+	end
 
 	--Action failed/interrupted
 	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) then
@@ -4756,7 +5733,7 @@ register_event('action', function (act)
 
 		actionInterrupted(act.actor_id,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
-		if player.id == act.actor_id then
+		if player.id == act.actor_id and not msg == 246 then
 			self_action_bar_meter:bg_color(255,050,050)
 			completeSelfMeter()
 		end
@@ -4818,6 +5795,10 @@ register_event('action', function (act)
 			action_name = spell[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			action_name_shdw = spell[action_id] and ' \\cs(000,000,000)'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			cast_time = spell[action_id].cast_time
+			--If a target starts casting, remove Silence debuff
+			if current_debuffs[act.actor_id] then
+				current_debuffs[act.actor_id][6] = nil
+			end
 
 		--Item
 		elseif act.category == 9 then
@@ -5313,6 +6294,12 @@ register_event('action', function (act)
 				local sp_abil = sp_abils[abil_name]
 				if sp_abil then
 					addToSPTable(act.actor_id, abil_name)
+
+				--If Benediction is used, remove all debuffs from all targets it hits
+				elseif abil_name == "Benediction" then
+					for i = 1, target_count do
+						current_debuffs[act.targets[i].id] = nil
+					end
 				end
 			end
 
@@ -6049,29 +7036,405 @@ register_event('action', function (act)
 		end
 
 		if abil_name ~= "[REDACTED]" then
+
 			--Check if the ability used was an SP ability
 			local sp_abil = sp_abils[abil_name]
 			if sp_abil then
 				addToSPTable(act.actor_id, abil_name)
+
+			--If Benediction is used, remove all debuffs from all targets it hits
+			elseif abil_name == "Benediction" or abil_name == "Depuration" then
+				for i = 1, target_count do
+					current_debuffs[act.targets[i].id] = nil
+				end
 			end
+
 		end
 
 	end
 end)
 
+function handleOverwrites(target_id, new_debuff)
+
+	--If the target has no current debuffs, return true so the new debuff gets saved
+	if not current_debuffs[target_id] then
+		return true
+	end
+
+	--Loop through all debuffs the target currently has
+	for effect_id, spell in pairs(current_debuffs[target_id]) do
+		local previous_debuff_overwrites = spell.id and res.spells[spell.id].overwrites or {}
+		
+		--Check if there is a higher priority debuff already active
+		if table.length(previous_debuff_overwrites) > 0 then
+			for _,v in ipairs(previous_debuff_overwrites) do
+				if new_debuff == v then
+					--If there is, return false so that the previous debuff is not overwritten
+					return false
+				end
+			end
+		end
+		
+		--Check if a lower priority debuff is being overwritten
+		local new_debuff_overwrites = res.spells[new_debuff].overwrites or {}
+		if table.length(new_debuff_overwrites) > 0 then
+			for _,v in ipairs(new_debuff_overwrites) do
+				if spell.id == v then
+					--If there is, clear the previous debuff
+					current_debuffs[target_id][effect_id] = nil
+				end
+			end
+		end
+	end
+
+	--Retrun true to continue to saving the new debuff
+	return true
+
+end
+
+--Save debuff to current_debuffs table
+function saveDebuff(target_id, effect_id, spell_id)
+
+	--Make sure the effect numbers we're getting are within the correct range
+	if not (effect_id >= 1 and effect_id <= 634) then return end
+
+	--Create target table if it doesn't already exist
+	if not current_debuffs[target_id] then
+		current_debuffs[target_id] = {}
+	end
+
+	local duration = res.spells[spell_id] and res.spells[spell_id].duration or 0
+
+	--Determine if this effect is a Daze and set duration accordingly
+	local daze_durations = {
+		[1] = 60,
+		[2] = 90,
+		[3] = 120,
+		[4] = 120,
+		[5] = 120,
+		[6] = 120,
+		[7] = 120,
+		[8] = 120,
+		[9] = 120,
+		[10] = 120,
+	}
+	local daze_levels = {
+		[386] = 1, [387] = 2, [388] = 3, [389] = 4, [390] = 5, --Lethargic Daze
+		[391] = 1, [392] = 2, [393] = 3, [394] = 4, [395] = 5, --Sluggish Daze
+		[396] = 1, [397] = 2, [398] = 3, [399] = 4, [400] = 5, --Weakened Daze
+		[448] = 1, [449] = 2, [450] = 3, [451] = 4, [452] = 5, --Bewildered Daze
+	}
+
+	--Match the effect with daze level
+	local level = daze_levels[effect_id]
+	if level then
+		duration = daze_durations[level]
+	end
+
+	--Shadowbind
+	if effect_id == 11 and spell_id == 57 then
+		duration = 30
+	--Addle overwrites Nocturne
+	elseif effect_id == 21 then
+		if current_debuffs[target_id][223] then
+			current_debuffs[target_id][223] = nil
+		end
+	--Bully
+	elseif effect_id == 22 and spell_id == 321 then
+		duration = 30
+		--lasts a maximum of 30 seconds
+		coroutine.schedule(function()
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][22] = nil
+			end
+		end, 30)
+	--Angon
+	elseif (effect_id == 149 or effect_id == 558) and spell_id == 170 then
+		duration = 30
+		--lasts a maximum of 90 seconds fully merited
+		coroutine.schedule(function()
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][149] = nil
+			end
+		end, 90)
+	--Chainbound
+	elseif effect_id == 164 then
+		duration = 9
+		--lasts a maximum of 9 seconds
+		coroutine.schedule(function()
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][164] = nil
+			end
+		end, 9)
+	--Tomahawk
+	elseif effect_id == 232 then
+		duration = 30
+		--lasts a maximum of 90 seconds fully merited (also does not give a "wears off" message for the actor)
+		coroutine.schedule(function()
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][232] = nil
+			end
+		end, 90)
+	--Sepulcher/Arcane Crest/Hamanoha/Dragon Breaker
+	elseif effect_id == 463 or effect_id == 464 or effect_id == 465 or effect_id == 466 then
+		duration = 180
+		coroutine.schedule(function()
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][effect_id] = nil
+			end
+		end, duration)
+	--Intervene/Odyllic Subterfuge
+	elseif effect_id == 496 or effect_id == 509 then
+		duration = 30
+		--lasts a maximum of 30 seconds
+		coroutine.schedule(function()
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][effect_id] = nil
+			end
+		end, 30)
+	--Gambit
+	elseif effect_id == 536 then
+		duration = 60
+	--Rayke
+	elseif effect_id == 571 then
+		duration = 30
+	else
+		--Check for spells that overwrite a current debuff
+		if not handleOverwrites(target_id, spell_id) then
+			--If there is a higher priority buff already active, do not save the new debuff
+			return
+		end
+	end
+
+	--Get target position if slept, bound, or petrified so we can later determine if it wears off
+	if effect_id == 2 or effect_id == 7 or effect_id == 11 or effect_id == 19 then
+		local target_data = get_mob_by_id(target_id)
+		current_debuffs[target_id].pos = {
+			x = target_data.x,
+			y = target_data.y,
+		}
+	end
+
+	--Save debuff data to the current_debuffs table
+	--target_id = id of the target (monster)
+	--effect_id = id of the debuff/status
+	current_debuffs[target_id][effect_id] = {
+		id = spell_id, --id of the spell that was cast
+		timer = os.clock() + duration, --expiration time
+	}
+
+end
+
+function handleAction(act)
+
+	local main_target_id = act.targets[1].id
+	-- local actor_id = act.actor_id
+
+	--Ignore if target is not a monster, or if the actor is a monster
+	if not isMonster(main_target_id) or isMonster(act.actor_id) then return end
+
+	--Upgrade Dia if Light Shot
+	if current_debuffs[main_target_id] and current_debuffs[main_target_id][134] and act.category == 6 and act.param == 131 then
+		--If current Dia level is 1-3 then increase by one level
+		--23 = Dia 1
+		--24 = Dia 2
+		--25 = Dia 3
+		--26 = Dia 4 (max achievable by players, from upgrading level 3)
+		local current_dia_level = current_debuffs[main_target_id][134].id
+		if current_dia_level <= 25 then
+			current_debuffs[main_target_id][134].id = current_dia_level + 1
+		end
+	end
+
+	--Upgrade Bio if Dark Shot
+	if current_debuffs[main_target_id] and current_debuffs[main_target_id][135] and act.category == 6 and act.param == 132 then
+		--If current Bio level is 1-3 then increase by one level
+		--230 = Bio 1
+		--231 = Bio 2
+		--232 = Bio 3
+		--233 = Bio 4 (max achievable by players, from upgrading level 3)
+		local current_bio_level = current_debuffs[main_target_id][134].id
+		if current_bio_level <= 232 then
+			current_debuffs[main_target_id][135].id = current_bio_level + 1
+		end
+	end
+
+	local spell_id = act.param
+	local target_count = act.target_count
+	for i = 1, target_count do
+
+		local target_id = act.targets[i].id
+
+		local message_id = act.targets[i].actions[1].message
+
+		--Spells that include a debuff
+		if act.category == 4 then
+
+			--Spell messages to look for
+			local damaging_spell_messages = S{2, 252}
+			local debuff_spell_messages = S{203, 236, 237, 267, 268, 269, 270, 271, 272, 277, 278, 279}
+
+			--Damaging spells
+			if damaging_spell_messages:contains(message_id) then
+				local effect_id = res.spells[spell_id] and res.spells[spell_id].status
+				if effect_id then
+					saveDebuff(target_id, effect_id, spell_id)
+				end
+
+			--Debuff spells
+			elseif debuff_spell_messages:contains(message_id) then
+				local effect_id = act.targets[i].actions[1].param
+				local spell_status = res.spells[spell_id] and res.spells[spell_id].status
+				if spell_status and spell_status == effect_id then
+					saveDebuff(target_id, effect_id, spell_id)
+				end
+			end
+
+		--Most job abilities
+		elseif act.category == 3 or act.category == 6 or act.category == 15 then
+			local messages = S{100, 110, 127, 141, 203, 242, 243, 267, 270, 277, 278, 279, 320, 645, 672}
+			if messages:contains(message_id) then
+				local effect_id = act.targets[i].actions[1].param
+				--Odyllic Subterfuge
+				if message_id == 100 and spell_id == 378 then
+					effect_id = 509
+				--Job Abilities that do damage
+				elseif message_id == 110 then
+					--Intervene
+					if spell_id == 329 then
+						effect_id = 496
+					else
+						effect_id = nil
+					end
+				end
+				if effect_id then
+					saveDebuff(target_id, effect_id, spell_id)
+				end
+			end
+
+		--Some job abilities that include a debuff (unblinkable)
+		elseif act.category == 14 then
+
+			--Daze effect groups mapped to their level/message_id
+			local daze_types = {
+				[519] = { [1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=390, [7]=390, [8]=390, [9]=390, [10]=390 }, --Lethargic Daze
+				[520] = { [1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=395, [7]=395, [8]=395, [9]=395, [10]=395 }, --Sluggish Daze
+				[521] = { [1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=400, [7]=400, [8]=400, [9]=400, [10]=400 }, --Weakened Daze
+				[591] = { [1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=452, [7]=452, [8]=452, [9]=452, [10]=452 }, --Bewildered Daze
+			}
+
+			--Check if the message ID is one of the Daze types
+			local daze_group = daze_types[message_id]
+			if daze_group then
+				local level = act.targets[i].actions[1].param
+				local effect_id = daze_group[level]
+				if effect_id then
+					if current_debuffs[target_id] then
+						for _, id in pairs(daze_group) do
+							current_debuffs[target_id][id] = nil
+						end
+					end
+					saveDebuff(target_id, effect_id, spell_id)
+				end
+			end
+
+			local messages = S{127, 141, 320, 645}
+			if messages:contains(message_id) then
+				local effect_id = act.targets[i].actions[1].param
+				saveDebuff(target_id, effect_id, spell_id)
+			--Chainbound
+			elseif message_id == 529 then
+				local effect_id = 164
+				saveDebuff(target_id, effect_id, spell_id)
+			end
+
+		end
+	end
+end
+
+function handleActionMessage(data)
+
+	local target_id = data.target_id
+	local message_id = data.message_id
+	local effect_id = data.param_1
+
+	--Action messages to look for
+	local death_messages = S{6, 20, 113, 406, 605, 646}
+	local expire_messages = S{64, 204, 206, 350, 531}
+
+	--Check if the target died and clear all debuffs
+	if death_messages:contains(message_id) then
+		current_debuffs[target_id] = nil
+
+	--Check if the debuff expired and clear just that debuff
+	elseif expire_messages:contains(message_id) and current_debuffs[target_id] then
+		local dazes = {
+			lethargic   = {386, 387, 388, 389, 390},
+			sluggish    = {391, 392, 393, 394, 395},
+			weakened    = {396, 397, 398, 399, 400},
+			bewildered  = {448, 449, 450, 451, 452},
+		}
+
+		local found_daze = nil
+
+		--Check if the effect is a Daze
+		for _, group in pairs(dazes) do
+			if S(group):contains(effect_id) then
+				found_daze = group
+				break
+			end
+		end
+
+		if found_daze then
+			if current_debuffs[target_id] then
+				for _, id in ipairs(found_daze) do
+					current_debuffs[target_id][id] = nil
+				end
+			end
+		else
+			if current_debuffs[target_id] then
+				current_debuffs[target_id][effect_id] = nil
+			end
+		end
+
+	end
+
+end
+
 register_event('incoming chunk',function(id,original,modified,injected,blocked)
-    if not injected or (id == 0x67 or id == 0x068) then
+
+	if injected then return end
+
+	if id == 0x67 or id == 0x068 then --pet tp
 		local packet = packets.parse('incoming', original)
 		local msg_type = packet['Message Type']
 		if (msg_type == 0x04) then
 			pet_tp = packet['Pet TP']
 		end
-    end
+
+	elseif id == 0x028 then --actions (for debuffs)
+		handleAction(windower.packets.parse_action(original))
+
+	elseif id == 0x029 then --action messages (for debuffs)
+		local data = {}
+		data.target_id = original:unpack('I',0x09)
+		data.param_1 = original:unpack('I',0x0D)
+		data.message_id = original:unpack('H',0x19)%32768
+		handleActionMessage(data)
+
+	elseif( id == 0xF4 ) then --wide scan (for monster levels)
+		local packet = packets.parse( 'incoming', original )
+		current_levels[packet.Index] = packet.Level
+
+	end
+
 end)
 
 --Unrecognized command
 function displayUnregnizedCommand()
+
 	add_to_chat(8,('[Bars] '):color(220)..('Unrecognized command. Type'):color(28)..(' //bars help'):color(1)..(' for a list of commands.'):color(28))
+
 end
 
 register_event('addon command',function(addcmd, ...)
@@ -6652,7 +8015,7 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 
 	if mouse_type == 2 and Screen_Test then --leftmouseup
 
-		local player_stat_bars = {
+		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
 			mp = player_stats_mp_bar_bg,
 			tp = player_stats_tp_bar_bg,
@@ -6672,8 +8035,8 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 		local self_action_x = self_action_bar_bg:pos_x()
 		local self_action_y = self_action_bar_bg:pos_y() - job_specific[job].vertical_offsets.self_action
 
-		local player_stats_x = player_stat_bars[player_stats_top_bar]:pos_x()
-		local player_stats_y = player_stat_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
+		local player_stats_x = player_stats_bars[player_stats_top_bar]:pos_x()
+		local player_stats_y = player_stats_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
 
 		if settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
 			settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
