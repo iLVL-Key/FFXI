@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.1'
+_addon.version = '4.1.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -3329,22 +3329,21 @@ function getIconFile(spell_name, debuff_id)
 		end
 	end
 
+	--Check for Roman numeral suffix
 	for suffix, roman_num in pairs(roman_numerals) do
 		if spell_name:sub(-#suffix) == suffix:lower() then
-			local roman_num_file = icon_file..roman_num..'.png'
-			local roman_num_path = icon_path_base..roman_num_file
-			local debuff_id_file = icon_file..'.png'
-			local debuff_id_path = icon_path_base..debuff_id_file
-
-			--Check if the icon file exists
+			local roman_num_path = icon_path_base..icon_file..roman_num..'.png'
 			if file_exists(roman_num_path) then
 				icon_file = icon_file..roman_num
-			elseif not file_exists(debuff_id_path) then
-				icon_file = nil
 			end
-
 			break
 		end
+	end
+
+	--Ensure the file exists (with or without roman numeral)
+	local final_icon_path = icon_path_base..icon_file..'.png'
+	if not file_exists(final_icon_path) then
+		icon_file = nil
 	end
 
 	return icon_file
