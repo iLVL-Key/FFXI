@@ -233,6 +233,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.1.1
+- Fixed icon file check so that it correctly does not display a blank white icon if the file does not exists. Previously only made the check if the spell cast was a tier 2+ (had a roman numeral attached at the end).
+
 Version 4.1
 - Added `debuff_icons` and `debuff_timers` options. Will display icons/timers for debuffs on monsters.
   - This feature IS NOT 100% accurate. There is currently no way to directly see and track buffs/debuffs on monsters.
