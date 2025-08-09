@@ -469,6 +469,17 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.3
+- Added a Song List section in the Options. Moved all settings regarding the Song List into it.
+- Added a Horizontal Song List option.
+- Added an option to remove the header in the Song List.
+- Added the ability to rename songs. Will rename only the matched part it finds. You can rename individual songs by using the full name of each song, or shorten multiple song names by including common word in them (ex. "Valor" -> "V." ).
+- Added Melee Dual Wield set.
+- Adjusted the Song List so that now the party member that is your current Target or Sub Target is highlighted.
+- Adjusted the Song List text to now be bold, making it easier to read.
+- Fixed Foe Lullaby I/II and Horde Lullaby I not equipping the correct gear set.
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+
 Version 1.2.2
 - Added support for the Limbus +4 gear for song duration.
 - Fixed Low MP warning triggering on subjobs with no MP.
