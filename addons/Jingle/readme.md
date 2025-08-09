@@ -1,10 +1,10 @@
-# Jingle #
+# Jingle
 
 Plays a sound and displays a chat notification when a target (player, mob, or NPC) is nearby.  
 
 ![Jingle_Oseem](https://github.com/iLVL-Key/FFXI/assets/101156258/5ed6b45b-e798-4e1e-92dc-27d7490fcca1)
 
-## Features ##
+## Features
  - Tells you distance and direction to target when found.
  - 3 types of targets:
    - **Permanent** - Found in all zones.
@@ -16,7 +16,7 @@ Plays a sound and displays a chat notification when a target (player, mob, or NP
    - Plays the default.wav sound if no sound specified.
  - Will play any .wav file you save to the /data/sounds folder.
   
-## Commands ##
+## Commands
 All commands must be preceded with `//jingle`   (ex: `//jingle list`)  
 `[optional] <required>`
  - `add/a` \[target] \[sound_file_name] - Add a target with an optional sound file.
@@ -33,7 +33,19 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
    - New sounds added to the /data/sounds folder must be .wav format.
  - `help` - Display a list of commands and addon info.
 
-## Version History ##
+## Settings
+Open the `/Jingle/data/settings.xml` file to adjust these settings.  
+
+| **Setting** | **Description** |
+|------------|----------------|
+| `distance` | Determines distance the target needs to be within before being "detected" (Note: Hard max is 50). |
+| `flood_delay` | Time in seconds after a target goes out of range before it can be considered "nearby" again. |
+| `polling_rate` | Time in seconds between each check for targets. (0 = every frame). |
+
+## Version History
+
+2.4
+- Added `check_every_x_seconds` option. Determines how often in seconds that the check for a nearby target is run. Setting to `0` runs the check every frame.
 
 2.3.1
 - Adjusted the distance to only show the full number, no decimal places.
