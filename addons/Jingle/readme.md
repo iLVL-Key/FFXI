@@ -45,7 +45,7 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 ## Version History
 
 2.4
-- Added `check_every_x_seconds` option. Determines how often in seconds that the check for a nearby target is run. Setting to `0` runs the check every frame.
+- Added `polling_rate` option. Determines how often in seconds that the check for a nearby target is run. Setting to `0` runs the check every frame.
 
 2.3.1
 - Adjusted the distance to only show the full number, no decimal places.
