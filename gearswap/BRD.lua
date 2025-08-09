@@ -113,16 +113,15 @@ AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation char
 TransportLock	=	'On'	--[On/Off]		Cancels your first Transport spell and unlocks for 3 min or until zone.
 
 -- Heads Up Display --
-HUDposX			=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-SongposX		=	400		--	X position for the Song list. 0 is left of the window, increasing this number will move it to the right.
-SongposY		=	300		--	Y position for the Song list. 0 is top of the window, increasing this number will move it downward.
-FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
-ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
-ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
-PTMemNearDist	=	10		--	Maximum distance for a party member to be highlighted as "nearby".
-SongsFontSize	=	9		--	Adjust the font size of the Songs List.
+HUDposX				=	973		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposY				=	805		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+SongposX			=	400		--	X position for the Song list. 0 is left of the window, increasing this number will move it to the right.
+SongposY			=	300		--	Y position for the Song list. 0 is top of the window, increasing this number will move it downward.
+FontSize			=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
+LineSpacer			=	16		--	Space in pixels between each Line of the HUD.
+ColumnSpacer		=	90.5	--	Space in pixels between each Column of the HUD.
+ShowTPMeter			=	'Off'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
+PTMemNearDist		=	10		--	Maximum distance for a party member to be highlighted as "nearby".
 
 modeName = {
 --HUD Mode Names
@@ -173,16 +172,16 @@ inst = {
 }
 
 --  General Notifications  --
-ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+ReraiseReminder		=	'Off'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
+NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiFood			=	'Off'	--[On/Off]	Displays a notification when food wears off.
 NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
-NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
-NotiSignet			=	'On'	--[On/Off]	Displays a notification when Signet/Sanction/Sigil/Ionis wears off.
+NotiReraise			=	'Off'	--[On/Off]	Displays a notification when reraise wears off.
+NotiSignet			=	'Off'	--[On/Off]	Displays a notification when Signet/Sanction/Sigil/Ionis wears off.
 NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
@@ -208,7 +207,6 @@ NotiTerror			=	'On'	--[On/Off]	Displays a notification when you are terrorized.
 -------------------------------------------
 
 ShowHUD			=	'On'	--[On/Off]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
-ShowSongs		=	'On'	--[On/Off]  Initial state of the Song List. Use `//songs` to show/hide the Song List in game.
 StartMode		=	'Mode1'	--[Mode1/Mode2]  (Mode1 = Full Potency Instrument, Mode2 = "Extra Song" Instrument)
 								--	Determines the Mode you will start in. Current Mode can be changed at any time by using any
 								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
@@ -288,6 +286,27 @@ sub = {
 		Abil05 = "Soul Voice",		Abil05_sh = "",
 		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
 	}
+}
+
+-------------------------------------------
+--               SONG LIST               --
+-------------------------------------------
+
+ShowSongList		=	"On"		--[On/Off]  Initial state of the Song List. Use `//songs` to show/hide the Song List in game.
+ShowSongListHeader	=	"On"		--[On/Off]  Show the header on the Song List.
+SongsFontSize		=	9			--	Adjust the font size of the Songs List.
+SongListOrientation	=	"Horizontal"	--  [Vertical/Horizontal]	Orientation of the Song List.
+									--	Vertical: All players and their songs in one column.
+									--	Horizontal: Each player and their songs in their own column.
+
+-- Song Renaming --
+
+--Feel free to rename songs as you see fit (included are commented out examples of the types of things you can do)
+song_renaming = {
+	-- ["Valor Minuet V"] = "Attack 5",
+	-- ["Valor"] = "V.",
+	-- ["Herb Pastoral"] = "Dummy Song",
+	-- ["Blade "] = "",
 }
 
 -------------------------------------------
@@ -448,21 +467,26 @@ sets.melee = {
 	legs="Nyame Flanchard",
 	feet="Nyame Sollerets",
 	neck="Bard's Charm +2",
-	waist="Reiki Yotai",
-	left_ear="Eabani Earring",
+	waist="Windbuffet Belt +1",
+	left_ear="Cessance Earring",
 	right_ear="Telos Earring",
 	left_ring="Chirich Ring +1",
-	right_ring="Chirich Ring +1",
-	-- left_ring="Petrov Ring",
-	-- right_ring="Hetairoi Ring",
+	right_ring="Hetairoi Ring",
 	back={ name="Intarabus's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 }
+
+-- Melee Dual Wield (Dual Wield, Accuracy, Multi Attack, DEX, Store TP, Attack)
+-- Combines with Melee set, only necessary to set the slots with specific desired stats
+sets.melee_dual_wield = set_combine(sets.melee, {
+	waist="Reiki Yotai",
+	left_ear="Eabani Earring",
+})
 
 -- Weapon Skill - Basic (STR, Weapon Skill Damage, Attack, Multi Attack)
 sets.weapon_skill = {
 	range={ name="Linos", augments={'Attack+13','Weapon skill damage +2%','STR+8',}},
 	head="Nyame Helm",
-	body="Nyame Mail",
+	body="Bihu Just. +4",
 	hands="Nyame Gauntlets",
 	legs="Nyame Flanchard",
 	feet="Nyame Sollerets",
@@ -484,6 +508,7 @@ sets["Savage Blade"] = set_combine(sets.weapon_skill, {
 -- Evisceration (combines with Weapon Skill set above)
 sets["Evisceration"] = set_combine(sets.weapon_skill, {
 	neck="Fotia Gorget",
+	neck="Baetyl Pendant",
 	waist="Fotia Belt",
 	right_ear="Mache Earring +1",
 	left_ring="Ilabrat Ring",
@@ -496,7 +521,10 @@ sets["Mordant Rime"] = set_combine(sets.weapon_skill, {
 
 -- Aeolian Edge (combines with Weapon Skill set above)
 sets["Aeolian Edge"] = set_combine(sets.weapon_skill, {
-
+	body="Nyame Mail",
+	waist="Orpheus's Sash",
+	right_ear="Friomisi Earring",
+	left_ring="Shiva Ring +1",
 })
 
 -- Exenterator (combines with Weapon Skill set above)
@@ -661,7 +689,7 @@ sets.threnody = set_combine(sets.debuff_song, {
 
 -- Lullaby (Foe Lullaby I & II, and Horde Lullaby I)
 sets.lullaby = set_combine(sets.debuff_song, {
-	hands="Brioso Cuffs +2",
+	hands="Brioso Cuffs +3",
 })
 
 -- Horde Lullaby II (String skill tiers: 6'=486, 7'=567)
@@ -753,7 +781,7 @@ sets.nightingale = {
 
 -- Troubadour (Enhances Troubadour gear)
 sets.troubadour = {
-	body="Bihu Justaucorps",
+	body="Bihu Just. +4",
 }
 
 -- Steps (physical accuracy)
@@ -840,7 +868,7 @@ end
 
 
 
-FileVersion = '1.2.2'
+FileVersion = '1.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1037,6 +1065,7 @@ local hud_bg_str = '                                                            
 --Create the PT Member Song list text objext
 local song_list = texts.new()
 song_list:font('Consolas')
+song_list:bold(true)
 song_list:size(SongsFontSize)
 song_list:bg_alpha(170)
 song_list:pos(SongposX,SongposY)
@@ -1595,7 +1624,7 @@ if ShowHUD == 'On' then
 	hud_abil05:show()
 	hud_abil06:show()
 end
-if ShowSongs == 'On' then
+if ShowSongList == "On" then
 	song_list:show()
 end
 
@@ -2393,13 +2422,9 @@ end
 
 --Create the song list to be displayed on the screen for tracking
 local function getCurrentSongList()
-	local formatted_list = "[SONG LIST         //songs]\n" --longest song name is 18 characters, plus formatting makes 27 char width
-
-	-- Retrieve the party list
 	local party = windower.ffxi.get_party()
 	local party_order = {}
 
-	--Store party members' names based on their position
 	for i = 0, 5 do
 		local position = 'p'..i
 		if party[position] and party[position].name then
@@ -2407,39 +2432,46 @@ local function getCurrentSongList()
 		end
 	end
 
-	--Iterate over the party_order to ensure the correct order in the Song List
+	local function formatRGB(value)
+		return string.format("%03d", value)
+	end
+
+	-- First build all the columns
+	local columns = {}
+
 	for _, player_name in ipairs(party_order) do
 		if current_songs[player_name] then
-			
-			--Format RGB values with leading zeros (helps prevent an issue with the text not lining up correctly after color is added)
-			local function formatRGB(value)
-				return string.format("%03d", value)
-			end
-
+			local col = {}
 			local cn = color.song_list[getNameColor(player_name)] or color.song.none
-			local l_padding = math.floor((27 - #player_name) / 2)
-			local r_padding = 27 - #player_name - l_padding
-			local l_spaces = ""
-			local r_spaces = ""
-			while string.len(l_spaces) < l_padding do
-				l_spaces = l_spaces..'-'
-			end
-			while string.len(r_spaces) < r_padding do
-				r_spaces = r_spaces..'-'
-			end
-			formatted_list = formatted_list..l_spaces.."\\cs("..formatRGB(cn.r)..","..formatRGB(cn.g)..","..formatRGB(cn.b)..")"..player_name.."\\cr"..r_spaces.."\n"
+			local r = formatRGB(cn.r)
+			local g = formatRGB(cn.g)
+			local b = formatRGB(cn.b)
+			local l_padding = math.floor((26 - #player_name) / 2)
+			local r_padding = 26 - #player_name - l_padding
+			local target = windower.ffxi.get_mob_by_target('st','t')
+			local targeted = target and target.name == player_name
+			local line = targeted and '=' or '-'
+			local l_spaces, r_spaces = string.rep(line, l_padding), string.rep(line, r_padding)
+			local t_r = targeted and r or '150'
+			local t_g = targeted and g or '150'
+			local t_b = targeted and b or '150'
+			table.insert(col, "\\cs("..t_r..","..t_g..","..t_b..")"..l_spaces.."\\cr\\cs("..r..","..g..","..b..")"..player_name.."\\cr\\cs("..t_r..","..t_g..","..t_b..")"..r_spaces.."\\cr")
 
 			local song_list = {}
 			for song_name, song_data in pairs(current_songs[player_name]) do
-				table.insert(song_list, {name = song_name, duration = song_data.duration, dummy = song_data.dummy, soul_voice = song_data.soul_voice})
+				for key, new_name in pairs(song_renaming) do
+					song_name = song_name:gsub(key, new_name, 1)
+				end
+				table.insert(song_list, {
+					name = song_name,
+					duration = song_data.duration,
+					dummy = song_data.dummy,
+					soul_voice = song_data.soul_voice
+				})
 			end
 
-			--Sort the song list by duration in descending order (longest first)
-			table.sort(song_list, function(a, b)
-				return a.duration > b.duration
-			end)
+			table.sort(song_list, function(a, b) return a.duration > b.duration end)
 
-			--Append each song and its duration to the formatted list
 			for _, song in ipairs(song_list) do
 				local cd = color.song_list.very_long
 				if song.duration <= 60 then
@@ -2451,51 +2483,66 @@ local function getCurrentSongList()
 				elseif song.duration <= 600 then
 					cd = color.song_list.long
 				end
+
 				local cn = song.soul_voice and color.song_list.soul_voice or color.song_list.normal
-				local minutes = math.floor(song.duration / 60)
-				local seconds = song.duration % 60
 				local cb = color.song_list.none
-				if string.find(song.name, "Paeon") then
-					cb = color.song_list.Paeon
-				elseif string.find(song.name, "Ballad") then
-					cb = color.song_list.Ballad
-				elseif string.find(song.name, "Minne") then
-					cb = color.song_list.Minne
-				elseif string.find(song.name, "Minuet") then
-					cb = color.song_list.Minuet
-				elseif string.find(song.name, "Madrigal") then
-					cb = color.song_list.Madrigal
-				elseif string.find(song.name, "Mazurka") then
-					cb = color.song_list.Mazurka
-				elseif string.find(song.name, "Prelude") then
-					cb = color.song_list.Prelude
-				elseif string.find(song.name, "Mambo") then
-					cb = color.song_list.Mambo
+
+				if string.find(song.name, "Paeon") then cb = color.song_list.Paeon
+				elseif string.find(song.name, "Ballad") then cb = color.song_list.Ballad
+				elseif string.find(song.name, "Minne") then cb = color.song_list.Minne
+				elseif string.find(song.name, "Minuet") then cb = color.song_list.Minuet
+				elseif string.find(song.name, "Madrigal") then cb = color.song_list.Madrigal
+				elseif string.find(song.name, "Mazurka") then cb = color.song_list.Mazurka
+				elseif string.find(song.name, "Prelude") then cb = color.song_list.Prelude
+				elseif string.find(song.name, "Mambo") then cb = color.song_list.Mambo
+				elseif string.find(song.name, "March") then cb = color.song_list.March
+				elseif string.find(song.name, "Etude") then cb = color.song_list.Etude
+				elseif string.find(song.name, "Carol") then cb = color.song_list.Carol
+				elseif string.find(song.name, "Sirvente") then cb = color.song_list.Sirvente
+				elseif string.find(song.name, "Dirge") then cb = color.song_list.Dirge
+				elseif string.find(song.name, "Scherzo") then cb = color.song_list.Scherzo
+				elseif string.find(song.name, "Aria") then cb = color.song_list.Aria
 				elseif string.find(song.name, "Aubade") or string.find(song.name, "Pastoral") or string.find(song.name, "Fantasia") or string.find(song.name, "Operetta") or string.find(song.name, "Capriccio") or string.find(song.name, "Round") or string.find(song.name, "Gavotte") then
 					cb = color.song_list.Dummy
-				elseif string.find(song.name, "March") then
-					cb = color.song_list.March
-				elseif string.find(song.name, "Etude") then
-					cb = color.song_list.Etude
-				elseif string.find(song.name, "Carol") then
-					cb = color.song_list.Carol
-				elseif string.find(song.name, "Sirvente") then
-					cb = color.song_list.Sirvente
-				elseif string.find(song.name, "Dirge") then
-					cb = color.song_list.Dirge
-				elseif string.find(song.name, "Scherzo") then
-					cb = color.song_list.Scherzo
-				elseif string.find(song.name, "Aria") then
-					cb = color.song_list.Aria
 				end
-				local bullet = "\\cs("..formatRGB(cb.r)..","..formatRGB(cb.g)..","..formatRGB(cb.b)..")"..(song.dummy and "♫" or "●").." \\cr"
-				local song_name = "\\cs("..formatRGB(cn.r)..","..formatRGB(cn.g)..","..formatRGB(cn.b)..")"..song.name.."\\cr"
+
+				local bullet = "\\cs("..formatRGB(cb.r)..","..formatRGB(cb.g)..","..formatRGB(cb.b)..")"..(song.dummy and "♫" or "●").."\\cr "
+				local song_name = "\\cs("..formatRGB(cn.r)..","..formatRGB(cn.g)..","..formatRGB(cn.b)..")"..song.name
+				local minutes = math.floor(song.duration / 60)
+				local seconds = song.duration % 60
+				local time = "\\cs("..formatRGB(cd.r)..","..formatRGB(cd.g)..","..formatRGB(cd.b)..")"..string.format("%d:%02d", minutes, seconds).."\\cr"
 				local padding = 27 - (#song.name + (minutes >= 10 and 2 or 1) + 7)
-				local spaces = ""
-				while string.len(spaces) < padding do
-					spaces = spaces..' '
+				local spaces = string.rep(" ", padding)
+
+				table.insert(col, bullet..song_name..":"..spaces.."\\cr"..time)
+			end
+
+			table.insert(columns, col)
+		end
+	end
+
+	local header = ShowSongListHeader == "On" and "[SONG LIST         //songs]\n" or ""
+	local formatted_list = header
+
+	--Combine columns into final string
+	if string.lower(SongListOrientation) == "horizontal" then
+		local max_lines = 0
+		for _, col in ipairs(columns) do
+			if #col > max_lines then max_lines = #col end
+		end
+		for i = 1, max_lines do
+			for c = 1, #columns do
+				formatted_list = formatted_list..(columns[c][i] or string.rep(" ", 26))
+				if c < #columns then
+					formatted_list = formatted_list.."│" --line between columns
 				end
-				formatted_list = formatted_list..bullet..song_name..":"..spaces.." \\cs("..formatRGB(cd.r)..","..formatRGB(cd.g)..","..formatRGB(cd.b)..")"..string.format("%d:%02d", minutes, seconds).."\\cr\n"
+			end
+			formatted_list = formatted_list.."\n"
+		end
+	else --Vertical (default)
+		for _, col in ipairs(columns) do
+			for _, line in ipairs(col) do
+				formatted_list = formatted_list..line.."\n"
 			end
 		end
 	end
@@ -2685,7 +2732,7 @@ local function setSongGear(song,instrument)
 	else
 		main_sub = hasDualWield() and "debuff_song_dual_wield" or "debuff_song_single_wield"
 		if string.find(song,'Lullaby') then
-			set_name = "foe_lullaby"
+			set_name = "lullaby"
 		elseif string.find(song,'Requiem') or string.find(song,'Elegy') or string.find(song,'Nocturne') or string.find(song,'Finale') or string.find(song,'Virelai') then
 			set_name = "debuff_song"
 		elseif string.find(song,'Threnody') then
@@ -2823,12 +2870,12 @@ function self_command(command)
 	elseif command == 'HUD' and ShowHUD == 'On' then
 		ShowHUD = 'Off'
 		windower.send_command('gs c HideHUD')
-	elseif command == 'Songs' and ShowSongs == 'Off' then
-		ShowSongs = 'On'
-		windower.send_command('gs c ShowSongs')
+	elseif command == 'Songs' and ShowSongList == 'Off' then
+		ShowSongList = 'On'
+		windower.send_command('gs c ShowSongList')
 		windower.add_to_chat(220,('[Songs List] Display: '):color(36)..('ON'):color(200))
-	elseif command == 'Songs' and ShowSongs == 'On' then
-		ShowSongs = 'Off'
+	elseif command == 'Songs' and ShowSongList == 'On' then
+		ShowSongList = 'Off'
 		windower.send_command('gs c HideSongs')
 		windower.add_to_chat(220,('[Songs List] Display: '):color(36)..('OFF'):color(200))
 	elseif command == 'ShowHUD' then
@@ -2938,7 +2985,7 @@ function self_command(command)
 		hud_abil04:hide()
 		hud_abil05:hide()
 		hud_abil06:hide()
-	elseif command == 'ShowSongs' then
+	elseif command == 'ShowSongList' then
 		song_list:show()
 	elseif command == 'HideSongs' then
 		song_list:hide()
@@ -3103,15 +3150,9 @@ function choose_set()
 			hud_noti:text('Status: Engaged')
 			hud_noti:color(255,255,255)
 		end
-		if DTOverride == 'On' then
-			equip(set_combine(sets.melee, sets.dt_override))
-		else
-			equip(sets.melee)
-		end
-		if LowHP == true then --no matter what Mode we're in, if we have low HP we equip the Oh Shit gear set
-			equip(sets.oh_shit)
-		end
-		equip({main=pair[1],sub=pair[2]})
+		local base_set = LowHP and sets.oh_shit or (hasDualWield() and sets.melee_dual_wield or sets.melee)
+		local dt_override = DTOverride == 'On' and not LowHP and sets.dt_override or nil
+		equip(set_combine(base_set, dt_override, {main=pair[1],sub=pair[2]}))
 	elseif player.status == "Idle" then
 		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
 			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..player.sub_job..player.sub_job_level)
@@ -3255,11 +3296,8 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 			cancel_spell()
 			return
-		elseif sets[spell.english] then
-			equip(sets[spell.english])
-		else
-			equip(sets.weapon_skill)
 		end
+		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
 		if player.equipment.main == "Aeneas" and spell.english == "Exenterator" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Mandau' and spell.english == "Mercy Stroke" then
@@ -3484,7 +3522,7 @@ windower.register_event('status change', function(status)
 		if ShowHUD == 'On' then --In a cutscene: Hide the HUD
 			windower.send_command('gs c HideHUD')
 		end
-		if ShowSongs == 'On' then --In a cutscene: Hide the Song List
+		if ShowSongList == "On" then --In a cutscene: Hide the Song List
 			windower.send_command('gs c HideSongs')
 		end
 	elseif status ~= 4 and InCS == true then
@@ -3492,8 +3530,8 @@ windower.register_event('status change', function(status)
 		if ShowHUD == 'On' then --Out of cutscene: Show the HUD
 			windower.send_command('gs c ShowHUD')
 		end
-		if ShowSongs == 'On' then --Out of cutscene: Show the Song List
-			windower.send_command('gs c ShowSongs')
+		if ShowSongList == "On" then --Out of cutscene: Show the Song List
+			windower.send_command('gs c ShowSongList')
 		end
 	end
 	choose_set() --run this any time your status changes (engage, disengage, rest)
@@ -3703,7 +3741,7 @@ windower.register_event('prerender', function()
 		if ShowHUD == 'On' then
 			send_command('gs c HideHUD')
 		end
-		if ShowSongs == 'On' then
+		if ShowSongList == "On" then
 			send_command('gs c HideSongs')
 		end
 	elseif pos ~= "(?-?)" and Zoning == true then
@@ -3711,8 +3749,8 @@ windower.register_event('prerender', function()
 		if ShowHUD == 'On' then
 			send_command('gs c ShowHUD')
 		end
-		if ShowSongs == 'On' then
-			send_command('gs c ShowSongs')
+		if ShowSongList == "On" then
+			send_command('gs c ShowSongList')
 		end
 	end
 
@@ -4146,6 +4184,11 @@ windower.register_event('prerender', function()
 	hud_ptmember05_bg:bg_alpha(party[5] and distance(party[5]) or 0)
 	hud_ptmember06_bg:bg_alpha(party[6] and distance(party[6]) or 0)
 
+	--Update the on-screen Song List
+	if ShowSongList == "On" then
+		song_list:text(getCurrentSongList())
+	end
+
 	--1 second heartbeat
 	if os.time() > Heartbeat then
 
@@ -4261,7 +4304,6 @@ windower.register_event('prerender', function()
 				resetCurrentSongs(party_member.name)
 			end
 		end
-		song_list:text(getCurrentSongList())
 
 		--PT Member updates
 		local c_not_found = {r = 125, g = 125, b = 125}
