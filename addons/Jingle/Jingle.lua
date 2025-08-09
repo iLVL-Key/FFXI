@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.3.1'
+_addon.version = '2.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -44,12 +44,16 @@ get_player = windower.ffxi.get_player
 play_sound = windower.play_sound
 register_event = windower.register_event
 
+last_check_time = 0
+
 defaults = {
-	distance = 50, --determines distance the target needs to be within before being "detected" (Note: Hard max is 50)
-	flood_delay = 5, --how much time after a target goes out or range before it can be considered "nearby" again
+	distance = 50, --Distance the target needs to be within before being "detected" (Note: Hard max is 50).
+	flood_delay = 5, --Time in seconds after a target goes out of range before it can be considered "nearby" again.
+	polling_rate = 1, --Time in seconds between each check for targets (0 = every frame).
 }
 
 settings = config.load(defaults)
+settings:save('all')
 
 function sortedTableString(tbl, indent)
 	indent = indent or ""
@@ -372,9 +376,9 @@ function checkForTarget()
 	function getAngle(player, target)
 		local dx = target.x - player.x
 		local dy = target.y - player.y
-		local angle = math.atan2(dy, dx) -- returns radians
-		local degrees = math.deg(angle) -- convert to degrees
-		return (degrees + 360) % 360 -- normalize to 0-360
+		local angle = math.atan2(dy, dx) --returns radians
+		local degrees = math.deg(angle) --convert to degrees
+		return (degrees + 360) % 360 --normalize to 0-360
 	end
 
 	--Convert angle in degrees to compass direction
@@ -574,7 +578,16 @@ register_event('addon command',function(addcmd, ...)
 end)
 
 register_event('prerender', function()
-	checkForTarget()
+    if settings.polling_rate == 0 then
+        --Run every frame
+        checkForTarget()
+    else
+        local current_time = os.time()
+        if current_time - last_check_time >= settings.polling_rate then
+            last_check_time = current_time
+            checkForTarget()
+        end
+    end
 end)
 
 windower.register_event('zone change', function()
