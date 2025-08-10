@@ -475,6 +475,7 @@ Version 1.3
 - Added an option to remove the header in the Song List.
 - Added the ability to rename songs. Will rename only the matched part it finds. You can rename individual songs by using the full name of each song, or shorten multiple song names by including common word in them (ex. "Valor" -> "V." ).
 - Added Melee Dual Wield set.
+- Added support for Miracle Cheer.
 - Adjusted the Song List so that now the party member that is your current Target or Sub Target is highlighted.
 - Adjusted the Song List text to now be bold, making it easier to read.
 - Fixed Foe Lullaby I/II and Horde Lullaby I not equipping the correct gear set.
