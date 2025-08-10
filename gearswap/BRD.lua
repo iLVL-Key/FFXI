@@ -2192,6 +2192,12 @@ getJPGiftBonusDuration()
 local function getSongDuration(spell)
 
 	song_duration = nil
+
+	--Miracle Cheer ignores all song duration gear and puts songs at exactly 15 minutes.
+	if player.equipment.range == 'Miracle Cheer' then
+		return 900
+	end
+
 	local multiplier = 1
 
 	--1200 job point gift duration nonus
