@@ -113,8 +113,8 @@ AutoSubCharge	=	'On'	--[On/Off]		Automatically attempts to keep Sublimation char
 TransportLock	=	'On'	--[On/Off]		Cancels your first Transport spell and unlocks for 3 min or until zone.
 
 -- Heads Up Display --
-HUDposX				=	973		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposY				=	805		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
+HUDposX				=	100		--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
+HUDposY				=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
 SongposX			=	400		--	X position for the Song list. 0 is left of the window, increasing this number will move it to the right.
 SongposY			=	300		--	Y position for the Song list. 0 is top of the window, increasing this number will move it downward.
 FontSize			=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
@@ -172,16 +172,16 @@ inst = {
 }
 
 --  General Notifications  --
-ReraiseReminder		=	'Off'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
+ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
-NotiDamage			=	'Off'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-NotiFood			=	'Off'	--[On/Off]	Displays a notification when food wears off.
+NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
 NotiLowHP			=	'On'	--[On/Off]	Displays a notification when HP is low.
 NotiLowMP			=	'On'	--[On/Off]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
-NotiReraise			=	'Off'	--[On/Off]	Displays a notification when reraise wears off.
-NotiSignet			=	'Off'	--[On/Off]	Displays a notification when Signet/Sanction/Sigil/Ionis wears off.
+NotiReraise			=	'On'	--[On/Off]	Displays a notification when reraise wears off.
+NotiSignet			=	'On'	--[On/Off]	Displays a notification when Signet/Sanction/Sigil/Ionis wears off.
 NotiSneak			=	'On'	--[On/Off]	Displays a notification when Sneak is about to wear off.
 NotiTime			=	'On'	--[On/Off]	Displays a notification for time remaining notices.
 NotiTrade			=	'On'	--[On/Off]	Displays a notification when someone trades you.
@@ -295,7 +295,7 @@ sub = {
 ShowSongList		=	"On"		--[On/Off]  Initial state of the Song List. Use `//songs` to show/hide the Song List in game.
 ShowSongListHeader	=	"On"		--[On/Off]  Show the header on the Song List.
 SongsFontSize		=	9			--	Adjust the font size of the Songs List.
-SongListOrientation	=	"Horizontal"	--  [Vertical/Horizontal]	Orientation of the Song List.
+SongListOrientation	=	"Vertical"	--  [Vertical/Horizontal]	Orientation of the Song List.
 									--	Vertical: All players and their songs in one column.
 									--	Horizontal: Each player and their songs in their own column.
 
