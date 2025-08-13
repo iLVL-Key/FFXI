@@ -43,6 +43,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - Shows the tiers of the debuffs (Frazzle 3, Dia 4, Slow 2, etc.)
   - Will show a best guess timer for each.
   - Removes the icon only when the debuff is known to be removed/off (ie Benediction or "wears off" message), otherwise displays "??" if unsure.
+  - Use a custom list of duration bonuses for your static group or friends to refine timers more precisely.
 - Display Monster levels.
 - Display the Index or Hex number for targets.
   - Useful for NM placeholder camping, or designating a specific mob for others to target.
@@ -102,6 +103,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `casting` | Icon displayed while the target is casting. |
 | `cancelled` | Icon displayed if the target's casting is cancelled or interrupted. |
 | `completed` | Icon displayed when the target's casting is completed. |
+| `monster_target` | Icon indicating a direct action was performed by the monster on this target. This should be the monsters actual enmity target. |
+| `monster_target_aoe` | Icon indicating an AOE action was performed by the monster on this target. May not be the monsters actual enmity target. |
 | `number_of_targets_hit` | Icon separating the number of target's hit from the results of the cast. |
 | `target_lock_left` | Icon displayed on the left of the target when the camera is locked-on. |
 | `target_lock_right` | Icon displayed on the right of the target when the camera is locked-on. |
@@ -149,12 +152,16 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
 | `debuffs` | Overall debuff options |
 | → `blacklist` | Determines what type of list is used.<br>`true` = Buffs in the list will be excluded from showing.<br>`false` = Buffs in the list will be the only ones shown. |
+| → `duraction_cap` | Time in seconds that is the maximum amount of time a specific debuff will stay on a monster if not refreshed. |
 | → `list` | Comma-separated list of buffs to either exclude or show. |
+| `flip_doom_timer_coloring` | Flips the timer coloring for the `Doom` debuff so that it changes from red when it first lands, to orange, then green when it is under 10 seconds. |
 | `focus_target_max_distance` | The maximum distance from the player that a target on the Auto Focus Target list must be before the bar is displayed. |
 | `hide_pet_bar_when_no_pet` | Hide the pet bar when set to be displayed but no pet is present. |
 | `hide_player_stats_bars_when_no_target` | Hide any Player Stat bars set to be displayed when there is no current target. |
-| `max_action_length` | The maximum number of characters of an action displayed. Actions longer than this number will be truncated to help save space. |
-| `max_name_length` | The maximum number of characters of a target’s name displayed (target action line only). Target names longer than this number will be truncated to help save space. |
+| `max_action_length` | The maximum number of characters of an action displayed. Actions longer than this number will be truncated to this length. |
+| `max_monster_target_length` | The maximum number of characters of a monster target’s name displayed. Names longer than this number will be truncated to this length. |
+| `max_name_length` | The maximum number of characters of a target’s name displayed (target action line only). Names longer than this number will be truncated to this length. |
+| `monster_target_confidence_timer` | Time in seconds before a `?` is displayed indicating low confidence in the monster's target. |
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
 | `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
 | `show_action_status_indicators` | Shows icons depicting when a spell/ability is casting, completed, or interrupted. |
@@ -164,7 +171,6 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `show_focus_target_when_targeted` | Show the Auto Focus Target bar when the subject of it has been targeted. False prevents a target being on both at the same time. |
 | `show_hp_tp_markers` | Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP. |
 | `show_max_hp_mp_on_bars` | Shows the current maximum HP and MP on their respective bars. |
-| `show_monster_level` | Show the level of the current monster target.  |
 | `show_pet_distance` | Show the distance between you and your pet. |
 | `show_pet_status` | Show the current status of your pet (Idle, Engaged, etc.). |
 | `show_pet_tp` | Show the current TP of your pet. |
@@ -185,12 +191,12 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ### Sections
 | **Setting** | **Description** |
 |------------|----------------|
-| `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target` | These sections are for the 5 bars.<br>Player Stats and Self Actions do not have sub text. |
+| `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target` | These sections are for the 5 bars.<br>NOTE: Not all sections have all options. |
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
 | → `bold` | Text within this section is bold. |
-| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). |
-| → `debuff_icon_size` | Size in pixels of the debuff icons (this number is used for both height and width), |
+| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). (Focus Target, Sub Target, and Target only) |
+| → `debuff_icon_size` | Size in pixels of the debuff icons (this number is used for both height and width). |
 | → `debuff_icon_spacing` | Number of pixels between each debuff icon. |
 | → `debuff_icons` | Show the debuff icons for monsters. |
 | → `debuff_max_icons` | Maximum number of debuffs displayed on this bar, capped at 32. |
@@ -200,7 +206,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
 | → `pos` | X and Y position of the bar. |
-| `show` | (Self Action only) Show the Self Action section. |
+| → `show` | Show the Self Action section. |
+| → `show_monster_level` | Show the level of the currently targeted monster. |
+| → `show_monster_target` | Show the currently targeted monster's target. |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
@@ -227,12 +235,27 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Known Issues
 - The name of a weapon skill used by a player being blinked by an enemy will be displayed incorrectly as a job ability.
-- Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the window's title bar is included when Windower returns the position of the mouse, but is not included when placing a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
+- Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the height of the window's title bar is included when Windower returns the position of the mouse, but is not included when determing the position of a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
 - The Target Lock icons/underline very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.  
 ![Bars_known_issue_1](https://github.com/user-attachments/assets/71e98977-4589-4501-841e-adbe3819294d)
 
 
 ## Changelog
+Version 4.2
+- Added `show_monster_target` options for Focus Target, Sub Target, and Target sections. Displays the last known target of the monster.
+- Added `monster_target` icon. Used with the `show_monster_target` options.
+- Added `flip_doom_timer_coloring` option. Flips the timer coloring for the `Doom` debuff so that it changes from red when it first lands, to orange, then green when it is under 10 seconds.
+- Added `data/durations.lua` file. Used to define known durations for specific players.
+- Added a Tracking Index number to all debuffs so that in the event of a debuff with a set duration being overwritten/renewed it is not removed early when the original duration expires.
+- Added debuff `duration_cap` option. Limits the maximum time a debuff will stay displayed on a target when a specific duration is not known.
+- Added new debuff icons: Impact, Carnage Elegy, Threnodies, Requiems, boosted Elemental DOT Debuffs (Burn, Rasp, etc).
+- Adjusted how Corsair Elemental Shots affect debuffs. Now adds a `+` symbol to the debuff icon when it gets boosted by an Elemental Shot. Boosted Dia and Bio are now correctly identified instead of incorrectly increasing their tier on the icon.
+- Adjusted all debuffs to have a max duration before they are automatically removed. Max duration for debuffs from abilities whose durations are from players who do not have their durations defined in the data/durations.lua file are specific to that ability. Max duration for debuffs from spells whose durations are from players who do not have their durations defined in the data/durations.lua file are capped at the duration_cap number.
+- Adjusted `show_monster_level` option into each Focus Target, Sub Target, and Target section instead of one option covering all three sections.
+- Adjusted action targets to better account for AOE actions and specifying the main target of the AOE. This should help eliminate instances where a mob performs an AOE move and the target of the move seems to be incorrectly named as a random one of the targets hit. To be clear, this is still not 100% perfect, but should be correct more often now.
+- Fixed Diaga not applying Dia to targets.
+- Fixed the action `cancelled` icon from displaying by itself for certain monster actions that are paralyzed.
+
 Version 4.1.1
 - Fixed icon file check so that it correctly does not display a blank white icon if the file does not exists. Previously only made the check if the spell cast was a tier 2+ (had a roman numeral attached at the end).
 
