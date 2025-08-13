@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.1.1'
+_addon.version = '4.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -59,6 +59,8 @@ defaults = {
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
+		monster_target = "►",
+		monster_target_aoe = "○",
 		number_of_targets_hit = "●",
 		target_lock_left = "»",
 		target_lock_right = "«",
@@ -213,13 +215,17 @@ defaults = {
 		},
 		debuffs = {
 			blacklist = true,
+			duration_cap = 642,
 			list = S{},
 		},
+		flip_doom_timer_coloring = false,
 		focus_target_max_distance = 40,
 		hide_pet_bar_when_no_pet = true,
 		hide_player_stats_bars_when_no_target = false,
 		max_action_length = 17,
+		max_monster_target_length = 8,
 		max_name_length = 20,
+		monster_target_confidence_timer = 6,
 		remove_tachi_blade_from_ws_name = true,
 		short_skillchain_names = true,
 		show_action_status_indicators = true,
@@ -229,7 +235,6 @@ defaults = {
 		show_focus_target_when_targeted = false,
 		show_hp_tp_markers = true,
 		show_max_hp_mp_on_bar = true,
-		show_monster_level = true,
 		show_pet_distance = true,
 		show_pet_status = true,
 		show_pet_tp = true,
@@ -263,6 +268,8 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 576, y = 200},
+			show_monster_level = false,
+			show_monster_target = true,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -376,6 +383,8 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 200, y = 200},
+			show_monster_level = false,
+			show_monster_target = true,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -404,6 +413,8 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 200, y = 250},
+			show_monster_level = true,
+			show_monster_target = true,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -498,10 +509,11 @@ defaults = {
 			damage = {r = 255, g = 200, b = 200},
 		},
 		debuffs = {
+			almost_ready = {r = 77, g = 255, b = 77},
 			critical_low = {r = 255, g = 77, b = 77},
 			low = {r = 255, g = 139, b = 56},
 			normal = {r = 255, g = 255, b = 255},
-		}
+		},
 	},
 }
 
@@ -704,6 +716,43 @@ else
 	mob_abbreviations_data = require('data.mob_abbreviations')
 end
 
+default_durations = {
+	["Valefor"] = {
+		["Keylesta"] = {
+			["Angon"] = 0,
+			["Arcane Crest"] = 0,
+			["Dragon Breaker"] = 0,
+			["Enfeebling Magic"] = 10,
+			["Gambit"] = 36,
+			["Hamanoha"] = 0,
+			["Rayke"] = 20,
+			["Sepulcher"] = 20,
+			["Shadowbind"] = 0,
+			["Singing"] = 161,
+			["Tomahawk"] = 60,
+		}
+	},
+}
+
+--Location of the durations file
+durations_file = files.new('data\\durations.lua')
+
+durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic and Singing are the total PERCENT bonus from all gear combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only set duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
+
+durations_data = {}
+
+--If the data\durations.lua file doesn't exist, create it
+if not durations_file:exists() then
+
+	durations_data = default_durations
+
+	durations_file:write(durations_help_msg..'return {\n'..sortedTableString(durations_data, '    ')..'\n}')
+
+else
+	--File already exists, load it
+	durations_data = require('data.durations')
+end
+
 bg_alpha = settings.bg.alpha
 text_alpha = settings.text.alpha
 
@@ -714,6 +763,7 @@ condense_target_and_subtarget_bars = settings.options.condense_target_and_subtar
 condense_focus_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.focus_target
 condense_sub_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.sub_target
 condense_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.target
+debuff_duration_cap = settings.options.debuffs.duration_cap
 drain_decay = (settings.options.animations.drain_speed / 10)
 drain_brightness = math.max(1, math.min(10, settings.options.animations.drain_brightness))
 drain_bg_alpha = bg_alpha * (drain_brightness / 10)
@@ -732,12 +782,15 @@ fade_text_num = settings.text.alpha
 fade_icon_num = 255
 fade_bg_ui_num = settings.sections.focus_target.ui_bg_alpha
 floating_tp_number = settings.options.animations.floating_tp_number
+flip_doom_timer_coloring = settings.options.flip_doom_timer_coloring
 focus_target_max_distance = settings.options.focus_target_max_distance
 hide_pet_bar_when_no_pet = settings.options.hide_pet_bar_when_no_pet
 hide_player_stats_bars_when_no_target = settings.options.hide_player_stats_bars_when_no_target
 job_specific = settings.job_specific
 max_action_length = settings.options.max_action_length
+max_monster_target_length = settings.options.max_monster_target_length
 max_name_length = settings.options.max_name_length
+monster_target_confidence_timer = settings.options.monster_target_confidence_timer
 pulse_brightness = settings.options.animations.pulse_brightness
 pulse_bar_when_target_sp_active = settings.options.animations.pulse_bar_when_target_sp_active
 pulse_when_hp_low = settings.options.animations.pulse_when_hp_low
@@ -756,7 +809,6 @@ show_dyna_jobs = settings.options.show_dyna_jobs
 show_fancy_rolls = settings.options.show_fancy_rolls
 show_focus_target_when_targeted = settings.options.show_focus_target_when_targeted
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
-show_monster_level = settings.options.show_monster_level
 show_pet_status = settings.options.show_pet_status
 show_pet_distance = settings.options.show_pet_distance
 show_pet_tp = settings.options.show_pet_tp
@@ -872,7 +924,7 @@ sp_abils = {
 	['Tabula Rasa'] = 180,
 	['Bolster'] = 180, ['Widened Compass'] = 60,
 	['Elemental Sforzo'] = 30,
-	}
+}
 
 sp_shorter_names = {
 	['Mighty Strikes'] = 'M. Strikes',
@@ -906,8 +958,22 @@ sp_shorter_names = {
 	['Bolster'] = 'Bolster',
 	['Widened Compass'] = 'W. Compass',
 	['Elemental Sforzo'] = 'El. Sforzo',
-	}
+}
 
+boosted_debuffs = {
+	[9023] = "Boosted Dia",
+	[9024] = "Boosted Dia II",
+	[9025] = "Boosted Dia III",
+	[9230] = "Boosted Bio",
+	[9231] = "Boosted Bio II",
+	[9232] = "Boosted Bio III",
+	[9235] = "Boosted Burn",
+	[9236] = "Boosted Frost",
+	[9237] = "Boosted Choke",
+	[9238] = "Boosted Rasp",
+	[9239] = "Boosted Shock",
+	[9240] = "Boosted Drown",
+}
 in_cutscene = false
 zoning = false
 job = ''
@@ -917,6 +983,9 @@ current_sp_actions = {}
 current_debuffs = {}
 current_levels = {}
 next_wide_scan_time = os.time() + math.random(30, 45)
+ft_targeting_id = nil
+st_targeting_id = nil
+t_targeting_id = nil
 focus_target = nil
 focus_target_override = nil
 focus_target_bar_width_str = ''
@@ -927,6 +996,7 @@ target_bar_width_str = ''
 player_stats_top_bar = ''
 index = 0
 Heartbeat = 0
+server = nil
 in_dyna = false
 wide_scan_locked = false
 drain_previous_ft_id = nil
@@ -1012,7 +1082,7 @@ screen_test_debuffs = {
 for section, section_table in pairs(screen_test_debuffs) do
 	local max_icons = math.max(0, math.min(settings.sections[section].debuff_max_icons, 32))
 	for i = 1, max_icons do
-		section_table[i] = math.random(0, 640)
+		section_table[i] = math.random(1, 640)
 	end
 end
 
@@ -2658,24 +2728,35 @@ function assignIndex()
 
 	local assignedIndex = index
 
-	index = (index + 1) % 1000 --Increment and reset to 0 when index reaches 1000
+	index = (index + 1) % 10000 --Increment and reset to 0 when index reaches 10000
 
 	return assignedIndex
+
+end
+
+--Update monster targeting
+function updateTargeting(actor_id, target_id, timestamp, icon)
+
+	current_actions[actor_id] = {
+		target_id = target_id,
+		timestamp = timestamp,
+		icon = icon,
+	}
 
 end
 
 --Add an action to the current_actions table
 function addToActionsTable(actor_id, action, action_shdw, status, status_shdw, result, result_shdw, index)
 
-	current_actions[actor_id] = {
-		action = action,
-		action_shdw = action_shdw,
-		status = status,
-		status_shdw = status_shdw,
-		result = result,
-		result_shdw = result_shdw,
-		index = index,
-	}
+	local entry = current_actions[actor_id] or {}
+	entry.action = action
+	entry.action_shdw = action_shdw
+	entry.status = status
+	entry.status_shdw = status_shdw
+	entry.result = result
+	entry.result_shdw = result_shdw
+	entry.index = index
+	current_actions[actor_id] = entry
 
 end
 
@@ -2902,7 +2983,7 @@ function uppercase(str)
 
 end
 
---Truncate names that are too long
+--Truncate action names that are too long
 function truncateAction(action)
 
 	local num = max_action_length
@@ -3285,9 +3366,10 @@ function colorizeDistance(text, distance, target)
 end
 
 --Format the Debuff timers
-function formatTimer(num)
+function formatTimer(num, flip_coloring)
+	local colors = settings.colors.debuffs
 	local formatted_num = ''
-	local c = settings.colors.debuffs.normal
+	local c = flip_coloring and colors.critical_low or colors.normal
 	if num > 3600 then
 		local hr = math.floor(num / 3600)
 		formatted_num = hr..'h'
@@ -3296,14 +3378,14 @@ function formatTimer(num)
 		formatted_num = min..'m'
 	elseif num > 0 then
 		if num <= 10 then
-			c = settings.colors.debuffs.critical_low
+			c = flip_coloring and colors.almost_ready or colors.critical_low
 		elseif num <= 30 then
-			c = settings.colors.debuffs.low
+			c = colors.low
 		end
 		num = tostring(math.floor(num))
 		formatted_num = string.format("%2s", num)
 	else
-		c = settings.colors.debuffs.critical_low
+		c = colors.critical_low
 		formatted_num = '??'
 	end
 	return '\\cs('..c.r..','..c.g..','..c.b..')'..formatted_num..'\\cr'
@@ -3311,20 +3393,28 @@ end
 
 --Get the proper Icon File to display based on the spell cast
 function getIconFile(spell_name, debuff_id)
+
 	local icon_path_base = windower_path..'addons/Bars/data/icons/'
-	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv"}
-	local helix_names = {
+	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv", [" V"] = "v", [" VI"] = "vi", [" VII"] = "vii"}
+	local custom_names = {
 		'pyrohelix', 'cryohelix', 'anemohelix', 'geohelix',
-		'ionohelix', 'hydrohelix', 'luminohelix', 'noctohelix'
+		'ionohelix', 'hydrohelix', 'luminohelix', 'noctohelix',
+		'fire threnody', 'ice threnody', 'wind threnody', 'earth threnody',
+		'ltng. threnody', 'water threnody', 'light threnody', 'dark threnody',
+		'carnage elegy', 'impact',
+	}
+	local boosted_names = {
+		'boosted dia', 'boosted bio', 'boosted shock', 'boosted rasp',
+		'boosted choke', 'boosted frost', 'boosted burn', 'boosted drown'
 	}
 
 	spell_name = spell_name:lower()
 	local icon_file = debuff_id
 
-	--Check for helix prefix
-	for _, helix in ipairs(helix_names) do
-		if spell_name:sub(1, #helix) == helix then
-			icon_file = helix
+	--Check for custom prefix
+	for _, custom in ipairs(custom_names) do
+		if spell_name:sub(1, #custom) == custom then
+			icon_file = string.gsub(custom, " ", "_") --convert spaces to underscores
 			break
 		end
 	end
@@ -3332,21 +3422,70 @@ function getIconFile(spell_name, debuff_id)
 	--Check for Roman numeral suffix
 	for suffix, roman_num in pairs(roman_numerals) do
 		if spell_name:sub(-#suffix) == suffix:lower() then
-			local roman_num_path = icon_path_base..icon_file..roman_num..'.png'
+			local roman_num_path = icon_path_base..icon_file.."_"..roman_num..'.png'
 			if file_exists(roman_num_path) then
-				icon_file = icon_file..roman_num
+				--Add Roman numeral to the end of the file name
+				icon_file = icon_file.."_"..roman_num
 			end
 			break
 		end
 	end
 
-	--Ensure the file exists (with or without roman numeral)
+	--Check for boosted prefix
+	for _, boosted in ipairs(boosted_names) do
+		if spell_name:sub(1, #boosted) == boosted then
+			--Add "shot" to the end of the file name
+			icon_file = icon_file..'_shot'
+			break
+		end
+	end
+
+	--Ensure the file exists
 	local final_icon_path = icon_path_base..icon_file..'.png'
 	if not file_exists(final_icon_path) then
 		icon_file = nil
 	end
 
 	return icon_file
+end
+
+--Truncate Monster Target names that are too long
+function truncateMonsterTarget(name)
+
+	local num = max_monster_target_length
+
+	--Abbreviate common names (from the mob_abbreviations.lua file)
+	if abbreviate_common_mob_names then
+		for key, abbreviation in pairs(mob_abbreviations_data) do
+			name = name:gsub(key, abbreviation, 1)
+		end
+	end
+
+	--Check if the string length is greater than max_monster_target_length
+	if #name > num then
+		--Truncate and add an ellipsis
+		name = string.sub(name, 1, num-1)..truncate_icon
+	end
+
+	return name
+end
+
+--Format (color and truncate) the monster target name
+function formatTargetingName(targeting)
+
+	local formatted_name = 'Unknown'
+
+	if targeting then
+		local c = targetColor(targeting)
+		local c_r = formatRGB(c.r)
+		local c_g = formatRGB(c.g)
+		local c_b = formatRGB(c.b)
+		local name = truncateMonsterTarget(targeting.name)
+		formatted_name = '\\cs('..c_r..','..c_g..','..c_b..')'..name..'\\cr'
+	end
+
+	return formatted_name
+
 end
 
 --Update the Focus Target bar
@@ -3377,7 +3516,9 @@ function updateFocusTarget()
 			ui_bg_right.focus_target:hide()
 			for k = 1, max_icons do
 				icon_set[k]:hide()
-				timer_set[k]:hide()
+				if ft_settings.debuff_timers then
+					timer_set[k]:hide()
+				end
 			end
 		end
 		return
@@ -3405,7 +3546,7 @@ function updateFocusTarget()
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
 	local dist_raw = ft and math.floor(ft.distance:sqrt()*100)/100
 	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
-	local level = ft and show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ' Lv '..current_levels[ft.index] or '') or ''
+	local level = ft and ft_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ft_spaces..'Lv '..current_levels[ft.index] or '') or ''
 	local meter = ''
 	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -3413,8 +3554,15 @@ function updateFocusTarget()
 	local cm = ft and (Fade and text_color or targetColor(ft)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
-	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level
+	local m_targeting = ft_settings.show_monster_target and current_actions[ft.id] and current_actions[ft.id].target_id and get_mob_by_id(current_actions[ft.id].target_id)
+	ft_targeting_id = m_targeting and m_targeting.id or ft_targeting_id
+	local target_icon = m_targeting
+		and os.time() >= current_actions[ft.id].timestamp and ' ?'
+		or (current_actions[ft.id] and current_actions[ft.id].icon and ' '..current_actions[ft.id].icon or ' ?')
+	local targeting = m_targeting and target_icon..formatTargetingName(m_targeting) or (ft_targeting_id and target_icon..formatTargetingName(get_mob_by_id(ft_targeting_id)) or '')
+	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (ft_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(ft_targeting_id).name) or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
 	local status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
 	local action = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action or '')
@@ -3461,7 +3609,7 @@ function updateFocusTarget()
 	focus_target_text_shadow:show()
 	focus_target_action_text:show()
 	focus_target_action_text_shadow:show()
-	if settings.sections.focus_target.ui_bg then
+	if ft_settings.ui_bg then
 		ui_bg_left.focus_target:show()
 		ui_bg_middle.focus_target:show()
 		ui_bg_right.focus_target:show()
@@ -3498,11 +3646,16 @@ function updateFocusTarget()
 		for k = 1, max_icons do
 			local num = screen_test_debuffs.focus_target[k]
 			local timer = formatTimer(num)
-			icon_set[k]:path(windower_path..'addons/Bars/data/icons/'..num..'.png')
-			icon_set[k]:show()
-			timer_set[k]:text(timer)
-			timer_set[k]:show()
-			i = i + 1
+			local file_path = windower_path..'addons/Bars/data/icons/'..num..'.png'
+			if file_exists(file_path) then
+				icon_set[k]:path(file_path)
+				icon_set[k]:show()
+				if ft_settings.debuff_timers then
+					timer_set[k]:text(timer)
+					timer_set[k]:show()
+				end
+				i = i + 1
+			end
 		end
 	elseif debuff_list then
 		--Sort debuff IDs numerically
@@ -3517,8 +3670,9 @@ function updateFocusTarget()
 			if i > max_icons then break end
 
 			local spell_data = debuff_list[debuff_id]
+			local boosted_debuff = boosted_debuffs[spell_data.id]
 			local spell = res.spells[spell_data.id]
-			local name = spell and spell.name or "???"
+			local name = spell and spell.name or (boosted_debuff and boosted_debuff or "???")
 			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
 
 			--Determine whether to show debuff icon/timer
@@ -3532,14 +3686,17 @@ function updateFocusTarget()
 			if show_debuff then
 				local text = ''
 				if ft_settings.debuff_timers then
-					text = formatTimer(time_remaining)
+					local flip_coloring = flip_doom_timer_coloring and debuff_id == 15 and true or false
+					text = formatTimer(time_remaining, flip_coloring)
 				end
 				local icon_file = getIconFile(name, debuff_id)
 				if icon_file then
 					icon_set[i]:path(windower_path..'addons/Bars/data/icons/'..icon_file..'.png')
 					icon_set[i]:show()
-					timer_set[i]:text(Fade and text:text_strip_format() or text)
-					timer_set[i]:show()
+					if ft_settings.debuff_timers then
+						timer_set[i]:text(Fade and text:text_strip_format() or text)
+						timer_set[i]:show()
+					end
 					i = i + 1
 				end
 			end
@@ -3563,7 +3720,9 @@ function updateFocusTarget()
 	--Hide remaining unused slots
 	for k = i, max_icons do
 		icon_set[k]:hide()
-		timer_set[k]:hide()
+		if ft_settings.debuff_timers then
+			timer_set[k]:hide()
+		end
 	end
 
 	--Update the previous focus target id
@@ -3602,7 +3761,9 @@ function updateSubTarget()
 			ui_bg_right.sub_target:hide()
 			for k = 1, max_icons do
 				icon_set[k]:hide()
-				timer_set[k]:hide()
+				if st_settings.debuff_timers then
+					timer_set[k]:hide()
+				end
 			end
 		end
 		return
@@ -3629,7 +3790,7 @@ function updateSubTarget()
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
 	local dist_raw = st and math.floor(st.distance:sqrt()*100)/100
 	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
-	local level = st and show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and ' Lv '..current_levels[st.index] or '') or ''
+	local level = st and st_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and st_spaces..'Lv '..current_levels[st.index] or '') or ''
 	local meter = ''
 	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -3637,8 +3798,15 @@ function updateSubTarget()
 	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
-	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level
+	local m_targeting = st_settings.show_monster_target and current_actions[st.id] and current_actions[st.id].target_id and get_mob_by_id(current_actions[st.id].target_id)
+	st_targeting_id = m_targeting and m_targeting.id or st_targeting_id
+	local target_icon = m_targeting
+		and os.time() >= current_actions[st.id].timestamp and ' ?'
+		or (current_actions[st.id] and current_actions[st.id].icon and ' '..current_actions[st.id].icon or ' ?')
+	local targeting = m_targeting and target_icon..formatTargetingName(m_targeting) or (st_targeting_id and target_icon..formatTargetingName(get_mob_by_id(st_targeting_id)) or '')
+	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (st_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(st_targeting_id).name) or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
 	local status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
 	local action = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action or '')
@@ -3685,7 +3853,7 @@ function updateSubTarget()
 	sub_target_text_shadow:show()
 	sub_target_action_text:show()
 	sub_target_action_text_shadow:show()
-	if settings.sections.sub_target.ui_bg then
+	if st_settings.ui_bg then
 		ui_bg_left.sub_target:show()
 		ui_bg_middle.sub_target:show()
 		ui_bg_right.sub_target:show()
@@ -3722,11 +3890,16 @@ function updateSubTarget()
 		for k = 1, max_icons do
 			local num = screen_test_debuffs.sub_target[k]
 			local timer = formatTimer(num)
-			icon_set[k]:path(windower_path..'addons/Bars/data/icons/'..num..'.png')
-			icon_set[k]:show()
-			timer_set[k]:text(timer)
-			timer_set[k]:show()
-			i = i + 1
+			local file_path = windower_path..'addons/Bars/data/icons/'..num..'.png'
+			if file_exists(file_path) then
+				icon_set[k]:path(file_path)
+				icon_set[k]:show()
+				if st_settings.debuff_timers then
+					timer_set[k]:text(timer)
+					timer_set[k]:show()
+				end
+				i = i + 1
+			end
 		end
 	elseif debuff_list then
 		--Sort debuff IDs numerically
@@ -3741,8 +3914,9 @@ function updateSubTarget()
 			if i > max_icons then break end
 
 			local spell_data = debuff_list[debuff_id]
+			local boosted_debuff = boosted_debuffs[spell_data.id]
 			local spell = res.spells[spell_data.id]
-			local name = spell and spell.name or "???"
+			local name = spell and spell.name or (boosted_debuff and boosted_debuff or "???")
 			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
 
 			--Determine whether to show debuff icon/timer
@@ -3756,14 +3930,17 @@ function updateSubTarget()
 			if show_debuff then
 				local text = ''
 				if st_settings.debuff_timers then
-					text = formatTimer(time_remaining)
+					local flip_coloring = flip_doom_timer_coloring and debuff_id == 15 and true or false
+					text = formatTimer(time_remaining, flip_coloring)
 				end
 				local icon_file = getIconFile(name, debuff_id)
 				if icon_file then
 					icon_set[i]:path(windower_path..'addons/Bars/data/icons/'..icon_file..'.png')
 					icon_set[i]:show()
-					timer_set[i]:text(text)
-					timer_set[i]:show()
+					if st_settings.debuff_timers then
+						timer_set[i]:text(text)
+						timer_set[i]:show()
+					end
 					i = i + 1
 				end
 			end
@@ -3787,7 +3964,9 @@ function updateSubTarget()
 	--Hide remaining unused slots
 	for k = i, max_icons do
 		icon_set[k]:hide()
-		timer_set[k]:hide()
+		if st_settings.debuff_timers then
+			timer_set[k]:hide()
+		end
 	end
 
 	--Update the previous sub target id
@@ -3823,7 +4002,9 @@ function updateTarget()
 			ui_bg_right.target:hide()
 			for k = 1, max_icons do
 				icon_set[k]:hide()
-				timer_set[k]:hide()
+				if t_settings.debuff_timers then
+					timer_set[k]:hide()
+				end
 			end
 		end
 		return
@@ -3850,7 +4031,7 @@ function updateTarget()
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
 	local dist_raw = t and math.floor(t.distance:sqrt()*100)/100
 	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
-	local level = t and show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and ' Lv '..current_levels[t.index] or '') or ''
+	local level = t and t_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and t_spaces..'Lv '..current_levels[t.index] or '') or ''
 	local meter = ''
 	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -3858,8 +4039,15 @@ function updateTarget()
 	local cm = t and (Fade and text_color or targetColor(t)) or color.t.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
-	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level
+	local m_targeting = t_settings.show_monster_target and current_actions[t.id] and current_actions[t.id].target_id and get_mob_by_id(current_actions[t.id].target_id)
+	t_targeting_id = m_targeting and m_targeting.id or t_targeting_id
+	local target_icon = m_targeting
+		and os.time() >= current_actions[t.id].timestamp and ' ?'
+		or (current_actions[t.id] and current_actions[t.id].icon and ' '..current_actions[t.id].icon or ' ?')
+	local targeting = m_targeting and target_icon..formatTargetingName(m_targeting) or (t_targeting_id and target_icon..formatTargetingName(get_mob_by_id(t_targeting_id)) or '')
+	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (t_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(t_targeting_id).name) or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
 	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
 	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
@@ -3916,7 +4104,7 @@ function updateTarget()
 	target_action_text:show()
 	target_text_shadow:show()
 	target_action_text_shadow:show()
-	if settings.sections.target.ui_bg then
+	if t_settings.ui_bg then
 		ui_bg_left.target:show()
 		ui_bg_middle.target:show()
 		ui_bg_right.target:show()
@@ -3964,11 +4152,16 @@ function updateTarget()
 		for k = 1, max_icons do
 			local num = screen_test_debuffs.target[k]
 			local timer = formatTimer(num)
-			icon_set[k]:path(windower_path..'addons/Bars/data/icons/'..num..'.png')
-			icon_set[k]:show()
-			timer_set[k]:text(timer)
-			timer_set[k]:show()
-			i = i + 1
+			local file_path = windower_path..'addons/Bars/data/icons/'..num..'.png'
+			if file_exists(file_path) then
+				icon_set[k]:path(file_path)
+				icon_set[k]:show()
+				if t_settings.debuff_timers then
+					timer_set[k]:text(timer)
+					timer_set[k]:show()
+				end
+				i = i + 1
+			end
 		end
 	elseif debuff_list then
 		--Sort debuff IDs numerically
@@ -3983,8 +4176,9 @@ function updateTarget()
 			if i > max_icons then break end
 
 			local spell_data = debuff_list[debuff_id]
+			local boosted_debuff = boosted_debuffs[spell_data.id]
 			local spell = res.spells[spell_data.id]
-			local name = spell and spell.name or "???"
+			local name = spell and spell.name or (boosted_debuff and boosted_debuff or "???")
 			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
 
 			--Determine whether to show debuff icon/timer
@@ -3998,14 +4192,17 @@ function updateTarget()
 			if show_debuff then
 				local text = ''
 				if t_settings.debuff_timers then
-					text = formatTimer(time_remaining)
+					local flip_coloring = flip_doom_timer_coloring and debuff_id == 15 and true or false
+					text = formatTimer(time_remaining, flip_coloring)
 				end
 				local icon_file = getIconFile(name, debuff_id)
 				if icon_file then
 					icon_set[i]:path(windower_path..'addons/Bars/data/icons/'..icon_file..'.png')
 					icon_set[i]:show()
-					timer_set[i]:text(text)
-					timer_set[i]:show()
+					if t_settings.debuff_timers then
+						timer_set[i]:text(text)
+						timer_set[i]:show()
+					end
 					i = i + 1
 				end
 			end
@@ -4029,7 +4226,9 @@ function updateTarget()
 	--Hide remaining unused slots
 	for k = i, max_icons do
 		icon_set[k]:hide()
-		timer_set[k]:hide()
+		if t_settings.debuff_timers then
+			timer_set[k]:hide()
+		end
 	end
 
 	--Update the previous target id
@@ -4880,9 +5079,11 @@ function setIconFade(num)
 		local timer_set = debuff_timers[section]
 
 		for k = 1, max_icons do
-			icon_set[k]:alpha(255)
-			timer_set[k]:alpha(255)
-			timer_set[k]:stroke_alpha(255)
+			icon_set[k]:alpha(num)
+			if section_settings.debuff_timers then
+				timer_set[k]:alpha(num)
+				timer_set[k]:stroke_alpha(num)
+			end
 		end
 
 	end
@@ -4998,8 +5199,10 @@ function unFade()
 
 		for k = 1, max_icons do
 			icon_set[k]:alpha(255)
-			timer_set[k]:alpha(255)
-			timer_set[k]:stroke_alpha(255)
+			if section_settings.debuff_timers then
+				timer_set[k]:alpha(255)
+				timer_set[k]:stroke_alpha(255)
+			end
 		end
 
 	end
@@ -5079,8 +5282,10 @@ function screenTest()
 	local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
 	local target_action_result = ''
 	local target_action_result_shdw = ''
+	local action_target_name = ''
+	local action_target_name_shdw = ''
 
-	addToActionsTable(get_player().id, target_action, target_action_shdw, target_action_status, target_action_status_shdw, target_action_result, target_action_result_shdw, trackingIndex)
+	addToActionsTable(get_player().id, target_action, target_action_shdw, target_action_status, target_action_status_shdw, target_action_result, target_action_result_shdw, trackingIndex, action_target_name, action_target_name_shdw)
 
 	self_action_bar_meter:bg_color(color.self.bar.r, color.self.bar.g, color.self.bar.b)
 
@@ -5099,8 +5304,16 @@ function runWideScan()
 	local in_town = wide_scan_exclude_zones:contains(zone_name)
 	local in_mh = get_info().mog_house
 
-	--Cancel if the option is turned off, currently locked, or user is zoning, in a cutscene, in town, or in their Mog House
-	if not show_monster_level or wide_scan_locked or zoning or in_cutscene or in_town or in_mh then return end
+	--Cancel if the option is completely turned off, currently locked, or user is zoning, in a cutscene, in town, or in their Mog House
+	if not (
+		settings.sections.focus_target.show_monster_level
+		or settings.sections.sub_target.show_monster_level
+		or settings.sections.target.show_monster_level
+	)
+	or wide_scan_locked
+	or zoning or in_cutscene or in_town or in_mh then
+		return
+	end
 
 	local zone_name = res.zones[get_info().zone].name
 	local packet = packets.new('outgoing', 0xF4, {
@@ -5152,6 +5365,11 @@ register_event('target change', function()
 	drain_st_hpp = 0
 	drain_ft_hpp = 0
 
+	--Reset Monster Target id
+	ft_targeting_id = nil
+	st_targeting_id = nil
+	t_targeting_id = nil
+
 end)
 
 --HP Changing
@@ -5198,6 +5416,7 @@ function initialize()
 		updateMPBar()
 		updateTPBar()
 		setUIPositions()
+		server = res.servers[get_info().server].name
 	end, 2)
 
 end
@@ -5253,6 +5472,7 @@ register_event('prerender', function()
 	local player = get_player()
 	local target = get_mob_by_target('t')
 	local sub_target = get_mob_by_target('st')
+	local pet = get_mob_by_target('pet')
 
 	updatePartyActions()
 	updateSelfAction()
@@ -5320,12 +5540,21 @@ register_event('prerender', function()
 			updateTPBar()
 		end
 		if job and job_specific[job].pet then
-			player_stats_pet_text:show()
-			player_stats_pet_text_shadow:show()
-			player_stats_pet_bar_bg:show()
-			player_stats_pet_bar_pulse:show()
-			player_stats_pet_bar_drain_meter:show()
-			player_stats_pet_bar_meter:show()
+			if hide_pet_bar_when_no_pet and not pet then
+				player_stats_pet_text:hide()
+				player_stats_pet_text_shadow:hide()
+				player_stats_pet_bar_bg:hide()
+				player_stats_pet_bar_pulse:hide()
+				player_stats_pet_bar_drain_meter:hide()
+				player_stats_pet_bar_meter:hide()
+			else
+				player_stats_pet_text:show()
+				player_stats_pet_text_shadow:show()
+				player_stats_pet_bar_bg:show()
+				player_stats_pet_bar_pulse:show()
+				player_stats_pet_bar_drain_meter:show()
+				player_stats_pet_bar_meter:show()
+			end
 			updatePetBar()
 		end
 	end
@@ -5625,19 +5854,63 @@ end)
 
 register_event('action', function (act)
 	local msg = act.targets[1].actions[1].message
+	local aoe_main_target_messages = {
+		2,7,14,67,75,83,85,102,103,110,116,127,131,134,141,148,150,156,185,186,187,188,189,194,197, --removed 15
+		224,227,224,230,231,236,237,238,242,243,252,268,271,274,306,317,318,319,320,321,322,323,324,
+		341,342,362,373,375,379,408,412,413,420,424,426,435,441,570,645,648,650,653,658,668,762
+	}
 	local player = get_player()
 	local actor = get_mob_by_id(act.actor_id)
+	local target_count = act.target_count
 	local action_id = act.targets[1].actions[1].param
-	local action_target = get_mob_by_id(act.targets[1].id)
-	local action_target_id = action_target and action_target.id or nil
+	local action_target_id = act.targets[1].id
+	monster_target_icon = settings.icons.monster_target
+	if target_count > 1 then
+		local main_target_found = false
+		local target_messages = '' --temp
+		for i = 1, target_count do
+			local message = act.targets[i].actions[1].message
+			if message ~= 255 and message ~= 1 then --temp
+				target_messages = target_messages..act.targets[i].actions[1].message..', ' --temp
+			end --temp
+			if checkForMessage(aoe_main_target_messages,act.targets[i].actions[1].message) then
+				action_target_id = act.targets[i].id
+				main_target_found = true
+				break
+			end
+		end
+		--If the attack was AOE, but we did not find a "main target" type message, we assume then its a mob who's melee attacks are AOE
+		--In that case, the 1st target in the table may not be the actual target, as the list seems to be sorted by id
+		--So, we fall back to checking who the target is looking at (credit: enemybar2)
+		if not main_target_found then
+			if msg == 1 then
+				local function looking_at(a, b)
+					if not a or not b then return false end
+					local h = a.facing % math.pi
+					local h2 = (math.atan2(a.x-b.x,a.y-b.y) + math.pi/2) % math.pi
+					return math.abs(h-h2) < 0.15
+				end
+				for _,v in pairs(get_mob_array()) do
+					local distance = math.floor(v.distance:sqrt())
+					if v.valid_target and distance < 50 and not isMonster(v.id) and looking_at(actor,v) then
+						action_target_id = v.id
+					end
+				end
+			end
+			monster_target_icon = settings.icons.monster_target_aoe
+		end
+	end
+	if not action_target_id then return end
+	local action_target = get_mob_by_id(action_target_id)
 	local action_name = ''
 	local action_name_shdw = ''
 	local ct = targetColor(action_target)
 	local ct_r = formatRGB(ct.r)
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
-	local action_target_name = action_target_id and ' '..targeting_icon..' \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncateName(action_target.name)..'\\cr' or ''
-	local action_target_name_shdw = action_target_id and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
+	local truncated_name = action_target and truncateName(action_target.name) or ''
+	local action_target_name = ' '..targeting_icon..' \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncated_name..'\\cr' or ''
+	local action_target_name_shdw = ' '..targeting_icon..' \\cs(000,000,000)'..truncated_name..'\\cr' or ''
 	local target_action = ''
 	local target_action_shdw = ''
 	local target_action_result = ''
@@ -5650,7 +5923,6 @@ register_event('action', function (act)
 	local wep_skill = res.weapon_skills
 	local cast_time = 0
 	local nm_auto_tp = monster_abil[act.param] and monster_abil[act.param].en and (string.find(monster_abil[act.param].en,'Autoattack') or string.find(monster_abil[act.param].en,'Auto Attack') or string.find(monster_abil[act.param].en,'Ranged') or string.find(monster_abil[act.param].en,'Vulture') or string.find(monster_abil[act.param].en,'Sabotender')) and true or false
-	local target_count = act.target_count
 	local amount = addCommas(act.targets[1].actions[1].param)
 	local count = show_result_totals and target_count > 1 and target_count..num_hit_icon or ''
 
@@ -5696,7 +5968,13 @@ register_event('action', function (act)
 				end
 			end
 		end
-		local info = {landed = landed, cure_total = cure_total, amount_total = amount_total, last_buff_id = last_buff_id, damage = damage}
+		local info = {
+			landed = landed,
+			cure_total = cure_total,
+			amount_total = amount_total,
+			last_buff_id = last_buff_id,
+			damage = damage,
+		}
 		return info
 	end
 
@@ -5707,19 +5985,26 @@ register_event('action', function (act)
 		current_debuffs[act.actor_id][19] = nil
 	end
 
+	--Update monster targeting
+	if isMonster(act.actor_id) and not isMonster(action_target_id) then
+		local timestamp = os.time() + monster_target_confidence_timer
+		updateTargeting(act.actor_id, action_target_id, timestamp, monster_target_icon)
+	end
+
 	--Ignore regular melee and ranged attacks
 	if msg == 1 or msg == 15 or msg == 373 or msg == 352 or msg == 353 or msg == 354 or msg == 382 or not actor then
 		return
 	end
 
 	--Debug Stuff
-	if actor.name == player.name then
-		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
-		-- add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
-	end
+	-- if (act.category == 4 or act.category == 8) and actor.name ~= player.name then
+	-- if actor.name == player.name and act.category ~= 1 then
+	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
+	-- 	add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
+	-- end
 
 	--Action failed/interrupted
-	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) then
+	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not (act.category == 1 and msg == 0) then
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(255,050,050)'..cancelled_icon..'\\cr'
@@ -5795,7 +6080,7 @@ register_event('action', function (act)
 			action_name_shdw = spell[action_id] and ' \\cs(000,000,000)'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			cast_time = spell[action_id].cast_time
 			--If a target starts casting, remove Silence debuff
-			if current_debuffs[act.actor_id] then
+			if current_debuffs[act.actor_id] and act.param ~= 28787 then
 				current_debuffs[act.actor_id][6] = nil
 			end
 
@@ -7055,6 +7340,9 @@ end)
 
 function handleOverwrites(target_id, new_debuff)
 
+	--Over 9000 are the boosted versions
+	new_debuff = new_debuff > 9000 and new_debuff - 9000 or new_debuff
+
 	--If the target has no current debuffs, return true so the new debuff gets saved
 	if not current_debuffs[target_id] then
 		return true
@@ -7062,7 +7350,12 @@ function handleOverwrites(target_id, new_debuff)
 
 	--Loop through all debuffs the target currently has
 	for effect_id, spell in pairs(current_debuffs[target_id]) do
-		local previous_debuff_overwrites = spell.id and res.spells[spell.id].overwrites or {}
+		--Over 9000 are the boosted versions
+		local spell_id = spell and spell.id and spell.id > 9000 and spell.id - 9000 or (spell and spell.id)
+		local previous_debuff_overwrites = spell_id
+		and res.spells[spell_id]
+		and res.spells[spell_id].overwrites
+		or {}
 		
 		--Check if there is a higher priority debuff already active
 		if table.length(previous_debuff_overwrites) > 0 then
@@ -7078,31 +7371,42 @@ function handleOverwrites(target_id, new_debuff)
 		local new_debuff_overwrites = res.spells[new_debuff].overwrites or {}
 		if table.length(new_debuff_overwrites) > 0 then
 			for _,v in ipairs(new_debuff_overwrites) do
-				if spell.id == v then
+				if spell_id == v then
 					--If there is, clear the previous debuff
 					current_debuffs[target_id][effect_id] = nil
 				end
 			end
 		end
 	end
-
 	--Retrun true to continue to saving the new debuff
 	return true
 
 end
 
+--Remove a debuff from a monster if the specific debuff is still present
+function removeDebuff(target_id, effect_id, index)
+	if current_debuffs[target_id]
+	and current_debuffs[target_id][effect_id]
+	and current_debuffs[target_id][effect_id].index == index then
+		current_debuffs[target_id][effect_id] = nil
+	end
+end
+
 --Save debuff to current_debuffs table
-function saveDebuff(target_id, effect_id, spell_id)
+function saveDebuff(actor_id, target_id, effect_id, spell_id)
 
 	--Make sure the effect numbers we're getting are within the correct range
-	if not (effect_id >= 1 and effect_id <= 634) then return end
+	if not ((effect_id >= 1 and effect_id <= 634) or effect_id == 9000) then return end
 
 	--Create target table if it doesn't already exist
 	if not current_debuffs[target_id] then
 		current_debuffs[target_id] = {}
 	end
 
+	local actor_name = get_mob_by_id(actor_id).name
 	local duration = res.spells[spell_id] and res.spells[spell_id].duration or 0
+	local trackingIndex = assignIndex()
+	local check_override = true
 
 	--Determine if this effect is a Daze and set duration accordingly
 	local daze_durations = {
@@ -7132,7 +7436,14 @@ function saveDebuff(target_id, effect_id, spell_id)
 
 	--Shadowbind
 	if effect_id == 11 and spell_id == 57 then
-		duration = 30
+		local base_duration = 30
+		local max_duration = 62
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Shadowbind"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, 11, trackingIndex)
+		end, removal_timer)
 	--Addle overwrites Nocturne
 	elseif effect_id == 21 then
 		if current_debuffs[target_id][223] then
@@ -7140,69 +7451,166 @@ function saveDebuff(target_id, effect_id, spell_id)
 		end
 	--Bully
 	elseif effect_id == 22 and spell_id == 321 then
+		check_override = false
 		duration = 30
-		--lasts a maximum of 30 seconds
+		--lasts 30 seconds
 		coroutine.schedule(function()
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][22] = nil
-			end
+			removeDebuff(target_id, effect_id, trackingIndex)
 		end, 30)
 	--Angon
 	elseif (effect_id == 149 or effect_id == 558) and spell_id == 170 then
-		duration = 30
-		--lasts a maximum of 90 seconds fully merited
+		local base_duration = 30
+		local max_duration = 90
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Angon"]or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
 		coroutine.schedule(function()
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][149] = nil
-			end
-		end, 90)
+			removeDebuff(target_id, 149, trackingIndex)
+		end, removal_timer)
 	--Chainbound
 	elseif effect_id == 164 then
+		check_override = false
 		duration = 9
 		--lasts a maximum of 9 seconds
 		coroutine.schedule(function()
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][164] = nil
-			end
+			removeDebuff(target_id, effect_id, trackingIndex)
 		end, 9)
 	--Tomahawk
 	elseif effect_id == 232 then
-		duration = 30
-		--lasts a maximum of 90 seconds fully merited (also does not give a "wears off" message for the actor)
+		check_override = false
+		local base_duration = 30
+		local max_duration = 90
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Tomahawk"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
 		coroutine.schedule(function()
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][232] = nil
-			end
-		end, 90)
-	--Sepulcher/Arcane Crest/Hamanoha/Dragon Breaker
-	elseif effect_id == 463 or effect_id == 464 or effect_id == 465 or effect_id == 466 then
-		duration = 180
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Sepulcher
+	elseif effect_id == 463 then
+		check_override = false
+		local base_duration = 180
+		local max_duration = 200
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Sepulcher"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
 		coroutine.schedule(function()
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][effect_id] = nil
-			end
-		end, duration)
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Arcane Crest
+	elseif effect_id == 464 then
+		check_override = false
+		local base_duration = 180
+		local max_duration = 200
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Arcane Crest"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Hamanoha
+	elseif effect_id == 465 then
+		check_override = false
+		local base_duration = 180
+		local max_duration = 200
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Hamanoha"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Dragon Breaker
+	elseif effect_id == 466 then
+		check_override = false
+		local base_duration = 180
+		local max_duration = 200
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Dragon Breaker"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
 	--Intervene/Odyllic Subterfuge
 	elseif effect_id == 496 or effect_id == 509 then
+		check_override = false
 		duration = 30
-		--lasts a maximum of 30 seconds
 		coroutine.schedule(function()
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][effect_id] = nil
-			end
+			removeDebuff(target_id, effect_id, trackingIndex)
 		end, 30)
 	--Gambit
 	elseif effect_id == 536 then
-		duration = 60
+		check_override = false
+		local base_duration = 60
+		local max_duration = 96
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Gambit"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
 	--Rayke
 	elseif effect_id == 571 then
-		duration = 30
-	else
-		--Check for spells that overwrite a current debuff
-		if not handleOverwrites(target_id, spell_id) then
-			--If there is a higher priority buff already active, do not save the new debuff
-			return
+		check_override = false
+		local base_duration = 30
+		local max_duration = 50
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Rayke"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Enfeebling Magic
+	elseif res.spells[spell_id].skill == 35 then
+		local base_duration = duration
+		local max_duration = debuff_duration_cap
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Enfeebling Magic"] and durations_data[server][actor_name]["Enfeebling Magic"] / 100 or nil
+		duration = bonus and base_duration + (base_duration * bonus) or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Singing
+	elseif res.spells[spell_id].skill == 40 then
+		--Threnodies override eachother (at this point they've already landed so we can ignore tiers)
+		if effect_id == 217 and current_debuffs[target_id][217] then
+			current_debuffs[target_id][217] = nil
 		end
+		--Lullaby fixes (incorrect durations in res\spells.lua)
+		if spell_id == 376 or spell_id == 463 then --Foe I/II
+			duration = 30
+		elseif spell_id == 377 or spell_id == 471 then --Horde I/II
+			duration = 60
+		end
+		local base_duration = duration
+		local max_duration = debuff_duration_cap
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Singing"] and durations_data[server][actor_name]["Singing"] / 100 or nil
+		duration = bonus and base_duration + (base_duration * bonus) or base_duration
+		local removal_timer = bonus and duration or max_duration
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	--Blue Magic spells get no duration bonuses, so we remove them right at the duration length
+	elseif res.spells[spell_id].skill == 43 then
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, duration)
+	--Impact
+	elseif effect_id == 9000 then
+		duration = 180
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, duration)
+	else
+		local removal_timer = debuff_duration_cap
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	end
+
+	--Check for spells that overwrite a current debuff
+	if check_override and not handleOverwrites(target_id, spell_id) then
+		--If there is a higher priority buff already active, do not save the new debuff
+		return
 	end
 
 	--Get target position if slept, bound, or petrified so we can later determine if it wears off
@@ -7220,42 +7628,51 @@ function saveDebuff(target_id, effect_id, spell_id)
 	current_debuffs[target_id][effect_id] = {
 		id = spell_id, --id of the spell that was cast
 		timer = os.clock() + duration, --expiration time
+		index = trackingIndex, --Unique ID for this debuff
 	}
 
 end
 
 function handleAction(act)
 
+	local actor_id = act.actor_id
 	local main_target_id = act.targets[1].id
-	-- local actor_id = act.actor_id
 
 	--Ignore if target is not a monster, or if the actor is a monster
-	if not isMonster(main_target_id) or isMonster(act.actor_id) then return end
+	if not isMonster(main_target_id) or isMonster(actor_id) then return end
 
-	--Upgrade Dia if Light Shot
-	if current_debuffs[main_target_id] and current_debuffs[main_target_id][134] and act.category == 6 and act.param == 131 then
-		--If current Dia level is 1-3 then increase by one level
-		--23 = Dia 1
-		--24 = Dia 2
-		--25 = Dia 3
-		--26 = Dia 4 (max achievable by players, from upgrading level 3)
-		local current_dia_level = current_debuffs[main_target_id][134].id
-		if current_dia_level <= 25 then
-			current_debuffs[main_target_id][134].id = current_dia_level + 1
-		end
-	end
+	if act.category == 6 then
 
-	--Upgrade Bio if Dark Shot
-	if current_debuffs[main_target_id] and current_debuffs[main_target_id][135] and act.category == 6 and act.param == 132 then
-		--If current Bio level is 1-3 then increase by one level
-		--230 = Bio 1
-		--231 = Bio 2
-		--232 = Bio 3
-		--233 = Bio 4 (max achievable by players, from upgrading level 3)
-		local current_bio_level = current_debuffs[main_target_id][134].id
-		if current_bio_level <= 232 then
-			current_debuffs[main_target_id][135].id = current_bio_level + 1
+		--Boost rules for Corsair shots
+		local shot_boosts = {
+			[131] = { --Light Shot -> Dia
+				effect_id = 134,
+				spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
+			},
+			[132] = { --Dark Shot -> Bio
+				effect_id = 135,
+				spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
+			},
+			[125] = {effect_id = 128, spell_map = {[235] = 9235}}, --Fire Shot -> Burn
+			[126] = {effect_id = 129, spell_map = {[236] = 9236}}, --Ice Shot -> Frost
+			[127] = {effect_id = 130, spell_map = {[237] = 9237}}, --Wind Shot -> Choke
+			[128] = {effect_id = 131, spell_map = {[238] = 9238}}, --Earth Shot -> Rasp
+			[129] = {effect_id = 132, spell_map = {[239] = 9239}}, --Thunder Shot -> Shock
+			[130] = {effect_id = 133, spell_map = {[240] = 9240}}, --Water Shot -> Drown
+		}
+
+		--Boost debuff based on shot type
+		local boost = shot_boosts[act.param]
+		if act.category == 6 and boost and current_debuffs[main_target_id] then
+			local debuff = current_debuffs[main_target_id][boost.effect_id]
+			if debuff then
+				local boosted_id = boost.spell_map[debuff.id]
+				if boosted_id then
+					debuff.id = boosted_id
+				end
+			end
 		end
+
 	end
 
 	local spell_id = act.param
@@ -7263,21 +7680,28 @@ function handleAction(act)
 	for i = 1, target_count do
 
 		local target_id = act.targets[i].id
-
 		local message_id = act.targets[i].actions[1].message
 
 		--Spells that include a debuff
 		if act.category == 4 then
 
 			--Spell messages to look for
-			local damaging_spell_messages = S{2, 252}
-			local debuff_spell_messages = S{203, 236, 237, 267, 268, 269, 270, 271, 272, 277, 278, 279}
+			local damaging_spell_messages = S{2,7,252,264,265}
+			local debuff_spell_messages = S{203,236,237,267,268,269,270,271,272,277,278,279}
 
 			--Damaging spells
 			if damaging_spell_messages:contains(message_id) then
 				local effect_id = res.spells[spell_id] and res.spells[spell_id].status
+				--Diaga
+				if spell_id == 33 then
+					spell_id = 23 --Diaga (33) puts Dia (23) on each target
+					effect_id = 134
+				--Impact
+				elseif spell_id == 503 then
+					effect_id = 9000
+				end
 				if effect_id then
-					saveDebuff(target_id, effect_id, spell_id)
+					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
 
 			--Debuff spells
@@ -7285,7 +7709,7 @@ function handleAction(act)
 				local effect_id = act.targets[i].actions[1].param
 				local spell_status = res.spells[spell_id] and res.spells[spell_id].status
 				if spell_status and spell_status == effect_id then
-					saveDebuff(target_id, effect_id, spell_id)
+					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
 			end
 
@@ -7307,7 +7731,7 @@ function handleAction(act)
 					end
 				end
 				if effect_id then
-					saveDebuff(target_id, effect_id, spell_id)
+					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
 			end
 
@@ -7316,10 +7740,10 @@ function handleAction(act)
 
 			--Daze effect groups mapped to their level/message_id
 			local daze_types = {
-				[519] = { [1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=390, [7]=390, [8]=390, [9]=390, [10]=390 }, --Lethargic Daze
-				[520] = { [1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=395, [7]=395, [8]=395, [9]=395, [10]=395 }, --Sluggish Daze
-				[521] = { [1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=400, [7]=400, [8]=400, [9]=400, [10]=400 }, --Weakened Daze
-				[591] = { [1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=452, [7]=452, [8]=452, [9]=452, [10]=452 }, --Bewildered Daze
+				[519] = {[1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=390, [7]=390, [8]=390, [9]=390, [10]=390}, --Lethargic Daze
+				[520] = {[1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=395, [7]=395, [8]=395, [9]=395, [10]=395}, --Sluggish Daze
+				[521] = {[1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=400, [7]=400, [8]=400, [9]=400, [10]=400}, --Weakened Daze
+				[591] = {[1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=452, [7]=452, [8]=452, [9]=452, [10]=452}, --Bewildered Daze
 			}
 
 			--Check if the message ID is one of the Daze types
@@ -7333,18 +7757,18 @@ function handleAction(act)
 							current_debuffs[target_id][id] = nil
 						end
 					end
-					saveDebuff(target_id, effect_id, spell_id)
+					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
 			end
 
 			local messages = S{127, 141, 320, 645}
 			if messages:contains(message_id) then
 				local effect_id = act.targets[i].actions[1].param
-				saveDebuff(target_id, effect_id, spell_id)
+				saveDebuff(actor_id, target_id, effect_id, spell_id)
 			--Chainbound
 			elseif message_id == 529 then
 				local effect_id = 164
-				saveDebuff(target_id, effect_id, spell_id)
+				saveDebuff(actor_id, target_id, effect_id, spell_id)
 			end
 
 		end
@@ -7361,17 +7785,19 @@ function handleActionMessage(data)
 	local death_messages = S{6, 20, 113, 406, 605, 646}
 	local expire_messages = S{64, 204, 206, 350, 531}
 
-	--Check if the target died and clear all debuffs
+	--Check if the target died and clear their table entries
 	if death_messages:contains(message_id) then
 		current_debuffs[target_id] = nil
+		current_actions[target_id] = nil
+		current_levels[get_mob_by_id(target_id).index] = nil
 
 	--Check if the debuff expired and clear just that debuff
 	elseif expire_messages:contains(message_id) and current_debuffs[target_id] then
 		local dazes = {
-			lethargic   = {386, 387, 388, 389, 390},
-			sluggish    = {391, 392, 393, 394, 395},
-			weakened    = {396, 397, 398, 399, 400},
-			bewildered  = {448, 449, 450, 451, 452},
+			lethargic	= {386, 387, 388, 389, 390},
+			sluggish	= {391, 392, 393, 394, 395},
+			weakened	= {396, 397, 398, 399, 400},
+			bewildered	= {448, 449, 450, 451, 452},
 		}
 
 		local found_daze = nil
@@ -7385,15 +7811,17 @@ function handleActionMessage(data)
 		end
 
 		if found_daze then
-			if current_debuffs[target_id] then
-				for _, id in ipairs(found_daze) do
-					current_debuffs[target_id][id] = nil
-				end
+			for _, id in ipairs(found_daze) do
+				current_debuffs[target_id][id] = nil
 			end
 		else
-			if current_debuffs[target_id] then
-				current_debuffs[target_id][effect_id] = nil
+			--Check if the effect is from Impact
+			local impact_effects = S{136, 137, 138, 139, 140, 141, 142}
+			if impact_effects:contains(effect_id) then
+				current_debuffs[target_id][9000] = nil
 			end
+
+			current_debuffs[target_id][effect_id] = nil
 		end
 
 	end
