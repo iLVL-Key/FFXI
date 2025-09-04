@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Attend'
-_addon.version = '1.0'
+_addon.version = '1.0.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'attend'}
 
@@ -143,8 +143,7 @@ register_event('zone change',function(new_id, old_id)
 	local should_run =
 		(auto_run.dynamis and current_zone_name:find("^Dynamis")) or
 		(auto_run.omen and current_zone_name == "Reisenjima Henge") or
-		(auto_run.vagary and current_zone_name:find("^Outer Ra'Kaznar") and previous_zone_name == "Outer Ra'Kaznar") or
-		(current_zone_name:find("^Outer Ra'Kaznar") and previous_zone_name == "Kamihr Drifts")
+		(auto_run.vagary and current_zone_name:find("^Outer Ra'Kaznar") and previous_zone_name == "Outer Ra'Kaznar")
 
 	if should_run then
 		coroutine.schedule(run, settings.after_zone_delay)
