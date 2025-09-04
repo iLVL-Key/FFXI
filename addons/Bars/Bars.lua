@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.2'
+_addon.version = '4.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -36,6 +36,7 @@ packets = require('packets')
 res = require('resources')
 texts = require('texts')
 require 'chat'
+math.randomseed(os.time())
 
 add_to_chat = windower.add_to_chat
 file_exists = windower.file_exists
@@ -253,6 +254,24 @@ defaults = {
 		show_target_lock = true,
 	},
 	sections = {
+		aggro_list = {
+			bg_alpha = 150,
+			bold = true,
+			ignore_list = S{
+				"Poison Mist",
+				"Malicious Spire",
+				"Zisurru",
+			},
+			italic = false,
+			max_monsters_listed = 6,
+			min_monsters_to_show = 0,
+			pos = {x = 200, y = 320},
+			show = true,
+			size = 10,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 1,
+		},
 		focus_target = {
 			bar_size = 10,
 			bar_width = 50,
@@ -267,7 +286,7 @@ defaults = {
 			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
-			pos = {x = 576, y = 200},
+			pos = {x = 576, y = 180},
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -294,6 +313,7 @@ defaults = {
 			},
 			right_align = true,
 			show = true,
+			show_results = false,
 			show_self = true,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -311,6 +331,7 @@ defaults = {
 				y = get_windower_settings().ui_y_res - 400,
 			},
 			show = true,
+			show_results = false,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 1,
@@ -329,6 +350,7 @@ defaults = {
 			},
 			right_align = true,
 			show = true,
+			show_results = false,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 1,
@@ -359,6 +381,7 @@ defaults = {
 			italic = false,
 			pos = {x = 200, y = 300},
 			show = true,
+			show_bar = true,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 0.5,
@@ -382,7 +405,7 @@ defaults = {
 			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
-			pos = {x = 200, y = 200},
+			pos = {x = 200, y = 180},
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -725,6 +748,7 @@ default_durations = {
 			["Enfeebling Magic"] = 10,
 			["Gambit"] = 36,
 			["Hamanoha"] = 0,
+			["Cumulative Spells"] = 0,
 			["Rayke"] = 20,
 			["Sepulcher"] = 20,
 			["Shadowbind"] = 0,
@@ -737,7 +761,7 @@ default_durations = {
 --Location of the durations file
 durations_file = files.new('data\\durations.lua')
 
-durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic and Singing are the total PERCENT bonus from all gear combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only set duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
+durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic and Singing are the total PERCENT bonus from all gear combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities and Cumulative Magic are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only set duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
 
 durations_data = {}
 
@@ -789,7 +813,9 @@ hide_player_stats_bars_when_no_target = settings.options.hide_player_stats_bars_
 job_specific = settings.job_specific
 max_action_length = settings.options.max_action_length
 max_monster_target_length = settings.options.max_monster_target_length
+max_monsters_listed = math.max(0, math.min(settings.sections.aggro_list.max_monsters_listed, 15))
 max_name_length = settings.options.max_name_length
+min_monsters_to_show = math.max(0, math.min(settings.sections.aggro_list.min_monsters_to_show, 15))
 monster_target_confidence_timer = settings.options.monster_target_confidence_timer
 pulse_brightness = settings.options.animations.pulse_brightness
 pulse_bar_when_target_sp_active = settings.options.animations.pulse_bar_when_target_sp_active
@@ -803,6 +829,7 @@ pulse_when_tp_ready = settings.options.animations.pulse_when_tp_ready
 remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_name
 short_skillchain_names = settings.options.short_skillchain_names
 show_action_status_indicators = settings.options.show_action_status_indicators
+show_aggro_list = settings.sections.aggro_list.show
 show_hp_tp_markers = settings.options.show_hp_tp_markers
 show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_dyna_jobs = settings.options.show_dyna_jobs
@@ -815,6 +842,7 @@ show_pet_tp = settings.options.show_pet_tp
 show_result_totals = settings.options.show_result_totals
 show_roll_lucky_info = settings.options.show_roll_lucky_info
 show_self_action = settings.sections.self_action.show
+show_self_action_bar = settings.sections.self_action.show_bar
 show_self_action_result = settings.options.show_self_action_result
 show_self_when_sub_targeted = settings.options.show_self_when_sub_targeted
 show_self_when_targeted = settings.options.show_self_when_targeted
@@ -864,6 +892,14 @@ player_stats_stroke_alpha = settings.sections.player_stats.stroke_alpha
 player_stats_stroke_color = settings.sections.player_stats.stroke_color
 player_stats_stroke_width = settings.sections.player_stats.stroke_width
 player_stats_text_size = settings.sections.player_stats.text_size
+
+aggro_list_size = settings.sections.aggro_list.size
+aggro_list_bg_alpha = settings.sections.aggro_list.bg_alpha
+aggro_list_bold = settings.sections.aggro_list.bold
+aggro_list_italic = settings.sections.aggro_list.italic
+aggro_list_stroke_alpha = settings.sections.aggro_list.stroke_alpha
+aggro_list_stroke_color = settings.sections.aggro_list.stroke_color
+aggro_list_stroke_width = settings.sections.aggro_list.stroke_width
 
 party_1_actions = settings.sections.party_1_actions
 party_2_actions = settings.sections.party_2_actions
@@ -960,19 +996,61 @@ sp_shorter_names = {
 	['Elemental Sforzo'] = 'El. Sforzo',
 }
 
-boosted_debuffs = {
-	[9023] = "Boosted Dia",
-	[9024] = "Boosted Dia II",
-	[9025] = "Boosted Dia III",
-	[9230] = "Boosted Bio",
-	[9231] = "Boosted Bio II",
-	[9232] = "Boosted Bio III",
-	[9235] = "Boosted Burn",
-	[9236] = "Boosted Frost",
-	[9237] = "Boosted Choke",
-	[9238] = "Boosted Rasp",
-	[9239] = "Boosted Shock",
-	[9240] = "Boosted Drown",
+--note that these aren't the actual spell names, just used to denote the tier of cumulative magic boost
+custom_spells = {
+	[9023]	= "Boosted Dia",
+	[9024]	= "Boosted Dia II",
+	[9025]	= "Boosted Dia III",
+	[9230]	= "Boosted Bio",
+	[9231]	= "Boosted Bio II",
+	[9232]	= "Boosted Bio III",
+	[9235]	= "Boosted Burn",
+	[9236]	= "Boosted Frost",
+	[9237]	= "Boosted Choke",
+	[9238]	= "Boosted Rasp",
+	[9239]	= "Boosted Shock",
+	[9240]	= "Boosted Drown",
+	[9219]	= "Comet",
+	[10219]	= "Comet II",
+	[11219]	= "Comet III",
+	[12219]	= "Comet IV",
+	[13219]	= "Comet V",
+	[9496]	= "Firaja",
+	[10496]	= "Firaja II",
+	[11496]	= "Firaja III",
+	[12496]	= "Firaja IV",
+	[13496]	= "Firaja V",
+	[9497]	= "Blizzaja",
+	[10497]	= "Blizzaja II",
+	[11497]	= "Blizzaja III",
+	[12497]	= "Blizzaja IV",
+	[13497]	= "Blizzaja V",
+	[9498]	= "Aeroja",
+	[10498]	= "Aeroja II",
+	[11498]	= "Aeroja III",
+	[12498]	= "Aeroja IV",
+	[13498]	= "Aeroja V",
+	[9499]	= "Stoneja",
+	[10499]	= "Stoneja II",
+	[11499]	= "Stoneja III",
+	[12499]	= "Stoneja IV",
+	[13499]	= "Stoneja V",
+	[9500]	= "Thundaja",
+	[10500]	= "Thundaja II",
+	[11500]	= "Thundaja III",
+	[12500]	= "Thundaja IV",
+	[13500]	= "Thundaja V",
+	[9501]	= "Waterja",
+	[10501]	= "Waterja II",
+	[11501]	= "Waterja III",
+	[12501]	= "Waterja IV",
+	[13501]	= "Waterja V",
+}
+aggro_list_ignore = settings.sections.aggro_list.ignore_list
+remove_all_debuffs = S{
+	"Benediction",
+	"Depuration",
+	"Stygian Sphere",
 }
 in_cutscene = false
 zoning = false
@@ -982,6 +1060,7 @@ current_actions = {}
 current_sp_actions = {}
 current_debuffs = {}
 current_levels = {}
+current_aggro_list = {}
 next_wide_scan_time = os.time() + math.random(30, 45)
 ft_targeting_id = nil
 st_targeting_id = nil
@@ -1130,15 +1209,27 @@ wide_scan_exclude_zones = S{
 
 --CREATE IMAGE/TEXT OBJECTS
 
---Create the UI BG LEFT image objects
+--MONSTER AGGRO LIST
 
+aggro_list_box = texts.new()
+aggro_list_box:text(test_text)
+aggro_list_box:pos(settings.sections.aggro_list.pos.x,settings.sections.aggro_list.pos.y)
+aggro_list_box:bold(true)
+aggro_list_box:show(true)
+aggro_list_box:font(font)
+aggro_list_box:size(9)
+aggro_list_box:bg_alpha(aggro_list_bg_alpha)
+aggro_list_box:pad(2)
+
+--MONSTER DEBUFFS
+
+--Create the UI BG LEFT image objects
 ui_bg_left = {
 	focus_target = {},
 	sub_target = {},
 	target = {},
 	self_action = {},
 }
-
 for section in pairs(ui_bg_left) do
 	local file = section == 'self_action' and 'ui_bg_half_left' or 'ui_bg_left'
 	ui_bg_left[section] = images.new({
@@ -1152,14 +1243,12 @@ for section in pairs(ui_bg_left) do
 end
 
 --Create the UI BG MIDDLE image objects
-
 ui_bg_middle = {
 	focus_target = {},
 	sub_target = {},
 	target = {},
 	self_action = {},
 }
-
 for section in pairs(ui_bg_middle) do
 	local file = section == 'self_action' and 'ui_bg_half_middle' or 'ui_bg_middle'
 	ui_bg_middle[section] = images.new({
@@ -1173,14 +1262,12 @@ for section in pairs(ui_bg_middle) do
 end
 
 --Create the UI BG RIGHT image objects
-
 ui_bg_right = {
 	focus_target = {},
 	sub_target = {},
 	target = {},
 	self_action = {},
 }
-
 for section in pairs(ui_bg_right) do
 	local file = section == 'self_action' and 'ui_bg_half_right' or 'ui_bg_right'
 	ui_bg_right[section] = images.new({
@@ -1194,13 +1281,11 @@ for section in pairs(ui_bg_right) do
 end
 
 --Create the DEBUFF ICON image objects
-
 debuff_icons = {
 	focus_target = {},
 	sub_target = {},
 	target = {}
 }
-
 for section, section_table in pairs(debuff_icons) do
 	local section_settings = settings.sections[section]
 
@@ -1219,13 +1304,11 @@ for section, section_table in pairs(debuff_icons) do
 end
 
 --Create the DEBUFF TIMER text objects
-
 debuff_timers = {
 	focus_target = {},
 	sub_target = {},
 	target = {}
 }
-
 for section, section_table in pairs(debuff_timers) do
 	local section_settings = settings.sections[section]
 
@@ -2639,6 +2722,8 @@ function hideBars()
 	party_actions_pt3_p4_text:hide()
 	party_actions_pt3_p5_text:hide()
 
+	aggro_list_box:hide()
+
 end
 
 --Show appropriate bars
@@ -2734,7 +2819,7 @@ function assignIndex()
 
 end
 
---Update monster targeting
+--Update monster targeting tables
 function updateTargeting(actor_id, target_id, timestamp, icon)
 
 	current_actions[actor_id] = {
@@ -2742,6 +2827,16 @@ function updateTargeting(actor_id, target_id, timestamp, icon)
 		timestamp = timestamp,
 		icon = icon,
 	}
+
+	--If the target of an action done by a monster (checked before this function was triggered)
+	--is in our alliance then add the monster to the aggro list table
+	if isInPartyOrAlliance(target_id) then
+		current_aggro_list[actor_id] = {
+			target_id = target_id,
+			timestamp = timestamp,
+			icon = icon,
+		}
+	end
 
 end
 
@@ -2823,6 +2918,7 @@ function clearTables()
 	current_sp_actions = {}
 	current_debuffs = {}
 	current_levels = {}
+	current_aggro_list = {}
 
 end
 
@@ -2885,6 +2981,28 @@ function isPlayer(id)
 	else
 		return false
 	end
+
+end
+
+--Is this player in our party or alliance?
+function isInPartyOrAlliance(id)
+
+	local positions = {
+		'p0', 'p1', 'p2', 'p3', 'p4', 'p5',
+		'a10', 'a11', 'a12', 'a13', 'a14', 'a15',
+		'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
+	}
+
+	for _, position in ipairs(positions) do
+		local member = get_mob_by_target(position)
+		if member and member.id and member.id == id then
+			--In our party or alliance
+			return true
+		end
+	end
+
+	--Not in our party or alliance
+	return false
 
 end
 
@@ -3401,11 +3519,12 @@ function getIconFile(spell_name, debuff_id)
 		'ionohelix', 'hydrohelix', 'luminohelix', 'noctohelix',
 		'fire threnody', 'ice threnody', 'wind threnody', 'earth threnody',
 		'ltng. threnody', 'water threnody', 'light threnody', 'dark threnody',
+		'comet', 'firaja', 'blizzaja', 'aeroja', 'stoneja', 'thundaja', 'waterja',
 		'carnage elegy', 'impact',
 	}
-	local boosted_names = {
+	local shot_boosted_names = {
 		'boosted dia', 'boosted bio', 'boosted shock', 'boosted rasp',
-		'boosted choke', 'boosted frost', 'boosted burn', 'boosted drown'
+		'boosted choke', 'boosted frost', 'boosted burn', 'boosted drown',
 	}
 
 	spell_name = spell_name:lower()
@@ -3413,7 +3532,7 @@ function getIconFile(spell_name, debuff_id)
 
 	--Check for custom prefix
 	for _, custom in ipairs(custom_names) do
-		if spell_name:sub(1, #custom) == custom then
+		if spell_name:sub(1, #custom) == custom and debuff_id ~= 464 then --NOT Arcane Crest (matches Hydrohelix id number)
 			icon_file = string.gsub(custom, " ", "_") --convert spaces to underscores
 			break
 		end
@@ -3432,7 +3551,7 @@ function getIconFile(spell_name, debuff_id)
 	end
 
 	--Check for boosted prefix
-	for _, boosted in ipairs(boosted_names) do
+	for _, boosted in ipairs(shot_boosted_names) do
 		if spell_name:sub(1, #boosted) == boosted then
 			--Add "shot" to the end of the file name
 			icon_file = icon_file..'_shot'
@@ -3485,6 +3604,95 @@ function formatTargetingName(targeting)
 	end
 
 	return formatted_name
+
+end
+
+--Update the Aggro List
+function updateAggroList()
+
+	--If the Aggro List is turned off, hide it
+	if not show_aggro_list and not Screen_Test then
+		if aggro_list_box:visible() then
+			aggro_list_box:hide()
+		end
+		return
+	end
+
+	local width = 3 + 5 + max_name_length + 2 + max_monster_target_length --ZZZ(3)/hpp(5)/icon(2)
+	local num = 0
+	local plus_num_more = 0
+	local text = ""
+
+	for actor_id, data in pairs(current_aggro_list) do
+
+		local actor = get_mob_by_id(actor_id)
+
+		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) then
+
+			num = num + 1
+
+			if num <= max_monsters_listed then
+				local actor_name = truncateName(actor.name)
+				local target = data.target_id and get_mob_by_id(data.target_id)
+				local target_name = target and target.name and truncateMonsterTarget(target.name)
+				local target_icon = os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
+				local hpp_raw =actor.hpp or 0
+				local hpp = string.format("%3s", hpp_raw)..'% ' or ''
+				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and "ZZZ" or ""
+
+				--Colorize the actor name
+				local ca = targetColor(actor)
+				local ca_r = formatRGB(ca.r)
+				local ca_g = formatRGB(ca.g)
+				local ca_b = formatRGB(ca.b)
+
+				--Colorize the target name
+				local ct = targetColor(target)
+				local ct_r = formatRGB(ct.r)
+				local ct_g = formatRGB(ct.g)
+				local ct_b = formatRGB(ct.b)
+
+				local padding = ""
+				local padding_spaces = width - (#hpp + math.min(#actor_name, max_name_length) + 2 + #asleep + (target_name and max_monster_target_length or 0))
+				while string.len(padding) < padding_spaces do
+					if padding == "" then
+						padding = padding.. ' '
+					else
+						padding = padding.. '.'
+					end
+				end
+				padding = "\\cs(100,100,100)"..padding.."\\cr"
+				actor_name = "\\cs("..ca_r..","..ca_g..","..ca_b..")"..(actor_name and actor_name or "").."\\cr" --add color start and reset to name
+				target_name = "\\cs("..ct_r..","..ct_g..","..ct_b..")"..(target_name and target_name or "").."\\cr" --add color start and reset to name
+				text = text..hpp..actor_name..padding..asleep..(target_name and target_icon..target_name).."\n"
+			else
+				plus_num_more = plus_num_more + 1
+			end
+
+		else
+			--Remove monster from the Aggro List when it's no longer a valid target
+			--(Prevents monsters from getting stuck on the list in certain circumstances, mostly high lag areas)
+			current_aggro_list[actor_id] = nil
+		end
+
+	end
+	local padding = ""
+	local plus_text = max_monsters_listed > 0 and plus_num_more > 0 and "+"..plus_num_more.." more" or ((num == 0 or max_monsters_listed == 0) and "Aggro List" or "")
+	local total_text = "Total: "..num
+	local padding_spaces = width - #plus_text - #total_text
+	while #padding < padding_spaces do
+		padding = padding..' '
+	end
+	local header = text == "" and "" or "Aggro List\n"
+	text = header..text..plus_text..padding..total_text
+	aggro_list_box:text(text)
+
+	--If in a cutscene or less aggro than we have set to show, hide the entire list
+	if aggro_list_box:visible() and (in_cutscene or num < min_monsters_to_show) and not Screen_Test then
+		aggro_list_box:hide()
+	elseif not aggro_list_box:visible() and num >= min_monsters_to_show and not in_cutscene then
+		aggro_list_box:show()
+	end
 
 end
 
@@ -3602,19 +3810,6 @@ function updateFocusTarget()
 		focus_target_bar_drain_meter:show()
 	end
 
-	--Show the Focus Target text objects
-	focus_target_bar_bg:show()
-	focus_target_bar_pulse:show()
-	focus_target_text:show()
-	focus_target_text_shadow:show()
-	focus_target_action_text:show()
-	focus_target_action_text_shadow:show()
-	if ft_settings.ui_bg then
-		ui_bg_left.focus_target:show()
-		ui_bg_middle.focus_target:show()
-		ui_bg_right.focus_target:show()
-	end
-
 	--Update the Focus Target text objects
 	focus_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
 	focus_target_bar_meter:bg_color(cm.r,cm.g,cm.b)
@@ -3670,9 +3865,9 @@ function updateFocusTarget()
 			if i > max_icons then break end
 
 			local spell_data = debuff_list[debuff_id]
-			local boosted_debuff = boosted_debuffs[spell_data.id]
+			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
-			local name = spell and spell.name or (boosted_debuff and boosted_debuff or "???")
+			local name = custom_spell and custom_spell or (spell and spell.name or "???")
 			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
 
 			--Determine whether to show debuff icon/timer
@@ -3723,6 +3918,19 @@ function updateFocusTarget()
 		if ft_settings.debuff_timers then
 			timer_set[k]:hide()
 		end
+	end
+
+	--Show the Focus Target text objects
+	focus_target_bar_bg:show()
+	focus_target_bar_pulse:show()
+	focus_target_text:show()
+	focus_target_text_shadow:show()
+	focus_target_action_text:show()
+	focus_target_action_text_shadow:show()
+	if ft_settings.ui_bg then
+		ui_bg_left.focus_target:show()
+		ui_bg_middle.focus_target:show()
+		ui_bg_right.focus_target:show()
 	end
 
 	--Update the previous focus target id
@@ -3846,19 +4054,6 @@ function updateSubTarget()
 		sub_target_bar_drain_meter:show()
 	end
 
-	--Show the Sub Target text objects
-	sub_target_bar_bg:show()
-	sub_target_bar_pulse:show()
-	sub_target_text:show()
-	sub_target_text_shadow:show()
-	sub_target_action_text:show()
-	sub_target_action_text_shadow:show()
-	if st_settings.ui_bg then
-		ui_bg_left.sub_target:show()
-		ui_bg_middle.sub_target:show()
-		ui_bg_right.sub_target:show()
-	end
-
 	--Update the Sub Target text objects
 	sub_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
 	sub_target_bar_meter:bg_color(cm.r,cm.g,cm.b)
@@ -3914,9 +4109,9 @@ function updateSubTarget()
 			if i > max_icons then break end
 
 			local spell_data = debuff_list[debuff_id]
-			local boosted_debuff = boosted_debuffs[spell_data.id]
+			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
-			local name = spell and spell.name or (boosted_debuff and boosted_debuff or "???")
+			local name = custom_spell and custom_spell or (spell and spell.name or "???")
 			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
 
 			--Determine whether to show debuff icon/timer
@@ -3967,6 +4162,19 @@ function updateSubTarget()
 		if st_settings.debuff_timers then
 			timer_set[k]:hide()
 		end
+	end
+
+	--Show the Sub Target text objects
+	sub_target_bar_bg:show()
+	sub_target_bar_pulse:show()
+	sub_target_text:show()
+	sub_target_text_shadow:show()
+	sub_target_action_text:show()
+	sub_target_action_text_shadow:show()
+	if st_settings.ui_bg then
+		ui_bg_left.sub_target:show()
+		ui_bg_middle.sub_target:show()
+		ui_bg_right.sub_target:show()
 	end
 
 	--Update the previous sub target id
@@ -4097,19 +4305,6 @@ function updateTarget()
 		target_bar_drain_meter:show()
 	end
 
-	--Show the Target text objects
-	target_bar_bg:show()
-	target_bar_pulse:show()
-	target_text:show()
-	target_action_text:show()
-	target_text_shadow:show()
-	target_action_text_shadow:show()
-	if t_settings.ui_bg then
-		ui_bg_left.target:show()
-		ui_bg_middle.target:show()
-		ui_bg_right.target:show()
-	end
-
 	--Show Target Lock
 	if show_target_lock and player and player.target_locked and not target_bar_lock_left:visible() then
 		target_bar_lock_left:show()
@@ -4176,9 +4371,9 @@ function updateTarget()
 			if i > max_icons then break end
 
 			local spell_data = debuff_list[debuff_id]
-			local boosted_debuff = boosted_debuffs[spell_data.id]
+			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
-			local name = spell and spell.name or (boosted_debuff and boosted_debuff or "???")
+			local name = custom_spell and custom_spell or (spell and spell.name or "???")
 			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
 
 			--Determine whether to show debuff icon/timer
@@ -4231,6 +4426,19 @@ function updateTarget()
 		end
 	end
 
+	--Show the Target text objects
+	target_bar_bg:show()
+	target_bar_pulse:show()
+	target_text:show()
+	target_action_text:show()
+	target_text_shadow:show()
+	target_action_text_shadow:show()
+	if t_settings.ui_bg then
+		ui_bg_left.target:show()
+		ui_bg_middle.target:show()
+		ui_bg_right.target:show()
+	end
+
 	--Update the previous target id
 	drain_previous_t_id = t and t.id or nil
 
@@ -4266,8 +4474,14 @@ function updateSelfAction()
 	local text_self_action = ' '..self_status..self_action..self_action_result
 	local text_self_action_shdw = ' '..self_status_shdw..self_action_shdw..self_action_result_shdw
 
+	--Update Self Action text objects
+	self_action_text:text(Fade and text_self_action:text_strip_format() or text_self_action)
+	self_action_text_shadow:text(Fade and text_self_action_shdw:text_strip_format() or text_self_action_shdw)
+
 	--Show Self Action text objects
-	self_action_bar_bg:show()
+	if show_self_action_bar then
+		self_action_bar_bg:show()
+	end
 	self_action_text:show()
 	self_action_text_shadow:show()
 	if settings.sections.self_action.ui_bg then
@@ -4276,16 +4490,12 @@ function updateSelfAction()
 		ui_bg_right.self_action:show()
 	end
 
-	--Update Self Action text objects
-	self_action_text:text(Fade and text_self_action:text_strip_format() or text_self_action)
-	self_action_text_shadow:text(Fade and text_self_action_shdw:text_strip_format() or text_self_action_shdw)
-
 end
 
 --Complete the Self meter to full
 function completeSelfMeter()
 
-	if not show_self_action then return end
+	if not show_self_action or not show_self_action_bar then return end
 
 	local self_meter = ''
 
@@ -4300,7 +4510,7 @@ end
 --Update the Self bar
 function updateSelfBar(cast_time, index)
 
-	if not show_self_action then return end
+	if not show_self_action or not show_self_action_bar then return end
 
 	cast_time = cast_time ~= 0 and cast_time or 1
 	local player = get_player()
@@ -4758,6 +4968,9 @@ function updatePartyActions()
 	local show_party_1 = party_1_actions.show
 	local show_party_2 = party_2_actions.show
 	local show_party_3 = party_3_actions.show
+	local party_1_results = party_1_actions.show_results
+	local party_2_results = party_2_actions.show_results
+	local party_3_results = party_3_actions.show_results
 
 	if not show_party_1 and not show_party_2 and not show_party_3 then return end
 
@@ -4777,33 +4990,39 @@ function updatePartyActions()
 		if party_1_actions.show_self then
 			local p0 = get_mob_by_target('p0')
 			local p0_action = Screen_Test and "Party 1: Player 0" or (p0 and current_actions[p0.id] and current_actions[p0.id].action or '')
-			local text_p0_action = formatPartyAction(p0_action)
+			local p0_result = party_1_results and not Screen_Test and p0 and current_actions[p0.id] and current_actions[p0.id].result or ''
+			local text_p0_action = formatPartyAction(p0_action)..formatPartyAction(p0_result)
 			party_actions_pt1_p0_text:text(text_p0_action)
 		end
 
 		local p1 = get_mob_by_target('p1')
 		local p1_action = Screen_Test and "Party 1: Player 1" or (p1 and current_actions[p1.id] and current_actions[p1.id].action or '')
-		local text_p1_action = formatPartyAction(p1_action)
+		local p1_result = party_1_results and not Screen_Test and p1 and current_actions[p1.id] and current_actions[p1.id].result or ''
+		local text_p1_action = formatPartyAction(p1_action)..formatPartyAction(p1_result)
 		party_actions_pt1_p1_text:text(text_p1_action)
 
 		local p2 = get_mob_by_target('p2')
 		local p2_action = Screen_Test and "Party 1: Player 2" or (p2 and current_actions[p2.id] and current_actions[p2.id].action or '')
-		local text_p2_action = formatPartyAction(p2_action)
+		local p2_result = party_1_results and not Screen_Test and p2 and current_actions[p2.id] and current_actions[p2.id].result or ''
+		local text_p2_action = formatPartyAction(p2_action)..formatPartyAction(p2_result)
 		party_actions_pt1_p2_text:text(text_p2_action)
 
 		local p3 = get_mob_by_target('p3')
 		local p3_action = Screen_Test and "Party 1: Player 3" or (p3 and current_actions[p3.id] and current_actions[p3.id].action or '')
-		local text_p3_action = formatPartyAction(p3_action)
+		local p3_result = party_1_results and not Screen_Test and p3 and current_actions[p3.id] and current_actions[p3.id].result or ''
+		local text_p3_action = formatPartyAction(p3_action)..formatPartyAction(p3_result)
 		party_actions_pt1_p3_text:text(text_p3_action)
 
 		local p4 = get_mob_by_target('p4')
 		local p4_action = Screen_Test and "Party 1: Player 4" or (p4 and current_actions[p4.id] and current_actions[p4.id].action or '')
-		local text_p4_action = formatPartyAction(p4_action)
+		local p4_result = party_1_results and not Screen_Test and p4 and current_actions[p4.id] and current_actions[p4.id].result or ''
+		local text_p4_action = formatPartyAction(p4_action)..formatPartyAction(p4_result)
 		party_actions_pt1_p4_text:text(text_p4_action)
 
 		local p5 = get_mob_by_target('p5')
 		local p5_action = Screen_Test and "Party 1: Player 5" or (p5 and current_actions[p5.id] and current_actions[p5.id].action or '')
-		local text_p5_action = formatPartyAction(p5_action)
+		local p5_result = party_1_results and not Screen_Test and p5 and current_actions[p5.id] and current_actions[p5.id].result or ''
+		local text_p5_action = formatPartyAction(p5_action)..formatPartyAction(p5_result)
 		party_actions_pt1_p5_text:text(text_p5_action)
 	end
 
@@ -4812,32 +5031,38 @@ function updatePartyActions()
 
 		local a10 = get_mob_by_target('a10')
 		local a10_action = Screen_Test and "Party 2: Player 0" or (a10 and current_actions[a10.id] and current_actions[a10.id].action or '')
-		local text_a10_action = formatPartyAction(a10_action)
+		local a10_result = party_2_results and not Screen_Test and a10 and current_actions[a10.id] and current_actions[a10.id].result or ''
+		local text_a10_action = formatPartyAction(a10_action)..formatPartyAction(a10_result)
 		party_actions_pt2_p0_text:text(text_a10_action)
 
 		local a11 = get_mob_by_target('a11')
 		local a11_action = Screen_Test and "Party 2: Player 1" or (a11 and current_actions[a11.id] and current_actions[a11.id].action or '')
-		local text_a11_action = formatPartyAction(a11_action)
+		local a11_result = party_2_results and not Screen_Test and a11 and current_actions[a11.id] and current_actions[a11.id].result or ''
+		local text_a11_action = formatPartyAction(a11_action)..formatPartyAction(a11_result)
 		party_actions_pt2_p1_text:text(text_a11_action)
 
 		local a12 = get_mob_by_target('a12')
 		local a12_action = Screen_Test and "Party 2: Player 2" or (a12 and current_actions[a12.id] and current_actions[a12.id].action or '')
-		local text_a12_action = formatPartyAction(a12_action)
+		local a12_result = party_2_results and not Screen_Test and a12 and current_actions[a12.id] and current_actions[a12.id].result or ''
+		local text_a12_action = formatPartyAction(a12_action)..formatPartyAction(a12_result)
 		party_actions_pt2_p2_text:text(text_a12_action)
 
 		local a13 = get_mob_by_target('a13')
 		local a13_action = Screen_Test and "Party 2: Player 3" or (a13 and current_actions[a13.id] and current_actions[a13.id].action or '')
-		local text_a13_action = formatPartyAction(a13_action)
+		local a13_result = party_2_results and not Screen_Test and a13 and current_actions[a13.id] and current_actions[a13.id].result or ''
+		local text_a13_action = formatPartyAction(a13_action)..formatPartyAction(a13_result)
 		party_actions_pt2_p3_text:text(text_a13_action)
 
 		local a14 = get_mob_by_target('a14')
 		local a14_action = Screen_Test and "Party 2: Player 4" or (a14 and current_actions[a14.id] and current_actions[a14.id].action or '')
-		local text_a14_action = formatPartyAction(a14_action)
+		local a14_result = party_2_results and not Screen_Test and a14 and current_actions[a14.id] and current_actions[a14.id].result or ''
+		local text_a14_action = formatPartyAction(a14_action)..formatPartyAction(a14_result)
 		party_actions_pt2_p4_text:text(text_a14_action)
 
 		local a15 = get_mob_by_target('a15')
 		local a15_action = Screen_Test and "Party 2: Player 5" or (a15 and current_actions[a15.id] and current_actions[a15.id].action or '')
-		local text_a15_action = formatPartyAction(a15_action)
+		local a15_result = party_2_results and not Screen_Test and a15 and current_actions[a15.id] and current_actions[a15.id].result or ''
+		local text_a15_action = formatPartyAction(a15_action)..formatPartyAction(a15_result)
 		party_actions_pt2_p5_text:text(text_a15_action)
 	end
 
@@ -4846,32 +5071,38 @@ function updatePartyActions()
 
 		local a20 = get_mob_by_target('a20')
 		local a20_action = Screen_Test and "Party 3: Player 0" or (a20 and current_actions[a20.id] and current_actions[a20.id].action or '')
-		local text_a20_action = formatPartyAction(a20_action)
+		local a20_result = party_3_results and not Screen_Test and a20 and current_actions[a20.id] and current_actions[a20.id].result or ''
+		local text_a20_action = formatPartyAction(a20_action)..formatPartyAction(a20_result)
 		party_actions_pt3_p0_text:text(text_a20_action)
 
 		local a21 = get_mob_by_target('a21')
 		local a21_action = Screen_Test and "Party 3: Player 1" or (a21 and current_actions[a21.id] and current_actions[a21.id].action or '')
-		local text_a21_action = formatPartyAction(a21_action)
+		local a21_result = party_3_results and not Screen_Test and a21 and current_actions[a21.id] and current_actions[a21.id].result or ''
+		local text_a21_action = formatPartyAction(a21_action)..formatPartyAction(a21_result)
 		party_actions_pt3_p1_text:text(text_a21_action)
 
 		local a22 = get_mob_by_target('a22')
 		local a22_action = Screen_Test and "Party 3: Player 2" or (a22 and current_actions[a22.id] and current_actions[a22.id].action or '')
-		local text_a22_action = formatPartyAction(a22_action)
+		local a22_result = party_3_results and not Screen_Test and a22 and current_actions[a22.id] and current_actions[a22.id].result or ''
+		local text_a22_action = formatPartyAction(a22_action)..formatPartyAction(a22_result)
 		party_actions_pt3_p2_text:text(text_a22_action)
 
 		local a23 = get_mob_by_target('a23')
 		local a23_action = Screen_Test and "Party 3: Player 3" or (a23 and current_actions[a23.id] and current_actions[a23.id].action or '')
-		local text_a23_action = formatPartyAction(a23_action)
+		local a23_result = party_3_results and not Screen_Test and a23 and current_actions[a23.id] and current_actions[a23.id].result or ''
+		local text_a23_action = formatPartyAction(a23_action)..formatPartyAction(a23_result)
 		party_actions_pt3_p3_text:text(text_a23_action)
 
 		local a24 = get_mob_by_target('a24')
 		local a24_action = Screen_Test and "Party 3: Player 4" or (a24 and current_actions[a24.id] and current_actions[a24.id].action or '')
-		local text_a24_action = formatPartyAction(a24_action)
+		local a24_result = party_3_results and not Screen_Test and a24 and current_actions[a24.id] and current_actions[a24.id].result or ''
+		local text_a24_action = formatPartyAction(a24_action)..formatPartyAction(a24_result)
 		party_actions_pt3_p4_text:text(text_a24_action)
 
 		local a25 = get_mob_by_target('a25')
 		local a25_action = Screen_Test and "Party 3: Player 5" or (a25 and current_actions[a25.id] and current_actions[a25.id].action or '')
-		local text_a25_action = formatPartyAction(a25_action)
+		local a25_result = party_3_results and not Screen_Test and a25 and current_actions[a25.id] and current_actions[a25.id].result or ''
+		local text_a25_action = formatPartyAction(a25_action)..formatPartyAction(a25_result)
 		party_actions_pt3_p5_text:text(text_a25_action)
 	end
 
@@ -5296,6 +5527,10 @@ function screenTest()
 
 	self_action_bar_bg:show()
 
+	if show_aggro_list then
+		aggro_list_box:show()
+	end
+
 end
 
 --Run Wide Scan
@@ -5476,6 +5711,7 @@ register_event('prerender', function()
 
 	updatePartyActions()
 	updateSelfAction()
+	updateAggroList()
 
 	if hide_player_stats_bars_when_no_target and not target then
 
@@ -5855,9 +6091,9 @@ end)
 register_event('action', function (act)
 	local msg = act.targets[1].actions[1].message
 	local aoe_main_target_messages = {
-		2,7,14,67,75,83,85,102,103,110,116,127,131,134,141,148,150,156,185,186,187,188,189,194,197, --removed 15
-		224,227,224,230,231,236,237,238,242,243,252,268,271,274,306,317,318,319,320,321,322,323,324,
-		341,342,362,373,375,379,408,412,413,420,424,426,435,441,570,645,648,650,653,658,668,762
+		2,7,14,67,75,83,85,102,103,110,116,127,131,134,141,148,150,156,185,186,187,188,189,194,197,
+		224,225,226,227,228,230,231,236,237,238,242,243,252,268,271,274,275,306,317,318,319,320,321,322,323,324,
+		341,342,362,373,375,379,408,412,413,435,441,570,645,658
 	}
 	local player = get_player()
 	local actor = get_mob_by_id(act.actor_id)
@@ -5867,13 +6103,9 @@ register_event('action', function (act)
 	monster_target_icon = settings.icons.monster_target
 	if target_count > 1 then
 		local main_target_found = false
-		local target_messages = '' --temp
 		for i = 1, target_count do
 			local message = act.targets[i].actions[1].message
-			if message ~= 255 and message ~= 1 then --temp
-				target_messages = target_messages..act.targets[i].actions[1].message..', ' --temp
-			end --temp
-			if checkForMessage(aoe_main_target_messages,act.targets[i].actions[1].message) then
+			if checkForMessage(aoe_main_target_messages,message) then
 				action_target_id = act.targets[i].id
 				main_target_found = true
 				break
@@ -5883,18 +6115,16 @@ register_event('action', function (act)
 		--In that case, the 1st target in the table may not be the actual target, as the list seems to be sorted by id
 		--So, we fall back to checking who the target is looking at (credit: enemybar2)
 		if not main_target_found then
-			if msg == 1 then
-				local function looking_at(a, b)
-					if not a or not b then return false end
-					local h = a.facing % math.pi
-					local h2 = (math.atan2(a.x-b.x,a.y-b.y) + math.pi/2) % math.pi
-					return math.abs(h-h2) < 0.15
-				end
-				for _,v in pairs(get_mob_array()) do
-					local distance = math.floor(v.distance:sqrt())
-					if v.valid_target and distance < 50 and not isMonster(v.id) and looking_at(actor,v) then
-						action_target_id = v.id
-					end
+			local function looking_at(a, b)
+				if not a or not b then return false end
+				local h = a.facing % math.pi
+				local h2 = (math.atan2(a.x-b.x,a.y-b.y) + math.pi/2) % math.pi
+				return math.abs(h-h2) < 0.05
+			end
+			for _,v in pairs(get_mob_array()) do
+				local distance = math.floor(v.distance:sqrt())
+				if v.valid_target and distance < 50 and not isMonster(v.id) and looking_at(actor,v) then
+					action_target_id = v.id
 				end
 			end
 			monster_target_icon = settings.icons.monster_target_aoe
@@ -5986,9 +6216,16 @@ register_event('action', function (act)
 	end
 
 	--Update monster targeting
-	if isMonster(act.actor_id) and not isMonster(action_target_id) then
+	if (isMonster(act.actor_id) and not isMonster(action_target_id)) then --monster targets a player
 		local timestamp = os.time() + monster_target_confidence_timer
 		updateTargeting(act.actor_id, action_target_id, timestamp, monster_target_icon)
+	elseif not isMonster(act.actor_id) and isMonster(action_target_id) then --player targets a monster...
+		local timestamp = os.time() + monster_target_confidence_timer
+		for i = 1, target_count do
+			if not current_aggro_list[act.targets[i].id] then --...that is not already targeting a player
+				updateTargeting(act.targets[i].id, act.actor_id, timestamp, monster_target_icon)
+			end
+		end
 	end
 
 	--Ignore regular melee and ranged attacks
@@ -6004,7 +6241,7 @@ register_event('action', function (act)
 	-- end
 
 	--Action failed/interrupted
-	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not (act.category == 1 and msg == 0) then
+	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not (act.category == 7 and msg == 0) then
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(255,050,050)'..cancelled_icon..'\\cr'
@@ -6017,7 +6254,7 @@ register_event('action', function (act)
 
 		actionInterrupted(act.actor_id,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
-		if player.id == act.actor_id and not msg == 246 then
+		if player.id == act.actor_id and msg ~= 246 then
 			self_action_bar_meter:bg_color(255,050,050)
 			completeSelfMeter()
 		end
@@ -6043,8 +6280,8 @@ register_event('action', function (act)
 			local r = formatRGB(c.r)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
-			action_target_name = (action_target_id and action_target_id ~= act.actor_id) and ' '..targeting_icon..' \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
-			action_target_name_shdw = (action_target_id and action_target_id ~= act.actor_id) and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
+			action_target_name = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
+			action_target_name_shdw = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
 
 			--Players
 			if isPlayer(actor.id) then
@@ -7326,8 +7563,8 @@ register_event('action', function (act)
 			if sp_abil then
 				addToSPTable(act.actor_id, abil_name)
 
-			--If Benediction is used, remove all debuffs from all targets it hits
-			elseif abil_name == "Benediction" or abil_name == "Depuration" then
+			--If specific moves are used, remove all debuffs from all targets it hits
+			elseif remove_all_debuffs:contains(abil_name) then
 				for i = 1, target_count do
 					current_debuffs[act.targets[i].id] = nil
 				end
@@ -7338,10 +7575,10 @@ register_event('action', function (act)
 	end
 end)
 
-function handleOverwrites(target_id, new_debuff)
+function handleOverwrites(target_id, new_spell_id)
 
-	--Over 9000 are the boosted versions
-	new_debuff = new_debuff > 9000 and new_debuff - 9000 or new_debuff
+	--Over 9000 are the boosted versions of Dia, Bio, Burn, etc.
+	new_spell_id = new_spell_id > 9000 and new_spell_id - 9000 or new_spell_id
 
 	--If the target has no current debuffs, return true so the new debuff gets saved
 	if not current_debuffs[target_id] then
@@ -7350,28 +7587,25 @@ function handleOverwrites(target_id, new_debuff)
 
 	--Loop through all debuffs the target currently has
 	for effect_id, spell in pairs(current_debuffs[target_id]) do
-		--Over 9000 are the boosted versions
-		local spell_id = spell and spell.id and spell.id > 9000 and spell.id - 9000 or (spell and spell.id)
-		local previous_debuff_overwrites = spell_id
-		and res.spells[spell_id]
-		and res.spells[spell_id].overwrites
-		or {}
-		
+		--Over 9000 are the boosted versions of Dia, Bio, Burn, etc.
+		local old_spell_id = spell and spell.id and spell.id > 9000 and spell.id - 9000 or (spell and spell.id)
+		local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
+
 		--Check if there is a higher priority debuff already active
-		if table.length(previous_debuff_overwrites) > 0 then
-			for _,v in ipairs(previous_debuff_overwrites) do
-				if new_debuff == v then
+		if table.length(old_debuff_overwrites) > 0 then
+			for _,v in ipairs(old_debuff_overwrites) do
+				if new_spell_id == v then
 					--If there is, return false so that the previous debuff is not overwritten
 					return false
 				end
 			end
 		end
-		
+
 		--Check if a lower priority debuff is being overwritten
-		local new_debuff_overwrites = res.spells[new_debuff].overwrites or {}
+		local new_debuff_overwrites = res.spells[new_spell_id] and res.spells[new_spell_id].overwrites or {}
 		if table.length(new_debuff_overwrites) > 0 then
 			for _,v in ipairs(new_debuff_overwrites) do
-				if spell_id == v then
+				if old_spell_id == v then
 					--If there is, clear the previous debuff
 					current_debuffs[target_id][effect_id] = nil
 				end
@@ -7396,7 +7630,7 @@ end
 function saveDebuff(actor_id, target_id, effect_id, spell_id)
 
 	--Make sure the effect numbers we're getting are within the correct range
-	if not ((effect_id >= 1 and effect_id <= 634) or effect_id == 9000) then return end
+	if not ((effect_id >= 1 and effect_id <= 634) or effect_id >= 9000) then return end
 
 	--Create target table if it doesn't already exist
 	if not current_debuffs[target_id] then
@@ -7405,6 +7639,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 
 	local actor_name = get_mob_by_id(actor_id).name
 	local duration = res.spells[spell_id] and res.spells[spell_id].duration or 0
+	local removal_timer = debuff_duration_cap
 	local trackingIndex = assignIndex()
 	local check_override = true
 
@@ -7440,41 +7675,24 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 62
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Shadowbind"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, 11, trackingIndex)
-		end, removal_timer)
-	--Addle overwrites Nocturne
-	elseif effect_id == 21 then
-		if current_debuffs[target_id][223] then
-			current_debuffs[target_id][223] = nil
-		end
+		removal_timer = bonus and duration or max_duration
 	--Bully
 	elseif effect_id == 22 and spell_id == 321 then
 		check_override = false
-		duration = 30
-		--lasts 30 seconds
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, 30)
+		duration = 30 --lasts only 30 seconds
+		removal_timer = duration
 	--Angon
 	elseif (effect_id == 149 or effect_id == 558) and spell_id == 170 then
 		local base_duration = 30
 		local max_duration = 90
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Angon"]or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, 149, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Chainbound
 	elseif effect_id == 164 then
 		check_override = false
-		duration = 9
-		--lasts a maximum of 9 seconds
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, 9)
+		duration = 9 --lasts a maximum of 9 seconds
+		removal_timer = duration
 	--Tomahawk
 	elseif effect_id == 232 then
 		check_override = false
@@ -7482,10 +7700,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 90
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Tomahawk"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Sepulcher
 	elseif effect_id == 463 then
 		check_override = false
@@ -7493,10 +7708,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 200
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Sepulcher"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Arcane Crest
 	elseif effect_id == 464 then
 		check_override = false
@@ -7504,10 +7716,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 200
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Arcane Crest"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Hamanoha
 	elseif effect_id == 465 then
 		check_override = false
@@ -7515,10 +7724,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 200
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Hamanoha"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Dragon Breaker
 	elseif effect_id == 466 then
 		check_override = false
@@ -7526,17 +7732,12 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 200
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Dragon Breaker"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Intervene/Odyllic Subterfuge
 	elseif effect_id == 496 or effect_id == 509 then
 		check_override = false
-		duration = 30
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, 30)
+		duration = 30 --lasts only 30 seconds
+		removal_timer = duration
 	--Gambit
 	elseif effect_id == 536 then
 		check_override = false
@@ -7544,10 +7745,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 96
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Gambit"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Rayke
 	elseif effect_id == 571 then
 		check_override = false
@@ -7555,22 +7753,38 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = 50
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Rayke"] or nil
 		duration = bonus and base_duration + bonus or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
+	--Cait Sith Amnesia (Eerie Eye)
+	elseif spell_id == 523 then
+		duration = 15
+		removal_timer = duration
+	--Leviathan Attack Down (Tidal Roar)
+	elseif spell_id == 585 then
+		duration = 90
+		removal_timer = duration
+	--Shiva Sleepga
+	elseif spell_id == 611 then
+		spell_id = 273
+		duration = 90
+		removal_timer = duration
+	--Shiva Evasion Down (Diamond Storm)
+	elseif spell_id == 617 then
+		duration = 180
+		removal_timer = duration
+	--Siren Elegy
+	elseif spell_id == 966 then
+		spell_id = 422
+		duration = 180
+		removal_timer = duration
 	--Enfeebling Magic
-	elseif res.spells[spell_id].skill == 35 then
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 35 then
 		local base_duration = duration
 		local max_duration = debuff_duration_cap
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Enfeebling Magic"] and durations_data[server][actor_name]["Enfeebling Magic"] / 100 or nil
 		duration = bonus and base_duration + (base_duration * bonus) or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Singing
-	elseif res.spells[spell_id].skill == 40 then
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 40 then
 		--Threnodies override eachother (at this point they've already landed so we can ignore tiers)
 		if effect_id == 217 and current_debuffs[target_id][217] then
 			current_debuffs[target_id][217] = nil
@@ -7585,32 +7799,37 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local max_duration = debuff_duration_cap
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Singing"] and durations_data[server][actor_name]["Singing"] / 100 or nil
 		duration = bonus and base_duration + (base_duration * bonus) or base_duration
-		local removal_timer = bonus and duration or max_duration
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = bonus and duration or max_duration
 	--Blue Magic spells get no duration bonuses, so we remove them right at the duration length
-	elseif res.spells[spell_id].skill == 43 then
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, duration)
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 43 then
+		removal_timer = duration
+	--Comet/Firaja/Blizzaja/Aeroja/Stoneja/Thundaja/Waterja (Cumulative Magic)
+	elseif T{9219,9496,9497,9498,9499,9500,9501}:contains(effect_id) then
+		local base_duration = 60
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Cumulative Spells"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		removal_timer = duration
 	--Impact
-	elseif effect_id == 9000 then
+	elseif effect_id == 9503 then
+		check_override = false
 		duration = 180
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, duration)
-	else
-		local removal_timer = debuff_duration_cap
-		coroutine.schedule(function()
-			removeDebuff(target_id, effect_id, trackingIndex)
-		end, removal_timer)
+		removal_timer = duration
 	end
 
 	--Check for spells that overwrite a current debuff
 	if check_override and not handleOverwrites(target_id, spell_id) then
 		--If there is a higher priority buff already active, do not save the new debuff
 		return
+	end
+
+	--Set timer to remove the specific debuff
+	coroutine.schedule(function()
+		removeDebuff(target_id, effect_id, trackingIndex)
+	end, removal_timer)
+
+	--Addle overwrites Nocturne
+	if effect_id == 21 and current_debuffs[target_id][223] then
+		current_debuffs[target_id][223] = nil
 	end
 
 	--Get target position if slept, bound, or petrified so we can later determine if it wears off
@@ -7641,42 +7860,24 @@ function handleAction(act)
 	--Ignore if target is not a monster, or if the actor is a monster
 	if not isMonster(main_target_id) or isMonster(actor_id) then return end
 
-	if act.category == 6 then
-
-		--Boost rules for Corsair shots
-		local shot_boosts = {
-			[131] = { --Light Shot -> Dia
-				effect_id = 134,
-				spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
-			},
-			[132] = { --Dark Shot -> Bio
-				effect_id = 135,
-				spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
-			},
-			[125] = {effect_id = 128, spell_map = {[235] = 9235}}, --Fire Shot -> Burn
-			[126] = {effect_id = 129, spell_map = {[236] = 9236}}, --Ice Shot -> Frost
-			[127] = {effect_id = 130, spell_map = {[237] = 9237}}, --Wind Shot -> Choke
-			[128] = {effect_id = 131, spell_map = {[238] = 9238}}, --Earth Shot -> Rasp
-			[129] = {effect_id = 132, spell_map = {[239] = 9239}}, --Thunder Shot -> Shock
-			[130] = {effect_id = 133, spell_map = {[240] = 9240}}, --Water Shot -> Drown
-		}
-
-		--Boost debuff based on shot type
-		local boost = shot_boosts[act.param]
-		if act.category == 6 and boost and current_debuffs[main_target_id] then
-			local debuff = current_debuffs[main_target_id][boost.effect_id]
-			if debuff then
-				local boosted_id = boost.spell_map[debuff.id]
-				if boosted_id then
-					debuff.id = boosted_id
-				end
-			end
-		end
-
-	end
-
 	local spell_id = act.param
 	local target_count = act.target_count
+	local shot_boosts = {
+		[131] = { --Light Shot -> Dia
+			effect_id = 134,
+			spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
+		},
+		[132] = { --Dark Shot -> Bio
+			effect_id = 135,
+			spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
+		},
+		[125] = {effect_id = 128, spell_map = {[235] = 9235}}, --Fire Shot		-> Burn
+		[126] = {effect_id = 129, spell_map = {[236] = 9236}}, --Ice Shot		-> Frost
+		[127] = {effect_id = 130, spell_map = {[237] = 9237}}, --Wind Shot		-> Choke
+		[128] = {effect_id = 131, spell_map = {[238] = 9238}}, --Earth Shot		-> Rasp
+		[129] = {effect_id = 132, spell_map = {[239] = 9239}}, --Thunder Shot	-> Shock
+		[130] = {effect_id = 133, spell_map = {[240] = 9240}}, --Water Shot		-> Drown
+	}
 	for i = 1, target_count do
 
 		local target_id = act.targets[i].id
@@ -7693,12 +7894,34 @@ function handleAction(act)
 			if damaging_spell_messages:contains(message_id) then
 				local effect_id = res.spells[spell_id] and res.spells[spell_id].status
 				--Diaga
-				if spell_id == 33 then
-					spell_id = 23 --Diaga (33) puts Dia (23) on each target
+				if spell_id == 23 or spell_id == 33 then
+					spell_id = 23 --Diaga (33) puts Dia (23/134) on each target
 					effect_id = 134
+				--Comet/Firaja/Blizzaja/Aeroja/Stoneja/Thundaja/Waterja (Cumulative Magic)
+				elseif T{219,496,497,498,499,500,501}:contains(spell_id) then
+					local ja_spell = spell_id + 9000
+					--If a Cumulative Magic boost of the same element already exists, bump it up a tier
+					if current_debuffs[target_id] and current_debuffs[target_id][ja_spell] then
+						local current = current_debuffs[target_id][ja_spell]
+						current.id = current.id + 1000 --Add 1000 to go up a tier
+					--Otherwise, add the new one
+					else
+						effect_id = ja_spell
+						spell_id = ja_spell
+						--Remove boosts of other elements before applying the new one
+						if current_debuffs[target_id] then
+							current_debuffs[target_id][9219] = nil
+							current_debuffs[target_id][9496] = nil
+							current_debuffs[target_id][9497] = nil
+							current_debuffs[target_id][9498] = nil
+							current_debuffs[target_id][9499] = nil
+							current_debuffs[target_id][9500] = nil
+							current_debuffs[target_id][9501] = nil
+						end
+					end
 				--Impact
 				elseif spell_id == 503 then
-					effect_id = 9000
+					effect_id = 9503
 				end
 				if effect_id then
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
@@ -7708,14 +7931,25 @@ function handleAction(act)
 			elseif debuff_spell_messages:contains(message_id) then
 				local effect_id = act.targets[i].actions[1].param
 				local spell_status = res.spells[spell_id] and res.spells[spell_id].status
+				--Poisonga
+				if spell_id == 220 or spell_id == 225 then
+					spell_id = 220 --Poisonga (225) puts Poison (220/3) on each target
+					spell_status = 3
+					effect_id = 3
+				--Poisonga II
+				elseif spell_id == 221 or spell_id == 226 then
+					spell_id = 221 --Poisonga II (226) puts Poison II (221/3) on each target
+					spell_status = 3
+					effect_id = 3
+				end
 				if spell_status and spell_status == effect_id then
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
 			end
 
 		--Most job abilities
-		elseif act.category == 3 or act.category == 6 or act.category == 15 then
-			local messages = S{100, 110, 127, 141, 203, 242, 243, 267, 270, 277, 278, 279, 320, 645, 672}
+		elseif act.category == 3 or act.category == 6 or act.category == 13 or act.category == 15 then
+			local messages = S{100, 110, 127, 141, 144, 203, 242, 243, 267, 270, 277, 278, 279, 320, 645, 672}
 			if messages:contains(message_id) then
 				local effect_id = act.targets[i].actions[1].param
 				--Odyllic Subterfuge
@@ -7732,6 +7966,23 @@ function handleAction(act)
 				end
 				if effect_id then
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
+				end
+			end
+			--Fenrir Impact
+			if act.category == 13 and spell_id == 539 then
+				effect_id = 9503
+				saveDebuff(actor_id, target_id, effect_id, spell_id)
+			end
+			--Boost debuff based on Corsair shot type
+			local boost = shot_boosts[act.param]
+			if act.category == 6 and boost and current_debuffs[main_target_id] then
+				local debuff = current_debuffs[main_target_id][boost.effect_id]
+				if debuff then
+					local boosted_id = boost.spell_map[debuff.id]
+					if boosted_id then
+						--Update the debuff id to the boosted version
+						debuff.id = boosted_id
+					end
 				end
 			end
 
@@ -7780,6 +8031,8 @@ function handleActionMessage(data)
 	local target_id = data.target_id
 	local message_id = data.message_id
 	local effect_id = data.param_1
+	local target_info = target_id and get_mob_by_id(target_id)
+	local target_index = target_info and target_info.index
 
 	--Action messages to look for
 	local death_messages = S{6, 20, 113, 406, 605, 646}
@@ -7787,9 +8040,14 @@ function handleActionMessage(data)
 
 	--Check if the target died and clear their table entries
 	if death_messages:contains(message_id) then
-		current_debuffs[target_id] = nil
-		current_actions[target_id] = nil
-		current_levels[get_mob_by_id(target_id).index] = nil
+		if target_id then
+			current_debuffs[target_id] = nil
+			current_actions[target_id] = nil
+			current_aggro_list[target_id] = nil
+		end
+		if target_index then
+			current_levels[target_index] = nil
+		end
 
 	--Check if the debuff expired and clear just that debuff
 	elseif expire_messages:contains(message_id) and current_debuffs[target_id] then
@@ -7818,7 +8076,7 @@ function handleActionMessage(data)
 			--Check if the effect is from Impact
 			local impact_effects = S{136, 137, 138, 139, 140, 141, 142}
 			if impact_effects:contains(effect_id) then
-				current_debuffs[target_id][9000] = nil
+				current_debuffs[target_id][9503] = nil
 			end
 
 			current_debuffs[target_id][effect_id] = nil
@@ -8279,6 +8537,14 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
 
+	--Toggle the Aggro List setting
+	elseif addcmd == 'aggro' or addcmd == 'agg' then
+
+		settings.sections.aggro_list.show = not settings.sections.aggro_list.show
+		show_aggro_list = settings.sections.aggro_list.show
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Aggro List:'):color(36)..(' %s':format(settings.sections.aggro_list.show and 'ON' or 'OFF')):color(200))
+
 	--Toggle the target distance setting
 	elseif addcmd == 'distance' or addcmd == 'dist' or addcmd == 'd' then
 
@@ -8399,6 +8665,7 @@ register_event('addon command',function(addcmd, ...)
 		local currMP = job_specific[job].mp
 		local currTP = job_specific[job].tp
 		local currPet = job_specific[job].pet
+		local currAggro = settings.sections.aggro_list.show
 		local currDistance = settings.options.show_target_distance
 		local currMarker = settings.options.show_hp_tp_markers
 		local currHex = settings.options.show_target_hex
@@ -8410,16 +8677,6 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
-		add_to_chat(8,(' hp/mp/tp/pet'):color(36)..(' - Toggle HP/MP/TP/Pet bar display setting for current job.'):color(8))
-		add_to_chat(8,('   ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(' Pet: '):color(8)..('%s':format(currPet and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' width/w '):color(36)..(' - Display bar widths and how to update them.'):color(8))
-		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
-		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
-		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
-		add_to_chat(8,(' distance/d '):color(36)..(' - Toggle the target Distance option. ['):color(8)..('%s':format(currDistance and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' marker/m '):color(36)..(' - Toggle the HP/TP Marker option. ['):color(8)..('%s':format(currMarker and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' hex/h '):color(36)..(' - Toggle the target Hex option (overrides Index). ['):color(8)..('%s':format(currHex and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index option (overrides Hex). ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' add/a '):color(36)..('[target]'):color(53)..(' - Add a target to the Auto Focus Target list.'):color(8))
 		add_to_chat(8,('   - Valid targets: Names, IDs or current cursor target.'):color(8))
 		add_to_chat(8,('   - Use quotes to surround names with spaces.'):color(8))
@@ -8428,7 +8685,22 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('   - Type again to remove the override.'):color(8))
 		add_to_chat(8,('   - Automatically removed when target moves out of range ('):color(8)..(tostring(currFTMDist)):color(200)..(').'):color(8))
 		add_to_chat(8,(' list/l'):color(36)..(' - Show the Auto Focus Target list.'):color(8))
+		add_to_chat(8,(' aggro/agg '):color(36)..(' - Toggle the Aggro List. ['):color(8)..('%s':format(currAggro and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' Target Bar Display Options '):color(220))
+		add_to_chat(8,(' distance/d '):color(36)..(' - Toggle the target Distance. ['):color(8)..('%s':format(currDistance and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' marker/m '):color(36)..(' - Toggle the HP/TP Marker. ['):color(8)..('%s':format(currMarker and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' hex/h '):color(36)..(' - Toggle the target Hex (overrides Index). ['):color(8)..('%s':format(currHex and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index (overrides Hex). ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
+		add_to_chat(8,' ')
+		add_to_chat(8,(' UI Adjustents '):color(220))
+		add_to_chat(8,(' hp/mp/tp/pet'):color(36)..(' - Toggle HP/MP/TP/Pet bar display for current job.'):color(8))
+		add_to_chat(8,('   ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(' Pet: '):color(8)..('%s':format(currPet and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' ui/lock/unlock'):color(36)..(' - Toggle Screen Test to drag sections of the UI around.'):color(8))
+		add_to_chat(8,(' width/w '):color(36)..(' - Display bar widths and how to update them.'):color(8))
+		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
+		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
+		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
 
 	else
 
@@ -8465,6 +8737,9 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 		local player_stats_x = player_stats_bars[player_stats_top_bar]:pos_x()
 		local player_stats_y = player_stats_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
 
+		local aggro_list_x = aggro_list_box:pos_x()
+		local aggro_list_y = aggro_list_box:pos_y()
+
 		if settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
 			settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
 			settings:save('all')
@@ -8489,6 +8764,10 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 			settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
 			settings:save('all')
 			setPositions()
+
+		elseif settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
+			settings.sections.aggro_list.pos = {x = aggro_list_x, y = aggro_list_y}
+			settings:save('all')
 
 		end
 	end
