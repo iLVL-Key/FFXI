@@ -33,13 +33,15 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - Displays a casting bar based on casting time for spells and items.
 - Party Actions.
   - A simplified display of the actions performed by each party/alliance member.
+- Aggro List
+  - A simplified list of all monsters aggressive to you/your party.
 - Focus Target.
   - A customizable list of targets to automatically track in a dedicated bar.
   - Update this list by name, id, or your current cursor target.
 - Focus Target Override.
   - Designate the current cursor target as a Focus Target taking priority over the Auto Focus Target list.
   - Focus will persist until subject moves out of range, dies, or is disabled manually.
-- Display Debuffs on Monsters.
+- Debuff Icons for Monsters.
   - Shows the tiers of the debuffs (Frazzle 3, Dia 4, Slow 2, etc.)
   - Will show a best guess timer for each.
   - Removes the icon only when the debuff is known to be removed/off (ie Benediction or "wears off" message), otherwise displays "??" if unsure.
@@ -78,21 +80,24 @@ All commands must be preceded with `//bars` (ex: `//bars focus`)
 
 | Command | Description |
 |---------|-------------|
-| `hp/mp/tp/pet` | Toggle HP/MP/TP/Pet bar display setting for current job. |
-| `width/w` | Display bar widths and how to update them. |
-| `size/s` | Display bar sizes and how to update them. |
-| `text/t` | Display text sizes and how to update them. |
-| `subtext/st` | Display sub text sizes and how to update them. |
-| `distance/d` | Toggle the target Distance option. |
-| `marker/m` | Toggle the HP/TP Marker option. |
-| `hex/h` | Toggle the target Hex option (overrides Index). |
-| `index/i` | Toggle the target Index option (overrides Hex). |
 | `add/a [target]` | Add a target to the Auto Focus Target list.<br> - Valid targets: Names, IDs,  or current highlighted target.<br> - Use quotes to surround names with spaces. |
 | `remove/r [target]` | Remove a target from the Auto Focus Target list.<br> - Valid targets: Names, IDs,  or current highlighted target.<br> - Use quotes to surround names with spaces. |
 | `focus/f` | Temporarily override the Auto Focus Target with the current cursor target.<br> - Type again to remove the override.<br> - Automatically removed when target moves out of range. |
 | `list/l` | Show the Auto Focus Target list. |
-| `ui/lock/unlock` | Toggle Screen Test to drag sections of the UI around. |
+| `aggro/agg` | Toggle the Aggro List. |
 | `help` | Display a list of commands and addon info. |
+| **Target Bar Display Options** |
+| `distance/d` | Toggle the target Distance option. |
+| `marker/m` | Toggle the HP/TP Marker option. |
+| `hex/h` | Toggle the target Hex option (overrides Index). |
+| `index/i` | Toggle the target Index option (overrides Hex). |
+| **UI Adjustments** |
+| `hp/mp/tp/pet` | Toggle HP/MP/TP/Pet bar display setting for current job. |
+| `ui/lock/unlock` | Toggle Screen Test to drag sections of the UI around. |
+| `width/w` | Display bar widths and how to update them. |
+| `size/s` | Display bar sizes and how to update them. |
+| `text/t` | Display text sizes and how to update them. |
+| `subtext/st` | Display sub text sizes and how to update them. |
 
 ## Settings
 Open the `/bars/data/settings.xml` file to adjust these settings.  
@@ -100,8 +105,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ### Icons
 | **Setting** | **Description** |
 |------------|----------------|
-| `casting` | Icon displayed while the target is casting. |
 | `cancelled` | Icon displayed if the target's casting is cancelled or interrupted. |
+| `casting` | Icon displayed while the target is casting. |
 | `completed` | Icon displayed when the target's casting is completed. |
 | `monster_target` | Icon indicating a direct action was performed by the monster on this target. This should be the monsters actual enmity target. |
 | `monster_target_aoe` | Icon indicating an AOE action was performed by the monster on this target. May not be the monsters actual enmity target. |
@@ -191,6 +196,19 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ### Sections
 | **Setting** | **Description** |
 |------------|----------------|
+| `aggro_list` | The On Screen Display box for the Aggro List. |
+| → `bg_alpha` | Opacity level for the background in this section (0-255). |
+| → `bold` |  Text within this section is bold. |
+| → `ignore_list` | Comma separated list of names of Monsters to not display. |
+| → `italic` | Text within this section is italic. |
+| → `max_monsters_listed` | Maximum number of monsters to display separately (0-15). |
+| → `min_monsters_to_show` | Minimum number of monsters before the Aggro List will display (0-15). |
+| → `pos` | X and Y position of the Aggro List. |
+| → `show` | Show the Aggro List. |
+| → `size` | Font size of the text within this section. |
+| → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
+| → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
+| → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
 | `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target` | These sections are for the 5 bars.<br>NOTE: Not all sections have all options. |
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
@@ -207,6 +225,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `italic` | Text within this section is italic. |
 | → `pos` | X and Y position of the bar. |
 | → `show` | Show the Self Action section. |
+| → `show_bar` | Show the progress bar in the Self Action section. |
 | → `show_monster_level` | Show the level of the currently targeted monster. |
 | → `show_monster_target` | Show the currently targeted monster's target. |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
@@ -241,6 +260,20 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.3
+- Added new Aggro List section and related settings. Displays a list of monsters currently aggressive to you and your party/alliance.
+- Added `aggro/agg` command. Toggles the Aggro List.
+- Added new debuff icons for tracking Cumulative Magic boosts.
+- Added `show_bar` option to the Self Action section.
+- Added `show_results` options to the Party Actions sections.
+- Adjusted the Monster Target to account for monsters that are first targeted by a player (ie pulled).
+- Adjusted the `help` command text to be more organized.
+- Added Stygian Sphere (Caturai) to list of moves that remove all debuffs.
+- Fixed Poisonga I/II not applying Poison I/II debuff icon to targets
+- Fixed (hopefully all of) the debuff icons Summoner Avatar debuff Blood Pacts. There are still some that do damage with an additional effect that are unable to be directly confirmed to have landed that are not accounted for.
+- Fixed Arcane Crest showing up as Hydrohelix in the debuff icons.
+- Fixed errors in Besieged/Mireu (high lag areas).
+
 Version 4.2
 - Added `show_monster_target` options for Focus Target, Sub Target, and Target sections. Displays the last known target of the monster.
 - Added `monster_target` icon. Used with the `show_monster_target` options.
