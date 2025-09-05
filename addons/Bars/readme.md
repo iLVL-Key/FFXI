@@ -276,8 +276,8 @@ Version 4.3
 - Adjusted the Monster Target to account for monsters that are first targeted by a player (ie pulled).
 - Adjusted the `help` command text to be more organized.
 - Added Stygian Sphere (Caturai) to list of moves that remove all debuffs.
-- Fixed Poisonga I/II not applying Poison I/II debuff icon to targets
-- Fixed (hopefully all of) the debuff icons Summoner Avatar debuff Blood Pacts. There are still some that do damage with an additional effect that are unable to be directly confirmed to have landed that are not accounted for.
+- Fixed Poisonga I/II not applying Poison I/II debuff icon to targets.
+- Fixed (hopefully all of) the debuff icons for Summoner Blood Pact debuffs. There are still some that do damage with an additional effect that are unable to be directly confirmed to have landed that are not accounted for.
 - Fixed Arcane Crest showing up as Hydrohelix in the debuff icons.
 - Fixed errors in Besieged/Mireu (high lag areas).
 
