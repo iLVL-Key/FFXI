@@ -17,9 +17,13 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ↑ Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
 <br><br><br>
 <img width="238" height="144" alt="Bars_debuffs" src="https://github.com/user-attachments/assets/52280a58-bc21-40cf-be3d-06907d707da5" />  
-↑ The Debuff Icons and Timers displayed above a target.<br><br><br>
+↑ The Debuff Icons and Timers displayed above a target.
+<br><br><br>
 ![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
 ↑ The Party Actions displayed next to each of your party members.
+<br><br><br>
+<img width="385" height="189" alt="Bars_aggro_list" src="https://github.com/user-attachments/assets/b7c0a31a-7a1e-486d-ab5d-a075537818f4" />  
+↑ The Aggro List with most monsters asleep, set to display a maximum of 6 monsters at a time.
 <br><br>
 ## Features
 - Target Actions.
