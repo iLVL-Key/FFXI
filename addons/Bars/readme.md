@@ -260,6 +260,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.3.1
+- Fixed Aggro List not accounting for pets of players in your party/alliance.
+
 Version 4.3
 - Added new Aggro List section and related settings. Displays a list of monsters currently aggressive to you and your party/alliance.
 - Added `aggro/agg` command. Toggles the Aggro List.
