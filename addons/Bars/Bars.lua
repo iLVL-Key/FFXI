@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.3'
+_addon.version = '4.3.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2987,6 +2987,7 @@ end
 --Is this player in our party or alliance?
 function isInPartyOrAlliance(id)
 
+	local actor = get_mob_by_id(id)
 	local positions = {
 		'p0', 'p1', 'p2', 'p3', 'p4', 'p5',
 		'a10', 'a11', 'a12', 'a13', 'a14', 'a15',
@@ -2995,7 +2996,7 @@ function isInPartyOrAlliance(id)
 
 	for _, position in ipairs(positions) do
 		local member = get_mob_by_target(position)
-		if member and member.id and member.id == id then
+		if member and member.id and (member.id == id or member.pet_index == actor.index) then
 			--In our party or alliance
 			return true
 		end
