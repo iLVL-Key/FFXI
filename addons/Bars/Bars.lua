@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.3.1'
+_addon.version = '4.3.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -8713,7 +8713,7 @@ end)
 --Handle mouse events
 register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 
-	if mouse_type == 2 and Screen_Test then --leftmouseup
+	if mouse_type == 2 then --leftmouseup
 
 		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
