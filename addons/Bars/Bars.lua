@@ -6242,7 +6242,7 @@ register_event('action', function (act)
 	-- end
 
 	--Action failed/interrupted
-	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not (act.category == 7 and msg == 0) then
+	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not ((act.category == 7 or act.category == 9) and msg == 0) then
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(255,050,050)'..cancelled_icon..'\\cr'
