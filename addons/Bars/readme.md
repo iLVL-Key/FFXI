@@ -264,6 +264,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.3.3
+- Fix errors on mouse clicks when not logged into character.
+
 Version 4.3.2
 - Fixed the Aggro List not saving position after it's moved.
 - Fixed the Self Action bar appearing incorrectly when eating food when you're already full... again.
