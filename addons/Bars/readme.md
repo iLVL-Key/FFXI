@@ -265,7 +265,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 Version 4.3.3
-- Fix errors on mouse clicks when not logged into character.
+- Fixed errors on mouse clicks when not logged into character.
+- Fixed Aggro List size setting not working correctly.
 
 Version 4.3.2
 - Fixed the Aggro List not saving position after it's moved.
