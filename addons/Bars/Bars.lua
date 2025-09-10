@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.3.2'
+_addon.version = '4.3.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -8712,6 +8712,10 @@ end)
 
 --Handle mouse events
 register_event('mouse',function(mouse_type, mouse_x, mouse_y)
+
+	local logged_in = get_info().logged_in
+
+	if not logged_in then return end
 
 	if mouse_type == 2 then --leftmouseup
 
