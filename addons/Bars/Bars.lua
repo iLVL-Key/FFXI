@@ -1217,7 +1217,7 @@ aggro_list_box:pos(settings.sections.aggro_list.pos.x,settings.sections.aggro_li
 aggro_list_box:bold(true)
 aggro_list_box:show(true)
 aggro_list_box:font(font)
-aggro_list_box:size(9)
+aggro_list_box:size(settings.sections.aggro_list.size)
 aggro_list_box:bg_alpha(aggro_list_bg_alpha)
 aggro_list_box:pad(2)
 
