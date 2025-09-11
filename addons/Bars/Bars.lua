@@ -2996,7 +2996,7 @@ function isInPartyOrAlliance(id)
 
 	for _, position in ipairs(positions) do
 		local member = get_mob_by_target(position)
-		if member and member.id and (member.id == id or member.pet_index == actor.index) then
+		if member and member.id == id or (actor and member.pet_index == actor.index) then
 			--In our party or alliance
 			return true
 		end
