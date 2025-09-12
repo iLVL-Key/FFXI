@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.3.3'
+_addon.version = '4.3.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1373,7 +1373,7 @@ target_bar_lock_underline:size(focus_target_bar_size)
 
 --Create the Focus Target BAR BACKGROUND text object
 focus_target_bar_bg = texts.new()
-focus_target_bar_bg:font(font)
+focus_target_bar_bg:font('Consolas')
 focus_target_bar_bg:pad(-4)
 focus_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 focus_target_bar_bg:bg_alpha(bg_alpha)
@@ -1382,7 +1382,7 @@ focus_target_bar_bg:size(focus_target_bar_size)
 
 --Create the Sub Target BAR BACKGROUND text object
 sub_target_bar_bg = texts.new()
-sub_target_bar_bg:font(font)
+sub_target_bar_bg:font('Consolas')
 sub_target_bar_bg:pad(-4)
 sub_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 sub_target_bar_bg:bg_alpha(bg_alpha)
@@ -1391,7 +1391,7 @@ sub_target_bar_bg:size(sub_target_bar_size)
 
 --Create the Target BAR BACKGROUND text object
 target_bar_bg = texts.new()
-target_bar_bg:font(font)
+target_bar_bg:font('Consolas')
 target_bar_bg:pad(-4)
 target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 target_bar_bg:bg_alpha(bg_alpha)
@@ -1400,7 +1400,7 @@ target_bar_bg:size(target_bar_size)
 
 --Create the Self Action BAR BACKGROUND text object
 self_action_bar_bg = texts.new()
-self_action_bar_bg:font(font)
+self_action_bar_bg:font('Consolas')
 self_action_bar_bg:pad(-4)
 self_action_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 self_action_bar_bg:bg_alpha(bg_alpha)
@@ -1409,7 +1409,7 @@ self_action_bar_bg:size(self_action_bar_size)
 
 --Create the Player Stats HP BAR BACKGROUND text object
 player_stats_hp_bar_bg = texts.new()
-player_stats_hp_bar_bg:font(font)
+player_stats_hp_bar_bg:font('Consolas')
 player_stats_hp_bar_bg:pad(-4)
 player_stats_hp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 player_stats_hp_bar_bg:bg_alpha(bg_alpha)
@@ -1418,7 +1418,7 @@ player_stats_hp_bar_bg:size(player_stats_bar_size)
 
 --Create the Player Stats MP BAR BACKGROUND text object
 player_stats_mp_bar_bg = texts.new()
-player_stats_mp_bar_bg:font(font)
+player_stats_mp_bar_bg:font('Consolas')
 player_stats_mp_bar_bg:pad(-4)
 player_stats_mp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 player_stats_mp_bar_bg:bg_alpha(bg_alpha)
@@ -1427,7 +1427,7 @@ player_stats_mp_bar_bg:size(player_stats_bar_size)
 
 --Create the Player Stats TP BAR BACKGROUND text object
 player_stats_tp_bar_bg = texts.new()
-player_stats_tp_bar_bg:font(font)
+player_stats_tp_bar_bg:font('Consolas')
 player_stats_tp_bar_bg:pad(-4)
 player_stats_tp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 player_stats_tp_bar_bg:bg_alpha(bg_alpha)
@@ -1436,7 +1436,7 @@ player_stats_tp_bar_bg:size(player_stats_bar_size)
 
 --Create the Player Stats Pet BAR BACKGROUND text object
 player_stats_pet_bar_bg = texts.new()
-player_stats_pet_bar_bg:font(font)
+player_stats_pet_bar_bg:font('Consolas')
 player_stats_pet_bar_bg:pad(-4)
 player_stats_pet_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
 player_stats_pet_bar_bg:bg_alpha(bg_alpha)
@@ -1447,7 +1447,7 @@ player_stats_pet_bar_bg:size(player_stats_bar_size)
 
 --Create the Player Stats HP BAR PULSE text object
 player_stats_hp_bar_pulse = texts.new()
-player_stats_hp_bar_pulse:font(font)
+player_stats_hp_bar_pulse:font('Consolas')
 player_stats_hp_bar_pulse:pad(-4)
 player_stats_hp_bar_pulse:bg_alpha(0)
 player_stats_hp_bar_pulse:draggable(false)
@@ -1455,7 +1455,7 @@ player_stats_hp_bar_pulse:size(player_stats_bar_size)
 
 --Create the Player Stats MP BAR PULSE text object
 player_stats_mp_bar_pulse = texts.new()
-player_stats_mp_bar_pulse:font(font)
+player_stats_mp_bar_pulse:font('Consolas')
 player_stats_mp_bar_pulse:pad(-4)
 player_stats_mp_bar_pulse:bg_alpha(0)
 player_stats_mp_bar_pulse:draggable(false)
@@ -1463,7 +1463,7 @@ player_stats_mp_bar_pulse:size(player_stats_bar_size)
 
 --Create the Player Stats TP BAR PULSE text object
 player_stats_tp_bar_pulse = texts.new()
-player_stats_tp_bar_pulse:font(font)
+player_stats_tp_bar_pulse:font('Consolas')
 player_stats_tp_bar_pulse:pad(-4)
 player_stats_tp_bar_pulse:bg_alpha(0)
 player_stats_tp_bar_pulse:draggable(false)
@@ -1471,7 +1471,7 @@ player_stats_tp_bar_pulse:size(pulse_tp_meter_only and player_stats_bar_size / 1
 
 --Create the Player Stats PET BAR PULSE text object
 player_stats_pet_bar_pulse = texts.new()
-player_stats_pet_bar_pulse:font(font)
+player_stats_pet_bar_pulse:font('Consolas')
 player_stats_pet_bar_pulse:pad(-4)
 player_stats_pet_bar_pulse:bg_alpha(0)
 player_stats_pet_bar_pulse:draggable(false)
@@ -1479,7 +1479,7 @@ player_stats_pet_bar_pulse:size(player_stats_bar_size)
 
 --Create the Focus Target BAR PULSE text object
 focus_target_bar_pulse = texts.new()
-focus_target_bar_pulse:font(font)
+focus_target_bar_pulse:font('Consolas')
 focus_target_bar_pulse:pad(-4)
 focus_target_bar_pulse:bg_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
 focus_target_bar_pulse:bg_alpha(0)
@@ -1488,7 +1488,7 @@ focus_target_bar_pulse:size(focus_target_bar_size)
 
 --Create the Sub Target BAR PULSE text object
 sub_target_bar_pulse = texts.new()
-sub_target_bar_pulse:font(font)
+sub_target_bar_pulse:font('Consolas')
 sub_target_bar_pulse:pad(-4)
 sub_target_bar_pulse:bg_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
 sub_target_bar_pulse:bg_alpha(0)
@@ -1497,7 +1497,7 @@ sub_target_bar_pulse:size(sub_target_bar_size)
 
 --Create the Target BAR PULSE text object
 target_bar_pulse = texts.new()
-target_bar_pulse:font(font)
+target_bar_pulse:font('Consolas')
 target_bar_pulse:pad(-4)
 target_bar_pulse:bg_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
 target_bar_pulse:bg_alpha(0)
@@ -1508,7 +1508,7 @@ target_bar_pulse:size(target_bar_size)
 
 --Create the Focus Target BAR DRAIN METER text object
 focus_target_bar_drain_meter = texts.new()
-focus_target_bar_drain_meter:font(font)
+focus_target_bar_drain_meter:font('Consolas')
 focus_target_bar_drain_meter:pad(-5)
 focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
 focus_target_bar_drain_meter:draggable(false)
@@ -1516,7 +1516,7 @@ focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 
 --Create the Sub Target BAR DRAIN METER text object
 sub_target_bar_drain_meter = texts.new()
-sub_target_bar_drain_meter:font(font)
+sub_target_bar_drain_meter:font('Consolas')
 sub_target_bar_drain_meter:pad(-5)
 sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
 sub_target_bar_drain_meter:draggable(false)
@@ -1524,7 +1524,7 @@ sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 
 --Create the Target BAR DRAIN METER text object
 target_bar_drain_meter = texts.new()
-target_bar_drain_meter:font(font)
+target_bar_drain_meter:font('Consolas')
 target_bar_drain_meter:pad(-5)
 target_bar_drain_meter:bg_alpha(drain_bg_alpha)
 target_bar_drain_meter:draggable(false)
@@ -1532,7 +1532,7 @@ target_bar_drain_meter:size(target_bar_size / 10)
 
 --Create the HP BAR DRAIN METER text object
 player_stats_hp_bar_drain_meter = texts.new()
-player_stats_hp_bar_drain_meter:font(font)
+player_stats_hp_bar_drain_meter:font('Consolas')
 player_stats_hp_bar_drain_meter:pad(-5)
 player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 player_stats_hp_bar_drain_meter:draggable(false)
@@ -1540,7 +1540,7 @@ player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 
 --Create the MP BAR DRAIN METER text object
 player_stats_mp_bar_drain_meter = texts.new()
-player_stats_mp_bar_drain_meter:font(font)
+player_stats_mp_bar_drain_meter:font('Consolas')
 player_stats_mp_bar_drain_meter:pad(-5)
 player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 player_stats_mp_bar_drain_meter:draggable(false)
@@ -1548,7 +1548,7 @@ player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 
 --Create the TP BAR DRAIN METER text object
 player_stats_tp_bar_drain_meter = texts.new()
-player_stats_tp_bar_drain_meter:font(font)
+player_stats_tp_bar_drain_meter:font('Consolas')
 player_stats_tp_bar_drain_meter:pad(-5)
 player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
 player_stats_tp_bar_drain_meter:draggable(false)
@@ -1556,7 +1556,7 @@ player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 
 --Create the Pet BAR DRAIN METER text object
 player_stats_pet_bar_drain_meter = texts.new()
-player_stats_pet_bar_drain_meter:font(font)
+player_stats_pet_bar_drain_meter:font('Consolas')
 player_stats_pet_bar_drain_meter:pad(-5)
 player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
 player_stats_pet_bar_drain_meter:draggable(false)
@@ -1566,7 +1566,7 @@ player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 
 --Create the Focus Target BAR METER text object
 focus_target_bar_meter = texts.new()
-focus_target_bar_meter:font(font)
+focus_target_bar_meter:font('Consolas')
 focus_target_bar_meter:pad(-5)
 focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 focus_target_bar_meter:draggable(false)
@@ -1574,7 +1574,7 @@ focus_target_bar_meter:size(focus_target_bar_size / 10)
 
 --Create the Sub Target BAR METER text object
 sub_target_bar_meter = texts.new()
-sub_target_bar_meter:font(font)
+sub_target_bar_meter:font('Consolas')
 sub_target_bar_meter:pad(-5)
 sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 sub_target_bar_meter:draggable(false)
@@ -1582,7 +1582,7 @@ sub_target_bar_meter:size(sub_target_bar_size / 10)
 
 --Create the Target BAR METER text object
 target_bar_meter = texts.new()
-target_bar_meter:font(font)
+target_bar_meter:font('Consolas')
 target_bar_meter:pad(-5)
 target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
 target_bar_meter:draggable(false)
@@ -1590,7 +1590,7 @@ target_bar_meter:size(target_bar_size / 10)
 
 --Create the Self Action BAR METER text object
 self_action_bar_meter = texts.new()
-self_action_bar_meter:font(font)
+self_action_bar_meter:font('Consolas')
 self_action_bar_meter:pad(-5)
 self_action_bar_meter:bg_alpha(bg_alpha)
 self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
@@ -1599,7 +1599,7 @@ self_action_bar_meter:size(self_action_bar_size / 10)
 
 --Create the HP BAR METER text object
 player_stats_hp_bar_meter = texts.new()
-player_stats_hp_bar_meter:font(font)
+player_stats_hp_bar_meter:font('Consolas')
 player_stats_hp_bar_meter:pad(-5)
 player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
 player_stats_hp_bar_meter:draggable(false)
@@ -1607,7 +1607,7 @@ player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 
 --Create the MP BAR METER text object
 player_stats_mp_bar_meter = texts.new()
-player_stats_mp_bar_meter:font(font)
+player_stats_mp_bar_meter:font('Consolas')
 player_stats_mp_bar_meter:pad(-5)
 player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
 player_stats_mp_bar_meter:draggable(false)
@@ -1615,7 +1615,7 @@ player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 
 --Create the TP BAR METER text object
 player_stats_tp_bar_meter = texts.new()
-player_stats_tp_bar_meter:font(font)
+player_stats_tp_bar_meter:font('Consolas')
 player_stats_tp_bar_meter:pad(-5)
 player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
 player_stats_tp_bar_meter:draggable(false)
@@ -1623,7 +1623,7 @@ player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 
 --Create the Pet BAR METER text object
 player_stats_pet_bar_meter = texts.new()
-player_stats_pet_bar_meter:font(font)
+player_stats_pet_bar_meter:font('Consolas')
 player_stats_pet_bar_meter:pad(-5)
 player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
 player_stats_pet_bar_meter:draggable(false)
@@ -1633,7 +1633,7 @@ player_stats_pet_bar_meter:size(player_stats_bar_size / 10)
 
 --Create the HP MARKER text object
 player_stats_hp_marker = texts.new()
-player_stats_hp_marker:font(font)
+player_stats_hp_marker:font('Consolas')
 player_stats_hp_marker:pad(-5)
 player_stats_hp_marker:alpha(255)
 player_stats_hp_marker:bg_alpha(0)
@@ -1643,7 +1643,7 @@ player_stats_hp_marker:size(player_stats_bar_size / 5) --Only shrinking by 5x so
 
 --Create the TP MARKER text object
 player_stats_tp_marker = texts.new()
-player_stats_tp_marker:font(font)
+player_stats_tp_marker:font('Consolas')
 player_stats_tp_marker:pad(-5)
 player_stats_tp_marker:alpha(255)
 player_stats_tp_marker:bg_alpha(0)
@@ -2996,7 +2996,7 @@ function isInPartyOrAlliance(id)
 
 	for _, position in ipairs(positions) do
 		local member = get_mob_by_target(position)
-		if member and member.id == id or (actor and member.pet_index == actor.index) then
+		if member and member.id == id or (member and actor and member.pet_index == actor.index) then
 			--In our party or alliance
 			return true
 		end
@@ -8702,6 +8702,14 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
 		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
 		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
+
+	elseif addcmd == "test" then
+		local player = get_player()
+		packets.inject(packets.new('incoming', 0x058, {
+			['Player'] = player.id,
+			['Target'] = 17809416,
+			['Player Index'] = player.index,
+		}))
 
 	else
 
