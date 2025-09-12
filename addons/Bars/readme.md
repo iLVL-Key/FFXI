@@ -264,6 +264,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.3.4
+- Fixed bars displaying incorrectly when changing the font of the text.
+
 Version 4.3.3
 - Fixed errors on mouse clicks when not logged into character.
 - Fixed Aggro List size setting not working correctly.
