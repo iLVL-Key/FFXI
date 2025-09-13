@@ -4496,12 +4496,14 @@ function updateSelfAction(player)
 	self_action_text_shadow:text(Fade and text_self_action_shdw:text_strip_format() or text_self_action_shdw)
 
 	--Show Self Action text objects
-	if show_self_action_bar then
+	if show_self_action_bar and not self_action_bar_bg:visible() then
 		self_action_bar_bg:show()
 	end
-	self_action_text:show()
-	self_action_text_shadow:show()
-	if settings.sections.self_action.ui_bg then
+	if not self_action_text:visible() then
+		self_action_text:show()
+		self_action_text_shadow:show()
+	end
+	if settings.sections.self_action.ui_bg and not ui_bg_left.self_action:visible() then
 		ui_bg_left.self_action:show()
 		ui_bg_middle.self_action:show()
 		ui_bg_right.self_action:show()
@@ -4561,9 +4563,9 @@ function updateSelfBar(cast_time, index)
 		self_action_bar_meter:text('\n\n\n\n\n\n\n'..self_meter)
 
 		--Fix the pad issue when under 13
-		if spaces >= 13 and current_actions[player.id] then
+		if spaces >= 13 and current_actions[player.id] and not self_action_bar_meter:visible() then
 			self_action_bar_meter:show()
-		elseif spaces < 13 or not current_actions[player.id] then
+		elseif spaces < 13 or not current_actions[player.id] and self_action_bar_meter:visible() then
 			self_action_bar_meter:hide()
 		end
 
@@ -4864,14 +4866,14 @@ function updatePetBar(pet)
 	local ct = color.hp
 
 	--Hide the Pet bar if the option is turned on and there is no pet
-	if hide_pet_bar_when_no_pet and not pet then
+	if hide_pet_bar_when_no_pet and not pet and player_stats_pet_bar_bg:visible() then
 		player_stats_pet_bar_bg:hide()
 		player_stats_pet_bar_pulse:hide()
 		player_stats_pet_bar_drain_meter:hide()
 		player_stats_pet_bar_meter:hide()
 		player_stats_pet_text_shadow:hide()
 		player_stats_pet_text:hide()
-	else
+	elseif player_stats_pet_bar_bg:visible() then
 		player_stats_pet_bar_bg:show()
 		player_stats_pet_bar_pulse:show()
 		player_stats_pet_bar_drain_meter:show()
