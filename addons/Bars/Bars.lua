@@ -5792,33 +5792,39 @@ register_event('prerender', function()
 			end
 
 		elseif not (in_cutscene or zoning) then
-			if job and job_specific[job].hp and not player_stats_hp_bar_bg:visible() then
-				player_stats_hp_text:show()
-				player_stats_hp_text_shadow:show()
-				player_stats_hp_bar_bg:show()
-				player_stats_hp_bar_pulse:show()
-				player_stats_hp_bar_drain_meter:show()
-				player_stats_hp_bar_meter:show()
-				player_stats_hp_marker:show()
+			if job and job_specific[job].hp then
+				if not player_stats_hp_bar_bg:visible() then
+					player_stats_hp_text:show()
+					player_stats_hp_text_shadow:show()
+					player_stats_hp_bar_bg:show()
+					player_stats_hp_bar_pulse:show()
+					player_stats_hp_bar_drain_meter:show()
+					player_stats_hp_bar_meter:show()
+					player_stats_hp_marker:show()
+				end
 				updateHPBar(player)
 			end
-			if job and job_specific[job].mp and not player_stats_mp_bar_bg:visible() then
-				player_stats_mp_text:show()
-				player_stats_mp_text_shadow:show()
-				player_stats_mp_bar_bg:show()
-				player_stats_mp_bar_pulse:show()
-				player_stats_mp_bar_drain_meter:show()
-				player_stats_mp_bar_meter:show()
+			if job and job_specific[job].mp then
+				if not player_stats_mp_bar_bg:visible() then
+					player_stats_mp_text:show()
+					player_stats_mp_text_shadow:show()
+					player_stats_mp_bar_bg:show()
+					player_stats_mp_bar_pulse:show()
+					player_stats_mp_bar_drain_meter:show()
+					player_stats_mp_bar_meter:show()
+				end
 				updateMPBar(player)
 			end
-			if job and job_specific[job].tp and not player_stats_tp_bar_bg:visible() then
-				player_stats_tp_text:show()
-				player_stats_tp_text_shadow:show()
-				player_stats_tp_bar_bg:show()
-				player_stats_tp_bar_pulse:show()
-				player_stats_tp_bar_drain_meter:show()
-				player_stats_tp_bar_meter:show()
-				player_stats_tp_marker:show()
+			if job and job_specific[job].tp then
+				if not player_stats_tp_bar_bg:visible() then
+					player_stats_tp_text:show()
+					player_stats_tp_text_shadow:show()
+					player_stats_tp_bar_bg:show()
+					player_stats_tp_bar_pulse:show()
+					player_stats_tp_bar_drain_meter:show()
+					player_stats_tp_bar_meter:show()
+					player_stats_tp_marker:show()
+				end
 				updateTPBar(player)
 			end
 			if job and job_specific[job].pet then
