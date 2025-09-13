@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.3.4'
+_addon.version = '4.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -48,7 +48,6 @@ get_mob_by_name = windower.ffxi.get_mob_by_name
 get_mob_by_target = windower.ffxi.get_mob_by_target
 get_party_info = windower.ffxi.get_party_info
 get_player = windower.ffxi.get_player
-get_position = windower.ffxi.get_position
 get_windower_settings = windower.get_windower_settings
 register_event = windower.register_event
 windower_path = windower.windower_path
@@ -252,6 +251,14 @@ defaults = {
 		show_target_hex = false,
 		show_target_index = false,
 		show_target_lock = true,
+		update_intervals = {
+			aggro_list = 0.2,
+			focus_target = 0.05,
+			party_actions = 0.05,
+			player_stats = 0.05,
+			sub_target = 0.05,
+			target = 0.05,
+		},
 	},
 	sections = {
 		aggro_list = {
@@ -917,6 +924,13 @@ targeting_icon = settings.icons.targeting
 num_hit_icon = settings.icons.number_of_targets_hit
 truncate_icon = settings.icons.truncate
 
+aggro_list_update_interval = settings.options.update_intervals.aggro_list
+focus_target_update_interval = settings.options.update_intervals.focus_target
+party_actions_update_interval = settings.options.update_intervals.party_actions
+player_stats_update_interval = settings.options.update_intervals.player_stats
+sub_target_update_interval = settings.options.update_intervals.sub_target
+target_update_interval = settings.options.update_intervals.target
+
 color = settings.colors
 font = settings.text.font
 text_color = {r = settings.text.red, g = settings.text.green, b = settings.text.blue}
@@ -1054,6 +1068,7 @@ remove_all_debuffs = S{
 }
 in_cutscene = false
 zoning = false
+logged_in = false
 job = ''
 pet_tp = 0
 current_actions = {}
@@ -1061,6 +1076,12 @@ current_sp_actions = {}
 current_debuffs = {}
 current_levels = {}
 current_aggro_list = {}
+last_aggro_list_update = 0
+last_focus_target_update = 0
+last_party_actions_update = 0
+last_player_stats_update = 0
+last_sub_target_update = 0
+last_target_update = 0
 next_wide_scan_time = os.time() + math.random(30, 45)
 ft_targeting_id = nil
 st_targeting_id = nil
@@ -3940,12 +3961,10 @@ function updateFocusTarget()
 end
 
 --Update the Sub Target bar
-function updateSubTarget()
+function updateSubTarget(player, st)
 
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
-	local player = get_player()
-	local st = Screen_Test and screen_test_sub_target or get_mob_by_target('st')
 	local target = get_mob_by_target('t')
 	local st_settings = settings.sections.sub_target
 	local max_icons = st_settings.debuff_icons and math.max(0, math.min(st_settings.debuff_max_icons, 32)) or 0
@@ -4184,12 +4203,10 @@ function updateSubTarget()
 end
 
 --Update the Target bar
-function updateTarget()
+function updateTarget(player, t)
 
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
-	local player = get_player()
-	local t = Screen_Test and screen_test_target or (condense_target_and_subtarget_bars and get_mob_by_target('st', 't') or get_mob_by_target('t'))
 	local t_settings = settings.sections.target
 	local max_icons = t_settings.debuff_icons and math.max(0, math.min(t_settings.debuff_max_icons, 32)) or 0
 	local icon_set = debuff_icons.target
@@ -4446,9 +4463,8 @@ function updateTarget()
 end
 
 --Update the Self Action text
-function updateSelfAction()
+function updateSelfAction(player)
 
-	local player = get_player()
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
 
 	--Hide the Self Action bar disabled, we are in a cutscene, or no actions
@@ -4564,9 +4580,8 @@ function updateSelfBar(cast_time, index)
 end
 
 --Update the HP bar
-function updateHPBar()
+function updateHPBar(player)
 
-	local player = get_player()
 	local hp = player and player.vitals.hp or 0
 	local max_hp = player and player.vitals.max_hp or 0
 	local hpp = player and player.vitals.hpp or 0
@@ -4655,9 +4670,8 @@ function updateHPBar()
 end
 
 --Update the MP bar
-function updateMPBar()
+function updateMPBar(player)
 
-	local player = get_player()
 	local mp = player and player.vitals.mp or 0
 	local max_mp = player and player.vitals.max_mp or 0
 	local mpp = player and player.vitals.mpp or 0
@@ -4747,9 +4761,8 @@ function updateMPBar()
 end
 
 --Update the TP bar
-function updateTPBar()
+function updateTPBar(player)
 
-	local player = get_player()
 	local tp = player and player.vitals.tp or 0
 	local tp_diff = drain_ps_tp - tp
 	local current_decay = math.min(tp_diff * 0.1, drain_decay * 120)
@@ -4835,9 +4848,8 @@ function updateTPBar()
 end
 
 --Update the Pet bar
-function updatePetBar()
+function updatePetBar(pet)
 
-	local pet = get_mob_by_target('pet')
 	local hpp = pet and pet.hpp or 0
 	local pet_diff = drain_ps_pet - hpp
 	local current_decay = math.min(pet_diff * 0.1, drain_decay * 120)
@@ -5481,11 +5493,14 @@ function screenTest()
 	--If already active, cancel test
 	if Screen_Test then
 
+		local player = get_player()
+		local target = get_mob_by_target('t')
+		local sub_target = get_mob_by_target('st')
 		Screen_Test = false
 		focus_target_override = nil
 		updateFocusTarget()
-		updateSubTarget()
-		updateTarget()
+		updateSubTarget(player, sub_target)
+		updateTarget(player, target)
 		removeFromActionsTable(get_player().id, screen_test_tracking_index)
 		resetFadeDelay()
 
@@ -5583,9 +5598,13 @@ end)
 --Target Changing
 register_event('target change', function()
 
-	updateTarget()
+	local player = get_player()
+	local target = get_mob_by_target('t')
+	local sub_target = get_mob_by_target('st')
+
+	updateTarget(player, target)
 	if not condense_target_and_subtarget_bars then
-		updateSubTarget()
+		updateSubTarget(player, sub_target)
 	end
 	resetFadeDelay()
 
@@ -5634,23 +5653,28 @@ end
 --Run necessarry functions at start
 function initialize()
 
+	local player = get_player()
+	local target = get_mob_by_target('t')
+	local sub_target = get_mob_by_target('st')
+
 	greeting()
 	setJob()
 	setPositions()
 	setWidth()
 	showBars()
-	updateTarget()
-	updateSubTarget()
-	updateHPBar()
-	updateMPBar()
-	updateTPBar()
+	updateTarget(player, target)
+	updateSubTarget(player, sub_target)
+	updateHPBar(player)
+	updateMPBar(player)
+	updateTPBar(player)
 	runWideScan()
 
 	--Wait 2 sec then repeat since values are 0 when first logging into a character
 	coroutine.schedule(function()
-		updateHPBar()
-		updateMPBar()
-		updateTPBar()
+		player = get_player()
+		updateHPBar(player)
+		updateMPBar(player)
+		updateTPBar(player)
 		setUIPositions()
 		server = res.servers[get_info().server].name
 	end, 2)
@@ -5662,6 +5686,7 @@ register_event('load', function()
 
 	if get_info().logged_in then
 		initialize()
+		logged_in = true
 	end
 
 end)
@@ -5671,6 +5696,7 @@ register_event('login', function()
 
 	initialize()
 	resetFadeDelay()
+	logged_in = true
 
 end)
 
@@ -5680,6 +5706,7 @@ register_event('logout', function()
 	hideBars()
 	resetFadeDelay()
 	clearTables()
+	logged_in = false
 
 end)
 
@@ -5701,128 +5728,146 @@ end)
 
 register_event('prerender', function()
 
-	local logged_in = get_info().logged_in
-
 	if not logged_in then return end
 
 	local player = get_player()
 	local target = get_mob_by_target('t')
 	local sub_target = get_mob_by_target('st')
 	local pet = get_mob_by_target('pet')
+	local clock = os.clock()
 
-	updatePartyActions()
-	updateSelfAction()
-	updateAggroList()
+	updateSelfAction(player)
 
-	if hide_player_stats_bars_when_no_target and not target then
+	if clock - last_party_actions_update >= party_actions_update_interval then
+		updatePartyActions()
+		last_party_actions_update = clock
+	end
 
-		player_stats_hp_text:hide()
-		player_stats_hp_text_shadow:hide()
-		player_stats_hp_bar_bg:hide()
-		player_stats_hp_bar_pulse:hide()
-		player_stats_hp_bar_drain_meter:hide()
-		player_stats_hp_bar_meter:hide()
-		player_stats_hp_marker:hide()
+	if clock - last_aggro_list_update >= aggro_list_update_interval then
+		updateAggroList()
+		last_aggro_list_update = clock
+	end
 
-		player_stats_mp_text:hide()
-		player_stats_mp_text_shadow:hide()
-		player_stats_mp_bar_bg:hide()
-		player_stats_mp_bar_pulse:hide()
-		player_stats_mp_bar_drain_meter:hide()
-		player_stats_mp_bar_meter:hide()
+	if clock - last_player_stats_update >= player_stats_update_interval then
+		if hide_player_stats_bars_when_no_target and not target then
 
-		player_stats_tp_text:hide()
-		player_stats_tp_text_shadow:hide()
-		player_stats_tp_bar_bg:hide()
-		player_stats_tp_bar_pulse:hide()
-		player_stats_tp_bar_drain_meter:hide()
-		player_stats_tp_bar_meter:hide()
-		player_stats_tp_marker:hide()
+			if player_stats_hp_bar_bg:visible() then
+				player_stats_hp_text:hide()
+				player_stats_hp_text_shadow:hide()
+				player_stats_hp_bar_bg:hide()
+				player_stats_hp_bar_pulse:hide()
+				player_stats_hp_bar_drain_meter:hide()
+				player_stats_hp_bar_meter:hide()
+				player_stats_hp_marker:hide()
+			end
 
-		player_stats_pet_text:hide()
-		player_stats_pet_text_shadow:hide()
-		player_stats_pet_bar_bg:hide()
-		player_stats_pet_bar_pulse:hide()
-		player_stats_pet_bar_drain_meter:hide()
-		player_stats_pet_bar_meter:hide()
+			if player_stats_mp_bar_bg:visible() then
+				player_stats_mp_text:hide()
+				player_stats_mp_text_shadow:hide()
+				player_stats_mp_bar_bg:hide()
+				player_stats_mp_bar_pulse:hide()
+				player_stats_mp_bar_drain_meter:hide()
+				player_stats_mp_bar_meter:hide()
+			end
 
-	elseif not (in_cutscene or zoning) then
-		if job and job_specific[job].hp then
-			player_stats_hp_text:show()
-			player_stats_hp_text_shadow:show()
-			player_stats_hp_bar_bg:show()
-			player_stats_hp_bar_pulse:show()
-			player_stats_hp_bar_drain_meter:show()
-			player_stats_hp_bar_meter:show()
-			player_stats_hp_marker:show()
-			updateHPBar()
-		end
-		if job and job_specific[job].mp then
-			player_stats_mp_text:show()
-			player_stats_mp_text_shadow:show()
-			player_stats_mp_bar_bg:show()
-			player_stats_mp_bar_pulse:show()
-			player_stats_mp_bar_drain_meter:show()
-			player_stats_mp_bar_meter:show()
-			updateMPBar()
-		end
-		if job and job_specific[job].tp then
-			player_stats_tp_text:show()
-			player_stats_tp_text_shadow:show()
-			player_stats_tp_bar_bg:show()
-			player_stats_tp_bar_pulse:show()
-			player_stats_tp_bar_drain_meter:show()
-			player_stats_tp_bar_meter:show()
-			player_stats_tp_marker:show()
-			updateTPBar()
-		end
-		if job and job_specific[job].pet then
-			if hide_pet_bar_when_no_pet and not pet then
+			if player_stats_tp_bar_bg:visible() then
+				player_stats_tp_text:hide()
+				player_stats_tp_text_shadow:hide()
+				player_stats_tp_bar_bg:hide()
+				player_stats_tp_bar_pulse:hide()
+				player_stats_tp_bar_drain_meter:hide()
+				player_stats_tp_bar_meter:hide()
+				player_stats_tp_marker:hide()
+			end
+
+			if player_stats_pet_bar_bg:visible() then
 				player_stats_pet_text:hide()
 				player_stats_pet_text_shadow:hide()
 				player_stats_pet_bar_bg:hide()
 				player_stats_pet_bar_pulse:hide()
 				player_stats_pet_bar_drain_meter:hide()
 				player_stats_pet_bar_meter:hide()
-			else
-				player_stats_pet_text:show()
-				player_stats_pet_text_shadow:show()
-				player_stats_pet_bar_bg:show()
-				player_stats_pet_bar_pulse:show()
-				player_stats_pet_bar_drain_meter:show()
-				player_stats_pet_bar_meter:show()
 			end
-			updatePetBar()
+
+		elseif not (in_cutscene or zoning) then
+			if job and job_specific[job].hp and not player_stats_hp_bar_bg:visible() then
+				player_stats_hp_text:show()
+				player_stats_hp_text_shadow:show()
+				player_stats_hp_bar_bg:show()
+				player_stats_hp_bar_pulse:show()
+				player_stats_hp_bar_drain_meter:show()
+				player_stats_hp_bar_meter:show()
+				player_stats_hp_marker:show()
+				updateHPBar(player)
+			end
+			if job and job_specific[job].mp and not player_stats_mp_bar_bg:visible() then
+				player_stats_mp_text:show()
+				player_stats_mp_text_shadow:show()
+				player_stats_mp_bar_bg:show()
+				player_stats_mp_bar_pulse:show()
+				player_stats_mp_bar_drain_meter:show()
+				player_stats_mp_bar_meter:show()
+				updateMPBar(player)
+			end
+			if job and job_specific[job].tp and not player_stats_tp_bar_bg:visible() then
+				player_stats_tp_text:show()
+				player_stats_tp_text_shadow:show()
+				player_stats_tp_bar_bg:show()
+				player_stats_tp_bar_pulse:show()
+				player_stats_tp_bar_drain_meter:show()
+				player_stats_tp_bar_meter:show()
+				player_stats_tp_marker:show()
+				updateTPBar(player)
+			end
+			if job and job_specific[job].pet then
+				if hide_pet_bar_when_no_pet and not pet and player_stats_pet_bar_bg:visible() then
+					player_stats_pet_text:hide()
+					player_stats_pet_text_shadow:hide()
+					player_stats_pet_bar_bg:hide()
+					player_stats_pet_bar_pulse:hide()
+					player_stats_pet_bar_drain_meter:hide()
+					player_stats_pet_bar_meter:hide()
+				elseif not player_stats_pet_bar_bg:visible() then
+					player_stats_pet_text:show()
+					player_stats_pet_text_shadow:show()
+					player_stats_pet_bar_bg:show()
+					player_stats_pet_bar_pulse:show()
+					player_stats_pet_bar_drain_meter:show()
+					player_stats_pet_bar_meter:show()
+				end
+				updatePetBar(pet)
+			end
 		end
+		last_player_stats_update = clock
 	end
 
-	if condense_target_and_subtarget_bars then
-		if target or sub_target or Screen_Test then
-			updateTarget()
-		elseif target_bar_lock_left:visible() and not calculating_dimensions then
-			target_bar_lock_left:hide()
-			target_bar_lock_right:hide()
-			target_bar_lock_underline:hide()
+	if clock - last_target_update >= target_update_interval then
+		if Screen_Test then
+			updateTarget(player, screen_test_target)
+		elseif condense_target_and_subtarget_bars and sub_target then
+			updateTarget(player, sub_target)
+		else
+			updateTarget(player, target)
+			updateSubTarget(player, sub_target)
 		end
-	else
-		if target or Screen_Test then
-			updateTarget()
-		elseif target_bar_lock_left:visible() and not calculating_dimensions then
-			target_bar_lock_left:hide()
-			target_bar_lock_right:hide()
-			target_bar_lock_underline:hide()
-		end
-		if sub_target or Screen_Test then
-			updateSubTarget()
-		end
+		last_target_update = clock
 	end
 
-	if focus_target_override then
-		checkForFocusTargetOverride()
-	else
-		checkForFocusTarget()
+	if (not target and not sub_target and not Screen_Test) and target_bar_lock_left:visible() and not calculating_dimensions then
+		target_bar_lock_left:hide()
+		target_bar_lock_right:hide()
+		target_bar_lock_underline:hide()
 	end
-	updateFocusTarget()
+
+	if clock - last_focus_target_update >= focus_target_update_interval then
+		if focus_target_override then
+			checkForFocusTargetOverride()
+		else
+			checkForFocusTarget()
+		end
+		updateFocusTarget()
+		last_focus_target_update = clock
+	end
 
 	if os.time() > Heartbeat then
 
@@ -5979,8 +6024,10 @@ register_event('prerender', function()
 			focus_target_text:stroke_alpha(pulse_focus_target_alpha_num)
 		end
 	else
-		focus_target_bar_pulse:hide()
-		focus_target_bar_pulse:bg_alpha(0)
+		if focus_target_bar_pulse:visible() then
+			focus_target_bar_pulse:hide()
+			focus_target_bar_pulse:bg_alpha(0)
+		end
 		if not Fade then
 			focus_target_text:stroke_alpha(ft_text_stroke.a)
 		end
@@ -6006,8 +6053,10 @@ register_event('prerender', function()
 			sub_target_text:stroke_alpha(pulse_sub_target_alpha_num)
 		end
 	else
-		sub_target_bar_pulse:hide()
-		sub_target_bar_pulse:bg_alpha(0)
+		if sub_target_bar_pulse:visible() then
+			sub_target_bar_pulse:hide()
+			sub_target_bar_pulse:bg_alpha(0)
+		end
 		if not Fade then
 			sub_target_text:stroke_alpha(st_text_stroke.a)
 		end
@@ -6033,8 +6082,10 @@ register_event('prerender', function()
 			target_text:stroke_alpha(pulse_target_alpha_num)
 		end
 	else
-		target_bar_pulse:hide()
-		target_bar_pulse:bg_alpha(0)
+		if target_bar_pulse:visible() then
+			target_bar_pulse:hide()
+			target_bar_pulse:bg_alpha(0)
+		end
 		if not Fade then
 			target_text:stroke_alpha(t_text_stroke.a)
 		end
@@ -6070,21 +6121,6 @@ register_event('prerender', function()
 			fade_bg_ui_num = fade_down_to_alpha
 			setBGUIFade(fade_bg_ui_num)
 		end
-	end
-
-	--Hide while zoning
-	local pos = get_position()
-	if pos == "(?-?)" and not zoning then
-		zoning = true
-		hideBars()
-		clearTables()
-		if Screen_Test then
-			windower.send_command('bars ui')
-		end
-	elseif pos ~= "(?-?)" and zoning then
-		zoning = false
-		showBars()
-		resetFadeDelay()
 	end
 
 end)
@@ -8108,9 +8144,22 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 		data.message_id = original:unpack('H',0x19)%32768
 		handleActionMessage(data)
 
-	elseif( id == 0xF4 ) then --wide scan (for monster levels)
+	elseif id == 0xF4 then --wide scan (for monster levels)
 		local packet = packets.parse( 'incoming', original )
 		current_levels[packet.Index] = packet.Level
+
+	elseif id == 0xB then --zone start
+		zoning = true
+		hideBars()
+		clearTables()
+		if Screen_Test then
+			windower.send_command('bars ui')
+		end
+
+	elseif id == 0xA then --zone finish
+		zoning = false
+		showBars()
+		resetFadeDelay()
 
 	end
 
@@ -8573,7 +8622,9 @@ register_event('addon command',function(addcmd, ...)
 		show_target_index = false
 		settings:save('all')
 		add_to_chat(8,('[Bars] '):color(220)..('Hex:'):color(36)..(' %s':format(settings.options.show_target_hex and 'ON' or 'OFF')):color(200))
-		updateTarget()
+		local player = get_player()
+		local target = get_mob_by_target('t')
+		updateTarget(player, target)
 
 	--Toggle the index setting
 	elseif addcmd == 'index' or addcmd == 'i' then
@@ -8584,7 +8635,9 @@ register_event('addon command',function(addcmd, ...)
 		show_target_hex = false
 		settings:save('all')
 		add_to_chat(8,('[Bars] '):color(220)..('Index:'):color(36)..(' %s':format(settings.options.show_target_index and 'ON' or 'OFF')):color(200))
-		updateTarget()
+		local player = get_player()
+		local target = get_mob_by_target('t')
+		updateTarget(player, target)
 
 	--Add a target to the Auto Focus Target list
 	elseif addcmd == 'add' or addcmd == 'a' then
@@ -8703,14 +8756,6 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
 		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
 
-	elseif addcmd == "test" then
-		local player = get_player()
-		packets.inject(packets.new('incoming', 0x058, {
-			['Player'] = player.id,
-			['Target'] = 17809416,
-			['Player Index'] = player.index,
-		}))
-
 	else
 
 		displayUnregnizedCommand()
@@ -8721,11 +8766,7 @@ end)
 --Handle mouse events
 register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 
-	local logged_in = get_info().logged_in
-
-	if not logged_in then return end
-
-	if mouse_type == 2 then --leftmouseup
+	if logged_in and mouse_type == 2 then --leftmouseup
 
 		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
