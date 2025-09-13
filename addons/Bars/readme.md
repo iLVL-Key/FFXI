@@ -196,6 +196,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `show_target_hex` | Shows the hex number of the current target. |
 | `show_target_index` | Shows the index number of the current target. |
 | `show_target_lock` | Shows the Target Lock icons when your camera is locked on your current target. |
+| `update_intervals` | Time in seconds that each section updates it's on-screen information. |
 
 ### Sections
 | **Setting** | **Description** |
@@ -264,6 +265,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+
+Version 4.4
+- Added `update_interval` settings. Allows you to set how often certain sections update their on-screen information.
+- Adjusted a number of areas for efficiency. Reduced a large number of redundant calls that happen every update interval.
+
 Version 4.3.4
 - Fixed bars displaying incorrectly when changing the font of the text.
 
