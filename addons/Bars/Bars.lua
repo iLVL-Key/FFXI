@@ -255,7 +255,7 @@ defaults = {
 			aggro_list = 0.2,
 			focus_target = 0.05,
 			party_actions = 0.05,
-			player_stats = 0.05,
+			player_stats_pet = 0.05,
 			sub_target = 0.05,
 			target = 0.05,
 		},
@@ -927,7 +927,7 @@ truncate_icon = settings.icons.truncate
 aggro_list_update_interval = settings.options.update_intervals.aggro_list
 focus_target_update_interval = settings.options.update_intervals.focus_target
 party_actions_update_interval = settings.options.update_intervals.party_actions
-player_stats_update_interval = settings.options.update_intervals.player_stats
+player_stats_pet_update_interval = settings.options.update_intervals.player_stats_pet
 sub_target_update_interval = settings.options.update_intervals.sub_target
 target_update_interval = settings.options.update_intervals.target
 
@@ -987,7 +987,7 @@ sp_shorter_names = {
 	['Perfect Dodge'] = 'Prf. Dodge',
 	['Invincible'] = 'Invincible',
 	['Blood Weapon'] = 'Bl. Weapon',
-	['Soul Enslavement'] = 'Soul Ensl.',
+	['Soul Enslavement'] = 'Soul Enslv.',
 	['Unleash'] = 'Unleash',
 	['Soul Voice'] = 'Soul Voice',
 	['Clarion Call'] = 'Clar. Call',
@@ -1531,7 +1531,7 @@ target_bar_pulse:size(target_bar_size)
 focus_target_bar_drain_meter = texts.new()
 focus_target_bar_drain_meter:font('Consolas')
 focus_target_bar_drain_meter:pad(-5)
-focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+focus_target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
 focus_target_bar_drain_meter:draggable(false)
 focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 
@@ -1539,7 +1539,7 @@ focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 sub_target_bar_drain_meter = texts.new()
 sub_target_bar_drain_meter:font('Consolas')
 sub_target_bar_drain_meter:pad(-5)
-sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+sub_target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
 sub_target_bar_drain_meter:draggable(false)
 sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 
@@ -1547,7 +1547,7 @@ sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 target_bar_drain_meter = texts.new()
 target_bar_drain_meter:font('Consolas')
 target_bar_drain_meter:pad(-5)
-target_bar_drain_meter:bg_alpha(drain_bg_alpha)
+target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
 target_bar_drain_meter:draggable(false)
 target_bar_drain_meter:size(target_bar_size / 10)
 
@@ -1555,7 +1555,7 @@ target_bar_drain_meter:size(target_bar_size / 10)
 player_stats_hp_bar_drain_meter = texts.new()
 player_stats_hp_bar_drain_meter:font('Consolas')
 player_stats_hp_bar_drain_meter:pad(-5)
-player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_hp_bar_drain_meter:bg_alpha(drain_hp_bar and drain_bg_alpha or 0)
 player_stats_hp_bar_drain_meter:draggable(false)
 player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1563,7 +1563,7 @@ player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_mp_bar_drain_meter = texts.new()
 player_stats_mp_bar_drain_meter:font('Consolas')
 player_stats_mp_bar_drain_meter:pad(-5)
-player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_mp_bar_drain_meter:bg_alpha(drain_mp_bar and drain_bg_alpha or 0)
 player_stats_mp_bar_drain_meter:draggable(false)
 player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1571,7 +1571,7 @@ player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_tp_bar_drain_meter = texts.new()
 player_stats_tp_bar_drain_meter:font('Consolas')
 player_stats_tp_bar_drain_meter:pad(-5)
-player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_tp_bar_drain_meter:bg_alpha(drain_tp_bar and drain_bg_alpha or 0)
 player_stats_tp_bar_drain_meter:draggable(false)
 player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1579,7 +1579,7 @@ player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_pet_bar_drain_meter = texts.new()
 player_stats_pet_bar_drain_meter:font('Consolas')
 player_stats_pet_bar_drain_meter:pad(-5)
-player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+player_stats_pet_bar_drain_meter:bg_alpha(drain_pet_bar and drain_bg_alpha or 0)
 player_stats_pet_bar_drain_meter:draggable(false)
 player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -2315,6 +2315,7 @@ function setUIPositions()
 
 		player_stats_hp_bar_bg:hide()
 		player_stats_hp_bar_bg:pos(ps_pos.x, ps_pos.y)
+		hpChange()
 
 		target_bar_lock_left:hide()
 		target_bar_lock_left:pos(icon_left_x,icon_y)
@@ -2841,7 +2842,7 @@ function assignIndex()
 end
 
 --Update monster targeting tables
-function updateTargeting(actor_id, target_id, timestamp, icon)
+function updateTargetBaring(actor_id, target_id, timestamp, icon)
 
 	current_actions[actor_id] = {
 		target_id = target_id,
@@ -2901,7 +2902,7 @@ function addToSPTable(actor_id, sp_name)
 
 	current_sp_actions[actor_id] = {
 		sp_name = sp_name,
-		timer = sp_abils[sp_name],
+		timestamp = os.clock() + sp_abils[sp_name],
 	}
 
 end
@@ -2915,16 +2916,14 @@ function removeFromSPTable(actor_id)
 
 end
 
---Countdown for active SP abilities
-function decrementSPTimers()
+--Check for expired SP abilities
+function checkSPTimers(clock)
 
 	for id, sp_action in pairs(current_sp_actions) do
 
-		local timer = sp_action.timer
+		local timestamp = sp_action.timestamp
 
-		if timer and timer > 0 then
-			sp_action.timer = timer - 1
-		elseif timer and timer <= 0 then
+		if clock > timestamp then
 			removeFromSPTable(id)
 		end
 
@@ -3719,11 +3718,10 @@ function updateAggroList()
 end
 
 --Update the Focus Target bar
-function updateFocusTarget()
+function updateFocusTargetBar(target, clock)
 
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
-	local target = get_mob_by_target('t') or nil
 	local ft_settings = settings.sections.focus_target
 	local max_icons = ft_settings.debuff_icons and math.max(0, math.min(ft_settings.debuff_max_icons, 32)) or 0
 	local icon_set = debuff_icons.focus_target
@@ -3756,11 +3754,9 @@ function updateFocusTarget()
 
 	local ft = focus_target_override and focus_target_override or focus_target
 	local hpp_raw = ft and ft.hpp or 0
-	local hpp_diff = drain_ft_hpp - hpp_raw
-	local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
-	drain_ft_hpp = ft and drain_previous_ft_id == ft.id and hpp_raw < drain_ft_hpp and drain_ft_hpp - current_decay or hpp_raw
 	local sp_active = ft and hpp_raw ~= 0 and current_sp_actions[ft.id]
-	local sp_timer = sp_active and ft_spaces..string.format("%d:%02d", math.floor(current_sp_actions[ft.id].timer / 60), current_sp_actions[ft.id].timer % 60)
+	local sp_timestamp = sp_active and clock and math.max(current_sp_actions[ft.id].timestamp - clock, 0) or 0
+	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[ft.id].sp_name
 	local ft_name = ft and ft.name or ''
 	if sp_active then
@@ -3778,9 +3774,7 @@ function updateFocusTarget()
 	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
 	local level = ft and ft_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ft_spaces..'Lv '..current_levels[ft.index] or '') or ''
 	local meter = ''
-	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
-	local drain_spaces = drain_ft_hpp and math.floor((focus_target_bar_width * 10) * (drain_ft_hpp / 100)) or 0
 	local cm = ft and (Fade and text_color or targetColor(ft)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
@@ -3818,24 +3812,9 @@ function updateFocusTarget()
 		end
 	end
 
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		focus_target_bar_drain_meter:hide()
-	elseif drain_target_bars then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_ft_hpp > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		focus_target_bar_drain_meter:show()
-	end
-
 	--Update the Focus Target text objects
 	focus_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
 	focus_target_bar_meter:bg_color(cm.r,cm.g,cm.b)
-	focus_target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
 	focus_target_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
 	focus_target_text:text(Fade and text:text_strip_format() or text)
 	focus_target_text:color(ct.r,ct.g,ct.b)
@@ -3960,8 +3939,73 @@ function updateFocusTarget()
 
 end
 
+function updateFocusTargetBarAnimations(player, target)
+
+	if not (focus_target_override or focus_target)
+	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
+		return
+	end
+
+	--Pulse the Focus Target bar (but not when the bar is fading/faded)
+	if Pulse_Focus_Target_Bar and focus_target_bar_bg:visible() and not (Fade or Screen_Test) then
+		if pulse_focus_target_direction_up and pulse_focus_target_alpha_num < pulse_brightness then
+			pulse_focus_target_alpha_num = pulse_focus_target_alpha_num + pulse_speed
+		elseif pulse_focus_target_direction_up and pulse_focus_target_alpha_num >= pulse_brightness then
+			pulse_focus_target_alpha_num = pulse_brightness
+			pulse_focus_target_direction_up = false
+		elseif not pulse_focus_target_direction_up and pulse_focus_target_alpha_num > 10 then
+			pulse_focus_target_alpha_num = pulse_focus_target_alpha_num - pulse_speed
+		elseif not pulse_focus_target_direction_up and pulse_focus_target_alpha_num <= 10 then
+			pulse_focus_target_alpha_num = 10
+			pulse_focus_target_direction_up = true
+		end
+		if Pulse_Focus_Target_Bar then
+			focus_target_bar_pulse:bg_alpha(pulse_focus_target_alpha_num)
+		end
+		if Pulse_Focus_Target_Name then
+			focus_target_text:stroke_alpha(pulse_focus_target_alpha_num)
+		end
+	else
+		if focus_target_bar_pulse:visible() then
+			focus_target_bar_pulse:hide()
+			focus_target_bar_pulse:bg_alpha(0)
+		end
+		if not Fade then
+			focus_target_text:stroke_alpha(ft_text_stroke.a)
+		end
+	end
+
+	if drain_target_bars then
+
+		local ft = focus_target_override and focus_target_override or focus_target
+		local hpp_raw = ft and ft.hpp or 0
+		local hpp_diff = drain_ft_hpp - hpp_raw
+		local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
+		drain_ft_hpp = ft and drain_previous_ft_id == ft.id and hpp_raw < drain_ft_hpp and drain_ft_hpp - current_decay or hpp_raw
+		local drain_spaces = drain_ft_hpp and math.floor((focus_target_bar_width * 10) * (drain_ft_hpp / 100)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue
+		if drain_spaces <= 6 then
+			focus_target_bar_drain_meter:hide()
+		elseif not Fade then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_ft_hpp > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			focus_target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			focus_target_bar_drain_meter:show()
+		end
+
+	end
+
+end
+
 --Update the Sub Target bar
-function updateSubTarget(player, st)
+function updateSubTargetBar(player, st, clock)
 
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
@@ -3998,11 +4042,9 @@ function updateSubTarget(player, st)
 	end
 
 	local hpp_raw = st and st.hpp or 0
-	local hpp_diff = drain_st_hpp - hpp_raw
-	local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
-	drain_st_hpp = st and drain_previous_st_id == st.id and hpp_raw < drain_st_hpp and drain_st_hpp - current_decay or hpp_raw
 	local sp_active = st and hpp_raw ~= 0 and current_sp_actions[st.id]
-	local sp_timer = sp_active and st_spaces..string.format("%d:%02d", math.floor(current_sp_actions[st.id].timer / 60), current_sp_actions[st.id].timer % 60)
+	local sp_timestamp = sp_active and clock and math.max(current_sp_actions[st.id].timestamp - clock, 0)
+	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[st.id].sp_name
 	local st_name = st and st.name or ''
 	if sp_active then
@@ -4020,9 +4062,7 @@ function updateSubTarget(player, st)
 	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
 	local level = st and st_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and st_spaces..'Lv '..current_levels[st.index] or '') or ''
 	local meter = ''
-	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
-	local drain_spaces = drain_st_hpp and math.floor((sub_target_bar_width * 10) * (drain_st_hpp / 100)) or 0
 	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
@@ -4060,24 +4100,9 @@ function updateSubTarget(player, st)
 		end
 	end
 
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		sub_target_bar_drain_meter:hide()
-	elseif drain_target_bars then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_st_hpp > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		sub_target_bar_drain_meter:show()
-	end
-
 	--Update the Sub Target text objects
 	sub_target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
 	sub_target_bar_meter:bg_color(cm.r,cm.g,cm.b)
-	sub_target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
 	sub_target_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
 	sub_target_text:text(Fade and text:text_strip_format() or text)
 	sub_target_text:color(ct.r,ct.g,ct.b)
@@ -4202,8 +4227,67 @@ function updateSubTarget(player, st)
 
 end
 
+function updateSubTargetBarAnimations(player, st)
+
+	--Pulse the Sub Target bar (but not when the bar is fading/faded)
+	if (Pulse_Sub_Target_Bar or Pulse_Sub_Target_Name) and sub_target_bar_bg:visible() and not (Fade or Screen_Test) then
+		if pulse_sub_target_direction_up and pulse_sub_target_alpha_num < pulse_brightness then
+			pulse_sub_target_alpha_num = pulse_sub_target_alpha_num + pulse_speed
+		elseif pulse_sub_target_direction_up and pulse_sub_target_alpha_num >= pulse_brightness then
+			pulse_sub_target_alpha_num = pulse_brightness
+			pulse_sub_target_direction_up = false
+		elseif not pulse_sub_target_direction_up and pulse_sub_target_alpha_num > 10 then
+			pulse_sub_target_alpha_num = pulse_sub_target_alpha_num - pulse_speed
+		elseif not pulse_sub_target_direction_up and pulse_sub_target_alpha_num <= 10 then
+			pulse_sub_target_alpha_num = 10
+			pulse_sub_target_direction_up = true
+		end
+		if Pulse_Sub_Target_Bar then
+			sub_target_bar_pulse:bg_alpha(pulse_sub_target_alpha_num)
+		end
+		if Pulse_Sub_Target_Name then
+			sub_target_text:stroke_alpha(pulse_sub_target_alpha_num)
+		end
+	else
+		if sub_target_bar_pulse:visible() then
+			sub_target_bar_pulse:hide()
+			sub_target_bar_pulse:bg_alpha(0)
+		end
+		if not Fade then
+			sub_target_text:stroke_alpha(st_text_stroke.a)
+		end
+	end
+
+	if drain_target_bars then
+
+		local hpp_raw = st and st.hpp or 0
+		local hpp_diff = drain_st_hpp - hpp_raw
+		local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
+		drain_st_hpp = st and drain_previous_st_id == st.id and hpp_raw < drain_st_hpp and drain_st_hpp - current_decay or hpp_raw
+		local drain_spaces = drain_st_hpp and math.floor((sub_target_bar_width * 10) * (drain_st_hpp / 100)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue when 0
+		if drain_spaces <= 0 then
+			sub_target_bar_drain_meter:hide()
+		elseif drain_target_bars then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_st_hpp > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			sub_target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			sub_target_bar_drain_meter:show()
+		end
+
+	end
+
+end
+
 --Update the Target bar
-function updateTarget(player, t)
+function updateTargetBar(player, t, clock)
 
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
@@ -4213,7 +4297,7 @@ function updateTarget(player, t)
 	local timer_set = debuff_timers.target
 
 	--Hide the Target bar if there is no Target to display, or the Target is ourselves
-	if not t or (show_self_when_targeted == false and t.id == player.id) then
+	if not t or (not show_self_when_targeted and t.id == player.id) then
 		if target_bar_bg:visible() then
 			target_bar_meter:hide()
 			target_bar_drain_meter:hide()
@@ -4237,11 +4321,9 @@ function updateTarget(player, t)
 	end
 
 	local hpp_raw = t and t.hpp or 0
-	local hpp_diff = drain_t_hpp - hpp_raw
-	local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
-	drain_t_hpp = t and drain_previous_t_id == t.id and hpp_raw < drain_t_hpp and drain_t_hpp - current_decay or hpp_raw
 	local sp_active = t and hpp_raw > 0 and current_sp_actions[t.id]
-	local sp_timer = sp_active and string.format("%d:%02d", math.floor(current_sp_actions[t.id].timer / 60), current_sp_actions[t.id].timer % 60) or ''
+	local sp_timestamp = sp_active and clock and math.max(current_sp_actions[t.id].timestamp - clock, 0)
+	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[t.id].sp_name
 	local t_name = t and t.name or ''
 	if sp_active then
@@ -4259,9 +4341,7 @@ function updateTarget(player, t)
 	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
 	local level = t and t_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and t_spaces..'Lv '..current_levels[t.index] or '') or ''
 	local meter = ''
-	local drain_meter = ''
 	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
-	local drain_spaces = drain_t_hpp and math.floor((target_bar_width * 10) * (drain_t_hpp / 100)) or 0
 	local cm = t and (Fade and text_color or targetColor(t)) or color.t.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
@@ -4309,20 +4389,6 @@ function updateTarget(player, t)
 		end
 	end
 
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		target_bar_drain_meter:hide()
-	elseif drain_target_bars then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_t_hpp > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		target_bar_drain_meter:show()
-	end
-
 	--Show Target Lock
 	if show_target_lock and player and player.target_locked and not target_bar_lock_left:visible() then
 		target_bar_lock_left:show()
@@ -4337,7 +4403,6 @@ function updateTarget(player, t)
 	--Update the Target text objects
 	target_bar_meter:text('\n\n\n\n\n\n\n'..meter)
 	target_bar_meter:bg_color(cm.r,cm.g,cm.b)
-	target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
 	target_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
 	target_text:text(Fade and text:text_strip_format() or text)
 	target_text:color(ct.r,ct.g,ct.b)
@@ -4456,9 +4521,69 @@ function updateTarget(player, t)
 		ui_bg_middle.target:show()
 		ui_bg_right.target:show()
 	end
-
+		
 	--Update the previous target id
 	drain_previous_t_id = t and t.id or nil
+
+end
+
+function updateTargetBarAnimations(player, t)
+
+	--Target Bar Pulse animation
+	if (Pulse_Target_Bar or Pulse_Target_Name) and target_bar_bg:visible() and not (Fade or Screen_Test) then
+		if pulse_target_direction_up and pulse_target_alpha_num < pulse_brightness then
+			pulse_target_alpha_num = pulse_target_alpha_num + pulse_speed
+		elseif pulse_target_direction_up and pulse_target_alpha_num >= pulse_brightness then
+			pulse_target_alpha_num = pulse_brightness
+			pulse_target_direction_up = false
+		elseif not pulse_target_direction_up and pulse_target_alpha_num > 10 then
+			pulse_target_alpha_num = pulse_target_alpha_num - pulse_speed
+		elseif not pulse_target_direction_up and pulse_target_alpha_num <= 10 then
+			pulse_target_alpha_num = 10
+			pulse_target_direction_up = true
+		end
+		if Pulse_Target_Bar then
+			target_bar_pulse:bg_alpha(pulse_target_alpha_num)
+		end
+		if Pulse_Target_Name then
+			target_text:stroke_alpha(pulse_target_alpha_num)
+		end
+	else
+		if target_bar_pulse:visible() then
+			target_bar_pulse:hide()
+			target_bar_pulse:bg_alpha(0)
+		end
+		if not Fade then
+			target_text:stroke_alpha(t_text_stroke.a)
+		end
+	end
+
+	--Target Bar Drain animation
+	if drain_target_bars then
+
+		local hpp_raw = t and t.hpp or 0
+		local hpp_diff = drain_t_hpp - hpp_raw
+		local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
+		drain_t_hpp = t and drain_previous_t_id == t.id and hpp_raw < drain_t_hpp and drain_t_hpp - current_decay or hpp_raw
+		local drain_spaces = drain_t_hpp and math.floor((target_bar_width * 10) * (drain_t_hpp / 100)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue
+		if drain_spaces <= 6 then
+			target_bar_drain_meter:hide()
+		elseif not (not show_self_when_targeted and t.id == player.id) and not Fade then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_t_hpp > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			target_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			target_bar_drain_meter:show()
+		end
+
+	end
 
 end
 
@@ -4468,8 +4593,7 @@ function updateSelfAction(player)
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
 
 	--Hide the Self Action bar disabled, we are in a cutscene, or no actions
-	if not show_self_action
-	or in_cutscene
+	if not show_self_action_result
 	or self_status == '' then
 		if self_action_bar_bg:visible() and not calculating_dimensions then
 			self_action_bar_meter:hide()
@@ -4587,13 +4711,8 @@ function updateHPBar(player)
 	local hp = player and player.vitals.hp or 0
 	local max_hp = player and player.vitals.max_hp or 0
 	local hpp = player and player.vitals.hpp or 0
-	local hp_diff = drain_ps_hpp - hpp
-	local current_decay = math.min(hp_diff * 0.1, drain_decay * 120)
-	drain_ps_hpp = hpp and hpp < drain_ps_hpp and drain_ps_hpp - current_decay or hpp
 	local hp_meter = ''
-	local drain_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
-	local drain_spaces = drain_ps_hpp and math.floor((player_stats_bar_width * 10) * (drain_ps_hpp / 100)) or 0
 	local ct = text_color
 	local cm = Fade and text_color or color.hp.bar
 
@@ -4609,20 +4728,6 @@ function updateHPBar(player)
 		while string.len(hp_meter) < spaces do
 			hp_meter = hp_meter..' '
 		end
-	end
-
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		player_stats_hp_bar_drain_meter:bg_alpha(0)
-	elseif drain_hp_bar then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_ps_hpp > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		player_stats_hp_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
 	end
 
 	--Add the max hp to the right-side of the bar
@@ -4646,10 +4751,6 @@ function updateHPBar(player)
 		ct = color.hp.quarter_1
 	end
 
-	local ct_r = formatRGB(ct.r)
-	local ct_g = formatRGB(ct.g)
-	local ct_b = formatRGB(ct.b)
-
 	--Pulse HP when its critically low (and not dead)
 	if pulse_when_hp_low and hpp > 0 and hpp <= 25 and not Pulse_HP then
 		Pulse_HP = true
@@ -4657,17 +4758,66 @@ function updateHPBar(player)
 		player_stats_hp_bar_pulse:bg_alpha(0)
 		Pulse_HP = false
 	end
-	player_stats_hp_bar_pulse:bg_color(ct_r,ct_g,ct_b)
+	player_stats_hp_bar_pulse:bg_color(ct.r,ct.g,ct.b)
 
 	--Format the text output
-	local text = 'HP: \\cs('..ct_r..','..ct_g..','..ct_b..')'..hp..'\\cr'..max_hp
+	local text = 'HP: \\cs('..ct.r..','..ct.g..','..ct.b..')'..hp..'\\cr'..max_hp
 	local text_shdw = 'HP: '..hp..max_hp
 	player_stats_hp_bar_meter:text('\n\n\n\n\n\n\n'..hp_meter)
 	player_stats_hp_bar_meter:bg_color(cm.r,cm.g,cm.b)
-	player_stats_hp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
 	player_stats_hp_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_hp_text:text(Fade and text:text_strip_format() or text)
 	player_stats_hp_text_shadow:text(text_shdw)
+
+end
+
+function updateHPBarAnimations(player)
+
+	--HP Bar Pulse animation
+	if Pulse_HP and not (Fade or Screen_Test) then
+		if pulse_hp_direction_up and pulse_hp_alpha_num < pulse_brightness then
+			pulse_hp_alpha_num = pulse_hp_alpha_num + pulse_speed
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+		elseif pulse_hp_direction_up and pulse_hp_alpha_num >= pulse_brightness then
+			pulse_hp_alpha_num = pulse_brightness
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+			pulse_hp_direction_up = false
+		elseif not pulse_hp_direction_up and pulse_hp_alpha_num > 10 then
+			pulse_hp_alpha_num = pulse_hp_alpha_num - pulse_speed
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+		elseif not pulse_hp_direction_up and pulse_hp_alpha_num <= 10 then
+			pulse_hp_alpha_num = 10
+			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
+			pulse_hp_direction_up = true
+		end
+	end
+
+	--HP Bar Drain animation
+	if drain_hp_bar then
+
+		local hpp = player and player.vitals.hpp or 0
+		local hp_diff = drain_ps_hpp - hpp
+		local current_decay = math.min(hp_diff * 0.1, drain_decay * 120)
+		drain_ps_hpp = hpp and hpp < drain_ps_hpp and drain_ps_hpp - current_decay or hpp
+		local drain_spaces = drain_ps_hpp and math.floor((player_stats_bar_width * 10) * (drain_ps_hpp / 100)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue
+		if drain_spaces <= 6 then
+			player_stats_hp_bar_drain_meter:bg_alpha(0)
+		elseif not Fade then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_ps_hpp > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			player_stats_hp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		end
+
+	end
 
 end
 
@@ -4677,43 +4827,24 @@ function updateMPBar(player)
 	local mp = player and player.vitals.mp or 0
 	local max_mp = player and player.vitals.max_mp or 0
 	local mpp = player and player.vitals.mpp or 0
-	local mp_diff = drain_ps_mpp - mpp
-	local current_decay = math.min(mp_diff * 0.1, drain_decay * 120)
-	drain_ps_mpp = mpp and mpp < drain_ps_mpp and drain_ps_mpp - current_decay or mpp
 	local hpp = player and player.vitals.hpp or 0
 	local mp_meter = ''
-	local drain_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (mpp / 100))
-	local drain_spaces = drain_ps_mpp and math.floor((player_stats_bar_width * 10) * (drain_ps_mpp / 100)) or 0
 	local ct = text_color
 	local cm = Fade and text_color or color.mp.bar
 
 	--Fix the pad issue when 0
 	if spaces == 0 then
-		player_stats_mp_bar_drain_meter:bg_alpha(0)
+		player_stats_mp_bar_meter:bg_alpha(0)
 	else
 		player_stats_mp_bar_meter:bg_alpha(not Fade and (drain_mp_bar and meter_bg_alpha or bg_alpha))
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and mp > 0 then
+		if spaces < 13 and mp >= 0 then
 			spaces = 13
 		end
 		while string.len(mp_meter) < spaces do
 			mp_meter = mp_meter..' '
 		end
-	end
-
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		player_stats_mp_bar_drain_meter:bg_alpha(0)
-	elseif drain_mp_bar then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_ps_mpp > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		player_stats_mp_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
 	end
 
 	--Set the color for the text based on MP percentage
@@ -4724,10 +4855,6 @@ function updateMPBar(player)
 	elseif mpp <= 25 then
 		ct = color.mp.quarter_1
 	end
-
-	local ct_r = formatRGB(ct.r)
-	local ct_g = formatRGB(ct.g)
-	local ct_b = formatRGB(ct.b)
 
 	--Add the max mp to the right-side of the bar
 	local center_padding = ''
@@ -4748,17 +4875,66 @@ function updateMPBar(player)
 		player_stats_mp_bar_pulse:bg_alpha(0)
 		Pulse_MP = false
 	end
-	player_stats_mp_bar_pulse:bg_color(ct_r,ct_g,ct_b)
+	player_stats_mp_bar_pulse:bg_color(ct.r,ct.g,ct.b)
 
 	--Format the text output
-	local text = 'MP: \\cs('..ct_r..','..ct_g..','..ct_b..')'..mp..'\\cr'..max_mp
+	local text = 'MP: \\cs('..ct.r..','..ct.g..','..ct.b..')'..mp..'\\cr'..max_mp
 	local text_shdw = 'MP: '..mp..max_mp
 	player_stats_mp_bar_meter:text('\n\n\n\n\n\n\n'..mp_meter)
 	player_stats_mp_bar_meter:bg_color(cm.r,cm.g,cm.b)
-	player_stats_mp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
 	player_stats_mp_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_mp_text:text(Fade and text:text_strip_format() or text)
 	player_stats_mp_text_shadow:text(text_shdw)
+
+end
+
+function updateMPBarAnimations(player)
+
+	--MP Bar Pulse animation
+	if Pulse_MP and not (Fade or Screen_Test) then
+		if pulse_mp_direction_up and pulse_mp_alpha_num < pulse_brightness then
+			pulse_mp_alpha_num = pulse_mp_alpha_num + pulse_speed
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+		elseif pulse_mp_direction_up and pulse_mp_alpha_num >= pulse_brightness then
+			pulse_mp_alpha_num = pulse_brightness
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+			pulse_mp_direction_up = false
+		elseif not pulse_mp_direction_up and pulse_mp_alpha_num > 10 then
+			pulse_mp_alpha_num = pulse_mp_alpha_num - pulse_speed
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+		elseif not pulse_mp_direction_up and pulse_mp_alpha_num <= 10 then
+			pulse_mp_alpha_num = 10
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
+			pulse_mp_direction_up = true
+		end
+	end
+
+	--MP Bar Drain animation
+	if drain_mp_bar then
+
+		local mpp = player and player.vitals.mpp or 0
+		local mp_diff = drain_ps_mpp - mpp
+		local current_decay = math.min(mp_diff * 0.1, drain_decay * 120)
+		drain_ps_mpp = mpp and mpp < drain_ps_mpp and drain_ps_mpp - current_decay or mpp
+		local drain_spaces = drain_ps_mpp and math.floor((player_stats_bar_width * 10) * (drain_ps_mpp / 100)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue
+		if drain_spaces <= 6 then
+			player_stats_mp_bar_drain_meter:bg_alpha(0)
+		elseif not Fade then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_ps_mpp > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			player_stats_mp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		end
+
+	end
 
 end
 
@@ -4766,14 +4942,9 @@ end
 function updateTPBar(player)
 
 	local tp = player and player.vitals.tp or 0
-	local tp_diff = drain_ps_tp - tp
-	local current_decay = math.min(tp_diff * 0.1, drain_decay * 120)
-	drain_ps_tp = tp and tp < drain_ps_tp and drain_ps_tp - current_decay or tp
 	local hpp = player and player.vitals.hpp or 0
 	local tp_meter = ''
-	local drain_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (tp / 3000))
-	local drain_spaces = drain_ps_tp and math.floor((player_stats_bar_width * 10) * (drain_ps_tp / 3000)) or 0
 	local floating_tp_spaces = math.floor(player_stats_bar_width * (tp / 3000))
 	local floating_tp = ''
 	local tp_spaces = floating_tp_number and math.max(math.min(floating_tp_spaces - (tp < 1000 and 8 or 9), player_stats_bar_width - 9), 0) or 0
@@ -4786,7 +4957,13 @@ function updateTPBar(player)
 	if spaces == 0 then
 		player_stats_tp_bar_meter:bg_alpha(0)
 	else
-		player_stats_tp_bar_meter:bg_alpha(not Fade and (drain_tp_bar and meter_bg_alpha or bg_alpha))
+		if not Fade then
+			if drain_tp_bar then
+				player_stats_tp_bar_meter:bg_alpha(meter_bg_alpha)
+			else
+				player_stats_tp_bar_meter:bg_alpha(bg_alpha)
+			end
+		end
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and tp > 0 then
 			spaces = 13
@@ -4794,20 +4971,6 @@ function updateTPBar(player)
 		while string.len(tp_meter) < spaces do
 			tp_meter = tp_meter..' '
 		end
-	end
-
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		player_stats_tp_bar_drain_meter:bg_alpha(0)
-	elseif drain_tp_bar then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_ps_tp > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		player_stats_tp_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
 	end
 
 	--Set the color for the bar based on TP percentage
@@ -4821,10 +4984,6 @@ function updateTPBar(player)
 		end
 	end
 
-	local cm_r = formatRGB(cm.r)
-	local cm_g = formatRGB(cm.g)
-	local cm_b = formatRGB(cm.b)
-
 	--Pulse TP when its ready to use (and not dead)
 	if pulse_when_tp_ready and hpp > 0 and tp >= 1000 and not Pulse_TP and not Screen_Test then
 		Pulse_TP = true
@@ -4832,20 +4991,71 @@ function updateTPBar(player)
 		player_stats_tp_bar_pulse:bg_alpha(0)
 		Pulse_TP = false
 	end
-	player_stats_tp_bar_pulse:bg_color(cm_r,cm_g,cm_b)
+	player_stats_tp_bar_pulse:bg_color(cm.r,cm.g,cm.b)
 
 	--Format the text output
-	local text = 'TP: '..floating_tp..'\\cs('..cm_r..','..cm_g..','..cm_b..')'..tp..'\\cr'
+	local text = 'TP: '..floating_tp..'\\cs('..cm.r..','..cm.g..','..cm.b..')'..tp..'\\cr'
 	local text_shdw = 'TP: '..floating_tp..''..tp
 	player_stats_tp_bar_meter:text('\n\n\n\n\n\n\n'..tp_meter)
-	player_stats_tp_bar_meter:bg_color(cm_r,cm_g,cm_b)
-	player_stats_tp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-	player_stats_tp_bar_drain_meter:bg_color(cm_r,cm_g,cm_b)
 	if pulse_tp_meter_only then
 		player_stats_tp_bar_pulse:text('\n\n\n\n\n\n\n'..tp_meter)
 	end
 	player_stats_tp_text:text(Fade and text:text_strip_format() or text)
 	player_stats_tp_text_shadow:text(text_shdw)
+
+	--Set the color for the bar based on TP percentage
+	player_stats_tp_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
+	player_stats_tp_bar_meter:bg_color(cm.r,cm.g,cm.b)
+
+end
+
+function updateTPBarAnimations(player)
+
+	--TP Bar Pulse animation
+	if Pulse_TP and not (Fade or Screen_Test) then
+		if pulse_tp_direction_up and pulse_tp_alpha_num < pulse_brightness then
+			pulse_tp_alpha_num = pulse_tp_alpha_num + pulse_speed
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+		elseif pulse_tp_direction_up and pulse_tp_alpha_num >= pulse_brightness then
+			pulse_tp_alpha_num = pulse_brightness
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+			pulse_tp_direction_up = false
+		elseif not pulse_tp_direction_up and pulse_tp_alpha_num > 10 then
+			pulse_tp_alpha_num = pulse_tp_alpha_num - pulse_speed
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+		elseif not pulse_tp_direction_up and pulse_tp_alpha_num <= 10 then
+			pulse_tp_alpha_num = 10
+			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
+			pulse_tp_direction_up = true
+		end
+	end
+
+	--TP Bar Drain animation
+	if drain_tp_bar then
+
+		local tp = player and player.vitals.tp or 0
+		local tp_diff = drain_ps_tp - tp
+		local current_decay = math.min(tp_diff * 0.1, drain_decay * 120)
+		drain_ps_tp = tp and tp < drain_ps_tp and drain_ps_tp - current_decay or tp
+		local drain_spaces = drain_ps_tp and math.floor((player_stats_bar_width * 10) * (drain_ps_tp / 3000)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue
+		if drain_spaces <= 6 then
+			player_stats_tp_bar_drain_meter:bg_alpha(0)
+		elseif not Fade then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_ps_tp > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			player_stats_tp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		end
+
+	end
 
 end
 
@@ -4853,16 +5063,11 @@ end
 function updatePetBar(pet)
 
 	local hpp = pet and pet.hpp or 0
-	local pet_diff = drain_ps_pet - hpp
-	local current_decay = math.min(pet_diff * 0.1, drain_decay * 120)
-	drain_ps_pet = hpp and hpp < drain_ps_pet and drain_ps_pet - current_decay or hpp
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
-	local drain_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
-	local drain_spaces = drain_ps_pet and math.floor((player_stats_bar_width * 10) * (drain_ps_pet / 100)) or 0
 	local ct = color.hp
 
 	--Hide the Pet bar if the option is turned on and there is no pet
@@ -4903,20 +5108,6 @@ function updatePetBar(pet)
 		end
 	end
 
-	--Fix the pad issue when 0
-	if drain_spaces <= 0 then
-		player_stats_pet_bar_drain_meter:bg_alpha(0)
-	elseif drain_pet_bar then
-		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if drain_spaces < 13 and drain_ps_pet > 0 then
-			drain_spaces = 13
-		end
-		while string.len(drain_meter) < drain_spaces do
-			drain_meter = drain_meter..' '
-		end
-		player_stats_pet_bar_drain_meter:bg_alpha(not Fade and drain_bg_alpha)
-	end
-
 	--Set the color for the text based on hp percentage
 	if hpp >= 75 then
 		ct = text_color
@@ -4927,9 +5118,6 @@ function updatePetBar(pet)
 	elseif hpp >= 0 then
 		ct = color.hp.quarter_1
 	end
-	local ct_r = formatRGB(ct.r)
-	local ct_g = formatRGB(ct.g)
-	local ct_b = formatRGB(ct.b)
 
 	local cm = Fade and text_color or color.pet.bar
 	--If SMN, set the color of the meter based on the summon element
@@ -4952,9 +5140,6 @@ function updatePetBar(pet)
 			cm = color.elements.dark
 		end
 	end
-	local cm_r = formatRGB(cm.r)
-	local cm_g = formatRGB(cm.g)
-	local cm_b = formatRGB(cm.b)
 
 	--Pulse Pet when its critically low
 	if pulse_when_pet_low and pet and hpp <= 25 and not Pulse_Pet then
@@ -4963,18 +5148,66 @@ function updatePetBar(pet)
 		player_stats_pet_bar_pulse:bg_alpha(0)
 		Pulse_Pet = false
 	end
-	player_stats_pet_bar_pulse:bg_color(cm_r,cm_g,cm_b)
+	player_stats_pet_bar_pulse:bg_color(cm.r,cm.g,cm.b)
 
 	--Format the text output
 	hpp = string.format("%3s", hpp)..'% '
-	local text = (pet and '\\cs('..ct_r..','..ct_g..','..ct_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
-	player_stats_pet_bar_meter:bg_color(cm_r,cm_g,cm_b)
-	player_stats_pet_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-	player_stats_pet_bar_drain_meter:bg_color(cm_r,cm_g,cm_b)
+	player_stats_pet_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	player_stats_pet_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_pet_text:text(Fade and text:text_strip_format() or text)
 	player_stats_pet_text_shadow:text(Fade and text_shdw:text_strip_format() or text_shdw)
+
+end
+
+function updatePetBarAnimations(pet)
+
+	--Pet Bar Pulse animation
+	if Pulse_Pet and not (Fade or Screen_Test) then
+		if pulse_pet_direction_up and pulse_pet_alpha_num < pulse_brightness then
+			pulse_pet_alpha_num = pulse_pet_alpha_num + pulse_speed
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+		elseif pulse_pet_direction_up and pulse_pet_alpha_num >= pulse_brightness then
+			pulse_pet_alpha_num = pulse_brightness
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+			pulse_pet_direction_up = false
+		elseif not pulse_pet_direction_up and pulse_pet_alpha_num > 10 then
+			pulse_pet_alpha_num = pulse_pet_alpha_num - pulse_speed
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+		elseif not pulse_pet_direction_up and pulse_pet_alpha_num <= 10 then
+			pulse_pet_alpha_num = 10
+			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
+			pulse_pet_direction_up = true
+		end
+	end
+
+	--Pet Bar Drain animation
+	if drain_pet_bar then
+
+		local hpp = pet and pet.hpp or 0
+		local pet_diff = drain_ps_pet - hpp
+		local current_decay = math.min(pet_diff * 0.1, drain_decay * 120)
+		drain_ps_pet = hpp and hpp < drain_ps_pet and drain_ps_pet - current_decay or hpp
+		local drain_spaces = drain_ps_pet and math.floor((player_stats_bar_width * 10) * (drain_ps_pet / 100)) or 0
+		local drain_meter = ''
+
+		--Fix the pad issue
+		if drain_spaces <= 6 then
+			player_stats_pet_bar_drain_meter:bg_alpha(0)
+		elseif drain_pet_bar then
+			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+			if drain_spaces < 13 and drain_ps_pet > 0 then
+				drain_spaces = 13
+			end
+			while string.len(drain_meter) < drain_spaces do
+				drain_meter = drain_meter..' '
+			end
+			player_stats_pet_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+		end
+
+	end
 
 end
 
@@ -5464,6 +5697,11 @@ function unFade()
 	--Run Wide Scan immediately after coming back from Fade
 	runWideScan()
 
+	--Update Player Stat Bars (mostly to re-enable any Pulses)
+	updateHPBar(player)
+	updateMPBar(player)
+	updateTPBar(player)
+
 end
 
 --Reset the fade delay timer
@@ -5500,9 +5738,9 @@ function screenTest()
 		local sub_target = get_mob_by_target('st')
 		Screen_Test = false
 		focus_target_override = nil
-		updateFocusTarget()
-		updateSubTarget(player, sub_target)
-		updateTarget(player, target)
+		updateFocusTargetBar()
+		updateSubTargetBar(player, sub_target)
+		updateTargetBar(player, target)
 		removeFromActionsTable(get_player().id, screen_test_tracking_index)
 		resetFadeDelay()
 
@@ -5564,7 +5802,7 @@ function runWideScan()
 		or settings.sections.target.show_monster_level
 	)
 	or wide_scan_locked
-	or zoning or in_cutscene or in_town or in_mh then
+	or in_town or in_mh then
 		return
 	end
 
@@ -5603,10 +5841,11 @@ register_event('target change', function()
 	local player = get_player()
 	local target = get_mob_by_target('t')
 	local sub_target = get_mob_by_target('st')
+	local clock = os.clock()
 
-	updateTarget(player, target)
+	updateTargetBar(player, target, clock)
 	if not condense_target_and_subtarget_bars then
-		updateSubTarget(player, sub_target)
+		updateSubTargetBar(player, sub_target, clock)
 	end
 	resetFadeDelay()
 
@@ -5621,6 +5860,7 @@ register_event('target change', function()
 	--Reset so the bars don't drain by simply targeting something else
 	drain_st_hpp = 0
 	drain_ft_hpp = 0
+	drain_t_hpp = 0
 
 	--Reset Monster Target id
 	ft_targeting_id = nil
@@ -5629,11 +5869,118 @@ register_event('target change', function()
 
 end)
 
+function hpChange()
+
+	if in_cutscene or zoning then return end
+
+	if job and job_specific[job].hp then
+		local target = get_mob_by_target('t')
+		if hide_player_stats_bars_when_no_target and not target then
+			if player_stats_hp_bar_bg:visible() then
+				player_stats_hp_text:hide()
+				player_stats_hp_text_shadow:hide()
+				player_stats_hp_bar_bg:hide()
+				player_stats_hp_bar_pulse:hide()
+				player_stats_hp_bar_drain_meter:hide()
+				player_stats_hp_bar_meter:hide()
+				player_stats_hp_marker:hide()
+			end
+		else
+			local player = get_player()
+			updateHPBar(player)
+			if not player_stats_hp_bar_bg:visible() then
+				player_stats_hp_text:show()
+				player_stats_hp_text_shadow:show()
+				player_stats_hp_bar_bg:show()
+				player_stats_hp_bar_pulse:show()
+				player_stats_hp_bar_drain_meter:show()
+				player_stats_hp_bar_meter:show()
+				player_stats_hp_marker:show()
+			end
+		end
+	end
+
+end
+
 --HP Changing
 register_event('hp change', function(new_hp,old_hp)
 
 	if new_hp < old_hp then
 		resetFadeDelay()
+	end
+
+	hpChange()
+
+end)
+register_event('hpp change', hpChange)
+
+function mpChange()
+
+	if in_cutscene or zoning then return end
+
+	if job and job_specific[job].mp then
+		local target = get_mob_by_target('t')
+		if hide_player_stats_bars_when_no_target and not target then
+			if player_stats_mp_bar_bg:visible() then
+				player_stats_mp_text:hide()
+				player_stats_mp_text_shadow:hide()
+				player_stats_mp_bar_bg:hide()
+				player_stats_mp_bar_pulse:hide()
+				player_stats_mp_bar_drain_meter:hide()
+				player_stats_mp_bar_meter:hide()
+				player_stats_mp_marker:hide()
+			end
+		else
+			local player = get_player()
+			updateMPBar(player)
+			if not player_stats_mp_bar_bg:visible() then
+				player_stats_mp_text:show()
+				player_stats_mp_text_shadow:show()
+				player_stats_mp_bar_bg:show()
+				player_stats_mp_bar_pulse:show()
+				player_stats_mp_bar_drain_meter:show()
+				player_stats_mp_bar_meter:show()
+				player_stats_mp_marker:show()
+			end
+		end
+	end
+
+end
+
+--MP Changing
+register_event('mp change', mpChange)
+register_event('mpp change', mpChange)
+
+--TP Changing
+register_event('tp change', function(new_tp,old_tp)
+
+	if in_cutscene or zoning then return end
+
+	if job and job_specific[job].tp then
+		local target = get_mob_by_target('t')
+		if hide_player_stats_bars_when_no_target and not target then
+			if player_stats_tp_bar_bg:visible() then
+				player_stats_tp_text:hide()
+				player_stats_tp_text_shadow:hide()
+				player_stats_tp_bar_bg:hide()
+				player_stats_tp_bar_pulse:hide()
+				player_stats_tp_bar_drain_meter:hide()
+				player_stats_tp_bar_meter:hide()
+				player_stats_tp_marker:hide()
+			end
+		else
+			local player = get_player()
+			updateTPBar(player)
+			if not player_stats_tp_bar_bg:visible() then
+				player_stats_tp_text:show()
+				player_stats_tp_text_shadow:show()
+				player_stats_tp_bar_bg:show()
+				player_stats_tp_bar_pulse:show()
+				player_stats_tp_bar_drain_meter:show()
+				player_stats_tp_bar_meter:show()
+				player_stats_tp_marker:show()
+			end
+		end
 	end
 
 end)
@@ -5664,8 +6011,8 @@ function initialize()
 	setPositions()
 	setWidth()
 	showBars()
-	updateTarget(player, target)
-	updateSubTarget(player, sub_target)
+	updateTargetBar(player, target)
+	updateSubTargetBar(player, sub_target)
 	updateHPBar(player)
 	updateMPBar(player)
 	updateTPBar(player)
@@ -5730,7 +6077,7 @@ end)
 
 register_event('prerender', function()
 
-	if not logged_in then return end
+	if not logged_in or in_cutscene or zoning then return end
 
 	local player = get_player()
 	local target = get_mob_by_target('t')
@@ -5738,7 +6085,28 @@ register_event('prerender', function()
 	local pet = get_mob_by_target('pet')
 	local clock = os.clock()
 
+	if sub_target and not condense_target_and_subtarget_bars then
+		updateSubTargetBarAnimations(player, sub_target)
+	end
+	if target then
+		updateTargetBarAnimations(player, target)
+	end
+	updateFocusTargetBarAnimations(player, target)
+
 	updateSelfAction(player)
+
+	if job and job_specific[job].hp then
+		updateHPBarAnimations(player)
+	end
+	if job and job_specific[job].mp then
+		updateMPBarAnimations(player)
+	end
+	if job and job_specific[job].tp then
+		updateTPBarAnimations(player)
+	end
+	if job and job_specific[job].pet and pet then
+		updatePetBarAnimations(pet)
+	end
 
 	if clock - last_party_actions_update >= party_actions_update_interval then
 		updatePartyActions()
@@ -5750,38 +6118,8 @@ register_event('prerender', function()
 		last_aggro_list_update = clock
 	end
 
-	if clock - last_player_stats_update >= player_stats_update_interval then
+	if clock - last_player_stats_update >= player_stats_pet_update_interval then
 		if hide_player_stats_bars_when_no_target and not target then
-
-			if player_stats_hp_bar_bg:visible() then
-				player_stats_hp_text:hide()
-				player_stats_hp_text_shadow:hide()
-				player_stats_hp_bar_bg:hide()
-				player_stats_hp_bar_pulse:hide()
-				player_stats_hp_bar_drain_meter:hide()
-				player_stats_hp_bar_meter:hide()
-				player_stats_hp_marker:hide()
-			end
-
-			if player_stats_mp_bar_bg:visible() then
-				player_stats_mp_text:hide()
-				player_stats_mp_text_shadow:hide()
-				player_stats_mp_bar_bg:hide()
-				player_stats_mp_bar_pulse:hide()
-				player_stats_mp_bar_drain_meter:hide()
-				player_stats_mp_bar_meter:hide()
-			end
-
-			if player_stats_tp_bar_bg:visible() then
-				player_stats_tp_text:hide()
-				player_stats_tp_text_shadow:hide()
-				player_stats_tp_bar_bg:hide()
-				player_stats_tp_bar_pulse:hide()
-				player_stats_tp_bar_drain_meter:hide()
-				player_stats_tp_bar_meter:hide()
-				player_stats_tp_marker:hide()
-			end
-
 			if player_stats_pet_bar_bg:visible() then
 				player_stats_pet_text:hide()
 				player_stats_pet_text_shadow:hide()
@@ -5790,43 +6128,7 @@ register_event('prerender', function()
 				player_stats_pet_bar_drain_meter:hide()
 				player_stats_pet_bar_meter:hide()
 			end
-
-		elseif not (in_cutscene or zoning) then
-			if job and job_specific[job].hp then
-				if not player_stats_hp_bar_bg:visible() then
-					player_stats_hp_text:show()
-					player_stats_hp_text_shadow:show()
-					player_stats_hp_bar_bg:show()
-					player_stats_hp_bar_pulse:show()
-					player_stats_hp_bar_drain_meter:show()
-					player_stats_hp_bar_meter:show()
-					player_stats_hp_marker:show()
-				end
-				updateHPBar(player)
-			end
-			if job and job_specific[job].mp then
-				if not player_stats_mp_bar_bg:visible() then
-					player_stats_mp_text:show()
-					player_stats_mp_text_shadow:show()
-					player_stats_mp_bar_bg:show()
-					player_stats_mp_bar_pulse:show()
-					player_stats_mp_bar_drain_meter:show()
-					player_stats_mp_bar_meter:show()
-				end
-				updateMPBar(player)
-			end
-			if job and job_specific[job].tp then
-				if not player_stats_tp_bar_bg:visible() then
-					player_stats_tp_text:show()
-					player_stats_tp_text_shadow:show()
-					player_stats_tp_bar_bg:show()
-					player_stats_tp_bar_pulse:show()
-					player_stats_tp_bar_drain_meter:show()
-					player_stats_tp_bar_meter:show()
-					player_stats_tp_marker:show()
-				end
-				updateTPBar(player)
-			end
+		else
 			if job and job_specific[job].pet then
 				if hide_pet_bar_when_no_pet and not pet and player_stats_pet_bar_bg:visible() then
 					player_stats_pet_text:hide()
@@ -5851,14 +6153,22 @@ register_event('prerender', function()
 
 	if clock - last_target_update >= target_update_interval then
 		if Screen_Test then
-			updateTarget(player, screen_test_target)
+			updateTargetBar(player, screen_test_target)
 		elseif condense_target_and_subtarget_bars and sub_target then
-			updateTarget(player, sub_target)
+			updateTargetBar(player, sub_target, clock)
 		else
-			updateTarget(player, target)
-			updateSubTarget(player, sub_target)
+			updateTargetBar(player, target, clock)
 		end
 		last_target_update = clock
+	end
+
+	if not condense_target_and_subtarget_bars and clock - last_sub_target_update >= sub_target_update_interval then
+		if Screen_Test then
+			updateSubTargetBar(player, screen_test_sub_target, clock)
+		else
+			updateSubTargetBar(player, sub_target, clock)
+		end
+		last_sub_target_update = clock
 	end
 
 	if (not target and not sub_target and not Screen_Test) and target_bar_lock_left:visible() and not calculating_dimensions then
@@ -5873,7 +6183,7 @@ register_event('prerender', function()
 		else
 			checkForFocusTarget()
 		end
-		updateFocusTarget()
+		updateFocusTargetBar(target, clock)
 		last_focus_target_update = clock
 	end
 
@@ -5882,7 +6192,6 @@ register_event('prerender', function()
 		Heartbeat = os.time()
 
 		--Determine if we are in Dynamis-D
-		--Do this here because I would rather run this check once per second than possibly up to 3 times per frame (Focus, Sub, and Target bars)
 		inDyna()		
 
 		--Run Wide Scan after next time has passed
@@ -5890,8 +6199,8 @@ register_event('prerender', function()
 			runWideScan()
 		end
 
-		--Countdown for active SP Abilities
-		decrementSPTimers()
+		--Check for expired SP Abilities
+		checkSPTimers(clock)
 
 		--Fade timer
 		if fade_after_a_delay and player.vitals.hp ~= 0 and not Screen_Test then
@@ -5910,12 +6219,29 @@ register_event('prerender', function()
 				Fade = true
 				fade_delay = -1
 
+				--Update to remove formatting from text
+				updateHPBar(player)
+				updateTPBar(player)
+				updateMPBar(player)
+
 				--Turn Pulse off
+				Pulse_HP = false
+				Pulse_MP = false
 				Pulse_TP = false
+				Pulse_Pet = false
+				Pulse_Focus_Target_Bar = false
+				Pulse_Focus_Target_Name = false
+				Pulse_Sub_Target_Bar = false
+				Pulse_Sub_Target_Name = false
+				Pulse_Target_Bar = false
+				Pulse_Target_Name = false
 				player_stats_hp_bar_pulse:bg_alpha(0)
 				player_stats_mp_bar_pulse:bg_alpha(0)
 				player_stats_tp_bar_pulse:bg_alpha(0)
 				player_stats_pet_bar_pulse:bg_alpha(0)
+				focus_target_bar_pulse:bg_alpha(0)
+				sub_target_bar_pulse:bg_alpha(0)
+				target_bar_pulse:bg_alpha(0)
 
 			end
 		end
@@ -5934,169 +6260,6 @@ register_event('prerender', function()
 
 		end
 
-	end
-
-	--Pulse the HP bar (but not when the bar is fading/faded)
-	if Pulse_HP and not (Fade or Screen_Test) then
-		if pulse_hp_direction_up and pulse_hp_alpha_num < pulse_brightness then
-			pulse_hp_alpha_num = pulse_hp_alpha_num + pulse_speed
-			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
-		elseif pulse_hp_direction_up and pulse_hp_alpha_num >= pulse_brightness then
-			pulse_hp_alpha_num = pulse_brightness
-			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
-			pulse_hp_direction_up = false
-		elseif not pulse_hp_direction_up and pulse_hp_alpha_num > 10 then
-			pulse_hp_alpha_num = pulse_hp_alpha_num - pulse_speed
-			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
-		elseif not pulse_hp_direction_up and pulse_hp_alpha_num <= 10 then
-			pulse_hp_alpha_num = 10
-			player_stats_hp_bar_pulse:bg_alpha(pulse_hp_alpha_num)
-			pulse_hp_direction_up = true
-		end
-	end
-
-	--Pulse the MP bar (but not when the bar is fading/faded)
-	if Pulse_MP and not (Fade or Screen_Test) then
-		if pulse_mp_direction_up and pulse_mp_alpha_num < pulse_brightness then
-			pulse_mp_alpha_num = pulse_mp_alpha_num + pulse_speed
-			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
-		elseif pulse_mp_direction_up and pulse_mp_alpha_num >= pulse_brightness then
-			pulse_mp_alpha_num = pulse_brightness
-			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
-			pulse_mp_direction_up = false
-		elseif not pulse_mp_direction_up and pulse_mp_alpha_num > 10 then
-			pulse_mp_alpha_num = pulse_mp_alpha_num - pulse_speed
-			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
-		elseif not pulse_mp_direction_up and pulse_mp_alpha_num <= 10 then
-			pulse_mp_alpha_num = 10
-			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
-			pulse_mp_direction_up = true
-		end
-	end
-
-	--Pulse the TP bar (but not when the bar is fading/faded)
-	if Pulse_TP and not (Fade or Screen_Test) then
-		if pulse_tp_direction_up and pulse_tp_alpha_num < pulse_brightness then
-			pulse_tp_alpha_num = pulse_tp_alpha_num + pulse_speed
-			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
-		elseif pulse_tp_direction_up and pulse_tp_alpha_num >= pulse_brightness then
-			pulse_tp_alpha_num = pulse_brightness
-			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
-			pulse_tp_direction_up = false
-		elseif not pulse_tp_direction_up and pulse_tp_alpha_num > 10 then
-			pulse_tp_alpha_num = pulse_tp_alpha_num - pulse_speed
-			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
-		elseif not pulse_tp_direction_up and pulse_tp_alpha_num <= 10 then
-			pulse_tp_alpha_num = 10
-			player_stats_tp_bar_pulse:bg_alpha(pulse_tp_alpha_num)
-			pulse_tp_direction_up = true
-		end
-	end
-
-	--Pulse the Pet bar (but not when the bar is fading/faded)
-	if Pulse_Pet and not (Fade or Screen_Test) then
-		if pulse_pet_direction_up and pulse_pet_alpha_num < pulse_brightness then
-			pulse_pet_alpha_num = pulse_pet_alpha_num + pulse_speed
-			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
-		elseif pulse_pet_direction_up and pulse_pet_alpha_num >= pulse_brightness then
-			pulse_pet_alpha_num = pulse_brightness
-			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
-			pulse_pet_direction_up = false
-		elseif not pulse_pet_direction_up and pulse_pet_alpha_num > 10 then
-			pulse_pet_alpha_num = pulse_pet_alpha_num - pulse_speed
-			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
-		elseif not pulse_pet_direction_up and pulse_pet_alpha_num <= 10 then
-			pulse_pet_alpha_num = 10
-			player_stats_pet_bar_pulse:bg_alpha(pulse_pet_alpha_num)
-			pulse_pet_direction_up = true
-		end
-	end
-
-	--Pulse the Focus Target bar (but not when the bar is fading/faded)
-	if Pulse_Focus_Target_Bar and focus_target_bar_bg:visible() and not (Fade or Screen_Test) then
-		if pulse_focus_target_direction_up and pulse_focus_target_alpha_num < pulse_brightness then
-			pulse_focus_target_alpha_num = pulse_focus_target_alpha_num + pulse_speed
-		elseif pulse_focus_target_direction_up and pulse_focus_target_alpha_num >= pulse_brightness then
-			pulse_focus_target_alpha_num = pulse_brightness
-			pulse_focus_target_direction_up = false
-		elseif not pulse_focus_target_direction_up and pulse_focus_target_alpha_num > 10 then
-			pulse_focus_target_alpha_num = pulse_focus_target_alpha_num - pulse_speed
-		elseif not pulse_focus_target_direction_up and pulse_focus_target_alpha_num <= 10 then
-			pulse_focus_target_alpha_num = 10
-			pulse_focus_target_direction_up = true
-		end
-		if Pulse_Focus_Target_Bar then
-			focus_target_bar_pulse:bg_alpha(pulse_focus_target_alpha_num)
-		end
-		if Pulse_Focus_Target_Name then
-			focus_target_text:stroke_alpha(pulse_focus_target_alpha_num)
-		end
-	else
-		if focus_target_bar_pulse:visible() then
-			focus_target_bar_pulse:hide()
-			focus_target_bar_pulse:bg_alpha(0)
-		end
-		if not Fade then
-			focus_target_text:stroke_alpha(ft_text_stroke.a)
-		end
-	end
-
-	--Pulse the Sub Target bar (but not when the bar is fading/faded)
-	if (Pulse_Sub_Target_Bar or Pulse_Sub_Target_Name) and sub_target_bar_bg:visible() and not (Fade or Screen_Test) then
-		if pulse_sub_target_direction_up and pulse_sub_target_alpha_num < pulse_brightness then
-			pulse_sub_target_alpha_num = pulse_sub_target_alpha_num + pulse_speed
-		elseif pulse_sub_target_direction_up and pulse_sub_target_alpha_num >= pulse_brightness then
-			pulse_sub_target_alpha_num = pulse_brightness
-			pulse_sub_target_direction_up = false
-		elseif not pulse_sub_target_direction_up and pulse_sub_target_alpha_num > 10 then
-			pulse_sub_target_alpha_num = pulse_sub_target_alpha_num - pulse_speed
-		elseif not pulse_sub_target_direction_up and pulse_sub_target_alpha_num <= 10 then
-			pulse_sub_target_alpha_num = 10
-			pulse_sub_target_direction_up = true
-		end
-		if Pulse_Sub_Target_Bar then
-			sub_target_bar_pulse:bg_alpha(pulse_sub_target_alpha_num)
-		end
-		if Pulse_Sub_Target_Name then
-			sub_target_text:stroke_alpha(pulse_sub_target_alpha_num)
-		end
-	else
-		if sub_target_bar_pulse:visible() then
-			sub_target_bar_pulse:hide()
-			sub_target_bar_pulse:bg_alpha(0)
-		end
-		if not Fade then
-			sub_target_text:stroke_alpha(st_text_stroke.a)
-		end
-	end
-
-	--Pulse the Target bar (but not when the bar is fading/faded)
-	if (Pulse_Target_Bar or Pulse_Target_Name) and target_bar_bg:visible() and not (Fade or Screen_Test) then
-		if pulse_target_direction_up and pulse_target_alpha_num < pulse_brightness then
-			pulse_target_alpha_num = pulse_target_alpha_num + pulse_speed
-		elseif pulse_target_direction_up and pulse_target_alpha_num >= pulse_brightness then
-			pulse_target_alpha_num = pulse_brightness
-			pulse_target_direction_up = false
-		elseif not pulse_target_direction_up and pulse_target_alpha_num > 10 then
-			pulse_target_alpha_num = pulse_target_alpha_num - pulse_speed
-		elseif not pulse_target_direction_up and pulse_target_alpha_num <= 10 then
-			pulse_target_alpha_num = 10
-			pulse_target_direction_up = true
-		end
-		if Pulse_Target_Bar then
-			target_bar_pulse:bg_alpha(pulse_target_alpha_num)
-		end
-		if Pulse_Target_Name then
-			target_text:stroke_alpha(pulse_target_alpha_num)
-		end
-	else
-		if target_bar_pulse:visible() then
-			target_bar_pulse:hide()
-			target_bar_pulse:bg_alpha(0)
-		end
-		if not Fade then
-			target_text:stroke_alpha(t_text_stroke.a)
-		end
 	end
 
 	--Fade away (but not if the Screen Test is active)
@@ -6263,12 +6426,12 @@ register_event('action', function (act)
 	--Update monster targeting
 	if (isMonster(act.actor_id) and not isMonster(action_target_id)) then --monster targets a player
 		local timestamp = os.time() + monster_target_confidence_timer
-		updateTargeting(act.actor_id, action_target_id, timestamp, monster_target_icon)
+		updateTargetBaring(act.actor_id, action_target_id, timestamp, monster_target_icon)
 	elseif not isMonster(act.actor_id) and isMonster(action_target_id) then --player targets a monster...
 		local timestamp = os.time() + monster_target_confidence_timer
 		for i = 1, target_count do
 			if not current_aggro_list[act.targets[i].id] then --...that is not already targeting a player
-				updateTargeting(act.targets[i].id, act.actor_id, timestamp, monster_target_icon)
+				updateTargetBaring(act.targets[i].id, act.actor_id, timestamp, monster_target_icon)
 			end
 		end
 	end
@@ -7682,7 +7845,9 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		current_debuffs[target_id] = {}
 	end
 
-	local actor_name = get_mob_by_id(actor_id).name
+	local actor = get_mob_by_id(actor_id)
+	if not actor then return end
+	local actor_name = actor and actor.name
 	local duration = res.spells[spell_id] and res.spells[spell_id].duration or 0
 	local removal_timer = debuff_duration_cap
 	local trackingIndex = assignIndex()
@@ -8193,6 +8358,10 @@ register_event('addon command',function(addcmd, ...)
 			hideBars()
 			setPositions()
 			showBars()
+			if job_specific[job].hp then
+				local player = get_player()
+				updateHPBar(player)
+			end
 			add_to_chat(8,('[Bars] '):color(220)..('HP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].hp and 'ON' or 'OFF')):color(200))
 		end
 
@@ -8207,6 +8376,10 @@ register_event('addon command',function(addcmd, ...)
 			hideBars()
 			setPositions()
 			showBars()
+			if job_specific[job].mp then
+				local player = get_player()
+				updateMPBar(player)
+			end
 			add_to_chat(8,('[Bars] '):color(220)..('MP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].mp and 'ON' or 'OFF')):color(200))
 		end
 
@@ -8221,6 +8394,10 @@ register_event('addon command',function(addcmd, ...)
 			hideBars()
 			setPositions()
 			showBars()
+			if job_specific[job].tp then
+				local player = get_player()
+				updateTPBar(player)
+			end
 			add_to_chat(8,('[Bars] '):color(220)..('TP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].tp and 'ON' or 'OFF')):color(200))
 		end
 
@@ -8632,7 +8809,8 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Hex:'):color(36)..(' %s':format(settings.options.show_target_hex and 'ON' or 'OFF')):color(200))
 		local player = get_player()
 		local target = get_mob_by_target('t')
-		updateTarget(player, target)
+		local clock = os.clock()
+		updateTargetBar(player, target, clock)
 
 	--Toggle the index setting
 	elseif addcmd == 'index' or addcmd == 'i' then
@@ -8645,7 +8823,8 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Index:'):color(36)..(' %s':format(settings.options.show_target_index and 'ON' or 'OFF')):color(200))
 		local player = get_player()
 		local target = get_mob_by_target('t')
-		updateTarget(player, target)
+		local clock = os.clock()
+		updateTargetBar(player, target, clock)
 
 	--Add a target to the Auto Focus Target list
 	elseif addcmd == 'add' or addcmd == 'a' then
