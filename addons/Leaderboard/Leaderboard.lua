@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.3'
+_addon.version = '5.3.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -2172,6 +2172,7 @@ end)
 
 
 register_event('incoming chunk', function(id, original, modified, injected, blocked)
+
 	if id == 0x029 and not live.paused then
 
 		local packet = packets.parse('incoming', original)
@@ -2378,16 +2379,22 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 			end
 		end
+
+	elseif id == 0xB then --zone start
+		lbBox:hide()
+		zoning = true
+
+	elseif id == 0xA then --zone finish
+		if settings.visible then
+			lbBox:show()
+		end
+		zoning = false
+
 	end
 end)
 
 
 register_event('action',function(act)
-
-	-- local msg = act.targets[1].actions[1].message --duplicate
-	-- if act.category == 1 then
-		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name..' add_e_e: '..act.targets[1].actions[1].add_effect_effect..' add_e_p: '..act.targets[1].actions[1].add_effect_param..' s_e_message: '..act.targets[1].actions[1].add_effect_message)
-	-- end
 
 	local actor = getActor(act.actor_id)
 
@@ -5693,18 +5700,6 @@ end)
 
 
 register_event('prerender', function()
-
-	--Hide the box when zoning and logging out
-	local pos = windower.ffxi.get_position()
-	if pos == "(?-?)" and not zoning then
-		lbBox:hide()
-		zoning = true
-	elseif pos ~= "(?-?)" and zoning then
-		if settings.visible then
-			lbBox:show()
-		end
-		zoning = false
-	end
 
 	--Creates a 1 second Heartbeat
 	if os.time() > Heartbeat then
