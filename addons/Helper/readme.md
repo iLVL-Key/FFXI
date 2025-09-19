@@ -131,6 +131,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 2.3.2
+- Adjusted the zoning check so it's watching packets instead of running every prerender.
+
 Version 2.3.1
 - Fixed Mystical Canteen, Moglophone, and Ra'Kaznarian Plate KI ready status not resetting correctly after obtaining the KI again.
 
