@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.3.1'
+_addon.version = '2.3.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -46,7 +46,6 @@ get_dir = windower.get_dir
 get_info = windower.ffxi.get_info
 get_key_items = windower.ffxi.get_key_items
 get_party = windower.ffxi.get_party
-get_position = windower.ffxi.get_position
 get_player = windower.ffxi.get_player
 register_event = windower.register_event
 play_sound = windower.play_sound
@@ -403,6 +402,7 @@ cap_points = 0
 job_points = 500
 capped_jps = true
 check_party_for_low_mp_toggle = true
+zoned = false
 paused = false
 alive = true
 new_updates = false
@@ -675,7 +675,7 @@ function checkSparkoladeReminder()
 			local text = helpers[selected.helper].sparkolade_reminder
 			if text then
 
-				add_to_chat(selected.c_text, ('[' .. selected.name .. '] '):color(selected.c_name) .. (text):color(selected.c_text))
+				add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
 				playSound(selected.helper, 'sparkolade_reminder')
 				showFaceplate(selected.helper)
@@ -765,7 +765,7 @@ end
 --Get a list of local Helper files
 function getLocalHelpers()
 	local local_helpers = {}
-	local helpers_path = addon_path .. "data/helpers/"
+	local helpers_path = addon_path.."data/helpers/"
 
 	--Ensure the folder exists before scanning
 	if not dir_exists(helpers_path) then
@@ -789,7 +789,7 @@ end
 
 local function getGitHubHelpers()
 	local request_url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/github_helper_data.xml"
-	local save_path = windower.addon_path .. "data/github_helper_data.xml"
+	local save_path = windower.addon_path.."data/github_helper_data.xml"
 
 	--Download the github_helper_data.xml file and save it
 	local curl_command = string.format('curl -s -L -H "User-Agent: Windower-Helper-Addon" -o "%s" "%s"', save_path, request_url)
@@ -815,7 +815,7 @@ local function checkForNewHelpers()
 	end
 
 	if not github_helpers then
-		add_to_chat(8, ('[Helper] '):color(220) .. ('Could not retrieve list of Helpers from GitHub. Please try again.'):color(8))
+		add_to_chat(8, ('[Helper] '):color(220)..('Could not retrieve list of Helpers from GitHub. Please try again.'):color(8))
 		return
 	end
 
@@ -834,19 +834,19 @@ local function checkForNewHelpers()
 
 	-- Display the list of new Helpers
 	if #new_helpers > 0 then
-		add_to_chat(8, ('[Helper] '):color(220) .. ('New %s available: '):color(6):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
+		add_to_chat(8, ('[Helper] '):color(220)..('New %s available: '):color(6):format(#new_helpers == 1 and 'Helper' or 'Helpers'))
 		for _, helper in ipairs(new_helpers) do
 			local helper_name = helper.name or "Unknown"
-			local helper_type = helper.type and helper.type .. " - " or "Unknown Type - "
+			local helper_type = helper.type and helper.type.." - " or "Unknown Type - "
 			local helper_description = helper.description or "No description available."
-			local helper_creator = helper.creator and " (Creator: " .. helper.creator .. ")" or ""
+			local helper_creator = helper.creator and " (Creator: "..helper.creator..")" or ""
 			local c_name = helper.name_color or 220
 			local c_text = helper.text_color or 1
 	
-			add_to_chat(c_text, ('[' .. helper_name .. '] '):color(c_name) .. (helper_type .. helper_description .. helper_creator):color(c_text))
+			add_to_chat(c_text, ('['..helper_name..'] '):color(c_name)..(helper_type..helper_description..helper_creator):color(c_text))
 		end
 	else
-		add_to_chat(8, ('[Helper] '):color(220) .. ('No new Helpers available.'):color(28))
+		add_to_chat(8, ('[Helper] '):color(220)..('No new Helpers available.'):color(28))
 	end
 end
 
@@ -906,7 +906,7 @@ end
 --Update the SHA tag of a downloaded Helper
 function updateHelperSHA(file_name, new_sha)
 
-	local filepath = addon_path .. "data/helpers/" .. file_name
+	local filepath = addon_path.."data/helpers/"..file_name
 
 	--Read XML file
 	local file = io.open(filepath, "r")
@@ -917,10 +917,10 @@ function updateHelperSHA(file_name, new_sha)
 	--Check if SHA tag already exists
 	if content:match("<sha>.-</sha>") then
 		--Replace existing SHA
-		content = content:gsub("<sha>.-</sha>", "<sha>" .. new_sha .. "</sha>")
+		content = content:gsub("<sha>.-</sha>", "<sha>"..new_sha.."</sha>")
 	else
 		--Insert new SHA tag inside <info>
-		content = content:gsub("(<info>.-)</info>", "%1\n    <sha>" .. new_sha .. "</sha>\n</info>")
+		content = content:gsub("(<info>.-)</info>", "%1\n    <sha>"..new_sha.."</sha>\n</info>")
 	end
 
 	--Save updated XML
@@ -1013,8 +1013,8 @@ end
 --Download a Helper from GitHub
 function downloadHelper(file_name, github_helper_sha)
 
-	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/helpers/" .. file_name
-	local filepath = addon_path .. "data/helpers/" .. file_name
+	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/data/helpers/"..file_name
+	local filepath = addon_path.."data/helpers/"..file_name
 
 	--Download the file
 	local curl_command = string.format('curl -s -L -o "%s" "%s"', filepath, url)
@@ -1039,7 +1039,7 @@ function downloadAddon(github_addon_sha)
 
 	--Define the download URL and destination path
 	local url = "https://raw.githubusercontent.com/iLVL-Key/FFXI/main/addons/Helper/Helper.lua"
-	local filepath = addon_path .. "Helper.lua"
+	local filepath = addon_path.."Helper.lua"
 
 	--Download the file
 	local curl_command = string.format('curl -s -L -o "%s" "%s"', filepath, url)
@@ -1128,7 +1128,7 @@ function downloadHelperMedia(helper_name)
 	end
 
 	if not response or response == "" then
-		add_to_chat(8, ('[Helper] '):color(220) .. ('Could not retrieve list of Helper Media from GitHub. Please try again.'):color(8))
+		add_to_chat(8, ('[Helper] '):color(220)..('Could not retrieve list of Helper Media from GitHub. Please try again.'):color(8))
 		return
 	end
 
@@ -1145,7 +1145,7 @@ function downloadHelperMedia(helper_name)
 	-- Download each media file
 	for _, file in ipairs(github_files) do
 
-		local file_path = save_path .. file.name
+		local file_path = save_path..file.name
 		os.execute(string.format('curl -s -L -o "%s" "%s"', file_path, file.url))
 
 		--Small delay to avoid freezing the game
@@ -1227,12 +1227,12 @@ function checkAndDownloadSounds(arg)
 
 	--Check each sound file
 	for _, filename in ipairs(sound_files) do
-		local file_path = media_folder .. filename
+		local file_path = media_folder..filename
 
 		--If the file does not exist, download it
 		if not file_exists(file_path) or arg == 'full' then
 
-			local download_url = base_url .. filename
+			local download_url = base_url..filename
 			local curl_command = string.format('start /B curl -s -L -o "%s" "%s"', file_path, download_url)
 			os.execute(curl_command)
 
@@ -1435,7 +1435,7 @@ function checkKIReminderTimestamps()
 					local text = helpers[selected.helper]['reminder_'..key_item]
 					if text then
 
-						add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name) .. (text):color(selected.c_text))
+						add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 
 						playSound(selected.helper, 'reminder_'..key_item)
 						showFaceplate(selected.helper)
@@ -1533,7 +1533,7 @@ end
 function capitalize(str)
 
 	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
-		return string.upper(firstLetter) .. string.lower(rest)
+		return string.upper(firstLetter)..string.lower(rest)
 	end)
 
 	return str
@@ -1542,7 +1542,7 @@ end
 
 register_event('incoming chunk', function(id, original, modified, injected, blocked)
 
-	if injected or blocked or paused then return end
+	if injected or blocked then return end
 
 	local packet = packets.parse('incoming', original)
 
@@ -1580,7 +1580,24 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 			job_points = job_points + jp_gained >= 500 and 500 or job_points + jp_gained
 
 		end
+
+	elseif id == 0xB then --zone start
+		if get_info().logged_in then
+			zoned = true
+			paused = true
+		end
+
+	elseif id == 0xA then --zone finish
+		if get_info().logged_in then
+			zoned = false
+			--Short delay after zoning to prevent "left...joined" messages after every zone.
+			coroutine.schedule(function()
+				paused = false
+			end, after_zone_party_check_delay_seconds)
+		end
 	end
+
+	if paused then return end
 
 	if capped_merit_points and merit_points == max_merit_points and not capped_merits then
 
@@ -2456,19 +2473,9 @@ end)
 
 register_event('prerender', function()
 
-	local pos = get_position()
+	-- local pos = get_position()
 	local logged_in = get_info().logged_in
 	local player = get_player()
-
-	--Prevents a few things from happening while zoning
-	if pos == "(?-?)" and logged_in and not paused then
-		paused = true
-	elseif pos ~= "(?-?)" and paused then
-		--Short delay after zoning to prevent "left...joined" messages after every zone.
-		coroutine.schedule(function()
-			paused = false
-		end, after_zone_party_check_delay_seconds)
-	end
 
 	--The alive flag prevents a few things from happening when you die
 	if logged_in and player.vitals.hp == 0 and alive then
