@@ -265,6 +265,12 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.4.2
+- Fixed `hide_player_stats_bars_when_no_target` option broken in version 4.4 update.
+- Fixed errors regarding `player_stats_mp_marker` that doesn't actually exist.
+- Fixed Impact debuff timer restarting on subsequent casts while Impact debuff is still active.
+- Fixed issues with the Player Stats Pet Bar flickering when `hide_pet_bar_when_no_pet` option is set to on.
+
 Version 4.4.1
 - Adjusted Bar animations to no longer be tied to when it's section updates and instead are based on frame rate (prerender). Animations should stay smooth no matter the update interval setting for each section.
 - Adjusted SP timer to use a timestamp with os.clock for calculating the time remaining instead of decrementing a number variable based on os.time. More accurate and won't desync under certain circumstances.
