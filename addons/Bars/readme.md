@@ -267,7 +267,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ## Changelog
 Version 4.4.1
 - Adjusted Bar animations to no longer be tied to when it's section updates and instead are based on frame rate (prerender). Animations should stay smooth no matter the update interval setting for each section.
-- Adjusted SP timer to use a timestamp for calculating the time remaining instead of decrementing a number variable. More accurate and won't desync under certain circumstances.
+- Adjusted SP timer to use a timestamp with os.clock for calculating the time remaining instead of decrementing a number variable based on os.time. More accurate and won't desync under certain circumstances.
 - Fixed a number of things that the initial 4.4 update had broken.
 
 Version 4.4
