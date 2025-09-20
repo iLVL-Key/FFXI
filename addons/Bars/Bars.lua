@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.1'
+_addon.version = '4.4.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2748,49 +2748,91 @@ function hideBars()
 
 end
 
+--Hide only the Player Stats bars
+function hidePlayerStatBars()
+
+	player_stats_hp_bar_meter:hide()
+	player_stats_hp_bar_drain_meter:hide()
+	player_stats_hp_bar_bg:hide()
+	player_stats_hp_bar_pulse:hide()
+	player_stats_hp_marker:hide()
+	player_stats_hp_text:hide()
+	player_stats_hp_text_shadow:hide()
+
+	player_stats_mp_bar_meter:hide()
+	player_stats_mp_bar_drain_meter:hide()
+	player_stats_mp_bar_bg:hide()
+	player_stats_mp_bar_pulse:hide()
+	player_stats_mp_text:hide()
+	player_stats_mp_text_shadow:hide()
+
+	player_stats_tp_bar_meter:hide()
+	player_stats_tp_bar_drain_meter:hide()
+	player_stats_tp_bar_bg:hide()
+	player_stats_tp_bar_pulse:hide()
+	player_stats_tp_marker:hide()
+	player_stats_tp_text:hide()
+	player_stats_tp_text_shadow:hide()
+
+	player_stats_pet_bar_meter:hide()
+	player_stats_pet_bar_drain_meter:hide()
+	player_stats_pet_bar_bg:hide()
+	player_stats_pet_bar_pulse:hide()
+	player_stats_pet_text:hide()
+	player_stats_pet_text_shadow:hide()
+
+end
+
 --Show appropriate bars
-function showBars()
+function showBars(target, pet)
 
-	if job_specific[job].hp then
-		player_stats_hp_bar_meter:show()
-		player_stats_hp_bar_drain_meter:show()
-		player_stats_hp_bar_bg:show()
-		player_stats_hp_bar_pulse:show()
-		if show_hp_tp_markers then
-			player_stats_hp_marker:show()
+	if not (hide_player_stats_bars_when_no_target and not target) then
+
+		if job_specific[job].hp then
+			player_stats_hp_bar_meter:show()
+			player_stats_hp_bar_drain_meter:show()
+			player_stats_hp_bar_bg:show()
+			player_stats_hp_bar_pulse:show()
+			if show_hp_tp_markers then
+				player_stats_hp_marker:show()
+			end
+			player_stats_hp_text:show()
+			player_stats_hp_text_shadow:show()
 		end
-		player_stats_hp_text:show()
-		player_stats_hp_text_shadow:show()
-	end
 
-	if job_specific[job].mp then
-		player_stats_mp_bar_meter:show()
-		player_stats_mp_bar_drain_meter:show()
-		player_stats_mp_bar_bg:show()
-		player_stats_mp_bar_pulse:show()
-		player_stats_mp_text:show()
-		player_stats_mp_text_shadow:show()
-	end
-
-	if job_specific[job].tp then
-		player_stats_tp_bar_meter:show()
-		player_stats_tp_bar_drain_meter:show()
-		player_stats_tp_bar_bg:show()
-		player_stats_tp_bar_pulse:show()
-		if show_hp_tp_markers then
-			player_stats_tp_marker:show()
+		if job_specific[job].mp then
+			player_stats_mp_bar_meter:show()
+			player_stats_mp_bar_drain_meter:show()
+			player_stats_mp_bar_bg:show()
+			player_stats_mp_bar_pulse:show()
+			player_stats_mp_text:show()
+			player_stats_mp_text_shadow:show()
 		end
-		player_stats_tp_text:show()
-		player_stats_tp_text_shadow:show()
-	end
 
-	if job_specific[job].pet then
-		player_stats_pet_bar_meter:show()
-		player_stats_pet_bar_drain_meter:show()
-		player_stats_pet_bar_bg:show()
-		player_stats_pet_bar_pulse:show()
-		player_stats_pet_text:show()
-		player_stats_pet_text_shadow:show()
+		if job_specific[job].tp then
+			player_stats_tp_bar_meter:show()
+			player_stats_tp_bar_drain_meter:show()
+			player_stats_tp_bar_bg:show()
+			player_stats_tp_bar_pulse:show()
+			if show_hp_tp_markers then
+				player_stats_tp_marker:show()
+			end
+			player_stats_tp_text:show()
+			player_stats_tp_text_shadow:show()
+		end
+
+		if job_specific[job].pet then
+			local pet = get_mob_by_target('pet')
+			if not (hide_pet_bar_when_no_pet and not pet) then
+				player_stats_pet_bar_meter:show()
+				player_stats_pet_bar_drain_meter:show()
+				player_stats_pet_bar_bg:show()
+				player_stats_pet_bar_pulse:show()
+				player_stats_pet_text:show()
+				player_stats_pet_text_shadow:show()
+			end
+		end
+
 	end
 
 	if party_1_actions.show then
@@ -5163,7 +5205,7 @@ function updatePetBar(pet)
 end
 
 function updatePetBarAnimations(pet)
-
+-- print(player_stats_pet_bar_meter:bg_alpha(), player_stats_pet_bar_drain_meter:bg_alpha())
 	--Pet Bar Pulse animation
 	if Pulse_Pet and not (Fade or Screen_Test) then
 		if pulse_pet_direction_up and pulse_pet_alpha_num < pulse_brightness then
@@ -5205,6 +5247,7 @@ function updatePetBarAnimations(pet)
 				drain_meter = drain_meter..' '
 			end
 			player_stats_pet_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
+			player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
 		end
 
 	end
@@ -5827,10 +5870,12 @@ end
 --Job Changing
 register_event('job change', function()
 
+	local target = get_mob_by_target('t')
+
 	hideBars()
 	setJob()
 	setPositions()
-	showBars()
+	showBars(target)
 	resetFadeDelay()
 
 end)
@@ -5867,36 +5912,29 @@ register_event('target change', function()
 	st_targeting_id = nil
 	t_targeting_id = nil
 
+	if hide_player_stats_bars_when_no_target and not target then
+		hidePlayerStatBars()
+	else
+		showBars(target)
+	end
+
 end)
 
 function hpChange()
 
 	if in_cutscene or zoning then return end
 
-	if job and job_specific[job].hp then
-		local target = get_mob_by_target('t')
-		if hide_player_stats_bars_when_no_target and not target then
-			if player_stats_hp_bar_bg:visible() then
-				player_stats_hp_text:hide()
-				player_stats_hp_text_shadow:hide()
-				player_stats_hp_bar_bg:hide()
-				player_stats_hp_bar_pulse:hide()
-				player_stats_hp_bar_drain_meter:hide()
-				player_stats_hp_bar_meter:hide()
-				player_stats_hp_marker:hide()
-			end
-		else
-			local player = get_player()
-			updateHPBar(player)
-			if not player_stats_hp_bar_bg:visible() then
-				player_stats_hp_text:show()
-				player_stats_hp_text_shadow:show()
-				player_stats_hp_bar_bg:show()
-				player_stats_hp_bar_pulse:show()
-				player_stats_hp_bar_drain_meter:show()
-				player_stats_hp_bar_meter:show()
-				player_stats_hp_marker:show()
-			end
+	local target = get_mob_by_target('t')
+	if hide_player_stats_bars_when_no_target and not target then
+		if player_stats_hp_bar_bg:visible() then
+			hidePlayerStatBars()
+		end
+	else
+		local player = get_player()
+		updateHPBar(player)
+		if not player_stats_hp_bar_bg:visible() then
+			local target = get_mob_by_target('t')
+			showBars(target)
 		end
 	end
 
@@ -5922,25 +5960,13 @@ function mpChange()
 		local target = get_mob_by_target('t')
 		if hide_player_stats_bars_when_no_target and not target then
 			if player_stats_mp_bar_bg:visible() then
-				player_stats_mp_text:hide()
-				player_stats_mp_text_shadow:hide()
-				player_stats_mp_bar_bg:hide()
-				player_stats_mp_bar_pulse:hide()
-				player_stats_mp_bar_drain_meter:hide()
-				player_stats_mp_bar_meter:hide()
-				player_stats_mp_marker:hide()
+				hidePlayerStatBars()
 			end
 		else
 			local player = get_player()
 			updateMPBar(player)
 			if not player_stats_mp_bar_bg:visible() then
-				player_stats_mp_text:show()
-				player_stats_mp_text_shadow:show()
-				player_stats_mp_bar_bg:show()
-				player_stats_mp_bar_pulse:show()
-				player_stats_mp_bar_drain_meter:show()
-				player_stats_mp_bar_meter:show()
-				player_stats_mp_marker:show()
+				showBars(target)
 			end
 		end
 	end
@@ -5960,25 +5986,13 @@ register_event('tp change', function(new_tp,old_tp)
 		local target = get_mob_by_target('t')
 		if hide_player_stats_bars_when_no_target and not target then
 			if player_stats_tp_bar_bg:visible() then
-				player_stats_tp_text:hide()
-				player_stats_tp_text_shadow:hide()
-				player_stats_tp_bar_bg:hide()
-				player_stats_tp_bar_pulse:hide()
-				player_stats_tp_bar_drain_meter:hide()
-				player_stats_tp_bar_meter:hide()
-				player_stats_tp_marker:hide()
+				hidePlayerStatBars()
 			end
 		else
 			local player = get_player()
 			updateTPBar(player)
 			if not player_stats_tp_bar_bg:visible() then
-				player_stats_tp_text:show()
-				player_stats_tp_text_shadow:show()
-				player_stats_tp_bar_bg:show()
-				player_stats_tp_bar_pulse:show()
-				player_stats_tp_bar_drain_meter:show()
-				player_stats_tp_bar_meter:show()
-				player_stats_tp_marker:show()
+				showBars(target)
 			end
 		end
 	end
@@ -6010,7 +6024,7 @@ function initialize()
 	setJob()
 	setPositions()
 	setWidth()
-	showBars()
+	showBars(target)
 	updateTargetBar(player, target)
 	updateSubTargetBar(player, sub_target)
 	updateHPBar(player)
@@ -6069,7 +6083,8 @@ register_event('status change', function(status)
 	--Out of cutscene: Show the bars
 	elseif status ~= 4 and in_cutscene then
 		in_cutscene = false
-		showBars()
+		local target = get_mob_by_target('t')
+		showBars(target)
 
 	end
 	resetFadeDelay()
@@ -6104,7 +6119,7 @@ register_event('prerender', function()
 	if job and job_specific[job].tp then
 		updateTPBarAnimations(player)
 	end
-	if job and job_specific[job].pet and pet then
+	if job and job_specific[job].pet then
 		updatePetBarAnimations(pet)
 	end
 
@@ -6121,12 +6136,7 @@ register_event('prerender', function()
 	if clock - last_player_stats_update >= player_stats_pet_update_interval then
 		if hide_player_stats_bars_when_no_target and not target then
 			if player_stats_pet_bar_bg:visible() then
-				player_stats_pet_text:hide()
-				player_stats_pet_text_shadow:hide()
-				player_stats_pet_bar_bg:hide()
-				player_stats_pet_bar_pulse:hide()
-				player_stats_pet_bar_drain_meter:hide()
-				player_stats_pet_bar_meter:hide()
+				hidePlayerStatBars()
 			end
 		else
 			if job and job_specific[job].pet then
@@ -6138,12 +6148,7 @@ register_event('prerender', function()
 					player_stats_pet_bar_drain_meter:hide()
 					player_stats_pet_bar_meter:hide()
 				elseif not player_stats_pet_bar_bg:visible() then
-					player_stats_pet_text:show()
-					player_stats_pet_text_shadow:show()
-					player_stats_pet_bar_bg:show()
-					player_stats_pet_bar_pulse:show()
-					player_stats_pet_bar_drain_meter:show()
-					player_stats_pet_bar_meter:show()
+					showBars(target)
 				end
 				updatePetBar(pet)
 			end
@@ -7785,7 +7790,7 @@ end)
 
 function handleOverwrites(target_id, new_spell_id)
 
-	--Over 9000 are the boosted versions of Dia, Bio, Burn, etc.
+	--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
 	new_spell_id = new_spell_id > 9000 and new_spell_id - 9000 or new_spell_id
 
 	--If the target has no current debuffs, return true so the new debuff gets saved
@@ -7795,8 +7800,9 @@ function handleOverwrites(target_id, new_spell_id)
 
 	--Loop through all debuffs the target currently has
 	for effect_id, spell in pairs(current_debuffs[target_id]) do
-		--Over 9000 are the boosted versions of Dia, Bio, Burn, etc.
+		--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
 		local old_spell_id = spell and spell.id and spell.id > 9000 and spell.id - 9000 or (spell and spell.id)
+		if old_spell_id == 503 then return false end --Impact does not overwrite itself
 		local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
 
 		--Check if there is a higher priority debuff already active
@@ -8021,7 +8027,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		removal_timer = duration
 	--Impact
 	elseif effect_id == 9503 then
-		check_override = false
+		-- check_override = false
 		duration = 180
 		removal_timer = duration
 	end
@@ -8331,7 +8337,8 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 
 	elseif id == 0xA then --zone finish
 		zoning = false
-		showBars()
+		local target = get_mob_by_target('t')
+		showBars(target)
 		resetFadeDelay()
 
 	end
@@ -8357,7 +8364,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			showBars()
+			local target = get_mob_by_target('t')
+			showBars(target)
 			if job_specific[job].hp then
 				local player = get_player()
 				updateHPBar(player)
@@ -8375,7 +8383,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			showBars()
+			local target = get_mob_by_target('t')
+			showBars(target)
 			if job_specific[job].mp then
 				local player = get_player()
 				updateMPBar(player)
@@ -8393,7 +8402,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			showBars()
+			local target = get_mob_by_target('t')
+			showBars(target)
 			if job_specific[job].tp then
 				local player = get_player()
 				updateTPBar(player)
@@ -8411,7 +8421,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			showBars()
+			local target = get_mob_by_target('t')
+			showBars(target)
 			add_to_chat(8,('[Bars] '):color(220)..('Pet bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].pet and 'ON' or 'OFF')):color(200))
 		end
 
@@ -8796,7 +8807,8 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Markers:'):color(36)..(' %s':format(settings.options.show_hp_tp_markers and 'ON' or 'OFF')):color(200))
 		hideBars()
 		setWidth()
-		showBars()
+		local target = get_mob_by_target('t')
+		showBars(target)
 
 	--Toggle the hex setting
 	elseif addcmd == 'hex' or addcmd == 'h' then
