@@ -265,10 +265,14 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+Version 4.4.1
+- Adjusted Bar animations to no longer be tied to when it's section updates and instead are based on frame rate (prerender). Animations should stay smooth no matter the update interval setting for each section.
+- Adjusted SP timer to use a timestamp for calculating the time remaining instead of decrementing a number variable. More accurate and won't desync under certain circumstances.
+- Fixed a number of things that the initial 4.4 update had broken.
 
 Version 4.4
 - Added `update_interval` settings. Allows you to set how often certain sections update their on-screen information.
-- Adjusted a number of areas for efficiency. Reduced a large number of redundant calls that happen every update interval.
+- Adjusted many areas for efficiency. Reduced a large number of redundant operations that had been happening every frame.
 
 Version 4.3.4
 - Fixed bars displaying incorrectly when changing the font of the text.
