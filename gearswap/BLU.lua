@@ -325,7 +325,7 @@ WeaponCycle = {
 	{"Tizona", "Thibron"},
 	{"Naegling", "Thibron"},
 	{"Maxentius", "Thibron"},
-	{"Maxentius", "Bunzi's Rod"},
+	{"Ice Brand", "Bunzi's Rod"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -360,7 +360,7 @@ sets.Mode1.idle = {
 	right_ear="Hashi. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
-	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Damage taken-5%',}},
+	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
 }
 
 -- Idle Mode 2
@@ -383,7 +383,7 @@ sets.Mode5.idle = set_combine(sets.Mode1.idle, {
 
 })
 
--- DPS (Accuracy, Double/Triple Attack, DEX, Store TP, Attack, Refresh, Regain, Regen)
+-- DPS (Dual Weild, Double/Triple Attack, Accuracy, DEX, Store TP, Attack)
 -- NOTE: All other Modes will use this DPS set unless gear is specified in each one. If you only care to use one DPS set, regardless of Mode, you may ignore the other DPS sets. They are only available should you wish to make use of them.
 sets.Mode1.melee = {
 	ammo="Coiste Bodhar",
@@ -393,17 +393,18 @@ sets.Mode1.melee = {
 	legs="Gleti's Breeches",
 	feet="Nyame Sollerets",
 	neck="Mirage Stole +2",
-	waist="Windbuffet Belt +1",
+	waist="Reiki Yotai",
 	left_ear="Suppanomimi",
 	right_ear="Hashi. Earring +2",
 	left_ring="Epona's Ring",
 	right_ring="Hetairoi Ring",
-	back={ name="Rosmerta's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Mag. Evasion+15',}},
+	back={ name="Rosmerta's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dual Wield"+10','Mag. Evasion+15',}},
 }
 
 -- DPS Mode 2
 sets.Mode2.melee = set_combine(sets.Mode1.melee, {
-
+	left_ear="Telos Earring",
+	waist="Windbuffet Belt +1",
 })
 
 -- DPS Mode 3
@@ -501,7 +502,6 @@ sets["Requiescat"] = set_combine(sets.weapon_skill, {
 sets["Chant du Gyne"] = set_combine(sets.weapon_skill, {
 	body="Gleti's Cuirass",
 	legs="Gleti's Breeches",
-	feet="Aya. Gambieras +2",
 	waist="Fotia Belt",
 	left_ear="Mache Earring +1",
 	right_ear="Odr Earring",
@@ -536,7 +536,7 @@ sets.fast_cast = {
 	right_ear="Etiolation Earring", --1%
 	left_ring="Prolix Ring", --2%
 	right_ring="Kishar Ring", --4%
-	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Damage taken-5%',}}, --10%
+	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}}, --10%
 }
 
 -- Snapshot
@@ -596,7 +596,7 @@ sets.dark = set_combine(sets.magical, {
 -- Breath
 -- Combines with Magical set, only necessary to set the slots with specific desired stats
 sets.breath = set_combine(sets.magical, {
-	head="Luh. Keffiyeh +3",
+	head="Luh. Keffiyeh +4",
 })
 
 -- Magic Accuracy (Magic Accuracy, Blue Magic Skill)
@@ -632,11 +632,11 @@ sets.buff = {
 -- Blue Magic Skill (Blue Magic Skill)
 sets.blue_magic_skill = {
 	ammo="Mavi Tathlum",
-	head="Luh. Keffiyeh +3",
-	body="Assim. Jubbah +3",
+	head="Luh. Keffiyeh +4",
+	body="Assim. Jubbah +4",
 	hands="Rawhide Gloves",
 	legs="Hashishin Tayt +3",
-	feet="Luhlaza Charuqs +3",
+	feet="Luhlaza Charuqs +4",
 	neck="Mirage Stole +2",
 	left_ear="Njordr Earring",
 	right_ear="Hashi. Earring +2",
@@ -717,7 +717,7 @@ sets.burst_affinity = {
 
 -- Diffusion (must remain equipped during midcast)
 sets.diffusion = {
-	feet="Luhlaza Charuqs +3",
+	feet="Luhlaza Charuqs +4",
 }
 
 -- Efflux
@@ -769,7 +769,7 @@ end
 
 
 
-FileVersion = '18.9.2'
+FileVersion = '18.9.3'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -1371,7 +1371,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -1786,6 +1786,17 @@ local function primeAMUpdate(tp)
 		end
 	end
 
+end
+
+local function buffActive(buff_id)
+	local buffs = windower.ffxi.get_player().buffs
+
+	for _, buff in ipairs(buffs) do
+		if buff == buff_id then
+			return true
+		end
+	end
+	return false
 end
 
 -------------------------------------------
@@ -2287,7 +2298,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2316,14 +2327,10 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 			cancel_spell()
 			return
-		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		elseif sets[spell.english] then
-			equip(sets[spell.english])
-		else
-			equip(sets.weapon_skill)
 		end
+		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
 		if player.equipment.main == "Sequence" and spell.english == "Requiescat" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Almace' and spell.english == "Chant du Cygne" then
@@ -2451,7 +2458,7 @@ function aftercast(spell)
 	elseif spell.english == 'Azure Lore' then
 		if ALTimer == 'On' then
 			--these pieces extend Azure Lore by 10 seconds so we adjust accordingly
-			if player.equipment.hands == 'Luhlaza Bazubands' or player.equipment.hands == 'Luh. Bazubands +1' or player.equipment.hands == 'Luh. Bazubands +2' or player.equipment.hands == 'Luh. Bazubands +3' then
+			if player.equipment.hands == 'Luhlaza Bazubands' or player.equipment.hands == 'Luh. Bazubands +1' or player.equipment.hands == 'Luh. Bazubands +2' or player.equipment.hands == 'Luh. Bazubands +3' or player.equipment.hands == 'Luh. Bazubands +4' then
 				send_command('input /echo [Azure Lore] 40 seconds;wait 10;input /echo [Azure Lore] 30 seconds;wait 10;input /echo [Azure Lore] 20 seconds;wait 10;input /echo [Azure Lore] 10 seconds')
 			else
 				send_command('input /echo [Azure Lore] 30 seconds;wait 10;input /echo [Azure Lore] 20 seconds;wait 10;input /echo [Azure Lore] 10 seconds')
@@ -3660,7 +3667,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Amplification.recast then
-			if buffactive['Magic Atk. Boost'] and buffactive['Magic Def. Boost'] then
+			if buffActive(190) and buffActive(191) then
 				textColor('Amplification','active')
 				Amplification.flashed = false
 			elseif Amplification.recast > 0 then
@@ -3678,7 +3685,7 @@ windower.register_event('prerender', function()
 		end
 
 		if AnimatingWail.recast then
-			if buffactive['Haste'] then
+			if buffActive(33) then
 				textColor('Animating Wail','active')
 				AnimatingWail.flashed = false
 			elseif AnimatingWail.recast > 0 then
@@ -3714,7 +3721,7 @@ windower.register_event('prerender', function()
 		end
 
 		if BatteryCharge.recast then
-			if buffactive['Refresh'] then
+			if buffActive(43) then
 				textColor('Battery Charge','active')
 				BatteryCharge.flashed = false
 			elseif BatteryCharge.recast > 0 then
@@ -3750,7 +3757,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Cocoon.recast then
-			if buffactive['Defense Boost'] then
+			if buffActive(93) then
 				textColor('Cocoon','active')
 				Cocoon.flashed = false
 			elseif Cocoon.recast > 0 then
@@ -3786,7 +3793,7 @@ windower.register_event('prerender', function()
 		end
 
 		if ErraticFlutter.recast then
-			if buffactive['Haste'] then
+			if buffActive(33) then
 				textColor('Erratic Flutter','active')
 				ErraticFlutter.flashed = false
 			elseif ErraticFlutter.recast > 0 then
@@ -3804,7 +3811,7 @@ windower.register_event('prerender', function()
 		end
 
 		if FeatherBarrier.recast then
-			if buffactive['Evasion Boost'] then
+			if buffActive(92) then
 				textColor('Feather Barrier','active')
 				FeatherBarrier.flashed = false
 			elseif FeatherBarrier.recast > 0 then
@@ -3840,7 +3847,7 @@ windower.register_event('prerender', function()
 		end
 
 		if MementoMori.recast then
-			if buffactive['Magic Atk. Boost'] then
+			if buffActive(190) then
 				textColor('Memento Mori','active')
 				MementoMori.flashed = false
 			elseif MementoMori.recast > 0 then
@@ -3876,7 +3883,7 @@ windower.register_event('prerender', function()
 		end
 
 		if NaturesMeditation.recast then
-			if buffactive['Attack Boost'] then
+			if buffActive(91) then
 				textColor('Nature\'s Meditation','active')
 				NaturesMeditation.flashed = false
 			elseif NaturesMeditation.recast > 0 then
@@ -3966,7 +3973,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Refueling.recast then
-			if buffactive['Haste'] then
+			if buffActive(33) then
 				textColor('Refueling','active')
 				Refueling.flashed = false
 			elseif Refueling.recast > 0 then
@@ -3984,7 +3991,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Regeneration.recast then
-			if buffactive['Regen'] then
+			if buffActive(42) then
 				textColor('Regeneration','active')
 				Regeneration.flashed = false
 			elseif Regeneration.recast > 0 then
@@ -4002,7 +4009,7 @@ windower.register_event('prerender', function()
 		end
 
 		if SalineCoat.recast then
-			if buffactive['Magic Def. Boost'] then
+			if buffActive(191) then
 				textColor('Saline Coat','active')
 				SalineCoat.flashed = false
 			elseif SalineCoat.recast > 0 then
@@ -4020,7 +4027,7 @@ windower.register_event('prerender', function()
 		end
 
 		if TriumphantRoar.recast then
-			if buffactive['Attack Boost'] then
+			if buffActive(91) then
 				textColor('Triumphant Roar','active')
 				TriumphantRoar.flashed = false
 			elseif TriumphantRoar.recast > 0 then
