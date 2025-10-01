@@ -120,7 +120,7 @@ SongposY			=	300		--	Y position for the Song list. 0 is top of the window, incre
 FontSize			=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer			=	16		--	Space in pixels between each Line of the HUD.
 ColumnSpacer		=	90.5	--	Space in pixels between each Column of the HUD.
-ShowTPMeter			=	'Off'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
+ShowTPMeter			=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 PTMemNearDist		=	10		--	Maximum distance for a party member to be highlighted as "nearby".
 
 modeName = {
@@ -566,7 +566,7 @@ sets.buff_song = {
 	body="Fili Hongreline +3",
 	hands="Fili Manchettes +3",
 	legs="Inyanga Shalwar +2",
-	feet="Brioso Slippers +3",
+	feet="Brioso Slippers +4",
 	neck="Mnbw. Whistle +1",
 }
 
@@ -607,7 +607,7 @@ sets.madrigal = set_combine(sets.buff_song, {
 
 -- Mambos
 sets.mambo = set_combine(sets.buff_song, {
-
+	feet="Mou. Crackows +1",
 })
 
 -- Marches
@@ -627,7 +627,7 @@ sets.minuet = set_combine(sets.buff_song, {
 
 -- Paeons
 sets.paeon = set_combine(sets.buff_song, {
-	head="Brioso Roundlet +3",
+	head="Brioso Roundlet +4",
 })
 
 -- Preludes
@@ -654,11 +654,11 @@ sets.buff_other = {
 -- Song Debuffs
 -- NOTE: Do not set your main/sub here, set them in the sets below
 sets.debuff_song = {
-	head="Brioso Roundlet +3",
+	head="Brioso Roundlet +4",
 	body="Fili Hongreline +3",
 	hands="Fili Manchettes +3",
 	legs="Inyanga Shalwar +2",
-	feet="Brioso Slippers +3",
+	feet="Brioso Slippers +4",
 	neck="Mnbw. Whistle +1",
 	waist="Null Belt",
 	left_ear="Regal Earring",
@@ -689,14 +689,14 @@ sets.threnody = set_combine(sets.debuff_song, {
 
 -- Lullaby (Foe Lullaby I & II, and Horde Lullaby I)
 sets.lullaby = set_combine(sets.debuff_song, {
-	hands="Brioso Cuffs +3",
+	hands="Brioso Cuffs +4",
 })
 
 -- Horde Lullaby II (String skill tiers: 6'=486, 7'=567)
 -- NOTE: Do not set your main/sub here, set them in the sets below
 sets.horde_lullaby_II = set_combine(sets.debuff_song, {
-	body="Brioso Justau. +3",
-	feet="Bihu Slippers +3",
+	body="Brioso Just. +4",
+	feet="Bihu Slippers +4",
 	waist="Harfner's Sash",
 	left_ear="Gersemi Earring",
 })
@@ -715,7 +715,7 @@ sets.horde_lullaby_II_single_wield = {
 
 -- Non-Song Magic Accuracy
 sets.magic_accuracy = {
-	head="Brioso Roundlet +3",
+	head="Brioso Roundlet +4",
 	body="Fili Hongreline +3",
 	hands="Fili Manchettes +3",
 	legs="Fili Rhingrave +3",
@@ -776,7 +776,7 @@ sets.soul_voice = {
 
 -- Nightingale (Enhances Nightingale gear)
 sets.nightingale = {
-	feet="Bihu Slippers +3",
+	feet="Bihu Slippers +4",
 }
 
 -- Troubadour (Enhances Troubadour gear)
@@ -868,7 +868,7 @@ end
 
 
 
-FileVersion = '1.3'
+FileVersion = '1.3.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2120,7 +2120,7 @@ local function primeAMUpdate(tp)
 			pre_primeNum = '8'
 			pre_AMTimer = 180
 		end
-	elseif primeMatch(21588) then --stage 4 Prime
+	elseif primeMatch(21589) then --stage 4 Prime
 		if tp >= 1000 and tp < 1334 then
 			pre_primeNum = '4'
 			pre_AMTimer = 60
@@ -2213,9 +2213,7 @@ local function getSongDuration(spell)
 	if player.equipment.main == "Carnwenhan" then
 		if itemMatch(20586,'main') or itemMatch(20562,'main') or itemMatch(20561,'main') or itemMatch(19957,'main') or itemMatch(19828,'main') then --99
 			multiplier = multiplier + .5
-		elseif itemMatch(19719,'main') then --95
-			multiplier = multiplier + .4
-		elseif itemMatch(19621,'main') then --90
+		elseif itemMatch(19719,'main') or itemMatch(19621,'main') then --95/90
 			multiplier = multiplier + .4
 		elseif itemMatch(19089,'main') then --85
 			multiplier = multiplier + .3
@@ -2226,7 +2224,7 @@ local function getSongDuration(spell)
 		end
 	end
 
-	--"all songs" instruments
+	--"all songs+" instruments
 	if player.equipment.range == 'Daurdabla' then
 		if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
 			multiplier = multiplier + .3
@@ -3273,7 +3271,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -3488,7 +3486,7 @@ end
 
 function aftercast(spell)
 	if spell.english == 'Soul Voice' and SVTimer == 'On' and not spell.interrupted then
-		if player.equipment.legs == 'Brd. Cannions +2' or player.equipment.legs == 'Bihu Cannions' or player.equipment.legs == 'Bihu Cannions +1' or player.equipment.legs == 'Bihu Cannions +2' or player.equipment.legs == 'Bihu Cannions +3' then --these pieces extend Soul Voice by 30 seconds so we adjust accordingly
+		if player.equipment.legs == 'Brd. Cannions +2' or player.equipment.legs == 'Bihu Cannions' or player.equipment.legs == 'Bihu Cannions +1' or player.equipment.legs == 'Bihu Cannions +2' or player.equipment.legs == 'Bihu Cannions +3' or player.equipment.legs == 'Bihu Cannions +4' then --these pieces extend Soul Voice by 30 seconds so we adjust accordingly
 			send_command('input /echo [Soul Voice] 3:30;wait 30;input /echo [Soul Voice] 3:00;wait 30;input /echo [Soul Voice] 2:30;wait 30;input /echo [Soul Voice] 2:00;wait 30;input /echo [Soul Voice] 1:30;wait 30;input /echo [Soul Voice] 1:00;wait 30;input /echo [Soul Voice] 0:30;wait 10;input /echo [Soul Voice] 0:20;wait 10;input /echo [Soul Voice] 0:10')
 		else
 			send_command('input /echo [Soul Voice] 3:00;wait 30;input /echo [Soul Voice] 2:30;wait 30;input /echo [Soul Voice] 2:00;wait 30;input /echo [Soul Voice] 1:30;wait 30;input /echo [Soul Voice] 1:00;wait 30;input /echo [Soul Voice] 0:30;wait 10;input /echo [Soul Voice] 0:20;wait 10;input /echo [Soul Voice] 0:10')
