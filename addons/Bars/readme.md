@@ -265,6 +265,15 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+
+Version 4.4.3
+- Added `show_cursor_target` option to the Aggro List section. Highlights the monster in the Aggro List that you currently have targeted.
+- Adjusted the Aggro List to be more consistant in removing monsters when they die.
+- Adjusted the SP Active name and target name cycling to be synced up with the timer again. The previous change to the timer made it more accurate, but the name switching was still based on full clock seconds.
+- Fixed an error on log in when Bars was autoloaded before logging in.
+- Fixed bars showing back up occasionally during zoning after hiding.
+- Fixed Focus Target Debuff Icons staying on screen after zoning away from a Focus Target.
+
 Version 4.4.2
 - Fixed `hide_player_stats_bars_when_no_target` option broken in version 4.4 update.
 - Fixed errors regarding `player_stats_mp_marker` that doesn't actually exist.
