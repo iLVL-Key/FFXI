@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.2'
+_addon.version = '4.4.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -274,6 +274,7 @@ defaults = {
 			min_monsters_to_show = 0,
 			pos = {x = 200, y = 320},
 			show = true,
+			show_cursor_target = true,
 			size = 10,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -837,6 +838,7 @@ remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_na
 short_skillchain_names = settings.options.short_skillchain_names
 show_action_status_indicators = settings.options.show_action_status_indicators
 show_aggro_list = settings.sections.aggro_list.show
+show_cursor_target = settings.sections.aggro_list.show_cursor_target
 show_hp_tp_markers = settings.options.show_hp_tp_markers
 show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_dyna_jobs = settings.options.show_dyna_jobs
@@ -1069,7 +1071,7 @@ remove_all_debuffs = S{
 in_cutscene = false
 zoning = false
 logged_in = false
-job = ''
+job = false
 pet_tp = 0
 current_actions = {}
 current_sp_actions = {}
@@ -2652,6 +2654,17 @@ function hideBars()
 	ui_bg_left.focus_target:hide()
 	ui_bg_middle.focus_target:hide()
 	ui_bg_right.focus_target:hide()
+	local ft_icon_set = debuff_icons.focus_target
+	local ft_settings = settings.sections.focus_target
+	local ft_timer_set = debuff_timers.focus_target
+	if ft_icon_set[1]:visible() then
+		for k = 1, max_icons do
+			ft_icon_set[k]:hide()
+			if ft_settings.debuff_timers then
+				ft_timer_set[k]:hide()
+			end
+		end
+	end
 
 	sub_target_bar_meter:hide()
 	sub_target_bar_drain_meter:hide()
@@ -2664,6 +2677,17 @@ function hideBars()
 	ui_bg_left.sub_target:hide()
 	ui_bg_middle.sub_target:hide()
 	ui_bg_right.sub_target:hide()
+	local st_icon_set = debuff_icons.sub_target
+	local st_settings = settings.sections.sub_target
+	local st_timer_set = debuff_timers.sub_target
+	if st_icon_set[1]:visible() then
+		for k = 1, max_icons do
+			st_icon_set[k]:hide()
+			if st_settings.debuff_timers then
+				st_timer_set[k]:hide()
+			end
+		end
+	end
 
 	--These need to be visible when calculating their dimensions so we can set the UI image objects correctly
 	if not calculating_dimensions then
@@ -2685,6 +2709,17 @@ function hideBars()
 	ui_bg_left.target:hide()
 	ui_bg_middle.target:hide()
 	ui_bg_right.target:hide()
+	local t_icon_set = debuff_icons.target
+	local t_settings = settings.sections.target
+	local t_timer_set = debuff_timers.target
+	if t_icon_set[1]:visible() then
+		for k = 1, max_icons do
+			t_icon_set[k]:hide()
+			if t_settings.debuff_timers then
+				t_timer_set[k]:hide()
+			end
+		end
+	end
 
 	self_action_bar_meter:hide()
 	self_action_text:hide()
@@ -2786,7 +2821,7 @@ end
 --Show appropriate bars
 function showBars(target, pet)
 
-	if not (hide_player_stats_bars_when_no_target and not target) then
+	if job and not (hide_player_stats_bars_when_no_target and not target) then
 
 		if job_specific[job].hp then
 			player_stats_hp_bar_meter:show()
@@ -3671,7 +3706,7 @@ function formatTargetingName(targeting)
 end
 
 --Update the Aggro List
-function updateAggroList()
+function updateAggroList(t)
 
 	--If the Aggro List is turned off, hide it
 	if not show_aggro_list and not Screen_Test then
@@ -3689,19 +3724,22 @@ function updateAggroList()
 	for actor_id, data in pairs(current_aggro_list) do
 
 		local actor = get_mob_by_id(actor_id)
+		local cursor_target = show_cursor_target and t and t.id == actor_id
 
-		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) then
+		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) and actor.hpp ~= 0 then
 
 			num = num + 1
 
 			if num <= max_monsters_listed then
 				local actor_name = truncateName(actor.name)
+				actor_name = actor_name and (cursor_target and uppercase(actor_name) or actor_name)
 				local target = data.target_id and get_mob_by_id(data.target_id)
 				local target_name = target and target.name and truncateMonsterTarget(target.name)
+				target_name = target_name and (cursor_target and uppercase(target_name) or target_name)
 				local target_icon = os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
 				local hpp_raw =actor.hpp or 0
-				local hpp = string.format("%3s", hpp_raw)..'% ' or ''
-				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and "ZZZ" or ""
+				local hpp = string.format("%3s", hpp_raw)..'%' or ''
+				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and (cursor_target and "ZZZ" or "zzz") or ""
 
 				--Colorize the actor name
 				local ca = targetColor(actor)
@@ -3719,21 +3757,23 @@ function updateAggroList()
 				local padding_spaces = width - (#hpp + math.min(#actor_name, max_name_length) + 2 + #asleep + (target_name and max_monster_target_length or 0))
 				while string.len(padding) < padding_spaces do
 					if padding == "" then
-						padding = padding.. ' '
+						padding = padding..' '
 					else
-						padding = padding.. '.'
+						padding = padding..'.'
 					end
 				end
-				padding = "\\cs(100,100,100)"..padding.."\\cr"
+				local targeted = cursor_target and "●" or " "
 				actor_name = "\\cs("..ca_r..","..ca_g..","..ca_b..")"..(actor_name and actor_name or "").."\\cr" --add color start and reset to name
+				local pc = cursor_target and text_color or {r = 100, g = 100, b = 100}
+				padding = "\\cs("..pc.r..","..pc.g..","..pc.b..")"..padding.."\\cr"
 				target_name = "\\cs("..ct_r..","..ct_g..","..ct_b..")"..(target_name and target_name or "").."\\cr" --add color start and reset to name
-				text = text..hpp..actor_name..padding..asleep..(target_name and target_icon..target_name).."\n"
+				text = text..hpp..targeted..actor_name..padding..asleep..(target_name and target_icon..target_name).."\n"
 			else
 				plus_num_more = plus_num_more + 1
 			end
 
 		else
-			--Remove monster from the Aggro List when it's no longer a valid target
+			--Remove monster from the Aggro List when it's no longer a valid target or dies
 			--(Prevents monsters from getting stuck on the list in certain circumstances, mostly high lag areas)
 			current_aggro_list[actor_id] = nil
 		end
@@ -3797,13 +3837,13 @@ function updateFocusTargetBar(target, clock)
 	local ft = focus_target_override and focus_target_override or focus_target
 	local hpp_raw = ft and ft.hpp or 0
 	local sp_active = ft and hpp_raw ~= 0 and current_sp_actions[ft.id]
-	local sp_timestamp = sp_active and clock and math.max(current_sp_actions[ft.id].timestamp - clock, 0) or 0
+	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[ft.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[ft.id].sp_name
 	local ft_name = ft and ft.name or ''
 	if sp_active then
 		if condense_focus_target_name_and_sp_name then
-			ft_name = sp_timer..' '..(Heartbeat % 2 == 0 and sp_name or ft.name)
+			ft_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or ft.name)
 		else
 			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
@@ -4085,13 +4125,13 @@ function updateSubTargetBar(player, st, clock)
 
 	local hpp_raw = st and st.hpp or 0
 	local sp_active = st and hpp_raw ~= 0 and current_sp_actions[st.id]
-	local sp_timestamp = sp_active and clock and math.max(current_sp_actions[st.id].timestamp - clock, 0)
+	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[st.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[st.id].sp_name
 	local st_name = st and st.name or ''
 	if sp_active then
 		if condense_sub_target_name_and_sp_name then
-			st_name = sp_timer..' '..(Heartbeat % 2 == 0 and sp_name or st.name)
+			st_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or st.name)
 		else
 			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
@@ -4364,13 +4404,13 @@ function updateTargetBar(player, t, clock)
 
 	local hpp_raw = t and t.hpp or 0
 	local sp_active = t and hpp_raw > 0 and current_sp_actions[t.id]
-	local sp_timestamp = sp_active and clock and math.max(current_sp_actions[t.id].timestamp - clock, 0)
+	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[t.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[t.id].sp_name
 	local t_name = t and t.name or ''
 	if sp_active then
 		if condense_target_name_and_sp_name then
-			t_name = sp_timer..' '..(Heartbeat % 2 == 0 and sp_name or t.name)
+			t_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or t.name)
 		else
 			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
@@ -5205,7 +5245,7 @@ function updatePetBar(pet)
 end
 
 function updatePetBarAnimations(pet)
--- print(player_stats_pet_bar_meter:bg_alpha(), player_stats_pet_bar_drain_meter:bg_alpha())
+
 	--Pet Bar Pulse animation
 	if Pulse_Pet and not (Fade or Screen_Test) then
 		if pulse_pet_direction_up and pulse_pet_alpha_num < pulse_brightness then
@@ -5488,6 +5528,7 @@ function checkForFocusTargetOverride()
 	else
 		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
 		focus_target_override = nil
+		focus_target_bar_drain_meter:hide()
 	end
 
 end
@@ -5914,9 +5955,11 @@ register_event('target change', function()
 
 	if hide_player_stats_bars_when_no_target and not target then
 		hidePlayerStatBars()
-	else
+	elseif not in_cutscene and not zoning then
 		showBars(target)
 	end
+
+	updateAggroList(target)
 
 end)
 
@@ -6024,7 +6067,7 @@ function initialize()
 	setJob()
 	setPositions()
 	setWidth()
-	showBars(target)
+	-- showBars(target)
 	updateTargetBar(player, target)
 	updateSubTargetBar(player, sub_target)
 	updateHPBar(player)
@@ -6129,7 +6172,7 @@ register_event('prerender', function()
 	end
 
 	if clock - last_aggro_list_update >= aggro_list_update_interval then
-		updateAggroList()
+		updateAggroList(target)
 		last_aggro_list_update = clock
 	end
 
