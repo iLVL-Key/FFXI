@@ -292,9 +292,9 @@ sets.idle = {
 	range="Dunna",
 	head="Null Masque",
 	body="Azimuth Coat +3",
-	hands="Bagua Mitaines +3",
+	hands="Bagua Mitaines +4",
 	legs="Volte Brais",
-	feet="Geo. Sandals +3",
+	feet="Geo. Sandals +4",
 	neck="Loricate Torque +1",
 	waist="Null Belt",
 	left_ear="Etiolation Earring",
@@ -313,8 +313,9 @@ sets.idle_luopan = set_combine(sets.idle, {
 	sub="Genmei Shield",
 	range="Dunna",
 	head="Azimuth Hood +3",
-	hands="Geo. Mitaines +3",
-	feet="Bagua Sandals +3",
+	body="Zendik Robe",
+	hands="Geo. Mitaines +4",
+	feet="Bagua Sandals +4",
 	waist="Isa Belt",
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Pet: "Regen"+10','Pet: "Regen"+5',}},
 })
@@ -421,9 +422,10 @@ sets.hachirin_no_obi = {
 sets.fast_cast = {
 	sub="Chanter's Shield", --3%
 	head="Amalric Coif +1", --11%
-	body="Agwu's Robe", --8%
+	body="Zendik Robe", --13%
+	-- body="Agwu's Robe", --8%
 	hands="Agwu's Gages", --6%
-	legs="Geomancy Pants +3", --15%
+	legs="Geomancy Pants +4", --15%
 	feet="Amalric Nails +1", --6%
 	neck="Baetyl Pendant", --4%
 	waist="Embla Sash", --5%
@@ -443,7 +445,7 @@ sets.indicolure = {
 	head="Azimuth Hood +3",
 	body="Azimuth Coat +3",
 	hands="Azimuth Gloves +3",
-	legs="Bagua Pants +3",
+	legs="Bagua Pants +4",
 	feet="Azimuth Gaiters +3",
 	back="Lifestream Cape",
 }
@@ -483,14 +485,16 @@ sets.elemental = {
 	left_ear="Malignance Earring",
 	right_ear="Regal Earring",
 	left_ring="Shiva Ring +1",
-	right_ring="Metamor. Ring +1",
+	right_ring="Freke Ring",
 	back={ name="Nantosuelta's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','"Mag.Atk.Bns."+10','Phys. dmg. taken-10%',}},
 }
 
 -- Magic Burst (Magic Burst Damage)
 -- Combines with Elemental Spells set, only necessary to set the slots with specific desired stats
 sets.magic_burst = {
-
+	head="Ea Hat +1",
+	waist="Acuity Belt +1",
+	left_ring="Mujin Band",
 }
 
 -- Magic Accuracy (Magic Accuracy)
@@ -544,7 +548,7 @@ sets.healing = {
 -- Aspir/Drain (Aspir/Drain, Dark Magic Skill)
 -- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
 sets.aspir_drain = set_combine(sets.magic_accuracy, {
-	head="Bagua Galero +3",
+	head="Bagua Galero +4",
 	feet="Agwu's Pigaches",
 	neck="Erra Pendant",
 	waist="Fucho-no-obi",
@@ -580,6 +584,9 @@ sets.cursna = {
 sets.impact = {
 	head=empty,
 	body="Twilight Cloak",
+	hands="Geo. Mitaines +4", --temp for Bumba
+	legs="Geomancy Pants +4", --temp for Bumba
+	feet="Geo. Sandals +4", --temp for Bumba
 }
 
 -- Dispelga (Daybreak)
@@ -617,22 +624,22 @@ sets.bolster = {
 -- Full Circle (Enhances Curative Recantation gear)
 sets.full_circle = {
 	head="Azimuth Hood +3",
-	hands="Bagua Mitaines +3",
+	hands="Bagua Mitaines +4",
 }
 
 -- Radial Arcana (Enhances Radial Arcana gear)
 sets.radial_arcana = {
-	feet="Bagua Sandals +3",
+	feet="Bagua Sandals +4",
 }
 
 -- Mending Halation (Enhances Mending Halation gear)
 sets.mending_halation = {
-	legs="Bagua Pants +3",
+	legs="Bagua Pants +4",
 }
 
 -- Collimated Fervor (Enhances Privemal Zeal gear)
 sets.collimated_fervor = {
-	head="Bagua Galero +3",
+	head="Bagua Galero +4",
 }
 
 -- Life Cycle (Enhances Life Cycle gear)
@@ -686,7 +693,7 @@ end
 
 
 
-FileVersion = '14.9'
+FileVersion = '14.9.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1280,7 +1287,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -2017,7 +2024,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2046,11 +2053,8 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 			cancel_spell()
 			return
-		elseif sets[spell.english] then
-			equip(sets[spell.english])
-		else
-			equip(sets.weapon_skill)
 		end
+		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
 	elseif spell.english == 'Bolster' and Bolster.recast < 2 then
 		equip(sets.bolster)
 	elseif spell.english == 'Full Circle' and FullCircle.recast < 2 then
@@ -2359,7 +2363,8 @@ function aftercast(spell)
 				hud_entrust_label:color(255,255,255)
 				hud_entrust_spell_shdw:text(format24(EntrustSpell..EntrustTotal..EntrustSuffix))
 				hud_entrust_spell:text(format24(EntrustSpell..EntrustTotal..EntrustSuffix))
-				hud_entrust_spell:color(75,255,75)
+				local c = color.bubble.normal
+				hud_entrust_spell:color(c.r,c.g,c.b)
 				local is_npc = windower.ffxi.get_mob_by_name(Target).is_npc
 				if is_npc then
 					EntrustCountdown = 330 -- 5:30 is about the longest you can get with Indi-spell duration gear
@@ -2411,7 +2416,7 @@ function aftercast(spell)
 		hud_geo_spell:color(c.r,c.g,c.b)
 		LuopanActive = false
 	elseif spell.english == 'Bolster' and BolTimer == 'On' and not spell.interrupted then
-		if player.equipment.body == 'Bagua Tunic' or player.equipment.body == 'Bagua Tunic +1' or player.equipment.body == 'Bagua Tunic +2' or player.equipment.body == 'Bagua Tunic +3' then --these pieces extend Bolster by 30 seconds so we adjust accordingly
+		if player.equipment.body == 'Bagua Tunic' or player.equipment.body == 'Bagua Tunic +1' or player.equipment.body == 'Bagua Tunic +2' or player.equipment.body == 'Bagua Tunic +3' or player.equipment.body == 'Bagua Tunic +4' then --these pieces extend Bolster by 30 seconds so we adjust accordingly
 			send_command('input /echo [Bolster] 3:30;wait 30;input /echo [Bolster] 3:00;wait 30;input /echo [Bolster] 2:30;wait 30;input /echo [Bolster] 2:00;wait 30;input /echo [Bolster] 1:30;wait 30;input /echo [Bolster] 1:00;wait 30;input /echo [Bolster] 0:30;wait 10;input /echo [Bolster] 0:20;wait 10;input /echo [Bolster] 0:10')
 		else
 			send_command('input /echo [Bolster] 3:00;wait 30;input /echo [Bolster] 2:30;wait 30;input /echo [Bolster] 2:00;wait 30;input /echo [Bolster] 1:30;wait 30;input /echo [Bolster] 1:00;wait 30;input /echo [Bolster] 0:30;wait 10;input /echo [Bolster] 0:20;wait 10;input /echo [Bolster] 0:10')
