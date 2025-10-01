@@ -87,7 +87,7 @@ HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing t
 FontSize		=	10		--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer		=	16		--	Space in pixels between each Line of the HUD.
 ColumnSpacer	=	90.5	--	Space in pixels between each Column of the HUD.
-ShowTPMeter		=	'On'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
+ShowTPMeter		=	'Off'	--[On/Off]		Show the mini TP Meter inside the Weapons area.
 
 --  General Notifications  --
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
@@ -425,7 +425,7 @@ sets.bp_delay = {
 -- Blood Pact: Rage Physical (BP Damage+, Pet: Att+) (BP midcast)
 sets.bp_rage_physical = {
 	main="Nirvana",
-	sub="Elan Strap",
+	sub="Elan Strap +1",
 	ammo="Epitaph",
 	head={ name="Apogee Crown +1", augments={'MP+80','Pet: Attack+35','Blood Pact Dmg.+8',}},
 	body="Beck. Doublet +3",
@@ -445,7 +445,7 @@ sets.bp_rage_physical = {
 -- Blood Pact: Rage Magical (BP Damage+, Pet: MAB+) (BP midcast)
 sets.bp_rage_magical = {
 	main="Grioavolr",
-	sub="Elan Strap",
+	sub="Elan Strap +1",
 	ammo="Epitaph",
 	head={ name="Apogee Crown +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
 	body={ name="Apo. Dalmatica +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
@@ -465,7 +465,7 @@ sets.bp_rage_magical = {
 -- Blood Pact: Rage Hybrid (BP Damage+, Pet: MAB+, Pet: Att+) (BP midcast)
 sets.bp_rage_hybrid = {
 	main="Nirvana",
-	sub="Elan Strap",
+	sub="Elan Strap +1",
 	ammo="Epitaph",
 	head={ name="Apogee Crown +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
 	body={ name="Apo. Dalmatica +1", augments={'MP+80','Pet: "Mag.Atk.Bns."+35','Blood Pact Dmg.+8',}},
@@ -596,6 +596,7 @@ sets.mana_cede = {
 -- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town. Does not lockstyle this gear, only equips)
 sets.town = set_combine(sets.idle, {
 	main="Nirvana",
+	sub="Elan Strap +1",
 })
 
 -- Adoulin Town Gear
@@ -637,7 +638,7 @@ end
 
 
 
-FileVersion = '12.8'
+FileVersion = '12.8.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1204,7 +1205,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -1996,7 +1997,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2025,11 +2026,8 @@ function precast(spell)
 			NotiCountdown = NotiDelay
 			cancel_spell()
 			return
-		elseif sets[spell.english] then
-			equip(sets[spell.english])
-		else
-			equip(sets.weapon_skill)
 		end
+		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
 		if player.equipment.main == "Khatvanga" and spell.english == "Shattersoul" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Claustrum' and spell.english == "Gates of Tartarus" then
@@ -2132,7 +2130,7 @@ end
 
 function aftercast(spell)
 	if spell.english == 'Astral Flow' and AFTimer == 'On' and not spell.interrupted then
-		if player.equipment.head == 'Glyphic Horn' or player.equipment.head == 'Glyphic Horn +1' or player.equipment.head == 'Glyphic Horn +2' or player.equipment.head == 'Glyphic Horn +3' then --these pieces extend Astral Flow by 30 seconds so we adjust accordingly
+		if player.equipment.head == 'Glyphic Horn' or player.equipment.head == 'Glyphic Horn +1' or player.equipment.head == 'Glyphic Horn +2' or player.equipment.head == 'Glyphic Horn +3' or player.equipment.head == 'Glyphic Horn +4' then --these pieces extend Astral Flow by 30 seconds so we adjust accordingly
 			send_command('input /echo [Astral Flow] 3:30;wait 30;input /echo [Astral Flow] 3:00;wait 30;input /echo [Astral Flow] 2:30;wait 30;input /echo [Astral Flow] 2:00;wait 30;input /echo [Astral Flow] 1:30;wait 30;input /echo [Astral Flow] 1:00;wait 30;input /echo [Astral Flow] 0:30;wait 10;input /echo [Astral Flow] 0:20;wait 10;input /echo [Astral Flow] 0:10')
 		else
 			send_command('input /echo [Astral Flow] 3:00;wait 30;input /echo [Astral Flow] 2:30;wait 30;input /echo [Astral Flow] 2:00;wait 30;input /echo [Astral Flow] 1:30;wait 30;input /echo [Astral Flow] 1:00;wait 30;input /echo [Astral Flow] 0:30;wait 10;input /echo [Astral Flow] 0:20;wait 10;input /echo [Astral Flow] 0:10')
