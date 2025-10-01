@@ -354,7 +354,7 @@ sets.tank = {
 sets.max_hp = set_combine(sets.tank, {
 	ammo="Egoist's Tathlum",
 	head="Souv. Schaller +1",
-	body="Rev. Surcoat +3",
+	body="Rev. Surcoat +4",
 	hands="Souv. Handsch. +1",
 	legs="Souv. Diechlings +1",
 	feet="Souveran Schuhs +1",
@@ -445,7 +445,7 @@ sets.rest = {
 sets.fast_cast = {
 	ammo="Sapience Orb", --2
 	head="Carmine Mask +1", --14
-	body="Rev. Surcoat +3", --10
+	body="Rev. Surcoat +4", --10
 	hands="Leyline Gloves", --5+1
 	legs="Souv. Diechlings +1",
 	feet="Chev. Sabatons +3", --8
@@ -737,12 +737,12 @@ sets.holy_circle = set_combine(sets.enmity, {
 
 -- Shield Bash (Enhances Shield Bash gear)
 sets.shield_bash = set_combine(sets.enmity, {
-	hands="Cab. Gauntlets +3",
+	hands="Cab. Gauntlets +4",
 })
 
 -- Sentinel (Enhances Sentinel gear)
 sets.sentinel = set_combine(sets.enmity, {
-	feet="Cab. Leggings +3",
+	feet="Cab. Leggings +4",
 })
 
 -- Cover (Enhances Cover gear)
@@ -762,7 +762,7 @@ sets.fealty = {
 
 -- Chivalry (Enhances Chivalry gear)
 sets.chivalry = {
-	hands="Cab. Gauntlets +3",
+	hands="Cab. Gauntlets +4",
 }
 
 -- Divine Emblem (Enhances Divine Emblem gear)
@@ -814,7 +814,7 @@ end
 
 
 
-FileVersion = '14.8.6'
+FileVersion = '14.8.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1383,7 +1383,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 
@@ -1793,6 +1793,17 @@ local function primeAMUpdate(tp)
 		end
 	end
 
+end
+
+local function buffActive(buff_id)
+	local buffs = windower.ffxi.get_player().buffs
+
+	for _, buff in ipairs(buffs) do
+		if buff == buff_id then
+			return true
+		end
+	end
+	return false
 end
 
 -------------------------------------------
@@ -2214,7 +2225,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2246,11 +2257,8 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		elseif sets[spell.english] then
-			equip(sets[spell.english])
-		else
-			equip(sets.weapon_skill)
 		end
+		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
 		if player.equipment.main == "Sequence" and spell.english == "Requiescat" then
 			pre_AMTimer = 181
 		elseif (player.equipment.main == 'Excalibur' and spell.english == "Knights of Round") or (player.equipment.main == 'Ragnarok' and spell.english == "Scourge") then
@@ -2472,7 +2480,7 @@ function aftercast(spell)
 		TP_Window_Open = false
 	end
 	if spell.english == 'Invincible' and InvTimer == 'On' and not spell.interrupted then
-		if player.equipment.legs == 'Cab. Breeches' or player.equipment.legs == 'Cab. Breeches +1' or player.equipment.legs == 'Cab. Breeches +2' or player.equipment.legs == 'Cab. Breeches +3' then --these pieces extend Invincible by 10 seconds so we adjust accordingly
+		if player.equipment.legs == 'Cab. Breeches' or player.equipment.legs == 'Cab. Breeches +1' or player.equipment.legs == 'Cab. Breeches +2' or player.equipment.legs == 'Cab. Breeches +3' or player.equipment.legs == 'Cab. Breeches +4' then --these pieces extend Invincible by 10 seconds so we adjust accordingly
 			send_command('input /echo [Invincible] 40 seconds;wait 10;input /echo [Invincible] 30 seconds;wait 10;input /echo [Invincible] 20 seconds;wait 10;input /echo [Invincible] 10 seconds')
 		else
 			send_command('input /echo [Invincible] 30 seconds;wait 10;input /echo [Invincible] 20 seconds;wait 10;input /echo [Invincible] 10 seconds')
@@ -3389,7 +3397,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Cocoon.recast then
-			if buffactive['Defense Boost'] then
+			if buffActive(93) then
 				textColor('Cocoon','active')
 				Cocoon.flashed = false
 			elseif Cocoon.recast > 0 then
@@ -3641,7 +3649,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Refueling.recast then
-			if buffactive['Haste'] then
+			if buffActive(33) then
 				textColor('Refueling','active')
 				Refueling.flashed = false
 			elseif Refueling.recast > 0 then
