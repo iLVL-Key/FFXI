@@ -108,7 +108,7 @@ modeName.Mode4 = 'Subtle Blow'			--Standard set.
 --  General Notifications  --
 ReraiseReminder		=	'On'	--[On/Off]	Displays an occasional reminder if Reraise is not up.
 Noti3000TP			=	'On'	--[On/Off]	Displays a notification when you have 3000 TP.
-NotiDamage			=	'On'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
+NotiDamage			=	'Ofn'	--[On/Off]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
 NotiFood			=	'On'	--[On/Off]	Displays a notification when food wears off.
 NotiInvis			=	'On'	--[On/Off]	Displays a notification when Invisible is about to wear off.
 NotiInvite			=	'On'	--[On/Off]	Displays a notification when someone invites to a party/alliance.
@@ -178,16 +178,16 @@ sub.WAR.hasso.Abil06 = "Warcry"			sub.WAR.hasso.Abil06_sh = ""
 sub.DRG.hasso.Abil01 = "Meditate"		sub.DRG.hasso.Abil01_sh = ""
 sub.DRG.hasso.Abil02 = "Konzen-ittai"	sub.DRG.hasso.Abil02_sh = "Konzen"
 sub.DRG.hasso.Abil03 = "Sekkanoki"		sub.DRG.hasso.Abil03_sh = ""
-sub.DRG.hasso.Abil04 = "Sengikori"		sub.DRG.hasso.Abil04_sh = ""
-sub.DRG.hasso.Abil05 = "Hagakure"		sub.DRG.hasso.Abil05_sh = ""
-sub.DRG.hasso.Abil06 = "Super Jump"		sub.DRG.hasso.Abil06_sh = ""
+sub.DRG.hasso.Abil04 = "High Jump"		sub.DRG.hasso.Abil04_sh = ""
+sub.DRG.hasso.Abil05 = "Super Jump"		sub.DRG.hasso.Abil05_sh = ""
+sub.DRG.hasso.Abil06 = "Third Eye"		sub.DRG.hasso.Abil06_sh = ""
 --SAM/DNC
 sub.DNC.hasso.Abil01 = "Meditate"		sub.DNC.hasso.Abil01_sh = ""
 sub.DNC.hasso.Abil02 = "Konzen-ittai"	sub.DNC.hasso.Abil02_sh = "Konzen"
 sub.DNC.hasso.Abil03 = "Sekkanoki"		sub.DNC.hasso.Abil03_sh = ""
-sub.DNC.hasso.Abil04 = "Sengikori"		sub.DNC.hasso.Abil04_sh = ""
-sub.DNC.hasso.Abil05 = "Steps"			sub.DNC.hasso.Abil05_sh = "Box Step"
-sub.DNC.hasso.Abil06 = "Flourishes II"	sub.DNC.hasso.Abil06_sh = "Rvrs Flrsh"
+sub.DNC.hasso.Abil04 = "Sambas"			sub.DNC.hasso.Abil04_sh = "Hst Samba"
+sub.DNC.hasso.Abil05 = "Flourishes II"	sub.DNC.hasso.Abil05_sh = "Rvrs Flrsh"
+sub.DNC.hasso.Abil06 = "Third Eye"		sub.DNC.hasso.Abil06_sh = ""
 --SAM/other
 sub.OTH.hasso.Abil01 = "Meditate"		sub.OTH.hasso.Abil01_sh = ""
 sub.OTH.hasso.Abil02 = "Konzen-ittai"	sub.OTH.hasso.Abil02_sh = "Konzen"
@@ -209,14 +209,14 @@ sub.WAR.seigan.Abil06 = "Third Eye"		sub.WAR.seigan.Abil06_sh = ""
 sub.DRG.seigan.Abil01 = "Meditate"		sub.DRG.seigan.Abil01_sh = ""
 sub.DRG.seigan.Abil02 = "Konzen-ittai"	sub.DRG.seigan.Abil02_sh = "Konzen"
 sub.DRG.seigan.Abil03 = "Sekkanoki"		sub.DRG.seigan.Abil03_sh = ""
-sub.DRG.seigan.Abil04 = "Sengikori"		sub.DRG.seigan.Abil04_sh = ""
-sub.DRG.seigan.Abil05 = "Hagakure"		sub.DRG.seigan.Abil05_sh = ""
+sub.DRG.seigan.Abil04 = "High Jump"		sub.DRG.seigan.Abil04_sh = ""
+sub.DRG.seigan.Abil05 = "Super Jump"	sub.DRG.seigan.Abil05_sh = ""
 sub.DRG.seigan.Abil06 = "Third Eye"		sub.DRG.seigan.Abil06_sh = ""
 --SAM/DNC
 sub.DNC.seigan.Abil01 = "Meditate"		sub.DNC.seigan.Abil01_sh = ""
 sub.DNC.seigan.Abil02 = "Konzen-ittai"	sub.DNC.seigan.Abil02_sh = "Konzen"
 sub.DNC.seigan.Abil03 = "Sekkanoki"		sub.DNC.seigan.Abil03_sh = ""
-sub.DNC.seigan.Abil04 = "Steps"			sub.DNC.seigan.Abil04_sh = "Box Step"
+sub.DNC.seigan.Abil04 = "Sambas"		sub.DNC.seigan.Abil04_sh = "Hst Samba"
 sub.DNC.seigan.Abil05 = "Flourishes II"	sub.DNC.seigan.Abil05_sh = "Rvrs Flrsh"
 sub.DNC.seigan.Abil06 = "Third Eye"		sub.DNC.seigan.Abil06_sh = ""
 --SAM/other
@@ -412,7 +412,7 @@ sets.hasso.Mode4 = set_combine(sets.hasso.Mode1, {
 	ammo="Coiste Bodhar",
 	head="Ken. Jinpachi +1",		--SB+8
 	body="Dagon Breast.",			--SBII+10
-	hands="Wakido Kote +3",
+	hands="Wakido Kote +4",
 	legs="Mpaca's Hose",			--SBII+5
 	feet="Ryuo Sune-Ate +1",		--SB+8
 	neck="Sam. Nodowa +2",
@@ -431,7 +431,7 @@ sets.seigan = set_combine(sets.hasso.Mode1, {
 	head="Kasuga Kabuto +3",
 	body="Mpaca's Doublet",
 	hands="Mpaca's Gloves",
-	legs="Sakonji Haidate +3",
+	legs="Sakonji Haidate +4",
 	feet="Mpaca's Boots",
 	neck="Sam. Nodowa +2",
 	waist="Sailfi Belt +1",
@@ -442,12 +442,15 @@ sets.seigan = set_combine(sets.hasso.Mode1, {
 	back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
 })
 
--- Idle (Movement Speed, Regain, Regen)
+-- Idle (Movement Speed, Regain, Regen, DT)
 sets.idle = {
-	head="Wakido Kabuto +3",
+	ammo="Staunch Tathlum +1",
+	head="Wakido Kabuto +4",
+	hands="Nyame Gauntlets",
 	feet="Danzo Sune-ate",
 	neck="Rep. Plat. Medal",
 	waist="Null Belt",
+	left_ring="Defending Ring",
 	right_ring="Karieyh Ring +1",
 	back="Null Shawl",
 }
@@ -500,6 +503,7 @@ sets["Tachi: Ageha"] = set_combine(sets.weapon_skill, {
 	hands="Kasuga Kote +3",
 	legs="Kasuga Haidate +3",
 	feet="Kas. Sune-Ate +3",
+	neck="Null Loop",
 	waist="Null Belt",
 	right_ear="Kasuga Earring +2",
 	left_ring="Stikini Ring +1",
@@ -519,7 +523,9 @@ sets["Tachi: Jinpu"] = set_combine(sets.weapon_skill, {
 
 -- Tachi: Jinpu - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Jinpu"].high_buff = set_combine(sets.weapon_skill, {
-	body="Sakonji Domaru +3",
+	head="Nyame Helm",
+	hands="Nyame Gauntlets",
+	feet="Mpaca's Boots",
 	waist="Orpheus's Sash",
 	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
@@ -537,7 +543,7 @@ sets["Tachi: Kagero"] = set_combine(sets.weapon_skill, {
 
 -- Tachi: Kagero - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Kagero"].high_buff = set_combine(sets.weapon_skill, {
-	body="Sakonji Domaru +3",
+	body="Sakonji Domaru +4",
 	waist="Orpheus's Sash",
 	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
@@ -564,12 +570,13 @@ sets["Tachi: Koki"].high_buff = set_combine(sets.weapon_skill, {
 -- Tachi: Fudo (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Fudo"] = set_combine(sets.weapon_skill, {
-
+	body="Sakonji Domaru +4",
 })
 
 -- Tachi: Fudo - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Fudo"].high_buff = set_combine(sets.weapon_skill, {
+	body="Sakonji Domaru +4",
 	feet="Kas. Sune-Ate +3",
 	left_ring="Sroda Ring",
 })
@@ -578,6 +585,7 @@ sets["Tachi: Fudo"].high_buff = set_combine(sets.weapon_skill, {
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Kaiten"] = set_combine(sets.weapon_skill, {
 	head="Nyame Helm",
+	body="Sakonji Domaru +4",
 	left_ear="Schere Earring",
 	left_ring="Sroda Ring",
 })
@@ -586,6 +594,8 @@ sets["Tachi: Kaiten"] = set_combine(sets.weapon_skill, {
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Kaiten"].high_buff = set_combine(sets.weapon_skill, {
 	head="Nyame Helm",
+	body="Sakonji Domaru +4",
+	legs="Mpaca's Hose",
 	feet="Kas. Sune-Ate +3",
 	left_ear="Schere Earring",
 	left_ring="Sroda Ring",
@@ -594,29 +604,30 @@ sets["Tachi: Kaiten"].high_buff = set_combine(sets.weapon_skill, {
 -- Tachi: Mumei (STR, DEX)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Mumei"] = set_combine(sets.weapon_skill, {
-	body="Sakonji Domaru +3",
+	body="Sakonji Domaru +4",
 	left_ring="Regal Ring",
 })
 
 -- Tachi: Mumei - High Buff (STR, DEX, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Mumei"].high_buff = set_combine(sets.weapon_skill, {
+	body="Sakonji Domaru +4",
 	feet="Kas. Sune-Ate +3",
 })
 
 -- Tachi: Shoha (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Shoha"] = set_combine(sets.weapon_skill, {
-	feet="Kas. Sune-Ate +3",
 	legs="Mpaca's Hose",
+	feet="Kas. Sune-Ate +3",
 	left_ring="Sroda Ring",
 })
 
 -- Tachi: Shoha - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Shoha"].high_buff = set_combine(sets.weapon_skill, {
-	feet="Kas. Sune-Ate +3",
 	legs="Mpaca's Hose",
+	feet="Kas. Sune-Ate +3",
 	left_ring="Sroda Ring",
 })
 
@@ -650,6 +661,7 @@ sets.hachirin_no_obi = {
 -- Fast Cast (cap is 80%)
 sets.fast_cast = {
 	ammo="Sapience Orb",
+	bnody="Sacro Breastplate",
 	hands="Leyline Gloves",
 	neck="Baetyl Pendant",
 	left_ear="Loquac. Earring",
@@ -681,7 +693,7 @@ sets.sekkanoki = {
 
 -- Shikikoyo
 sets.shikikoyo = {
-	legs="Sakonji Haidate +3",
+	legs="Sakonji Haidate +4",
 }
 
 -- Blade Bash
@@ -696,7 +708,7 @@ sets.sengikori = {
 
 -- Meditate
 sets.meditate = {
-	head="Wakido Kabuto +3",
+	head="Wakido Kabuto +4",
 	hands="Sakonji Kote +3",
 	back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
 }
@@ -709,7 +721,7 @@ sets.jump = {
 
 -- Warding Circle
 sets.warding_circle = {
-	head="Wakido Kabuto +3"
+	head="Wakido Kabuto +4"
 }
 
 -- Meikyo Shisui
@@ -788,7 +800,7 @@ end
 
 
 
-FileVersion = '15.0.5'
+FileVersion = '15.0.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1350,7 +1362,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -2178,7 +2190,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2210,22 +2222,21 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, or we're using the Soboro, we don't want to use a WS set
 		elseif (checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea')) or player.equipment.main == "Soboro Sukehiro" then
 			return
-		else
-			local base_set = sets.weapon_skill
-			local ws = spell.english
-			local ws_set = sets[ws]
-			if player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
-				base_set = sets[ws].high_buff
-			elseif ws_set then
-				base_set = sets[ws]
-			end
-			local hachirin_no_obi = useHachirinNoObi(ws) and sets.hachirin_no_obi or nil
-			local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
-			local ws_accuracy = Mode == 'Mode3' and sets.ws_accuracy or nil
-			local sekkanoki = buffactive['Sekkanoki'] and sets.sekkanoki or nil
-			local meikyo_shisui = buffactive['Meikyo Shisui'] and sets.meikyo_shisui or nil
-			equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy, sekkanoki, meikyo_shisui))
 		end
+		local base_set = sets.weapon_skill
+		local ws = spell.english
+		local ws_set = sets[ws]
+		if player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
+			base_set = sets[ws].high_buff
+		elseif ws_set then
+			base_set = sets[ws]
+		end
+		local hachirin_no_obi = useHachirinNoObi(ws) and sets.hachirin_no_obi or nil
+		local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
+		local ws_accuracy = Mode == 'Mode3' and sets.ws_accuracy or nil
+		local sekkanoki = buffactive['Sekkanoki'] and sets.sekkanoki or nil
+		local meikyo_shisui = buffactive['Meikyo Shisui'] and sets.meikyo_shisui or nil
+		equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy, sekkanoki, meikyo_shisui))
 		if player.equipment.main == "Dojikiri Yasutsuna" and spell.english == "Tachi: Shoha" then
 			pre_AMTimer = 180
 		elseif player.equipment.main == 'Amanomurakumo' and spell.english == "Tachi: Kaiten" then
