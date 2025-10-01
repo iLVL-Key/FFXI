@@ -1,7 +1,9 @@
 # LLMChat
 LLM-powered in-game chat.
 
-Requires LLMStudio and a LLM small enough to run quickly with your hardware.  
+Requires LLMStudio and a LLM small enough to run quickly with your hardware.
+
+<img width="1200" height="250" alt="LM Studio_3" src="https://github.com/user-attachments/assets/a8c39828-793b-425f-878d-175892c39add" />
 
 Please be aware that responses to queries are almost guaranteed to be incorrect. This should be used purely for the entertainment value.
 
