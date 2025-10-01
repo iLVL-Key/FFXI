@@ -394,7 +394,7 @@ sets.Mode5 = set_combine(sets.Mode1, {
 	head="Bhikku Crown +3",
 	body="Mpaca's Doublet",			--Counter +10
 	hands="Bhikku Gloves +3",
-	legs="Anch. Hose +3",			--Counter +6
+	legs="Anch. Hose +4",			--Counter +6
 	feet="Mpaca's Boots",
 	neck="Mnk. Nodowa +2",
 	waist="Moonbow Belt +1",
@@ -440,7 +440,7 @@ sets.weapon_skill = {
 	waist="Moonbow Belt +1",
 	left_ear="Mache Earring +1",
 	right_ear="Odr Earring",
-	left_ring="Hetairoi Ring",
+	left_ring="Gere Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 }
@@ -467,13 +467,11 @@ sets["Tornado Kick"] = set_combine(sets.weapon_skill, {
 	body="Nyame Mail",
 	hands="Nyame Gauntlets",
 	legs="Nyame Flanchard",
-	feet="Anch. Gaiters +3",
+	feet="Anch. Gaiters +4",
 	neck="Mnk. Nodowa +2",
 	waist="Moonbow Belt +1",
 	left_ear="Schere Earring",
 	right_ear="Moonshade Earring",
-	left_ring="Regal Ring",
-	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 })
 
@@ -545,6 +543,18 @@ sets["Shijin Spiral"] = set_combine(sets.weapon_skill, {
 	back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
 })
 
+-- Raging Fists (DEX, STR)
+sets["Raging Fists"] = set_combine(sets.weapon_skill, {
+	ammo="Crepuscular Pebble",
+	head="Mpaca's Cap",
+	body="Bhikku Cyclas +3",
+	hands="Bhikku Gloves +3",
+	neck="Mnk. Nodowa +2",
+	left_ear="Schere Earring",
+	right_ear="Moonshade Earring",
+	back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
+})
+
 -- Cataclysm (Dark Elem. MAB, INT, Magic Damage, WSD)
 sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	ammo="Ghastly Tathlum +1",
@@ -596,7 +606,7 @@ sets.focus = {
 
 -- Dodge
 sets.dodge = {
-	feet="Anch. Gaiters +3",
+	feet="Anch. Gaiters +4",
 }
 
 -- Chakra
@@ -716,7 +726,7 @@ end
 
 
 
-FileVersion = '7.7.5'
+FileVersion = '7.7.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1272,7 +1282,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 
@@ -1938,11 +1948,7 @@ function choose_set()
 			equip(sets.oh_shit)
 		else
 			local function setEquip(mode_set)
-				if buffactive['Footwork'] and buffactive['Impetus'] then
-					equip(set_combine(mode_set, sets.footwork, sets.impetus))
-				elseif buffactive['Footwork'] then
-					equip(set_combine(mode_set, sets.footwork))
-				elseif buffactive['Impetus'] then
+				if buffactive['Impetus'] then
 					equip(set_combine(mode_set, sets.impetus))
 				else
 					equip(mode_set)
@@ -2033,7 +2039,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2065,30 +2071,13 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		elseif Mode == 'Mode3' then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.ws_accuracy, sets.ygnass_resolve_1))
-			else
-				equip(sets.ws_accuracy)
-			end
+		end
+		if Mode == 'Mode3' then
+			equip(set_combine(sets.ws_accuracy, buffactive['Reive Mark'] and sets.ygnass_resolve_1))
 		elseif player.tp >= CappedTPThreshold then
-			if buffactive['Reive Mark'] then
-				equip(set_combine(sets.ws_capped_tp, sets.ygnass_resolve_1))
-			else
-				equip(sets.ws_capped_tp)
-			end
+			equip(set_combine(sets.ws_capped_tp, buffactive['Reive Mark'] and sets.ygnass_resolve_1))
 		else
-			if sets[spell.english] then
-				if buffactive['Reive Mark'] then
-					equip(set_combine(sets[spell.english], sets.ygnass_resolve_1))
-				else
-					equip(sets[spell.english])
-				end
-			elseif buffactive['Reive Mark'] then
-				equip(set_combine(sets.weapon_skill, sets.ygnass_resolve_1))
-			else
-				equip(sets.weapon_skill)
-			end
+			equip(set_combine(sets[spell.english] and sets[spell.english] or sets.weapon_skill, buffactive['Reive Mark'] and sets.ygnass_resolve_1))
 		end
 		if player.equipment.main == "Godhands" and spell.english == "Shijin Spiral" then
 			pre_AMTimer = 181
@@ -2123,6 +2112,8 @@ function precast(spell)
 		equip(sets.chi_blast)
 	elseif spell.english == 'Counterstance' and Counterstance.recast < 2 then
 		equip(sets.counterstance)
+	elseif spell.english == 'Footwork' and Footwork.recast < 2 then
+		equip(sets.footwork)
 	elseif spell.english == 'Mantra' and Mantra.recast < 2 then
 		equip(sets.mantra)
 	elseif spell.english == 'Formless Strikes' and FormlessStrikes.recast < 2 then
@@ -2162,7 +2153,7 @@ end
 
 function aftercast(spell)
 	if spell.english == 'Hundred Fists' and HFTimer == 'On' and not spell.interrupted then
-		if player.equipment.legs == 'Hes. Hose' or player.equipment.legs == 'Hes. Hose +1' or player.equipment.legs == 'Hes. Hose +2' or player.equipment.legs == 'Hes. Hose +3' then --these pieces extend Hundred Fists by 15 seconds so we adjust accordingly
+		if player.equipment.legs == 'Hes. Hose' or player.equipment.legs == 'Hes. Hose +1' or player.equipment.legs == 'Hes. Hose +2' or player.equipment.legs == 'Hes. Hose +3' or player.equipment.legs == 'Hes. Hose +4' then --these pieces extend Hundred Fists by 15 seconds so we adjust accordingly
 			send_command('input /echo [Hundred Fists] 60 seconds;wait 15;input /echo [Hundred Fists] 45 seconds;wait 15;input /echo [Hundred Fists] 30 seconds;wait 10;input /echo [Hundred Fists] 20 seconds;wait 10;input /echo [Hundred Fists] 10 seconds')
 		else
 			send_command('input /echo [Hundred Fists] 45 seconds;wait 15;input /echo [Hundred Fists] 30 seconds;wait 10;input /echo [Hundred Fists] 20 seconds;wait 10;input /echo [Hundred Fists] 10 seconds')
@@ -2225,8 +2216,6 @@ windower.register_event('gain buff', function(buff)
 		send_command('wait .5;gs c ClearNotifications')
 	elseif buff == 461 and player.status == "Engaged" then
 		equip(sets.impetus)
-	elseif buff == 406 and player.status == "Engaged" then
-		equip(sets.footwork)
 	end
 end)
 
