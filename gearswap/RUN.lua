@@ -356,8 +356,8 @@ WeaponCycle = {
 -- These are the Main/Sub combos that get added to the Weapon Cycle while in Abyssea for Procs. Add more pairs on new lines as needed
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 AbysseaProcCycle = {
-	{"Excalipoor II", "Blurred Shield +1"},
-	{"Chocobo Wand", "Blurred Shield +1"},
+	{"Excalipoor II", "Chanter's Shield"},
+	{"Chocobo Wand", "Chanter's Shield"},
 	{"Hapy Staff", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
 }
@@ -475,7 +475,7 @@ sets.rest = {
 -- Fast Cast (cap is 80%)
 sets.fast_cast = {
 	ammo="Sapience Orb", --2
-	head="Rune. Bandeau +3", --14
+	head="Rune. Bandeau +4", --14
 	body="Erilaz Surcoat +3", --13
 	hands="Agwu's Gages", --6
 	legs="Agwu's Slops", --7
@@ -528,7 +528,7 @@ sets.enmityspells = set_combine(sets.enmity, {
 
 -- Regen (Regen+, Enhancing Magic Duration)
 sets.regen = {
-	head="Rune. Bandeau +3",
+	head="Rune. Bandeau +4",
 	hands="Regal Gauntlets",
 	right_ear="Erilaz Earring +2",
 }
@@ -551,7 +551,7 @@ sets.enhancing = {
 sets.phalanx = set_combine(sets.enhancing, {
 	head="Fu. Bandeau +3",
 	body="Herculean Vest",
-	hands={ name="Herculean Gloves", augments={'Attack+6','Phys. dmg. taken -2%','Phalanx +1','Accuracy+4 Attack+4','Mag. Acc.+2 "Mag.Atk.Bns."+2',}},
+	hands={ name="Herculean Gloves", augments={'INT+3','Crit.hit rate+2','Phalanx +3','Accuracy+12 Attack+12',}},
 	legs="Herculean Trousers",
 	feet={ name="Herculean Boots", augments={'Pet: STR+9','Accuracy+18','Phalanx +3','Accuracy+19 Attack+19',}},
 })
@@ -678,7 +678,7 @@ sets.pulse = set_combine(sets.enmity, {
 
 -- Gambit (Enhances Gambit gear)
 sets.gambit = set_combine(sets.enmity, {
-	hands="Runeist Mitons +3",
+	hands="Runeist Mitons +4",
 })
 
 -- Battuta (Enhances Battuta gear)
@@ -745,7 +745,7 @@ end
 
 
 
-FileVersion = '9.9.1'
+FileVersion = '9.9.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1464,7 +1464,7 @@ function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -1890,6 +1890,17 @@ function updateBuffs()
     for _, buffId in ipairs(windower.ffxi.get_player().buffs) do
         active_buffs[res.buffs[buffId].en] = true  --Store buff names as keys for O(1) lookup
     end
+end
+
+local function buffActive(buff_id)
+	local buffs = windower.ffxi.get_player().buffs
+
+	for _, buff in ipairs(buffs) do
+		if buff == buff_id then
+			return true
+		end
+	end
+	return false
 end
 
 -------------------------------------------
@@ -2485,7 +2496,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2519,18 +2530,11 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		elseif Mode == 'DPS' then
-			if sets[spell.english] then
-				equip(sets[spell.english])
-			else
-				equip(sets.weapon_skill)
-			end
+		end
+		if Mode == 'DPS' then
+			equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
 		else
-			if sets[spell.english] then
-				equip(set_combine(sets[spell.english], sets.weapons_skill_accuracy))
-			else
-				equip(set_combine(sets.weapon_skill, sets.weapons_skill_accuracy))
-			end
+			equip(set_combine(sets[spell.english] and sets[spell.english] or sets.weapon_skill, sets.weapons_skill_accuracy))
 		end
 		if player.equipment.main == "Lionheart" and spell.english == "Resolution" then
 			pre_AMTimer = 181
@@ -2779,7 +2783,7 @@ function aftercast(spell)
 	elseif (spell.english == 'Rayke' or spell.english == 'Gambit' or spell.english == 'Lunge') and player.status == "Engaged" and not spell.interrupted then
 		send_command('gs c ClearRunes')
 	elseif spell.english == 'Elemental Sforzo' and SfoTimer == 'On' and not spell.interrupted then
-		if player.equipment.body == 'Futhark Coat' or player.equipment.body == 'Futhark Coat +1' or player.equipment.body == 'Futhark Coat +2' or player.equipment.hands == 'Futhark Coat +3' then --these pieces extend Elemental Sforzo by 10 seconds so we adjust accordingly
+		if player.equipment.body == 'Futhark Coat' or player.equipment.body == 'Futhark Coat +1' or player.equipment.body == 'Futhark Coat +2' or player.equipment.hands == 'Futhark Coat +3' or player.equipment.hands == 'Futhark Coat +4' then --these pieces extend Elemental Sforzo by 10 seconds so we adjust accordingly
 			send_command('input /echo [Elemental Sforzo] 40 seconds;wait 10;input /echo [Elemental Sforzo] 30 seconds;wait 10;input /echo [Elemental Sforzo] 20 seconds;wait 10;input /echo [Elemental Sforzo] 10 seconds')
 		else
 			send_command('input /echo [Elemental Sforzo] 30 seconds;wait 10;input /echo [Elemental Sforzo] 20 seconds;wait 10;input /echo [Elemental Sforzo] 10 seconds')
@@ -3739,7 +3743,7 @@ windower.register_event('prerender', function()
 		end
 
 		if Cocoon.recast then
-			if buffactive['Defense Boost'] then
+			if buffActive(93) then
 				textColor('Cocoon','active')
 				Cocoon.flashed = false
 			elseif Cocoon.recast > 0 then
@@ -4052,7 +4056,7 @@ windower.register_event('prerender', function()
 
 		--Refueling
 		if Refueling.recast then
-			if buffactive['Haste'] then
+			if buffActive(33) then
 				textColor('Refueling','active')
 				Refueling.flashed = false
 			elseif Refueling.recast > 0 then
