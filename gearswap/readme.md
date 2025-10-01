@@ -96,6 +96,12 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 18.9.3
+- Added support for the Limbus +4 gear for SP Ability.
+- Adjusted a number of HUD Recast buffs to use the buff ID instead of the buff name. This will prevent things like GEO bubbles from triggering the HUD Recast to show the buff is active on you (ex. the Defense Boost effect from Cocoon wears off, but you are within range of a Barrier bubble so the HUD still labels Cocoon as active).
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
+
 Version 18.9.2
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
 
@@ -469,6 +475,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 1.3.1
+- Fixed Echo Drops mispelled.
+- Fixede Stage 4 Prime Dagger not working with AfterMath correctly.
+
 Version 1.3
 - Added a Song List section in the Options. Moved all settings regarding the Song List into it.
 - Added a Horizontal Song List option.
@@ -540,6 +550,11 @@ Version 1.0 BETA-1
 <details>
  
 <summary>GEO</summary>
+
+Version 14.9.1
+- Added support for the Limbus +4 gear for SP Ability
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
 
 Version 14.9
 - Added a Nuke Mode toggle between Free Nuke and Magic Burst. Keybind can be changed in Advanced Options. Basic Statuses in the HUD (Idle, Resting, etc.) will be colored based on current mode.
@@ -854,6 +869,11 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 7.7.6
+- Added support for the Limbus +4 gear for SP Ability
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
+
 Version 7.7.5
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
 
@@ -1014,6 +1034,12 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 14.8.7
+- Added support for the Limbus +4 gear for SP Ability
+- Adjusted a number of HUD Recast buffs to use the buff ID instead of the buff name. This will prevent things like GEO bubbles from triggering the HUD Recast to show the buff is active on you (ex. the Defense Boost effect from Cocoon wears off, but you are within range of a Barrier bubble so the HUD still labels Cocoon as active).
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
 
 Version 14.8.6
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
@@ -1333,6 +1359,12 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 9.9.2
+- Added support for the Limbus +4 gear for SP Ability
+- Adjusted a number of HUD Recast buffs to use the buff ID instead of the buff name. This will prevent things like GEO bubbles from triggering the HUD Recast to show the buff is active on you (ex. the Defense Boost effect from Cocoon wears off, but you are within range of a Barrier bubble so the HUD still labels Cocoon as active).
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
+
 Version 9.9.1
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
 
@@ -1575,6 +1607,10 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 15.0.6
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
 
 Version 15.0.5
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
@@ -1855,6 +1891,11 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 12.8.1
+- Added support for the Limbus +4 gear for SP Ability
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
+
 Version 12.8
 - Added `avatar_movement_speed` gear set. Intended to only have movement speed piece in it and will combine with the avatar gear set when an avatar is out and a movement speed buff is active. This allows having avatar gear still on when intending to also be moving quickly (putting Fleet Wind up with Garuda out will no longer cancel eachother out, lose movement speed gear going from idle set to avatar set but then gaining quickening from Fleet Wind)
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
@@ -2100,6 +2141,11 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 9.0.7
+- Added support for the Limbus +4 gear for SP Ability
+- Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
+- Fixed Echo Drops mispelled.
 
 Version 9.0.6
 - Adjusted the ZoneGear option to now also set your gear when you change jobs.
