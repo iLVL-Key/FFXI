@@ -379,7 +379,7 @@ sets.Mode1.single_wield = {
 	hands="Sakpata's Gauntlets",
 	legs="Sakpata's Cuisses",
 	--legs="Pumm. Cuisses +3",
-	feet="Pumm. Calligae +3",
+	feet="Pumm. Calligae +4",
 	neck="War. Beads +2",
 	waist="Sailfi Belt +1",
 	left_ear="Schere Earring",
@@ -474,7 +474,7 @@ sets.oh_shit = {
 -- Weapon Skill - Basic (STR, TP Bonus, Multi-hit, Crit, Attack)
 sets.weapon_skill = {
 	ammo="Knobkierrie",
-	head="Nyame Helm",
+	head="Agoge Mask +4",
 	body="Nyame Mail",
 	hands="Boii Mufflers +3",
 	legs="Nyame Flanchard",
@@ -532,7 +532,6 @@ sets["Fimbulvetr"].high_buff = set_combine(sets.weapon_skill, {
 -- Impulse Drive (STR, Crit (w/ Shining One))
 sets["Impulse Drive"] = set_combine(sets.weapon_skill, {
 	ammo="Yetshila +1",
-	head="Boii Mask +3",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
@@ -545,7 +544,6 @@ sets["Impulse Drive"] = set_combine(sets.weapon_skill, {
 -- Impulse Drive - High Buff (STR, Crit (w/ Shining One), PDL)
 sets["Impulse Drive"].high_buff = set_combine(sets.weapon_skill, {
 	ammo="Yetshila +1",
-	head="Boii Mask +3",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
@@ -557,15 +555,12 @@ sets["Impulse Drive"].high_buff = set_combine(sets.weapon_skill, {
 
 -- Judgment (STR, MND, Fencer, TP Bonus)
 sets["Judgment"] = set_combine(sets.weapon_skill, {
-	
-	head="Agoge Mask +3",
 	body="Nyame Mail",
 	right_ring="Regal Ring",
 })
 
 -- Judgment - High Buff (STR, MND, Fencer, TP Bonus, PDL)
 sets["Judgment"].high_buff = set_combine(sets.weapon_skill, {
-	head="Agoge Mask +3",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
@@ -574,7 +569,6 @@ sets["Judgment"].high_buff = set_combine(sets.weapon_skill, {
 
 -- Resolution (STR, TP Bonus)
 sets["Resolution"] = set_combine(sets.weapon_skill, {
-	head="Boii Mask +3",
 	hands="Sakpata's Gauntlets",
 	legs="Boii Cuisses +3",
 	feet="Sakpata's Leggings",
@@ -588,7 +582,7 @@ sets["Resolution"] = set_combine(sets.weapon_skill, {
 
 -- Resolution - High Buff (STR, TP Bonus, PDL)
 sets["Resolution"].high_buff = set_combine(sets.weapon_skill, {
-	head="Boii Mask +3",
+	head="Sakpata's Helm",
 	body="Sakpata's Plate",
 	hands="Sakpata's Gauntlets",
 	legs="Boii Cuisses +3",
@@ -612,13 +606,11 @@ sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
 
 -- Savage Blade (STR, MND, Fencer, TP Bonus)
 sets["Savage Blade"] = set_combine(sets.weapon_skill, {
-	head="Agoge Mask +3",
 	left_ring="Regal Ring",
 })
 
 -- Savage Blade - High Buff (STR, MND, Fencer, TP Bonus, PDL)
 sets["Savage Blade"].high_buff = set_combine(sets.weapon_skill, {
-	head="Agoge Mask +3",
 	body="Sakpata's Plate",
 	legs="Boii Cuisses +3",
 	left_ring="Sroda Ring",
@@ -661,7 +653,6 @@ sets["Ukko's Fury"] = set_combine(sets.weapon_skill, {
 	ammo="Yetshila +1",
 	head="Boii Mask +3",
 	body="Sakpata's Plate",
-	legs="Boii Cuisses +3",
 	feet="Boii Calligae +3",
 	left_ear="Schere Earring",
 	right_ear="Boii Earring +2",
@@ -685,7 +676,6 @@ sets["Ukko's Fury"].high_buff = set_combine(sets.weapon_skill, {
 
 -- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
 sets["Upheaval"] = set_combine(sets.weapon_skill, {
-	head="Agoge Mask +3",
 	legs="Boii Cuisses +3",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
@@ -693,7 +683,6 @@ sets["Upheaval"] = set_combine(sets.weapon_skill, {
 
 -- Upheaval - High Buff (VIT, TP Bonus, Multi-hit, Crit, Attack, PDL)
 sets["Upheaval"].high_buff = set_combine(sets.weapon_skill, {
-	head="Sakpata's Helm",
 	body="Sakpata's Plate",
 	hands="Sakpata's Gauntlets",
 	legs="Boii Cuisses +3",
@@ -762,7 +751,7 @@ sets.defender = {
 
 -- Warcry
 sets.warcry = {
-	head="Agoge Mask +3",
+	head="Agoge Mask +4",
 }
 
 -- Restraint
@@ -861,7 +850,7 @@ end
 
 
 
-FileVersion = '9.0.6'
+FileVersion = '9.0.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1434,7 +1423,7 @@ local function addCommas(number)
 			end
 
 			while insertIndex < length do
-				formattedNumber = formattedNumber:sub(1, insertIndex) .. "," .. formattedNumber:sub(insertIndex + 1)
+				formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
 				insertIndex = insertIndex + 4
 				length = length + 1
 			end
@@ -2323,7 +2312,7 @@ function precast(spell)
 			play_sound(Notification_Cancel)
 		end
 		if UseEcho == 'E' then
-			send_command('input /item "Echo Drop" <me>')
+			send_command('input /item "Echo Drops" <me>')
 		elseif UseEcho == 'R' then
 			send_command('input /item "Remedy" <me>')
 		end
@@ -2355,20 +2344,19 @@ function precast(spell)
 		-- If an Abyssea Proc weapon pair is equipped inside Abyssea, we don't want to use a WS set
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
-		else
-			local base_set = sets.weapon_skill
-			local ws = spell.english
-			local ws_set = sets[ws]
-			if player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
-				base_set = sets[ws].high_buff
-			elseif ws_set then
-				base_set = sets[ws]
-			end
-			local hachirin_no_obi = useHachirinNoObi(ws) and sets.hachirin_no_obi or nil
-			local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
-			local ws_accuracy = Mode == 'Mode3' and sets.ws_accuracy or nil
-			equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
 		end
+		local base_set = sets.weapon_skill
+		local ws = spell.english
+		local ws_set = sets[ws]
+		if player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff then
+			base_set = sets[ws].high_buff
+		elseif ws_set then
+			base_set = sets[ws]
+		end
+		local hachirin_no_obi = useHachirinNoObi(ws) and sets.hachirin_no_obi or nil
+		local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
+		local ws_accuracy = Mode == 'Mode3' and sets.ws_accuracy or nil
+		equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
 		if player.equipment.main == "Chango" and spell.english == "Upheaval" then
 			pre_AMTimer = 181
 		elseif (player.equipment.main == 'Ragnarok' and spell.english == "Scourge") or (player.equipment.main == 'Bravura' and spell.english == "Metatron Torment") then
@@ -2445,7 +2433,7 @@ end
 
 function aftercast(spell)
 	if spell.english == 'Mighty Strikes' and MSTimer == 'On' and not spell.interrupted then
-		if player.equipment.hands == 'Agoge Mufflers' or player.equipment.hands == 'Agoge Mufflers +1' or player.equipment.hands == 'Agoge Mufflers +2' or player.equipment.hands == 'Agoge Mufflers +3' then --these pieces extend Mighty Strikes by 15 seconds so we adjust accordingly
+		if player.equipment.hands == 'Agoge Mufflers' or player.equipment.hands == 'Agoge Mufflers +1' or player.equipment.hands == 'Agoge Mufflers +2' or player.equipment.hands == 'Agoge Mufflers +3' or player.equipment.hands == 'Agoge Mufflers +4' then --these pieces extend Mighty Strikes by 15 seconds so we adjust accordingly
 			send_command('input /echo [Mighty Strikes] 60 seconds;wait 15;input /echo [Mighty Strikes] 45 seconds;wait 15;input /echo [Mighty Strikes] 30 seconds;wait 10;input /echo [Mighty Strikes] 20 seconds;wait 10;input /echo [Mighty Strikes] 10 seconds')
 		else
 			send_command('input /echo [Mighty Strikes] 45 seconds;wait 15;input /echo [Mighty Strikes] 30 seconds;wait 10;input /echo [Mighty Strikes] 20 seconds;wait 10;input /echo [Mighty Strikes] 10 seconds')
