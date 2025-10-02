@@ -214,7 +214,7 @@ function handleQuery(query, send_to, personality_name, personality_desc)
 	--Set the flood delay
 	flood_delay = true
 
-	add_to_chat(8,('[LLMChat] ':color(220))..('Generating response for '..personality_name..'...'):color(8))
+	add_to_chat(8,('[LLMChat] ':color(220))..('Generating response from '..personality_name..'...'):color(8))
 
 	-- Split the message into parts
 	local function splitMessage(send_to, message, personality_name)
