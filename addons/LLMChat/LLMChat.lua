@@ -36,6 +36,8 @@ files = require('files')
 require 'chat'
 
 add_to_chat = windower.add_to_chat
+input = windower.chat.input
+register_event = windower.register_event
 
 --Defaults values loaded on first run. Do not edit these here, edit them in the data/settings.xml file
 defaults = {
@@ -109,7 +111,7 @@ function checkChatBuffer()
 	-- If the chat_buffer has messages in it, send them to chat then remove them, then check again after a short wait
 	if #chat_buffer > 0 then
 		local message = chat_buffer[1]
-		windower.chat.input(message)
+		input(message)
 		table.remove(chat_buffer, 1)
 		coroutine.sleep(1.5)
 		checkChatBuffer()
@@ -125,7 +127,7 @@ function newChatMessage(str)
 
 	-- If the releaseValve is open, send the new chat message straight to chat and close the valve
 	if release_valve_open then
-		windower.chat.input(str)
+		input(str)
 		release_valve_open = false
 		coroutine.sleep(1.5)
 		checkChatBuffer()
@@ -262,7 +264,7 @@ end
 
 --Incoming chat message - NOTE: these are checking incoming packets, messages originating from yourself will not trigger them
 --(tells work though because they go out to the server first then back to you as the receiver)
-windower.register_event('chat message', function(message, sender, chat_mode)
+register_event('chat message', function(message, sender, chat_mode)
 
 	--Ignore if another query while already working on one
 	if flood_delay then
@@ -284,7 +286,7 @@ windower.register_event('chat message', function(message, sender, chat_mode)
 
 end)
 
-windower.register_event('outgoing text', function(original)
+register_event('outgoing text', function(original)
 
     -- Ignore if already processing a query
     if flood_delay then
@@ -322,7 +324,7 @@ windower.register_event('outgoing text', function(original)
 end)
 
 -- Handle addon commands
-windower.register_event('addon command', function(addon_command, ...)
+register_event('addon command', function(addon_command, ...)
 
 	local args = {...}
 
@@ -377,7 +379,7 @@ windower.register_event('addon command', function(addon_command, ...)
 		-- Print to chat log
 		add_to_chat(8,('[LLMChat] ':color(220))..('Available Personalities:'):color(8))
 		for _, name in ipairs(names) do
-			windower.add_to_chat(36, (" - "):color(8)..name)
+			add_to_chat(36, (" - "):color(8)..name)
 		end
 	end
 
