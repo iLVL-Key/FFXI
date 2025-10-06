@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'LLMChat'
-_addon.version = '1.0 BETA-1'
+_addon.version = '1.0 BETA-2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'llmchat','llm'}
 
@@ -282,6 +282,43 @@ windower.register_event('chat message', function(message, sender, chat_mode)
 		handleQuery(message, send_to, personality_name, personality_desc)
 	end
 
+end)
+
+windower.register_event('outgoing text', function(original)
+
+    -- Ignore if already processing a query
+    if flood_delay then
+        return
+    end
+
+    -- Map chat commands to channel codes
+    local chat_map = {
+        ["echo"]        = "echo",
+        ["party"]       = "p",
+        ["p"]           = "p",
+        ["linkshell"]   = "l",
+        ["l"]           = "l",
+        ["linkshell2"]  = "l2",
+        ["l2"]          = "l2",
+    }
+
+    -- Detect prefix like "/p ", "/party ", "/l2 ", etc.
+    local chat_prefix, remainder = original:match("^/(%S+)%s+(.*)")
+    local send_to
+
+    if chat_prefix and chat_map[chat_prefix:lower()] then
+        send_to = chat_map[chat_prefix:lower()]
+        original = remainder -- Remove the prefix for processing
+    end
+
+    -- Detect if it starts with a known personality name
+    local personality_name, personality_desc = getPersonality(original)
+
+    -- Only handle if both personality and send_to exist
+    if personality_name and personality_desc and send_to then
+		coroutine.sleep(1.5) -- Delay to avoid chat error if reply comes back too fast.
+        handleQuery(original, send_to, personality_name, personality_desc)
+    end
 end)
 
 -- Handle addon commands
