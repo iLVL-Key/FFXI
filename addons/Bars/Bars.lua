@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.3'
+_addon.version = '4.4.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -265,13 +265,26 @@ defaults = {
 			bg_alpha = 150,
 			bold = true,
 			ignore_list = S{
-				"Poison Mist",
-				"Malicious Spire",
-				"Zisurru",
+				"Poison Mist", "Malicious Spire", "Zisurru",
 			},
 			italic = false,
 			max_monsters_listed = 6,
 			min_monsters_to_show = 0,
+			open_mobs = S{
+				"Mireu", "Azi Dahaka", "Naga Raja", "Quetzalcoatl",
+				"Azi Dahaka's Dragon", "Naga Raja's Lamia", "Quetzalcoatl's Sibilus",
+				"Academic's", "Agoge", "Anchorite's", "Ankusa",
+				"Arcadian", "Archmage's", "Assimilator's", "Atrophy",
+				"Bagua", "Bihu", "Brioso", "Caballarius",
+				"Convoker's", "Fallen's", "Foire", "Futhark",
+				"Geomancy", "Glyphic", "Hachiya", "Hesychast's",
+				"Horos", "Ignominy", "Laksamana's", "Lanun",
+				"Luhlaza", "Maxixi", "Mochizuki", "Orion",
+				"Pedagogy", "Piety", "Pillager's", "Pitre",
+				"Plunderer's", "Pteroslaver", "Pummeler's", "Reverence",
+				"Runeist", "Sakonji", "Spaekona's", "Theophany",
+				"Totemic", "Vishap", "Vitiation", "Wakido",
+			},
 			pos = {x = 200, y = 320},
 			show = true,
 			show_cursor_target = true,
@@ -789,6 +802,8 @@ bg_alpha = settings.bg.alpha
 text_alpha = settings.text.alpha
 
 abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
+aggro_list_ignore = settings.sections.aggro_list.ignore_list
+aggro_list_open_mobs = settings.sections.aggro_list.open_mobs
 clear_action_delay = settings.options.clear_action_delay
 colorize_spells = settings.options.colorize_spells
 condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
@@ -820,6 +835,11 @@ hide_pet_bar_when_no_pet = settings.options.hide_pet_bar_when_no_pet
 hide_player_stats_bars_when_no_target = settings.options.hide_player_stats_bars_when_no_target
 job_specific = settings.job_specific
 max_action_length = settings.options.max_action_length
+max_icons = {
+	focus_target = math.max(0, math.min(settings.sections.focus_target.debuff_max_icons, 32)),
+	sub_target = math.max(0, math.min(settings.sections.sub_target.debuff_max_icons, 32)),
+	target = math.max(0, math.min(settings.sections.target.debuff_max_icons, 32)),
+}
 max_monster_target_length = settings.options.max_monster_target_length
 max_monsters_listed = math.max(0, math.min(settings.sections.aggro_list.max_monsters_listed, 15))
 max_name_length = settings.options.max_name_length
@@ -976,6 +996,7 @@ sp_abils = {
 	['Tabula Rasa'] = 180,
 	['Bolster'] = 180, ['Widened Compass'] = 60,
 	['Elemental Sforzo'] = 30,
+	['Ignis'] = 30,
 }
 
 sp_shorter_names = {
@@ -1062,12 +1083,12 @@ custom_spells = {
 	[12501]	= "Waterja IV",
 	[13501]	= "Waterja V",
 }
-aggro_list_ignore = settings.sections.aggro_list.ignore_list
 remove_all_debuffs = S{
 	"Benediction",
 	"Depuration",
 	"Stygian Sphere",
 }
+
 in_cutscene = false
 zoning = false
 logged_in = false
@@ -1182,8 +1203,7 @@ screen_test_debuffs = {
 	target = {},
 }
 for section, section_table in pairs(screen_test_debuffs) do
-	local max_icons = math.max(0, math.min(settings.sections[section].debuff_max_icons, 32))
-	for i = 1, max_icons do
+	for i = 1, max_icons[section] do
 		section_table[i] = math.random(1, 640)
 	end
 end
@@ -1314,8 +1334,7 @@ for section, section_table in pairs(debuff_icons) do
 
 	--Make sure Debuff Icons are enabled for each section
 	if section_settings.debuff_icons then
-		local max_icons = math.max(0, math.min(section_settings.debuff_max_icons, 32))
-		for i = 1, max_icons do
+		for i = 1, max_icons[section] do
 			section_table[i] = images.new({
 				color = {alpha = 255},
 				texture = {fit = false},
@@ -1337,8 +1356,7 @@ for section, section_table in pairs(debuff_timers) do
 
 	--Make sure Debuff Icons and Timers are both enabled for each section
 	if section_settings.debuff_icons and section_settings.debuff_timers then
-		local max_icons = math.max(0, math.min(section_settings.debuff_max_icons, 32))
-		for i = 1, max_icons do
+		for i = 1, max_icons[section] do
 			section_table[i] = texts.new({
 				text = {
 					alpha = 255,
@@ -2658,7 +2676,7 @@ function hideBars()
 	local ft_settings = settings.sections.focus_target
 	local ft_timer_set = debuff_timers.focus_target
 	if ft_icon_set[1]:visible() then
-		for k = 1, max_icons do
+		for k = 1, max_icons.focus_target do
 			ft_icon_set[k]:hide()
 			if ft_settings.debuff_timers then
 				ft_timer_set[k]:hide()
@@ -2681,7 +2699,7 @@ function hideBars()
 	local st_settings = settings.sections.sub_target
 	local st_timer_set = debuff_timers.sub_target
 	if st_icon_set[1]:visible() then
-		for k = 1, max_icons do
+		for k = 1, max_icons.sub_target do
 			st_icon_set[k]:hide()
 			if st_settings.debuff_timers then
 				st_timer_set[k]:hide()
@@ -2713,7 +2731,7 @@ function hideBars()
 	local t_settings = settings.sections.target
 	local t_timer_set = debuff_timers.target
 	if t_icon_set[1]:visible() then
-		for k = 1, max_icons do
+		for k = 1, max_icons.target do
 			t_icon_set[k]:hide()
 			if t_settings.debuff_timers then
 				t_timer_set[k]:hide()
@@ -2819,7 +2837,7 @@ function hidePlayerStatBars()
 end
 
 --Show appropriate bars
-function showBars(target, pet)
+function showBars(target)
 
 	if job and not (hide_player_stats_bars_when_no_target and not target) then
 
@@ -2919,7 +2937,7 @@ function assignIndex()
 end
 
 --Update monster targeting tables
-function updateTargetBaring(actor_id, target_id, timestamp, icon)
+function updateTargeting(actor_id, target_id, timestamp, icon)
 
 	current_actions[actor_id] = {
 		target_id = target_id,
@@ -2928,8 +2946,8 @@ function updateTargetBaring(actor_id, target_id, timestamp, icon)
 	}
 
 	--If the target of an action done by a monster (checked before this function was triggered)
-	--is in our alliance then add the monster to the aggro list table
-	if isInPartyOrAlliance(target_id) then
+	--is in our alliance, or if the monster is on the open_mobs list, then add the monster to the aggro list table
+	if isInPartyOrAlliance(target_id) or aggro_list_open_mobs:contains(get_mob_by_id(actor_id).name) then
 		current_aggro_list[actor_id] = {
 			target_id = target_id,
 			timestamp = timestamp,
@@ -3144,9 +3162,7 @@ function isInAlliance(id)
 end
 
 --Return what color the target should be based on what/who it is
-function targetColor(target)
-
-	local player = get_player()
+function targetColor(player, target)
 
 	--Player (us)
 	if target and target.id == player.id then
@@ -3154,21 +3170,69 @@ function targetColor(target)
 
 	--NPCs
 	elseif target and target.is_npc then
+
 		--Monsters
 		if target.spawn_type == 16 then
+
 			--Passive
 			if target.claim_id == 0 then
 				return color.target.monster_passive
+
 			--Claimed by our Party
 			elseif isInParty(target.claim_id) then
 				return color.target.monster_claimed_party
+
 			--Claimed by our alliance
 			elseif isInAlliance(target.claim_id) then
 				return color.target.monster_claimed_alliance
+
 			--Claimed by others
 			else
 				return color.target.monster_claimed_other
 			end
+
+		--Pets/Trusts
+		elseif target.charmed then
+
+			--Trusts
+			if target.spawn_type == 14 then
+				return color.target.npc
+
+			--Pet belongs to us
+			elseif target.index == get_mob_by_target('p0').pet_index then
+				return color.target.pc_self
+
+			else
+
+				local party_pos = {
+					'p1', 'p2', 'p3', 'p4', 'p5',
+				}
+				local alliance_pos = {
+					'a10', 'a11', 'a12', 'a13', 'a14', 'a15',
+					'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
+				}
+
+				--Pet belongs to someone in our party
+				for _, pos in ipairs(party_pos) do
+					local ally = get_mob_by_target(pos)
+					if ally and ally.pet_index == target.index then
+						return color.target.pc_party
+					end
+				end
+
+				--Pet belongs to someone in our alliance
+				for _, pos in ipairs(alliance_pos) do
+					local ally = get_mob_by_target(pos)
+					if ally and ally.pet_index == target.index then
+						return color.target.pc_alliance
+					end
+				end
+
+				--None of the above, pet belongs to a player outside of our party/alliance
+				return color.target.pc_other
+
+			end
+
 		else
 			return color.target.npc
 		end
@@ -3688,12 +3752,12 @@ function truncateMonsterTarget(name)
 end
 
 --Format (color and truncate) the monster target name
-function formatTargetingName(targeting)
+function formatTargetingName(player, targeting)
 
 	local formatted_name = 'Unknown'
 
 	if targeting then
-		local c = targetColor(targeting)
+		local c = targetColor(player, targeting)
 		local c_r = formatRGB(c.r)
 		local c_g = formatRGB(c.g)
 		local c_b = formatRGB(c.b)
@@ -3706,7 +3770,7 @@ function formatTargetingName(targeting)
 end
 
 --Update the Aggro List
-function updateAggroList(t)
+function updateAggroList(player, t)
 
 	--If the Aggro List is turned off, hide it
 	if not show_aggro_list and not Screen_Test then
@@ -3742,13 +3806,13 @@ function updateAggroList(t)
 				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and (cursor_target and "ZZZ" or "zzz") or ""
 
 				--Colorize the actor name
-				local ca = targetColor(actor)
+				local ca = targetColor(player, actor)
 				local ca_r = formatRGB(ca.r)
 				local ca_g = formatRGB(ca.g)
 				local ca_b = formatRGB(ca.b)
 
 				--Colorize the target name
-				local ct = targetColor(target)
+				local ct = targetColor(player, target)
 				local ct_r = formatRGB(ct.r)
 				local ct_g = formatRGB(ct.g)
 				local ct_b = formatRGB(ct.b)
@@ -3800,12 +3864,11 @@ function updateAggroList(t)
 end
 
 --Update the Focus Target bar
-function updateFocusTargetBar(target, clock)
+function updateFocusTargetBar(player, target, clock)
 
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
 	local ft_settings = settings.sections.focus_target
-	local max_icons = ft_settings.debuff_icons and math.max(0, math.min(ft_settings.debuff_max_icons, 32)) or 0
 	local icon_set = debuff_icons.focus_target
 	local timer_set = debuff_timers.focus_target
 
@@ -3824,7 +3887,7 @@ function updateFocusTargetBar(target, clock)
 			ui_bg_left.focus_target:hide()
 			ui_bg_middle.focus_target:hide()
 			ui_bg_right.focus_target:hide()
-			for k = 1, max_icons do
+			for k = 1, max_icons.focus_target do
 				icon_set[k]:hide()
 				if ft_settings.debuff_timers then
 					timer_set[k]:hide()
@@ -3857,7 +3920,7 @@ function updateFocusTargetBar(target, clock)
 	local level = ft and ft_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ft_spaces..'Lv '..current_levels[ft.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
-	local cm = ft and (Fade and text_color or targetColor(ft)) or color.target.pc_other
+	local cm = ft and (Fade and text_color or targetColor(player, ft)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
 	local m_targeting = ft_settings.show_monster_target and current_actions[ft.id] and current_actions[ft.id].target_id and get_mob_by_id(current_actions[ft.id].target_id)
@@ -3865,7 +3928,7 @@ function updateFocusTargetBar(target, clock)
 	local target_icon = m_targeting
 		and os.time() >= current_actions[ft.id].timestamp and ' ?'
 		or (current_actions[ft.id] and current_actions[ft.id].icon and ' '..current_actions[ft.id].icon or ' ?')
-	local targeting = m_targeting and target_icon..formatTargetingName(m_targeting) or (ft_targeting_id and target_icon..formatTargetingName(get_mob_by_id(ft_targeting_id)) or '')
+	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (ft_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(ft_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (ft_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(ft_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
 	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
@@ -3907,12 +3970,11 @@ function updateFocusTargetBar(target, clock)
 
 	--Pulse/Glow Focus Target when SP active
 	Pulse_Focus_Target_Bar = pulse_bar_when_target_sp_active and sp_active
-	if sp_active and not Pulse_Focus_Target_Name then
-		Pulse_Focus_Target_Name = true
+	Pulse_Focus_Target_Name = pulse_name_when_target_sp_active and sp_active
+	if Pulse_Focus_Target_Name then
 		focus_target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
 		focus_target_text:stroke_width(ft_text_stroke.w < 1 and 1 or ft_text_stroke.w)
-	elseif Pulse_Focus_Target_Name and not sp_active then
-		Pulse_Focus_Target_Name = false
+	else
 		focus_target_text:stroke_color(ft_text_stroke.r,ft_text_stroke.g,ft_text_stroke.b)
 		focus_target_text:stroke_width(ft_text_stroke.w)
 	end
@@ -3921,7 +3983,7 @@ function updateFocusTargetBar(target, clock)
 	local debuff_list = current_debuffs[ft.id]
 	local i = 1
 	if Screen_Test then
-		for k = 1, max_icons do
+		for k = 1, max_icons.focus_target do
 			local num = screen_test_debuffs.focus_target[k]
 			local timer = formatTimer(num)
 			local file_path = windower_path..'addons/Bars/data/icons/'..num..'.png'
@@ -3945,7 +4007,7 @@ function updateFocusTargetBar(target, clock)
 
 		--Show debuffs up to max_icons
 		for _, debuff_id in ipairs(sorted_keys) do
-			if i > max_icons then break end
+			if i > max_icons.focus_target then break end
 
 			local spell_data = debuff_list[debuff_id]
 			local custom_spell = custom_spells[spell_data.id]
@@ -3996,7 +4058,7 @@ function updateFocusTargetBar(target, clock)
 	end
 
 	--Hide remaining unused slots
-	for k = i, max_icons do
+	for k = i, max_icons.focus_target do
 		icon_set[k]:hide()
 		if ft_settings.debuff_timers then
 			timer_set[k]:hide()
@@ -4087,13 +4149,11 @@ function updateFocusTargetBarAnimations(player, target)
 end
 
 --Update the Sub Target bar
-function updateSubTargetBar(player, st, clock)
-
+function updateSubTargetBar(player, st, target, clock)
+	
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
-	local target = get_mob_by_target('t')
 	local st_settings = settings.sections.sub_target
-	local max_icons = st_settings.debuff_icons and math.max(0, math.min(st_settings.debuff_max_icons, 32)) or 0
 	local icon_set = debuff_icons.sub_target
 	local timer_set = debuff_timers.sub_target
 
@@ -4113,7 +4173,7 @@ function updateSubTargetBar(player, st, clock)
 			ui_bg_left.sub_target:hide()
 			ui_bg_middle.sub_target:hide()
 			ui_bg_right.sub_target:hide()
-			for k = 1, max_icons do
+			for k = 1, max_icons.sub_target do
 				icon_set[k]:hide()
 				if st_settings.debuff_timers then
 					timer_set[k]:hide()
@@ -4145,7 +4205,7 @@ function updateSubTargetBar(player, st, clock)
 	local level = st and st_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and st_spaces..'Lv '..current_levels[st.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
-	local cm = st and (Fade and text_color or targetColor(st)) or color.target.pc_other
+	local cm = st and (Fade and text_color or targetColor(player, st)) or color.target.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
 	local m_targeting = st_settings.show_monster_target and current_actions[st.id] and current_actions[st.id].target_id and get_mob_by_id(current_actions[st.id].target_id)
@@ -4153,7 +4213,7 @@ function updateSubTargetBar(player, st, clock)
 	local target_icon = m_targeting
 		and os.time() >= current_actions[st.id].timestamp and ' ?'
 		or (current_actions[st.id] and current_actions[st.id].icon and ' '..current_actions[st.id].icon or ' ?')
-	local targeting = m_targeting and target_icon..formatTargetingName(m_targeting) or (st_targeting_id and target_icon..formatTargetingName(get_mob_by_id(st_targeting_id)) or '')
+	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (st_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(st_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (st_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(st_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
 	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
@@ -4195,12 +4255,11 @@ function updateSubTargetBar(player, st, clock)
 
 	--Pulse/Glow Sub Target when SP active
 	Pulse_Sub_Target_Bar = pulse_bar_when_target_sp_active and sp_active
-	if sp_active and not Pulse_Sub_Target_Name then
-		Pulse_Sub_Target_Name = true
+	Pulse_Sub_Target_Name = pulse_name_when_target_sp_active and sp_active
+	if Pulse_Sub_Target_Name then
 		sub_target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
 		sub_target_text:stroke_width(st_text_stroke.w < 1 and 1 or st_text_stroke.w)
-	elseif Pulse_Sub_Target_Name and not sp_active then
-		Pulse_Sub_Target_Name = false
+	else
 		sub_target_text:stroke_color(st_text_stroke.r,st_text_stroke.g,st_text_stroke.b)
 		sub_target_text:stroke_width(st_text_stroke.w)
 	end
@@ -4209,7 +4268,7 @@ function updateSubTargetBar(player, st, clock)
 	local debuff_list = current_debuffs[st.id]
 	local i = 1
 	if Screen_Test then
-		for k = 1, max_icons do
+		for k = 1, max_icons.sub_target do
 			local num = screen_test_debuffs.sub_target[k]
 			local timer = formatTimer(num)
 			local file_path = windower_path..'addons/Bars/data/icons/'..num..'.png'
@@ -4233,7 +4292,7 @@ function updateSubTargetBar(player, st, clock)
 
 		--Show debuffs up to max_icons
 		for _, debuff_id in ipairs(sorted_keys) do
-			if i > max_icons then break end
+			if i > max_icons.sub_target then break end
 
 			local spell_data = debuff_list[debuff_id]
 			local custom_spell = custom_spells[spell_data.id]
@@ -4284,7 +4343,7 @@ function updateSubTargetBar(player, st, clock)
 	end
 
 	--Hide remaining unused slots
-	for k = i, max_icons do
+	for k = i, max_icons.sub_target do
 		icon_set[k]:hide()
 		if st_settings.debuff_timers then
 			timer_set[k]:hide()
@@ -4374,7 +4433,6 @@ function updateTargetBar(player, t, clock)
 	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
 
 	local t_settings = settings.sections.target
-	local max_icons = t_settings.debuff_icons and math.max(0, math.min(t_settings.debuff_max_icons, 32)) or 0
 	local icon_set = debuff_icons.target
 	local timer_set = debuff_timers.target
 
@@ -4392,7 +4450,7 @@ function updateTargetBar(player, t, clock)
 			ui_bg_left.target:hide()
 			ui_bg_middle.target:hide()
 			ui_bg_right.target:hide()
-			for k = 1, max_icons do
+			for k = 1, max_icons.target do
 				icon_set[k]:hide()
 				if t_settings.debuff_timers then
 					timer_set[k]:hide()
@@ -4424,7 +4482,7 @@ function updateTargetBar(player, t, clock)
 	local level = t and t_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and t_spaces..'Lv '..current_levels[t.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
-	local cm = t and (Fade and text_color or targetColor(t)) or color.t.pc_other
+	local cm = t and (Fade and text_color or targetColor(player, t)) or color.t.pc_other
 	local ct = text_color
 	local hpp = string.format("%3s", hpp_raw)..'%'
 	local m_targeting = t_settings.show_monster_target and current_actions[t.id] and current_actions[t.id].target_id and get_mob_by_id(current_actions[t.id].target_id)
@@ -4432,7 +4490,7 @@ function updateTargetBar(player, t, clock)
 	local target_icon = m_targeting
 		and os.time() >= current_actions[t.id].timestamp and ' ?'
 		or (current_actions[t.id] and current_actions[t.id].icon and ' '..current_actions[t.id].icon or ' ?')
-	local targeting = m_targeting and target_icon..formatTargetingName(m_targeting) or (t_targeting_id and target_icon..formatTargetingName(get_mob_by_id(t_targeting_id)) or '')
+	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (t_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(t_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (t_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(t_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
 	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
@@ -4495,12 +4553,11 @@ function updateTargetBar(player, t, clock)
 
 	--Pulse/Glow Target when SP active
 	Pulse_Target_Bar = pulse_bar_when_target_sp_active and sp_active
-	if sp_active and not Pulse_Target_Name then
-		Pulse_Target_Name = true
+	Pulse_Target_Name = pulse_name_when_target_sp_active and sp_active
+	if Pulse_Target_Name then
 		target_text:stroke_color(sp_active_glow.r,sp_active_glow.g,sp_active_glow.b)
 		target_text:stroke_width(t_text_stroke.w < 1 and 1 or t_text_stroke.w)
-	elseif Pulse_Target_Name and not sp_active then
-		Pulse_Target_Name = false
+	else
 		target_text:stroke_color(t_text_stroke.r,t_text_stroke.g,t_text_stroke.b)
 		target_text:stroke_width(t_text_stroke.w)
 	end
@@ -4509,7 +4566,7 @@ function updateTargetBar(player, t, clock)
 	local debuff_list = current_debuffs[t.id]
 	local i = 1
 	if Screen_Test then
-		for k = 1, max_icons do
+		for k = 1, max_icons.target do
 			local num = screen_test_debuffs.target[k]
 			local timer = formatTimer(num)
 			local file_path = windower_path..'addons/Bars/data/icons/'..num..'.png'
@@ -4533,7 +4590,7 @@ function updateTargetBar(player, t, clock)
 
 		--Show debuffs up to max_icons
 		for _, debuff_id in ipairs(sorted_keys) do
-			if i > max_icons then break end
+			if i > max_icons.target then break end
 
 			local spell_data = debuff_list[debuff_id]
 			local custom_spell = custom_spells[spell_data.id]
@@ -4584,7 +4641,7 @@ function updateTargetBar(player, t, clock)
 	end
 
 	--Hide remaining unused slots
-	for k = i, max_icons do
+	for k = i, max_icons.target do
 		icon_set[k]:hide()
 		if t_settings.debuff_timers then
 			timer_set[k]:hide()
@@ -4733,12 +4790,11 @@ function completeSelfMeter()
 end
 
 --Update the Self bar
-function updateSelfBar(cast_time, index)
+function updateSelfBar(player, cast_time, index)
 
 	if not show_self_action or not show_self_action_bar then return end
 
 	cast_time = cast_time ~= 0 and cast_time or 1
-	local player = get_player()
 	local self_meter = ''
 	local spaces = 0
 	local multiplier = 0.02 --Bar length gets updated 50 times per second
@@ -5278,7 +5334,7 @@ function updatePetBarAnimations(pet)
 		--Fix the pad issue
 		if drain_spaces <= 6 then
 			player_stats_pet_bar_drain_meter:bg_alpha(0)
-		elseif drain_pet_bar then
+		elseif drain_pet_bar and not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 			if drain_spaces < 13 and drain_ps_pet > 0 then
 				drain_spaces = 13
@@ -5464,9 +5520,8 @@ function listAutoFocusTargets()
 end
 
 --Check for matching focus targets
-function checkForFocusTarget()
+function checkForFocusTarget(target)
 
-	local target = get_mob_by_target('t') or nil
 	local nearby = nil
 
 	--Loop through all the mobs in memory (nearby)
@@ -5505,9 +5560,8 @@ function checkForFocusTarget()
 end
 
 --Check if focus target override is still nearby
-function checkForFocusTargetOverride()
+function checkForFocusTargetOverride(target)
 
-	local target = get_mob_by_target('t') or nil
 	local nearby = false
 
 	--Loop through all the mobs in memory (nearby)
@@ -5584,10 +5638,7 @@ function setTextFade(num)
 end
 
 --Fade the bars (bg_alpha)
-function setBarFade(num)
-
-	local player = get_player()
-	local pet = get_mob_by_target('pet')
+function setBarFade(num, player, pet)
 
 	focus_target_bar_meter:bg_alpha(num)
 	focus_target_bar_drain_meter:bg_alpha(0)
@@ -5637,11 +5688,10 @@ function setIconFade(num)
 	for section, section_table in pairs(debuff_icons) do
 
 		local section_settings = settings.sections[section]
-		local max_icons = section_settings.debuff_icons and math.max(0, math.min(section_settings.debuff_max_icons, 32)) or 0
 		local icon_set = debuff_icons[section]
 		local timer_set = debuff_timers[section]
 
-		for k = 1, max_icons do
+		for k = 1, max_icons[section] do
 			icon_set[k]:alpha(num)
 			if section_settings.debuff_timers then
 				timer_set[k]:alpha(num)
@@ -5756,11 +5806,10 @@ function unFade()
 	for section, _ in pairs(debuff_icons) do
 
 		local section_settings = settings.sections[section]
-		local max_icons = section_settings.debuff_icons and math.max(0, math.min(section_settings.debuff_max_icons, 32)) or 0
 		local icon_set = debuff_icons[section]
 		local timer_set = debuff_timers[section]
 
-		for k = 1, max_icons do
+		for k = 1, max_icons[section] do
 			icon_set[k]:alpha(255)
 			if section_settings.debuff_timers then
 				timer_set[k]:alpha(255)
@@ -5814,16 +5863,17 @@ end
 --Show the Target, Sub Target, and Focus Target bars to test the screen layout
 function screenTest()
 
+	local player = get_player()
+
 	--If already active, cancel test
 	if Screen_Test then
 
-		local player = get_player()
 		local target = get_mob_by_target('t')
 		local sub_target = get_mob_by_target('st')
 		Screen_Test = false
 		focus_target_override = nil
-		updateFocusTargetBar()
-		updateSubTargetBar(player, sub_target)
+		updateFocusTargetBar(player)
+		updateSubTargetBar(player, sub_target, target)
 		updateTargetBar(player, target)
 		removeFromActionsTable(get_player().id, screen_test_tracking_index)
 		resetFadeDelay()
@@ -5842,7 +5892,7 @@ function screenTest()
 	local c_r = formatRGB(c.r)
 	local c_g = formatRGB(c.g)
 	local c_b = formatRGB(c.b)
-	local ct = targetColor(get_player())
+	local ct = targetColor(player, player)
 	local ct_r = formatRGB(ct.r)
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
@@ -5931,7 +5981,7 @@ register_event('target change', function()
 
 	updateTargetBar(player, target, clock)
 	if not condense_target_and_subtarget_bars then
-		updateSubTargetBar(player, sub_target, clock)
+		updateSubTargetBar(player, sub_target, target, clock)
 	end
 	resetFadeDelay()
 
@@ -5959,7 +6009,7 @@ register_event('target change', function()
 		showBars(target)
 	end
 
-	updateAggroList(target)
+	updateAggroList(player, target)
 
 end)
 
@@ -5976,7 +6026,6 @@ function hpChange()
 		local player = get_player()
 		updateHPBar(player)
 		if not player_stats_hp_bar_bg:visible() then
-			local target = get_mob_by_target('t')
 			showBars(target)
 		end
 	end
@@ -6067,9 +6116,8 @@ function initialize()
 	setJob()
 	setPositions()
 	setWidth()
-	-- showBars(target)
 	updateTargetBar(player, target)
-	updateSubTargetBar(player, sub_target)
+	updateSubTargetBar(player, sub_target, target)
 	updateHPBar(player)
 	updateMPBar(player)
 	updateTPBar(player)
@@ -6082,6 +6130,8 @@ function initialize()
 		updateMPBar(player)
 		updateTPBar(player)
 		setUIPositions()
+		showBars(target)
+		logged_in = true
 		server = res.servers[get_info().server].name
 	end, 2)
 
@@ -6092,7 +6142,6 @@ register_event('load', function()
 
 	if get_info().logged_in then
 		initialize()
-		logged_in = true
 	end
 
 end)
@@ -6172,7 +6221,7 @@ register_event('prerender', function()
 	end
 
 	if clock - last_aggro_list_update >= aggro_list_update_interval then
-		updateAggroList(target)
+		updateAggroList(player, target)
 		last_aggro_list_update = clock
 	end
 
@@ -6212,9 +6261,9 @@ register_event('prerender', function()
 
 	if not condense_target_and_subtarget_bars and clock - last_sub_target_update >= sub_target_update_interval then
 		if Screen_Test then
-			updateSubTargetBar(player, screen_test_sub_target, clock)
+			updateSubTargetBar(player, screen_test_sub_target, target, clock)
 		else
-			updateSubTargetBar(player, sub_target, clock)
+			updateSubTargetBar(player, sub_target, target, clock)
 		end
 		last_sub_target_update = clock
 	end
@@ -6227,11 +6276,11 @@ register_event('prerender', function()
 
 	if clock - last_focus_target_update >= focus_target_update_interval then
 		if focus_target_override then
-			checkForFocusTargetOverride()
+			checkForFocusTargetOverride(target)
 		else
-			checkForFocusTarget()
+			checkForFocusTarget(target)
 		end
-		updateFocusTargetBar(target, clock)
+		updateFocusTargetBar(player, target, clock)
 		last_focus_target_update = clock
 	end
 
@@ -6314,10 +6363,10 @@ register_event('prerender', function()
 	if Fade and not Screen_Test then
 		if fade_bg_num > fade_down_to_alpha then
 			fade_bg_num = fade_bg_num - fade_speed
-			setBarFade(fade_bg_num)
+			setBarFade(fade_bg_num, player, pet)
 		elseif fade_bg_num <= fade_down_to_alpha then
 			fade_bg_num = fade_down_to_alpha
-			setBarFade(fade_bg_num)
+			setBarFade(fade_bg_num, player, pet)
 		end
 		if fade_text_num > (fade_down_to_alpha + fade_speed) then
 			fade_text_num = fade_text_num - fade_speed
@@ -6390,7 +6439,7 @@ register_event('action', function (act)
 	local action_target = get_mob_by_id(action_target_id)
 	local action_name = ''
 	local action_name_shdw = ''
-	local ct = targetColor(action_target)
+	local ct = targetColor(player, action_target)
 	local ct_r = formatRGB(ct.r)
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
@@ -6474,12 +6523,12 @@ register_event('action', function (act)
 	--Update monster targeting
 	if (isMonster(act.actor_id) and not isMonster(action_target_id)) then --monster targets a player
 		local timestamp = os.time() + monster_target_confidence_timer
-		updateTargetBaring(act.actor_id, action_target_id, timestamp, monster_target_icon)
+		updateTargeting(act.actor_id, action_target_id, timestamp, monster_target_icon)
 	elseif not isMonster(act.actor_id) and isMonster(action_target_id) then --player targets a monster...
 		local timestamp = os.time() + monster_target_confidence_timer
 		for i = 1, target_count do
 			if not current_aggro_list[act.targets[i].id] then --...that is not already targeting a player
-				updateTargetBaring(act.targets[i].id, act.actor_id, timestamp, monster_target_icon)
+				updateTargeting(act.targets[i].id, act.actor_id, timestamp, monster_target_icon)
 			end
 		end
 	end
@@ -6532,7 +6581,7 @@ register_event('action', function (act)
 		--Weapon skill or TP move
 		if act.category == 7 then
 
-			local c = targetColor(action_target)
+			local c = targetColor(player, action_target)
 			local r = formatRGB(c.r)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
@@ -6601,7 +6650,7 @@ register_event('action', function (act)
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
-				updateSelfBar(cast_time,trackingIndex)
+				updateSelfBar(player, cast_time,trackingIndex)
 				resetFadeDelay()
 			end
 
@@ -8397,6 +8446,10 @@ end
 
 register_event('addon command',function(addcmd, ...)
 
+	local player = get_player()
+	local target = get_mob_by_target('t')
+	local clock = os.clock()
+
 	--Toggle the HP bar display setting for the current job
 	if addcmd == 'hp' then
 
@@ -8407,10 +8460,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			local target = get_mob_by_target('t')
 			showBars(target)
 			if job_specific[job].hp then
-				local player = get_player()
 				updateHPBar(player)
 			end
 			add_to_chat(8,('[Bars] '):color(220)..('HP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].hp and 'ON' or 'OFF')):color(200))
@@ -8426,10 +8477,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			local target = get_mob_by_target('t')
 			showBars(target)
 			if job_specific[job].mp then
-				local player = get_player()
 				updateMPBar(player)
 			end
 			add_to_chat(8,('[Bars] '):color(220)..('MP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].mp and 'ON' or 'OFF')):color(200))
@@ -8445,10 +8494,8 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			local target = get_mob_by_target('t')
 			showBars(target)
 			if job_specific[job].tp then
-				local player = get_player()
 				updateTPBar(player)
 			end
 			add_to_chat(8,('[Bars] '):color(220)..('TP bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].tp and 'ON' or 'OFF')):color(200))
@@ -8464,7 +8511,6 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			hideBars()
 			setPositions()
-			local target = get_mob_by_target('t')
 			showBars(target)
 			add_to_chat(8,('[Bars] '):color(220)..('Pet bar display for '..uppercase(job)..':'):color(36)..(' %s':format(job_specific[job].pet and 'ON' or 'OFF')):color(200))
 		end
@@ -8850,7 +8896,6 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Markers:'):color(36)..(' %s':format(settings.options.show_hp_tp_markers and 'ON' or 'OFF')):color(200))
 		hideBars()
 		setWidth()
-		local target = get_mob_by_target('t')
 		showBars(target)
 
 	--Toggle the hex setting
@@ -8862,9 +8907,6 @@ register_event('addon command',function(addcmd, ...)
 		show_target_index = false
 		settings:save('all')
 		add_to_chat(8,('[Bars] '):color(220)..('Hex:'):color(36)..(' %s':format(settings.options.show_target_hex and 'ON' or 'OFF')):color(200))
-		local player = get_player()
-		local target = get_mob_by_target('t')
-		local clock = os.clock()
 		updateTargetBar(player, target, clock)
 
 	--Toggle the index setting
@@ -8876,9 +8918,6 @@ register_event('addon command',function(addcmd, ...)
 		show_target_hex = false
 		settings:save('all')
 		add_to_chat(8,('[Bars] '):color(220)..('Index:'):color(36)..(' %s':format(settings.options.show_target_index and 'ON' or 'OFF')):color(200))
-		local player = get_player()
-		local target = get_mob_by_target('t')
-		local clock = os.clock()
 		updateTargetBar(player, target, clock)
 
 	--Add a target to the Auto Focus Target list
@@ -8907,7 +8946,6 @@ register_event('addon command',function(addcmd, ...)
 			focus_target_override = nil
 		--Create a new Focus Target Override
 		else
-			local target = get_mob_by_target('t')
 			if target then
 				focus_target_override = target
 				local currFTMDist = settings.options.focus_target_max_distance
