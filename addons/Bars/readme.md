@@ -204,10 +204,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `aggro_list` | The On Screen Display box for the Aggro List. |
 | → `bg_alpha` | Opacity level for the background in this section (0-255). |
 | → `bold` |  Text within this section is bold. |
-| → `ignore_list` | Comma separated list of names of Monsters to not display. |
+| → `ignore_list` | Comma separated list of monster names to not display. |
 | → `italic` | Text within this section is italic. |
 | → `max_monsters_listed` | Maximum number of monsters to display separately (0-15). |
 | → `min_monsters_to_show` | Minimum number of monsters before the Aggro List will display (0-15). |
+| → `open_mobs` | Comma separated list of monster names that anyone can fight and are not claimed (bypassing the party/alliance only filter). |
 | → `pos` | X and Y position of the Aggro List. |
 | → `show` | Show the Aggro List. |
 | → `size` | Font size of the text within this section. |
@@ -265,6 +266,13 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+
+Version 4.4.4
+- Added `open_mobs` to the Aggro List section. Mobs on this list are mobs that are open for anyone to fight together. This will adjust the Aggro List to display their correct target instead of filtering it to party/alliance only.
+- Adjusted pet name colors to match their owner's color.
+- Adjusted more areas for efficiency. Reduced more calls for get_player() and get_mob_by_target().
+- Fixed Focus Target, Sub Target, and Target names not pulsing/glowing correctly when their SP is active.
+- Fixed issue with the Player Stats Pet Bar flickering when Bars are faded.
 
 Version 4.4.3
 - Added `show_cursor_target` option to the Aggro List section. Highlights the monster in the Aggro List that you currently have targeted.
