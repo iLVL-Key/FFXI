@@ -267,6 +267,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.4.4.1
+- Removed some test code left in by mistake (Ignis triggering SP Active glow/pulsing).
+
 Version 4.4.4
 - Added `open_mobs` to the Aggro List section. Mobs on this list are mobs that are open for anyone to fight together. This will adjust the Aggro List to display their correct target instead of filtering it to party/alliance only.
 - Adjusted pet name colors to match their owner's color.
