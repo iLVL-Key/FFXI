@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.4'
+_addon.version = '4.4.4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -996,7 +996,6 @@ sp_abils = {
 	['Tabula Rasa'] = 180,
 	['Bolster'] = 180, ['Widened Compass'] = 60,
 	['Elemental Sforzo'] = 30,
-	['Ignis'] = 30,
 }
 
 sp_shorter_names = {
