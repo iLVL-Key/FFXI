@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.4'
+_addon.version = '2.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -33,6 +33,7 @@ require 'chat'
 config = require('config')
 files = require('files')
 res = require('resources')
+texts = require('texts')
 
 add_to_chat = windower.add_to_chat
 addon_path = windower.addon_path
@@ -44,12 +45,47 @@ get_player = windower.ffxi.get_player
 play_sound = windower.play_sound
 register_event = windower.register_event
 
+current_time = 0
 last_check_time = 0
+announced = T{}
+last_seen = T{}
+dir_full = {
+	['E '] = 'East',
+	['NE'] = 'North-East',
+	['N '] = 'North',
+	['NW'] = 'North-West',
+	['W '] = 'West',
+	['SW'] = 'South-West',
+	['S '] = 'South',
+	['SE'] = 'South-East',
+}
 
+--Defaults values loaded on first run. Do not edit these here, edit them in the data/settings.xml file
 defaults = {
 	distance = 50, --Distance the target needs to be within before being "detected" (Note: Hard max is 50).
 	flood_delay = 5, --Time in seconds after a target goes out of range before it can be considered "nearby" again.
-	polling_rate = 1, --Time in seconds between each check for targets (0 = every frame).
+	polling_rate = .2, --Time in seconds between each check for targets (0 = every frame).
+	target_tracker = {
+		auto_hide = true,
+		bg_alpha = 150,
+		bold = true,
+		colorize = true,
+		colors = {
+			close = "255,050,050",
+			far = "050,255,050",
+			mid = "250,130,40",
+		},
+		distance_close = 10,
+		distance_mid = 20,
+		draggable = true,
+		font = "Consolas",
+		pos = {
+			x = 10,
+			y = 400,
+		},
+		show = false,
+		size = 10,
+	},
 }
 
 settings = config.load(defaults)
@@ -163,8 +199,16 @@ else
 	targets_data = require('data.targets')
 end
 
-announced = T{}
-last_seen = T{}
+--Create the Target Tracker text object
+target_tracker = texts.new()
+target_tracker:bold(settings.target_tracker.bold)
+target_tracker:bg_alpha(settings.target_tracker.bg_alpha)
+target_tracker:draggable(settings.target_tracker.draggable)
+target_tracker:font(settings.target_tracker.font)
+target_tracker:pad(2)
+target_tracker:pos(settings.target_tracker.pos.x, settings.target_tracker.pos.y)
+target_tracker:show(settings.target_tracker.show)
+target_tracker:size(settings.target_tracker.size)
 
 --Convert an index to a hex id
 function convertToHexId(num)
@@ -186,6 +230,21 @@ function convertToHexId(num)
 	
 	return result
 
+end
+
+--Truncate names that are too long
+function truncateName(name)
+
+	--max name length
+	local num = 20
+
+	--Check if the string length is greater than the max name length
+	if #name > num then
+		--Truncate and add an ellipsis
+		name = string.sub(name, 1, num-1).."…"
+	end
+
+	return name
 end
 
 --Add a target and sound file
@@ -362,52 +421,52 @@ function listTargets()
 	end
 end
 
+--Get angle in degrees between player and target (thanks Genoxd!)
+function getAngle(player, target)
+	local dx = target.x - player.x
+	local dy = target.y - player.y
+	local angle = math.atan2(dy, dx) --returns radians
+	local degrees = math.deg(angle) --convert to degrees
+	return (degrees + 360) % 360 --normalize to 0-360
+end
+
+--Convert angle in degrees to compass direction
+function getDirection(degrees)
+	if degrees >= 337.5 or degrees < 22.5 then
+		return 'E '
+	elseif degrees < 67.5 then
+		return 'NE'
+	elseif degrees < 112.5 then
+		return 'N '
+	elseif degrees < 157.5 then
+		return 'NW'
+	elseif degrees < 202.5 then
+		return 'W '
+	elseif degrees < 247.5 then
+		return 'SW'
+	elseif degrees < 292.5 then
+		return 'S '
+	elseif degrees < 337.5 then
+		return 'SE'
+	end
+end
+
 --Check for matching targets
 function checkForTarget()
 
-	local current_time = os.time()
+	local current_time = os.clock()
 	local nearby = T{}
 	local mob_array = get_mob_array()
 	local max_distance = tonumber(settings.distance)
 	local current_zone_id = windower.ffxi.get_info().zone
 	local current_zone_name = res.zones[current_zone_id] and res.zones[current_zone_id].name or "Unknown"
 
-	--Get angle in degrees between player and target (thanks Genoxd!)
-	function getAngle(player, target)
-		local dx = target.x - player.x
-		local dy = target.y - player.y
-		local angle = math.atan2(dy, dx) --returns radians
-		local degrees = math.deg(angle) --convert to degrees
-		return (degrees + 360) % 360 --normalize to 0-360
-	end
-
-	--Convert angle in degrees to compass direction
-	function getDirection(degrees)
-		if degrees >= 337.5 or degrees < 22.5 then
-			return 'East'
-		elseif degrees < 67.5 then
-			return 'North-East'
-		elseif degrees < 112.5 then
-			return 'North'
-		elseif degrees < 157.5 then
-			return 'North-West'
-		elseif degrees < 202.5 then
-			return 'West'
-		elseif degrees < 247.5 then
-			return 'South-West'
-		elseif degrees < 292.5 then
-			return 'South'
-		elseif degrees < 337.5 then
-			return 'South-East'
-		end
-	end
-
 	--Loop through all mobs in memory
 	for _, mob in pairs(mob_array) do
 
 		local distance = math.floor(mob.distance:sqrt() * 100) / 100
 
-		--Mob is a valid_target and is within our determined distance
+		--Mob is a valid_target and within distance range
 		if mob.valid_target and distance ~= 0 and distance <= max_distance then
 
 			--Keys to match this mob to (in order)
@@ -420,55 +479,124 @@ function checkForTarget()
 				convertToHexId(mob.index)
 			}
 
-			--Loop through the above keys
+			--Loop through all keys to check if this mob is being tracked
 			for _, key in ipairs(keys) do
-
 				local sound_file = targets_data[key]
 
-				--Does this key have an entry in targets_data?
 				if sound_file then
-
-					--Add this target to the list of nearby mobs
 					table.insert(nearby, key)
 
 					local last_seen_time = last_seen[key] or 0
+					local player = get_mob_by_index(get_player().index)
+					local degrees = getAngle(player, mob)
+					local direction = getDirection(degrees)
+					local rounded_distance = math.floor(distance + 0.5)
 
 					--Notify player if not already announced or flood delay has passed
-					if not announced:contains(key) and (current_time - last_seen_time > settings.flood_delay) then
-
+					if (not announced[key]) and (current_time - last_seen_time > settings.flood_delay) then
 						local displayName = (key == convertToHexId(mob.index)) and (mob.name..' ('..key..')') or mob.name
-						local player = get_mob_by_index(get_player().index)
-						local degrees = getAngle(player, mob)
-						local direction = getDirection(degrees)
 
 						if direction then
-							distance = math.floor(distance + 0.5)
-							add_to_chat(1,'[Jingle] ':color(220)..displayName:color(1)..' detected ':color(8)..distance..'y':color(1)..' to the ':color(8)..direction:color(1)..'.':color(8))
+							add_to_chat(1, '[Jingle] ':color(220)..displayName:color(1)..' detected ':color(8)..rounded_distance..'y':color(1)..' to the ':color(8)..dir_full[direction]:color(1)..'.':color(8))
 						else
-							add_to_chat(1,'[Jingle] ':color(220)..displayName..' is nearby.':color(8))
+							add_to_chat(1, '[Jingle] ':color(220)..displayName..' is nearby.':color(8))
 						end
+
 						play_sound(addon_path..'data/sounds/'..sound_file..'.wav')
-						table.insert(announced, key)
+
+						-- Store full data for target in announced table
+						announced[key] = {
+							name = mob.name,
+							distance = rounded_distance,
+							direction = direction or "??",
+							last_seen = current_time
+						}
+					else
+						-- Update distance/direction if already announced
+						if announced[key] then
+							announced[key].distance = rounded_distance
+							announced[key].direction = direction or "??"
+							announced[key].last_seen = current_time
+						end
 					end
 
-					--Update last seen time
+					--Track last seen for flood delay
 					last_seen[key] = current_time
-					break --Stop checking once a match is found
+					break --Stop checking further keys
 				end
 			end
 		end
 	end
 
-	--Remove targets from 'announced' if they haven't been seen in the last X seconds
-	for i = #announced, 1, -1 do
-		local key = announced[i]
-		if not last_seen[key] or (current_time - last_seen[key] > settings.flood_delay) then
-			table.remove(announced, i)
+	--Clean up old announced entries
+	for key, info in pairs(announced) do
+		if not last_seen[key] or (current_time - info.last_seen > settings.flood_delay) then
+			announced[key] = nil
 			last_seen[key] = nil
 		end
 	end
 end
 
+--Update the on-screen Target Tracker
+function updateTargetTracker()
+
+	local text = ""
+
+	for key, info in pairs(announced) do
+
+		local last_seen = info.last_seen or 0
+
+		if current_time <= last_seen + .1 then -- add .1 seconds difference tolerance so it doesn't blink when slightly off
+
+			local name = info.name or key
+			local distance = info.distance or 0
+			local direction = info.direction or "??"
+			local max_name_length = 20 -- max spaces allocated to a name
+			local name_length = math.min(#name, max_name_length)
+
+			-- Determine color based on distance
+			local color = "255,255,255"
+			if settings.target_tracker.colorize then
+				if distance <= settings.target_tracker.distance_close then
+					color = settings.target_tracker.colors.close
+				elseif distance <= settings.target_tracker.distance_mid then
+					color = settings.target_tracker.colors.mid
+				else
+					color = settings.target_tracker.colors.far
+				end
+			end
+
+			local spaces = ""
+			local diff = max_name_length - name_length
+			for i = 1, diff do
+				spaces = spaces.." "
+			end
+
+			distance = string.format("%2d", distance)
+
+			text = text..string.format("\\cs("..color..")%sy %s ·\\cr%s\n", --●
+				distance,
+				direction,
+				truncateName(name)
+			)
+
+		end
+
+	end
+
+	if settings.target_tracker.auto_hide then
+		if text == "" then
+			target_tracker:hide()
+		else
+			target_tracker:show()
+		end
+	end
+
+	local header = "\\cs(50,120,255)Target Tracker    //jin help\\cr\n"
+	text = header..text
+	target_tracker:text(text)
+
+end
 
 register_event('addon command',function(addcmd, ...)
 
@@ -479,6 +607,7 @@ register_event('addon command',function(addcmd, ...)
 	if addcmd == 'help' then
 
 		local currDist = tostring(settings.distance)
+		local currTracker = settings.target_tracker.show and "ON" or "OFF"
 
 		local prefix = "//jingle, //jin"
 		add_to_chat(1,'[Jingle] ':color(220)..'Version ':color(8).._addon.version:color(220)..' by ':color(8).._addon.author:color(220)..' (':color(8)..prefix..')':color(8))
@@ -494,6 +623,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(1,' remove/r ':color(36)..'[target]':color(53)..' - Remove a target.':color(8))
 		add_to_chat(1,' list/l':color(36)..' - Show the list of targets and sounds associated.':color(8))
 		add_to_chat(1,' distance/d ':color(36)..'<#1-50>':color(2)..' - Set the detection distance. [':color(8)..currDist:color(200)..']':color(8))
+		add_to_chat(1,' show/hide ':color(36)..' - Enable the Target Tracker. [':color(8)..currTracker:color(200)..']':color(8))
 		add_to_chat(1,' test ':color(36)..'<sound_file_name>':color(2)..' - Test a sound file.':color(8))
 		add_to_chat(1,'   - New sounds added to the /data/sounds folder must be .wav format.':color(8))
 
@@ -571,6 +701,17 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(1,'[Jingle] ':color(220)..'Detection distance must be a number between 1 and 50.':color(28))
 		end
 
+	elseif addcmd == 'show' or addcmd == 'hide' or addcmd == "tracker" or addcmd == "track" then
+		settings.target_tracker.show = not settings.target_tracker.show
+		settings:save('all')
+		local tracker = settings.target_tracker.show and "ON" or "OFF"
+		add_to_chat(1,'[Jingle] ':color(220)..'Target Tracker set to: ':color(36)..tracker:color(200))
+		if settings.target_tracker.show then
+			target_tracker:show()
+		else
+			target_tracker:hide()
+		end
+
 	else
 		add_to_chat(1,'[Jingle] ':color(220)..'Unrecognized command. Type':color(28)..' //jin help'..' for a list of commands.':color(28))
 
@@ -578,16 +719,25 @@ register_event('addon command',function(addcmd, ...)
 end)
 
 register_event('prerender', function()
-    if settings.polling_rate == 0 then
+
+	current_time = os.clock()
+
+	if settings.polling_rate == 0 then
         --Run every frame
         checkForTarget()
+		if settings.target_tracker.show then
+			updateTargetTracker()
+		end
     else
-        local current_time = os.time()
         if current_time - last_check_time >= settings.polling_rate then
             last_check_time = current_time
             checkForTarget()
+			if settings.target_tracker.show then
+				updateTargetTracker()
+			end
         end
     end
+
 end)
 
 windower.register_event('zone change', function()
@@ -607,6 +757,24 @@ windower.register_event('zone change', function()
 		coroutine.schedule(function()
 			add_to_chat(1, '[Jingle] ':color(220)..'Temporary targets cleared on zone change.':color(8))
 		end, 5)
+	end
+
+end)
+
+--Handle mouse events
+register_event('mouse',function(mouse_type, mouse_x, mouse_y)
+
+	if mouse_type == 2 then --leftmouseup
+
+		--Save Bar positions after dragged
+		local x = target_tracker:pos_x()
+		local y = target_tracker:pos_y()
+
+		if settings.target_tracker.pos.x ~= x or settings.target_tracker.pos.y ~= y then
+			settings.target_tracker.pos = {x = x, y = y}
+			settings:save('all')
+		end
+
 	end
 
 end)
