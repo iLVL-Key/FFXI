@@ -2,19 +2,25 @@
 
 Plays a sound and displays a chat notification when a target (player, mob, or NPC) is nearby.  
 
-![Jingle_Oseem](https://github.com/iLVL-Key/FFXI/assets/101156258/5ed6b45b-e798-4e1e-92dc-27d7490fcca1)
+![Jingle announcing in the chatlog that_the NPC "Oseem" is nearby.](https://github.com/iLVL-Key/FFXI/assets/101156258/5ed6b45b-e798-4e1e-92dc-27d7490fcca1)  
+↑ Announcing in the chatlog that_the NPC "Oseem" is nearby.  
+
+![Jingle_displaying the Target Tracker with the Notorious Monster "Arcadian," showing it's distance and direction from the player.](https://github.com/user-attachments/assets/6870638a-2d5f-4990-95db-6b2f98fef53d)  
+↑ The Target Tracker with the Notorious Monster "Arcadian," showing it's distance and direction from the player.  
 
 ## Features
  - Tells you distance and direction to target when found.
+ - Optional on-screen Target Tracker showing nearby targets distance and direction.
  - 3 types of targets:
    - **Permanent** - Found in all zones.
    - **Zone** - Only found within a specified zone.
    - **Temporary** - Only found until removed or you change zones.
- - Plays only once until the target moves out of range again.
  - Works using names, IDs, or Hex IDs (great for NM placeholders).
  - Specify an optional specific sound to play for each target.
    - Plays the default.wav sound if no sound specified.
  - Will play any .wav file you save to the /data/sounds folder.
+ - Chat notification and alert sound plays only once until the target moves out of range again.
+ - Adjustable flood delay for thsoe times when a target is right at the edge of detection range.
   
 ## Commands
 All commands must be preceded with `//jingle`   (ex: `//jingle list`)  
@@ -29,6 +35,7 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
  - `remove/r` \[target] - Remove a target.
  - `list/l` - Show the list of targets and sounds associated.
  - `distance/d` <#1-50> - Set the detection distance.
+ - `show/hide` - Enable the Target Tracker.
  - `test` \<sound_file_name> - Test a sound file. Do not include the extension.
    - New sounds added to the /data/sounds folder must be .wav format.
  - `help` - Display a list of commands and addon info.
@@ -41,8 +48,25 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 | `distance` | Determines distance the target needs to be within before being "detected" (Note: Hard max is 50). |
 | `flood_delay` | Time in seconds after a target goes out of range before it can be considered "nearby" again. |
 | `polling_rate` | Time in seconds between each check for targets. (0 = every frame). |
+| `target_tracker` | On-screen Target Tracker that shows nearby targets distance and direction in real-time. |
+| → `auto_hide` | Hide the Target Tracker when there are no nearby targets. |
+| → `bg_alpha` | Opacity level for the background (0-255). |
+| → `bold` | Text is bold. |
+| → `colorize` | Colorize the text based on distance. |
+| → `colors` | RGB values for the distance colors. |
+| → `distance_close` | Distance at which the target will be colorized as being close to the player. |
+| → `distance_mid` | Distance at which the target will be colorized as being at a middle distance from the player. |
+| → `draggable` | Target Tracker is draggable. Position is automatically saved. |
+| → `font` | Font for the text. |
+| → `pos` | X and Y position for the Target Tracker. Automatically updated and saved if dragged in-game. |
+| → `show` | Enable the Target Tracker to be displayed. |
+| → `size` | Font size for the text. |
 
 ## Version History
+
+2.5
+- Added on-screen Target Tracker. Displays a list of current nearby targets and their distance and direction. Update timing is tied to `polling_rate`.
+- Adjusted `polling_rate` to accept decimal places for seconds. Default updated to .2 seconds.
 
 2.4
 - Added `polling_rate` option. Determines how often in seconds that the check for a nearby target is run. Setting to `0` runs the check every frame.
