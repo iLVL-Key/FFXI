@@ -64,6 +64,9 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 
 ## Version History
 
+2.5.1
+- Fixed Target Tracker displaying with no text (resulting in a small black square) when addon is loaded and Target Tracker `show` set to false.
+
 2.5
 - Added on-screen Target Tracker. Displays a list of current nearby targets and their distance and direction. Update timing is tied to `polling_rate`.
 - Adjusted `polling_rate` to accept decimal places for seconds. Default updated to .2 seconds.
