@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.5'
+_addon.version = '2.5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -252,8 +252,10 @@ target_tracker:draggable(settings.target_tracker.draggable)
 target_tracker:font(settings.target_tracker.font)
 target_tracker:pad(2)
 target_tracker:pos(settings.target_tracker.pos.x, settings.target_tracker.pos.y)
-target_tracker:show(settings.target_tracker.show)
 target_tracker:size(settings.target_tracker.size)
+if settings.target_tracker.show then
+	target_tracker:show()
+end
 
 --Convert an index to a hex id
 function convertToHexId(num)
@@ -585,6 +587,11 @@ end
 --Update the on-screen Target Tracker
 function updateTargetTracker()
 
+	if not settings.target_tracker.show then
+		target_tracker:hide()
+		return
+	end
+
 	local text = ""
 
 	for key, info in pairs(announced) do
@@ -751,11 +758,6 @@ register_event('addon command',function(addcmd, ...)
 		settings:save('all')
 		local tracker = settings.target_tracker.show and "ON" or "OFF"
 		add_to_chat(1,'[Jingle] ':color(220)..'Target Tracker set to: ':color(36)..tracker:color(200))
-		if settings.target_tracker.show then
-			target_tracker:show()
-		else
-			target_tracker:hide()
-		end
 
 	else
 		add_to_chat(1,'[Jingle] ':color(220)..'Unrecognized command. Type':color(28)..' //jin help'..' for a list of commands.':color(28))
@@ -770,16 +772,12 @@ register_event('prerender', function()
 	if settings.polling_rate == 0 then
         --Run every frame
         checkForTarget()
-		if settings.target_tracker.show then
-			updateTargetTracker()
-		end
+		updateTargetTracker()
     else
         if current_time - last_check_time >= settings.polling_rate then
             last_check_time = current_time
             checkForTarget()
-			if settings.target_tracker.show then
-				updateTargetTracker()
-			end
+			updateTargetTracker()
         end
     end
 
