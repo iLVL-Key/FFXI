@@ -248,6 +248,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `ui_bg_alpha` | Opacity level for the gradient shadow behind the text in this section (0-255). |
 | `party_1_actions`<br>`party_2_actions`<br>`party_3_actions` | These sections do not have bars, but are a simplified display of the actions of each party member. |
 | → `bold` | Text within this section is bold. |
+| → `bottom_up` | As players are added to this party, the list grows upwards. |
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
 | → `pos` | X and Y position of the text within this section. |
@@ -266,6 +267,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 
 ## Changelog
+
+Version 4.4.5
+- Added `bottum_up` options to Party 2 & 3 Actions. This allows matching with the XIVParty addons alliance layout when less than a full party.
 
 Version 4.4.4.1
 - Removed some test code left in by mistake (Ignis triggering SP Active glow/pulsing).
