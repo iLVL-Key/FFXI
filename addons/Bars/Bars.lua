@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.4.1'
+_addon.version = '4.4.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -345,6 +345,7 @@ defaults = {
 		},
 		party_2_actions = {
 			bold = true,
+			bottom_up = true,
 			font = "Consolas",
 			italic = false,
 			pos = {
@@ -363,6 +364,7 @@ defaults = {
 		},
 		party_3_actions = {
 			bold = true,
+			bottom_up = true,
 			font = "Consolas",
 			italic = false,
 			pos = {
@@ -2552,9 +2554,11 @@ function updatePartyActionsPos(num_party1_members, num_party2_members, num_party
 	local pt1_pos_x = party_1_actions.pos.x
 	local pt1_pos_y = party_1_actions.pos.y
 	local pt1_y_spacing = party_1_actions.vertical_spacing_between_players
+	local pt2_bottom_up = party_2_actions.bottom_up
 	local pt2_pos_x = party_2_actions.pos.x
 	local pt2_pos_y = party_2_actions.pos.y
 	local pt2_y_spacing = party_2_actions.vertical_spacing_between_players
+	local pt3_bottom_up = party_3_actions.bottom_up
 	local pt3_pos_x = party_3_actions.pos.x
 	local pt3_pos_y = party_3_actions.pos.y
 	local pt3_y_spacing = party_3_actions.vertical_spacing_between_players
@@ -2570,29 +2574,82 @@ function updatePartyActionsPos(num_party1_members, num_party2_members, num_party
 	}
 
 	--Define Party 2 positions
-	party_actions_pt2_p0_text:pos(pt2_pos_x, pt2_pos_y)
-	party_actions_pt2_p1_text:pos(pt2_pos_x, pt2_pos_y + pt2_y_spacing)
-	party_actions_pt2_p2_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 2))
-	party_actions_pt2_p3_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 3))
-	party_actions_pt2_p4_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 4))
-	party_actions_pt2_p5_text:pos(pt2_pos_x, pt2_pos_y + (pt2_y_spacing * 5))
+	local pt2_positions = {
+		{x = pt2_pos_x, y = pt2_pos_y},							--position 1 (top)
+		{x = pt2_pos_x, y = pt2_pos_y + pt2_y_spacing},			--position 2
+		{x = pt2_pos_x, y = pt2_pos_y + (pt2_y_spacing * 2)},	--position 3
+		{x = pt2_pos_x, y = pt2_pos_y + (pt2_y_spacing * 3)},	--position 4
+		{x = pt2_pos_x, y = pt2_pos_y + (pt2_y_spacing * 4)},	--position 5
+		{x = pt2_pos_x, y = pt2_pos_y + (pt2_y_spacing * 5)},	--position 6 (bottom)
+	}
 
 	--Define Party 3 positions
-	party_actions_pt3_p0_text:pos(pt3_pos_x, pt3_pos_y)
-	party_actions_pt3_p1_text:pos(pt3_pos_x, pt3_pos_y + pt3_y_spacing)
-	party_actions_pt3_p2_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 2))
-	party_actions_pt3_p3_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 3))
-	party_actions_pt3_p4_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 4))
-	party_actions_pt3_p5_text:pos(pt3_pos_x, pt3_pos_y + (pt3_y_spacing * 5))
+	local pt3_positions = {
+		{x = pt3_pos_x, y = pt3_pos_y},							--position 1 (top)
+		{x = pt3_pos_x, y = pt3_pos_y + pt3_y_spacing},			--position 2
+		{x = pt3_pos_x, y = pt3_pos_y + (pt3_y_spacing * 2)},	--position 3
+		{x = pt3_pos_x, y = pt3_pos_y + (pt3_y_spacing * 3)},	--position 4
+		{x = pt3_pos_x, y = pt3_pos_y + (pt3_y_spacing * 4)},	--position 5
+		{x = pt3_pos_x, y = pt3_pos_y + (pt3_y_spacing * 5)},	--position 6 (bottom)
+	}
 
-	text_objects = { party_actions_pt1_p0_text, party_actions_pt1_p1_text, party_actions_pt1_p2_text, party_actions_pt1_p3_text, party_actions_pt1_p4_text, party_actions_pt1_p5_text }
+	pt1_text_objects = {
+		party_actions_pt1_p0_text,
+		party_actions_pt1_p1_text,
+		party_actions_pt1_p2_text,
+		party_actions_pt1_p3_text,
+		party_actions_pt1_p4_text,
+		party_actions_pt1_p5_text
+	}
+
+	pt2_text_objects = {
+		party_actions_pt2_p0_text,
+		party_actions_pt2_p1_text,
+		party_actions_pt2_p2_text,
+		party_actions_pt2_p3_text,
+		party_actions_pt2_p4_text,
+		party_actions_pt2_p5_text
+	}
+
+	pt3_text_objects = {
+		party_actions_pt3_p0_text,
+		party_actions_pt3_p1_text,
+		party_actions_pt3_p2_text,
+		party_actions_pt3_p3_text,
+		party_actions_pt3_p4_text,
+		party_actions_pt3_p5_text
+	}
 
 	--Handle Party 1
 	if num_party1_members and num_party1_members > 0 then
 		for i = 1, num_party1_members do
-			local pos_index = pt1_bottom_up and (7 - (num_party1_members - (i - 1))) or i
-			local obj = text_objects[i]
+			local pos_index = pt1_bottom_up and (7 - (num_party1_members - (i - 1))) or i --flip order if bottom_up
+			local obj = pt1_text_objects[i]
 			local pos = pt1_positions[pos_index]
+			if obj and pos then
+				obj:pos(pos.x, pos.y)
+			end
+		end
+	end
+
+	--Handle Party 2
+	if num_party2_members and num_party2_members > 0 then
+		for i = 1, num_party2_members do
+			local pos_index = pt2_bottom_up and (7 - (num_party2_members - (i - 1))) or i --flip order if bottom_up
+			local obj = pt2_text_objects[i]
+			local pos = pt2_positions[pos_index]
+			if obj and pos then
+				obj:pos(pos.x, pos.y)
+			end
+		end
+	end
+
+	--Handle Party 3
+	if num_party3_members and num_party3_members > 0 then
+		for i = 1, num_party3_members do
+			local pos_index = pt3_bottom_up and (7 - (num_party3_members - (i - 1))) or i --flip order if bottom_up
+			local obj = pt3_text_objects[i]
+			local pos = pt3_positions[pos_index]
 			if obj and pos then
 				obj:pos(pos.x, pos.y)
 			end
@@ -5554,6 +5611,9 @@ function checkForFocusTarget(target)
 	--Update focus_target if its new, will remove/nil if nothing in the auto_focus_targets_data
 	if focus_target ~= nearby then
 		focus_target = nearby
+		if not nearby then
+			focus_target_bar_drain_meter:hide()
+		end
 	end
 
 end
@@ -6345,7 +6405,11 @@ register_event('prerender', function()
 		local party_info = get_party_info()
 		
 		--Adjust Party Action positioning if the party/alliance changes
-		if num_party1_members ~= party_info.party1_count
+		if Screen_Test then
+			updatePartyActionsPos(6,6,6)
+
+		elseif not Screen_Test
+		or num_party1_members ~= party_info.party1_count
 		or num_party2_members ~= party_info.party2_count
 		or num_party3_members ~= party_info.party3_count then
 
