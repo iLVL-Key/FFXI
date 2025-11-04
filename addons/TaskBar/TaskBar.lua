@@ -28,20 +28,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-4'
+_addon.version = '1.0 BETA-5'
 _addon.commands = {'taskbar'}
 
 require 'logger'
 config = require('config')
 texts = require('texts')
-files = require 'files'
+files = require('files')
 
 add_to_chat = windower.add_to_chat
-addon_path = windower.addon_path
-get_party = windower.ffxi.get_party
 get_position = windower.ffxi.get_position
 get_windower_settings = windower.get_windower_settings
-file_exists = windower.file_exists
 input = windower.chat.input
 open_url = windower.open_url
 register_event = windower.register_event
@@ -137,6 +134,13 @@ main_menu_defaults = {
 		["Primer Vol. One"] = "find Ambuscade Primer Volume One",
 		["Vagary Key Items"]="find prototype pearl;wait 1;find prototype sigil pearl",
 	},
+	["Food"]={
+		["Tropical Crepe"]="input /item \"Tropical Crepe\" <me>",
+		["Miso Ramen"]="input /item \"Miso Ramen\" <me>",
+		["Popo. con Queso"]="input /item \"Popo. con Queso\" <me>",
+		["Grape Daifuku"]="input /item \"Grape Daifuku\" <me>",
+		["Om. Sandwich"]="input /item \"Om. Sandwich\" <me>",
+	},
 	["GaolPlan"] = {
 		["Open"] = "gaolplan",
 	},
@@ -149,15 +153,21 @@ main_menu_defaults = {
 		["Show Gear Swaps"] = "gs showswaps",
 		["Validate Gear"] = "gs validate",
 	},
+	["Items"]={
+		["Panacea"]="input /item \"Panacea\" <me>", 
+		["Prism Powder"]="input /item \"Prism Powder\" <me>",
+		["Remedy"]="input /item \"Remedy\" <me>", 
+		["Silent Oil"]="input /item \"Silent Oil\" <me>",
+	},
 	["LeaderBoard"] = {
-		["Reset ALL Data"] = "lb reset all",
-		["Mode: Silent "] = "lb silent",
+		["Mode: Kart"] = "lb kart",
 		["Mode: Party"] = "lb party",
 		["Mode: Raid"] = "lb raid",
-		["Mode: Kart"] = "lb kart",
+		["Mode: Silent "] = "lb silent",
 		["OSD: Hide"] = "lb hide",
 		["OSD: Show"] = "lb show",
 		["Print ALL Boards"] = "lb all",
+		["Reset ALL Data"] = "lb reset all",
 	},
 	["Pouches"] = {
 		["Bead Pouch"] = "pouches Bead Pouch",
@@ -189,21 +199,41 @@ main_menu_defaults = {
 		["Leathercraft"]="hp south san 4",
 		["Bonecraft/Clothcraft"]="hp win wood 5",
 		["Alchemy"]="hp bas mine 3",
-	}, 
+	},
 	["Travel: Home Points"] = {
 		["Curio Moogle"] = "hp portb mh",
 		["Leafalia"] = "hp leaf",
-        ["Mhaura"]="hp mhaura", 
-		["Norg"] = "hp norg 2",
+		["Lower Jeuno Exit"]="hp lowerj e",
+		["Mhaura"]="hp mhaura",
+		["Nashmau"]="hp nashmau",
+		["Norg MH/AH"] = "hp norg 2",
 		["Port Jeuno Exit"] = "hp portj e",
 		["Rabao"] = "hp rabao 2;wait 15;find moglophone;wait 1;find moogle amplifier",
 		["Ru'Lude Auct House"] = "hp rul ah",
+		["Selbina"]="hp selbina",
 		["Tavnazia Interchange"] = "hp tavn",
-        ["W Adoulin Auct House"]="hp west ah", 
-        ["W Adoulin Mog House"]="hp west mh", 
+		["W Adoulin Auct House"]="hp west ah",
+		["W Adoulin Mog House"]="hp west mh",
 	},
 	["Travel: Odyssey"] = {
 		["Conflux Port"] = "od port",
+	},
+	["Travel: Pec. Foes"]={
+		["01: (UN) Wajaom Wd."]="un waj",
+		["02: (VW) Mt. Zhayolm"]="vw zhay",
+		["03: (UN) Caed. Mire"]="un mire",
+		["04: (UN) Beauc. Glc."]="un fei",
+		["05: (HP) Palb. Mines"]="hp pal",
+		["06: (SG) Aydeewa Sb."]="sg ayd",
+		["07: (SG) Arrap. Reef"]="sg mire",
+		["08: (Dim) Reisenjima"]="dim",
+		["09: (UN) W. Altepa"]="un waltep",
+		["10: (HP) Batallia D."]="hp upperj e",
+		["11: (HP) Qufim Isl."]="hp quf",
+		["12: (WP) Kamihr Dr."]="wp rak",
+		["13: (HP) Rala Water."]="hp east",
+		["14: (HP) Newton Mvl."]="hp newt",
+		["15: (SG) Xarcabard"]="sg bailey",
 	},
 	["Travel: Sortie"] = {
 		["Device #0"] = "so 0",
@@ -214,14 +244,20 @@ main_menu_defaults = {
 		["Gadget/Bitzer Port"] = "so port",
 	},
 	["Travel: Surv. Guides"] = {
-		["Tavnazia Interchange"] = "sg tavn",
-		["King Ranp. Tomb"] = "sg king",
+		["Castle Oztroja"]="sg Castle Oztroja",
+		["Castle Zvahl Baileys"]="sg Castle Zvahl Baileys",
+		["Tavnazia Interchange"]="sg tavn",
+		["Nashmau"]="sg Nashmau",
+		["Beadeaux"]="sg Beadeaux",
+		["Davoi"]="sg davoi",
+		["King Ranp. Tomb"]="sg king",
 	},
 	["Travel: Waypoints"] = {
 		["Sortie"] = "wp drift 4",
 		["W Adoulin Auct House"] = "wp west ah",
 		["W Adoulin Mog House"] = "wp west mh",
 		["Vagary"] = "wp rak",
+		["Pioneers"] = "wp west pioneers",
 	},
 	["Windower"] = {
 		["Minimize Game"] = "game_minimize",
@@ -243,18 +279,44 @@ menu_help_msg = '--Add, remove, rename, and edit categories and commands by righ
 
 pins_help_msg = '--Instead of manually changing this file, right-click on a command in the menu and use "Pin Command"\n\n'
 
+function sortedTableString(tbl, indent)
+	indent = indent or ""
+	local lines = {}
+	local keys = {}
+
+	for k in pairs(tbl) do
+		table.insert(keys, k)
+	end
+	table.sort(keys, function(a, b) return tostring(a):lower() < tostring(b):lower() end)
+
+	for _, k in ipairs(keys) do
+		local v = tbl[k]
+		local formatted_key = type(k) == "string" and string.format("[%q]", k) or string.format("[%s]", tostring(k))
+		if type(v) == "table" then
+			table.insert(lines, indent..formatted_key.."={")
+			table.insert(lines, sortedTableString(v, indent.."    "))
+			table.insert(lines, indent.."},")
+		else
+			local formatted_val = type(v) == "string" and string.format("%q", v) or tostring(v)
+			table.insert(lines, indent..formatted_key.."="..formatted_val..",")
+		end
+	end
+
+	return table.concat(lines, "\n")
+end
+
 --If the data\menu.lua file doesn't exist, create it and say a little something to the user
 if not menu_file:exists() then
 	coroutine.schedule(function()
 		add_to_chat(8,('[TaskBar] ':color(220))..('Right-click anywhere on the menu to bring up customization options.'):color(8))
 		add_to_chat(8,('[TaskBar] ':color(220))..('Thanks for using TaskBar. Enjoy!  -Key'):color(8))
 	end, 1)
-	menu_file:write(menu_help_msg..'return '..T(main_menu_defaults):tovstring())
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_defaults, '    ')..'\n}')
 end
 
 --If the data\pins.lua file doesn't exist, create it
 if not pins_file:exists() then
-	pins_file:write(pins_help_msg..'return '..T(pins_defaults):tovstring())
+	pins_file:write(pins_help_msg..'return {\n'..sortedTableString(pins_defaults, '    ')..'\n}')
 end
 
 --Load the menu and pins from the data\menu.lua and data\pins.lua files
@@ -448,7 +510,7 @@ function updateTaskBar()
 
 		--Add a pipe separator between the pinned buttons
 		if i > 2 then
-			taskbar_text = taskbar_text.."│" --•│∙
+			taskbar_text = taskbar_text.."│"
 		end
 		
 		--Add spaces around pinned buttons (remember the first button is actually the TASKBAR button)
@@ -574,8 +636,8 @@ function setupMenu()
 	main_menu_button_positions = {}
 	sub_menu_button_positions = {}
 	sub_menu_positions = {}
-	main_menu_columns = max_label_characters + 3 -- Account for adding the "│" and " >"
-	sub_menu_columns = max_label_characters + 1 -- Account for adding the "│"
+	main_menu_columns = max_label_characters + 3 --Account for adding the "│" and " >"
+	sub_menu_columns = max_label_characters + 1 --Account for adding the "│"
 
 	local temp_lines = {}
 	local menu_index = 0
@@ -609,7 +671,7 @@ function setupMenu()
 	main_menu:show()
 
 	--Give Windower a moment to display the text objects
-	coroutine.sleep(0.1)
+	coroutine.sleep(0.5)
 
 	main_menu_total_width, main_menu_total_height = main_menu:extents()
 	main_menu_total_height = main_menu_total_height - (settings.padding * 2)
@@ -695,9 +757,7 @@ function createNewCategory()
 	main_menu_data[keyboard_input] = {}
 
 	--Update the file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(keyboard_input):color(1)..(' created.'):color(8))
@@ -731,9 +791,7 @@ function deleteCategory()
 	table.remove(main_menu_button_positions, index)
 
 	--Update the file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(label):color(1)..(' deleted.'):color(8))
@@ -774,15 +832,11 @@ function renameCategory()
 		pins_data[old_label] = nil
 
 		--Save the updated pins file
-		local pins_file_contents = pins_help_msg
-		pins_file_contents = pins_file_contents..'return '..T(pins_data):tovstring()
-		pins_file:write(pins_file_contents)
+		pins_file:write(pins_help_msg..'return {\n'..sortedTableString(pins_data, '    ')..'\n}')
 	end
 
 	--Save the updated main menu file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Category '):color(8)..('%s'):format(old_label):color(1)..(' renamed to '):color(8)..('%s'):format(keyboard_input):color(1)..('.'):color(8))
@@ -848,9 +902,7 @@ function createNewCommand()
 	main_menu_data[category_name][active_command_label] = keyboard_input
 
 	--Update the file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(active_command_label):color(1)..(' added to category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(8))
@@ -893,9 +945,7 @@ function deleteCommand()
 	sub_menu[label] = nil
 
 	--Update the file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(label):color(1)..(' deleted from category '):color(8)..('%s'):format(category_label):color(1)..('.'):color(8))
@@ -942,15 +992,11 @@ function renameCommand()
 		pins_data[category_label][old_label] = nil
 
 		--Save pins_data using Windower's write
-		local file_contents = pins_help_msg
-		file_contents = file_contents..'return '..T(pins_data):tovstring()
-		pins_file:write(file_contents)
+		pins_file:write(pins_help_msg..'return {\n'..sortedTableString(pins_data, '    ')..'\n}')
 	end
 
 	--Update the main menu data file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Command '):color(8)..('%s'):format(old_label):color(1)..(' renamed to '):color(8)..('%s'):format(keyboard_input):color(1)..('.'):color(8))
@@ -993,9 +1039,7 @@ function editCommand()
 	sub_menu[label] = keyboard_input
 
 	--Update the file
-	local file_contents = menu_help_msg
-	file_contents = file_contents..'return '..T(main_menu_data):tovstring()
-	menu_file:write(file_contents)
+	menu_file:write(menu_help_msg..'return {\n'..sortedTableString(main_menu_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] ':color(220))..('Command text for '):color(8)..('%s'):format(label):color(1)..(' updated.'):color(8))
@@ -1032,10 +1076,8 @@ function addPin(button)
 	pins_data[category][command_label] = true
 
 	-- Write updated pins_data to data/pins.lua
-	local pins_file = io.open(windower.addon_path..'data/pins.lua', 'w')
 	if pins_file then
-		local file_contents = pins_help_msg..'return '..T(pins_data):tovstring()
-		pins_file:write(file_contents)
+		pins_file:write(pins_help_msg..'return {\n'..sortedTableString(pins_data, '    ')..'\n}')
 	end
 
 	if settings.options.action_logging then
@@ -1081,8 +1123,7 @@ function removePin(button)
 	end
 
 	--Save the updated pins_data to pins.lua
-	local pins_file = files.new('data\\pins.lua')
-	pins_file:write('return '..T(pins_data):tovstring())
+	pins_file:write('return {\n'..sortedTableString(pins_data, '    ')..'\n}')
 
 	if settings.options.action_logging then
 		add_to_chat(8, ('[TaskBar] '):color(220)..('Command '):color(8)..('%s'):format(command_label):color(1)..(' unpinned from the TaskBar.'):color(8))
@@ -1849,6 +1890,7 @@ end
 register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 	if calculating_dimensions then return end
+	-- if calculating_dimensions or not main_menu:visible() then return end
 
 	local function closeMenus()
 		main_menu:hide()
@@ -1865,19 +1907,31 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 	--Get the mouse position relative to the grid
 	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
+
 	-- print(mouse_is_on)
 
 	updateTaskBar()
 
 	--Activate/show main menu when hovering over task bar
-	if mouse_is_on == "open_taskbar" and not (main_menu:visible() or right_click_menu:visible() or text_input_window:visible() or confirm_window:visible()) then
-		main_menu:show()
-		coroutine.schedule(function()
-			main_menu_total_width, main_menu_total_height = main_menu:extents()
-			local pos = {x = taskbar:pos_x(), y = taskbar:pos_y() - main_menu_total_height}
-			main_menu:pos(pos.x, pos.y)
-		end, 0.05)
-		updateTaskBar()
+	if mouse_is_on == "open_taskbar" then
+		if mouse_type == 2 then
+			if not (main_menu:visible() or right_click_menu:visible() or text_input_window:visible() or confirm_window:visible()) then
+				if sub_menu_positions["main_menu_1"].x_offset <= 20 then
+					setupMenu()
+				else
+					main_menu:show()
+					updateTaskBar()
+					coroutine.schedule(function()
+						main_menu_total_width, main_menu_total_height = main_menu:extents()
+						local pos = {x = taskbar:pos_x(), y = taskbar:pos_y() - main_menu_total_height}
+						main_menu:pos(pos.x, pos.y)
+					end, 0.05)
+				end
+			else
+				closeMenus()
+			end
+		end
+		return true --blocked from reaching game
 	end
 
 	if options_window:visible() then
@@ -2199,7 +2253,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Command name must not be empty.'):color(28))
 					displayTextInputWindow("text_input_add_command_text", "New command name:")
 				elseif category_name then
-					add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(28))
+					add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(28)..('%s'):format(category_name):color(1)..('.'):color(28))
 					displayTextInputWindow("text_input_add_command_text", "New command name:")
 				else
 					local category_name = getCategoryName()
@@ -2215,7 +2269,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Command name must not be empty.'):color(28))
 					displayTextInputWindow("rename_command", "Rename command:")
 				elseif category_name then
-					add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(28))
+					add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(28)..('%s'):format(category_name):color(1)..('.'):color(28))
 					displayTextInputWindow("rename_command", "Rename command:")
 				else
 					renameCommand()
@@ -2461,7 +2515,7 @@ register_event('keyboard', function(dik, down, flags, blocked)
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Command name must not be empty.'):color(28))
 						displayTextInputWindow("text_input_add_command_text", "New command name:")
 					elseif category_name then
-						add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(28))
+						add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(28)..('%s'):format(category_name):color(1)..('.'):color(28))
 						displayTextInputWindow("text_input_add_command_text", "New command name:")
 					else
 						local category_name = getCategoryName()
@@ -2477,7 +2531,7 @@ register_event('keyboard', function(dik, down, flags, blocked)
 						add_to_chat(8, ('[TaskBar] ':color(220))..('Command name must not be empty.'):color(28))
 						displayTextInputWindow("rename_command", "Rename command:")
 					elseif category_name then
-						add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(8)..('%s'):format(category_name):color(1)..('.'):color(28))
+						add_to_chat(8, ('[TaskBar] ':color(220))..('Command named '):color(28)..('%s'):format(keyboard_input):color(1)..(' already exists in category '):color(28)..('%s'):format(category_name):color(1)..('.'):color(28))
 						displayTextInputWindow("rename_command", "Rename command:")
 					else
 						renameCommand()
