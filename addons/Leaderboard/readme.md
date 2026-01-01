@@ -101,6 +101,24 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 ### Current Known Issues
 - In high lag situations (seen in Dynamis-Jeuno Divergance), very rarely a tell sent out to a player via Mog Kart Mode gets a "tell not received" error as if they are offline (when they are online) resulting in the player receiving an item without the tell to inform them of it. I have only seen this myself a total of twice ever, but something to be aware of. This isn't an issue with Leaderboard itself, just a case of lag eating a tell to another player.
 
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
+
 ### Version History
 
 Version 5.3.1
