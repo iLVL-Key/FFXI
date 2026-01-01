@@ -129,6 +129,23 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 | `sparkolade_reminder_time` | Time the Sparkolade reminder will run.<br> - Time must be a number in military time, i.e., `1730` instead of `5:30 PM`.<br> - Defaults to `1200` if unable to determine time. |
 | `voices` | Randomly selects an active Helper to use for each alert. |
 
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
 
 ## Changelog
 Version 2.3.2
