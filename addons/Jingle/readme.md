@@ -62,6 +62,24 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 | → `show` | Enable the Target Tracker to be displayed. |
 | → `size` | Font size for the text. |
 
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
+
 ## Version History
 
 2.5.1
