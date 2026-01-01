@@ -91,6 +91,24 @@ In general, each HUD has..
 ## Issues
 - Loading one of these files after having certain lua files made by some other folks loaded may cause some things to not function correctly (for example, you have your normal WAR lua file loaded, then type `//gs load whateveryounamedoneofthesefiles` to test it out). These issues seem to be mostly with using keyboard shortcuts (for example, Weapon Cycler not working correctly when hitting the kb shortcut to cycle). Renaming the file so that gearswap will load directly into it /without/ first loading into the other file (simply `WAR.lua`, for example) then typing `lua r gearswap` should fix the issue. I'm not sure exactly what the other files are doing or not doing that causes issues, but my guess is they are not removing keybinds once their files are unloaded.
 
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
+
 ## Changelog
 
 <details>
