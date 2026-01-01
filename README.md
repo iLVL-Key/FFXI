@@ -1,10 +1,28 @@
-Welcome to my FFXI Github!  
+<h2 align="center">Welcome to my FFXI GitHub!</h2>
 
-I have put hundreds of hours into creating these addons and GearSwap files.  
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
 
-Consider checking out one of my other projects, a product brand called Joke&Vogue. Aside from "regular" products, I have some that are FFXI-related that I think you may like.  
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
 
-[Visit the Vana'diel Collection at Joke&Vogue.](https://jokeandvogue.com/en-usd/collections/vanadiel)  
-(Use code GITHUB for 10% off, too ^^)
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
 
-![JOKE&VOGUE Vanadiel image](https://github.com/user-attachments/assets/62e66658-245d-4838-9b6c-86d5faded45c)
+------
+<p align="center">
+  Consider checking out one of my other projects, a product brand called <b>Joke&Vogue</b>.<br>
+  Aside from "regular" products, I have some that are FFXI-related that I think you may like.<br>
+  <a href="https://jokeandvogue.com/en-usd/collections/vanadiel">
+    Visit the Vana'diel Collection at <b>Joke&Vogue</b>.
+  </a>
+  <a href="https://jokeandvogue.com/en-usd/collections/vanadiel">
+    <img src="https://github.com/user-attachments/assets/62e66658-245d-4838-9b6c-86d5faded45c" alt="Visit the Vana'diel Collection at Joke&Vogue.">
+  </a>
+</p>
