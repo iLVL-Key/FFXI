@@ -47,4 +47,20 @@ I have included 6 personalities to get you started:
 ### Creating a new Personality
 New personalities are extremely easy to create. Open the `dta\settings.xml` file, and create a new entry underneath the current personalities. Fill in the name you wish to give it, then add the prompt that explains how the personality should behave. To create the personalities included by default, I went to chatGPT and asked it to create a prompt specifically tailored to give to another LLM for this purpose. I then tested the prompt and adjusted it a few times.
 
-NOTE: If anyone can craft a prompt that will get Shantotto to rhyme every time please share it with me. I absolutely cannot get to her to rhyme in her replies, although I am pretty sure it is a limitation of the smaller parameter LLM I am using 🤷‍♂️
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
