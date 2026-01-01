@@ -22,6 +22,24 @@ All commands must be preceded with `//callouts` or `//co` (ex: `//co mode`)
 - `list` - List the current callouts and their ON/OFF state
 - `help` - Display a list of commands and addon info.
 
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
+
 ## Changelog
 
 Version 2.0
