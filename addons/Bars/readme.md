@@ -265,6 +265,23 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 - The Target Lock icons/underline very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.  
 ![Bars_known_issue_1](https://github.com/user-attachments/assets/71e98977-4589-4501-841e-adbe3819294d)
 
+------
+<p align="center">
+  <em>Support development in Vana'diel</em>
+</p>
+
+<p align="center">
+  <a href="https://www.paypal.com/donate/?hosted_button_id=7NELJEHF84YRQ">
+    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal">
+  </a>
+</p>
+
+<p align="center">
+  I have put hundreds of hours into creating these addons and GearSwap files.<br>
+  All of my work is <em>Donate What You Want</em> - contribute whatever you feel it’s worth.
+</p>
+
+------
 
 ## Changelog
 
