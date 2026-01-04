@@ -157,7 +157,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `pulse_when_pet_low` | Pulses the Pet bar when pet HP is critically low. |
 | → `pulse_when_tp_ready` | Pulses the TP bar when TP is ready to use. |
 | `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 5.5). |
-| `clear_action_delay_for_rolls` |  The delay in seconds specifically after a Phantom Roll or Double-Up before it will be cleared from the target. |
+| `clear_action_delay_for_self_rolls` |  The delay in seconds specifically after a Phantom Roll or Double-Up performed by the player before it will be cleared from the Self Actions Bar. |
 | `colorize_spells` | Colorize the names of spells to match their element. |
 | `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
@@ -286,6 +286,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.5.1
+- Fixed the `clear_action_delay_for_rolls`. Now named `clear_action_delay_for_self_rolls` to better relay what it is for, and also now correctly only applies to rolls performed by the player.
 
 Version 4.5
 - Added Treasure Hunter tracking via monster debuff icons.
