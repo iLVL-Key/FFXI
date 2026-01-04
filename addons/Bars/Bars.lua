@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5'
+_addon.version = '4.5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -207,7 +207,7 @@ defaults = {
 			pulse_when_tp_ready = true,
 		},
 		clear_action_delay = 5.5,
-		clear_action_delay_for_rolls = 10,
+		clear_action_delay_for_self_rolls = 10,
 		colorize_spells = true,
 		condense_target_and_subtarget_bars = false,
 		condense_target_name_and_sp_name = {
@@ -815,7 +815,7 @@ abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
 aggro_list_ignore = settings.sections.aggro_list.ignore_list
 aggro_list_open_mobs = settings.sections.aggro_list.open_mobs
 clear_action_delay = settings.options.clear_action_delay
-clear_action_delay_for_rolls = settings.options.clear_action_delay_for_rolls
+clear_action_delay_for_self_rolls = settings.options.clear_action_delay_for_self_rolls
 colorize_spells = settings.options.colorize_spells
 condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
 condense_focus_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.focus_target
@@ -6816,7 +6816,7 @@ register_event('action', function (act)
 	)
 	or act.category == 6 or act.category == 14 or act.category == 15 then
 
-		local is_a_roll = false
+		local is_a_self_roll = false
 		local target_action = ''
 		local target_action_shdw = ''
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
@@ -7107,7 +7107,9 @@ register_event('action', function (act)
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Phantom Roll/Double-Up
 			elseif msg == 420 or msg == 424 then
-				is_a_roll = true
+				if actor.name == player.name then
+					is_a_self_roll = true
+				end
 				local rolls = {
 					[98] = {lucky = '5', unlucky = '9'},	-- Fighter's Roll
 					[99] = {lucky = '3', unlucky = '7'},	-- Monk's Roll
@@ -7408,7 +7410,7 @@ register_event('action', function (act)
 
 			coroutine.schedule(function()
 				removeFromActionsTable(act.actor_id, trackingIndex)
-			end, is_a_roll and clear_action_delay_for_rolls or clear_action_delay)
+			end, is_a_self_roll and clear_action_delay_for_self_rolls or clear_action_delay)
 
 		end
 
