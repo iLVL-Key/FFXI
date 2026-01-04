@@ -5398,8 +5398,8 @@ function updatePetBar(pet)
 
 	--Format the text output
 	hpp = string.format("%3s", hpp)..'% '
-	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
-	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
+	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
 	player_stats_pet_bar_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_pet_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
