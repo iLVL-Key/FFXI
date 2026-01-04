@@ -48,6 +48,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 - Debuff Icons for Monsters.
   - Shows the tiers of the debuffs (Frazzle 3, Dia 4, Slow 2, etc.)
   - Will show a best guess timer for each.
+  - Shows Treasure Hunter level after TH procs.
   - Removes the icon only when the debuff is known to be removed/off (ie Benediction or "wears off" message), otherwise displays "??" if unsure.
   - Use a custom list of duration bonuses for your static group or friends to refine timers more precisely.
 - Display Monster levels.
