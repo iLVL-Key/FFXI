@@ -109,6 +109,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ### Icons
 | **Setting** | **Description** |
 |------------|----------------|
+| `aggro_list_highlight` | Icon used in the Aggro List to designate a target that you have targeted. |
 | `cancelled` | Icon displayed if the target's casting is cancelled or interrupted. |
 | `casting` | Icon displayed while the target is casting. |
 | `completed` | Icon displayed when the target's casting is completed. |
@@ -156,6 +157,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `pulse_when_pet_low` | Pulses the Pet bar when pet HP is critically low. |
 | → `pulse_when_tp_ready` | Pulses the TP bar when TP is ready to use. |
 | `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 5.5). |
+| `clear_action_delay_for_rolls` |  The delay in seconds specifically after a Phantom Roll or Double-Up before it will be cleared from the target. |
 | `colorize_spells` | Colorize the names of spells to match their element. |
 | `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
@@ -230,7 +232,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
 | → `pos` | X and Y position of the bar. |
-| → `show` | Show the Self Action section. |
+| → `show` | Show this specific section. |
 | → `show_bar` | Show the progress bar in the Self Action section. |
 | → `show_monster_level` | Show the level of the currently targeted monster. |
 | → `show_monster_target` | Show the currently targeted monster's target. |
@@ -284,6 +286,19 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.5
+- Added Treasure Hunter tracking via monster debuff icons.
+- Added `clear_action_delay_for_rolls` option. Allows you to set a different delay for clearing roll actions from the Self Action bar (ie you want the results to show a little longer than usual).
+- Added `aggro_list_highlight` icon. Used withe the Aggro List to highlight which mob you are targeting.
+- Added `show` options to the Focus Target Bar and Sub Target Bar sections allowing you to turn off these bars.
+- Added results for Cutting Cards.
+- Adjusted Aggro List to display current target of monsters correctly when in Besieged (all monsters can be engaged by all players).
+- Adjusted Monster Debuffs to better handle no effect messages. Will now add the debuff icon if one does not already exist.
+- Adjusted Action Results for Wild Card to display the actual roll number at the end of the result.
+- Fixed Monster Level option calling for Wide Scan in town zones when it should not be.
+- Fixed Light Shot Sleep timer.
+- Fixed missing results for Energy Drain/Steal.
 
 Version 4.4.5
 - Added `bottum_up` options to Party 2 & 3 Actions. This allows matching with the XIVParty addons alliance layout when less than a full party.
