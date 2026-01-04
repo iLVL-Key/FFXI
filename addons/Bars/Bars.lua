@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.5'
+_addon.version = '4.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -56,6 +56,7 @@ defaults = {
 	bg = {alpha = 240, red = 0, green = 0, blue = 0},
 	text = {alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas'},
 	icons = {
+		aggro_list_highlight = "●",
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
@@ -206,6 +207,7 @@ defaults = {
 			pulse_when_tp_ready = true,
 		},
 		clear_action_delay = 5.5,
+		clear_action_delay_for_rolls = 10,
 		colorize_spells = true,
 		condense_target_and_subtarget_bars = false,
 		condense_target_name_and_sp_name = {
@@ -229,6 +231,7 @@ defaults = {
 		remove_tachi_blade_from_ws_name = true,
 		short_skillchain_names = true,
 		show_action_status_indicators = true,
+		show_automaton_mp = true,
 		show_commas_on_numbers = true,
 		show_dyna_jobs = true,
 		show_fancy_rolls = true,
@@ -284,6 +287,7 @@ defaults = {
 				"Plunderer's", "Pteroslaver", "Pummeler's", "Reverence",
 				"Runeist", "Sakonji", "Spaekona's", "Theophany",
 				"Totemic", "Vishap", "Vitiation", "Wakido",
+				"Ultima Forerunner", "Omega Forerunner", "Omega's Bit"
 			},
 			pos = {x = 200, y = 320},
 			show = true,
@@ -308,6 +312,7 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 576, y = 180},
+			show = true,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -429,6 +434,7 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 200, y = 180},
+			show = true,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -539,7 +545,7 @@ defaults = {
 			eleven = {r = 255, g = 255, b = 50},
 			lucky = {r = 50, g = 255, b = 50},
 			total = {r = 30, g = 144, b = 255},
-			unlucky = {r = 255, g = 50, b = 50},
+			unlucky = {r = 255, g = 165, b = 0},
 		},
 		range = {
 			out_of_range = {r = 255, g = 255, b = 255},
@@ -621,6 +627,8 @@ default_auto_focus_targets = {
 	['Naga Raja'] = true,
 	['Quetzalcoatl'] = true,
 	['Mireu'] = true,
+	['Omega Forerunner'] = true,
+	['Ultima Forerunner'] = true,
 }
 
 --Location of the targets file
@@ -807,6 +815,7 @@ abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
 aggro_list_ignore = settings.sections.aggro_list.ignore_list
 aggro_list_open_mobs = settings.sections.aggro_list.open_mobs
 clear_action_delay = settings.options.clear_action_delay
+clear_action_delay_for_rolls = settings.options.clear_action_delay_for_rolls
 colorize_spells = settings.options.colorize_spells
 condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
 condense_focus_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.focus_target
@@ -860,11 +869,13 @@ remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_na
 short_skillchain_names = settings.options.short_skillchain_names
 show_action_status_indicators = settings.options.show_action_status_indicators
 show_aggro_list = settings.sections.aggro_list.show
+show_automaton_mp = settings.options.show_automaton_mp
 show_cursor_target = settings.sections.aggro_list.show_cursor_target
 show_hp_tp_markers = settings.options.show_hp_tp_markers
 show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_dyna_jobs = settings.options.show_dyna_jobs
 show_fancy_rolls = settings.options.show_fancy_rolls
+show_focus_target_bar = settings.sections.focus_target.show
 show_focus_target_when_targeted = settings.options.show_focus_target_when_targeted
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
 show_pet_status = settings.options.show_pet_status
@@ -877,6 +888,7 @@ show_self_action_bar = settings.sections.self_action.show_bar
 show_self_action_result = settings.options.show_self_action_result
 show_self_when_sub_targeted = settings.options.show_self_when_sub_targeted
 show_self_when_targeted = settings.options.show_self_when_targeted
+show_sub_target_bar = settings.sections.sub_target.show
 show_sub_target_when_targeted = settings.options.show_sub_target_when_targeted
 show_target_action = settings.options.show_target_action
 show_target_action_result = settings.options.show_target_action_result
@@ -941,6 +953,7 @@ target_lock_icon_stroke_color = settings.sections.target.target_lock_icon_stroke
 target_lock_icon_stroke_width = settings.sections.target.target_lock_icon_stroke_width
 target_lock_icon_size = settings.sections.target.target_lock_icon_size
 
+aggro_icon = settings.icons.aggro_list_highlight
 casting_icon = settings.icons.casting
 cancelled_icon = settings.icons.cancelled
 completed_icon = settings.icons.completed
@@ -1083,17 +1096,32 @@ custom_spells = {
 	[11501]	= "Waterja III",
 	[12501]	= "Waterja IV",
 	[13501]	= "Waterja V",
+	[9902]	= "Treasure Hunter II",
+	[9903]	= "Treasure Hunter III",
+	[9904]	= "Treasure Hunter IV",
+	[9905]	= "Treasure Hunter V",
+	[9906]	= "Treasure Hunter VI",
+	[9907]	= "Treasure Hunter VII",
+	[9908]	= "Treasure Hunter VIII",
+	[9909]	= "Treasure Hunter IX",
+	[9910]	= "Treasure Hunter X",
+	[9911]	= "Treasure Hunter XI",
+	[9912]	= "Treasure Hunter XII",
+	[9913]	= "Treasure Hunter XIII",
+	[9914]	= "Treasure Hunter XIV",
 }
 remove_all_debuffs = S{
 	"Benediction",
 	"Depuration",
 	"Stygian Sphere",
+	"Oppressive Yawp",
 }
 
 in_cutscene = false
 zoning = false
 logged_in = false
 job = false
+pet_mp = 0
 pet_tp = 0
 current_actions = {}
 current_sp_actions = {}
@@ -1121,6 +1149,7 @@ player_stats_top_bar = ''
 index = 0
 Heartbeat = 0
 server = nil
+current_zone = nil
 in_dyna = false
 wide_scan_locked = false
 drain_previous_ft_id = nil
@@ -3003,7 +3032,7 @@ function updateTargeting(actor_id, target_id, timestamp, icon)
 
 	--If the target of an action done by a monster (checked before this function was triggered)
 	--is in our alliance, or if the monster is on the open_mobs list, then add the monster to the aggro list table
-	if isInPartyOrAlliance(target_id) or aggro_list_open_mobs:contains(get_mob_by_id(actor_id).name) then
+	if isInPartyOrAlliance(target_id) or aggro_list_open_mobs:contains(get_mob_by_id(actor_id).name) or current_zone == "Al Zahbi" then
 		current_aggro_list[actor_id] = {
 			target_id = target_id,
 			timestamp = timestamp,
@@ -3435,12 +3464,6 @@ function removeFromAutoFocusTargetList(target)
 	end
 end
 
---Are we in Dyna-[D]?
-function inDyna()
-	local zone = res.zones[get_info().zone].en
-	in_dyna = string.match(zone, "%[D%]$") and true or false
-end
-
 --What jobs are the target mob?
 function dynaJob(mob_name)
 
@@ -3706,7 +3729,9 @@ function formatTimer(num, flip_coloring)
 	local colors = settings.colors.debuffs
 	local formatted_num = ''
 	local c = flip_coloring and colors.critical_low or colors.normal
-	if num > 3600 then
+	if not num then
+		formatted_num = ''
+	elseif num > 3600 then
 		local hr = math.floor(num / 3600)
 		formatted_num = hr..'h'
 	elseif num > 60 then
@@ -3731,14 +3756,14 @@ end
 function getIconFile(spell_name, debuff_id)
 
 	local icon_path_base = windower_path..'addons/Bars/data/icons/'
-	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv", [" V"] = "v", [" VI"] = "vi", [" VII"] = "vii"}
+	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv", [" V"] = "v", [" VI"] = "vi", [" VII"] = "vii", [" VIII"] = "viii", [" IX"] = "ix", [" X"] = "x", [" XI"] = "xi", [" XII"] = "xii", [" XIII"] = "xiii", [" XIV"] = "xiv"}
 	local custom_names = {
 		'pyrohelix', 'cryohelix', 'anemohelix', 'geohelix',
 		'ionohelix', 'hydrohelix', 'luminohelix', 'noctohelix',
 		'fire threnody', 'ice threnody', 'wind threnody', 'earth threnody',
 		'ltng. threnody', 'water threnody', 'light threnody', 'dark threnody',
 		'comet', 'firaja', 'blizzaja', 'aeroja', 'stoneja', 'thundaja', 'waterja',
-		'carnage elegy', 'impact',
+		'carnage elegy', 'impact', 'treasure hunter',
 	}
 	local shot_boosted_names = {
 		'boosted dia', 'boosted bio', 'boosted shock', 'boosted rasp',
@@ -3825,6 +3850,23 @@ function formatTargetingName(player, targeting)
 
 end
 
+--Retrieve the zone name
+function getZone()
+
+	local zone = res.zones[get_info().zone].en
+	return zone
+
+end
+
+--Are we inside a Dynamis zone?
+function inDyna()
+
+	local zone = current_zone or getZone()
+	local dyna = string.match(zone, "%[D%]$") and true or false
+	return dyna
+
+end
+
 --Update the Aggro List
 function updateAggroList(player, t)
 
@@ -3882,7 +3924,7 @@ function updateAggroList(player, t)
 						padding = padding..'.'
 					end
 				end
-				local targeted = cursor_target and "●" or " "
+				local targeted = cursor_target and aggro_icon or " "
 				actor_name = "\\cs("..ca_r..","..ca_g..","..ca_b..")"..(actor_name and actor_name or "").."\\cr" --add color start and reset to name
 				local pc = cursor_target and text_color or {r = 100, g = 100, b = 100}
 				padding = "\\cs("..pc.r..","..pc.g..","..pc.b..")"..padding.."\\cr"
@@ -3921,8 +3963,8 @@ end
 
 --Update the Focus Target bar
 function updateFocusTargetBar(player, target, clock)
-
-	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
+	--Skip all this while we're calculating dimensions off screen or if the Focus Target Bar is turned off
+	if calculating_dimensions or not show_focus_target_bar then return end
 
 	local ft_settings = settings.sections.focus_target
 	local icon_set = debuff_icons.focus_target
@@ -3968,6 +4010,7 @@ function updateFocusTargetBar(player, target, clock)
 		end
 	end
 	ft_name = ft_spaces..ft_name
+	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = ft and show_dyna_jobs and in_dyna and dynaJob(ft.name) or false
 	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
@@ -4069,7 +4112,7 @@ function updateFocusTargetBar(player, target, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock())
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -4141,7 +4184,8 @@ end
 
 function updateFocusTargetBarAnimations(player, target)
 
-	if not (focus_target_override or focus_target)
+	if not show_focus_target_bar
+	or not (focus_target_override or focus_target)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
 		return
 	end
@@ -4206,8 +4250,9 @@ end
 
 --Update the Sub Target bar
 function updateSubTargetBar(player, st, target, clock)
-	
-	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
+
+	--Skip all this while we're calculating dimensions off screen or if the Sub Target Bar is turned off
+	if calculating_dimensions or not show_sub_target_bar then return end
 
 	local st_settings = settings.sections.sub_target
 	local icon_set = debuff_icons.sub_target
@@ -4253,6 +4298,7 @@ function updateSubTargetBar(player, st, target, clock)
 		end
 	end
 	st_name = st_spaces..st_name
+	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = st and show_dyna_jobs and in_dyna and dynaJob(st.name) or false
 	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
@@ -4354,7 +4400,7 @@ function updateSubTargetBar(player, st, target, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock())
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -4425,6 +4471,10 @@ function updateSubTargetBar(player, st, target, clock)
 end
 
 function updateSubTargetBarAnimations(player, st)
+
+	if not show_sub_target_bar then
+		return
+	end
 
 	--Pulse the Sub Target bar (but not when the bar is fading/faded)
 	if (Pulse_Sub_Target_Bar or Pulse_Sub_Target_Name) and sub_target_bar_bg:visible() and not (Fade or Screen_Test) then
@@ -4530,6 +4580,7 @@ function updateTargetBar(player, t, clock)
 		end
 	end
 	t_name = t_spaces..t_name
+	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = t and show_dyna_jobs and in_dyna and dynaJob(t.name) or false
 	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
@@ -4652,7 +4703,7 @@ function updateTargetBar(player, t, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock())
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -5259,6 +5310,7 @@ function updatePetBar(pet)
 	local hpp = pet and pet.hpp or 0
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
+	-- local mp = job == 'pup' and pet and show_automaton_mp and ' MP: '..pet_mp or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
@@ -5346,8 +5398,8 @@ function updatePetBar(pet)
 
 	--Format the text output
 	hpp = string.format("%3s", hpp)..'% '
-	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
-	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
+	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
 	player_stats_pet_bar_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_pet_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
@@ -5985,6 +6037,7 @@ end
 --Run Wide Scan
 function runWideScan()
 
+	local zone_name = current_zone or getZone()
 	local in_town = wide_scan_exclude_zones:contains(zone_name)
 	local in_mh = get_info().mog_house
 
@@ -5999,7 +6052,6 @@ function runWideScan()
 		return
 	end
 
-	local zone_name = res.zones[get_info().zone].name
 	local packet = packets.new('outgoing', 0xF4, {
         ['Flags'] = 1,
         ['_unknown1'] = 0,
@@ -6015,6 +6067,34 @@ function runWideScan()
 	--Lock Wide Scan again
 	wide_scan_locked = true
 
+end
+
+--Wipe Debuffs (but save TH)
+function wipeDebuffs(target_id)
+	local saved_th = false
+
+	--If the target has any debuffs, check if Treasure Hunter is present
+	if current_debuffs[target_id] then
+		for effect_id, spell in pairs(current_debuffs[target_id]) do
+			if T{9902,9903,9904,9905,9906,9907,9908,9909,9910,9911,9912,9913,9914}:contains(effect_id) then
+				saved_th = effect_id
+				break
+			end
+		end
+	end
+
+	--Wipe all debuffs
+	current_debuffs[target_id] = nil
+
+	--If Treasure Hunter was present, reapply it
+	if saved_th then
+		current_debuffs[target_id] = {}
+		current_debuffs[target_id][saved_th] = {
+			id = saved_th,
+			timer = nil,
+			index = assignIndex()
+		}
+	end
 end
 
 --Job Changing
@@ -6241,6 +6321,13 @@ register_event('status change', function(status)
 	resetFadeDelay()
 end)
 
+register_event('zone change', function()
+
+	current_zone = getZone()
+	in_dyna = inDyna()
+	
+end)
+
 register_event('prerender', function()
 
 	if not logged_in or in_cutscene or zoning then return end
@@ -6346,9 +6433,6 @@ register_event('prerender', function()
 	if os.time() > Heartbeat then
 
 		Heartbeat = os.time()
-
-		--Determine if we are in Dynamis-D
-		inDyna()		
 
 		--Run Wide Scan after next time has passed
 		if Heartbeat >= next_wide_scan_time then
@@ -6602,10 +6686,9 @@ register_event('action', function (act)
 	end
 
 	--Debug Stuff
-	-- if (act.category == 4 or act.category == 8) and actor.name ~= player.name then
-	-- if actor.name == player.name and act.category ~= 1 then
-	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
-	-- 	add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
+	-- if actor.name == player.name then
+	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
+	-- 	add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
 	-- end
 
 	--Action failed/interrupted
@@ -6662,7 +6745,6 @@ register_event('action', function (act)
 
 			--Pets (& Synergy Furnaces)
 			elseif actor and actor.spawn_type == 2 then
-			-- elseif get_mob_by_id(actor.id) and get_mob_by_id(actor.id).spawn_type == 2 then
 				action_name = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 				action_name_shdw = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 
@@ -6734,6 +6816,7 @@ register_event('action', function (act)
 	)
 	or act.category == 6 or act.category == 14 or act.category == 15 then
 
+		local is_a_roll = false
 		local target_action = ''
 		local target_action_shdw = ''
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
@@ -7024,6 +7107,7 @@ register_event('action', function (act)
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Phantom Roll/Double-Up
 			elseif msg == 420 or msg == 424 then
+				is_a_roll = true
 				local rolls = {
 					[98] = {lucky = '5', unlucky = '9'},	-- Fighter's Roll
 					[99] = {lucky = '3', unlucky = '7'},	-- Monk's Roll
@@ -7141,18 +7225,54 @@ register_event('action', function (act)
 			elseif msg == 426 then
 				target_action_result = ' ('..count..'Bust!)'
 				target_action_result_shdw = ' ('..count..'Bust!)'
-			--Wild Card 1-2
-			elseif msg == 435 then
-				target_action_result = ' ('..count..'JAs reset)'
-				target_action_result_shdw = ' ('..count..'JAs reset)'
-			--WIld Card 3-4
-			elseif msg == 437 then
-				target_action_result = ' ('..count..'TP, JAs reset)'
-				target_action_result_shdw = ' ('..count..'TP, JAs reset)'
-			--Wild Card 5-6
-			elseif msg == 439 then
-				target_action_result = ' ('..count..'SP, MP, TP, JAs reset)'
-				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs reset)'
+			--Wild Card 1
+			elseif act.targets[1].actions[1].animation == 132 then
+				target_action_result = ' ('..count..'JAs Reset|1)'
+				target_action_result_shdw = ' ('..count..'JAs Reset|1)'
+			--Wild Card 2
+			elseif act.targets[1].actions[1].animation == 133 then
+				target_action_result = ' ('..count..'JAs Reset|2)'
+				target_action_result_shdw = ' ('..count..'JAs Reset|2)'
+			--Wild Card 3
+			elseif act.targets[1].actions[1].animation == 134 then
+				target_action_result = ' ('..count..'TP, JAs Reset|3)'
+				target_action_result_shdw = ' ('..count..'TP, JAs Reset|3)'
+			--Wild Card 4
+			elseif act.targets[1].actions[1].animation == 135 then
+				target_action_result = ' ('..count..'TP, JAs Reset|4)'
+				target_action_result_shdw = ' ('..count..'TP, JAs Reset|4)'
+			--Wild Card 5
+			elseif act.targets[1].actions[1].animation == 136 then
+				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|5)'
+				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|5)'
+			--Wild Card 6
+			elseif act.targets[1].actions[1].animation == 137 then
+				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|6)'
+				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|6)'
+			--Cutting Cards 1
+			elseif act.targets[1].actions[1].animation == 321 then
+				target_action_result = ' ('..count..'5-25% SP Recast Reduction|1)'
+				target_action_result_shdw = ' ('..count..'5-25% SP Recast Reduction|1)'
+			--Cutting Cards 2
+			elseif act.targets[1].actions[1].animation == 322 then
+				target_action_result = ' ('..count..'10-30% SP Recast Reduction|2)'
+				target_action_result_shdw = ' ('..count..'10-30% SP Recast Reduction|2)'
+			--Cutting Cards 3
+			elseif act.targets[1].actions[1].animation == 323 then
+				target_action_result = ' ('..count..'20-40% SP Recast Reduction|3)'
+				target_action_result_shdw = ' ('..count..'20-40% SP Recast Reduction|3)'
+			--Cutting Cards 4
+			elseif act.targets[1].actions[1].animation == 324 then
+				target_action_result = ' ('..count..'30-50% SP Recast Reduction|4)'
+				target_action_result_shdw = ' ('..count..'30-50% SP Recast Reduction|4)'
+			--Cutting Cards 5
+			elseif act.targets[1].actions[1].animation == 325 then
+				target_action_result = ' ('..count..'40-60% SP Recast Reduction|5)'
+				target_action_result_shdw = ' ('..count..'40-60% SP Recast Reduction|5)'
+			--Cutting Cards 6
+			elseif act.targets[1].actions[1].animation == 326 then
+				target_action_result = ' ('..count..'50-70% SP Recast Reduction|6)'
+				target_action_result_shdw = ' ('..count..'50-70% SP Recast Reduction|6)'
 			--Regains MP
 			elseif msg == 451 then
 				local info = calculateInfo(act)
@@ -7187,7 +7307,7 @@ register_event('action', function (act)
 				--If Benediction is used, remove all debuffs from all targets it hits
 				elseif abil_name == "Benediction" then
 					for i = 1, target_count do
-						current_debuffs[act.targets[i].id] = nil
+						wipeDebuffs(act.targets[i].id)
 					end
 				end
 			end
@@ -7288,7 +7408,7 @@ register_event('action', function (act)
 
 			coroutine.schedule(function()
 				removeFromActionsTable(act.actor_id, trackingIndex)
-			end, clear_action_delay)
+			end, is_a_roll and clear_action_delay_for_rolls or clear_action_delay)
 
 		end
 
@@ -7414,6 +7534,20 @@ register_event('action', function (act)
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			--Recover HP
+			elseif msg == 225 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			--Recover TP
+			elseif msg == 226 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
 			end
 
 		--Spells
@@ -7934,7 +8068,8 @@ register_event('action', function (act)
 			--If specific moves are used, remove all debuffs from all targets it hits
 			elseif remove_all_debuffs:contains(abil_name) then
 				for i = 1, target_count do
-					current_debuffs[act.targets[i].id] = nil
+					local t_id = act.targets[i].id
+					wipeDebuffs(t_id)
 				end
 			end
 
@@ -7945,8 +8080,8 @@ end)
 
 function handleOverwrites(target_id, new_spell_id)
 
-	--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
-	new_spell_id = new_spell_id > 9000 and new_spell_id - 9000 or new_spell_id
+	--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc., excluding TH)
+	new_spell_id = new_spell_id > 9000 and new_spell_id < 9900 and new_spell_id - 9000 or new_spell_id
 
 	--If the target has no current debuffs, return true so the new debuff gets saved
 	if not current_debuffs[target_id] then
@@ -7955,28 +8090,38 @@ function handleOverwrites(target_id, new_spell_id)
 
 	--Loop through all debuffs the target currently has
 	for effect_id, spell in pairs(current_debuffs[target_id]) do
-		--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
-		local old_spell_id = spell and spell.id and spell.id > 9000 and spell.id - 9000 or (spell and spell.id)
-		if old_spell_id == 503 then return false end --Impact does not overwrite itself
-		local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
+		if effect_id ~= 'pos' then 
+			--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
+			local old_spell_id = spell.id and spell.id > 9000 and spell.id < 9900 and spell.id - 9000 or spell.id -- compare number with nil
 
-		--Check if there is a higher priority debuff already active
-		if table.length(old_debuff_overwrites) > 0 then
-			for _,v in ipairs(old_debuff_overwrites) do
-				if new_spell_id == v then
-					--If there is, return false so that the previous debuff is not overwritten
-					return false
+			--Impact does not overwrite itself
+			if new_spell_id == 503 and old_spell_id == 503 then
+				return false
+			--TH effect overwrites itself
+			elseif new_spell_id >= 9902 and new_spell_id <= 9914 and old_spell_id >= 9902 and old_spell_id <= 9914 then
+				current_debuffs[target_id][effect_id] = nil
+				return true
+			end
+			local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
+
+			--Check if there is a higher priority debuff already active
+			if table.length(old_debuff_overwrites) > 0 then
+				for _,v in ipairs(old_debuff_overwrites) do
+					if new_spell_id == v then
+						--If there is, return false so that the previous debuff is not overwritten
+						return false
+					end
 				end
 			end
-		end
 
-		--Check if a lower priority debuff is being overwritten
-		local new_debuff_overwrites = res.spells[new_spell_id] and res.spells[new_spell_id].overwrites or {}
-		if table.length(new_debuff_overwrites) > 0 then
-			for _,v in ipairs(new_debuff_overwrites) do
-				if old_spell_id == v then
-					--If there is, clear the previous debuff
-					current_debuffs[target_id][effect_id] = nil
+			--Check if a lower priority debuff is being overwritten
+			local new_debuff_overwrites = res.spells[new_spell_id] and res.spells[new_spell_id].overwrites or {}
+			if table.length(new_debuff_overwrites) > 0 then
+				for _,v in ipairs(new_debuff_overwrites) do
+					if old_spell_id == v then
+						--If there is, clear the previous debuff
+						current_debuffs[target_id][effect_id] = nil
+					end
 				end
 			end
 		end
@@ -7988,15 +8133,14 @@ end
 
 --Remove a debuff from a monster if the specific debuff is still present
 function removeDebuff(target_id, effect_id, index)
-	if current_debuffs[target_id]
-	and current_debuffs[target_id][effect_id]
-	and current_debuffs[target_id][effect_id].index == index then
-		current_debuffs[target_id][effect_id] = nil
+	local target_debuffs = current_debuffs[target_id]
+	if target_debuffs and target_debuffs[effect_id] and target_debuffs[effect_id].index == index then
+		target_debuffs[effect_id] = nil
 	end
 end
 
 --Save debuff to current_debuffs table
-function saveDebuff(actor_id, target_id, effect_id, spell_id)
+function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 
 	--Make sure the effect numbers we're getting are within the correct range
 	if not ((effect_id >= 1 and effect_id <= 634) or effect_id >= 9000) then return end
@@ -8040,8 +8184,13 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		duration = daze_durations[level]
 	end
 
+	--Light Shot Sleep
+	if effect_id == 2 and spell_id == 131 then
+		check_override = false
+		duration = 60 --lasts only 60 seconds
+		removal_timer = duration
 	--Shadowbind
-	if effect_id == 11 and spell_id == 57 then
+	elseif effect_id == 11 and spell_id == 57 then
 		local base_duration = 30
 		local max_duration = 62
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Shadowbind"] or nil
@@ -8182,9 +8331,17 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		removal_timer = duration
 	--Impact
 	elseif effect_id == 9503 then
-		-- check_override = false
 		duration = 180
 		removal_timer = duration
+	--Treasure Hunter
+	elseif T{9902,9903,9904,9905,9906,9907,9908,9909,9910,9911,9912,9913,9914}:contains(effect_id) then
+		duration = nil
+		removal_timer = nil
+	end
+
+	--No effect duration adjustment (since we don't know when the previously cast effect will wear off)
+	if no_effect and not current_debuffs[target_id][effect_id] then
+		duration = 0
 	end
 
 	--Check for spells that overwrite a current debuff
@@ -8194,9 +8351,11 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 	end
 
 	--Set timer to remove the specific debuff
-	coroutine.schedule(function()
-		removeDebuff(target_id, effect_id, trackingIndex)
-	end, removal_timer)
+	if removal_timer then
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	end
 
 	--Addle overwrites Nocturne
 	if effect_id == 21 and current_debuffs[target_id][223] then
@@ -8217,7 +8376,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 	--effect_id = id of the debuff/status
 	current_debuffs[target_id][effect_id] = {
 		id = spell_id, --id of the spell that was cast
-		timer = os.clock() + duration, --expiration time
+		timer = duration and os.clock() + duration, --expiration time
 		index = trackingIndex, --Unique ID for this debuff
 	}
 
@@ -8253,13 +8412,23 @@ function handleAction(act)
 
 		local target_id = act.targets[i].id
 		local message_id = act.targets[i].actions[1].message
+		local add_message_id = act.targets[i].actions[1].add_effect_message
+
+		--Treasure Hunter procs
+		if act.category == 1 and add_message_id == 603 then
+			local level = act.targets[i].actions[1].add_effect_param
+			local th_id = {[2]=9902,[3]=9903,[4]=9904,[5]=9905,[6]=9906,[7]=9907,[8]=9908,[9]=9909,[10]=9910,[11]=9911,[12]=9912,[13]=9913,[14]=9914}
+			effect_id = th_id[level]
+			spell_id = th_id[level]
+			saveDebuff(actor_id, target_id, effect_id, spell_id)
 
 		--Spells that include a debuff
-		if act.category == 4 then
+		elseif act.category == 4 then
 
 			--Spell messages to look for
 			local damaging_spell_messages = S{2,7,252,264,265}
 			local debuff_spell_messages = S{203,236,237,267,268,269,270,271,272,277,278,279}
+			local no_effect_spell_messages = S{75,283,423,659}
 
 			--Damaging spells
 			if damaging_spell_messages:contains(message_id) then
@@ -8316,6 +8485,10 @@ function handleAction(act)
 				if spell_status and spell_status == effect_id then
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
+			elseif no_effect_spell_messages:contains(message_id) then
+				local effect_id = res.spells[spell_id] and res.spells[spell_id].status or 0
+				local no_effect = true
+				saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 			end
 
 		--Most job abilities
@@ -8355,6 +8528,14 @@ function handleAction(act)
 						debuff.id = boosted_id
 					end
 				end
+			end
+			--Bounty Shot procs
+			if message_id == 608 then
+				local level = act.targets[i].actions[1].param
+				local th_id = {[2]=9902,[3]=9903,[4]=9904,[5]=9905,[6]=9906,[7]=9907,[8]=9908,[9]=9909,[10]=9910,[11]=9911,[12]=9912,[13]=9913,[14]=9914}
+				effect_id = th_id[level]
+				spell_id = th_id[level]
+				saveDebuff(actor_id, target_id, effect_id, spell_id)
 			end
 
 		--Some job abilities that include a debuff (unblinkable)
@@ -8466,6 +8647,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 		local msg_type = packet['Message Type']
 		if (msg_type == 0x04) then
 			pet_tp = packet['Pet TP']
+			-- pet_mp = packet['Current MP%']
 		end
 
 	elseif id == 0x028 then --actions (for debuffs)
@@ -8479,7 +8661,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 		handleActionMessage(data)
 
 	elseif id == 0xF4 then --wide scan (for monster levels)
-		local packet = packets.parse( 'incoming', original )
+		local packet = packets.parse('incoming', original)
 		current_levels[packet.Index] = packet.Level
 
 	elseif id == 0xB then --zone start
