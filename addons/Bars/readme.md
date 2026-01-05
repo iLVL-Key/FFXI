@@ -288,6 +288,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.5.2
+- Adjusted Phantom Roll, Double-Up, Wild Card, and Cutting Cards, removing the target name from the action.
+
 Version 4.5.1
 - Fixed the `clear_action_delay_for_rolls`. Now named `clear_action_delay_for_self_rolls` to better relay what it is for, and also now correctly only applies to rolls performed by the player.
 
