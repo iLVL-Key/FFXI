@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5.2'
+_addon.version = '4.5.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -3868,7 +3868,7 @@ function inDyna()
 end
 
 --Update the Aggro List
-function updateAggroList(player, t)
+function updateAggroList(player, t, st)
 
 	--If the Aggro List is turned off, hide it
 	if not show_aggro_list and not Screen_Test then
@@ -3886,7 +3886,7 @@ function updateAggroList(player, t)
 	for actor_id, data in pairs(current_aggro_list) do
 
 		local actor = get_mob_by_id(actor_id)
-		local cursor_target = show_cursor_target and t and t.id == actor_id
+		local cursor_target = show_cursor_target and (st and st.id == actor_id or t and t.id == actor_id)
 
 		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) and actor.hpp ~= 0 then
 
@@ -6148,7 +6148,7 @@ register_event('target change', function()
 		showBars(target)
 	end
 
-	updateAggroList(player, target)
+	updateAggroList(player, target, sub_target)
 
 end)
 
@@ -6367,7 +6367,7 @@ register_event('prerender', function()
 	end
 
 	if clock - last_aggro_list_update >= aggro_list_update_interval then
-		updateAggroList(player, target)
+		updateAggroList(player, target, sub_target)
 		last_aggro_list_update = clock
 	end
 
