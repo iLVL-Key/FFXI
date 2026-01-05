@@ -288,6 +288,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.5.4
+- Adjusted the Aggro List highlighting behavior. Changed the `aggro_list_highlight` icon to `aggro_list_target` and added `aggro_list_sub_target` icon. The Aggro List highlighting will now differentiate between normal Target and Sub Targets with a different icon, Sub Target taking priority over Target.
+
 Version 4.5.3
 - Adjusted the Aggro List to highlight the current Sub Target as well as the Target.
 
