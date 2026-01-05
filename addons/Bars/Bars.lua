@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5.3'
+_addon.version = '4.5.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -56,7 +56,8 @@ defaults = {
 	bg = {alpha = 240, red = 0, green = 0, blue = 0},
 	text = {alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas'},
 	icons = {
-		aggro_list_highlight = "●",
+		aggro_list_target = "●",
+		aggro_list_sub_target = "►",
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
@@ -953,7 +954,8 @@ target_lock_icon_stroke_color = settings.sections.target.target_lock_icon_stroke
 target_lock_icon_stroke_width = settings.sections.target.target_lock_icon_stroke_width
 target_lock_icon_size = settings.sections.target.target_lock_icon_size
 
-aggro_icon = settings.icons.aggro_list_highlight
+aggro_t_icon = settings.icons.aggro_list_target
+aggro_st_icon = settings.icons.aggro_list_sub_target
 casting_icon = settings.icons.casting
 cancelled_icon = settings.icons.cancelled
 completed_icon = settings.icons.completed
@@ -3886,7 +3888,8 @@ function updateAggroList(player, t, st)
 	for actor_id, data in pairs(current_aggro_list) do
 
 		local actor = get_mob_by_id(actor_id)
-		local cursor_target = show_cursor_target and (st and st.id == actor_id or t and t.id == actor_id)
+		local cursor_target = show_cursor_target and t and t.id == actor_id
+		local cursor_sub_target = show_cursor_target and st and st.id == actor_id
 
 		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) and actor.hpp ~= 0 then
 
@@ -3894,14 +3897,14 @@ function updateAggroList(player, t, st)
 
 			if num <= max_monsters_listed then
 				local actor_name = truncateName(actor.name)
-				actor_name = actor_name and (cursor_target and uppercase(actor_name) or actor_name)
+				actor_name = actor_name and ((cursor_target or cursor_sub_target) and uppercase(actor_name) or actor_name)
 				local target = data.target_id and get_mob_by_id(data.target_id)
 				local target_name = target and target.name and truncateMonsterTarget(target.name)
-				target_name = target_name and (cursor_target and uppercase(target_name) or target_name)
+				target_name = target_name and ((cursor_target or cursor_sub_target) and uppercase(target_name) or target_name)
 				local target_icon = os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
 				local hpp_raw =actor.hpp or 0
 				local hpp = string.format("%3s", hpp_raw)..'%' or ''
-				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and (cursor_target and "ZZZ" or "zzz") or ""
+				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and ((cursor_target or cursor_sub_target) and "ZZZ" or "zzz") or ""
 
 				--Colorize the actor name
 				local ca = targetColor(player, actor)
@@ -3924,9 +3927,9 @@ function updateAggroList(player, t, st)
 						padding = padding..'.'
 					end
 				end
-				local targeted = cursor_target and aggro_icon or " "
+				local targeted = cursor_sub_target and aggro_st_icon or (cursor_target and aggro_t_icon or " ")
 				actor_name = "\\cs("..ca_r..","..ca_g..","..ca_b..")"..(actor_name and actor_name or "").."\\cr" --add color start and reset to name
-				local pc = cursor_target and text_color or {r = 100, g = 100, b = 100}
+				local pc = (cursor_target or cursor_sub_target) and text_color or {r = 100, g = 100, b = 100}
 				padding = "\\cs("..pc.r..","..pc.g..","..pc.b..")"..padding.."\\cr"
 				target_name = "\\cs("..ct_r..","..ct_g..","..ct_b..")"..(target_name and target_name or "").."\\cr" --add color start and reset to name
 				text = text..hpp..targeted..actor_name..padding..asleep..(target_name and target_icon..target_name).."\n"
