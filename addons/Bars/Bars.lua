@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5.1'
+_addon.version = '4.5.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -7107,6 +7107,8 @@ register_event('action', function (act)
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Phantom Roll/Double-Up
 			elseif msg == 420 or msg == 424 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				if actor.name == player.name then
 					is_a_self_roll = true
 				end
@@ -7225,54 +7227,80 @@ register_event('action', function (act)
 
 			--Bust
 			elseif msg == 426 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'Bust!)'
 				target_action_result_shdw = ' ('..count..'Bust!)'
 			--Wild Card 1
 			elseif act.targets[1].actions[1].animation == 132 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'JAs Reset|1)'
 				target_action_result_shdw = ' ('..count..'JAs Reset|1)'
 			--Wild Card 2
 			elseif act.targets[1].actions[1].animation == 133 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'JAs Reset|2)'
 				target_action_result_shdw = ' ('..count..'JAs Reset|2)'
 			--Wild Card 3
 			elseif act.targets[1].actions[1].animation == 134 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'TP, JAs Reset|3)'
 				target_action_result_shdw = ' ('..count..'TP, JAs Reset|3)'
 			--Wild Card 4
 			elseif act.targets[1].actions[1].animation == 135 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'TP, JAs Reset|4)'
 				target_action_result_shdw = ' ('..count..'TP, JAs Reset|4)'
 			--Wild Card 5
 			elseif act.targets[1].actions[1].animation == 136 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|5)'
 				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|5)'
 			--Wild Card 6
 			elseif act.targets[1].actions[1].animation == 137 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|6)'
 				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|6)'
 			--Cutting Cards 1
 			elseif act.targets[1].actions[1].animation == 321 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'5-25% SP Recast Reduction|1)'
 				target_action_result_shdw = ' ('..count..'5-25% SP Recast Reduction|1)'
 			--Cutting Cards 2
 			elseif act.targets[1].actions[1].animation == 322 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'10-30% SP Recast Reduction|2)'
 				target_action_result_shdw = ' ('..count..'10-30% SP Recast Reduction|2)'
 			--Cutting Cards 3
 			elseif act.targets[1].actions[1].animation == 323 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'20-40% SP Recast Reduction|3)'
 				target_action_result_shdw = ' ('..count..'20-40% SP Recast Reduction|3)'
 			--Cutting Cards 4
 			elseif act.targets[1].actions[1].animation == 324 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'30-50% SP Recast Reduction|4)'
 				target_action_result_shdw = ' ('..count..'30-50% SP Recast Reduction|4)'
 			--Cutting Cards 5
 			elseif act.targets[1].actions[1].animation == 325 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'40-60% SP Recast Reduction|5)'
 				target_action_result_shdw = ' ('..count..'40-60% SP Recast Reduction|5)'
 			--Cutting Cards 6
 			elseif act.targets[1].actions[1].animation == 326 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'50-70% SP Recast Reduction|6)'
 				target_action_result_shdw = ' ('..count..'50-70% SP Recast Reduction|6)'
 			--Regains MP
