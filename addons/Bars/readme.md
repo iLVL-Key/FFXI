@@ -288,6 +288,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.5.3
+- Adjusted the Aggro List to highlight the current Sub Target as well as the Target.
+
 Version 4.5.2
 - Adjusted Phantom Roll, Double-Up, Wild Card, and Cutting Cards, removing the target name from the action.
 
