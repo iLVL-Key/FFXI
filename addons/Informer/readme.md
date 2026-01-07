@@ -106,6 +106,9 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 
 ## Changelog
 
+Version 5.1.2
+- Fixed errors when in Monstrosity.
+
 Version 5.1.1
 - Temporary fix for Windower get_info().moon_phase bug. Determines moon phase based on moon percent, waiting for the percent to update after addon load to determine which direction the moon phase is going (waxing or waning).
 
