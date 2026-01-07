@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5.5'
+_addon.version = '4.5.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -117,6 +117,11 @@ defaults = {
 			},
 		},
 		mnk = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		mon = {hp = false, mp = false, pet = false, tp = false,
 			vertical_offsets = {
 				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
 			},
@@ -4958,6 +4963,9 @@ function updateHPBar(player)
 
 	local hp = player and player.vitals.hp or 0
 	local max_hp = player and player.vitals.max_hp or 0
+	if max_hp < hp then
+		max_hp = hp
+	end
 	local hpp = player and player.vitals.hpp or 0
 	local hp_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
@@ -5074,6 +5082,9 @@ function updateMPBar(player)
 
 	local mp = player and player.vitals.mp or 0
 	local max_mp = player and player.vitals.max_mp or 0
+	if max_mp < mp then
+		max_mp = mp
+	end
 	local mpp = player and player.vitals.mpp or 0
 	local hpp = player and player.vitals.hpp or 0
 	local mp_meter = ''
@@ -6689,7 +6700,7 @@ register_event('action', function (act)
 	end
 
 	--Debug Stuff
-	-- if actor.name == player.name then
+	-- if actor.name == player.name and act.category ~=1 then
 	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
 	-- 	add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
 	-- end
@@ -7576,21 +7587,35 @@ register_event('action', function (act)
 						target_action_result_shdw = ' ('..count..'Missed)'
 					end
 				end
-			--Recover MP
+			--Recover/Absorb MP
 			elseif msg == 224 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
-			--Recover HP
-			elseif msg == 225 then
+			--Recover/Absorb HP
+			elseif msg == 238 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
-			--Recover TP
+			--Drain HP
+			elseif msg == 187 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			--Drain MP
+			elseif msg == 225 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			--Drain TP
 			elseif msg == 226 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
