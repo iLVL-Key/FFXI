@@ -288,6 +288,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.5.6
+- Fixed errors when in Monstrosity.
+- Fixed incorrect results with Weapon Skills that drain MP.
+
 Version 4.5.5
 - Adjusted "Resisted" action results to split off "Completely Resisted."
 
