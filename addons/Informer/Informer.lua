@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.1.1'
+_addon.version = '5.1.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -56,6 +56,7 @@ defaults.layout.main.drg = default_layout..' | Angons: ${track:Angon}'
 defaults.layout.main.drk = default_layout
 defaults.layout.main.geo = default_layout
 defaults.layout.main.mnk = default_layout
+defaults.layout.main.mon = default_layout
 defaults.layout.main.nin = default_layout..' | Shihei: ${track:Shihei}'
 defaults.layout.main.pld = default_layout..' | Remedies: ${track:Remedy} | H.Waters: ${track:Holy Water}'
 defaults.layout.main.pup = default_layout..' | Oils: ${track:Automat. Oil +3}'
