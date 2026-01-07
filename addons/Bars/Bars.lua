@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5.4'
+_addon.version = '4.5.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -6999,9 +6999,13 @@ register_event('action', function (act)
 					target_action_result = ' ('..count..'No Effect)'
 					target_action_result_shdw = ' ('..count..'No Effect)'
 				--Resisted
-				elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+				elseif msg == 85 or msg == 284 then
 					target_action_result = ' ('..count..'Resisted)'
 					target_action_result_shdw = ' ('..count..'Resisted)'
+				--Completely Resisted
+				elseif msg == 655 or msg == 656 then
+					target_action_result = ' ('..count..'Completely Resisted)'
+					target_action_result_shdw = ' ('..count..'Completely Resisted)'
 				--Immunobreak
 				elseif msg == 653 or msg == 654 then
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
@@ -7072,9 +7076,13 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
@@ -7388,9 +7396,13 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
@@ -7535,9 +7547,13 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
@@ -7690,9 +7706,13 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
@@ -7872,9 +7892,13 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
@@ -8027,9 +8051,13 @@ register_event('action', function (act)
 					target_action_result = ' ('..count..'No Effect)'
 					target_action_result_shdw = ' ('..count..'No Effect)'
 				--Resisted
-				elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+				elseif msg == 85 or msg == 284 then
 					target_action_result = ' ('..count..'Resisted)'
 					target_action_result_shdw = ' ('..count..'Resisted)'
+				--Completely Resisted
+				elseif msg == 655 or msg == 656 then
+					target_action_result = ' ('..count..'Completely Resisted)'
+					target_action_result_shdw = ' ('..count..'Completely Resisted)'
 				--Immunobreak
 				elseif msg == 653 or msg == 654 then
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
