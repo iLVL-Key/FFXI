@@ -7,6 +7,7 @@ Lots of little things to improve your experience. Each file has an Options and A
 - AutoMajesty - Automatically activates and keeps Majesty active.
 - AutoStance - Automatically activates and keeps Stances (Hasso/Seigan) active.
 - Book/Page - set your specific macro book and page for that job (and common subjobs) when the file loads.
+- Automatically equips Movement Speed gear while you are moving.
 - DD jobs will attempt to use a "save" when you are at low HP (High Jump, Chakra, etc depending on main/sub job).
 - Reminder to put Reraise up if it's down.
 - "Oh Shit" gear set for when you are in critical health, or are stunned, petrified, or terrorized.
@@ -113,6 +114,17 @@ In general, each HUD has..
 
 <details>
 <summary>BLU</summary>
+
+Version 19.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed AutoSubCharge still activating when set to Off.
+- Fixed AutoSubCharge attempting to activate inside Mog House and Mog Garden.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
 
 Version 18.9.3
 - Added support for the Limbus +4 gear for SP Ability.
@@ -493,6 +505,17 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 2.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed AutoSubCharge still activating when set to Off.
+- Fixed AutoSubCharge attempting to activate inside Mog House and Mog Garden.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
+
 Version 1.3.1
 - Fixed Echo Drops mispelled.
 - Fixede Stage 4 Prime Dagger not working with AfterMath correctly.
@@ -566,8 +589,74 @@ Version 1.0 BETA-1
 
 </details>
 <details>
- 
+
+<summary>COR</summary>
+
+Version 1.0
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged. Allows you to have  a better defensive piece equipped while idle and not moving. Can be disabled by simply leaving the set blank and having movement speed in your idle set like usual.
+- Added Ranged Attack W/ Armageddon Aftermath set.
+- Adjusted Triple Shot to combine with Ranged Accuracy set if in Mode 3 (Accuracy), otherwise combines with Ranged Attack. (You will need to replace the entire Triple set as the combine has been removed from the set itself and is now handled down in the rules).
+- Adjusted Ammo Tracker to flash when low ammo.
+- Fixed the Italics Crooked Cards indicator not staying with the appropriate roll as rolls wear off.
+- Fixed AutoSave not resetting correctly.
+
+Version 1.0 BETA-8
+- Added AutoDoubleUp option. Allows you to turn on/off converting a repeat of the SAME Phantom Roll to Double-Up.
+- Adjusted Roll Info layout a little more. Removed " Roll" from roll names and centered the whole thing.
+- Adjusted when the Ranged Attack/Accuracy Bullet gets equipped. Now equips every time a basic Idle/Engaged/Resting set is equipped.
+- Fixed switching from the Roll Info display to Roll Tracker in the HUD when a roll wears off in the middle of rolling another.
+
+Version 1.0 BETA-7
+- Added an italic effect to a roll that has Crooked Cards applied to it in the Roll Tracker.
+- Fixed a specific instance last night that allowed a double-up to go through on an XI still.
+- Cleaned up the Ammo Tracker display so it should be a cleaner transition between swapping places between the Roll Tracker and Roll Info.
+- Swapped out Fold for Random Deal in the HUD Recast section.
+- Changed the shorthand for Triple Shot in the Recast HUD. "Trip. S:4m" at a quick glance looked like it was reading as 5:4m (5 minutes, 4 m ??).
+
+Version 1.0 BETA-6
+- Added Roll Timers to the HUD
+- Fixed Low HP warning being called too frequently.
+
+Version 1.0 BETA-5
+- Fixed ranged attacks not equipping the Ranged Accuracy set as the base set when in Mode 3 (High Accuracy) and Triple Shot is up.
+- Fixed HUD Rolls showing up in a cutscene if you roll right before you enter the CS.
+
+Version 1.0 BETA-4
+- Fixed issues with the HUD Roll Tracker.
+
+Version 1.0 BETA-3
+- Fix New Roll after an 11 auto-Double-Up'ing.
+- Add TP Threshold for swapping weapons when Rolling.
+- Add Hachirin-no-Obi stuff.
+
+Version 1.0 BETA-2
+- Split out Phantom Roll set and add a Double Up set (to add in all enmity- for it since you only need the Roll+ and duration gear on the initial roll).
+- Fix sub job macro pages not working correctly.
+- Add in stuff for /RNG.
+- Removed Rudra Storm.
+- Removed High Buff sets for Leaden and Wildfire (had actually removed these already after I posted it, All Jobs thing doesn't have sets for them and I assume it's because they are magic damage based)
+- Expand equipped bullet tracking to include wardrobes not just main inventory.
+- Rebuild the Weapon Cycler(s) to accommodate weapons with augments.
+- Add an alternative snapshot set for when we have Flurry on. I really don't want to go too far out into the weeds calculating flurry/snapshot percentages and all that shit that I've specifically not done before with haste, so I'm just going to add a set for assuming you have flurry on so you can add more rapid shot.
+
+Version 1.0 BETA-1
+- First Version.
+
+</details>
+<details>
+
 <summary>GEO</summary>
+
+Version 15.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed AutoSubCharge still activating when set to Off.
+- Fixed AutoSubCharge attempting to activate inside Mog House and Mog Garden.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
 
 Version 14.9.1
 - Added support for the Limbus +4 gear for SP Ability
@@ -887,6 +976,16 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Adjusted how Weapon Skill sets are equipped to better equip the correct gear under different conditions.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
+
 Version 7.7.6
 - Added support for the Limbus +4 gear for SP Ability
 - Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
@@ -1052,6 +1151,21 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added Kite Mode. This mode essentially already existed before, but was only available in Auto mode. This now allows you to manually put yourself into Kite mode.
+- Added Tank - Magic Damage set. This is a special set that is used in place of the normal Tank set when a piece of gear in the new TankMDTTrigger table is found in EITHER the MAIN or SUB slots. (For example: Aegis is in the TankMDTTrigger table, when fighting Aminon you use the Weapon Cycler to swap to Malignance Sword and Aegis, the Tank - Magic Damage set will now be used in place of the normal Tank set.)
+- Adjusted DPS Mode to equip Idle + Movement Speed sets when idle.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Adjusted the TPThreshold option (now KeepTPThreshold) to no longer require a separate gear set for the Fast Cast and Phalanx sets. Main and Sub slots can now be defined directly in those sets and will be equipped or ignored based on the KeepTPThreshold setting.
+- Fixed errors when on a character with no subjob.
+- Fixed AutoSubCharge still activating when set to Off.
+- Fixed AutoSubCharge attempting to activate inside Mog House and Mog Garden.
+- Fixed bug with GearSwaps `player.in_combat` variable occasionally not replorting values correctly.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
 
 Version 14.8.7
 - Added support for the Limbus +4 gear for SP Ability
@@ -1377,6 +1491,16 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed idling in a town not including the idle set in the set combine.
+- Fixed bug with GearSwaps `player.in_combat` variable variable not replorting values correctly.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
+
 Version 9.9.2
 - Added support for the Limbus +4 gear for SP Ability
 - Adjusted a number of HUD Recast buffs to use the buff ID instead of the buff name. This will prevent things like GEO bubbles from triggering the HUD Recast to show the buff is active on you (ex. the Defense Boost effect from Cocoon wears off, but you are within range of a Barrier bubble so the HUD still labels Cocoon as active).
@@ -1625,6 +1749,16 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Adjusted High Buff Weapon Skill sets to combine with their respective normal versions instead of the general Weapon Skill set.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
 
 Version 15.0.6
 - Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
@@ -1909,6 +2043,17 @@ Version 9.0
  
 <summary>SMN</summary>
 
+Version 13.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed errors when on a character with no subjob.
+- Fixed AutoSubCharge still activating when set to Off.
+- Fixed AutoSubCharge attempting to activate inside Mog House and Mog Garden.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
+
 Version 12.8.1
 - Added support for the Limbus +4 gear for SP Ability
 - Fixed an issue where using a macro for a weapon skill just before you hit 1000+ TP but close enough that the weapon skill still fires off will not change your gear. The trade-off now is that every time you hit a macro to use a weapon skill you will switch gear, regardless of how much TP you have.
@@ -2159,6 +2304,18 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.0
+- Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
+- Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
+- Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged.
+- Added Single Wield, Dual Wield, and Two-Handed sets to Mode3 and Mode4.
+- Adjusted High Buff Weapon Skill sets to combine with their respective normal versions instead of the general Weapon Skill set.
+- Adjusted HUD Recast timers to be more accurate. Specifically, numbers are now ceilinged rather than floored.
+- Fixed Mode2, Mode3, and Mode4 melee sets combining with a non-existant set, keeping idle gear equipped while engaged.
+- Fixed errors when on a character with no subjob.
+- Fixed Ranged Weapon Skills not able to be used when outside of melee range.
+- Fixed Debuff Notifications continuing after you die.
 
 Version 9.0.7
 - Added support for the Limbus +4 gear for SP Ability
