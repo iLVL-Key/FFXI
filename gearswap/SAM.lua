@@ -2112,7 +2112,7 @@ function choose_set()
 		else
 			local base_set = Stance == 'Seigan' and sets.seigan or sets.hasso[Mode]
 			local low_hp = LowHP and sets.oh_shit or nil
-			equip(set_combine(base_set, low_hp))
+			equip(set_combine(base_set, sets.idle, low_hp))
 		end
 	end
 end
@@ -3719,4 +3719,5 @@ function file_unload()
 	send_command('unbind '..WCBind)
 
 end
+
 
