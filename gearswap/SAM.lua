@@ -170,7 +170,7 @@ sub = {
 	--Hasso Active
 	hasso = {
 		--SAM/WAR
-		DNC = {
+		WAR = {
 			Abil01 = "Meditate",		Abil01_sh = "",
 			Abil02 = "Konzen-ittai",	Abil02_sh = "Konzen",
 			Abil03 = "Sekkanoki",		Abil03_sh = "",
@@ -3719,3 +3719,4 @@ function file_unload()
 	send_command('unbind '..WCBind)
 
 end
+
