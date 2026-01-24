@@ -702,7 +702,7 @@ end
 
 
 
-FileVersion = '8.0'
+FileVersion = '8.0.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1930,12 +1930,9 @@ function choose_set()
 				hud_noti:color(255,255,255)
 			end
 		end
-		if LowHP then --if we have low HP we equip the Oh Shit gear set
-			equip(sets.oh_shit)
-		else
-			local impetus = buffactive['Impetus'] and sets.impetus
-			equip(set_combine(mode_set, impetus))
-		end
+		local impetus = buffactive['Impetus'] and sets.impetus or nil
+		local low_hp = LowHP and sets.oh_shit or nil
+		equip(set_combine(sets[Mode], impetus, low_hp))
 	elseif player.status == "Idle" then
 		if GreetingDelay == -1 then
 			if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
