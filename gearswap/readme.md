@@ -976,6 +976,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.0.1
+- Fxied sets not equipping correctly when engaged. (Thanks Bahamut.Seicz!)
+
 Version 8.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
 - Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
