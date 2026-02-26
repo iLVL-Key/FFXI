@@ -75,9 +75,10 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 3. Once you have the bar positions settled, you can add or remove any of the Player Stats bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to add/remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are currently on.
 
 #### Extra
-4. You can type `//bars help` at any time to display the list of in game commands the addon supports. See **Commands** below.
+4. You can type `//bars help` at any time to display the list of in-game commands the addon supports. See **Commands** below.
 5. If you have a different number of the Player Stats bars shown for different jobs and would like them aligned to the bottom (for example, sitting on top of your chat log), you can adjust the vertical offset for each bar for each job as needed in the `data/settings.xml` file.
 6. Explore the `data/settings.xml` file to see the full list of options that are available to tweak. See **Options** below.
+7. If you multi-box and have different screen sizes for different characters, and therefore different position needs for your bars, make a copy of the main `data/settings.xml` file and rename it as `<charactername>_settings.xml` (ex: `Keylesta_settings.xml`). Make any separate settings changes you would like within this character-specific file, bars will then use that file for that character.
 
 ## Commands
 All commands must be preceded with `//bars` (ex: `//bars focus`)  
@@ -237,6 +238,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `show_bar` | Show the progress bar in the Self Action section. |
 | → `show_monster_level` | Show the level of the currently targeted monster. |
 | → `show_monster_target` | Show the currently targeted monster's target. |
+| → `show_player_angle_from_target_facing` | Shows the degree angle and an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
+| → `show_target_angle_from_player_facing` | Shows the degree angle and an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
