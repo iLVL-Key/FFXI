@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.5.6'
+_addon.version = '4.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -58,6 +58,10 @@ defaults = {
 	icons = {
 		aggro_list_target = "●",
 		aggro_list_sub_target = "►",
+		angle_down_arrow = "↓",
+		angle_left_arrow = "←",
+		angle_right_arrow = "→",
+		angle_up_arrow = "↑",
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
@@ -228,7 +232,7 @@ defaults = {
 		},
 		flip_doom_timer_coloring = false,
 		focus_target_max_distance = 40,
-		hide_pet_bar_when_no_pet = true,
+		hide_pet_bar_when_no_pet = false,
 		hide_player_stats_bars_when_no_target = false,
 		max_action_length = 17,
 		max_monster_target_length = 8,
@@ -319,6 +323,8 @@ defaults = {
 			italic = false,
 			pos = {x = 576, y = 180},
 			show = true,
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -441,6 +447,8 @@ defaults = {
 			italic = false,
 			pos = {x = 200, y = 180},
 			show = true,
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -471,6 +479,8 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			pos = {x = 200, y = 250},
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
 			show_monster_level = true,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -572,10 +582,37 @@ defaults = {
 			low = {r = 255, g = 139, b = 56},
 			normal = {r = 255, g = 255, b = 255},
 		},
+		angle = {
+			front = {r = 150, g = 255, b = 150},
+			sides = {r = 125, g = 125, b = 255},
+			rear = {r = 255, g = 150, b = 150},
+		},
 	},
 }
 
-settings = config.load(defaults)
+relative_path = 'data/'..get_player().name..'_settings.xml'
+absolute_path = windower.addon_path..relative_path
+custom_settings_loaded = false
+
+-- Check if the specific character file exists and load from it instead of the normal settings.xml file
+if file_exists(absolute_path) then
+
+	settings = config.load(relative_path, defaults)
+	config.save(settings, 'all')
+
+	coroutine.schedule(function()
+		print('Bars: Custom settings file loaded for '..get_player().name)
+	end, .5)
+
+	-- So we don't infinite loop this
+	custom_settings_loaded = true
+
+else
+
+	settings = config.load(defaults)
+
+end
+
 settings:save('all') --only useful for when Bars gets updated, will automatically add in any new default settings.
 
 --Default/example targets to pre-populate the auto_focus_targets.lua file
@@ -791,6 +828,7 @@ default_durations = {
 			["Shadowbind"] = 0,
 			["Singing"] = 161,
 			["Tomahawk"] = 60,
+			["Helix"] = 0,
 		}
 	},
 }
@@ -798,7 +836,7 @@ default_durations = {
 --Location of the durations file
 durations_file = files.new('data\\durations.lua')
 
-durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic and Singing are the total PERCENT bonus from all gear combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities and Cumulative Magic are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only set duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
+durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Helix, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic, Singing, and Helix are the total PERCENT bonus from all gear, merits, and/or job gifts combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities and Cumulative Magic are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only define duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
 
 durations_data = {}
 
@@ -1000,24 +1038,26 @@ element_colors = {
 sp_abils = {
 	['Mighty Strikes'] = 45, ['Brazen Rush'] = 30,
 	['Hundred Fists'] = 45, ['Inner Strength'] = 30,
+	['Benediction'] = 10, ['Asylum'] = 10,
 	['Manafont'] = 60, ['Subtle Sorcery'] = 60,
-	['Chainspell'] = 60,
-	['Perfect Dodge'] = 30,
-	['Invincible'] = 30,
+	['Chainspell'] = 60, ['Stymie'] = 10,
+	['Perfect Dodge'] = 30, ['Larceny'] = 10,
+	['Invincible'] = 30, ['Intervene'] = 10,
 	['Blood Weapon'] = 30, ['Soul Enslavement'] = 30,
-	['Unleash'] = 60,
+	['Unleash'] = 60, ['Familiar'] = 10, ['Charm'] = 10,
 	['Soul Voice'] = 180, ['Clarion Call'] = 180,
-	['Overkill'] = 60,
+	['Eagle Eye Shot'] = 10, ['Overkill'] = 60,
 	['Meikyo Shisui'] = 30, ['Yaegasumi'] = 45,
-	['Mikage'] = 45,
+	['Mijin Gakure'] = 10,['Mikage'] = 45,
 	['Spirit Surge'] = 60, ['Fly High'] = 30,
 	['Astral Flow'] = 180, ['Astral Conduit'] = 30,
 	['Azure Lore'] = 30, ['Unbridled Wisdom'] = 60,
-	['Overdrive'] = 60,
+	['Wild Card'] = 10, ['Cutting Cards'] = 10,
+	['Overdrive'] = 60, ['Heady Artifice'] = 10,
 	['Trance'] = 60, ['Grand Pas'] = 30,
-	['Tabula Rasa'] = 180,
+	['Tabula Rasa'] = 180, ['Caper Emissarius'] = 10,
 	['Bolster'] = 180, ['Widened Compass'] = 60,
-	['Elemental Sforzo'] = 30,
+	['Elemental Sforzo'] = 30, ['Odyllic Subterfuge'] = 10,
 }
 
 sp_shorter_names = {
@@ -1025,19 +1065,28 @@ sp_shorter_names = {
 	['Brazen Rush'] = 'Brzn. Rush',
 	['Hundred Fists'] = 'Hnd. Fists',
 	['Inner Strength'] = 'Inner Str.',
+	['Benediction'] = 'Benedctn.',
+	['Asylum'] = 'Asylum',
 	['Manafont'] = 'Manafont',
 	['Subtle Sorcery'] = 'Sbtl. Src.',
 	['Chainspell'] = 'Chainspell',
+	['Stymie'] = 'Stymie',
 	['Perfect Dodge'] = 'Prf. Dodge',
+	['Larceny'] = 'Larceny',
 	['Invincible'] = 'Invincible',
+	['Intervene'] = 'Intervene',
 	['Blood Weapon'] = 'Bl. Weapon',
 	['Soul Enslavement'] = 'Soul Enslv.',
 	['Unleash'] = 'Unleash',
+	['Familiar'] = 'Familiar',
+	['Charm'] = 'Charm',
 	['Soul Voice'] = 'Soul Voice',
 	['Clarion Call'] = 'Clar. Call',
+	['Eagle Eye Shot'] = 'Egl. E. S.',
 	['Overkill'] = 'Overkill',
 	['Meikyo Shisui'] = 'Mk. Shisui',
 	['Yaegasumi'] = 'Yaegasumi',
+	['Mijin Gakure'] = 'Mijin Gak.',
 	['Mikage'] = 'Mikage',
 	['Spirit Surge'] = 'Spr. Surge',
 	['Fly High'] = 'Fly High',
@@ -1045,13 +1094,18 @@ sp_shorter_names = {
 	['Astral Conduit'] = 'Ast. Cond.',
 	['Azure Lore'] = 'Azure Lore',
 	['Unbridled Wisdom'] = 'Un. Wisdom',
+	['Wild Card'] = 'Wild Card',
+	['Cutting Cards'] = 'Cut. Cards',
 	['Overdrive'] = 'Overdrive',
+	['Heady Artifice'] = 'Heady Art.',
 	['Trance'] = 'Trance',
 	['Grand Pas'] = 'Grand Pas',
 	['Tabula Rasa'] = 'Tab. Rasa',
+	['Caper Emissarius'] = 'Caper Ems.',
 	['Bolster'] = 'Bolster',
 	['Widened Compass'] = 'W. Compass',
 	['Elemental Sforzo'] = 'El. Sforzo',
+	['Odyllic Subterfuge'] = 'Odl. Subt.',
 }
 
 --note that these aren't the actual spell names, just used to denote the tier of cumulative magic boost
@@ -1128,7 +1182,7 @@ in_cutscene = false
 zoning = false
 logged_in = false
 job = false
-pet_mp = 0
+pet_mp = 100
 pet_tp = 0
 current_actions = {}
 current_sp_actions = {}
@@ -2750,6 +2804,24 @@ function setWidth()
 
 end
 
+-- Check for a custom <playername>_settings.xml file, this is for when Bars gets autoloaded before we get logged into a character or we switch characters
+function checkCustomSettings(player)
+
+	-- NOTE: This is a cheap way of doing this, but I could not for the life of me get it to reload settings from the <playername>_settings.xml file after the fact and get it to save correctly, but it works fine when loading directly into it when the addon loads, and I had other things I wanted to work on, so here we are.
+
+	local relative_path = 'data/'..player.name..'_settings.xml'
+	local absolute_path = windower.addon_path..relative_path
+
+	-- Check if the specific character settings file exists
+	if file_exists(absolute_path) and not custom_settings_loaded then
+
+		-- If it does, reload bars so it loads the custom seettings file on addon load
+		windower.send_command('lua r bars')
+
+	end
+
+end
+
 --Hide all bars
 function hideBars()
 
@@ -3106,12 +3178,12 @@ end
 --Check for expired SP abilities
 function checkSPTimers(clock)
 
-	for id, sp_action in pairs(current_sp_actions) do
+	for actor_id, sp_action in pairs(current_sp_actions) do
 
 		local timestamp = sp_action.timestamp
 
 		if clock > timestamp then
-			removeFromSPTable(id)
+			removeFromSPTable(actor_id)
 		end
 
 	end
@@ -3551,7 +3623,7 @@ function colorizeDistance(text, distance, target)
 			local max_distance = 6
 			if distance < max_distance then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		--Magic
@@ -3576,7 +3648,7 @@ function colorizeDistance(text, distance, target)
 			--In Range (Song AOE), party members only
 			if job == 'brd' and target.in_party and distance < song_aoe_max then
 				local c = color.range.song_aoe
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--In Range (Inner Blue Magic), only apply if monster or charmed player
 			elseif (job == 'blu' or sub_job == 'blu') and distance < inner_blue_distance
@@ -3588,7 +3660,7 @@ function colorizeDistance(text, distance, target)
 				)
 			) then
 				local c = color.range.inner_blue_magic
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--In Range (Outer Blue Magic), only apply if monster or charmed player, or party member within diffusion range
 			elseif (job == 'blu' or sub_job == 'blu')
@@ -3603,17 +3675,17 @@ function colorizeDistance(text, distance, target)
 				)
 			) then
 				local c = color.range.outer_blue_magic
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--In Range
 			elseif distance < target_distance then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Out of Range
 			else
 				local c = color.range.out_of_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		--Ranged, only apply color if ranged weapon is equipped and target is monster or charmed player
@@ -3676,22 +3748,22 @@ function colorizeDistance(text, distance, target)
 			--In range, no boost
 			if distance < max_distance and (distance > square_max or distance < square_min) then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Hits Squarely
 			elseif (distance <= square_max and distance > true_max) or (distance < true_min and distance >= square_min) then
 				local c = color.range.hits_squarely
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Strikes True
 			elseif (distance <= true_max and distance >= true_min) then
 				local c = color.range.strikes_true
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Out of range
 			else
 				local c = color.range.out_of_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		--Ninjutsu, only apply color if target is monster or charmed player
@@ -3714,12 +3786,12 @@ function colorizeDistance(text, distance, target)
 			--In range
 			if distance < target_distance then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Out of Range
 			else
 				local c = color.range.out_of_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		end		
@@ -3727,7 +3799,7 @@ function colorizeDistance(text, distance, target)
 
 	--Jobs without a distance type, or if disabled
 	local c = color.range.out_of_range
-	return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+	return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..c.b..')'..text..'\\cr'
 
 end
 
@@ -3969,6 +4041,92 @@ function updateAggroList(player, t, st)
 
 end
 
+--Get angle of target relative to player facing
+function getAngleToTarget(target)
+
+	local player = get_mob_by_target('me')
+	if not player or not target then return nil end
+
+	local dx = target.x - player.x
+	local dy = target.y - player.y
+
+	--Angle to target in degrees
+	local target_angle = math.deg(math.atan2(dy, dx))
+
+	--Convert FFXI facing to atan2-compatible degrees
+	local player_facing_angle = -math.deg(player.facing)
+
+	--Relative angle
+	local relative_angle = target_angle - player_facing_angle
+
+	--Normalize to -180 .. 180
+	relative_angle = (relative_angle + 180) % 360 - 180
+
+	return math.floor(relative_angle)
+
+end
+
+--Get angle of player relative to target facing
+function getAngleToPlayer(target)
+
+	local player = get_mob_by_target('me')
+	if not player or not target then return nil end
+
+	local dx = player.x - target.x
+	local dy = player.y - target.y
+
+	--Angle to player in degrees
+	local player_angle = math.deg(math.atan2(dy, dx))
+
+	--Convert target facing to atan2-compatible degrees
+	local target_facing_angle = -math.deg(target.facing)
+
+	--Relative angle
+	local relative_angle = player_angle - target_facing_angle
+
+	--Normalize to -180 .. 180
+	relative_angle = (relative_angle + 180) % 360 - 180
+
+	return math.floor(relative_angle)
+
+end
+
+function getAngleIcon(angle)
+
+	if angle == nil then return "" end
+
+	local icon = settings.icons.angle_down_arrow
+
+	if angle >= -45 and angle <= 45 then
+		icon = settings.icons.angle_up_arrow
+	elseif angle > 45 and angle < 135 then
+		icon = settings.icons.angle_left_arrow
+	elseif angle < -45 and angle > -135 then
+		icon = settings.icons.angle_right_arrow
+	end
+
+	return icon
+
+end
+
+function getAngleColor(angle)
+
+	local color = settings.colors.angle.sides
+
+	if angle == nil then return color end
+
+	local abs_angle = math.abs(angle)
+
+	if abs_angle <= 45 then
+		color = settings.colors.angle.front
+	elseif abs_angle >= 135 then
+		color = settings.colors.angle.rear
+	end
+
+	return color
+
+end
+
 --Update the Focus Target bar
 function updateFocusTargetBar(player, target, clock)
 	--Skip all this while we're calculating dimensions off screen or if the Focus Target Bar is turned off
@@ -4017,13 +4175,16 @@ function updateFocusTargetBar(player, target, clock)
 			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	ft_name = ft_spaces..ft_name
 	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = ft and show_dyna_jobs and in_dyna and dynaJob(ft.name) or false
 	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
 	local dist_raw = ft and math.floor(ft.distance:sqrt()*100)/100
 	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local ft_angle = ft and not Screen_Test and ft_settings.show_target_angle_from_player_facing and getAngleToTarget(ft) or nil
+	local ft_angle_icon = ft_angle and getAngleIcon(ft_angle) or ''
+	local p_angle = ft and not Screen_Test and ft_settings.show_player_angle_from_target_facing and getAngleToPlayer(ft) or nil
+	local p_angle_icon = p_angle and getAngleIcon(p_angle) or ''
 	local level = ft and ft_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ft_spaces..'Lv '..current_levels[ft.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -4037,8 +4198,8 @@ function updateFocusTargetBar(player, target, clock)
 		or (current_actions[ft.id] and current_actions[ft.id].icon and ' '..current_actions[ft.id].icon or ' ?')
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (ft_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(ft_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (ft_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(ft_targeting_id).name) or '')
-	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, ft)..ft_spaces.."\\cs("..formatRGB(getAngleColor(ft_angle).r)..","..formatRGB(getAngleColor(ft_angle).g)..","..formatRGB(getAngleColor(ft_angle).b)..")"..ft_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..ft_spaces..'\\cs(000,000,000)'..ft_angle_icon..'\\cr\\cs(000,000,000)'..p_angle_icon..'\\cr\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
 	local status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
 	local action = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action or '')
@@ -4305,13 +4466,16 @@ function updateSubTargetBar(player, st, target, clock)
 			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	st_name = st_spaces..st_name
 	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = st and show_dyna_jobs and in_dyna and dynaJob(st.name) or false
 	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
 	local dist_raw = st and math.floor(st.distance:sqrt()*100)/100
 	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local st_angle = st and not Screen_Test and st_settings.show_target_angle_from_player_facing and getAngleToTarget(st) or nil
+	local st_angle_icon = st_angle and getAngleIcon(st_angle) or ''
+	local p_angle = st and not Screen_Test and st_settings.show_player_angle_from_target_facing and getAngleToPlayer(st) or nil
+	local p_angle_icon = p_angle and getAngleIcon(p_angle) or ''
 	local level = st and st_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and st_spaces..'Lv '..current_levels[st.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -4325,8 +4489,8 @@ function updateSubTargetBar(player, st, target, clock)
 		or (current_actions[st.id] and current_actions[st.id].icon and ' '..current_actions[st.id].icon or ' ?')
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (st_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(st_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (st_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(st_targeting_id).name) or '')
-	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, st)..st_spaces.."\\cs("..formatRGB(getAngleColor(st_angle).r)..","..formatRGB(getAngleColor(st_angle).g)..","..formatRGB(getAngleColor(st_angle).b)..")"..st_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..st_spaces..'\\cs(000,000,000)'..st_angle_icon..'\\cr\\cs(000,000,000)'..p_angle_icon..'\\cr\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
 	local status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
 	local action = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action or '')
@@ -4587,13 +4751,16 @@ function updateTargetBar(player, t, clock)
 			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	t_name = t_spaces..t_name
 	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = t and show_dyna_jobs and in_dyna and dynaJob(t.name) or false
 	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
 	local dist_raw = t and math.floor(t.distance:sqrt()*100)/100
 	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local t_angle = t and not Screen_Test and t_settings.show_target_angle_from_player_facing and getAngleToTarget(t) or nil
+	local t_angle_icon = t_angle and getAngleIcon(t_angle) or ''
+	local p_angle = t and not Screen_Test and t_settings.show_player_angle_from_target_facing and getAngleToPlayer(t) or nil
+	local p_angle_icon = p_angle and getAngleIcon(p_angle) or ''
 	local level = t and t_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and t_spaces..'Lv '..current_levels[t.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
@@ -4607,8 +4774,8 @@ function updateTargetBar(player, t, clock)
 		or (current_actions[t.id] and current_actions[t.id].icon and ' '..current_actions[t.id].icon or ' ?')
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (t_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(t_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (t_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(t_targeting_id).name) or '')
-	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, t)..t_spaces.."\\cs("..formatRGB(getAngleColor(t_angle).r)..","..formatRGB(getAngleColor(t_angle).g)..","..formatRGB(getAngleColor(t_angle).b)..")"..t_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs(000,000,000)'..dist..t_spaces..'\\cr\\cs(000,000,000)'..t_angle_icon..'\\cr\\cs(000,000,000)'..p_angle_icon..'\\cr\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
 	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
 	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
@@ -5324,7 +5491,7 @@ function updatePetBar(pet)
 	local hpp = pet and pet.hpp or 0
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
-	-- local mp = job == 'pup' and pet and show_automaton_mp and ' MP: '..pet_mp or ''
+	local mp = job == 'pup' and pet and show_automaton_mp and ' MP: '..pet_mp or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
@@ -5412,8 +5579,8 @@ function updatePetBar(pet)
 
 	--Format the text output
 	hpp = string.format("%3s", hpp)..'% '
-	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
-	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
+	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
 	player_stats_pet_bar_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_pet_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
@@ -6115,11 +6282,13 @@ end
 register_event('job change', function()
 
 	local target = get_mob_by_target('t')
+	local player = get_player()
 
 	hideBars()
 	setJob()
 	setPositions()
 	showBars(target)
+	updateTPBar(player)
 	resetFadeDelay()
 
 end)
@@ -6249,9 +6418,14 @@ function greeting()
 
 	if settings.first_run then
 		add_to_chat(8,('[Bars] '):color(220)..('Welcome to Bars '.._addon.version.."!"):color(36))
+		coroutine.sleep(0.5)
 		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars ui '):color(1)..('to unlock and drag the UI sections around.'):color(8))
+		coroutine.sleep(0.5)
 		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars help '):color(1)..('for a list of other commands.'):color(8))
+		coroutine.sleep(0.5)
 		add_to_chat(8,('[Bars] '):color(220)..('More detailed settings can be found in the '):color(8)..('Bars/data/settings.xml '):color(1)..('file.'):color(8))
+		coroutine.sleep(0.5)
+		add_to_chat(8,('[Bars] '):color(220)..('NOTE: Monster Debuff timers are generally close enough but NOT 100% accurate.'):color(8))
 		settings.first_run = false
 		settings:save('all')
 	end
@@ -6286,6 +6460,7 @@ function initialize()
 		showBars(target)
 		logged_in = true
 		server = res.servers[get_info().server].name
+		checkCustomSettings(player)
 	end, 2)
 
 end
@@ -6339,7 +6514,7 @@ register_event('zone change', function()
 
 	current_zone = getZone()
 	in_dyna = inDyna()
-	
+
 end)
 
 register_event('prerender', function()
@@ -6700,10 +6875,10 @@ register_event('action', function (act)
 	end
 
 	--Debug Stuff
-	-- if actor.name == player.name and act.category ~=1 then
-	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
-	-- 	add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
-	-- end
+	if actor.name == player.name and act.category ~=1 then
+		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
+		-- add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
+	end
 
 	--Action failed/interrupted
 	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not ((act.category == 7 or act.category == 9) and msg == 0) then
@@ -7355,9 +7530,10 @@ register_event('action', function (act)
 				local sp_abil = sp_abils[abil_name]
 				if sp_abil then
 					addToSPTable(act.actor_id, abil_name)
+				end
 
 				--If Benediction is used, remove all debuffs from all targets it hits
-				elseif abil_name == "Benediction" then
+				if abil_name == "Benediction" then
 					for i = 1, target_count do
 						wipeDebuffs(act.targets[i].id)
 					end
@@ -8382,8 +8558,15 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		spell_id = 422
 		duration = 180
 		removal_timer = duration
-	--Enfeebling Magic
-	elseif res.spells[spell_id] and res.spells[spell_id].skill == 35 then
+	--Helix Spells
+	elseif res.spells[spell_id] and string.find(res.spells[spell_id].en,"helix") then
+		local base_duration = duration
+		local max_duration = debuff_duration_cap
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Helix"] and durations_data[server][actor_name]["Helix"] / 100 or nil
+		duration = bonus and base_duration + (base_duration * bonus) or base_duration
+		removal_timer = bonus and duration or max_duration
+	--Elemental Magic
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 36 then
 		local base_duration = duration
 		local max_duration = debuff_duration_cap
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Enfeebling Magic"] and durations_data[server][actor_name]["Enfeebling Magic"] / 100 or nil
@@ -8415,6 +8598,9 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Cumulative Spells"] or nil
 		duration = bonus and base_duration + bonus or base_duration
 		removal_timer = duration
+	--Kaustra
+	elseif effect_id == 23 then
+		duration = 100
 	--Impact
 	elseif effect_id == 9503 then
 		duration = 180
@@ -8452,8 +8638,8 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 	if effect_id == 2 or effect_id == 7 or effect_id == 11 or effect_id == 19 then
 		local target_data = get_mob_by_id(target_id)
 		current_debuffs[target_id].pos = {
-			x = target_data.x,
-			y = target_data.y,
+			x = target_data and target_data.x or 0,
+			y = target_data and target_data.y or 0,
 		}
 	end
 
@@ -8545,6 +8731,9 @@ function handleAction(act)
 							current_debuffs[target_id][9501] = nil
 						end
 					end
+				--Kaustra
+				elseif spell_id == 502 then
+					effect_id = 23
 				--Impact
 				elseif spell_id == 503 then
 					effect_id = 9503
@@ -8733,7 +8922,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 		local msg_type = packet['Message Type']
 		if (msg_type == 0x04) then
 			pet_tp = packet['Pet TP']
-			-- pet_mp = packet['Current MP%']
+			pet_mp = packet['Current MP%']
 		end
 
 	elseif id == 0x028 then --actions (for debuffs)
@@ -8788,7 +8977,8 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('[Bars] '):color(220)..('Please lock the UI with '):color(28)..('//bars lock '):color(1)..('before using the '):color(28)..(addcmd):color(1)..(' command.'):color(28))
 		else
 			job_specific[job].hp = not job_specific[job].hp
-			settings:save('all')
+			-- settings:save('all')
+			config.save(settings, 'all')
 			hideBars()
 			setPositions()
 			showBars(target)
@@ -9377,7 +9567,7 @@ end)
 --Handle mouse events
 register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 
-	if logged_in and mouse_type == 2 then --leftmouseup
+	if logged_in and Screen_Test and mouse_type == 2 then --leftmouseup
 
 		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
