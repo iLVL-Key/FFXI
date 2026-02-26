@@ -178,6 +178,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
 | `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
 | `show_action_status_indicators` | Shows icons depicting when a spell/ability is casting, completed, or interrupted. |
+| `show_automaton_mp` | Displays the MP percent for your Automaton on the Pet bar. |
 | `show_commas_on_numbers` | Adds commas to numbers for easier readability. |
 | `show_dyna_jobs` | Show the job of Dynamis Divergence mobs. |
 | `show_fancy_rolls` | Show a fancified version of COR rolls (if `show_lucky_roll_info` is turned on). |
@@ -290,6 +291,17 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.6
+- Added `show_target_angle_from_player_facing` option to the Focus Target, Sub Target, and Target sections. Shows the degree angle and an arrow indicating which direction the target is relative to the direction your character is facing.
+- Added `show_player_angle_from_target_facing` option to the Focus Target, Sub Target, and Target sections. Shows the degree angle and an arrow indicating which direction the player is relative to the direction your target is facing.
+- Added missing Kaustra Monster Debuff icon. Since duration is based on the casters Dark Magic skill, I took the base Dark Magic skill of a mastered (Mlvl 0) SCH and made the default duration 100 seconds based on that.
+- Added check for custom per-character settings. Copy your `data/settings.xml` file and name it `<playername>_settings.xml` (for example: `Keylesta_settings.xml`). When Bars loads (or you log into a character) it will look for a settings file with the character name first.
+- Added `show_automaton_mp` Option. Displays Pet MP (Automaton, specifically) on the Pet bar.
+- Added Helix to the duration bonus calculations.
+- Adjusted SP Abilities to include a short 10 second timer for ones that are instant, making it easier to catch that they happened. Additionally added Charm, despite it not being an actual SP ability, since the BST mobs in Dyna use it in place of Familiar.
+- Fixed an issue where the TP Bar does not reset it's value, until your TP ticks, when changing jobs under specific conditions.
+- Fixed minor issue with distance coloring not being format-corrected, causing a very subtle wiggling of the target text as the distance colors change.
 
 Version 4.5.6
 - Fixed errors when in Monstrosity.
