@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.6.1'
+_addon.version = '4.6.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -2374,9 +2374,6 @@ function setUIPositions()
 		self_action_bar_pixel_width, self_action_bar_pixel_height = self_action_bar_bg:extents()
 		player_stats_bars_pixel_width, player_stats_bars_pixel_height = player_stats_hp_bar_bg:extents()
 
-		--Done with extent calculations
-		calculating_dimensions = false
-
 		--Position of bar sections
 		local ft_pos = {x = settings.sections.focus_target.pos.x, y = settings.sections.focus_target.pos.y + job_specific[job].vertical_offsets.focus_target}
 		local st_pos = {x = settings.sections.sub_target.pos.x, y = settings.sections.sub_target.pos.y + job_specific[job].vertical_offsets.sub_target}
@@ -2462,6 +2459,9 @@ function setUIPositions()
 		ui_bg_middle.self_action:size(self_action_bar_pixel_width - 20,25)
 		ui_bg_right.self_action:pos(ui_bg_sa_r_x,ui_bg_sa_y)
 		ui_bg_right.self_action:size(10,25)
+
+		--Done with extent calculations
+		calculating_dimensions = false
 
 	end, 0.1)
 
@@ -9567,7 +9567,7 @@ end)
 --Handle mouse events
 register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 
-	if logged_in and Screen_Test and mouse_type == 2 then --leftmouseup
+	if logged_in and Screen_Test and mouse_type == 2 and not calculating_dimensions then --leftmouseup
 
 		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
