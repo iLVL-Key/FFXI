@@ -239,8 +239,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `show_bar` | Show the progress bar in the Self Action section. |
 | → `show_monster_level` | Show the level of the currently targeted monster. |
 | → `show_monster_target` | Show the currently targeted monster's target. |
-| → `show_player_angle_from_target_facing` | Shows the degree angle and an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
-| → `show_target_angle_from_player_facing` | Shows the degree angle and an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
+| → `show_player_angle_from_target_facing` | Shows an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
+| → `show_target_angle_from_player_facing` | Shows an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
@@ -296,8 +296,8 @@ Version 4.6.1
 - Fixed coloring for the Player HP and MP bars not changing as they get lower. (thanks **Bahamut.Navius**!)
 
 Version 4.6
-- Added `show_target_angle_from_player_facing` option to the Focus Target, Sub Target, and Target sections. Shows the degree angle and an arrow indicating which direction the target is relative to the direction your character is facing.
-- Added `show_player_angle_from_target_facing` option to the Focus Target, Sub Target, and Target sections. Shows the degree angle and an arrow indicating which direction the player is relative to the direction your target is facing.
+- Added `show_target_angle_from_player_facing` option to the Focus Target, Sub Target, and Target sections. Shows an arrow indicating which direction the target is relative to the direction your character is facing.
+- Added `show_player_angle_from_target_facing` option to the Focus Target, Sub Target, and Target sections. Shows an arrow indicating which direction the player is relative to the direction your target is facing.
 - Added missing Kaustra Monster Debuff icon. Since duration is based on the casters Dark Magic skill, I took the base Dark Magic skill of a mastered (Mlvl 0) SCH and made the default duration 100 seconds based on that.
 - Added check for custom per-character settings. Copy your `data/settings.xml` file and name it `<playername>_settings.xml` (for example: `Keylesta_settings.xml`). When Bars loads (or you log into a character) it will look for a settings file with the character name first.
 - Added `show_automaton_mp` Option. Displays Pet MP (Automaton, specifically) on the Pet bar.
