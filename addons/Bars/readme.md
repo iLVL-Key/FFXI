@@ -292,6 +292,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.6.2
+- Fixed (hopefully) a rare issue where bars may seemingly disappear, getting stuck saved to a possition off-screen.
+
 Version 4.6.1
 - Fixed coloring for the Player HP and MP bars not changing as they get lower. (thanks **Bahamut.Navius**!)
 
