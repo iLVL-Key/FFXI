@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.6'
+_addon.version = '4.6.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -5166,12 +5166,12 @@ function updateHPBar(player)
 	end
 
 	--Set the color for the text based on HP percentage
-	if hpp <= 75 then
-		ct = color.hp.quarter_3
+	if hpp <= 25 then
+		ct = color.hp.quarter_1
 	elseif hpp <= 50 then
 		ct = color.hp.quarter_2
-	elseif hpp <= 25 then
-		ct = color.hp.quarter_1
+	elseif hpp <= 75 then
+		ct = color.hp.quarter_3
 	end
 
 	--Pulse HP when its critically low (and not dead)
@@ -5274,12 +5274,12 @@ function updateMPBar(player)
 	end
 
 	--Set the color for the text based on MP percentage
-	if mpp <= 75 then
-		ct = color.mp.quarter_3
+	if mpp <= 25 then
+		ct = color.mp.quarter_1
 	elseif mpp <= 50 then
 		ct = color.mp.quarter_2
-	elseif mpp <= 25 then
-		ct = color.mp.quarter_1
+	elseif mpp <= 75 then
+		ct = color.mp.quarter_3
 	end
 
 	--Add the max mp to the right-side of the bar
