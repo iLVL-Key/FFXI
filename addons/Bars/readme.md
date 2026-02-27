@@ -292,6 +292,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.6.1
+- Fixed coloring for the Player HP and MP bars not changing as they get lower. (thanks **Bahamut.Navius**!)
+
 Version 4.6
 - Added `show_target_angle_from_player_facing` option to the Focus Target, Sub Target, and Target sections. Shows the degree angle and an arrow indicating which direction the target is relative to the direction your character is facing.
 - Added `show_player_angle_from_target_facing` option to the Focus Target, Sub Target, and Target sections. Shows the degree angle and an arrow indicating which direction the player is relative to the direction your target is facing.
