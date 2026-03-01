@@ -292,6 +292,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.6.3
+- Fixed an issue with autoloading producing an error and not actually loading the addon.
+
 Version 4.6.2
 - Fixed (hopefully) a rare issue where bars may seemingly disappear, getting stuck saved to a possition off-screen.
 
