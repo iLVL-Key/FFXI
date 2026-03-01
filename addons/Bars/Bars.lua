@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.6.2'
+_addon.version = '4.6.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -590,28 +590,36 @@ defaults = {
 	},
 }
 
-relative_path = 'data/'..get_player().name..'_settings.xml'
-absolute_path = windower.addon_path..relative_path
 custom_settings_loaded = false
 
--- Check if the specific character file exists and load from it instead of the normal settings.xml file
-if file_exists(absolute_path) then
+function loadSettings()
 
-	settings = config.load(relative_path, defaults)
-	config.save(settings, 'all')
+	local player = get_player()
+	local player_name = player and player.name or false
+	local relative_path = player_name and 'data/'..player_name..'_settings.xml' or false
+	local absolute_path = relative_path and windower.addon_path..relative_path or false
 
-	coroutine.schedule(function()
-		print('Bars: Custom settings file loaded for '..get_player().name)
-	end, .5)
+	-- Check if the specific character file exists and load from it instead of the normal settings.xml file
+	if absolute_path and file_exists(absolute_path) then
 
-	-- So we don't infinite loop this
-	custom_settings_loaded = true
+		settings = config.load(relative_path, defaults)
+		config.save(settings, 'all')
 
-else
+		coroutine.schedule(function()
+			print('Bars: Custom settings file loaded for '..get_player().name)
+		end, .5)
 
-	settings = config.load(defaults)
+		-- So we don't infinite loop this
+		custom_settings_loaded = true
+
+	else
+
+		settings = config.load(defaults)
+
+	end
 
 end
+loadSettings()
 
 settings:save('all') --only useful for when Bars gets updated, will automatically add in any new default settings.
 
