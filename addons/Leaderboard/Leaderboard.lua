@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.3.1'
+_addon.version = '5.3.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -1027,7 +1027,7 @@ function updatePointsBoards(board)
 		local player = places[rank]
 		if player and player.name then
 			local name = player.name
-			if not settings.optout[name] then
+			if not settings.optout[string.lower(name)] then
 				local current = indPts[name] and indPts[name].score or 0
 				indPts[name] = {
 					score = current + base[board] + (bonus[rank] or 0),
@@ -1099,12 +1099,11 @@ function updateBoard(board_name)
 	end
 end
 
-
 --Add a name to the Optout list
 function addToOptout(name)
 
 	--Add the name to the table
-	settings.optout[name] = true
+	settings.optout[string.lower(name)] = true
 	settings:save('all')
 
 	--Delete all related data for the player
@@ -1154,7 +1153,7 @@ end
 
 --Remove a name from the Optout list
 function removeFromOptout(name)
-	settings.optout[name] = nil
+	settings.optout[string.lower(name)] = nil
 	settings:save('all')
 end
 
@@ -1165,7 +1164,7 @@ function optoutList()
 	local names = {}
 
 	for name, _ in pairs(settings.optout) do
-		table.insert(names, name)
+		table.insert(names, capitalize(name))
 	end
 
 	if next(names) == nil then
@@ -1626,13 +1625,18 @@ function useItem(name, specifiedTarget)
 	elseif live.items[name] == "eft_bomb" then
 
 		local eft_bomb = settings.item.eft_bomb
-		local targetName = specifiedTarget or selectRandomPlayer(name)
-		local isSpecified = (specifiedTarget ~= nil)
+		local targetName = specifiedTarget and capitalize(string.lower(specifiedTarget)) or selectRandomPlayer(name)
 		local targetPlace = targetName and findPlace(targetName, "point")
 
 		local function useOnTarget(attacker, target)
 			local place = findPlace(target, "point")
-			if isInvincible(target) then
+			if not target then
+				newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..' tries to use '..eft_bomb.indart..' '..eft_bomb.name..' but it\'s a dud.')
+			elseif attacker == target then
+				local lostPoints = math.floor(points[name].score * (eft_bomb.points / 100))
+				points[name].score = points[name].score - lostPoints
+				newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(name)..' tries to use '..eft_bomb.indart..' '..eft_bomb.name..' but it blows up in their face instead! (-'..addCommas(lostPoints)..')')
+			elseif isInvincible(target) then
 				newChatMessage('/p [LB] '..playerPlace..'|'..capitalize(attacker)..' drops '..eft_bomb.indart..' '..eft_bomb.name..' on '..place..'|'..capitalize(target)..'! (Invincible!)')
 			else
 				local lostPoints = math.floor(points[target].score * (eft_bomb.points / 100))
@@ -1642,12 +1646,12 @@ function useItem(name, specifiedTarget)
 		end
 
 		--Did the user specify a name?
-		if isSpecified then
+		if specifiedTarget then
 			if targetPlace and isPlayerInAlliance(targetName) then
 				if (math.random(1, 100) <= eft_bomb.accuracy) and targetName ~= name then
 					useOnTarget(name, targetName)
 				else
-					blowUpOnSelf()
+					useOnTarget(name, name)
 				end
 				live.items[name] = nil
 				saveToLiveFile()
@@ -1663,7 +1667,7 @@ function useItem(name, specifiedTarget)
 			if targetName and (math.random(1, 100) <= eft_bomb.accuracy) then
 				useOnTarget(name, targetName)
 			else
-				dudMessage()
+				useOnTarget(name, false)
 			end
 			live.items[name] = nil
 			saveToLiveFile()
@@ -2051,7 +2055,7 @@ register_event('chat message', function(message, sender, chat_mode)
 
 	--Add/remove the message sender to the Optout list
 	elseif message:lower():match("^optout") and chat_mode == 3 then
-		if settings.optout[sender] then
+		if settings.optout[string.lower(sender)] then
 			removeFromOptout(sender)
 			newChatMessage('/t '..sender..' [LB] You have been removed from the Optout list.')
 		else
@@ -2178,8 +2182,10 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 		local packet = packets.parse('incoming', original)
 		local target = getTarget(packet['Target'])
 		local target_name = target and target.name or '[REDACTED]'
+		local target_name_l = string.lower(target_name)
 		local actor = getActor(packet['Actor'])
 		local actor_name = actor and actor.name or '[REDACTED]'
+		local actor_name_l = string.lower(actor_name)
 
 		--A monster is killed
 		if packet['Message'] == 6 then
@@ -2194,7 +2200,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 			end
 
 			--Make sure the actor is not on the Optout list
-			if settings.optout[actor_name] then
+			if settings.optout[actor_name_l] then
 				return
 			end
 
@@ -2239,7 +2245,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 				end
 
 				--Make sure the target is not on the Optout list
-				if settings.optout[target_name] then
+				if settings.optout[target_name_l] then
 					return
 				end
 
@@ -2303,7 +2309,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 				local points_transfered = 0
 
 				--Make sure the actor (Murderer) is not on the Optout list
-				if not settings.optout[actor_name] then
+				if not settings.optout[actor_name_l] then
 
 					local murderPlaces = live.places.murder
 					local murderIndividuals = live.individuals.murder
@@ -2335,7 +2341,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 				end
 
 				--Make sure the target (Victim) is not on the Optout list
-				if not settings.optout[target_name] then
+				if not settings.optout[target_name_l] then
 
 					local victimIndividuals = live.individuals.victim
 
@@ -2368,11 +2374,11 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 				--Call out Murders/Victims
 				if mode ~= "Silent" and party_calls.murder then
-					if not settings.optout[actor_name] and not settings.optout[target_name] then
+					if not settings.optout[actor_name_l] and not settings.optout[target_name_l] then
 						newChatMessage('/p [MURDER/VICTIM] '..actor_name..(' has %s'):format((murders == 1 and actor_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..'sacrificed '..target_name..(' to Altana!%s'):format(mode == "Mog Kart" and ' ('..addCommas(points_transfered)..' transferred)' or ''))
-					elseif not settings.optout[actor_name] then
+					elseif not settings.optout[actor_name_l] then
 						newChatMessage('/p [MURDER/VICTIM] '..actor_name..(' has %s'):format((murders == 1 and actor_name == murderPlaces.first.name) and 'drawn First Blood and ' or '')..('sacrificed a victim to Altana!'):format(mode == "Mog Kart" and ' (-'..addCommas(points_transfered)..')' or ''))
-					elseif not settings.optout[target_name] then
+					elseif not settings.optout[target_name_l] then
 						newChatMessage('/p [MURDER/VICTIM] '..target_name..(' %s'):format((murders == 1 and actor_name == murderPlaces.first.name) and 'is the first to be ' or 'has been ')..'sacrificed to Altana!')
 					end
 				end
@@ -2395,6 +2401,11 @@ end)
 
 
 register_event('action',function(act)
+
+	-- local msg = act.targets[1].actions[1].message --duplicate
+	-- if act.category == 1 then
+		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(act.targets[1].id).name..' add_e_e: '..act.targets[1].actions[1].add_effect_effect..' add_e_p: '..act.targets[1].actions[1].add_effect_param..' s_e_message: '..act.targets[1].actions[1].add_effect_message)
+	-- end
 
 	local actor = getActor(act.actor_id)
 
@@ -2433,7 +2444,7 @@ register_event('action',function(act)
 			actor_name = target_name
 		end
 		
-		if (actor == false and spike == 0) or settings.optout[actor_name] or (actor_name == '[REDACTED]' and actor) then
+		if (actor == false and spike == 0) or settings.optout[string.lower(actor_name)] or (actor_name == '[REDACTED]' and actor) then
 			return
 		end
 		
@@ -2535,7 +2546,7 @@ register_event('action',function(act)
 			actor_name = target_name
 		end
 
-		if (actor == false and counter == 0) or settings.optout[actor_name] or (actor_name == '[REDACTED]' and actor) then
+		if (actor == false and counter == 0) or settings.optout[string.lower(actor_name)] or (actor_name == '[REDACTED]' and actor) then
 			return
 		end
 
@@ -2586,7 +2597,7 @@ register_event('action',function(act)
 
 	--Make sure the actor is part of the party/alliance and not on the Optout list
 	--Do this after Melee since counters are initiated by the mobs we are attacking (Target not the Actor)
-	if actor == false or settings.optout[actor_name] then
+	if actor == false or settings.optout[string.lower(actor_name)] then
 		return
 	end
 
@@ -5491,7 +5502,7 @@ register_event('addon command',function(addcmd, ...)
 			if arg2 == nil then
 				add_to_chat(8,('[Leaderboard] '):color(220)..('Please add a name to be added to the Optout list.'):color(8))
 			else
-				local name = capitalize(string.lower(arg2))
+				local name = string.lower(arg2)
 				if settings.optout[name] then
 					add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(arg2)):color(1)..(' is already in the Optout list.'):color(8)..'')
 				else
@@ -5503,7 +5514,7 @@ register_event('addon command',function(addcmd, ...)
 			if arg2 == nil then
 				add_to_chat(8,('[Leaderboard] '):color(220)..('Please add a name to be removed from the Optout list.'):color(8))
 			else
-				local name = capitalize(string.lower(arg2))
+				local name = string.lower(arg2)
 				if settings.optout[name] then
 					removeFromOptout(name)
 					add_to_chat(8,('[Leaderboard] '):color(220)..(capitalize(arg2)):color(1)..(' has been removed from the Optout list.'):color(8)..'')
