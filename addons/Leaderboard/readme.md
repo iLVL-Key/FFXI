@@ -121,6 +121,10 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 
 ### Version History
 
+Version 5.3.2
+- Fixed issues with Optout list not matching names correctly.
+- Fixed issues where the Eft Bomb in Mog Kart would not work correctly.
+
 Version 5.3.1
 - Adjusted the zoning check so it's watching packets instead of running every prerender.
 
