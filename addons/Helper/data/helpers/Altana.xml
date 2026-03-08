@@ -52,7 +52,7 @@
             <description>Warm, comforting, and protective.</description>
             <introduction>I am Altana, ever watching, ever guiding. May my light bring you peace.</introduction>
             <name>Altana</name>
-            <name_color>36</name_color
+            <name_color>36</name_color>
             <text_color>1</text_color>
             <type>NPC</type>
         </info>
@@ -85,3 +85,4 @@
         <your_party_left_alliance>Your party has left the alliance. A new path awaits.</your_party_left_alliance>
     </global>
 </settings>
+
