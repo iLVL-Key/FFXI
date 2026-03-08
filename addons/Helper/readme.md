@@ -148,6 +148,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+Version 2.4
+- Added Inventory Full notification. Default befor ethis notification can play again is 15 minutes.
+
 Version 2.3.2
 - Adjusted the zoning check so it's watching packets instead of running every prerender.
 
