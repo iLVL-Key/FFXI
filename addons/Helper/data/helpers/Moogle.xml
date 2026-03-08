@@ -81,10 +81,10 @@
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
             <name_color>3</name_color>
-            <sha>bd8c2303e15bb491ecd6488efe98223cd6547217</sha>
             <text_color>53</text_color>
             <type>NPC</type>
         </info>
+		<inventory_full>Kupopo! Your beautiful bag is bursting with belongings, kupo!</inventory_full>
         <member_joined_alliance>${member} has joined the alliance, kupo!</member_joined_alliance>
         <member_joined_party>${member} has joined the party, kupo!</member_joined_party>
         <member_left_alliance>${member} has left the alliance, kupo!</member_left_alliance>
