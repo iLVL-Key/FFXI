@@ -86,17 +86,17 @@
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
-            <sha>853439f859e32252de854dd43f4e2eedae2c6e31</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
+		<inventory_full>Your inventory's full, you greedy little mule - perhaps it's time to learn restraint in school.</inventory_full>
         <member_joined_alliance>Ah-ha, ${member} has arrived - now our strength is amplified!</member_joined_alliance>
-        <member_joined_party>With ${member} here, we shan't retreat - our foes shall crumble in defeat!</member_joined_party>
+        <member_joined_party>With ${member} here, we shan&apos;t retreat - our foes shall crumble in defeat!</member_joined_party>
         <member_left_alliance>Ah, ${member} has bid adieu - a loss for us, a gain for who?</member_left_alliance>
-        <member_left_party>Oh, ${member} is gone, what a shame - our battles now won't be the same!</member_left_party>
+        <member_left_party>Oh, ${member} is gone, what a shame - our battles now won&apos;t be the same!</member_left_party>
         <mireu_popped>Ho ho, Mireu appears in sight - at ${zone}, prepare for the fight!</mireu_popped>
         <other_party_joined_alliance>A party joins, how quaint, how neat - I do hope they can take the heat!</other_party_joined_alliance>
-        <other_party_left_alliance>A party gone, now that's a twist - that's okay, they won't be missed.</other_party_left_alliance>
+        <other_party_left_alliance>A party gone, now that&apos;s a twist - that&apos;s okay, they won&apos;t be missed.</other_party_left_alliance>
         <party_low_mp>Tsk tsk, ${member} looks quite weak - perhaps a ${refresh} is what they seek?</party_low_mp>
         <reminder_canteen>A Mystical Canteen, just for you - what will you do? Guzzle or brew?</reminder_canteen>
         <reminder_mog_locker>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</reminder_mog_locker>
@@ -108,13 +108,13 @@
         <sparkolade_reminder>Hoarding Sparkolades, are we now? Use them up, or take a bow!</sparkolade_reminder>
         <sublimation_charged>Sublimation&apos;s charge is complete - use it now, unleash its feat!</sublimation_charged>
         <vorseal_wearing>Oh ho ho! Your Vorseal effect is running low - about 10 minutes left, didn&apos;t you know?</vorseal_wearing>
-        <you_are_now_alliance_leader>Alliance leader, now that's grand - but will you rule with steady hand?</you_are_now_alliance_leader>
+        <you_are_now_alliance_leader>Alliance leader, now that&apos;s grand - but will you rule with steady hand?</you_are_now_alliance_leader>
         <you_are_now_party_leader>Party leader you are, the power is great - use it wisely, or seal your fate!</you_are_now_party_leader>
-        <you_joined_alliance>Joined an alliance, oh what a day - do make sure you don't get in the way!</you_joined_alliance>
-        <you_joined_party>Oh ho, you're part of the team - time to fight and make them scream!</you_joined_party>
-        <you_left_alliance>The alliance is done, you've taken your leave - what's next now, what will you achieve?</you_left_alliance>
-        <you_left_party>The party's done, you walk alone - will you rise, or just bemoan?</you_left_party>
-        <your_party_joined_alliance>A grand alliance, strength anew - but will it last? That's up to you!</your_party_joined_alliance>
-        <your_party_left_alliance>That alliance? A fragile thing - without your might, they'll feel the sting!</your_party_left_alliance>
+        <you_joined_alliance>Joined an alliance, oh what a day - do make sure you don&apos;t get in the way!</you_joined_alliance>
+        <you_joined_party>Oh ho, you&apos;re part of the team - time to fight and make them scream!</you_joined_party>
+        <you_left_alliance>The alliance is done, you&apos;ve taken your leave - what&apos;s next now, what will you achieve?</you_left_alliance>
+        <you_left_party>The party&apos;s done, you walk alone - will you rise, or just bemoan?</you_left_party>
+        <your_party_joined_alliance>A grand alliance, strength anew - but will it last? That&apos;s up to you!</your_party_joined_alliance>
+        <your_party_left_alliance>That alliance? A fragile thing - without your might, they&apos;ll feel the sting!</your_party_left_alliance>
     </global>
 </settings>
