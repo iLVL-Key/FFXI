@@ -46,10 +46,10 @@
             <introduction>I am Vana, your personal Helper.</introduction>
             <name>Vana</name>
             <name_color>220</name_color>
-            <sha>b5e048cc7a2428d8809da92e3d669a8854830456</sha>
             <text_color>8</text_color>
             <type>NPC</type>
         </info>
+		<inventory_full>Your inventory is full.</inventory_full>
         <member_joined_alliance>${member} has joined the alliance.</member_joined_alliance>
         <member_joined_party>${member} has joined the party.</member_joined_party>
         <member_left_alliance>${member} has left the alliance.</member_left_alliance>
