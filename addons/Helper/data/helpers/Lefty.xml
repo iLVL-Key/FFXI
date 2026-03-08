@@ -40,10 +40,10 @@
             <introduction>I&apos;m Lefty! I&apos;m your Hamburger Helper!</introduction>
             <name>Lefty</name>
             <name_color>39</name_color>
-            <sha>ac59917d2595d95b69ae0b7bcce44b2ea74af1bd</sha>
             <text_color>1</text_color>
             <type>Sp. Guest</type>
         </info>
+		<inventory_full>Your pantry's lookin a little full. Make sure to keep the right ingredients stocked.</inventory_full>
         <member_joined_alliance>${member} got here just in time for dinner!</member_joined_alliance>
         <member_joined_party>${member} got here just in time for dinner!</member_joined_party>
         <member_left_alliance>${member} must&apos;ve had their fill!</member_left_alliance>
