@@ -46,10 +46,10 @@
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
-            <sha>36c90f2ffaa0385ca6d998c44f2154dcab9c9abb</sha>
             <text_color>39</text_color>
             <type>Player</type>
         </info>
+		<inventory_full>Your inventory is full! You're starting to get as disorganized as Bastokan streets!</inventory_full>
         <member_joined_alliance>Aw man, ${member} just hopped into the alliance - things are gettin&apos; exciting now!</member_joined_alliance>
         <member_joined_party>Hey now, ${member} just joined up! This party&apos;s lookin&apos; perty solid!</member_joined_party>
         <member_left_alliance>Well shoot, ${member} stepped out. Hope they ain&apos;t headin&apos; to Bastok...</member_left_alliance>
