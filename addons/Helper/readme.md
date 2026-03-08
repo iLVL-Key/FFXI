@@ -14,10 +14,10 @@ The default Helper. Has no Faceplate, and uses the default sounds.
 | **Shantotto**  | **Moogle**  | **Mayakov**  |
 | Witty, rhyming, and slightly menacing. | Cheerful, helpful, and full of "kupo!" | Flamboyant, theatrical, and obthethed with perfecthion. |
 
-| ![Altana](https://github.com/user-attachments/assets/c7c91a06-5dcf-4b0e-9792-09af916987a3) | ![Promathia](https://github.com/user-attachments/assets/1c71e534-d2df-43c1-a78a-967a0dfd0294) |
-|---|---|
-| **Altana**  | **Promathia**  |
-| Warm, comforting, and protective. | Dark, foreboding, and indifferent to your struggles. |
+| ![Altana](https://github.com/user-attachments/assets/c7c91a06-5dcf-4b0e-9792-09af916987a3) | ![Promathia](https://github.com/user-attachments/assets/1c71e534-d2df-43c1-a78a-967a0dfd0294) | ![Balamor](https://github.com/user-attachments/assets/54d8de86-fb16-4064-a979-bb41b43db648)
+|---|---|---|
+| **Altana**  | **Promathia**  | **Balamor**  |
+| Warm, comforting, and protective. | Dark, foreboding, and indifferent to your struggles. | Smooth, smug, and always watching.  |
 
 | ![faceplate_small](https://github.com/user-attachments/assets/4751a585-8cf5-41f9-bafc-9a169941c8a4) | ![faceplate_small](https://github.com/user-attachments/assets/82bd8074-1fa0-405b-a27b-42c3bae6c07c) |
 |---|---|
@@ -52,6 +52,7 @@ The default Helper. Has no Faceplate, and uses the default sounds.
   - **Mireu Pop Alerts** → Notifies you when the NM Mireu is mentioned.
   - **Mog Locker Expiring** → Don't let your Mog Locker lease expire.
   - **Reraise Check** → Don't forget... again.
+  - **Inventory full** → Don't get caught with a full bag at the worst time.
 - <ins>**Enhanced Party Awareness**</ins>
   - **Low MP Warnings** → Alerts you if a party member needs Refresh.
   - **Party & Alliance Updates** → Get messages when members join or leave.
@@ -117,7 +118,7 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 | `helpers_loaded` | The list and enabled status of all currently loaded Helpers.<br> - It is better to change the enabled status of loaded Helpers in-game with `//helper unload name_of_helper` or `//helper load name_of_helper`. |
 | `introduce_on_load` | Plays the current Helper’s introduction text when the addon is loaded. |
 | `key_item_reminders` | Alerts you when specific Key Items are ready to be picked up again from their respective NPCs.<br> - Tracks Mystical Canteen, Moglophone, and Shiny Ra'Kaznarian Plate.<br> - Sub-settings for turning tracking off for each individually.<br> - Sub-settings for adjusting the amount of time between additional repeat reminders after the first for each individually. |
-| `notifications` | Alerts you about certain events happening.<br> - Alerts for Capped Job Points, Capped Merit Points, Mireu popping, Mog Locker lease expiring, Reraise wearing off, Signet (includes all "region" buffs) wearing off, Sublimation fully charged, and Vorseal wearing off.<br> - Sub-settings for turning alerts off for each individually. |
+| `notifications` | Alerts you about certain events happening.<br> - Alerts for Capped Job Points, Capped Merit Points, Food wearing off, Inventory full, Mireu popping, Mog Locker Lease expiring, Reraise wearing off, Signet (includes all "region" buffs) wearing off, Sublimation fully charged, and Vorseal wearing off.<br> - Sub-settings for turning alerts off for each individually. |
 | `party_announcements` | Alerts for any party structure updates.<br> - Alerts for party/alliance members joining or leaving, parties joining or leaving alliance, and you becoming party or alliance leader.<br> - Sub-settings for turning alerts off for each individually. |
 | `random_helper_on_load` | Selects a random Helper to use each time the addon loads. |
 | `reraise_check` | Alert letting you know that you are missing Reraise. |
