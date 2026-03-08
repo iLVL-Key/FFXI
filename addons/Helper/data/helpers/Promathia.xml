@@ -6,14 +6,6 @@
         <capped_merit_points>Your Merit Points are full. And yet, what has truly changed?</capped_merit_points>
         <flavor_text>
             <1>Your struggle is meaningless... yet still you fight.</1>
-            <2>The world decays, and you are but a fading ember.</2>
-            <3>No matter how bright the dawn, the night will return.</3>
-            <4>Seek strength, gain power... it will not spare you from fate.</4>
-            <5>You run from oblivion, yet it is all that awaits you.</5>
-            <6>The eternal cycle persists, indifferent to your efforts.</6>
-            <7>All things will break, all things will fall, all things will be forgotten.</7>
-            <8>You would defy me? You cannot even defy time.</8>
-            <9>Even the most glorious victories are but a breath against eternity.</9>
             <10>Stay your course if you wish... but nothing waits beyond the end.</10>
             <11>Seek comfort in your allies, your friends... they, too, will be taken by the void.</11>
             <12>The world moves in cycles... and you are merely another turn of the wheel.</12>
@@ -24,6 +16,7 @@
             <17>There is no meaning, no path, no purpose. Only the endless return to nothingness.</17>
             <18>You cling to life like a leaf upon the river, hoping to resist the current.</18>
             <19>It is not cruelty, nor hatred, nor wrath. It is simply what must be.</19>
+            <2>The world decays, and you are but a fading ember.</2>
             <20>Still you fight, still you wish to exist? Foolish, but... entertaining.</20>
             <21>You are but a mote of dust in the storm, and the storm will not be stayed.</21>
             <22>You stand against the void, but in time, it will consume you.</22>
@@ -34,6 +27,7 @@
             <27>Your journey has a destination, whether you see it or not.</27>
             <28>Even the stars will one day die. What makes you think you will not?</28>
             <29>A legacy? A lasting mark? Nothing you build will stand forever.</29>
+            <3>No matter how bright the dawn, the night will return.</3>
             <30>You struggle, you fight, and for what? A moment of respite before the inevitable.</30>
             <31>The void does not hunger. It simply is.</31>
             <32>You are dust, held together for but a fleeting moment.</32>
@@ -44,6 +38,12 @@
             <37>Everything you cherish will one day be lost.</37>
             <38>Why do you fight? You already know how this ends.</38>
             <39>The end does not rush toward you. It simply waits for you to arrive.</39>
+            <4>Seek strength, gain power... it will not spare you from fate.</4>
+            <5>You run from oblivion, yet it is all that awaits you.</5>
+            <6>The eternal cycle persists, indifferent to your efforts.</6>
+            <7>All things will break, all things will fall, all things will be forgotten.</7>
+            <8>You would defy me? You cannot even defy time.</8>
+            <9>Even the most glorious victories are but a breath against eternity.</9>
         </flavor_text>
         <food_wears_off>Your meals effect has passed. A reminder of how fleeting stability is.</food_wears_off>
         <info>
@@ -54,6 +54,7 @@
             <text_color>160</text_color>
             <type>NPC</type>
         </info>
+		<inventory_full>Your inventory is full. Yet it will all be lost eventually.</inventory_full>
         <member_joined_alliance>${member} has joined the alliance. Do they still believe they can prevail?</member_joined_alliance>
         <member_joined_party>${member} has joined the party. Another pawn against the tide of nothingness.</member_joined_party>
         <member_left_alliance>${member} has left the alliance. One by one, they all will fall.</member_left_alliance>
