@@ -46,10 +46,10 @@
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
-            <sha>0ed521bd98153d98b78831e9f13d8fa47a248b06</sha>
             <text_color>220</text_color>
             <type>Player</type>
         </info>
+		<inventory_full>Your inventory's full! I swear you hoard everything!</inventory_full>
         <member_joined_alliance>${member} just joined the alliance. Fuck!</member_joined_alliance>
         <member_joined_party>${member} just joined the party. Fuck!</member_joined_party>
         <member_left_alliance>${member} left and didn&apos;t even say I love you, what the fuck?!</member_left_alliance>
