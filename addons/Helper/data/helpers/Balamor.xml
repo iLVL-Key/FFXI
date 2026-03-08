@@ -1,0 +1,101 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <ability_ready>Ah... ${ability} is ready. Wonderful. Let us see how spectacularly it fails.</ability_ready>
+        <capped_job_points>Job points capped? Impressive... though perfection is still far away.</capped_job_points>
+        <capped_merit_points>You've reached the limit of your Merit Points. How finite.</capped_merit_points>
+        <flavor_text>
+            <1>Pain... when properly applied, creates the most exquisite expressions.</1>
+            <10>Adventurers call this struggle 'duty.' I call it... entertainment.</10>
+            <11>Some warriors fear death. Others rehearse it beautifully.</11>
+            <12>There is elegance in a well-timed collapse.</12>
+            <13>How curious... mortals cling to life, yet spend it so recklessly.</13>
+            <14>A battlefield is merely a theater with louder applause.</14>
+            <15>I wonder... do heroes realize how theatrical their suffering looks?</15>
+            <16>Ah, the gasp before defeat... always my favorite moment.</16>
+            <17>Such determination. Such agony. Such marvelous contrast.</17>
+            <18>Every victory requires a loser. Fortunately, there are so many volunteers.</18>
+            <19>Mortals polish their armor, yet neglect polishing their despair.</19>
+            <2>I admire a warrior who falls with style.</2>
+            <20>Hope... what a fragile prop to carry onto the stage of battle.</20>
+            <21>How delightful - another moment where courage meets inevitability.</21>
+            <22>Pain sharpens the performance. Fear perfects it.</22>
+            <23>Even heroes tremble... if you watch closely enough.</23>
+            <24>Mortals call it 'survival.' I call it a prolonged final act.</24>
+            <25>Such effort... just to postpone the curtain.</25>
+            <26>Bravery and foolishness share such a thin costume.</26>
+            <27>I do enjoy watching hope struggle against reality.</27>
+            <28>Some battles are won with strength... others with patience... and some with exquisite suffering.</28>
+            <29>Adventurers accumulate scars the way artists collect masterpieces.</29>
+            <3>One must admire persistence... even when it is utterly doomed.</3>
+            <30>The finest tragedies always begin with confidence.</30>
+            <31>Listen closely - the rhythm of battle is quite musical.</31>
+            <32>Every scream has its own unique tone.</32>
+            <33>A dramatic pause before defeat... magnificent.</33>
+            <34>I suspect many heroes fight not for glory... but for a proper audience.</34>
+			<35>A hero's courage is most beautiful just before it breaks.</35>
+			<36>I adore the instant when confidence becomes panic.</36>
+			<37>Every soul has a breaking point. Discovering it is such a delicate art.</37>
+			<38>The strongest hearts make the most satisfying cracks.</38>
+			<39>Fear and panic spreads through a crowd faster than fire.</39>
+            <4>There is beauty in desperation, if you know how to look.</4>
+			<40>The silence after a scream... exquisite.</40>
+			<41>Mortals try so hard not to tremble.</41>
+			<42>Hope flickers brightest just before darkness swallows it.</42>
+			<43>I find desperation terribly charming.</43>
+			<44>Such determination... it makes the inevitable collapse all the sweeter.</44>
+			<45>Do they realize how predictable their terror becomes?</45>
+			<46>A battlefield full of courage is merely a garden waiting to wilt.</46>
+			<47>How fascinating... even heroes beg eventually.</47>
+			<48>Confidence is simply the first stage of despair.</48>
+			<49>I wonder which of them will shatter first.</49>
+            <5>Do continue struggling. The performance improves with every moment.</5>
+			<50>There is no music quite like the sound of fading hope.</50>
+			<51>The bravest souls make the loudest screams.</51>
+			<52>Fear ripens slowly... but oh, how sweet it becomes.</52>
+			<53>They always believe they will be the exception.</53>
+			<54>Their resolve cracks like thin glass.</54>
+            <6>Suffering is the purest form of honesty.</6>
+            <7>The moment hope dies... that is when the performance truly begins.</7>
+            <8>Mortals scream so differently when they realize no one is coming to save them.</8>
+            <9>Despair... such a reliable companion.</9>
+        </flavor_text>
+        <food_wears_off>And just like that... the food wears off.</food_wears_off>
+        <info>
+            <description>Smooth, smug, and always watching.</description>
+            <introduction>I am Balamor. Consider me your guide, your observer - your Helper, if you insist. Do try to be interesting... I do so enjoy watching outcomes unfold.</introduction>
+            <name>Balamor</name>
+            <name_color>39</name_color>
+            <sha></sha>
+            <text_color>209</text_color>
+            <type>NPC</type>
+        </info>
+		<inventory_full>Your inventory is full. How delightfully inconvenient.</inventory_full>
+        <member_joined_alliance>Another piece added - ${member} enters the alliance.</member_joined_alliance>
+        <member_joined_party>${member} has joined the party. How convenient.</member_joined_party>
+        <member_left_alliance>${member} has left the alliance. Curious.</member_left_alliance>
+        <member_left_party>And ${member} is gone. Interesting timing.</member_left_party>
+        <mireu_popped>Mireu has been mentioned in ${zone}. That rarely ends well.</mireu_popped>
+        <other_party_joined_alliance>A new party enters the alliance. Fascinating.</other_party_joined_alliance>
+        <other_party_left_alliance>A party leaves the alliance. I suppose that was to be expected.</other_party_left_alliance>
+        <party_low_mp>It seems ${member} is a little low on MP. Perhaps a ${refresh} would be prudent.</party_low_mp>
+        <reminder_canteen>Yet another Mystical Canteen is available. Let's see how this one plays out.</reminder_canteen>
+        <reminder_mog_locker>Access to your Mog Locker will soon be over - unless you act.</reminder_mog_locker>
+        <reminder_moglophone>Ah... the Moglophone calls again. Will you answer?</reminder_moglophone>
+        <reminder_plate>Access to another Shiny Ra&apos;Kaznarian Plate has been granted. Predictable.</reminder_plate>
+        <reraise_check>Hmmm... no reraise. I wonder if you've even noticed.</reraise_check>
+        <reraise_wears_off>Your Reraise has faded. Now the stakes become interesting.</reraise_wears_off>
+        <signet_wears_off>Your ${signet} has worn off. Even blessings grow tired of you.</signet_wears_off>
+        <sparkolade_reminder>Do you still hold Sparkolades? A curious sort of restraint.</sparkolade_reminder>
+        <sublimation_charged>Ah... Sublimation is ready. Do try not to squander it immediately.</sublimation_charged>
+        <vorseal_wearing>The Vorseal protecting you is weakening. Tick tock.</vorseal_wearing>
+        <you_are_now_alliance_leader>Oh? The alliance now looks to you to lead them. This should be entertaining.</you_are_now_alliance_leader>
+        <you_are_now_party_leader>The party now follows your lead. Do try to make it interesting.</you_are_now_party_leader>
+        <you_joined_alliance>You've joined an alliance. This certianly won't be boring.</you_joined_alliance>
+        <you_joined_party>You've joined a party. This should be good.</you_joined_party>
+        <you_left_alliance>You've abandoned the alliance. A curious choice.</you_left_alliance>
+        <you_left_party>It seems the party will continue without you. How tragic.</you_left_party>
+        <your_party_joined_alliance>Your party is now part of an alliance. The spectacle expands.</your_party_joined_alliance>
+        <your_party_left_alliance>The alliance has lost your party. A most interesting development.</your_party_left_alliance>
+    </global>
+</settings>
