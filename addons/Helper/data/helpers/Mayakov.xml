@@ -18,8 +18,23 @@
             <19>Remember, darling, it&apos;th not *what* you do, it&apos;th *how* you do it - with grathe, with drama, with pathion~!</19>
             <2>Your footwork - *atrothiouth*! We mutht rehearthe, rehearthe, rehearthe!</2>
             <20>Even in the heat of battle, a true performer never lotheth their compothure!</20>
+			<21>Perfecthion ith not opthional!</21>
+			<22>Thloppy technique ith the enemy of true beauty.</22>
+			<23>Adventurerth fight... but do they perform?</23>
+			<24>A proper performanthe requireth prethithe timing.</24>
+			<25>Thuch chaoth! where ith the choreography?</25>
+			<26>A tharp blade without elegance ith terribly dull.</26>
+			<27>I have theen tavern dantherth with better poithture!</27>
+			<28>Why ith no one thinking about the thpectacle?</28>
+			<29>Thuch effort but thuch little refinement.</29>
             <3>Ah, your movementh are becoming *le magnifique!* Keep it up, yeth!</3>
-            <4>A warrior without rhythm ith like a danther without thoul - thimply unthinkable!</4>
+			<30>A true maethro never thtriketh without thtyle.</30>
+			<31>Your footing ith... how do I put thith... tragically unbalanced.</31>
+			<32>Thuch enthuthiathm... thuch terrible technique.</32>
+			<33>Your thtance ith doing you no favorth.</33>
+			<34>Have you conthidered... grathe?</34>
+			<35>You move like thomeone unfamiliar with their own limbth!</35>
+            <4>A fight without rhythm ith like a danthe without thoul - thimply unthinkable!</4>
             <5>One doeth not *walk* through Vana&apos;diel! One glideth, one pirouetteth, one *commandth* the thpotlight!</5>
             <6>Tsk tsk, thuch thlow reactionth! You mutht move with the grathe of a *Danther*!</6>
             <7>Did you *thee* that? A movement tho elegant, tho divine, it nearly brought a tear to my eye~!</7>
@@ -32,10 +47,10 @@
             <introduction>Ah, yeth, another performer gratheth the thtage! I, Mayakov, thall enthure your every movement ith a mathterpiethe!</introduction>
             <name>Mayakov</name>
             <name_color>39</name_color>
-            <sha>a3f198b4a518190e43ea99a921791da6c330fd4e</sha>
             <text_color>160</text_color>
             <type>NPC</type>
         </info>
+		<inventory_full>No more thpace? We cannot achieve perfecthion with thuch clutter!</inventory_full>
         <member_joined_alliance>Ah-ha! Our enthemble growth! Welcome, ${member}, to the grandetht of productionth!</member_joined_alliance>
         <member_joined_party>*Ah!* A new catht member hath arrived! Welcome, ${member}, to our *dazzling* production!</member_joined_party>
         <member_left_alliance>Alath, ${member} hath taken their final bow and left the allianthe!</member_left_alliance>
@@ -55,7 +70,7 @@
         <sublimation_charged>Ah-ha! Your Thublimation ith *priiiimed* for a grand performanthe! Now, dazzle uth!</sublimation_charged>
         <vorseal_wearing>Oh dear, your Vortheal&apos;th light ith fading fatht! A performer *mutht* have their thtage illuminated at all timeth!</vorseal_wearing>
         <you_are_now_alliance_leader>Ah-ha! You are now the *maethtro* of thith grand thymphony! Lead with flair, darling!</you_are_now_alliance_leader>
-        <you_are_now_party_leader>Oh-ho! The lead role ith yourth! It'th *thowtime*!</you_are_now_party_leader>
+        <you_are_now_party_leader>Oh-ho! The lead role ith yourth! It&apos;th *thowtime*!</you_are_now_party_leader>
         <you_joined_alliance>Ah-ha! The curtain ritheth on a new act - you have joined an allianthe, yeth!</you_joined_alliance>
         <you_joined_party>The curtain ritheth! You have entered the thtage of battle - prepare to *captivate*!</you_joined_party>
         <you_left_alliance>A dramatic exit, yeth, but all performantheth mutht end... for now!</you_left_alliance>
