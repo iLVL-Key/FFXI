@@ -6,14 +6,6 @@
         <capped_merit_points>Your Merit Points are full. A symbol of your unwavering effort.</capped_merit_points>
         <flavor_text>
             <1>Even in darkness, the light remains.</1>
-            <2>You are never alone, my child.</2>
-            <3>Every step forward is a step toward the dawn.</3>
-            <4>No burden is too great when carried with hope.</4>
-            <5>Strength is not in power, but in kindness.</5>
-            <6>Do not fear the night, for morning will come.</6>
-            <7>Love, hope, and light - they will guide your way.</7>
-            <8>Rest if you must, but never surrender to despair.</8>
-            <9>Even the smallest light can banish the deepest shadow.</9>
             <10>You are strong, even when you do not see it yourself.</10>
             <11>Your journey is long, but you do not walk it alone.</11>
             <12>I watch over all who wander this world.</12>
@@ -24,6 +16,7 @@
             <17>The light never abandons those who seek it.</17>
             <18>You are stronger than the trials before you.</18>
             <19>Carry on, for the world is brighter with you in it.</19>
+            <2>You are never alone, my child.</2>
             <20>No night lasts forever. No storm is endless.</20>
             <21>Even in the darkest hour, the dawn is near.</21>
             <22>Even the smallest kindness can light the darkest path.</22>
@@ -34,6 +27,7 @@
             <27>You are stronger than you realize, braver than you believe.</27>
             <28>The stars still shine, even behind the clouds.</28>
             <29>When you feel lost, look to those who walk beside you.</29>
+            <3>Every step forward is a step toward the dawn.</3>
             <30>Hope is not a thing to be found - it is a thing to be carried within you.</30>
             <31>You may falter, but you will rise again.</31>
             <32>No journey is too long when walked with purpose.</32>
@@ -44,18 +38,25 @@
             <37>The world changes, but love, hope, and kindness endure.</37>
             <38>When the road ahead seems uncertain, take one step at a time.</38>
             <39>Your strength is not in never falling, but in always rising again.</39>
+            <4>No burden is too great when carried with hope.</4>
             <40>You shine, even when you do not see it yourself.</40>
             <41>No matter how far you roam, there will always be a light to guide you home.</41>
+            <5>Strength is not in power, but in kindness.</5>
+            <6>Do not fear the night, for morning will come.</6>
+            <7>Love, hope, and light - they will guide your way.</7>
+            <8>Rest if you must, but never surrender to despair.</8>
+            <9>Even the smallest light can banish the deepest shadow.</9>
         </flavor_text>
         <food_wears_off>Your meals effect has passed. However, strength still remains in you.</food_wears_off>
         <info>
             <description>Warm, comforting, and protective.</description>
             <introduction>I am Altana, ever watching, ever guiding. May my light bring you peace.</introduction>
             <name>Altana</name>
-            <name_color>36</name_color>
+            <name_color>36</name_color
             <text_color>1</text_color>
             <type>NPC</type>
         </info>
+		<inventory_full>Your inventory is full. Even the most prepared traveler must sometimes lighten their load.</inventory_full>
         <member_joined_alliance>${member} has joined the alliance. Together, we are stronger.</member_joined_alliance>
         <member_joined_party>${member} has joined the party. May their path be bright and their burdens light.</member_joined_party>
         <member_left_alliance>${member} has left the alliance. Their journey continues on another path.</member_left_alliance>
