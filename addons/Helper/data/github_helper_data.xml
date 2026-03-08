@@ -15,6 +15,13 @@
             <text_color>6</text_color>
             <type>Player</type>
         </azhur>
+        <balamor>
+            <description>Smooth, smug, and always watching.</description>
+            <name>Balamor</name>
+            <name_color>53</name_color>
+            <text_color>1</text_color>
+            <type>NPC</type>
+        </balamor>
         <brygid>
             <description>Fabulously judgmental and fashion-obsessed.</description>
             <name>Brygid</name>
