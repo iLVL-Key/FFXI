@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.3.2'
+_addon.version = '2.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -145,6 +145,8 @@ defaults = {
 			capped_job_points = true,
 			capped_merit_points = true,
 			food_wears_off = true,
+			inventory_full = true,
+			inventory_full_delay_minutes = 15,
 			mireu_popped = true,
 			mog_locker_expiring = true,
 			reraise_wears_off = true,
@@ -231,6 +233,7 @@ vana = {
 	capped_job_points = "Your Job Points are now capped.",
 	capped_merit_points = "Your Merit Points are now capped.",
 	food_wears_off = "Your food has worn off.",
+	inventory_full = "Your inventory is full.",
 	mog_locker_expiring = "Your Mog Locker lease is expiring soon.",
 	reminder_canteen = "Another Mystical Canteen should be available now.",
 	reminder_moglophone = "Another Moglophone should be available now.",
@@ -294,6 +297,8 @@ flavor_text_window_min_hours = math.floor(settings.options.flavor_text_window_mi
 food_wears_off = settings.options.notifications.food_wears_off
 helpers_loaded = settings.options.helpers_loaded
 introduce_on_load = settings.options.introduce_on_load
+inventory_full = settings.options.notifications.inventory_full
+inventory_full_delay_minutes = math.floor(settings.options.notifications.inventory_full_delay_minutes * 60)
 key_item_reminders = settings.options.key_item_reminders
 mireu_popped = settings.options.notifications.mireu_popped
 mog_locker_expiring = settings.options.notifications.mog_locker_expiring
@@ -314,6 +319,7 @@ voices = settings.options.voices
 countdowns = {
 	check_party_for_low_mp = 0,
 	flavor_text = math.floor(math.random(flavor_text_window_min_hours,flavor_text_window_max_hours)),
+	inventory_full = 0,
 	mireu = 0,
 	vorseal = -1,
 	reraise = reraise_check_delay_minutes,
@@ -401,6 +407,8 @@ capped_merits = true
 cap_points = 0
 job_points = 500
 capped_jps = true
+inventory_is_full = false
+inventory_full_toggle = true
 check_party_for_low_mp_toggle = true
 zoned = false
 paused = false
@@ -2541,7 +2549,7 @@ register_event('prerender', function()
 			checkSparkoladeReminder()
 		end
 
-		--Coutdown for checking party for low mp
+		--Countdown for checking party for low mp
 		if check_party_for_low_mp and (player_job == 'RDM' or player_job == 'BRD') then
 
 			if countdowns.check_party_for_low_mp > 0 then
@@ -2572,6 +2580,20 @@ register_event('prerender', function()
 					add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
 					countdowns.flavor_text = math.floor(math.random(flavor_text_window_min_hours, flavor_text_window_max_hours))
 				end
+			end
+		end
+
+		--Countdown for Inventory Full
+		if inventory_full and not inventory_full_toggle then
+
+			if countdowns.inventory_full > 0 then
+
+				countdowns.inventory_full = countdowns.inventory_full - 1
+
+			elseif countdowns.inventory_full == 0 then
+
+				inventory_full_toggle = true
+
 			end
 		end
 
@@ -2644,6 +2666,47 @@ register_event('prerender', function()
 			end
 		end
 	end
+end)
+
+-- Item movement
+register_event('add item', function(bag,index,id,count)
+
+	if not inventory_full then return end
+
+	local bag = windower.ffxi.get_bag_info(0)
+
+	if inventory_full_toggle and bag.count == bag.max then
+
+		inventory_is_full = true
+
+		--Turn the toggle off so this can't be triggered again until it's turned back on
+		inventory_full_toggle = false
+
+		local selected = getHelper()
+		local inventory_text = helpers[selected.helper].inventory_full
+		if inventory_text then
+			add_to_chat(selected.c_text,('['..selected.name..'] '):color(selected.c_name)..(inventory_text):color(selected.c_text))
+
+			playSound(selected.helper, 'inventory_full')
+			showFaceplate(selected.helper)
+		end
+
+	end
+
+end)
+register_event('remove item', function(bag,index,id,count)
+
+	if not inventory_full then return end
+
+	if inventory_is_full then
+
+		inventory_is_full = false
+
+		--Reset the countdown timer so we don't check again until ready
+		countdowns.inventory_full = inventory_full_delay_minutes
+
+	end
+
 end)
 
 register_event('addon command',function(addcmd, ...)
