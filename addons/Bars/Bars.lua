@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.6.3'
+_addon.version = '4.6.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -8573,6 +8573,22 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Helix"] and durations_data[server][actor_name]["Helix"] / 100 or nil
 		duration = bonus and base_duration + (base_duration * bonus) or base_duration
 		removal_timer = bonus and duration or max_duration
+	--Blue Magic spells get no duration bonuses, so we remove them right at the duration length
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 43 then
+		removal_timer = duration
+	--Comet/Firaja/Blizzaja/Aeroja/Stoneja/Thundaja/Waterja (Cumulative Magic)
+	elseif T{9219,9496,9497,9498,9499,9500,9501}:contains(effect_id) then
+		local base_duration = 60
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Cumulative Spells"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		removal_timer = duration
+	--Kaustra
+	elseif effect_id == 23 then
+		duration = 100
+	--Impact
+	elseif effect_id == 9503 then
+		duration = 180
+		removal_timer = duration
 	--Elemental Magic
 	elseif res.spells[spell_id] and res.spells[spell_id].skill == 36 then
 		local base_duration = duration
@@ -8597,22 +8613,6 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Singing"] and durations_data[server][actor_name]["Singing"] / 100 or nil
 		duration = bonus and base_duration + (base_duration * bonus) or base_duration
 		removal_timer = bonus and duration or max_duration
-	--Blue Magic spells get no duration bonuses, so we remove them right at the duration length
-	elseif res.spells[spell_id] and res.spells[spell_id].skill == 43 then
-		removal_timer = duration
-	--Comet/Firaja/Blizzaja/Aeroja/Stoneja/Thundaja/Waterja (Cumulative Magic)
-	elseif T{9219,9496,9497,9498,9499,9500,9501}:contains(effect_id) then
-		local base_duration = 60
-		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Cumulative Spells"] or nil
-		duration = bonus and base_duration + bonus or base_duration
-		removal_timer = duration
-	--Kaustra
-	elseif effect_id == 23 then
-		duration = 100
-	--Impact
-	elseif effect_id == 9503 then
-		duration = 180
-		removal_timer = duration
 	--Treasure Hunter
 	elseif T{9902,9903,9904,9905,9906,9907,9908,9909,9910,9911,9912,9913,9914}:contains(effect_id) then
 		duration = nil
