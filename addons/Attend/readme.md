@@ -1,4 +1,4 @@
-When zoning into a Dynamis-Divergence zone, this copies a formatted list of attendees to the clipboard to paste into Discord for attendance tracking.  
+When zoning into a Dynamis-Divergence, Omen, or Vagary zone, this copies a formatted list of attendees to the clipboard to paste into Discord for attendance tracking.  
 
 ------
 <p align="center">
