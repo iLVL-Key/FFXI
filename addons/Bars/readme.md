@@ -292,6 +292,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.6.4
+- Fixed Impact Monster Debuff no longer showing up.
+
 Version 4.6.3
 - Fixed an issue with autoloading producing an error and not actually loading the addon.
 
