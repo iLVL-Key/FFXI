@@ -237,6 +237,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `pos` | X and Y position of the bar. |
 | → `show` | Show this specific section. |
 | → `show_bar` | Show the progress bar in the Self Action section. |
+| → `show_cast_time_bar` | Displays the position of the bar when a self action completes, allowing a visual indication of your fast cast. |
 | → `show_monster_level` | Show the level of the currently targeted monster. |
 | → `show_monster_target` | Show the currently targeted monster's target. |
 | → `show_player_angle_from_target_facing` | Shows an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
@@ -291,6 +292,15 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.7
+- Added `show_cast_time_bar` option for the Self Action bar. Displays the position of the bar when an self action completes, allowing a visual indication of your fast cast.
+- Added `drop_shadow` color option into the `text` settings. Controls the color of the drop shadow for all text.
+- Added an indicator to the Aggro List for monsters who have their SP ability currently active.
+- Adjusted sleep/petrify/bind wearing off detection to delay half a second before recording the mobs initial position data. This should be more accurate for mobs that are moving quickly when they are slept/petrified/bound and reduce the number of false positives that clear these debuffs immediately.
+- Adjusted sleep/petrify wearing off detection to also check the mobs facing to determine if they have worn off.
+- Adjusted Job Abilities with Additional Effect Damage (ie Soul Jump and Spirit Jump) to display the combined damage amount.
+- Fixed Impact not showing up on Monster Debuffs. Recent update had broken this.
 
 Version 4.6.4
 - Fixed Impact Monster Debuff no longer showing up.
