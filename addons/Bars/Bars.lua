@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.6.4'
+_addon.version = '4.7'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -54,7 +54,12 @@ windower_path = windower.windower_path
 
 defaults = {
 	bg = {alpha = 240, red = 0, green = 0, blue = 0},
-	text = {alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas'},
+	text = {
+		alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas',
+		drop_shadow = {
+			r = 0, g = 0, b = 0
+		}
+	},
 	icons = {
 		aggro_list_target = "●",
 		aggro_list_sub_target = "►",
@@ -282,7 +287,7 @@ defaults = {
 			},
 			italic = false,
 			max_monsters_listed = 6,
-			min_monsters_to_show = 0,
+			min_monsters_to_show = 1,
 			open_mobs = S{
 				"Mireu", "Azi Dahaka", "Naga Raja", "Quetzalcoatl",
 				"Azi Dahaka's Dragon", "Naga Raja's Lamia", "Quetzalcoatl's Sibilus",
@@ -422,6 +427,7 @@ defaults = {
 			pos = {x = 200, y = 300},
 			show = true,
 			show_bar = true,
+			show_cast_time_bar = true,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 0.5,
@@ -937,6 +943,7 @@ show_result_totals = settings.options.show_result_totals
 show_roll_lucky_info = settings.options.show_roll_lucky_info
 show_self_action = settings.sections.self_action.show
 show_self_action_bar = settings.sections.self_action.show_bar
+show_self_action_cast_bar = settings.sections.self_action.show_cast_time_bar
 show_self_action_result = settings.options.show_self_action_result
 show_self_when_sub_targeted = settings.options.show_self_when_sub_targeted
 show_self_when_targeted = settings.options.show_self_when_targeted
@@ -1021,6 +1028,13 @@ player_stats_pet_update_interval = settings.options.update_intervals.player_stat
 sub_target_update_interval = settings.options.update_intervals.sub_target
 target_update_interval = settings.options.update_intervals.target
 
+--Format RGB values with leading zeros (helps prevent an issue with the shadow text not lining up correctly)
+function formatRGB(value)
+
+	return string.format("%03d", value)
+
+end
+
 color = settings.colors
 font = settings.text.font
 text_color = {r = settings.text.red, g = settings.text.green, b = settings.text.blue}
@@ -1030,6 +1044,9 @@ pt3_text_color = {r = party_3_actions.text_color.r, g = party_3_actions.text_col
 pt1_stroke_color = {r = party_1_actions.stroke_color.r, g = party_1_actions.stroke_color.g, b = party_1_actions.stroke_color.b}
 pt2_stroke_color = {r = party_2_actions.stroke_color.r, g = party_2_actions.stroke_color.g, b = party_2_actions.stroke_color.b}
 pt3_stroke_color = {r = party_3_actions.stroke_color.r, g = party_3_actions.stroke_color.g, b = party_3_actions.stroke_color.b}
+c_shdw_r = formatRGB(settings.text.drop_shadow.r)
+c_shdw_g = formatRGB(settings.text.drop_shadow.g)
+c_shdw_b = formatRGB(settings.text.drop_shadow.b)
 
 element_colors = {
 	[0] = { r = color.elements.fire.r, g = color.elements.fire.g, b = color.elements.fire.b },
@@ -1737,6 +1754,16 @@ self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.
 self_action_bar_meter:draggable(false)
 self_action_bar_meter:size(self_action_bar_size / 10)
 
+--Create the Self Action BAR CAST METER text object
+self_action_bar_cast_meter = texts.new()
+self_action_bar_cast_meter:font('Consolas')
+self_action_bar_cast_meter:pad(-5)
+self_action_bar_cast_meter:bg_alpha(75)
+self_action_bar_cast_meter:color(0,0,0)
+self_action_bar_cast_meter:draggable(false)
+self_action_bar_cast_meter:bold(true)
+self_action_bar_cast_meter:size(self_action_bar_size / 10)
+
 --Create the HP BAR METER text object
 player_stats_hp_bar_meter = texts.new()
 player_stats_hp_bar_meter:font('Consolas')
@@ -1796,7 +1823,7 @@ player_stats_tp_marker:size(player_stats_bar_size / 5) --Only shrinking by 5x so
 --Create the Focus Target TEXT SHADOW text object
 focus_target_text_shadow = texts.new()
 focus_target_text_shadow:font(settings.sections.focus_target.font)
-focus_target_text_shadow:color(0,0,0)
+focus_target_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 focus_target_text_shadow:alpha(text_alpha)
 focus_target_text_shadow:bg_alpha(0)
 focus_target_text_shadow:draggable(false)
@@ -1807,7 +1834,7 @@ focus_target_text_shadow:size(settings.sections.focus_target.text_size)
 --Create the Focus Target Action TEXT SHADOW text object
 focus_target_action_text_shadow = texts.new()
 focus_target_action_text_shadow:font(settings.sections.focus_target.font)
-focus_target_action_text_shadow:color(0,0,0)
+focus_target_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 focus_target_action_text_shadow:alpha(text_alpha)
 focus_target_action_text_shadow:bg_alpha(0)
 focus_target_action_text_shadow:draggable(false)
@@ -1818,7 +1845,7 @@ focus_target_action_text_shadow:size(settings.sections.focus_target.sub_text_siz
 --Create the Sub Target TEXT SHADOW text object
 sub_target_text_shadow = texts.new()
 sub_target_text_shadow:font(settings.sections.sub_target.font)
-sub_target_text_shadow:color(0,0,0)
+sub_target_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 sub_target_text_shadow:alpha(text_alpha)
 sub_target_text_shadow:bg_alpha(0)
 sub_target_text_shadow:draggable(false)
@@ -1829,7 +1856,7 @@ sub_target_text_shadow:size(settings.sections.sub_target.text_size)
 --Create the Sub Target Action TEXT SHADOW text object
 sub_target_action_text_shadow = texts.new()
 sub_target_action_text_shadow:font(settings.sections.sub_target.font)
-sub_target_action_text_shadow:color(0,0,0)
+sub_target_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 sub_target_action_text_shadow:alpha(text_alpha)
 sub_target_action_text_shadow:bg_alpha(0)
 sub_target_action_text_shadow:draggable(false)
@@ -1840,7 +1867,7 @@ sub_target_action_text_shadow:size(settings.sections.sub_target.sub_text_size)
 --Create the Target TEXT SHADOW text object
 target_text_shadow = texts.new()
 target_text_shadow:font(settings.sections.target.font)
-target_text_shadow:color(0,0,0)
+target_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 target_text_shadow:alpha(text_alpha)
 target_text_shadow:bg_alpha(0)
 target_text_shadow:draggable(false)
@@ -1851,7 +1878,7 @@ target_text_shadow:size(settings.sections.target.text_size)
 --Create the Target Action TEXT SHADOW text object
 target_action_text_shadow = texts.new()
 target_action_text_shadow:font(settings.sections.target.font)
-target_action_text_shadow:color(0,0,0)
+target_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 target_action_text_shadow:alpha(text_alpha)
 target_action_text_shadow:bg_alpha(0)
 target_action_text_shadow:draggable(false)
@@ -1862,7 +1889,7 @@ target_action_text_shadow:size(settings.sections.target.sub_text_size)
 --Create the Self Action TEXT SHADOW text object
 self_action_text_shadow = texts.new()
 self_action_text_shadow:font(settings.sections.self_action.font)
-self_action_text_shadow:color(0,0,0)
+self_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 self_action_text_shadow:alpha(text_alpha)
 self_action_text_shadow:bg_alpha(0)
 self_action_text_shadow:draggable(false)
@@ -1873,7 +1900,7 @@ self_action_text_shadow:size(settings.sections.self_action.text_size)
 --Create the Player Stats HP TEXT SHADOW text object
 player_stats_hp_text_shadow = texts.new()
 player_stats_hp_text_shadow:font(settings.sections.player_stats.font)
-player_stats_hp_text_shadow:color(0,0,0)
+player_stats_hp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_hp_text_shadow:alpha(text_alpha)
 player_stats_hp_text_shadow:bg_alpha(0)
 player_stats_hp_text_shadow:draggable(false)
@@ -1884,7 +1911,7 @@ player_stats_hp_text_shadow:size(settings.sections.player_stats.text_size)
 --Create the Player Stats MP TEXT SHADOW text object
 player_stats_mp_text_shadow = texts.new()
 player_stats_mp_text_shadow:font(settings.sections.player_stats.font)
-player_stats_mp_text_shadow:color(0,0,0)
+player_stats_mp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_mp_text_shadow:alpha(text_alpha)
 player_stats_mp_text_shadow:bg_alpha(0)
 player_stats_mp_text_shadow:draggable(false)
@@ -1895,7 +1922,7 @@ player_stats_mp_text_shadow:size(settings.sections.player_stats.text_size)
 --Create the Player Stats TP TEXT SHADOW text object
 player_stats_tp_text_shadow = texts.new()
 player_stats_tp_text_shadow:font(settings.sections.player_stats.font)
-player_stats_tp_text_shadow:color(0,0,0)
+player_stats_tp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_tp_text_shadow:alpha(text_alpha)
 player_stats_tp_text_shadow:bg_alpha(0)
 player_stats_tp_text_shadow:draggable(false)
@@ -1906,7 +1933,7 @@ player_stats_tp_text_shadow:size(settings.sections.player_stats.text_size)
 --Create the Player Stats Pet TEXT SHADOW text object
 player_stats_pet_text_shadow = texts.new()
 player_stats_pet_text_shadow:font(settings.sections.player_stats.font)
-player_stats_pet_text_shadow:color(0,0,0)
+player_stats_pet_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_pet_text_shadow:alpha(text_alpha)
 player_stats_pet_text_shadow:bg_alpha(0)
 player_stats_pet_text_shadow:draggable(false)
@@ -2573,6 +2600,7 @@ function setPositions()
 	target_action_text_shadow:pos(t_pos.x + t_sub_text_shadow_offset, t_pos.y + t_sub_text_offset + t_sub_text_shadow_offset)
 
 	self_action_bar_meter:pos(sa_pos.x + 1, sa_pos.y + 1)
+	self_action_bar_cast_meter:pos(sa_pos.x + 1, sa_pos.y + 1)
 	self_action_bar_bg:pos(sa_pos.x, sa_pos.y)
 	self_action_text:pos(sa_pos.x, sa_pos.y + sa_text_offset)
 	self_action_text_shadow:pos(sa_pos.x + sa_text_shadow_offset, sa_pos.y + sa_text_offset + sa_text_shadow_offset)
@@ -2912,6 +2940,7 @@ function hideBars()
 	end
 
 	self_action_bar_meter:hide()
+	self_action_bar_cast_meter:hide()
 	self_action_text:hide()
 	self_action_text_shadow:hide()
 	ui_bg_left.self_action:hide()
@@ -3097,7 +3126,7 @@ function setJob()
 
 end
 
---Assign and incrememnt a new tracking index number
+--Assign and increment a new tracking index number
 function assignIndex()
 
 	local assignedIndex = index
@@ -3245,14 +3274,7 @@ end
 function isMonster(id)
 
 	local actor = get_mob_by_id(id)
-
-	--Is a monster (not in_party to exclude trusts)
-	if actor and actor.spawn_type == 16 and not actor.in_party then
-		return true
-	--Is not a monster
-	else
-		return false
-	end
+	return actor and actor.spawn_type == 16 and not actor.in_party --"not actor.in_party" to exclude trusts
 
 end
 
@@ -3260,14 +3282,7 @@ end
 function isPlayer(id)
 
 	local actor = get_mob_by_id(id)
-
-	--Is a player
-	if actor and (actor.spawn_type == 1 or actor.spawn_type == 9 or actor.spawn_type == 13) then
-		return true
-	--Is not a player
-	else
-		return false
-	end
+	return actor and (actor.spawn_type == 1 or actor.spawn_type == 9 or actor.spawn_type == 13)
 
 end
 
@@ -3480,13 +3495,6 @@ function truncateName(name)
 	return name
 end
 
---Format RGB values with leading zeros (helps prevent an issue with the shadow text not lining up correctly)
-function formatRGB(value)
-
-	return string.format("%03d", value)
-
-end
-
 function saveToAutoFocusTargetFile()
 
 	coroutine.schedule(function()
@@ -3627,7 +3635,7 @@ function colorizeDistance(text, distance, target)
 		local range_type = range and range.id and res.items[range.id] and res.items[range.id].range_type or nil
 
 		--NPC or object
-		if  spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
+		if spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
 			local max_distance = 6
 			if distance < max_distance then
 				local c = color.range.in_range
@@ -3987,9 +3995,10 @@ function updateAggroList(player, t, st)
 				local target_name = target and target.name and truncateMonsterTarget(target.name)
 				target_name = target_name and ((cursor_target or cursor_sub_target) and uppercase(target_name) or target_name)
 				local target_icon = os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
-				local hpp_raw =actor.hpp or 0
+				local hpp_raw = actor.hpp or 0
 				local hpp = string.format("%3s", hpp_raw)..'%' or ''
-				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and ((cursor_target or cursor_sub_target) and "ZZZ" or "zzz") or ""
+				local sp_active = current_sp_actions[actor_id]
+				local info = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and ((cursor_target or cursor_sub_target) and "ZZZ" or "zzz") or (sp_active and "SP" or "")
 
 				--Colorize the actor name
 				local ca = targetColor(player, actor)
@@ -4004,7 +4013,7 @@ function updateAggroList(player, t, st)
 				local ct_b = formatRGB(ct.b)
 
 				local padding = ""
-				local padding_spaces = width - (#hpp + math.min(#actor_name, max_name_length) + 2 + #asleep + (target_name and max_monster_target_length or 0))
+				local padding_spaces = width - (#hpp + math.min(#actor_name, max_name_length) + 2 + #info + (target_name and max_monster_target_length or 0))
 				while string.len(padding) < padding_spaces do
 					if padding == "" then
 						padding = padding..' '
@@ -4017,7 +4026,11 @@ function updateAggroList(player, t, st)
 				local pc = (cursor_target or cursor_sub_target) and text_color or {r = 100, g = 100, b = 100}
 				padding = "\\cs("..pc.r..","..pc.g..","..pc.b..")"..padding.."\\cr"
 				target_name = "\\cs("..ct_r..","..ct_g..","..ct_b..")"..(target_name and target_name or "").."\\cr" --add color start and reset to name
-				text = text..hpp..targeted..actor_name..padding..asleep..(target_name and target_icon..target_name).."\n"
+				hpp = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..hpp.."\\cr" or hpp
+				targeted = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..targeted.."\\cr" or targeted
+				info = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..info.."\\cr" or info
+				target_icon = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..target_icon.."\\cr" or target_icon
+				text = text..hpp..targeted..actor_name..padding..info..(target_name and target_icon..target_name).."\n"
 			else
 				plus_num_more = plus_num_more + 1
 			end
@@ -4207,7 +4220,7 @@ function updateFocusTargetBar(player, target, clock)
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (ft_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(ft_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (ft_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(ft_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, ft)..ft_spaces.."\\cs("..formatRGB(getAngleColor(ft_angle).r)..","..formatRGB(getAngleColor(ft_angle).g)..","..formatRGB(getAngleColor(ft_angle).b)..")"..ft_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..ft_spaces..'\\cs(000,000,000)'..ft_angle_icon..'\\cr\\cs(000,000,000)'..p_angle_icon..'\\cr\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..'\\cr'..ft_spaces..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..ft_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
 	local status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
 	local action = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action or '')
@@ -4318,14 +4331,21 @@ function updateFocusTargetBar(player, target, clock)
 			end
 		end
 
+		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
+		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 2 or math.abs(debuff_list.pos.y - ft.y) > 2)
 		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
-		local moved = false
-		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
-		if debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 3 or math.abs(debuff_list.pos.y - ft.y) > 3) then
-			moved = true
-		end
 		if moved then
 			local watch_effects = {2, 7, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+		--Check for spinning in place more than 10 degrees
+		local spun = debuff_list.pos and (math.abs(debuff_list.pos.facing - math.floor((ft.facing * 180 / math.pi) + 0.5)) > 10)
+		--Clear Sleep or Petrfy debuffs if the mob has spun in place
+		if spun then
+			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -4498,7 +4518,7 @@ function updateSubTargetBar(player, st, target, clock)
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (st_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(st_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (st_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(st_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, st)..st_spaces.."\\cs("..formatRGB(getAngleColor(st_angle).r)..","..formatRGB(getAngleColor(st_angle).g)..","..formatRGB(getAngleColor(st_angle).b)..")"..st_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..st_spaces..'\\cs(000,000,000)'..st_angle_icon..'\\cr\\cs(000,000,000)'..p_angle_icon..'\\cr\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..'\\cr'..st_spaces..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..st_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
 	local status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
 	local action = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action or '')
@@ -4609,14 +4629,21 @@ function updateSubTargetBar(player, st, target, clock)
 			end
 		end
 
+		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
+		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 2 or math.abs(debuff_list.pos.y - st.y) > 2)
 		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
-		local moved = false
-		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
-		if debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 3 or math.abs(debuff_list.pos.y - st.y) > 3) then
-			moved = true
-		end
 		if moved then
 			local watch_effects = {2, 7, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+		--Check for spinning in place more than 10 degrees
+		local spun = debuff_list.pos and (math.abs(debuff_list.pos.facing - math.floor((st.facing * 180 / math.pi) + 0.5)) > 10)
+		--Clear Sleep or Petrfy debuffs if the mob has spun in place
+		if spun then
+			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -4783,7 +4810,7 @@ function updateTargetBar(player, t, clock)
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (t_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(t_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (t_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(t_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, t)..t_spaces.."\\cs("..formatRGB(getAngleColor(t_angle).r)..","..formatRGB(getAngleColor(t_angle).g)..","..formatRGB(getAngleColor(t_angle).b)..")"..t_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..t_spaces..'\\cr\\cs(000,000,000)'..t_angle_icon..'\\cr\\cs(000,000,000)'..p_angle_icon..'\\cr\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..t_spaces..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
 	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
 	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
@@ -4915,14 +4942,21 @@ function updateTargetBar(player, t, clock)
 			end
 		end
 
+		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
+		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 2 or math.abs(debuff_list.pos.y - t.y) > 2)
 		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
-		local moved = false
-		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
-		if debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 3 or math.abs(debuff_list.pos.y - t.y) > 3) then
-			moved = true
-		end
 		if moved then
 			local watch_effects = {2, 7, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+		--Check for spinning in place more than 10 degrees
+		local spun = debuff_list.pos and (math.abs(debuff_list.pos.facing - math.floor((t.facing * 180 / math.pi) + 0.5)) > 10)
+		--Clear Sleep or Petrfy debuffs if the mob has spun in place
+		if spun then
+			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -5019,6 +5053,8 @@ end
 --Update the Self Action text
 function updateSelfAction(player)
 
+	if not show_self_action then return end
+
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
 
 	--Hide the Self Action bar disabled, we are in a cutscene, or no actions
@@ -5026,6 +5062,7 @@ function updateSelfAction(player)
 	or self_status == '' then
 		if self_action_bar_bg:visible() and not calculating_dimensions then
 			self_action_bar_meter:hide()
+			self_action_bar_cast_meter:hide()
 			self_action_bar_bg:hide()
 			self_action_text:hide()
 			self_action_text_shadow:hide()
@@ -5071,23 +5108,43 @@ function completeSelfMeter()
 
 	local self_meter = ''
 
+	--Set the bar to full length
 	while string.len(self_meter) < self_action_bar_width * 10 do
 		self_meter = self_meter..' '
 	end
+
 	self_action_bar_meter:text('\n\n\n\n\n\n\n'..self_meter)
 	self_action_bar_meter:show()
+	
+end
+
+function completeCastMeter(spaces)
+
+	if not show_self_action_cast_bar then return end
+
+	local cast_meter = ''
+
+	--Set the cast bar length
+	while string.len(cast_meter) < spaces do
+		cast_meter = cast_meter..' '
+	end
+
+	self_action_bar_cast_meter:text('\n\n\n\n\n\n\n'..cast_meter)
+	self_action_bar_cast_meter:show()
 
 end
 
 --Update the Self bar
-function updateSelfBar(player, cast_time, index)
+function updateSelfBar(player, cast_time, index, display_cast_meter)
 
 	if not show_self_action or not show_self_action_bar then return end
+
+	self_action_bar_cast_meter:hide()
 
 	cast_time = cast_time ~= 0 and cast_time or 1
 	local self_meter = ''
 	local spaces = 0
-	local multiplier = 0.02 --Bar length gets updated 50 times per second
+	local multiplier = 0.02 --Bar length gets updated 50 times per second - Smooth!
 	local divisor = cast_time / multiplier
 	local increment = (self_action_bar_width * 10) / divisor
 
@@ -5099,7 +5156,10 @@ function updateSelfBar(player, cast_time, index)
 		--Cancel if a spell has finished early
 		local status = current_actions[player.id] and current_actions[player.id].status
 		if (status and (status:find(completed_icon, 1, true) or status:find(cancelled_icon, 1, true)) and not Screen_Test)
-			or curr_index and index ~= curr_index.index then
+		or curr_index and index ~= curr_index.index then
+			if display_cast_meter then
+				completeCastMeter(spaces)
+			end
 			break
 		end
 
@@ -5588,7 +5648,7 @@ function updatePetBar(pet)
 	--Format the text output
 	hpp = string.format("%3s", hpp)..'% '
 	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
-	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
+	local text_shdw = (pet and '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
 	player_stats_pet_bar_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_pet_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
@@ -6198,9 +6258,9 @@ function screenTest()
 	local ct_b = formatRGB(ct.b)
 
 	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Screen Test '..targeting_icon..'\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
-	local target_action_shdw = ' \\cs(000,000,000)Screen Test '..targeting_icon..'\\cr \\cs(000,000,000)'..get_player().name..'\\cr'
+	local target_action_shdw = ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Screen Test '..targeting_icon..'\\cr \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..get_player().name..'\\cr'
 	local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
-	local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
+	local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..casting_icon..'\\cr'
 	local target_action_result = ''
 	local target_action_result_shdw = ''
 	local action_target_name = ''
@@ -6242,16 +6302,16 @@ function runWideScan()
 	end
 
 	local packet = packets.new('outgoing', 0xF4, {
-        ['Flags'] = 1,
-        ['_unknown1'] = 0,
-        ['_unknown2'] = 0,
-    })
+		['Flags'] = 1,
+		['_unknown1'] = 0,
+		['_unknown2'] = 0,
+	})
 
 	--Send the Wide Scan request
 	packets.inject(packet)
 
-    --Schedule the next Wide Scan attempt for 30 to 60 seconds from now
-    next_wide_scan_time = os.time() + math.random(30, 60)
+	--Schedule the next Wide Scan attempt for 30 to 60 seconds from now
+	next_wide_scan_time = os.time() + math.random(30, 60)
 
 	--Lock Wide Scan again
 	wide_scan_locked = true
@@ -6789,7 +6849,7 @@ register_event('action', function (act)
 	local ct_b = formatRGB(ct.b)
 	local truncated_name = action_target and truncateName(action_target.name) or ''
 	local action_target_name = ' '..targeting_icon..' \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncated_name..'\\cr' or ''
-	local action_target_name_shdw = ' '..targeting_icon..' \\cs(000,000,000)'..truncated_name..'\\cr' or ''
+	local action_target_name_shdw = ' '..targeting_icon..' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncated_name..'\\cr' or ''
 	local target_action = ''
 	local target_action_shdw = ''
 	local target_action_result = ''
@@ -6884,8 +6944,8 @@ register_event('action', function (act)
 
 	--Debug Stuff
 	if actor.name == player.name and act.category ~=1 then
-		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
-		-- add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation)
+		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
+		-- add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
 	end
 
 	--Action failed/interrupted
@@ -6893,7 +6953,7 @@ register_event('action', function (act)
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(255,050,050)'..cancelled_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..cancelled_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..cancelled_icon..'\\cr'
 
 		if msg == 78 then
 			target_action_result = ' (Too Far!)'
@@ -6919,7 +6979,7 @@ register_event('action', function (act)
 	if action_id and (act.category == 7 or act.category == 8 or act.category == 9) then
 
 		local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..casting_icon..'\\cr'
 
 		--Weapon skill or TP move
 		if act.category == 7 then
@@ -6929,7 +6989,7 @@ register_event('action', function (act)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
 			action_target_name = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
-			action_target_name_shdw = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
+			action_target_name_shdw = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateName(action_target.name)..'\\cr' or ''
 
 			--Players
 			if isPlayer(actor.id) then
@@ -6961,7 +7021,7 @@ register_event('action', function (act)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
 			action_name = spell[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
-			action_name_shdw = spell[action_id] and ' \\cs(000,000,000)'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
+			action_name_shdw = spell[action_id] and ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			cast_time = spell[action_id].cast_time
 			--If a target starts casting, remove Silence debuff
 			if current_debuffs[act.actor_id] and act.param ~= 28787 then
@@ -6992,7 +7052,8 @@ register_event('action', function (act)
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
-				updateSelfBar(player, cast_time,trackingIndex)
+				local display_cast_meter = act.category ~= 7
+				updateSelfBar(player, cast_time, trackingIndex, display_cast_meter)
 				resetFadeDelay()
 			end
 
@@ -7017,7 +7078,7 @@ register_event('action', function (act)
 		local target_action = ''
 		local target_action_shdw = ''
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..completed_icon..'\\cr'
 		local abil_id = act.param
 		local abil_name = ''
 		if act.category == 6 and actor.spawn_type == 16 then
@@ -7036,12 +7097,12 @@ register_event('action', function (act)
 			if msg == 102 or msg == 306 or msg == 318 or msg == 122 then
 				local lunge_mb = act.targets[1].actions[1].unknown == 4 and true or false
 				target_action_result = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Lunge/Swipes
 			elseif msg == 110 then
 				local lunge_mb = act.targets[1].actions[1].unknown == 4 and true or false
 				target_action_result = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 319 or msg == 320 or msg == 668 or msg == 670 or msg == 671 or msg == 672 then
 				local landed = calculateInfo(act).landed
@@ -7054,11 +7115,12 @@ register_event('action', function (act)
 		--Absorbed - job abilities
 		elseif (act.category == 3 or act.category == 6 or act.category == 14) and (msg == 102 or msg == 122 or msg == 306 or msg == 318) then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--Most direct damage abilities
 		elseif act.category == 3 and msg == 110 then
+			amount = addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param)
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--No Effect
 		elseif act.category == 3 and (msg == 156 or msg == 323) then
 			target_action_result = ' ('..count..'No Effect)'
@@ -7086,16 +7148,15 @@ register_event('action', function (act)
 			local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 			target_action_result = ' ('..count..buff_name..')'
 			target_action_result_shdw = ' ('..count..buff_name..')'
-
 		--Mug Success + HP
 		elseif msg == 129 and act.targets[1].actions[1].has_add_effect then
 			local hp_drain = act.targets[1].actions[1].add_effect_param
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..hp_drain..'\\cr HP)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil + \\cs(000,000,000)'..hp_drain..'\\cr HP)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr Gil + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..hp_drain..'\\cr HP)'
 		--Mug Success
 		elseif msg == 129 then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr Gil)'
 		--Mug Fail
 		elseif msg == 244 then
 			target_action_result = ' (Failed)'
@@ -7103,12 +7164,12 @@ register_event('action', function (act)
 		--Mug Fail + HP Drain
 		elseif msg == 736 then
 			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP)'
-			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr HP)'
+			target_action_result_shdw = ' (Failed + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP)'
 		--Steal Success
 		elseif msg == 125 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr)'
 		--Aura Steal Absorb
 		elseif msg == 453 then
 			local aura = buff[action_id].name
@@ -7117,7 +7178,7 @@ register_event('action', function (act)
 				removeFromSPTable(act.targets[1].id)
 			end
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..aura..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..aura..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..aura..'\\cr)'
 		--Aura Steal Dispel
 		elseif msg == 321 or msg == 322 then
 			local aura = buff[action_id].name
@@ -7127,37 +7188,37 @@ register_event('action', function (act)
 		elseif msg == 593 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Att Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Att Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Att Down)'
 		--Despoil Success + Defense Down
 		elseif msg == 594 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Def Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Def Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Def Down)'
 		--Despoil Success + Magic Attack Down
 		elseif msg == 595 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MAtt Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MAtt Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + MAtt Down)'
 		--Despoil Success + Magic Defense Down
 		elseif msg == 596 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MDef Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MDef Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + MDef Down)'
 		--Despoil Success + Evasion Down
 		elseif msg == 597 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Eva Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Eva Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Eva Down)'
 		--Despoil Success + Accuracy Down
 		elseif msg == 598 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Acc Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Acc Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Acc Down)'
 		--Despoil Success + Slow
 		elseif msg == 599 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Slow)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Slow)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Slow)'
 		--Steal/Despoil Fail
 		elseif msg == 153 then
 			target_action_result = ' (Failed)'
@@ -7165,7 +7226,7 @@ register_event('action', function (act)
 		--Bounty Shot Success
 		elseif msg == 608 then
 			target_action_result = ' (TH: \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-			target_action_result_shdw = ' (TH: \\cs(000,000,000)'..amount..'\\cr)'
+			target_action_result_shdw = ' (TH: \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 			local info = calculateInfo(act)
@@ -7182,7 +7243,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			else
 				--Evaded
 				if msg == 282 then
@@ -7203,7 +7264,7 @@ register_event('action', function (act)
 				--Immunobreak
 				elseif msg == 653 or msg == 654 then
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 				--Anticipated
 				elseif msg == 30 then
 					target_action_result = ' ('..count..'Anticipated)'
@@ -7228,21 +7289,22 @@ register_event('action', function (act)
 			if msg == 123 then
 				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--Monberaux healing? idr
 			elseif msg == 103 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Plain Damage
 			elseif msg == 110 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				amount = addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param)
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
@@ -7259,7 +7321,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7280,7 +7342,7 @@ register_event('action', function (act)
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
 						target_action_result = ' ('..count..'Anticipated)'
@@ -7382,27 +7444,27 @@ register_event('action', function (act)
 						local r_c11 = color.rolls.eleven
 
 						local r_1_t = '\\cs('..formatRGB(r_c1.r)..','..formatRGB(r_c1.g)..','..formatRGB(r_c1.b)..')'..r_1..'\\cr'
-						local r_1_t_shdw = '\\cs(000,000,000)'..r_1..'\\cr'
+						local r_1_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_1..'\\cr'
 						local r_2_t = '\\cs('..formatRGB(r_c2.r)..','..formatRGB(r_c2.g)..','..formatRGB(r_c2.b)..')'..r_2..'\\cr'
-						local r_2_t_shdw = '\\cs(000,000,000)'..r_2..'\\cr'
+						local r_2_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_2..'\\cr'
 						local r_3_t = '\\cs('..formatRGB(r_c3.r)..','..formatRGB(r_c3.g)..','..formatRGB(r_c3.b)..')'..r_3..'\\cr'
-						local r_3_t_shdw = '\\cs(000,000,000)'..r_3..'\\cr'
+						local r_3_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_3..'\\cr'
 						local r_4_t = '\\cs('..formatRGB(r_c4.r)..','..formatRGB(r_c4.g)..','..formatRGB(r_c4.b)..')'..r_4..'\\cr'
-						local r_4_t_shdw = '\\cs(000,000,000)'..r_4..'\\cr'
+						local r_4_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_4..'\\cr'
 						local r_5_t = '\\cs('..formatRGB(r_c5.r)..','..formatRGB(r_c5.g)..','..formatRGB(r_c5.b)..')'..r_5..'\\cr'
-						local r_5_t_shdw = '\\cs(000,000,000)'..r_5..'\\cr'
+						local r_5_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_5..'\\cr'
 						local r_6_t = '\\cs('..formatRGB(r_c6.r)..','..formatRGB(r_c6.g)..','..formatRGB(r_c6.b)..')'..r_6..'\\cr'
-						local r_6_t_shdw = '\\cs(000,000,000)'..r_6..'\\cr'
+						local r_6_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_6..'\\cr'
 						local r_7_t = '\\cs('..formatRGB(r_c7.r)..','..formatRGB(r_c7.g)..','..formatRGB(r_c7.b)..')'..r_7..'\\cr'
-						local r_7_t_shdw = '\\cs(000,000,000)'..r_7..'\\cr'
+						local r_7_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_7..'\\cr'
 						local r_8_t = '\\cs('..formatRGB(r_c8.r)..','..formatRGB(r_c8.g)..','..formatRGB(r_c8.b)..')'..r_8..'\\cr'
-						local r_8_t_shdw = '\\cs(000,000,000)'..r_8..'\\cr'
+						local r_8_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_8..'\\cr'
 						local r_9_t = '\\cs('..formatRGB(r_c9.r)..','..formatRGB(r_c9.g)..','..formatRGB(r_c9.b)..')'..r_9..'\\cr'
-						local r_9_t_shdw = '\\cs(000,000,000)'..r_9..'\\cr'
+						local r_9_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_9..'\\cr'
 						local r_10_t = '\\cs('..formatRGB(r_c10.r)..','..formatRGB(r_c10.g)..','..formatRGB(r_c10.b)..')'..r_10..'\\cr'
-						local r_10_t_shdw = '\\cs(000,000,000)'..r_10..'\\cr'
+						local r_10_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_10..'\\cr'
 						local r_11_t = '\\cs('..formatRGB(r_c11.r)..','..formatRGB(r_c11.g)..','..formatRGB(r_c11.b)..')'..r_11..'\\cr'
-						local r_11_t_shdw = '\\cs(000,000,000)'..r_11..'\\cr'
+						local r_11_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_11..'\\cr'
 
 						target_action_result = ' ('..count..r_1_t..r_2_t..r_3_t..r_4_t..r_5_t..r_6_t..r_7_t..r_8_t..r_9_t..r_10_t..r_11_t..')'
 						target_action_result_shdw = ' ('..count..r_1_t_shdw..r_2_t_shdw..r_3_t_shdw..r_4_t_shdw..r_5_t_shdw..r_6_t_shdw..r_7_t_shdw..r_8_t_shdw..r_9_t_shdw..r_10_t_shdw..r_11_t_shdw..')'
@@ -7422,7 +7484,7 @@ register_event('action', function (act)
 
 						count = count..' '
 						target_action_result = ' ('..count..'\\cs('..r..','..g..','..b..')L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..'\\cr)'
-						target_action_result_shdw = ' ('..count..'\\cs(000,000,000)L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr)'
+						target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr)'
 					end
 				else
 					count = count..' '
@@ -7514,14 +7576,14 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Regains TP
 			elseif msg == 452 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--No Foot Rise
 			elseif msg == 560 then
 				local fin_moves = act.targets[1].actions[1].param
@@ -7556,7 +7618,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 127 then
 				local landed = calculateInfo(act).landed
@@ -7580,7 +7642,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7601,7 +7663,7 @@ register_event('action', function (act)
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
 						target_action_result = ' ('..count..'Anticipated)'
@@ -7643,6 +7705,7 @@ register_event('action', function (act)
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(050,255,050)
+				self_action_bar_cast_meter:hide()
 				completeSelfMeter()
 			end
 
@@ -7657,7 +7720,7 @@ register_event('action', function (act)
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..completed_icon..'\\cr'
 		local sc = {}
 		if short_skillchain_names then
 			sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
@@ -7698,23 +7761,24 @@ register_event('action', function (act)
 			--Absorbed and creates a Skillchain
 			if msg == 103 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
 			--Absorbed
 			elseif msg == 103 or msg == 318 then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Creates a Skillchain
 			elseif msg == 185 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
 			--Plain Damage
 			elseif msg == 185 or msg == 317 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				amount = msg == 317 and addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param) or amount
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
@@ -7731,7 +7795,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7752,7 +7816,7 @@ register_event('action', function (act)
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
 						target_action_result = ' ('..count..'Anticipated)'
@@ -7777,35 +7841,35 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Recover/Absorb HP
 			elseif msg == 238 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Drain HP
 			elseif msg == 187 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Drain MP
 			elseif msg == 225 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Drain TP
 			elseif msg == 226 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			end
 
 		--Spells
@@ -7817,11 +7881,11 @@ register_event('action', function (act)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
 			action_name = spell[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
-			action_name_shdw = spell[action_id] and ' \\cs(000,000,000)'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
+			action_name_shdw = spell[action_id] and ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			--Creates a Skillchain
 			if msg == 2 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
 			--Plain Damage
 			elseif msg == 2 then
 				local info = calculateInfo(act)
@@ -7829,11 +7893,11 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Absorbed and creates a Skillchain
 			elseif msg == 7 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
 			--Cures/Absorbed
 			elseif msg == 7 then
 				local info = calculateInfo(act)
@@ -7843,11 +7907,11 @@ register_event('action', function (act)
 				if cure_total then
 					cure_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(cure_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..cure_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..cure_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..cure_total..'\\cr)'
 				else
 					amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				end
 			--Transportation
 			elseif msg == 93 then
@@ -7859,28 +7923,28 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (Magic Burst! \\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Drain
 			elseif msg == 227 or msg == 274 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Aspir
 			elseif msg == 228 or msg == 275 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Absorb-TP
 			elseif msg == 454 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 230 or msg == 236 or msg == 237 or msg == 268 or msg == 271 then
 				local landed = calculateInfo(act).landed
@@ -7904,7 +7968,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7925,7 +7989,7 @@ register_event('action', function (act)
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
 						target_action_result = ' ('..count..'Anticipated)'
@@ -7948,11 +8012,11 @@ register_event('action', function (act)
 			elseif msg == 83 or msg == 341 or msg == 342 then
 				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--TP reduced
 			elseif msg == 431 then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')TP Reduced\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)TP Reduced\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')TP Reduced\\cr)'
 			end
 
 		--Items
@@ -7969,20 +8033,20 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--MP
 			elseif msg == 25 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--HP and MP
 			elseif msg == 26 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP/MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP/MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP/MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 375 then
 				local landed = calculateInfo(act).landed
@@ -7992,7 +8056,7 @@ register_event('action', function (act)
 			--Dispel/Erase
 			elseif msg == 378 then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--Obtains item
 			elseif msg == 376 or msg == 377 then
 				target_action_result = ' ('..count..obtained_item_name..')'
@@ -8023,7 +8087,7 @@ register_event('action', function (act)
 			--Creates a Skillchain
 			if act.targets[1].actions[1].has_add_effect then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
 			--Accuracy/Evasion Down
 			elseif msg == 144 then
 				target_action_result = ' ('..count..'Acc./Eva. Down)'
@@ -8038,7 +8102,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (Magic Burst! \\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Plain Damage
 			elseif msg == 317 then
 				local info = calculateInfo(act)
@@ -8046,7 +8110,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Cures
 			elseif msg == 318 then
 				local info = calculateInfo(act)
@@ -8056,11 +8120,11 @@ register_event('action', function (act)
 				if cure_total then
 					cure_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(cure_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..cure_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..cure_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..cure_total..'\\cr)'
 				else
 					amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				end
 			--Buff/Debuff
 			elseif msg == 319 or msg == 320 then
@@ -8090,7 +8154,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -8111,7 +8175,7 @@ register_event('action', function (act)
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
 						target_action_result = ' ('..count..'Anticipated)'
@@ -8141,7 +8205,7 @@ register_event('action', function (act)
 			--TP Reduced
 			elseif msg == 730 then
 				target_action_result = ' (TP Reduced to \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' (TP Reduced to \\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' (TP Reduced to \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Enmity Reduced
 			elseif msg == 743 then
 				target_action_result = ' ('..count..'Enmity Reduced)'
@@ -8152,7 +8216,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			end
 		end
 
@@ -8163,6 +8227,7 @@ register_event('action', function (act)
 		if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index then
 
 			self_action_bar_meter:bg_color(050,255,050)
+			self_action_bar_cast_meter:hide()
 			completeSelfMeter()
 
 			addToActionsTable(player.id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
@@ -8180,6 +8245,7 @@ register_event('action', function (act)
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(050,255,050)
+				self_action_bar_cast_meter:hide()
 				completeSelfMeter()
 			end
 
@@ -8198,7 +8264,7 @@ register_event('action', function (act)
 	elseif act and act.category == 11 and not nm_auto_tp then
 
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..completed_icon..'\\cr'
 		local abil_id = act.param
 		local abil_name = monster_abil[abil_id] and monster_abil[abil_id].name or '[REDACTED]'
 		action_name = ' '..truncateAction(abil_name)
@@ -8210,7 +8276,7 @@ register_event('action', function (act)
 		if msg == 159 then
 			local buff_name = buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 			target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-			target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+			target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 		--Buff/Debuff
 		elseif msg == 186 or msg == 194 or msg == 243 then
 			local landed = calculateInfo(act).landed
@@ -8225,14 +8291,14 @@ register_event('action', function (act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Drain
 		elseif msg == 187 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 			local info = calculateInfo(act)
@@ -8249,7 +8315,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			else
 				--Evaded
 				if msg == 282 then
@@ -8270,7 +8336,7 @@ register_event('action', function (act)
 				--Immunobreak
 				elseif msg == 653 or msg == 654 then
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 				--Anticipated
 				elseif msg == 30 then
 					target_action_result = ' ('..count..'Anticipated)'
@@ -8295,21 +8361,21 @@ register_event('action', function (act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Absorb-TP
 		elseif msg == 226 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Absorbed
 		elseif msg == 238 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Stat Boost
 		elseif msg == 762 then
 			target_action_result = ' ('..count..'Stat Boost)'
@@ -8334,9 +8400,10 @@ register_event('action', function (act)
 			local sp_abil = sp_abils[abil_name]
 			if sp_abil then
 				addToSPTable(act.actor_id, abil_name)
+			end
 
 			--If specific moves are used, remove all debuffs from all targets it hits
-			elseif remove_all_debuffs:contains(abil_name) then
+			if remove_all_debuffs:contains(abil_name) then
 				for i = 1, target_count do
 					local t_id = act.targets[i].id
 					wipeDebuffs(t_id)
@@ -8344,7 +8411,6 @@ register_event('action', function (act)
 			end
 
 		end
-
 	end
 end)
 
@@ -8619,7 +8685,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		removal_timer = nil
 	end
 
-	--No effect duration adjustment (since we don't know when the previously cast effect will wear off)
+	--No Effect duration adjustment (since we don't know when the previously cast effect will wear off)
 	if no_effect and not current_debuffs[target_id][effect_id] then
 		duration = 0
 	end
@@ -8644,11 +8710,18 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 
 	--Get target position if slept, bound, or petrified so we can later determine if it wears off
 	if effect_id == 2 or effect_id == 7 or effect_id == 11 or effect_id == 19 then
-		local target_data = get_mob_by_id(target_id)
-		current_debuffs[target_id].pos = {
-			x = target_data and target_data.x or 0,
-			y = target_data and target_data.y or 0,
-		}
+		--wait .5 sec to account for server tick lag if target was in motion
+		coroutine.schedule(function()
+			local target_data = get_mob_by_id(target_id)
+			if target_data and current_debuffs[target_data] then
+				current_debuffs[target_id].pos = {
+					x = target_data.x or 0,
+					y = target_data.y or 0,
+					facing = target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0,
+				}
+				print(target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0)
+			end
+		end, 0.5)
 	end
 
 	--Save debuff data to the current_debuffs table
@@ -9240,6 +9313,7 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..new_size):color(200))
 			self_action_bar_bg:size(new_size)
 			self_action_bar_meter:size(new_size)
+			self_action_bar_cast_meter:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200))
 			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
@@ -9603,32 +9677,38 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 		local aggro_list_x = aggro_list_box:pos_x()
 		local aggro_list_y = aggro_list_box:pos_y()
 
-		if settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
+		if focus_target_x >= 0 and focus_target_y >= 0
+		and settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
 			settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
 			settings:save('all')
 			setPositions()
 
-		elseif settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
+		elseif sub_target_x >= 0 and sub_target_y >= 0
+		and settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
 			settings.sections.sub_target.pos = {x = sub_target_x, y = sub_target_y}
 			settings:save('all')
 			setPositions()
 
-		elseif settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
+		elseif target_x >= 0 and target_y >= 0
+		and settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
 			settings.sections.target.pos = {x = target_x, y = target_y}
 			settings:save('all')
 			setPositions()
 
-		elseif settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
+		elseif self_action_x >= 0 and self_action_y >= 0
+		and settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
 			settings.sections.self_action.pos = {x = self_action_x, y = self_action_y}
 			settings:save('all')
 			setPositions()
 
-		elseif settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
+		elseif player_stats_x >= 0 and player_stats_y >= 0
+		and settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
 			settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
 			settings:save('all')
 			setPositions()
 
-		elseif settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
+		elseif aggro_list_x >= 0 and aggro_list_y >= 0
+		and settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
 			settings.sections.aggro_list.pos = {x = aggro_list_x, y = aggro_list_y}
 			settings:save('all')
 
