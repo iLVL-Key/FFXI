@@ -16,7 +16,13 @@ Lots of little things to improve your experience. Each file has an Options and A
 - NOTE: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
 
 ### Gear Modes
-Certain files have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
+Certain jobs have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
+
+### Automatic High Accuracy Mode
+Jobs that have a Gear Mode selector and a High Accuracy mode allow you to set specific targets that will automatically use the High Accuracy gear set when fighting them.
+
+### Danger Mode
+Certain jobs can automatically equip the Danger set when you are the target of a monster your party is fighting. The GEO file specifically will equip the Danger set when you are within a configurable distance of the monster your party is fighting, allowing you to [relatively] safely get up close with an Indicolure spell.
 
 ### Weapon Cycler
 Certain files have the ability to cycle between pairs of Main slot weapons and Sub slot weapons/grips/shields. Use this to cycle between your commonly used weapons. Has a second, separate list for Abyssea Proc Weapons that gets added into the cycle list when inside Abyssea. Will not equip a Weaponskill gear set when inside Abyssea and an Abyssea Proc Weapon pair is equipped. Activated with a macro, an alias, or a keyboard shortcut (default is CTRL+H for Hweapon). Can be adjusted or new pairs added in the Weapons section.
@@ -114,6 +120,18 @@ In general, each HUD has..
 
 <details>
 <summary>BLU</summary>
+
+Version 20.0
+- Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Adjusted AutoSubCharge so it should be more consistent.
+- Fixed Aftermath duration for Almace below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Tizona.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Tizona.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
 
 Version 19.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
@@ -505,6 +523,21 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.0
+- Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Adjusted aftercast to switch back to Weapon Cycler Main/Sub pair.
+- Adjusted AutoSubCharge so it should be more consistent.
+- Fixed Aftermath duration for Twashtar below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Carnwenhan.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Carnwenhan.
+- Fixed an issue with dummy songs incorrectly switching out of dummy song instrument when engaged. (Thanks javelinx!)
+- Fixed players songs not clearing when changing sub job.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
+
 Version 2.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
 - Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
@@ -592,6 +625,23 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.0
+- Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
+- Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee, ranged attacks, and Weapon Skills), regardless of current Gear Mode.
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Adjusted HUD Roll Information to be in italics when the current roll you are working on has the Crooked Cards effect applied to it.
+- Adjusted HUD Roll Information to display an "XI" at the end that when lit up means you have an active 11 roll up (allowing you to strategically bust should you decide).
+- Adjusted Accuracy Mode (Mode 3) to not use the Weapon Skill Accuracy set for magical WSs since they cannot miss.
+- Fixed Weapon Skills not equipping the Weapon Skill Accuracy set in Mode 3 (Accuracy).
+- Fixed Aftermath duration for Armageddon below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Death Penalty.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Death Penalty.
+- Fixed Aftermth: Lv.1 not overwriting itself as it should.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
+
 Version 1.0
 - Added automatic equipping of Movement Speed set while moving. Returns to the currently appropriate set when stationary. Does not equip while engaged. Allows you to have  a better defensive piece equipped while idle and not moving. Can be disabled by simply leaving the set blank and having movement speed in your idle set like usual.
 - Added Ranged Attack W/ Armageddon Aftermath set.
@@ -646,6 +696,16 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.0
+- Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of OR within a configurable distance to a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
+- Overhauled Nuke Mode. Now is completely automatic, removing the need to change between modes. Keybind and alias have been removed. Tracks targets and weaponskills and related things that start a skillchain on them to deteermine which set to put you in (Magic Burst or Nuke).
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Adjusted AutoSubCharge so it should be more consistent.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
 
 Version 15.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
@@ -976,6 +1036,16 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.1
+- Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee and Weapon Skills),regardless of current Gear Mode (except Tank).
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Fixed Aftermath duration for Verethragna below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Glanzfaust.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Glanzfaust.
+- Code efficiency improvements and cleanup.
+
 Version 8.0.1
 - Fxied sets not equipping correctly when engaged. (Thanks Bahamut.Seicz!)
 
@@ -1154,6 +1224,18 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.0.1
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added Cure IV downgrading to a lower tier Cure based on current MP (accounts for Light Arts cost reduction).
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Adjusted AutoSubCharge so it should be more consistent.
+- Fixed Aftermath duration for Almace and Caladbolg below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Burtgang.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Burtgang.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
 
 Version 15.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
@@ -1494,6 +1576,14 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.1
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Added Lunge being changed to Swipe if Lunge recast is down and Swipe recast is ready.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
+
 Version 10.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
 - Overhauled majority of how options are done. Switched simple `On/Off` options to `true/false`. While this is functionally the same, it changes the variables from strings to booleans and is a better coding practice. Also updated the layout of the HUD Recasts and Colors.
@@ -1752,6 +1842,16 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.1
+- Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee and Weapon Skills), regardless of current Hasso Mode (NOT Seigan Stance).
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Fixed Aftermath duration for Masamune below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Kogarasumaru.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Kogarasumaru.
+- Code efficiency improvements and cleanup.
 
 Version 16.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
@@ -2043,8 +2143,29 @@ Version 9.0
 - Started from Blue Mage file version 02.01.22 (Version Compatibility Codename: Pollen)
 </details>
 <details>
- 
+  
+<summary>SCH</summary>
+
+Version 1.0
+- First version
+</details>
+<details>
+
 <summary>SMN</summary>
+
+Version 14.0
+- Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
+- Added `LockWeaponOnEngage` option. Prevents your Main/Sub slots from switching when you are engaged so you can built TP for Aftermath.
+- Added `LockWeaponOnAM` option. Prevents your Main/Sub slots from switching when you have Aftermath so you don't lose it. Keep your Nirvana AM3!
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Adjusted AutoSubCharge so it should be more consistent.
+- Fixed Aftermath duration for Hvergelmir below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Nirvana.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Nirvana.
+- Fixed Low MP Notification so that it clears when MP ticks back above the threshold without something else setting a notification.
+- Code efficiency improvements and cleanup.
 
 Version 13.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
@@ -2307,6 +2428,16 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.1
+- Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee and Weapon Skills), regardless of current Gear Mode (except Tank).
+- Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement. Helps fix getting stuck in the wrong gear after completing an action.
+- Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle. Setting AutoGearCheck to false will override this setting.
+- Added `Impairment` (Salvage) as another form of Amnesia.
+- Fixed Aftermath duration for Farsha and Ukonvasara below 119 III Afterglow.
+- Fixed Aftermath duration for level 75 Conqueror.
+- Fixed Aftermath effect calculations for level 75 and 80/85/90 Conqueror.
+- Code efficiency improvements and cleanup.
 
 Version 10.0
 - Overhauled how HUD updating is handled. New `PollingRate` Advanced Option allows you to set how many times per second various conditions are checked. This replaces the once per frame check used previously and improves performance and efficiency.
