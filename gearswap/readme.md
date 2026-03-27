@@ -10,7 +10,6 @@ Lots of little things to improve your experience. Each file has an Options and A
 - Automatically equips Movement Speed gear while you are moving.
 - DD jobs will attempt to use a "save" when you are at low HP (High Jump, Chakra, etc depending on main/sub job).
 - Reminder to put Reraise up if it's down.
-- "Oh Shit" gear set for when you are in critical health, or are stunned, petrified, or terrorized.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
 - NOTE: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
@@ -45,7 +44,7 @@ In general, each HUD has..
 - Gear Mode. Files that have this feature will also change background color of the HUD based on which mode is currently active.
 - AftermathWeapon Notifications. Displays your currently equipped weapon(s) and Aftermath info (including potency and timers!) when appropriate, as well as a TP meter behind it.
 - Recasts. Display 6 CUSTOMIZABLE ability/spell recasts (GREEN is currently active, ORANGE is not active but not ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
-- Some files show more specialized information such as SMN Avatars,  bubbles (with realtime potency numbers!), and RUN runes.  
+- Some files show more specialized information such as SMN Avatars, GEO bubbles (with realtime potency numbers!), and RUN runes.  
 
 #### BLU
 ![BLU_HUD](https://github.com/user-attachments/assets/c9a7a9f2-5035-4927-826d-ef149ba3cd08)  
@@ -93,7 +92,7 @@ In general, each HUD has..
 **A:** Abso-freakin-lutely.  Message me @ Valefor.Keylesta on ffxiah.com
 
 **Q:** Can you make one for X job?  
-**A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry.
+**A:** These take a lot of time to make and customize. I've only made them for the jobs I use, sorry. (edit: Ok technically the SCH file is one I made for a friend and don't play myself)
 
 ## Issues
 - Loading one of these files after having certain lua files made by some other folks loaded may cause some things to not function correctly (for example, you have your normal WAR lua file loaded, then type `//gs load whateveryounamedoneofthesefiles` to test it out). These issues seem to be mostly with using keyboard shortcuts (for example, Weapon Cycler not working correctly when hitting the kb shortcut to cycle). Renaming the file so that gearswap will load directly into it /without/ first loading into the other file (simply `WAR.lua`, for example) then typing `lua r gearswap` should fix the issue. I'm not sure exactly what the other files are doing or not doing that causes issues, but my guess is they are not removing keybinds once their files are unloaded.
