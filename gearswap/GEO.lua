@@ -1,29 +1,42 @@
--------------------------------------------
--- Keys Gearswap lua file for Geomancer  --
--------------------------------------------
+------------------------------------------
+-- Keys Gearswap lua file for Geomancer --
+------------------------------------------
+
 --[[
+------------------------------------------
+--                NOTES                 --
+------------------------------------------
+
+IMPORTANT:
+When you load this file for the first time, your HUD may not be in a good position, or may be too large.
+If the HUD is not in a good position, go to the Heads Up Display options below and adjust the HUDposX and HUDposY
+options, then save and reload the file. Adjust and repeat until positioned as desired.
+If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
+Suggested placement is center screen, just above your chat log.
+
+------------------------------------------
 
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
 
 Place both this file and the sounds folder inside the GearSwap data folder
-ex:	/addons/GearSwap/data/sounds/
+	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/GEO.lua
 
---------------------
+------------------------------------------
+--         HOW TO USE THIS FILE         --
+------------------------------------------
 
-To switch between Nuke Modes, use any of these three options:
-1. A macro
-	/console mode
-2. An alias command
-	//mode
-3. A keybind shortcut
-	CTRL+G
-	(Can be changed in the Advanced Options section)
+DANGER MODE
 
---------------------
+Auto -	Automatically layers the Danger set on top of other sets if it detects you are taking damage from a monster
+		your party is fighting. Disabled after a configurable amount of time has passed.
+		NOTE: This GEO file will adiitionally activate when you are within a set distance of a monster your party is fighting.
+		
+On   - 	Always layers the Danger gear set on top of other gear sets.
+Off  -	Disables this functionality.
 
-To activate Damage Taken Override, use any of these three options:
+To switch between Danger Modes, use any of these three options:
 1. A macro
 	/console dt
 2. An alias command
@@ -32,19 +45,15 @@ To activate Damage Taken Override, use any of these three options:
 	CTRL+D
 	(Can be changed in the Advanced Options section)
 
---------------------
+------------------------------------------
+
+JOB HUD
+
+Displays real-time information including various notifications, debilitating debuffs preventing you from taking
+actions, Job Ability and spell recasts, as well as specific information catered to how the job functions.
 
 Hide or show the HUD at any time by typing
 	//hud
-
---------------------
-
-IMPORTANT:
-When you load this file for the first time, your HUD may not be in a good position, or may be too large.
-If the HUD is not in a good position, go to the Heads Up Display options below and adjust the HUDposX and HUDposY
-options, then save and reload the file. Adjust and repeat until positioned as desired.
-If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
-Suggested placement is center screen, just above your chat log.
 
 --]]
 
@@ -64,6 +73,8 @@ ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zo
 							--				(Town limits this to town gear only).
 AlertSounds		=	true	--[true/false]	Plays a sound on alerts. 
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
+AutoGearCheck	=	true	--[true/false]	Automatically checks and equips appropriate gear set on player movement.
+AutoMvmntSpeed	=	true	--[true/false]	Automatically equips Movement Speed set on player movement when idle.
 AutoFullCircle	=	true	--[true/false]	Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
 AutoEntrust		=	true	--[true/false]	Automatically uses Entrust when you cast an Indi- spell on a party member. The first cast onto
 							--				a party member will engage the AutoEntrust system, the second cast will execute as intended.
@@ -114,19 +125,21 @@ notifications = {
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-ShowHUD			=	true	--[true/false]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
-StartMode		=	'Free'	--[Free/Burst]
-							--	Determines the Nuke Mode you will start in. Current Mode can be changed at any time by using any
-							--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-ModeBind		=	'^g'	--Sets the keyboard shortcut you would like to cycle between Nuke Modes. CTRL+G (^g) is default.
-DTBind			=	'^d'	--Sets the keyboard shortcut you would like to activate the Damage Taken Override. CTRL+D (^d) is default.
-							--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
-LowHPThreshold	=	1000	--Below this number is considered Low HP.
-DangerRepeat	=	5		--Maximum number of times the Danger Sound will repeat, once per second.
-RRReminderTimer	=	1800	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
-NotiDelay		=	6		--Delay in seconds before certain notifications will automatically clear.
-PollingRate		=	5		--Times per second to check for various conditions (debuffs, ammo, etc). Higher rates use more CPU.
-AddCommas		=	true	--[true/false]  Adds commas to damage numbers.
+ShowHUD				=	true	--[true/false]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
+StartingDangerMode	=	'Auto'	--[Auto/On/Off]
+								--	Determines the Danger Mode you start in. Danger Mode can be changed at any time by using any
+								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
+DMBind				=	'^d'	--Sets the keyboard shortcut you would like to switch between Danger Modes. CTRL+D (^d) is default.
+								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
+LowHPThreshold		=	1000	--Below this number is considered Low HP.
+DangerSafeDelay		=	5		--Delay in seconds after Danger Mode (Auto) activates before it is considered safe again.
+DangerPTOnly		=	false	--[true/false]  Danger Mode (Auto) will only activate when in a party with other players (Trusts do not count).
+NearDangerRange		=	10		--Being within this range of an active Battle Target will equip the Danger set when DT Override is on.
+WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
+RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
+NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
+PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
+AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -------------------------------------------
 --              HUD RECAST               --
@@ -201,7 +214,7 @@ color = {
 	Water	= {r = 30, g = 144, b = 255},
 	Dark	= {r = 200, g = 30, b = 80},
 
-	-- HUD Bubble HP Meter --
+	-- BUBBLE HP METER --
 	hi = {r = 0, g = 255, b = 0},
 	md = {r = 255, g = 165, b = 0},
 	lo = {r = 255, g = 0, b = 50},
@@ -215,19 +228,21 @@ color = {
 		notfound	= {r = 125, g = 125, b = 125}	-- Not Found
 	},
 
-	-- HUD Nuke Modes --
-	mode = {
-		free = {r = 150, g = 255, b = 150},		--Free Nuke
-		burst = {r = 100, g = 200, b = 255},	--Magic Burst
-	},
-
-	-- HUD Bubbles --
+	-- BUBBLES --
 	bubble = {
 		normal = {r = 150, g = 255,b = 150},	--Normal
 		extra = {r = 100, g = 200, b = 255},	--Blaze of Glory OR Ecliptic Attrition
 		boge = {r = 200, g = 100, b = 255},		--Blaze of Glory AND Ecliptic Attrition
 		bolster = {r = 255, g = 223, b = 0},	--Bolster
-	}
+	},
+
+	-- DANGER MODE --
+	danger_mode = {
+		["Auto"] = {r = 255, g = 255, b = 255},
+		["On"] = {r = 250, g = 160, b = 0},
+		["Off"] = {r = 175, g = 175, b = 175},
+	},
+
 }
 
 -------------------------------------------
@@ -273,25 +288,15 @@ sets.idle_luopan = set_combine(sets.idle, {
 })
 
 -- Movement Speed
--- Automatically equips while in town, and while moving outside of town.
--- NOTE: To disable, leave this set empty and instead include your movement speed gear in the Idle set above.
+-- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
+-- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
 	feet="Geo. Sandals +4",
 }
 
--- DT Override (Damage Taken-, Magic Evasion)
--- Will override all other gear sets but still inherit unused slots from them
-sets.dt_override = {
-	head="Azimuth Hood +3",
-	body="Nyame Mail",
-	hands="Azimuth Gloves +3",
-	legs="Nyame Flanchard",
-	right_ring="Defending Ring",
-}
-
--- Oh Shit
+-- Danger
 -- Full DT- and everything you've got with Absorbs or Annuls Damage
-sets.oh_shit = {
+sets.danger = {
 	head="Azimuth Hood +3",
 	body="Nyame Mail",
 	hands="Azimuth Gloves +3",
@@ -390,7 +395,7 @@ sets.fast_cast = {
 	neck="Baetyl Pendant", --4%
 	waist="Embla Sash", --5%
 	left_ear="Malignance Earring", --4%
-	right_ear="Alabaster Earring",
+	right_ear="Azimuth Earring +1",
 	left_ring="Prolix Ring", --2%
 	right_ring="Kishar Ring", --4%
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}}, --10%
@@ -431,8 +436,8 @@ sets.entrust = set_combine(sets.indicolure, {
 	main="Gada",
 })
 
--- Elemental Spells (Magic Attack Bonus, Magic Damage, INT, Magic Accuracy)
-sets.elemental = {
+-- Nukes (Magic Attack Bonus, Magic Damage, INT, Magic Accuracy)
+sets.nuke = {
 	main="Bunzi's Rod",
 	sub="Ammurapi Shield",
 	head="Agwu's Cap",
@@ -521,7 +526,7 @@ sets.enfeeble = set_combine(sets.magic_accuracy, {
 	right_ring="Kishar Ring",
 })
 
--- Refresh (Refresh augmenting gear, not Refresh+)
+-- Refresh Spell (Refresh potency, Enhancing Magic Duration)
 sets.refresh = {
 	head="Amalric Coif +1",
 	back="Grapevine Cape",
@@ -653,31 +658,31 @@ end
 
 
 
-FileVersion = '15.0'
+FileVersion = '16.0'
 
 -------------------------------------------
 --             AREA MAPPING              --
 -------------------------------------------
 
-AdoulinZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife'
-	}
+AdoulinZones = {
+	["Western Adoulin"] = true, ["Eastern Adoulin"] = true, ["Celennia Memorial Library"] = true, ["Silver Knife"] = true
+}
 
-BastokZones = S{
-	'Bastok Markets','Bastok Mines','Metalworks','Port Bastok'
-	}
+BastokZones = {
+	["Bastok Markets"] = true, ["Bastok Mines"] = true, ["Metalworks"] = true, ["Port Bastok"] = true
+}
 
-SandyZones = S{
-	'Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria'
-	}
+SandyZones = {
+	["Chateau d'Oraguille"] = true, ["Northern San d'Oria"] = true, ["Port San d'Oria"] = true, ["Southern San d'Oria"] = true
+}
 
-WindyZones = S{
-	'Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods'
-	}
+WindyZones = {
+	["Heavens Tower"] = true, ["Port Windurst"] = true, ["Windurst Walls"] = true, ["Windurst Waters"] = true, ["Windurst Woods"] = true
+}
 
-TownZones = S{
-	'Western Adoulin','Eastern Adoulin','Celennia Memorial Library','Silver Knife','Bastok Markets','Bastok Mines','Metalworks','Port Bastok','Chateau d\'Oraguille','Northern San d\'Oria','Port San d\'Oria','Southern San d\'Oria','Heavens Tower','Port Windurst','Windurst Walls','Windurst Waters','Windurst Woods','Lower Jeuno','Port Jeuno','Ru\'Lude Gardens','Upper Jeuno','Aht Urhgan Whitegate','The Colosseum','Tavnazian Safehold','Southern San d\'Oria [S]','Bastok Markets [S]','Windurst Waters [S]','Mhaura','Selbina','Rabao','Kazham','Norg','Nashmau','Mog Garden','Leafallia','Chocobo Circuit'
-	}
+TownZones = {
+	["Western Adoulin"] = true, ["Eastern Adoulin"] = true, ["Celennia Memorial Library"] = true, ["Silver Knife"] = true, ["Bastok Markets"] = true, ["Bastok Mines"] = true, ["Metalworks"] = true, ["Port Bastok"] = true, ["Chateau d'Oraguille"] = true, ["Northern San d'Oria"] = true, ["Port San d'Oria"] = true, ["Southern San d'Oria"] = true, ["Heavens Tower"] = true, ["Port Windurst"] = true, ["Windurst Walls"] = true, ["Windurst Waters"] = true, ["Windurst Woods"] = true, ["Lower Jeuno"] = true, ["Port Jeuno"] = true, ["Ru'Lude Gardens"] = true, ["Upper Jeuno"] = true, ["Aht Urhgan Whitegate"] = true, ["The Colosseum"] = true, ["Tavnazian Safehold"] = true, ["Southern San d'Oria [S]"] = true, ["Bastok Markets [S]"] = true, ["Windurst Waters [S]"] = true, ["Mhaura"] = true, ["Selbina"] = true, ["Rabao"] = true, ["Kazham"] = true, ["Norg"] = true, ["Nashmau"] = true, ["Mog Garden"] = true, ["Leafallia"] = true, ["Chocobo Circuit"] = true
+}
 
 -------------------------------------------
 --              FILE LOAD                --
@@ -685,7 +690,7 @@ TownZones = S{
 
 sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 --debuffs table used so we're not spamming the Debuff Notifications with text updates (when they get flipped to true it stops updating)
-debuffs = {Amnesia = false, Animated = false, Charm = false, Curse = false, Doom = false, Encumbrance = false, Haunt = false, Mute = false, None = false, Paralysis = false, Petrification = false, Plague = false, Silence = false, Sleep = false, Stun = false, Taint = false, Terror = false, Zombie = false}
+debuffs = {Amnesia = false, Animated = false, Charm = false, Curse = false, Doom = false, Encumbrance = false, Haunt = false, Impairment = false, Mute = false, None = false, Paralysis = false, Petrification = false, Plague = false, Silence = false, Sleep = false, Stun = false, Taint = false, Terror = false, Zombie = false}
 SIL = '    '
 PAR = '     '
 PLG = '     '
@@ -697,13 +702,12 @@ res = require('resources')
 texts = require('texts')
 weaponskills = res.weapon_skills
 spells = res.spells
-Mode = StartMode --sets the starting mode (selected in the Advanced Options)
+DangerMode = StartingDangerMode
 IndiSpell = 'None'
 GeoSpell = 'None'
 EntrustSpell = 'None'
 UseEntrust = false
 NotiLowMPToggle = false --start with the toggle off for the Low MP Notification so that it can trigger
-DTOverride = false --Start with the Damage Taken Override off
 RRRCountdown = RRReminderTimer
 HUDposYLine1 = HUDposY
 last_poll = 0 --keeps the timing for things that happen at the polling rate
@@ -719,8 +723,11 @@ end
 LowHP = false
 Alive = true --makes it easier to Do Things or Not Do Things based on if we die.
 announceAlive = false --simple flip when we raise to make sure the AliveDelay command and notification text is only done once
-DangerCountdown = 0
-NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the ClearNotifications command
+WarningCountdown = 0
+NotiCountdown = -1 --we set the countdown below 0 to stop the countdown from hitting 0 and triggering the setNotification() command
+SafeTimer = -1
+TakingDamage = false
+NearDanger = false
 PetHPP = 0
 LuopanDelay = false --used to create a short delay between casting a luopan and checking if it still exists, pet.isvalid does a weird on/off/on thing when a luopan is cast which messes with checking if certain buffs are still active on the lupoan
 EntrustCountdown = 0
@@ -731,6 +738,9 @@ transport_lock_timestamp = 0
 player_x = nil
 player_y = nil
 moving = false
+active_skillchain_targets = {}
+active_chain_affinity = {}
+active_immanence = {}
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -1226,11 +1236,9 @@ end
 --            CUSTOM ALIASES             --
 -------------------------------------------
 
-send_command('alias mode gs c Mode') --creates the Mode alias
 send_command('alias hud gs c HUD') --creates the HUD alias
-send_command('alias dt gs c DT') --creates the DT Override alias
-send_command('bind '..ModeBind..' gs c Mode') --creates the gear mode keyboard shortcut
-send_command('bind '..DTBind..' gs c DT') --creates the DT Override keyboard shortcut
+send_command('alias dt gs c DT') --creates the Danger Mode alias
+send_command('bind '..DMBind..' gs c DT') --creates the Danger Mode keyboard shortcut
 
 -------------------------------------------
 --           CUSTOM FUNCTIONS            --
@@ -1259,7 +1267,7 @@ local function addCommas(number)
 	end
 
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
-    return formattedNumber
+	return formattedNumber
 end
 
 --Color the appropriate Ability/spell recast
@@ -1366,6 +1374,7 @@ local function formatAbils(input,input_sh)
 
 			-- Are we using the ability/spell name itself, or a shorthand supplied in the Options?
 			local startingString = input_sh == '' and input or input_sh
+
 			-- Adjust for Sublimation
 			if input == 'Sublimation' and buffactive['Sublimation: Activated'] then
 				startingString = 'Charging'
@@ -1449,7 +1458,7 @@ local function format36(input)
 	local maxLength = 40 --add 4 since the 4 « characters count as 2 each
 	local paddingTotalLength = maxLength - #input
 
-	-- Determine the position to insert the truncatedString
+	-- Determine the number of left and right spaces in order to center the formatted string
 	local leftPaddingLength = math.floor(paddingTotalLength / 2)
 	local leftPadding = string.rep(" ", leftPaddingLength)
 	local rightPaddingLength = paddingTotalLength - leftPaddingLength
@@ -1529,95 +1538,109 @@ local function useHachirinNoObi(nuke_element)
 	return bonus > penalty
 end
 
+local function setNotification()
+
+	if GreetingDelay ~= -1 then return end
+
+	
+	if TownZones[world.area] or windower.ffxi.get_info().mog_house then
+		hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..(player.sub_job_level and player.sub_job..player.sub_job_level or "---"))
+		hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..(player.sub_job_level and player.sub_job..player.sub_job_level or "---"))
+		hud_noti:color(255,255,255)
+	elseif buffactive['Sneak'] and buffactive['Invisible'] then
+		hud_noti_shdw:text('Status: Sneak & Invisible')
+		hud_noti:text('Status: Sneak & Invisible')
+		hud_noti:color(50,205,50)
+	elseif buffactive['Sneak'] then
+		hud_noti_shdw:text('Status: Sneak')
+		hud_noti:text('Status: Sneak')
+		hud_noti:color(50,205,50)
+	elseif buffactive['Invisible'] then
+		hud_noti_shdw:text('Status: Invisible')
+		hud_noti:text('Status: Invisible')
+		hud_noti:color(50,205,50)
+	elseif LowHP then
+		hud_noti_shdw:text('«« Low HP »»')
+		hud_noti:text('«« Low HP »»')
+		hud_noti:color(255,50,50)
+	elseif buffactive['weakness'] then
+		hud_noti_shdw:text('Status: Weakness')
+		hud_noti:text('Status: Weakness')
+		hud_noti:color(205,133,63)
+	elseif player.mpp <= 20 then
+		hud_noti_shdw:text('«« Low MP »»')
+		hud_noti:text('«« Low MP »»')
+		hud_noti:color(255,50,50)
+	else
+		local status = player.status
+		hud_noti_shdw:text('Status: '..status)
+		hud_noti:text('Status: '..status)
+		local c = color.danger_mode[DangerMode]
+		hud_noti:color(c.r,c.g,c.b)
+	end
+
+end
+
+--Are we in a party or alliance with other players (trusts do not count)
+local function playerIsInAPartyOrAlliance()
+	local get_party = windower.ffxi.get_party()
+	if get_party.party2_count > 0 or get_party.party3_count > 0 then return true end
+	if get_party.party1_count == 1 then return false end
+	for i = 1, get_party.party1_count-1 do
+		local member = windower.ffxi.get_mob_by_target('p'..i)
+		if member and not member.is_npc then
+			return true
+		end
+	end
+	return false
+end
+
+--Is the actor a monster?
+local function isMonster(id)
+	local actor = windower.ffxi.get_mob_by_id(id)
+	return actor and actor.spawn_type == 16 and not actor.in_party
+end
+
+--Is this player in our party or alliance?
+local function isInOurPartyOrAlliance(id)
+	local actor = windower.ffxi.get_mob_by_id(id)
+	local positions = {
+		'p0', 'p1', 'p2', 'p3', 'p4', 'p5',
+		'a10', 'a11', 'a12', 'a13', 'a14', 'a15',
+		'a20', 'a21', 'a22', 'a23', 'a24', 'a25'
+	}
+	for _, position in ipairs(positions) do
+		local member = windower.ffxi.get_mob_by_target(position)
+		if member and member.id == id or (member and actor and member.pet_index == actor.index) then
+			return true --In our party or alliance
+		end
+	end
+	return false --Not in our party or alliance
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
 
 function self_command(command)
-	if command == 'Mode' then
-		if Mode == 'Free' then
-			Mode = 'Burst'
-		elseif Mode == 'Burst' then
-			Mode = 'Free'
+	if command == 'DT' then
+		if DangerMode == 'Auto' then
+			DangerMode = 'On'
+		elseif DangerMode == 'On' then
+			DangerMode = 'Off'
+		elseif DangerMode == 'Off' then
+			DangerMode = 'Auto'
 		end
-		local new_mode = Mode == 'Free' and 'Free Nuke' or 'Magic Burst'
-		hud_noti_shdw:text('Nuke Mode set to '..new_mode)
-		hud_noti:text('Nuke Mode set to '..new_mode)
-		local c = Mode == 'Free' and color.mode.free or color.mode.burst
-		hud_noti:color(c.r,c.g,c.b)
-		NotiCountdown = NotiDelay
-	elseif command == 'DT' then
-		DTOverride = not DTOverride
 		choose_set()
+		setNotification()
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
-		local c = Mode == 'Free' and color.mode.free or color.mode.burst
-		if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
-			hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..(player.sub_job_level and player.sub_job..player.sub_job_level or "---"))
-			hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..(player.sub_job_level and player.sub_job..player.sub_job_level or "---"))
-			hud_noti:color(c.r,c.g,c.b)
-		elseif buffactive['Sneak'] and buffactive['Invisible'] then
-			hud_noti_shdw:text('Status: Sneak & Invisible')
-			hud_noti:text('Status: Sneak & Invisible')
-			hud_noti:color(50,205,50)
-		elseif buffactive['Sneak'] then
-			hud_noti_shdw:text('Status: Sneak')
-			hud_noti:text('Status: Sneak')
-			hud_noti:color(50,205,50)
-		elseif buffactive['Invisible'] then
-			hud_noti_shdw:text('Status: Invisible')
-			hud_noti:text('Status: Invisible')
-			hud_noti:color(50,205,50)
-		elseif LowHP then
-			hud_noti_shdw:text('«« Low HP »»')
-			hud_noti:text('«« Low HP »»')
-			hud_noti:color(255,50,50)
-		elseif buffactive['weakness'] and DTOverride then
-			hud_noti_shdw:text('Status: Weakness (DT Override)')
-			hud_noti:text('Status: Weakness (DT Override)')
-			hud_noti:color(205,133,63)
-		elseif buffactive['weakness'] then
-			hud_noti_shdw:text('Status: Weakness')
-			hud_noti:text('Status: Weakness')
-			hud_noti:color(205,133,63)
-		elseif player.mpp <= 20 then
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-		elseif player.status == "Resting" and DTOverride then
-			hud_noti_shdw:text('Status: Resting (DT Override)')
-			hud_noti:text('Status: Resting (DT Override)')
-			hud_noti:color(c.r,c.g,c.b)
-		elseif player.status == "Resting" then
-			hud_noti_shdw:text('Status: Resting')
-			hud_noti:text('Status: Resting')
-			hud_noti:color(c.r,c.g,c.b)
-		elseif player.status == "Engaged" and DTOverride then
-			hud_noti_shdw:text('Status: Engaged (DT Override)')
-			hud_noti:text('Status: Engaged (DT Override)')
-			hud_noti:color(c.r,c.g,c.b)
-		elseif player.status == "Engaged" then
-			hud_noti_shdw:text('Status: Engaged')
-			hud_noti:text('Status: Engaged')
-			hud_noti:color(c.r,c.g,c.b)
-		elseif player.status == "Idle" and DTOverride then
-			hud_noti_shdw:text('Status: Idle (DT Override)')
-			hud_noti:text('Status: Idle (DT Override)')
-			hud_noti:color(c.r,c.g,c.b)
-		elseif player.status == "Idle" then
-			hud_noti_shdw:text('Status: Idle')
-			hud_noti:text('Status: Idle')
-			hud_noti:color(c.r,c.g,c.b)
-		elseif player.status == "Mount" then
-			hud_noti_shdw:text('Status: Mounted')
-			hud_noti:text('Status: Mounted')
-			hud_noti:color(c.r,c.g,c.b)
-		end
+		setNotification()
 	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
 		hud_debuffs_shdw:text('')
 		hud_debuffs:text('')
 	elseif command == 'Zone Gear' then
 		if ZoneGear == 'Town' then
-			if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
+			if TownZones[world.area] or windower.ffxi.get_info().mog_house then
 				send_command('wait 5;gs c Choose Set')
 			end
 		elseif ZoneGear ~= "Off" then
@@ -1796,129 +1819,32 @@ end
 -------------------------------------------
 
 function choose_set()
-	local c = Mode == 'Free' and color.mode.free or color.mode.burst
+
+	local base_set = LuopanActive and sets.idle_luopan or sets.idle
+	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and (TakingDamage or NearDanger))) and sets.danger or nil
 	if player.status == "Resting" then
-		if GreetingDelay == -1 then
-			if LowHP then
-				hud_noti_shdw:text('«« Low HP »»')
-				hud_noti:text('«« Low HP »»')
-				hud_noti:color(255,50,50)
-			elseif buffactive['weakness'] and DTOverride then
-				hud_noti_shdw:text('Status: Weakness (DT Override)')
-				hud_noti:text('Status: Weakness (DT Override)')
-				hud_noti:color(205,133,63)
-			elseif buffactive['weakness'] then
-				hud_noti_shdw:text('Status: Weakness')
-				hud_noti:text('Status: Weakness')
-				hud_noti:color(205,133,63)
-			elseif player.mpp <= 20 then
-				hud_noti_shdw:text('«« Low MP »»')
-				hud_noti:text('«« Low MP »»')
-				hud_noti:color(255,50,50)
-			elseif DTOverride then
-				hud_noti_shdw:text('Status: Resting (DT Override)')
-				hud_noti:text('Status: Resting (DT Override)')
-				hud_noti:color(c.r,c.g,c.b)
-			else
-				hud_noti_shdw:text('Status: Resting')
-				hud_noti:text('Status: Resting')
-				hud_noti:color(c.r,c.g,c.b)
-			end
-		end
-		local dt_override = DTOverride and sets.dt_override or nil
-		equip(set_combine(sets.idle, sets.rest, dt_override))
+		equip(set_combine(base_set, sets.rest, danger))
 	elseif player.status == "Engaged" then
-		if GreetingDelay == -1 then
-			if LowHP then
-				hud_noti_shdw:text('«« Low HP »»')
-				hud_noti:text('«« Low HP »»')
-				hud_noti:color(255,50,50)
-			elseif buffactive['weakness'] and DTOverride then
-				hud_noti_shdw:text('Status: Weakness (DT Override)')
-				hud_noti:text('Status: Weakness (DT Override)')
-				hud_noti:color(205,133,63)
-			elseif buffactive['weakness'] then
-				hud_noti_shdw:text('Status: Weakness')
-				hud_noti:text('Status: Weakness')
-				hud_noti:color(205,133,63)
-			elseif player.mpp <= 20 then
-				hud_noti_shdw:text('«« Low MP »»')
-				hud_noti:text('«« Low MP »»')
-				hud_noti:color(255,50,50)
-			elseif DTOverride then
-				hud_noti_shdw:text('Status: Engaged (DT Override)')
-				hud_noti:text('Status: Engaged (DT Override)')
-				hud_noti:color(c.r,c.g,c.b)
-			else
-				hud_noti_shdw:text('Status: Engaged')
-				hud_noti:text('Status: Engaged')
-				hud_noti:color(c.r,c.g,c.b)
-			end
-		end
-		local dt_override = DTOverride and sets.dt_override or nil
-		local low_hp = LowHP and sets.oh_shit or nil
-		equip(set_combine(sets.melee, dt_override, low_hp))
+		equip(set_combine(sets.melee, danger))
 	elseif player.status == "Idle" then
-		if GreetingDelay == -1 then
-			if TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
-				hud_noti_shdw:text(player.name..': '..player.main_job..player.main_job_level..'/'..(player.sub_job_level and player.sub_job..player.sub_job_level or "---"))
-				hud_noti:text(player.name..': '..player.main_job..player.main_job_level..'/'..(player.sub_job_level and player.sub_job..player.sub_job_level or "---"))
-				hud_noti:color(c.r,c.g,c.b)
-			elseif buffactive['Sneak'] and buffactive['Invisible'] then
-				hud_noti_shdw:text('Status: Sneak & Invisible')
-				hud_noti:text('Status: Sneak & Invisible')
-				hud_noti:color(50,205,50)
-			elseif buffactive['Sneak'] then
-				hud_noti_shdw:text('Status: Sneak')
-				hud_noti:text('Status: Sneak')
-				hud_noti:color(50,205,50)
-			elseif buffactive['Invisible'] then
-				hud_noti_shdw:text('Status: Invisible')
-				hud_noti:text('Status: Invisible')
-				hud_noti:color(50,205,50)
-			elseif LowHP then
-				hud_noti_shdw:text('«« Low HP »»')
-				hud_noti:text('«« Low HP »»')
-				hud_noti:color(255,50,50)
-			elseif buffactive['weakness'] and DTOverride then
-				hud_noti_shdw:text('Status: Weakness (DT Override)')
-				hud_noti:text('Status: Weakness (DT Override)')
-				hud_noti:color(205,133,63)
-			elseif buffactive['weakness'] then
-				hud_noti_shdw:text('Status: Weakness')
-				hud_noti:text('Status: Weakness')
-				hud_noti:color(205,133,63)
-			elseif player.mpp <= 20 then
-				hud_noti_shdw:text('«« Low MP »»')
-				hud_noti:text('«« Low MP »»')
-				hud_noti:color(205,133,63)
-			elseif DTOverride then
-				hud_noti_shdw:text('Status: Idle (DT Override)')
-				hud_noti:text('Status: Idle (DT Override)')
-				hud_noti:color(c.r,c.g,c.b)
-			else
-				hud_noti_shdw:text('Status: Idle')
-				hud_noti:text('Status: Idle')
-				hud_noti:color(c.r,c.g,c.b)
-			end
-		end
-		if AdoulinZones:contains(world.area) then
+		if AdoulinZones[world.area] then
 			equip(set_combine(sets.adoulin, sets.movement_speed))
-		elseif BastokZones:contains(world.area) then
+		elseif BastokZones[world.area] then
 			equip(set_combine(sets.bastok, sets.movement_speed))
-		elseif SandyZones:contains(world.area) then
+		elseif SandyZones[world.area] then
 			equip(set_combine(sets.sandoria, sets.movement_speed))
-		elseif WindyZones:contains(world.area) then
+		elseif WindyZones[world.area] then
 			equip(set_combine(sets.windurst, sets.movement_speed))
-		elseif TownZones:contains(world.area) or windower.ffxi.get_info().mog_house then
+		elseif TownZones[world.area] or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets.town, sets.movement_speed))
 		else
-			local base_set = LuopanActive and sets.idle_luopan or sets.idle
-			local dt_override = DTOverride and sets.dt_override or nil
-			local low_hp = LowHP and sets.oh_shit or nil
-			equip(set_combine(base_set, dt_override, low_hp))
+			local autorun = windower.ffxi.get_player().autorun
+			local auto_movement_speed = AutoMvmntSpeed and moving
+			local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
+			equip(set_combine(base_set, danger, movement_speed))
 		end
 	end
+
 end
 
 -------------------------------------------
@@ -1926,12 +1852,10 @@ end
 -------------------------------------------
 
 function precast(spell)
-	local transport_spells = S{
-		'Teleport-Holla', 'Teleport-Dem', 'Teleport-Mea', 'Teleport-Altep', 'Teleport-Yhoat', 'Teleport-Vahzl',
-		'Recall-Jugner', 'Recall-Meriph', 'Recall-Pashh',
-		'Warp', 'Warp II', 'Retrace', 'Escape'
+	local transport_spells = {
+		['Teleport-Holla'] = true, ['Teleport-Dem'] = true, ['Teleport-Mea'] = true, ['Teleport-Altep'] = true, ['Teleport-Yhoat'] = true, ['Teleport-Vahzl'] = true, ['Recall-Jugner'] = true, ['Recall-Meriph'] = true, ['Recall-Pashh'] = true, ['Warp'] = true, ['Warp II'] = true, ['Retrace'] = true, ['Escape'] = true
 	}
-	if TransportLock and transport_spells:contains(spell.en) and transport_locked then
+	if TransportLock and transport_spells[spell.en] and transport_locked then
 		cancel_spell()
 		transport_locked = false
 		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
@@ -1941,44 +1865,26 @@ function precast(spell)
 		transport_lock_timestamp = os.time() + 180
 		return
 	end
-	if buffactive['terror'] then
+	local is_magic = spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song'
+	local is_ws_or_ja = spell.type == 'WeaponSkill' or spell.type == 'JobAbility'
+	local blocked =
+		buffactive['terror'] or
+		buffactive['petrification'] or
+		buffactive['sleep'] or
+		buffactive['stun'] or
+		(buffactive['amnesia'] or buffactive['impairment'] and is_ws_or_ja) or
+		(buffactive['mute'] and is_magic)
+	local silenced = buffactive['silence'] and is_magic
+	if blocked or silenced then
 		if AlertSounds then
 			play_sound(Notification_Cancel)
 		end
-		flash('Debuffs')
-	elseif buffactive['petrification'] then
-		if AlertSounds then
-			play_sound(Notification_Cancel)
-		end
-		flash('Debuffs')
-	elseif buffactive['sleep'] then
-		if AlertSounds then
-			play_sound(Notification_Cancel)
-		end
-		flash('Debuffs')
-	elseif buffactive['stun'] then
-		if AlertSounds then
-			play_sound(Notification_Cancel)
-		end
-		flash('Debuffs')
-	elseif buffactive['amnesia'] and (spell.type == 'WeaponSkill' or spell.type == 'JobAbility') then
-		if AlertSounds then
-			play_sound(Notification_Cancel)
-		end
-		flash('Debuffs')
-	elseif buffactive['silence'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
-		if AlertSounds then
-			play_sound(Notification_Cancel)
-		end
-		if UseEcho == 'E' then
-			send_command('input /item "Echo Drops" <me>')
-		elseif UseEcho == 'R' then
-			send_command('input /item "Remedy" <me>')
-		end
-		flash('Debuffs')
-	elseif buffactive['mute'] and (spell.prefix == '/magic' or spell.prefix == '/ninjutsu' or spell.prefix == '/song') then
-		if AlertSounds then
-			play_sound(Notification_Cancel)
+		if silenced then
+			if UseEcho == 'E' then
+				send_command('input /item "Echo Drops" <me>')
+			elseif UseEcho == 'R' then
+				send_command('input /item "Remedy" <me>')
+			end
 		end
 		flash('Debuffs')
 	elseif spell.type == 'WeaponSkill' then
@@ -2068,8 +1974,6 @@ function precast(spell)
 	elseif spell.english == 'Stoneskin' and buffactive['Stoneskin'] then
 		send_command('cancel 37')
 		equip(sets.fast_cast)
-	elseif spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water' then
-		equip(sets.Elemental)
 	elseif spell.english == 'Impact' then
 		equip(set_combine(sets.fast_cast, sets.impact))
 	elseif spell.english == 'Dispelga' then
@@ -2114,10 +2018,10 @@ function midcast(spell)
 		equip(sets.aquaveil)
 	elseif spell.skill == 'Enhancing Magic' then
 		equip(sets.enhancing)
-	elseif spell.skill == 'Elemental Magic' and not (spell.english == 'Fire' or spell.english == 'Blizzard' or spell.english == 'Aero' or spell.english == 'Stone' or spell.english == 'Thunder' or spell.english == 'Water') then
-		local magic_burst = Mode == 'Burst' and sets.magic_burst or nil
+	elseif spell.skill == 'Elemental Magic' then
+		local magic_burst = active_skillchain_targets[spell.target.id] and sets.magic_burst or nil
 		local hachirin_no_obi = useHachirinNoObi(spell.element) and sets.hachirin_no_obi or nil
-		equip(set_combine(sets.elemental, magic_burst, hachirin_no_obi))
+		equip(set_combine(sets.nuke, magic_burst, hachirin_no_obi))
 	elseif spell.skill == 'Enfeebling Magic' then
 		equip(sets.enfeeble)
 	elseif spell.type == 'Trust' then
@@ -2343,8 +2247,8 @@ function aftercast(spell)
 			GeoSpell = SpellSH
 			GeoTotal = Total
 			GeoSuffix = Suffix
-			send_command('wait 2;gs c Choose Set;gs c LuopanDelay')
-			--add in a 2 second wait after casting a Geo- spell because the choose_set function is called too quickly and the pet.isvalid hasn't had enough time to be set to true yet
+			LuopanActive = true
+			send_command('wait 2;gs c LuopanDelay')
 		end
 	elseif spell.english == 'Blaze of Glory' and not spell.interrupted then
 		BlazeActive = true
@@ -2356,18 +2260,7 @@ function aftercast(spell)
 	elseif spell.english == 'Dematerialize' and not spell.interrupted then
 		DematerializeActive = true
 	elseif (spell.english == 'Full Circle' or spell.english == 'Concentric Pulse' or spell.english == 'Radial Arcana' or spell.english == 'Mending Halation') and not spell.interrupted then
-		hud_geo_spell_shdw:text(format24('None'))
-		hud_geo_spell:text(format24('None'))
 		local c = color.bubble.normal
-		if BolsteredBubble and buffactive['Bolster'] then
-			c = color.bubble.bolster
-		elseif EclipticActive and BlazeActive then
-			c = color.bubble.boge
-		elseif BlazeActive then
-			c = color.bubble.extra
-		elseif EclipticActive then
-			c = color.bubble.extra
-		end
 		hud_geo_spell:color(c.r,c.g,c.b)
 		LuopanActive = false
 	elseif spell.english == 'Bolster' and BolTimer and not spell.interrupted then
@@ -2380,15 +2273,11 @@ function aftercast(spell)
 		send_command('input /echo [Widened Compass] 1:00;wait 30;input /echo [Widened Compass] 0:30;wait 10;input /echo [Widened Compass] 0:20;wait 10;input /echo [Widened Compass] 0:10')
 	end
 	choose_set()
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoFullCircle and spell.english == "Full Circle") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
-			if spell.type == 'WeaponSkill' or spell.action_type == 'Magic' then
-				send_command('wait 3;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-			elseif spell.type == 'JobAbility' then
-				send_command('wait .5;input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-			end
-			return
+			local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
+			send_command('wait '..wait..';input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
 		end
 	end
 end
@@ -2398,21 +2287,25 @@ end
 -------------------------------------------
 
 windower.register_event('status change', function(status)
-    if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
+
+	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
 		windower.send_command('gs c HideHUD')
-    elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
+	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
 		windower.send_command('gs c ShowHUD')
-    end
-	choose_set() --run this any time your status changes (engage, disengage, rest)
-	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+	end
+
+	choose_set()
+	setNotification()
+
+	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
 		if not double_sublimation_fix then
 			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
 			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-			return
 		end
 	end
+
 end)
 
 -------------------------------------------
@@ -2420,6 +2313,7 @@ end)
 -------------------------------------------
 
 function party_buff_change(party_member,name,gain,buff)
+
 	if name == 'Colure Active' and not gain and party_member.name == EntrustTarget then
 		EntrustTarget = nil
 		hud_entrust_spell_shdw:text(format24('None'))
@@ -2432,18 +2326,20 @@ function party_buff_change(party_member,name,gain,buff)
 			hud_entrust_spell:color(255,50,50)	
 		end
 	end
+
 end
 
 windower.register_event('gain buff', function(buff)
+
 	if (buff == 2 or buff == 19) then
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --If we get slept, remove stoneskin if its up
 			send_command('cancel 37')
 		end
-		equip(sets.oh_shit)
-	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Oh Shit set
-		equip(sets.oh_shit)
+		equip(sets.danger)
+	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Danger set
+		equip(sets.danger)
 	elseif buff == 15 then --Doom
-		DangerCountdown = DangerRepeat --Start the Danger Sound going
+		WarningCountdown = WarningRepeat --Start the Warning Sound going
 	elseif buff == 17 and AlertSounds then --Charm
 		play_sound(Notification_Cancel)
 	elseif buff == 612 then --Colure Active
@@ -2452,13 +2348,15 @@ windower.register_event('gain buff', function(buff)
 		local c = buffactive['Bolster'] and color.bubble.bolster or color.bubble.normal
 		hud_indi_spell:color(c.r,c.g,c.b)
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
-		send_command('gs c ClearNotifications')
+		setNotification()
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
 	end
+
 end)
 
 windower.register_event('lose buff', function(buff)
+
 	if buff == 251 and Alive and notifications.Food then --food wears off
 		if AlertSounds then
 			play_sound(Notification_Bad)
@@ -2532,15 +2430,17 @@ windower.register_event('lose buff', function(buff)
 	elseif buff == 2 or buff == 19 or buff == 7 or buff == 10 or buff == 28 then --lose sleep, petrify, stun, or terror run choose_set since we changed gear for those
 		choose_set()
 	elseif buff == 15 then --Doom
-		DangerCountdown = 0 --Set to 0 to turn the sound off when we are no longer Doomed
+		WarningCountdown = 0 --Set to 0 to turn the sound off when we are no longer Doomed
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
-		send_command('gs c ClearNotifications')
+		setNotification()
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
 	end
+
 end)
 
 windower.register_event('tp change',function()
+
 	if player.tp == 3000 and notifications.TP3000 then
 		if AlertSounds then
 			play_sound(Notification_3000TP)
@@ -2550,6 +2450,7 @@ windower.register_event('tp change',function()
 		hud_noti:color(255,255,50)
 		NotiCountdown = NotiDelay
 	end
+
 end)
 
 -------------------------------------------
@@ -2581,18 +2482,44 @@ windower.register_event('prerender', function()
 			Zoning = false
 		end
 
-		--Movement Speed set equipping
-		local get_player = windower.ffxi.get_mob_by_target('me')
-		local new_player_x = get_player and get_player.x or new_player_x
-		local new_player_y = get_player and get_player.y or new_player_y
-		if (player_x ~= new_player_x or player_y ~= new_player_y) and get_player and get_player.status ~= 1 then
-			player_x = new_player_x
-			player_y = new_player_y
-			moving = true
-			equip(sets.movement_speed)
-		elseif moving then
-			moving = false
-			choose_set()
+		--Checking gear on movement
+		if AutoGearCheck or AutoMvmntSpeed then
+			local get_player = windower.ffxi.get_mob_by_target('me')
+			if get_player then
+				--Player has started moving
+				if player_x ~= get_player.x or player_y ~= get_player.y then
+					if not moving then
+						moving = true
+						choose_set()
+					end
+				--Player has stopped moving
+				elseif moving then
+					moving = false
+					choose_set()
+				end
+				player_x = get_player.x
+				player_y = get_player.y
+			end
+		end
+
+		--Battle Target distance checks
+		if not DangerPTOnly or playerIsInAPartyOrAlliance() then
+			local found = false
+			for _,v in pairs(windower.ffxi.get_mob_array()) do
+				local distance = math.floor(v.distance:sqrt())
+				if v.valid_target and distance < NearDangerRange and isInOurPartyOrAlliance(v.claim_id) then
+					found = true
+					break
+				end
+			end
+			NearDanger = found
+		end
+
+		--Clear expired Skillchain timers
+		for id, timestamp in pairs(active_skillchain_targets) do
+			if timestamp <= current_time then
+				active_skillchain_targets[id] = nil
+			end
 		end
 
 		--Debuff checks
@@ -2730,6 +2657,12 @@ windower.register_event('prerender', function()
 						local c = color.Fire
 						AMN = '\\cs('..c.r..','..c.g..','..c.b..')AMNES\\cr'
 					end
+				elseif buffactive['impairment'] then
+					if not debuffs.Impairment then
+						debuffs.Impairment = true
+						local c = color.Fire
+						AMN = '\\cs('..c.r..','..c.g..','..c.b..')IMPAR\\cr'
+					end
 				else
 					if debuffs.Amnesia then debuffs.Amnesia = false end
 					if AMN ~= '     ' then AMN = '     ' end
@@ -2770,7 +2703,8 @@ windower.register_event('prerender', function()
 
 		--MP checks
 		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off (done below)
+			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+			lowMP = true
 			if AlertSounds then
 				play_sound(Notification_Bad)
 			end
@@ -2779,6 +2713,9 @@ windower.register_event('prerender', function()
 			hud_noti:color(255,50,50)
 			NotiCountdown = NotiDelay
 			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+		elseif notifications.LowMP and player and player.mpp > 20 and LowMP then
+			lowMP = false
+			setNotification()
 		end
 
 		--HP checks
@@ -2790,7 +2727,7 @@ windower.register_event('prerender', function()
 				NotiCountdown = -1
 				Alive = false
 				announceAlive = true
-				DangerCountdown = 0
+				WarningCountdown = 0
 				if LowHP then
 					LowHP = false
 				end
@@ -2804,15 +2741,15 @@ windower.register_event('prerender', function()
 				announceAlive = false
 				send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
 			end
-			if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
+			if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
 				if not LowHP then
 					LowHP = true
-					DangerCountdown = DangerRepeat
+					WarningCountdown = WarningRepeat
 					choose_set()
 				end
-			elseif player.hp > LowHPThreshold and LowHP then --when HP goes back above a certain amount, turn off the LowHP flag and equip the appropriate gear set
-				send_command('gs c ClearNotifications')
+			elseif (player.hp > LowHPThreshold or player.max_hp > LowHPThreshold) and LowHP then --when HP goes back above a certain amount, turn off the LowHP flag and equip the appropriate gear set
 				LowHP = false
+				setNotification()
 				choose_set()
 			end
 		end
@@ -3288,28 +3225,36 @@ windower.register_event('prerender', function()
 		if notifications.Doom and buffactive['doom'] then
 			flash('Debuffs')
 		end
-		if (notifications.Doom and buffactive['doom']) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones:contains(world.area) or windower.ffxi.get_info().mog_house)) and AlertSounds and DangerCountdown > 0 then
-			DangerCountdown = DangerCountdown - 1
+		if (notifications.Doom and buffactive['doom']) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and AlertSounds and WarningCountdown > 0 then
+			WarningCountdown = WarningCountdown - 1
 			play_sound(Notification_Danger)
 		end
 
 		if NotiCountdown > 0 then
 			NotiCountdown = NotiCountdown - 1
 		elseif NotiCountdown == 0 then
-			send_command('gs c ClearNotifications')
 			NotiCountdown = -1
+			setNotification()
+		end
+
+		if SafeTimer > 0 then
+			SafeTimer = SafeTimer - 1
+		elseif SafeTimer == 0 then
+			TakingDamage = false
+			SafeTimer = -1
+			choose_set()
 		end
 
 		if GreetingDelay > 0 then
 			GreetingDelay = GreetingDelay - 1
 		elseif GreetingDelay == 0 then
-			send_command('gs c ClearNotifications')
 			GreetingDelay = -1
+			setNotification()
 		end
 
 		if party and party_count == 1 and party_count ~= party.count then
 			party_count = party.count
-			send_command('gs c ClearNotifications')
+			setNotification()
 		elseif party and party_count ~= 1 and party.count == 1 then
 			party_count = 1
 		end
@@ -3335,7 +3280,7 @@ windower.register_event('zone change',function()
 	end
 
 	--Clear any notifications
-	send_command('gs c ClearNotifications')
+	setNotification()
 
 	--Clear any debuffs
 	send_command('gs c ClearDebuffs')
@@ -3343,6 +3288,9 @@ windower.register_event('zone change',function()
 	--Unlock Transport spells
 	transport_locked = true
 	transport_lock_timestamp = 0
+
+	--Clear any Skillchain timers just in case
+	active_skillchain_targets = {}
 
 end)
 
@@ -3353,7 +3301,7 @@ end)
 function sub_job_change(newSubjob, oldSubjob)
 
 	if GreetingDelay == -1 then
-		send_command('gs c ClearNotifications')
+		setNotification()
 	end
 
 	-- Reset HUD Abilities/Spells and Macro Page
@@ -3464,7 +3412,7 @@ windower.register_event('incoming text',function(org)
 		end
 		NotiCountdown = NotiDelay
 	elseif org:find('Trade complete') then
-		send_command('gs c ClearNotifications')
+		setNotification()
 	end
 end)
 
@@ -3474,39 +3422,107 @@ end)
 
 windower.register_event('action',function(act)
 
-	if notifications.Damage then
-		--Weapon Skills and Skillchains:
-		if act.category == 3 and act.actor_id == player.id then
-			--Weapon Skill misses:
-			if act.targets[1].actions[1].message == 188 then
-				hud_noti_shdw:text('«« '..weaponskills[act.param].english..' Missed »»')
-				hud_noti:text('«« '..weaponskills[act.param].english..' Missed »»')
-				hud_noti:color(0,255,255)
-			--Weapon Skill gets blinked:
-			elseif act.targets[1].actions[1].message == 31 then
-				hud_noti_shdw:text('«« '..weaponskills[act.param].english..' Blinked »»')
-				hud_noti:text('«« '..weaponskills[act.param].english..' Blinked »»')
-				hud_noti:color(0,255,255)
-			--Weapon Skill lands and creates a Skillchain:
-			elseif act.targets[1].actions[1].message == 185 and act.targets[1].actions[1].has_add_effect then
-				hud_noti_shdw:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')')
-				hud_noti:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param)..' ('..sc[act.targets[1].actions[1].add_effect_animation]..': '..addCommas(act.targets[1].actions[1].add_effect_param)..')')
-				hud_noti:color(0,255,255)
-			--Weapon Skill lands but no Skillchain:
-			elseif act.targets[1].actions[1].message == 185 then
-				hud_noti_shdw:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-				hud_noti:text(weaponskills[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-				hud_noti:color(0,255,255)
+	local ata = act.targets[1].actions[1]
+	local msg = ata.message
+	local target_id = act.targets[1].id
+	local clock = os.clock()
+
+	--Check if a monsters attack hits the player
+	if DangerMode == "Auto" and (not DangerPTOnly or playerIsInAPartyOrAlliance()) and isMonster(act.actor_id) then
+		for i = 1, act.target_count do
+			if act.targets[i].id == player.id then
+				SafeTimer = DangerSafeDelay
+				TakingDamage = true
+				choose_set()
+				break
 			end
-			NotiCountdown = -1
-		--Magic Bursts:
-		elseif (act.category == 4 and act.targets[1].actions[1].message == 252) and act.actor_id == player.id then
-			hud_noti_shdw:text('Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-			hud_noti:text('Magic Burst! '..spells[act.param].english..': '..addCommas(act.targets[1].actions[1].param))
-			hud_noti:color(0,255,255)
-			NotiCountdown = -1
 		end
 	end
+
+	--Track Skillchain things our party/alliance is doing
+	--NOTE: Since we need to know slightly ahead of the actual Magic Burst window to make sure to be casting in MB gear, we're
+	--      just going to assume if we're nuking on a monster someone is WS'ing (or related things) on that we're trying to MB.
+	if isInOurPartyOrAlliance(act.actor_id) then
+
+		local function addToActiveSkillchain(id)
+			active_skillchain_targets = {
+				[id] = clock + 10,
+			}
+		end
+
+		--Weapon Skills
+		if act.category == 3 and msg == 185 then
+			addToActiveSkillchain(target_id)
+		end
+
+		--Konzen-ittai (and maybe Wild Flourish?)
+		if act.category == 14 and msg == 529 then
+			addToActiveSkillchain(target_id)
+		end
+
+		--Immanence and Chain Affinity usage so we can know if their next spell then opens a skillchain window
+		if act.category == 6 and msg == 100 then
+			if ata.param == 470 then --Chain Affinity
+				local duration = 30
+				active_chain_affinity = {
+					[act.actor_id] = clock + duration,
+				}
+			elseif ata.param == 164 then --Immanence
+				local duration = 60
+				active_immanence = {
+					[act.actor_id] = clock + duration,
+				}
+			end
+		end
+
+		--Spell with Immanence or Chain Affinity active
+		if act.category == 4 then
+			if spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
+				addToActiveSkillchain(target_id)
+				active_chain_affinity[act.actor_id] = nil
+			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
+				addToActiveSkillchain(target_id)
+				active_immanence[act.actor_id] = nil
+			end
+		end
+
+	end
+
+	if not notifications.Damage then return end
+
+	--Weapon Skills and Skillchains:
+	if act.category == 3 and act.actor_id == player.id then
+		local weapon_skill = weaponskills[act.param].english
+		--Weapon Skill misses:
+		if msg == 188 then
+			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
+			hud_noti:text('«« '..weapon_skill..' Missed »»')
+			hud_noti:color(0,255,255)
+		--Weapon Skill gets blinked:
+		elseif msg == 31 then
+			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
+			hud_noti:text('«« '..weapon_skill..' Blinked »»')
+			hud_noti:color(0,255,255)
+		--Weapon Skill lands and creates a Skillchain:
+		elseif msg == 185 and ata.has_add_effect then
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:color(0,255,255)
+		--Weapon Skill lands but no Skillchain:
+		elseif msg == 185 then
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
+			hud_noti:color(0,255,255)
+		end
+		NotiCountdown = -1
+	--Magic Bursts:
+	elseif (act.category == 4 and msg == 252) and act.actor_id == player.id then
+		hud_noti_shdw:text('Magic Burst! '..spells[act.param].english..': '..addCommas(ata.param))
+		hud_noti:text('Magic Burst! '..spells[act.param].english..': '..addCommas(ata.param))
+		hud_noti:color(0,255,255)
+		NotiCountdown = -1
+	end
+
 end)
 
 -------------------------------------------
@@ -3516,10 +3532,8 @@ end)
 function file_unload()
 
 	--Delete our aliases and binds, thank you for your service
-	send_command('unalias mode')
 	send_command('unalias dt')
 	send_command('unalias hud')
-	send_command('unbind '..ModeBind)
-	send_command('unbind '..DTBind)
+	send_command('unbind '..DMBind)
 
 end
