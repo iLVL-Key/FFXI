@@ -2145,6 +2145,9 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.1
+- Added Low Damage Helix Immanence gear set with associated table of targets. Automatically uses the Low Damage Helix Immanence gear set when casting a Helix spell with Immanence active.
+
 Version 1.0
 - First version
 </details>
