@@ -586,12 +586,12 @@ function checkForTarget()
 
 					--Notify player if not already announced or flood delay has passed
 					if (not announced[key]) and (current_time - last_seen_time > settings.flood_delay) then
-						local displayName = (key == convertToHexId(mob.index)) and (mob.name..' ('..key..')') or mob.name
+						local displayName = (key == convertToHexId(mob.index) or tostring(key) == tostring(mob.id)) and (mob.name..' ('..key..')') or mob.name
 
 						if direction then
 							add_to_chat(1, '[Jingle] ':color(220)..displayName:color(1)..' detected ':color(8)..rounded_distance..'y':color(1)..' to the ':color(8)..dir_full[direction]:color(1)..'.':color(8))
 						else
-							add_to_chat(1, '[Jingle] ':color(220)..displayName..' is nearby.':color(8))
+							add_to_chat(1, '[Jingle] ':color(220)..displayName:color(1)..' is nearby.':color(8))
 						end
 
 						if settings.play_sound then
