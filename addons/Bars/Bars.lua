@@ -8719,7 +8719,6 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 					y = target_data.y or 0,
 					facing = target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0,
 				}
-				print(target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0)
 			end
 		end, 0.5)
 	end
