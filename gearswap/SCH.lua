@@ -455,6 +455,18 @@ spell_map = {
 		["Luminohelix II"] = "<stnpc>", ["Noctohelix II"] = "<stnpc>", ["Pyrohelix II"] = "<stnpc>", ["Geohelix II"] = "<stnpc>", ["Hydrohelix II"] = "<stnpc>", ["Anemohelix II"] = "<stnpc>", ["Cryohelix II"] = "<stnpc>", ["Ionohelix II"] = "<stnpc>",
 	}
 }
+
+-------------------------------------------
+--    LOW DAMAGE HELIX IMMANENCE MOBS    --
+-------------------------------------------
+
+-- These targets automatically use the Low Damage Helix Immanence gear set when casting a Helix spell with Immanence active.
+
+HelixLowDamageImmanence = {
+	["Gartell"] = true,
+	["Leshonn"] = true,
+}
+
 -------------------------------------------
 --               GEAR SETS               --
 -------------------------------------------
@@ -745,6 +757,11 @@ sets.helix = {
 	left_ring="Freke Ring",
 	right_ring="Metamor. Ring +1",
 	back="Lugh's Cape",
+}
+
+-- Low Damage Immanence Helices
+sets.helix.low_damage_immanence = {
+
 }
 
 -- Magic Burst Helices
@@ -1078,7 +1095,9 @@ end
 
 
 
-FileVersion = '1.0'
+FileVersion = '1.1'
+
+-- - Added Low Damage Helix Immanence gear set with associated table of targets. Automatically uses the Low Damage Helix Immanence gear set when casting a Helix spell with Immanence active.
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2716,7 +2735,7 @@ function midcast(spell)
 			local magic_burst = (not immanence and Mode == 1 and active_skillchain_targets[spell.target.id]) and sets.nuke.magic_burst or nil
 			local occult_acumen = (not immanence and Mode == 2) and sets.nuke.occult_acumen or nil
 			local ebullience = buffactive.Ebullience and sets.ebullience or nil
-			local helix = string.find(spell.name,"helix") and sets.helix or nil
+			local helix = string.find(spell.name,"helix") and (HelixLowDamageImmanence[player.target.name] and sets.helix.low_damage_immanence or sets.helix) or nil
 			local lumino = spell.english:startswith('Lumino') and sets.helix.luminohelix or nil
 			local nocto = spell.english:startswith('Nocto') and sets.helix.noctohelix or nil
 			local helix_mb = (not immanence and string.find(spell.name,"helix") and Mode == 1) and sets.helix.magic_burst or nil
