@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.5.1'
+_addon.version = '2.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -64,6 +64,7 @@ dir_full = {
 defaults = {
 	distance = 50, --Distance the target needs to be within before being "detected" (Note: Hard max is 50).
 	flood_delay = 5, --Time in seconds after a target goes out of range before it can be considered "nearby" again.
+	play_sound = true,
 	polling_rate = .2, --Time in seconds between each check for targets (0 = every frame).
 	target_tracker = {
 		auto_hide = true,
@@ -134,51 +135,51 @@ default_targets = {
 	["Mog-Tablet"] = "default",
 	["???|Temenos"] = "default",
 	["???|Apollyon"] = "default",
-    ["Academic's"] = "default",
-    ["Agoge"] = "default",
-    ["Anchorite's"] = "default",
-    ["Ankusa"] = "default",
-    ["Arcadian"] = "default",
-    ["Archmage's"] = "default",
-    ["Assimilator's"] = "default",
-    ["Atrophy"] = "default",
-    ["Bagua"] = "default",
-    ["Bihu"] = "default",
-    ["Brioso"] = "default",
-    ["Caballarius"] = "default",
-    ["Convoker's"] = "default",
-    ["Fallen's"] = "default",
-    ["Foire"] = "default",
-    ["Futhark"] = "default",
-    ["Geomancy"] = "default",
-    ["Glyphic"] = "default",
-    ["Hachiya"] = "default",
-    ["Hesychast's"] = "default",
-    ["Horos"] = "default",
-    ["Ignominy"] = "default",
-    ["Laksamana's"] = "default",
-    ["Lanun"] = "default",
-    ["Luhlaza"] = "default",
-    ["Maxixi"] = "default",
-    ["Mochizuki"] = "default",
-    ["Orion"] = "default",
-    ["Pedagogy"] = "default",
-    ["Piety"] = "default",
-    ["Pillager's"] = "default",
-    ["Pitre"] = "default",
-    ["Plunderer's"] = "default",
-    ["Pteroslaver"] = "default",
-    ["Pummeler's"] = "default",
-    ["Reverence"] = "default",
-    ["Runeist"] = "default",
-    ["Runic Lamp"] = "default",
-    ["Sakonji"] = "default",
-    ["Spaekona's"] = "default",
-    ["Theophany"] = "default",
-    ["Totemic"] = "default",
-    ["Vishap"] = "default",
-    ["Vitiation"] = "default",
-    ["Wakido"] = "default",
+	["Academic's"] = "default",
+	["Agoge"] = "default",
+	["Anchorite's"] = "default",
+	["Ankusa"] = "default",
+	["Arcadian"] = "default",
+	["Archmage's"] = "default",
+	["Assimilator's"] = "default",
+	["Atrophy"] = "default",
+	["Bagua"] = "default",
+	["Bihu"] = "default",
+	["Brioso"] = "default",
+	["Caballarius"] = "default",
+	["Convoker's"] = "default",
+	["Fallen's"] = "default",
+	["Foire"] = "default",
+	["Futhark"] = "default",
+	["Geomancy"] = "default",
+	["Glyphic"] = "default",
+	["Hachiya"] = "default",
+	["Hesychast's"] = "default",
+	["Horos"] = "default",
+	["Ignominy"] = "default",
+	["Laksamana's"] = "default",
+	["Lanun"] = "default",
+	["Luhlaza"] = "default",
+	["Maxixi"] = "default",
+	["Mochizuki"] = "default",
+	["Orion"] = "default",
+	["Pedagogy"] = "default",
+	["Piety"] = "default",
+	["Pillager's"] = "default",
+	["Pitre"] = "default",
+	["Plunderer's"] = "default",
+	["Pteroslaver"] = "default",
+	["Pummeler's"] = "default",
+	["Reverence"] = "default",
+	["Runeist"] = "default",
+	["Runic Lamp"] = "default",
+	["Sakonji"] = "default",
+	["Spaekona's"] = "default",
+	["Theophany"] = "default",
+	["Totemic"] = "default",
+	["Vishap"] = "default",
+	["Vitiation"] = "default",
+	["Wakido"] = "default",
 }
 
 --Location of the targets file
@@ -292,10 +293,35 @@ function truncateName(name)
 	end
 
 	return name
+
+end
+
+--Remove any leading zeroes just in case, since TargetInfo addon shows them but the .id's in memory do not have them
+function removeLeadingZeros(input)
+
+	local str = tostring(input)
+
+	--Return original if not purely numeric
+	if not str:match("^%d+$") then
+		return input
+	end
+
+	--Remove leading zeroes
+	local stripped = str:match("^0*(%d+)$")
+
+	--Unlikely to happen, but in case it's all zeroes just return a single "0"
+	if stripped == "" or stripped == nil then
+		return "0"
+	end
+
+	return stripped
+
 end
 
 --Add a target and sound file
 function addTarget(target, sound_file)
+
+	target = removeLeadingZeros(target)
 
 	--Remove file extension if present
 	sound_file = string.match(sound_file, '^[^%.]+') or sound_file
@@ -312,6 +338,9 @@ end
 
 --Add a zone-based target and sound file
 function addZoneTarget(target, sound_file)
+
+	target = removeLeadingZeros(target)
+
 	--Remove file extension if present
 	sound_file = string.match(sound_file, '^[^%.]+') or sound_file
 
@@ -329,10 +358,13 @@ function addZoneTarget(target, sound_file)
 	targets_file:write(targets_help_msg..'return {\n'..sortedTableString(targets_data, '    ')..'\n}')
 
 	add_to_chat(1,'[Jingle] ':color(220)..'Zone Target added: ':color(36)..target..' in '..zone_name:color(200)..(sound_file ~= "default" and ' ('..sound_file..')' or ''))
+
 end
 
 --Add a temporary target and sound file
 function addTempTarget(target, sound_file)
+
+	target = removeLeadingZeros(target)
 
     --Remove file extension if present
     sound_file = string.match(sound_file, '^[^%.]+') or sound_file
@@ -347,9 +379,11 @@ function addTempTarget(target, sound_file)
     targets_file:write(targets_help_msg..'return {\n'..sortedTableString(targets_data, '    ')..'\n}')
 
     add_to_chat(1, '[Jingle] ':color(220)..'Temp. Target added: ':color(36)..target..' (':color(8)..sound_file..' sound file)':color(8))
+
 end
 
 function removeTarget(target)
+
 	local target_lower = target:lower()
 	local matched_key = nil
 	local matched_type = nil
@@ -405,10 +439,12 @@ function removeTarget(target)
 		add_to_chat(1,'[Jingle] ':color(220)..target..' was not found.':color(28))
 		add_to_chat(1,'[Jingle] ':color(220)..'Type ':color(8)..'//jin list'..' to see stored targets.':color(8))
 	end
+
 end
 
 --List the targets in the external targets_data table
 function listTargets()
+
 	local permanent = {}
 	local temporary = {}
 	local zone_based = {}
@@ -466,19 +502,23 @@ function listTargets()
 			add_to_chat(1, ' - ':color(8)..name..(sound ~= 'default' and ' ('..sound..')' or ''))
 		end
 	end
+
 end
 
 --Get angle in degrees between player and target (thanks Genoxd!)
 function getAngle(player, target)
+
 	local dx = target.x - player.x
 	local dy = target.y - player.y
 	local angle = math.atan2(dy, dx) --returns radians
 	local degrees = math.deg(angle) --convert to degrees
 	return (degrees + 360) % 360 --normalize to 0-360
+
 end
 
 --Convert angle in degrees to compass direction
 function getDirection(degrees)
+
 	if degrees >= 337.5 or degrees < 22.5 then
 		return 'E '
 	elseif degrees < 67.5 then
@@ -496,6 +536,7 @@ function getDirection(degrees)
 	elseif degrees < 337.5 then
 		return 'SE'
 	end
+
 end
 
 --Check for matching targets
@@ -518,12 +559,16 @@ function checkForTarget()
 
 			--Keys to match this mob to (in order)
 			local keys = {
-				mob.name..'|' .. current_zone_name,	-- Zone-based
-				mob.name..'|temporary',				-- Temporary
-				mob.name,							-- Permanent
+				mob.name..'|'..current_zone_name,	--Name, Zone-based
+				mob.name..'|temporary',				--Name, Temporary
+				mob.name,							--Name, Permanent
 				string.lower(mob.name),
-				tostring(mob.id),
-				convertToHexId(mob.index)
+				tostring(mob.id)..'|'..current_zone_name,	--ID, Zone-based
+				tostring(mob.id)..'|temporary',				--ID, Temporary
+				tostring(mob.id),							--ID, Permanent
+				convertToHexId(mob.index)..'|'..current_zone_name,	--Hex, Zone-based
+				convertToHexId(mob.index)..'|temporary',			--Hex, Temporary
+				convertToHexId(mob.index),							--Hex, Permanent
 			}
 
 			--Loop through all keys to check if this mob is being tracked
@@ -549,7 +594,9 @@ function checkForTarget()
 							add_to_chat(1, '[Jingle] ':color(220)..displayName..' is nearby.':color(8))
 						end
 
-						play_sound(addon_path..'data/sounds/'..sound_file..'.wav')
+						if settings.play_sound then
+							play_sound(addon_path..'data/sounds/'..sound_file..'.wav')
+						end
 
 						-- Store full data for target in announced table
 						announced[key] = {
@@ -582,6 +629,7 @@ function checkForTarget()
 			last_seen[key] = nil
 		end
 	end
+
 end
 
 --Update the on-screen Target Tracker
@@ -659,6 +707,7 @@ register_event('addon command',function(addcmd, ...)
 	if addcmd == 'help' then
 
 		local currDist = tostring(settings.distance)
+		local currSound = settings.play_sound and "ON" or "OFF"
 		local currTracker = settings.target_tracker.show and "ON" or "OFF"
 
 		local prefix = "//jingle, //jin"
@@ -675,6 +724,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(1,' remove/r ':color(36)..'[target]':color(53)..' - Remove a target.':color(8))
 		add_to_chat(1,' list/l':color(36)..' - Show the list of targets and sounds associated.':color(8))
 		add_to_chat(1,' distance/d ':color(36)..'<#1-50>':color(2)..' - Set the detection distance. [':color(8)..currDist:color(200)..']':color(8))
+		add_to_chat(1,' sound/s ':color(36)..' - Toggle playing a found target\'s associated sound on or off. [':color(8)..currSound:color(200)..']':color(8))
 		add_to_chat(1,' show/hide ':color(36)..' - Enable the Target Tracker. [':color(8)..currTracker:color(200)..']':color(8))
 		add_to_chat(1,' test ':color(36)..'<sound_file_name>':color(2)..' - Test a sound file.':color(8))
 		add_to_chat(1,'   - New sounds added to the /data/sounds folder must be .wav format.':color(8))
@@ -719,6 +769,12 @@ register_event('addon command',function(addcmd, ...)
 
 	elseif addcmd == 'list' or addcmd == 'l' then
 		listTargets()
+
+	elseif addcmd == 'sound' or addcmd == 's' then
+		settings.play_sound = not settings.play_sound
+		settings:save('all')
+		local sound = settings.play_sound and "ON" or "OFF"
+		add_to_chat(1,'[Jingle] ':color(220)..'Sound set to: ':color(36)..sound:color(200))
 
 	elseif addcmd == 'test' then
 		if arg1 == nil then
@@ -770,16 +826,16 @@ register_event('prerender', function()
 	current_time = os.clock()
 
 	if settings.polling_rate == 0 then
-        --Run every frame
-        checkForTarget()
+		--Run every frame
+		checkForTarget()
 		updateTargetTracker()
-    else
-        if current_time - last_check_time >= settings.polling_rate then
-            last_check_time = current_time
-            checkForTarget()
+	else
+		if current_time - last_check_time >= settings.polling_rate then
+			last_check_time = current_time
+			checkForTarget()
 			updateTargetTracker()
-        end
-    end
+		end
+	end
 
 end)
 
