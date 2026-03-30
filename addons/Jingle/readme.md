@@ -85,6 +85,7 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 
 2.6
 - Added `sound` option. Toggle playing a found target's associated sound on or off.
+- Fixed missing listing of matched id number when target found based on an id number.
 - Fixed Hex and ID targets not working correctly when set to Zone or Temporary.
 
 2.5.1
