@@ -35,6 +35,7 @@ All commands must be preceded with `//jingle`   (ex: `//jingle list`)
  - `remove/r` \[target] - Remove a target.
  - `list/l` - Show the list of targets and sounds associated.
  - `distance/d` <#1-50> - Set the detection distance.
+ - `sound/s` - Toggle playing a found target's associated sound on or off.
  - `show/hide` - Enable the Target Tracker.
  - `test` \<sound_file_name> - Test a sound file. Do not include the extension.
    - New sounds added to the /data/sounds folder must be .wav format.
@@ -81,6 +82,10 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 ------
 
 ## Version History
+
+2.6
+- Added `sound` option. Toggle playing a found target's associated sound on or off.
+- Fixed Hex and ID targets not working correctly when set to Zone or Temporary.
 
 2.5.1
 - Fixed Target Tracker displaying with no text (resulting in a small black square) when addon is loaded and Target Tracker `show` set to false.
