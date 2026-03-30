@@ -293,6 +293,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.7.1
+- Fixed an issue with updating bar sizes through in-game commands setting the size to 10x what it should be. When I updated the bars to have finer step sizes I divided the size by 10 then multiplied the output by 10 to equal out to the actual desired size. The in-game commands simply set the new bar size to the actual size desired, without dividing it by 10, so the output for the bar would then multiply by 10 creating a giant new meter on that bar. (Thanks Nautilus1222!)
+
 Version 4.7
 - Added `show_cast_time_bar` option for the Self Action bar. Displays the position of the bar when an self action completes, allowing a visual indication of your fast cast.
 - Added `drop_shadow` color option into the `text` settings. Controls the color of the drop shadow for all text.
