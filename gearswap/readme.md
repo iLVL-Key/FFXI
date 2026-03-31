@@ -3,11 +3,12 @@
 ## Features
 ### QOL Improvements
 Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
-- UseEcho - Automatically uses an Echo Drop or Remedy instead of spell when you are silenced.
-- AutoMajesty - Automatically activates and keeps Majesty active.
-- AutoStance - Automatically activates and keeps Stances (Hasso/Seigan) active.
-- Book/Page - set your specific macro book and page for that job (and common subjobs) when the file loads.
+- Automatically uses an Echo Drop or Remedy instead of spell when you are silenced.
+- Automatically activates and keeps Majesty active.
+- Automatically activates and keeps Stances (Hasso/Seigan) active.
 - Automatically equips Movement Speed gear while you are moving.
+- Delays casting if you're coming to a stop from moving to help prevent "spell interrupted" even though you KNOW you weren't moving!
+- Set your specific macro book and page for that job (and common subjobs) when the file loads.
 - DD jobs will attempt to use a "save" when you are at low HP (High Jump, Chakra, etc depending on main/sub job).
 - Reminder to put Reraise up if it's down.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
