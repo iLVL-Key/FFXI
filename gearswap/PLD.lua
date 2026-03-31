@@ -191,6 +191,7 @@ AutSntThreshold		=	500		--If your HP goes below this number, Sentinel will activ
 RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
+MovementCastDelay	=	0.5		--[#]  Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption. Set to 0 to disable.
 AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -------------------------------------------
@@ -804,7 +805,7 @@ end
 
 
 
-FileVersion = '15.1'
+FileVersion = '15.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -855,6 +856,7 @@ NotiLowMPToggle = false --start with the toggle off for the Low MP Notification 
 RRRCountdown = RRReminderTimer
 HUDposYLine1 = HUDposY
 last_poll = 0 --keeps the timing for things that happen at the polling rate
+last_captured_poll = 0 --keeps the timing for the MovementCastDelay polling rate (0.1 seconds)
 last_second = 0 --keeps the timing for things that happen every second
 GreetingDelay = 6 --delay to display greeting and file version info
 Zoning = false --flips automatically to hide the HUD while zoning
@@ -885,6 +887,8 @@ TP_Window_Open = false
 player_x = nil
 player_y = nil
 moving = false
+captured = {}
+captured_spell_toggle = false
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -2061,6 +2065,8 @@ function self_command(command)
 		double_majesty_fix = false
 	elseif command == "double_sublimation_fix" then
 		double_sublimation_fix = false
+	elseif command == "resetCapturedToggle" then
+		captured_spell_toggle = false
 	end
 end
 
@@ -2114,6 +2120,27 @@ end
 -------------------------------------------
 
 function precast(spell)
+
+	local prefixes = {
+		["/magic"] = true,
+		["/song"] = true,
+		["/ninjutsu"] = true,
+		['/trust'] = true,
+		['/item'] = true,
+		['/range'] = true,
+	}
+	if MovementCastDelay ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
+		captured_spell_toggle = true
+		if spell.prefix == "/range" then
+			captured.spell = "/range "..spell.target.raw
+			captured.timestamp = os.clock() + MovementCastDelay
+		else
+			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
+			captured.timestamp = os.clock() + MovementCastDelay
+		end
+		cancel_spell()
+		return
+	end
 
 	local use_mainsub = player.tp <= KeepTPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath'])
 	local main_sub = use_mainsub and {main=nil, sub=nil} or {main="", sub=""}
@@ -2634,9 +2661,25 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	--Polling rate
 	local current_time = os.clock()
 
+	--Check for captured spells (to delay them while coming to a stop from moving)
+	if captured.timestamp and current_time > last_captured_poll + 0.1 then
+		last_captured_poll = current_time
+		if captured.timestamp > current_time then
+			if not moving then
+				send_command('wait 0.05;input '..captured.spell)
+				captured = {}
+				send_command('wait 1;gs c resetCapturedToggle')
+			end
+		else
+			send_command('wait 0.05;input '..captured.spell)
+				captured = {}
+			send_command('wait 1;gs c resetCapturedToggle')
+		end
+	end
+
+	--Polling rate
 	if current_time - last_poll >= 1 / PollingRate then
 
 		last_poll = current_time
