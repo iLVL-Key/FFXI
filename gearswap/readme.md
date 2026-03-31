@@ -120,6 +120,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.1
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
 Version 20.0
 - Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
 - Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
@@ -522,6 +525,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.1
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
 Version 3.0
 - Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
 - Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
@@ -624,6 +630,9 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.1
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
 Version 2.0
 - Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
 - Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee, ranged attacks, and Weapon Skills), regardless of current Gear Mode.
@@ -695,6 +704,9 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.1
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
 Version 16.0
 - Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of OR within a configurable distance to a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
@@ -1035,6 +1047,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.2
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
 Version 8.1
 - Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee and Weapon Skills),regardless of current Gear Mode (except Tank).
 - Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
@@ -1224,7 +1239,10 @@ Version 3.0
  
 <summary>PLD</summary>
 
-Version 15.0.1
+Version 15.2
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
+Version 15.1
 - Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
 - Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
 - Added Cure IV downgrading to a lower tier Cure based on current MP (accounts for Light Arts cost reduction).
@@ -1575,6 +1593,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.2
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
 Version 10.1
 - Added `AutoGearCheck` option. Automatically checks and equips appropriate gear set on player movement.
 - Added `AutoMvmntSpeed` option. Automatically equips Movement Speed set on player movement when idle.
@@ -1841,6 +1862,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.2
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
 Version 16.1
 - Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee and Weapon Skills), regardless of current Hasso Mode (NOT Seigan Stance).
@@ -2145,6 +2169,9 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.2
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
+
 Version 1.1
 - Added Low Damage Helix Immanence gear set with associated table of targets. Automatically uses the Low Damage Helix Immanence gear set when casting a Helix spell with Immanence active.
 
@@ -2154,6 +2181,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.1
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
 Version 14.0
 - Overhauled DT Override. Now called Danger Mode. Has 3 states: Auto, On, and Off. Auto will automatically layer the Danger set on top of other sets if it detects you are the target of a monster your party is fighting (party must have at least one other player, a party of all trusts will not trigger), disabled after a configurable amount of time has passed. On will always layers the Danger gear set on top of other gear sets. Off will disable this functionality. DT Override and Oh Shit gear sets have been removed and replaced by this system.
@@ -2430,6 +2460,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.2
+- Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
 Version 10.1
 - Added High Accuracy Mobs section. These targets automatically use the High Accuracy sets (melee and Weapon Skills), regardless of current Gear Mode (except Tank).
