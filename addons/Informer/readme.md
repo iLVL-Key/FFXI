@@ -56,6 +56,7 @@ Displays a bar with information (much like InfoBar!)
   - The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive.
 - **${weather}** - Current Vana'diel weather.
 - **${zone}** - Current zone.
+
 (NOTE: some data is updated when the packet for it is called, so may not be correct immediately upon loading the addon)
 
 ## Commands
