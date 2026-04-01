@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.1.2'
+_addon.version = '5.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -198,6 +198,7 @@ sub2_visible = false
 
 last_item_used = nil
 master_level = nil
+synced_master_level = nil
 loading_inv = false
 login_loading = false
 loading_check = false
@@ -225,6 +226,10 @@ moon_phase = "Waiting for moon update..."
 moon_percent = nil
 last_moon_value = nil
 moon_direction = nil
+
+tnml = {
+	[2500] = 0, [5550] = 1, [8721] = 2, [11919] = 3, [15122] = 4, [18327] = 5, [21532] = 6, [24737] = 7, [27942] = 8, [31147] = 9, [41205] = 10, [48130] = 11, [53677] = 12, [58618] = 13, [63292] = 14, [67848] = 15, [72353] = 16, [76835] = 17, [81307] = 18, [85775] = 19, [109112] = 20, [127014] = 21, [141329] = 22, [153277] = 23, [163663] = 24, [173018] = 25, [181692] = 26, [189917] = 27, [197845] = 28, [205578] = 29, [258409] = 30, [307400] = 31, [353012] = 32, [395651] = 33, [435673] = 34, [473392] = 35, [509085] = 36, [542995] = 37, [575336] = 38, [606296] = 39, [769426] = 40, [951369] = 41, [1154006] = 42, [1379407] = 43, [1629848] = 44, [1907833] = 45, [2216116] = 46, [2557728] = 47, [2936001] = 48, [3354601] = 49, [3817561] = 50
+}
 
 function firstLoadMessage()
 	add_to_chat(220,'[Informer] '..('First load detected.'):color(8))
@@ -266,7 +271,8 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	if injected or blocked then return end
 	local packet = packets.parse('incoming', original)
 	if id == 0x061 then
-		master_level = packet['Master Level']
+		master_level = tnml[packet['Required Exemplar Points']]
+		synced_master_level = packet['Master Level']
 	elseif id == 0x01D then
 		loading_inv = packet['Flag'] == 0 and true or false
 	end
@@ -734,6 +740,7 @@ end
 function updateInformerMain()
 
 	local mlvl = master_level or '--'
+	local smlvl = synced_master_level ~= master_level and synced_master_level.."/" or ''
 	local speed = get_mob_by_target('me') and math.floor(100 * (get_mob_by_target('me').movement_speed / 5 - 1) + .1)
 	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
 	local target = get_mob_by_target('st','t')
@@ -766,7 +773,7 @@ function updateInformerMain()
 		target = getTarget(),
 		target_w_hpp = getTarget("w_hpp"),
 		tp = tp,
-		mlvl = mlvl,
+		mlvl = smlvl..mlvl,
 		reraise = reraise,
 		speed = formatted_speed,
 		distance = target_distance,
