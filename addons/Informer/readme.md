@@ -106,6 +106,9 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 
 ## Changelog
 
+Version 5.2
+- Adjusted Master Level to include the synced Master Level if level synced.
+
 Version 5.1.2
 - Fixed errors when in Monstrosity.
 
