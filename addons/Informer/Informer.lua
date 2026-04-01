@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.2'
+_addon.version = '5.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -42,8 +42,8 @@ default_layout = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${tp} ${track:Item Name} ${weather} ${zone}'
-defaults.layout.ac_help = '(NOTE: mlvl is updated when the packet for it is called, so will not be correct immediately upon loading)'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone}'
+defaults.layout.ac_help = '(NOTE: some data is updated when the packet for it is called, so may not be correct immediately upon loading the addon)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.main = {}
 defaults.layout.main.brd = default_layout
@@ -226,6 +226,7 @@ moon_phase = "Waiting for moon update..."
 moon_percent = nil
 last_moon_value = nil
 moon_direction = nil
+title = nil
 
 tnml = {
 	[2500] = 0, [5550] = 1, [8721] = 2, [11919] = 3, [15122] = 4, [18327] = 5, [21532] = 6, [24737] = 7, [27942] = 8, [31147] = 9, [41205] = 10, [48130] = 11, [53677] = 12, [58618] = 13, [63292] = 14, [67848] = 15, [72353] = 16, [76835] = 17, [81307] = 18, [85775] = 19, [109112] = 20, [127014] = 21, [141329] = 22, [153277] = 23, [163663] = 24, [173018] = 25, [181692] = 26, [189917] = 27, [197845] = 28, [205578] = 29, [258409] = 30, [307400] = 31, [353012] = 32, [395651] = 33, [435673] = 34, [473392] = 35, [509085] = 36, [542995] = 37, [575336] = 38, [606296] = 39, [769426] = 40, [951369] = 41, [1154006] = 42, [1379407] = 43, [1629848] = 44, [1907833] = 45, [2216116] = 46, [2557728] = 47, [2936001] = 48, [3354601] = 49, [3817561] = 50
@@ -273,6 +274,7 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 	if id == 0x061 then
 		master_level = tnml[packet['Required Exemplar Points']]
 		synced_master_level = packet['Master Level']
+		title = packet['Title']
 	elseif id == 0x01D then
 		loading_inv = packet['Flag'] == 0 and true or false
 	end
@@ -745,6 +747,7 @@ function updateInformerMain()
 	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
 	local target = get_mob_by_target('st','t')
 	local target_distance = target and (string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
+	local formatted_title = title and res.titles[title].en or "Unknown Title"
 
 	local pos = get_position()
 
@@ -779,6 +782,7 @@ function updateInformerMain()
 		distance = target_distance,
 		moon_percent = moon_percent,
 		moon_phase = moon_phase,
+		title = formatted_title,
 	}
 	local text = replacePlaceholders(layout_main, placeholders)
 	local text_sub1 = replacePlaceholders(layout_sub1, placeholders)
