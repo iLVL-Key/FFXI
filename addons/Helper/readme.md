@@ -149,6 +149,10 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 2.4.1
+- Fixed issue with logging into a character with your inventory already full results in "inventory is full" message spam.
+
 Version 2.4
 - Added Inventory Full notification. Default before this notification can play again is 15 minutes.
 
