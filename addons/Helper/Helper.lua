@@ -1,4 +1,4 @@
---Copyright (c) 2025, Key
+--Copyright (c) 2026, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.4'
+_addon.version = '2.4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -407,6 +407,7 @@ capped_merits = true
 cap_points = 0
 job_points = 500
 capped_jps = true
+loading_inv = false
 inventory_is_full = false
 inventory_full_toggle = true
 check_party_for_low_mp_toggle = true
@@ -1589,13 +1590,15 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 		end
 
-	elseif id == 0xB then --zone start
+	--Zone start
+	elseif id == 0xB then
 		if get_info().logged_in then
 			zoned = true
 			paused = true
 		end
 
-	elseif id == 0xA then --zone finish
+	--Zone finish
+	elseif id == 0xA then
 		if get_info().logged_in then
 			zoned = false
 			--Short delay after zoning to prevent "left...joined" messages after every zone.
@@ -1603,6 +1606,11 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 				paused = false
 			end, after_zone_party_check_delay_seconds)
 		end
+
+	--Loading Inventory
+	elseif id == 0x01D then
+		loading_inv = packet['Flag'] == 0 and true or false
+
 	end
 
 	if paused then return end
@@ -2671,7 +2679,7 @@ end)
 -- Item movement
 register_event('add item', function(bag,index,id,count)
 
-	if not inventory_full then return end
+	if paused or loading_inv or not inventory_full then return end
 
 	local bag = windower.ffxi.get_bag_info(0)
 
