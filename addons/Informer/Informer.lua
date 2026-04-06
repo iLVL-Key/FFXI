@@ -1,4 +1,4 @@
---Copyright (c) 2025, Key
+--Copyright (c) 2026, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.3'
+_addon.version = '5.4'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -38,11 +38,11 @@ res = require('resources')
 defaults = {}
 
 defaults.first_load = true
-default_layout = '${job}(${mlvl}) | ${zone} ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
+default_layout = '${job}(${mlvl}) | ${zone} [${zone_timer}] ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone}'
+defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
 defaults.layout.ac_help = '(NOTE: some data is updated when the packet for it is called, so may not be correct immediately upon loading the addon)'
 defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.main = {}
@@ -227,6 +227,8 @@ moon_percent = nil
 last_moon_value = nil
 moon_direction = nil
 title = nil
+time_in_zone = 0
+zone_timestamp = 0
 
 tnml = {
 	[2500] = 0, [5550] = 1, [8721] = 2, [11919] = 3, [15122] = 4, [18327] = 5, [21532] = 6, [24737] = 7, [27942] = 8, [31147] = 9, [41205] = 10, [48130] = 11, [53677] = 12, [58618] = 13, [63292] = 14, [67848] = 15, [72353] = 16, [76835] = 17, [81307] = 18, [85775] = 19, [109112] = 20, [127014] = 21, [141329] = 22, [153277] = 23, [163663] = 24, [173018] = 25, [181692] = 26, [189917] = 27, [197845] = 28, [205578] = 29, [258409] = 30, [307400] = 31, [353012] = 32, [395651] = 33, [435673] = 34, [473392] = 35, [509085] = 36, [542995] = 37, [575336] = 38, [606296] = 39, [769426] = 40, [951369] = 41, [1154006] = 42, [1379407] = 43, [1629848] = 44, [1907833] = 45, [2216116] = 46, [2557728] = 47, [2936001] = 48, [3354601] = 49, [3817561] = 50
@@ -267,14 +269,15 @@ function hideInformerBars()
 	sub2_visible = false
 end
 
--- Master Level info
 register_event('incoming chunk', function(id, original, modified, injected, blocked)
 	if injected or blocked then return end
 	local packet = packets.parse('incoming', original)
+	--Master Level info
 	if id == 0x061 then
 		master_level = tnml[packet['Required Exemplar Points']]
 		synced_master_level = packet['Master Level']
 		title = packet['Title']
+	--Loading Inventory
 	elseif id == 0x01D then
 		loading_inv = packet['Flag'] == 0 and true or false
 	end
@@ -466,6 +469,39 @@ function updateZone()
 	if not region_name then
 		region_name = "Unknown Region"
 	end
+
+	zone_timestamp = os.time()
+
+end
+
+function updateTimeInZone(time)
+
+	if not time then
+		time = os.time()
+	end
+
+	local seconds = math.max(time - zone_timestamp, 0)
+
+	local days = math.floor(seconds / 86400)
+	seconds = seconds % 86400
+
+	local hours = math.floor(seconds / 3600)
+	seconds = seconds % 3600
+
+	local min = math.floor(seconds / 60)
+	local sec = seconds % 60
+
+	local result = ""
+
+	if days > 0 then
+		result = string.format("%02d:", days)
+	end
+
+	if hours > 0 or days > 0 then
+		result = result..string.format("%02d:", hours)
+	end
+
+	time_in_zone = result..string.format("%02d:%02d", min, sec)
 
 end
 
@@ -783,6 +819,7 @@ function updateInformerMain()
 		moon_percent = moon_percent,
 		moon_phase = moon_phase,
 		title = formatted_title,
+		zone_timer = time_in_zone
 	}
 	local text = replacePlaceholders(layout_main, placeholders)
 	local text_sub1 = replacePlaceholders(layout_sub1, placeholders)
@@ -943,6 +980,8 @@ end)
 
 register_event('prerender', function()
 
+	local time = os.time()
+
 	-- Main call to update the Informer bar
 	if get_info().logged_in then
 		updateInformerMain()
@@ -958,11 +997,12 @@ register_event('prerender', function()
 	end
 
 	-- Once per second...
-	if os.time() > earth_time_raw then
-		earth_time_raw = os.time()
+	if time > earth_time_raw then
+		earth_time_raw = time
 		updateEarthData()
 		updateGil()
 		updateMoon()
+		updateTimeInZone(time)
 	end
 
 end)
@@ -983,6 +1023,7 @@ register_event('load', function()
 		updatePlayerJob()
 		updateTP()
 		updateMoon()
+		updateTimeInZone()
 		if settings.first_load then
 			firstLoadMessage()
 		end
@@ -1005,6 +1046,7 @@ register_event('login', function()
 	updatePlayerJob()
 	updateTP()
 	updateMoon()
+	updateTimeInZone()
 	showInformerBars()
 	coroutine.sleep(5)
 	if settings.first_load then
