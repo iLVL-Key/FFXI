@@ -111,7 +111,7 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 ## Changelog
 
 Version 5.4
-- Added Zone Timer placeholder
+- Added Zone Timer placeholder.
 
 Version 5.3
 - Added Title placeholder.
