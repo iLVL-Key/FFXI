@@ -56,6 +56,7 @@ Displays a bar with information (much like InfoBar!)
   - The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive.
 - **${weather}** - Current Vana'diel weather.
 - **${zone}** - Current zone.
+- **${zone_timer}** - Time elapsed in the current zone
 
 (NOTE: some data is updated when the packet for it is called, so may not be correct immediately upon loading the addon)
 
@@ -108,6 +109,9 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 ------
 
 ## Changelog
+
+Version 5.4
+- Added Zone Timer placeholder
 
 Version 5.3
 - Added Title placeholder.
