@@ -1,4 +1,4 @@
-# ZNMcheck
+# ZNMTracker
 
 Tracks all ZNM pop items, trophy items, and key items that your character has in easy to read window. Highlights which NMs are currently available to purchase depending on which Key Items you have. Updates as you go.
 <img width="629" height="553" alt="ZNMTracker_all" src="https://github.com/user-attachments/assets/d5723e81-fe01-4ae7-b046-f52ef831e656" />  
