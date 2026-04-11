@@ -62,7 +62,7 @@ To switch between Gear Modes, use any of these three options:
 DANGER MODE
 
 Auto -	Automatically layers the Danger set on top of other sets if it detects you are taking damage from a monster
-		your party is fighting. Disabled after a configurable amount of time has passed.
+		your party is fighting. Disabled after a configurable amount of time has passed. Does not activate when engaged.
 On   - 	Always layers the Danger gear set on top of other gear sets.
 Off  -	Disables this functionality.
 
@@ -219,7 +219,8 @@ WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, onc
 RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, ammo, etc). Higher rates use more CPU.
-MovementCastDelay	=	0.5		--[#]  Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption. Set to 0 to disable.
+MoveCastWindow		=	1		--[#]  Window in seconds to wait to come a stop from moving before cassting a spell to help prevent interruption. Set to 0 to disable.
+MoveCastDelay		=	0.25	--[#]  Delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 LowAmmoNum			=	25		--Amount for ammo to be considered "Low Ammo" for HUD color changes.
 
@@ -571,7 +572,7 @@ sets.Mode2.dual_wield = set_combine(sets.Mode2, {
 -- Mode 3 (Accuracy) (Example: A focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Store TP, and Attack)
 -- NOTE: This is a special mode for accuracy. When in this mode, weapon skills will default to the Accuracy Weapon Skill set.
 sets.Mode3 = set_combine(sets.Mode1, {
-
+	body="Malignance Tabard",
 })
 
 -- Mode 3 Dual Wield (Dual Wield, Accuracy, Multi Attack, DEX, Store TP, Attack)
@@ -1000,7 +1001,7 @@ end
 
 
 
-FileVersion = '2.1'
+FileVersion = '2.1.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1060,7 +1061,7 @@ NotiLowMPToggle = false --start with the toggle off for the Low MP Notification 
 RRRCountdown = RRReminderTimer
 HUDposYLine1 = HUDposY
 last_poll = 0 --keeps the timing for things that happen at the polling rate
-last_captured_poll = 0 --keeps the timing for the MovementCastDelay polling rate (0.1 seconds)
+last_captured_poll = 0 --keeps the timing for the MoveCastWindow polling rate (0.1 seconds)
 last_second = 0 --keeps the timing for things that happen every second
 GreetingDelay = 6 --delay to display greeting and file version info
 Zoning = false --flips automatically to hide the HUD while zoning
@@ -2176,16 +2177,16 @@ local function itemMatch(item_num)
 	return false --no match found
 end
 
-local function getMainWeaponID()
+local function getMainWeaponID(slot)
 	local get_items = windower.ffxi.get_items()
-	local bag = get_items.equipment.main_bag
-	local index = get_items.equipment.main
+	local bag = get_items.equipment[slot.."_bag"]
+	local index = get_items.equipment[slot]
 	local item_id = windower.ffxi.get_items(bag, index).id
 	return item_id
 end
 
-local function empyreanAMUpdate(tp)
-	local weapon_id = getMainWeaponID()
+local function empyreanAMUpdate(tp, slot)
+	local weapon_id = getMainWeaponID(slot)
 	local afterglow = weapon_id == 21269 or weapon_id == 22142
 	if tp >= 3000 then
 		pre_AMTimer = afterglow and 180 or 90
@@ -2196,8 +2197,8 @@ local function empyreanAMUpdate(tp)
 	pre_AMTimer = timers[tier]
 end
 
-local function mythicAMUpdate(tp)
-	local weapon_id = getMainWeaponID()
+local function mythicAMUpdate(tp, slot)
+	local weapon_id = getMainWeaponID(slot)
 	local lvl75 = weapon_id == 18987 or weapon_id == 19007
 	local lvl80_90 = weapon_id == 19076 or weapon_id == 19096 or weapon_id == 19628
 	if tp >= 1000 and tp < 2000 then
@@ -2223,8 +2224,8 @@ local function mythicAMUpdate(tp)
 	end
 end
 
-local function primeAMUpdate(tp)
-	local weapon_id = getMainWeaponID()
+local function primeAMUpdate(tp, slot)
+	local weapon_id = getMainWeaponID(slot)
 	local stages = {
 		[22161] = 2, --Stage 3
 		[22162] = 4, --Stage 4
@@ -3188,7 +3189,7 @@ function choose_set()
 		equip(set_combine(sets.idle, sets.rest, danger, bullet))
 	elseif player.status == "Engaged" then
 		local base_set = dualWield() and (high_acc_mob and sets.Mode3.dual_wield or sets[Mode].dual_wield) or (high_acc_mob and sets.Mode3 or sets[Mode])
-		equip(set_combine(base_set, danger, {main = pair.main, sub = pair.sub}, bullet))
+		equip(set_combine(base_set, {main = pair.main, sub = pair.sub}, bullet))
 	elseif player.status == "Idle" then
 		if AdoulinZones[world.area] then
 			equip(set_combine(sets.adoulin, sets.movement_speed, bullet))
@@ -3201,7 +3202,8 @@ function choose_set()
 		elseif TownZones[world.area] or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets.town, sets.movement_speed, bullet))
 		else
-			local autorun = windower.ffxi.get_player().autorun
+			local get_player = windower.ffxi.get_player()
+			local autorun = get_player and get_player.autorun
 			local auto_movement_speed = AutoMvmntSpeed and moving
 			local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
 			equip(set_combine(sets.idle, danger, movement_speed, bullet))
@@ -3224,14 +3226,14 @@ function precast(spell)
 		['/item'] = true,
 		['/range'] = true,
 	}
-	if MovementCastDelay ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
+	if MoveCastWindow ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MovementCastDelay
+			captured.timestamp = os.clock() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MovementCastDelay
+			captured.timestamp = os.clock() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -3301,15 +3303,15 @@ function precast(spell)
 		elseif player.equipment.range == 'Armageddon' and spell.english == "Wildfire" then
 			player_tp = player.tp
 			TP_Window_Open = true
-			empyreanAMUpdate(player_tp)
+			empyreanAMUpdate(player_tp, "range")
 		elseif player.equipment.range == "Death Penalty" and spell.english == "Leaden Salute" then
 			player_tp = player.tp
 			TP_Window_Open = true
-			mythicAMUpdate(player_tp)
+			mythicAMUpdate(player_tp, "range")
 		elseif player.equipment.range == 'Earp' and spell.english == "Terminus" then
 			player_tp = player.tp
 			TP_Window_Open = true
-			primeAMUpdate(player_tp)
+			primeAMUpdate(player_tp, "range")
 		end
 	elseif spell.english == 'Wild Card' and WildCard.recast < 2 then
 		equip(sets.wild_card)
@@ -3631,11 +3633,11 @@ windower.register_event('tp change',function()
 	if TP_Window_Open and player.tp > player_tp then
 		player_tp = player.tp
 		if player.equipment.range == 'Armageddon' then
-			empyreanAMUpdate(player_tp)
+			empyreanAMUpdate(player_tp, "range")
 		elseif player.equipment.range == "Death Penalty" then
-			mythicAMUpdate(player_tp)
+			mythicAMUpdate(player_tp, "range")
 		elseif player.equipment.range == 'Earp' then
-			primeAMUpdate(player_tp)
+			primeAMUpdate(player_tp, "range")
 		end
 	end
 
@@ -3660,14 +3662,14 @@ windower.register_event('prerender', function()
 		last_captured_poll = current_time
 		if captured.timestamp > current_time then
 			if not moving then
-				send_command('wait 0.05;input '..captured.spell)
+				send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
-				send_command('wait 1;gs c resetCapturedToggle')
+				send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 			end
 		else
-			send_command('wait 0.05;input '..captured.spell)
+			send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
-			send_command('wait 1;gs c resetCapturedToggle')
+			send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 		end
 	end
 
@@ -3706,7 +3708,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving then
+					if not moving and player.status == "Idle" then
 						moving = true
 						choose_set()
 					end
@@ -4090,7 +4092,7 @@ windower.register_event('prerender', function()
 			hud_noti:color(255,50,50)
 			NotiCountdown = NotiDelay
 			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and LowMP then
+		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
 			lowMP = false
 			setNotification()
 		end
