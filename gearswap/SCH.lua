@@ -48,7 +48,7 @@ To switch between Nuke Modes, use any of these three options:
 DANGER MODE
 
 Auto -	Automatically layers the Danger set on top of other sets if it detects you are taking damage from a monster
-		your party is fighting. Disabled after a configurable amount of time has passed.
+		your party is fighting. Disabled after a configurable amount of time has passed. Does not activate when engaged.
 On   - 	Always layers the Danger gear set on top of other gear sets.
 Off  -	Disables this functionality.
 
@@ -194,13 +194,15 @@ HelixIBind			=	'^numpad7'	--Sets the keyboard shortcut for Helix I spells.
 HelixIIBind			=	'^numpad8'	--Sets the keyboard shortcut for Helix II spells.
 									--(See SPELL MAPPING section below)
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
+FullMpPercent		=	85		--Above this percent is considered full mp.
 DangerSafeDelay		=	5		--Delay in seconds after Danger Mode (Auto) activates before it is considered safe again.
 DangerPTOnly		=	true	--[true/false]  Danger Mode (Auto) will only activate when in a party with other players (Trusts do not count).
 WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
 RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
-MovementCastDelay	=	0.5		--[#]  Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption. Set to 0 to disable.
+MoveCastWindow		=	1		--[#]  Window in seconds to wait to come a stop from moving before cassting a spell to help prevent interruption. Set to 0 to disable.
+MoveCastDelay		=	0.25	--[#]  Delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 AddCommas			=	true	--[true/false]	Adds commas to damage numbers.
 
 -------------------------------------------
@@ -1096,7 +1098,7 @@ end
 
 
 
-FileVersion = '1.2'
+FileVersion = '1.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1157,7 +1159,7 @@ NotiLowMPToggle = false --start with the toggle off for the Low MP Notification 
 RRRCountdown = RRReminderTimer
 HUDposYLine1 = HUDposY
 last_poll = 0 --keeps the timing for things that happen at the polling rate
-last_captured_poll = 0 --keeps the timing for the MovementCastDelay polling rate (0.1 seconds)
+last_captured_poll = 0 --keeps the timing for the MoveCastWindow polling rate (0.1 seconds)
 last_second = 0 --keeps the timing for things that happen every second
 GreetingDelay = 6 --delay to display greeting and file version info
 Zoning = false --flips automatically to hide the HUD while zoning
@@ -2549,9 +2551,9 @@ function choose_set(sublimation_activation)
 	local dark_arts = (buffactive['Dark Arts'] or buffactive['Addendum: Black']) and sets.idle.dark_arts or nil
 	local sublimation = (buffactive['Sublimation: Activated'] or sublimation_activation) and sets.idle.sublimation or nil
 	local rest = player.status == "Resting" and sets.rest or nil
-	local full_mp = player.mpp > 90 and sets.idle.full_mp or nil
+	local full_mp = player.mpp > FullMpPercent and sets.idle.full_mp or nil
 	local melee = player.status == 'Engaged' and sets.melee or nil
-	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage)) and sets.danger or nil
+	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage aand not melee)) and sets.danger or nil
 
 	if player.status == "Idle" then
 		if AdoulinZones[world.area] then
@@ -2568,7 +2570,8 @@ function choose_set(sublimation_activation)
 			equip(set_combine(sets.idle, light_arts, dark_arts, sublimation, full_mp, danger))
 		end
 	else
-		local autorun = windower.ffxi.get_player().autorun
+		local get_player = windower.ffxi.get_player()
+		local autorun = get_player and get_player.autorun
 		local auto_movement_speed = AutoMvmntSpeed and moving
 		local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
 		equip(set_combine(sets.idle, light_arts, dark_arts, sublimation, rest, full_mp, melee, danger, movement_speed))
@@ -2590,14 +2593,14 @@ function precast(spell)
 		['/item'] = true,
 		['/range'] = true,
 	}
-	if MovementCastDelay ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
+	if MoveCastWindow ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MovementCastDelay
+			captured.timestamp = os.clock() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MovementCastDelay
+			captured.timestamp = os.clock() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -3090,14 +3093,14 @@ windower.register_event('prerender', function()
 		last_captured_poll = current_time
 		if captured.timestamp > current_time then
 			if not moving then
-				send_command('wait 0.05;input '..captured.spell)
+				send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
-				send_command('wait 1;gs c resetCapturedToggle')
+				send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 			end
 		else
-			send_command('wait 0.05;input '..captured.spell)
+			send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
-			send_command('wait 1;gs c resetCapturedToggle')
+			send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 		end
 	end
 
@@ -3122,7 +3125,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving then
+					if not moving and player.status == "Idle" then
 						moving = true
 						choose_set()
 					end
@@ -3532,7 +3535,7 @@ windower.register_event('prerender', function()
 			hud_noti:color(255,50,50)
 			NotiCountdown = NotiDelay	
 			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and LowMP then
+		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
 			lowMP = false
 			setNotification()
 		end
@@ -4051,10 +4054,10 @@ windower.register_event('action',function(act)
 
 		--Spell with Immanence or Chain Affinity active
 		if act.category == 4 then
-			if spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
+			if spells[act.param] and spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
 				addToActiveSkillchain(target_id)
 				active_chain_affinity[act.actor_id] = nil
-			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
+			elseif spells[act.param] and spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
 				addToActiveSkillchain(target_id)
 				active_immanence[act.actor_id] = nil
 			end
