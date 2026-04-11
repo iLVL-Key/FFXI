@@ -65,7 +65,7 @@ To switch between Instrument Modes, use any of these three options:
 DANGER MODE
 
 Auto -	Automatically layers the Danger set on top of other sets if it detects you are taking damage from a monster
-		your party is fighting. Disabled after a configurable amount of time has passed.
+		your party is fighting. Disabled after a configurable amount of time has passed. Does not activate when engaged.
 On   - 	Always layers the Danger gear set on top of other gear sets.
 Off  -	Disables this functionality.
 
@@ -258,7 +258,8 @@ WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, onc
 RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
 PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
-MovementCastDelay	=	0.5		--[#]  Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption. Set to 0 to disable.
+MoveCastWindow		=	1		--[#]  Window in seconds to wait to come a stop from moving before cassting a spell to help prevent interruption. Set to 0 to disable.
+MoveCastDelay		=	0.25	--[#]  Delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -------------------------------------------
@@ -919,7 +920,7 @@ end
 
 
 
-FileVersion = '3.1'
+FileVersion = '3.1.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -970,7 +971,7 @@ NotiLowMPToggle = false --start with the toggle off for the Low MP Notification 
 RRRCountdown = RRReminderTimer
 HUDposYLine1 = HUDposY
 last_poll = 0 --keeps the timing for things that happen at the polling rate
-last_captured_poll = 0 --keeps the timing for the MovementCastDelay polling rate (0.1 seconds)
+last_captured_poll = 0 --keeps the timing for the MoveCastWindow polling rate (0.1 seconds)
 last_second = 0 --keeps the timing for things that happen every second
 GreetingDelay = 6 --delay to display greeting and file version info
 Zoning = false --flips automatically to hide the HUD while zoning
@@ -3043,7 +3044,7 @@ function choose_set()
 		equip(set_combine(sets.idle, sets.rest, danger, main_sub))
 	elseif player.status == "Engaged" then
 		local base_set = dualWield() and sets.melee_dual_wield or sets.melee
-		equip(set_combine(base_set, danger, main_sub))
+		equip(set_combine(base_set, main_sub))
 	elseif player.status == "Idle" then
 		if AdoulinZones[world.area] then
 			equip(set_combine(sets.adoulin, sets.movement_speed))
@@ -3056,7 +3057,8 @@ function choose_set()
 		elseif TownZones[world.area] or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets.town, sets.movement_speed))
 		else
-			local autorun = windower.ffxi.get_player().autorun
+			local get_player = windower.ffxi.get_player()
+			local autorun = get_player and get_player.autorun
 			local auto_movement_speed = AutoMvmntSpeed and moving
 			local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
 			equip(set_combine(sets.idle, danger, main_sub, movement_speed))
@@ -3079,14 +3081,14 @@ function precast(spell)
 		['/item'] = true,
 		['/range'] = true,
 	}
-	if MovementCastDelay ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
+	if MoveCastWindow ~= 0 and not captured_spell_toggle and prefixes[spell.prefix] and moving then
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MovementCastDelay
+			captured.timestamp = os.clock() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MovementCastDelay
+			captured.timestamp = os.clock() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -3600,14 +3602,14 @@ windower.register_event('prerender', function()
 		last_captured_poll = current_time
 		if captured.timestamp > current_time then
 			if not moving then
-				send_command('wait 0.05;input '..captured.spell)
+				send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
-				send_command('wait 1;gs c resetCapturedToggle')
+				send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 			end
 		else
-			send_command('wait 0.05;input '..captured.spell)
+			send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
-			send_command('wait 1;gs c resetCapturedToggle')
+			send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 		end
 	end
 
@@ -3642,7 +3644,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving then
+					if not moving and player.status == "Idle" then
 						moving = true
 						choose_set()
 					end
@@ -4045,7 +4047,7 @@ windower.register_event('prerender', function()
 			hud_noti:color(255,50,50)
 			NotiCountdown = NotiDelay
 			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and LowMP then
+		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
 			lowMP = false
 			setNotification()
 		end
