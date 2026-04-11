@@ -121,6 +121,14 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.1.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Adjusted Danger Mode to not activate when engaged.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
+
 Version 20.1
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
@@ -526,6 +534,14 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.1.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Adjusted Danger Mode to not activate when engaged.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
+
 Version 3.1
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
@@ -631,6 +647,14 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.1.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Adjusted Danger Mode to not activate when engaged.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
+
 Version 2.1
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
@@ -705,6 +729,14 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.1.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Adjusted Danger Mode to not activate when engaged.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
 
 Version 16.1
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
@@ -1048,6 +1080,12 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.2.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
+
 Version 8.2
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
@@ -1239,6 +1277,13 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.2.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
 
 Version 15.2
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
@@ -1594,6 +1639,13 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.2.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
+
 Version 10.2
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
@@ -1863,6 +1915,12 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.2.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
 
 Version 16.2
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
@@ -2170,6 +2228,16 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3
+- Added `FullMpPercent` Advanced Option. Above this percent is considered full mp.
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Adjusted Danger Mode to not activate when engaged.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
+- Fixed some stray errors.
+
 Version 1.2
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
 
@@ -2182,6 +2250,14 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.1.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Adjusted Danger Mode to not activate when engaged.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed the Low MP Notification not clearing correctly when your MP ticks back up over the 20% threshold.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
 
 Version 14.1
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
@@ -2461,6 +2537,12 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.2.1
+- Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+- Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
+- Fixed an issue with starting to move immediately after coming out of a teleport/cs doesn't give the game enough time to be able to switch gear into the movement set.
+- Fixed occasional error when choose_set function runs and character is not fully loaded in game or has just logged out.
 
 Version 10.2
 - Added `MovementCastDelay` Advanced Option. Delays casting UP TO this amount in seconds when coming to a stop from moving to help prevent interruption.
