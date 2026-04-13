@@ -33,3 +33,8 @@ All commands must be preceded with either `//znmtracker` or `//znmtrack` or `//z
 </p>
 
 ------
+
+## Changelog
+
+Version 1.1
+- Added ability to track items on other characters and display them in the check command.
