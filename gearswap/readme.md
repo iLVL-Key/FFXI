@@ -2228,6 +2228,9 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3.1
+-Fixed an issue where going into a cutscene would trigger the choose_set function and giving in-game "unable to equip" errors.
+
 Version 1.3
 - Added `FullMpPercent` Advanced Option. Above this percent is considered full mp.
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
