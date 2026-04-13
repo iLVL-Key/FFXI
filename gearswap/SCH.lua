@@ -1098,7 +1098,7 @@ end
 
 
 
-FileVersion = '1.3'
+FileVersion = '1.3.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2569,7 +2569,7 @@ function choose_set(sublimation_activation)
 		else
 			equip(set_combine(sets.idle, light_arts, dark_arts, sublimation, full_mp, danger))
 		end
-	else
+	elseif player.status ~= "Event" then
 		local get_player = windower.ffxi.get_player()
 		local autorun = get_player and get_player.autorun
 		local auto_movement_speed = AutoMvmntSpeed and moving
