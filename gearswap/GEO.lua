@@ -660,7 +660,7 @@ end
 
 
 
-FileVersion = '16.1.1'
+FileVersion = '16.1.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3522,7 +3522,7 @@ windower.register_event('action',function(act)
 		end
 
 		--Spell with Immanence or Chain Affinity active
-		if act.category == 4 then
+		if act.category == 4 and spells[act.param] then
 			if spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
 				addToActiveSkillchain(target_id)
 				active_chain_affinity[act.actor_id] = nil
