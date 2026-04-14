@@ -730,6 +730,9 @@ Version 1.0 BETA-1
 
 <summary>GEO</summary>
 
+Version 16.1.2
+-- Fixed an error in the code for checking if a party member has Immanence or Chain Affinity active.
+
 Version 16.1.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 - Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
