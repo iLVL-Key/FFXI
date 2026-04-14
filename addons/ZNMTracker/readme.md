@@ -36,6 +36,9 @@ All commands must be preceded with either `//znmtracker` or `//znmtrack` or `//z
 
 ## Changelog
 
+Version 1.2
+- Added items on other characters displaying on the tracker window.
+
 Version 1.1
 - Added ability to track items on other characters and display them in the check command.
 
