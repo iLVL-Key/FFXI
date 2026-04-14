@@ -26,7 +26,7 @@
 
 _addon.name = 'ZNMTracker'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.1'
+_addon.version = '1.2'
 _addon.commands = {'znmtracker', 'znmtrack', 'znmt'}
 
 require 'logger'
@@ -238,6 +238,7 @@ end
 
 --Load data from data/znm_data.lua
 function loadExternalData()
+
 	ext_data = {}
 
 	--Load external file
@@ -246,6 +247,24 @@ function loadExternalData()
 	if success and data then
 		ext_data = data
 	end
+
+	--Setup simplified data to use in the tracker window
+	other_chars = {
+		pop = {},
+		trophy = {},
+		ki = {},
+	}
+
+	for char_name, char_data in pairs(ext_data) do
+		for category, tbl in pairs(other_chars) do
+			if char_data[category] then
+				for item_id in pairs(char_data[category]) do
+					tbl[item_id] = true
+				end
+			end
+		end
+	end
+
 end
 
 --Save data from this character to file
@@ -451,79 +470,79 @@ function updateBox()
 
 	if display == "All" or display == "Tinnin" then
 		cs = cs_able
-		have_pop = pop[2580] and icons.current.pop or x
-		have_trophy = trophy[2616] and icons.current.trophy or x
+		have_pop = pop[2580] and icons.current.pop or (other_chars.pop[2580] and icons.other.pop or x)
+		have_trophy = trophy[2616] and icons.current.trophy or (other_chars.trophy[2616] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Vulpangue        "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = cs_able
-		have_pop = pop[2590] and icons.current.pop or x
-		have_trophy = trophy[2626] and icons.current.trophy or x
+		have_pop = pop[2590] and icons.current.pop or (other_chars.pop[2590] and icons.other.pop or x)
+		have_trophy = trophy[2626] and icons.current.trophy or (other_chars.trophy[2626] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Brass Borer      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = cs_able
-		have_pop = pop[2600] and icons.current.pop or x
-		have_trophy = trophy[2636] and icons.current.trophy or x
+		have_pop = pop[2600] and icons.current.pop or (other_chars.pop[2600] and icons.other.pop or x)
+		have_trophy = trophy[2636] and icons.current.trophy or (other_chars.trophy[2636] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Velionis"..cr.."\n"))
 
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = cs_able
-		have_pop = pop[2581] and icons.current.pop or x
-		have_trophy = trophy[2617] and icons.current.trophy or x
+		have_pop = pop[2581] and icons.current.pop or (other_chars.pop[2581] and icons.other.pop or x)
+		have_trophy = trophy[2617] and icons.current.trophy or (other_chars.trophy[2617] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Chamrosh         "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = cs_able
-		have_pop = pop[2591] and icons.current.pop or x
-		have_trophy = trophy[2627] and icons.current.trophy or x
+		have_pop = pop[2591] and icons.current.pop or (other_chars.pop[2591] and icons.other.pop or x)
+		have_trophy = trophy[2627] and icons.current.trophy or (other_chars.trophy[2627] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Claret           "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = cs_able
-		have_pop = pop[2601] and icons.current.pop or x
-		have_trophy = trophy[2637] and icons.current.trophy or x
+		have_pop = pop[2601] and icons.current.pop or (other_chars.pop[2601] and icons.other.pop or x)
+		have_trophy = trophy[2637] and icons.current.trophy or (other_chars.trophy[2637] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Lil' Apkallu"..cr.."\n"))
 
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = cs_able
-		have_pop = pop[2582] and icons.current.pop or x
-		have_trophy = trophy[2618] and icons.current.trophy or x
+		have_pop = pop[2582] and icons.current.pop or (other_chars.pop[2582] and icons.other.pop or x)
+		have_trophy = trophy[2618] and icons.current.trophy or (other_chars.trophy[2618] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Chs. H. Gigiroon "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = cs_able
-		have_pop = pop[2592] and icons.current.pop or x
-		have_trophy = trophy[2628] and icons.current.trophy or x
+		have_pop = pop[2592] and icons.current.pop or (other_chars.pop[2592] and icons.other.pop or x)
+		have_trophy = trophy[2628] and icons.current.trophy or (other_chars.trophy[2628] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Ob               "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = cs_able
-		have_pop = pop[2602] and icons.current.pop or x
-		have_trophy = trophy[2638] and icons.current.trophy or x
+		have_pop = pop[2602] and icons.current.pop or (other_chars.pop[2602] and icons.other.pop or x)
+		have_trophy = trophy[2638] and icons.current.trophy or (other_chars.trophy[2638] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Chigre"..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[998] and "\\cs("..formatRGB(colors.maroon.r)..","..formatRGB(colors.maroon.g)..","..formatRGB(colors.maroon.b)..")" or ((trophy[2616] or trophy[2617] or trophy[2618]) and cs_able or cs_unable)
-		have_trophy = (trophy[2616] or trophy[2617] or trophy[2618]) and icons.current.trophy or x
-		have_ki = ki[998] and icons.current.ki or x
+		have_trophy = (trophy[2616] or trophy[2617] or trophy[2618]) and icons.current.trophy or ((other_chars.trophy[2616] or other_chars.trophy[2617] or other_chars.trophy[2618]) and icons.other.trophy or x)
+		have_ki = ki[998] and icons.current.ki or (other_chars.ki[998] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Maroon Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1004] and "\\cs("..formatRGB(colors.cerise.r)..","..formatRGB(colors.cerise.g)..","..formatRGB(colors.cerise.b)..")" or ((trophy[2590] or trophy[2627] or trophy[2628]) and cs_able or cs_unable)
-		have_trophy = (trophy[2590] or trophy[2627] or trophy[2628]) and icons.current.trophy or x
-		have_ki = ki[1004] and icons.current.ki or x
+		have_trophy = (trophy[2590] or trophy[2627] or trophy[2628]) and icons.current.trophy or ((other_chars.trophy[2590] or other_chars.trophy[2627] or other_chars.trophy[2628]) and icons.other.trophy or x)
+		have_ki = ki[1004] and icons.current.ki or (other_chars.ki[1004] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Cerise Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1010] and "\\cs("..formatRGB(colors.pine_green.r)..","..formatRGB(colors.pine_green.g)..","..formatRGB(colors.pine_green.b)..")" or ((trophy[2600] or trophy[2637] or trophy[2638]) and cs_able or cs_unable)
-		have_trophy = (trophy[2600] or trophy[2637] or trophy[2638]) and icons.current.trophy or x
-		have_ki = ki[1010] and icons.current.ki or x
+		have_trophy = (trophy[2600] or trophy[2637] or trophy[2638]) and icons.current.trophy or ((other_chars.trophy[2600] or other_chars.trophy[2637] or other_chars.trophy[2638]) and icons.other.trophy or x)
+		have_ki = ki[1010] and icons.current.ki or (other_chars.ki[1010] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Pine Green Seal"..cr.."\n"))
 	end
 	
@@ -535,77 +554,77 @@ function updateBox()
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[998] and cs_able or cs_unable
-		have_pop = pop[2577] and icons.current.pop or x
-		have_trophy = trophy[2613] and icons.current.trophy or x
+		have_pop = pop[2577] and icons.current.pop or (other_chars.pop[2577] and icons.other.pop or x)
+		have_trophy = trophy[2613] and icons.current.trophy or (other_chars.trophy[2613] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Iriz Ima         "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1004] and cs_able or cs_unable
-		have_pop = pop[2587] and icons.current.pop or x
-		have_trophy = trophy[2623] and icons.current.trophy or x
+		have_pop = pop[2587] and icons.current.pop or (other_chars.pop[2587] and icons.other.pop or x)
+		have_trophy = trophy[2623] and icons.current.trophy or (other_chars.trophy[2623] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Anantaboga       "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1010] and cs_able or cs_unable
-		have_pop = pop[2598] and icons.current.pop or x
-		have_trophy = trophy[2634] and icons.current.trophy or x
+		have_pop = pop[2598] and icons.current.pop or (other_chars.pop[2598] and icons.other.pop or x)
+		have_trophy = trophy[2634] and icons.current.trophy or (other_chars.trophy[2634] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Zareehkl the Jbl."..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[998] and cs_able or cs_unable
-		have_pop = pop[2579] and icons.current.pop or x
-		have_trophy = trophy[2615] and icons.current.trophy or x
+		have_pop = pop[2579] and icons.current.pop or (other_chars.pop[2579] and icons.other.pop or x)
+		have_trophy = trophy[2615] and icons.current.trophy or (other_chars.trophy[2615] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Iriri Samariri   "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1004] and cs_able or cs_unable
-		have_pop = pop[2588] and icons.current.pop or x
-		have_trophy = trophy[2624] and icons.current.trophy or x
+		have_pop = pop[2588] and icons.current.pop or (other_chars.pop[2588] and icons.other.pop or x)
+		have_trophy = trophy[2624] and icons.current.trophy or (other_chars.trophy[2624] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Reacton          "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1010] and cs_able or cs_unable
-		have_pop = pop[2599] and icons.current.pop or x
-		have_trophy = trophy[2635] and icons.current.trophy or x
+		have_pop = pop[2599] and icons.current.pop or (other_chars.pop[2599] and icons.other.pop or x)
+		have_trophy = trophy[2635] and icons.current.trophy or (other_chars.trophy[2635] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Verdelet"..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[998] and cs_able or cs_unable
-		have_pop = pop[2578] and icons.current.pop or x
-		have_trophy = trophy[2614] and icons.current.trophy or x
+		have_pop = pop[2578] and icons.current.pop or (other_chars.pop[2578] and icons.other.pop or x)
+		have_trophy = trophy[2614] and icons.current.trophy or (other_chars.trophy[2614] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Livid. Amooshah  "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1004] and cs_able or cs_unable
-		have_pop = pop[2589] and icons.current.pop or x
-		have_trophy = trophy[2625] and icons.current.trophy or x
+		have_pop = pop[2589] and icons.current.pop or (other_chars.pop[2589] and icons.other.pop or x)
+		have_trophy = trophy[2625] and icons.current.trophy or (other_chars.trophy[2625] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Dextrose         "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1010] and cs_able or cs_unable
-		have_pop = pop[2597] and icons.current.pop or x
-		have_trophy = trophy[2633] and icons.current.trophy or x
+		have_pop = pop[2597] and icons.current.pop or (other_chars.pop[2597] and icons.other.pop or x)
+		have_trophy = trophy[2633] and icons.current.trophy or (other_chars.trophy[2633] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Wulgaru"..cr.."\n"))
 	end
 	
 	if display == "All" or display == "Tinnin" then
 		cs = ki[999] and "\\cs("..formatRGB(colors.apple_green.r)..","..formatRGB(colors.apple_green.g)..","..formatRGB(colors.apple_green.b)..")" or ((trophy[2613] or trophy[2623] or trophy[2634]) and cs_able or cs_unable)
-		have_trophy = (trophy[2613] or trophy[2623] or trophy[2634]) and icons.current.trophy or x
-		have_ki = ki[999] and icons.current.ki or x
+		have_trophy = (trophy[2613] or trophy[2623] or trophy[2634]) and icons.current.trophy or ((other_chars.trophy[2613] or other_chars.trophy[2623] or other_chars.trophy[2634]) and icons.other.trophy or x)
+		have_ki = ki[999] and icons.current.ki or (other_chars.ki[999] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Apple Green Seal "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1005] and "\\cs("..formatRGB(colors.salmon.r)..","..formatRGB(colors.salmon.g)..","..formatRGB(colors.salmon.b)..")" or ((trophy[2615] or trophy[2624] or trophy[2635]) and cs_able or cs_unable)
-		have_trophy = (trophy[2615] or trophy[2624] or trophy[2635]) and icons.current.trophy or x
-		have_ki = ki[1005] and icons.current.ki or x
+		have_trophy = (trophy[2615] or trophy[2624] or trophy[2635]) and icons.current.trophy or ((other_chars.trophy[2615] or other_chars.trophy[2624] or other_chars.trophy[2635]) and icons.other.trophy or x)
+		have_ki = ki[1005] and icons.current.ki or (other_chars.ki[1005] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Salmon Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1011] and "\\cs("..formatRGB(colors.amber.r)..","..formatRGB(colors.amber.g)..","..formatRGB(colors.amber.b)..")" or ((trophy[2614] or trophy[2625] or trophy[2633]) and cs_able or cs_unable)
-		have_trophy = (trophy[2614] or trophy[2625] or trophy[2633]) and icons.current.trophy or x
-		have_ki = ki[1011] and icons.current.ki or x
+		have_trophy = (trophy[2614] or trophy[2625] or trophy[2633]) and icons.current.trophy or ((other_chars.trophy[2614] or other_chars.trophy[2625] or other_chars.trophy[2633]) and icons.other.trophy or x)
+		have_ki = ki[1011] and icons.current.ki or (other_chars.ki[1011] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Amber Seal"..cr.."\n"))
 	end
 
@@ -617,39 +636,39 @@ function updateBox()
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[999] and cs_able or cs_unable
-		have_pop = pop[2574] and icons.current.pop or x
-		have_trophy = trophy[2610] and icons.current.trophy or x
+		have_pop = pop[2574] and icons.current.pop or (other_chars.pop[2574] and icons.other.pop or x)
+		have_trophy = trophy[2610] and icons.current.trophy or (other_chars.trophy[2610] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Armed Gears      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1005] and cs_able or cs_unable
-		have_pop = pop[2584] and icons.current.pop or x
-		have_trophy = trophy[2620] and icons.current.trophy or x
+		have_pop = pop[2584] and icons.current.pop or (other_chars.pop[2584] and icons.other.pop or x)
+		have_trophy = trophy[2620] and icons.current.trophy or (other_chars.trophy[2620] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Nosferatu        "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1011] and cs_able or cs_unable
-		have_pop = pop[2594] and icons.current.pop or x
-		have_trophy = trophy[2630] and icons.current.trophy or x
+		have_pop = pop[2594] and icons.current.pop or (other_chars.pop[2594] and icons.other.pop or x)
+		have_trophy = trophy[2630] and icons.current.trophy or (other_chars.trophy[2630] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Mahjlaef the Pnt."..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[1000] and "\\cs("..formatRGB(colors.charcoal_grey.r)..","..formatRGB(colors.charcoal_grey.g)..","..formatRGB(colors.charcoal_grey.b)..")" or (trophy[2610] and cs_able or cs_unable)
-		have_trophy = trophy[2610] and icons.current.trophy or x
-		have_ki = ki[1000] and icons.current.ki or x
+		have_trophy = trophy[2610] and icons.current.trophy or (other_chars.trophy[2610] and icons.other.trophy or x)
+		have_ki = ki[1000] and icons.current.ki or (other_chars.ki[1000] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Char. Grey Seal  "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1006] and "\\cs("..formatRGB(colors.purplish_grey.r)..","..formatRGB(colors.purplish_grey.g)..","..formatRGB(colors.purplish_grey.b)..")" or (trophy[2620] and cs_able or cs_unable)
-		have_trophy = trophy[2620] and icons.current.trophy or x
-		have_ki = ki[1006] and icons.current.ki or x
+		have_trophy = trophy[2620] and icons.current.trophy or (other_chars.trophy[2620] and icons.other.trophy or x)
+		have_ki = ki[1006] and icons.current.ki or (other_chars.ki[1006] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Purp. Grey Seal  "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1012] and "\\cs("..formatRGB(colors.fallow.r)..","..formatRGB(colors.fallow.g)..","..formatRGB(colors.fallow.b)..")" or (trophy[2630] and cs_able or cs_unable)
-		have_trophy = trophy[2630] and icons.current.trophy or x
-		have_ki = ki[1012] and icons.current.ki or x
+		have_trophy = trophy[2630] and icons.current.trophy or (other_chars.trophy[2630] and icons.other.trophy or x)
+		have_ki = ki[1012] and icons.current.ki or (other_chars.ki[1012] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Fallow Seal"..cr.."\n"))
 	end
 
@@ -661,39 +680,39 @@ function updateBox()
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[999] and cs_able or cs_unable
-		have_pop = pop[2575] and icons.current.pop or x
-		have_trophy = trophy[2611] and icons.current.trophy or x
+		have_pop = pop[2575] and icons.current.pop or (other_chars.pop[2575] and icons.other.pop or x)
+		have_trophy = trophy[2611] and icons.current.trophy or (other_chars.trophy[2611] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Gotoh Z. the Rd. "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1005] and cs_able or cs_unable
-		have_pop = pop[2585] and icons.current.pop or x
-		have_trophy = trophy[2621] and icons.current.trophy or x
+		have_pop = pop[2585] and icons.current.pop or (other_chars.pop[2585] and icons.other.pop or x)
+		have_trophy = trophy[2621] and icons.current.trophy or (other_chars.trophy[2621] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Khromasoul Bblr. "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1011] and cs_able or cs_unable
-		have_pop = pop[2595] and icons.current.pop or x
-		have_trophy = trophy[2631] and icons.current.trophy or x
+		have_pop = pop[2595] and icons.current.pop or (other_chars.pop[2595] and icons.other.pop or x)
+		have_trophy = trophy[2631] and icons.current.trophy or (other_chars.trophy[2631] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Experim. Lamia"..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[1001] and "\\cs("..formatRGB(colors.deep_purple.r)..","..formatRGB(colors.deep_purple.g)..","..formatRGB(colors.deep_purple.b)..")" or (trophy[2611] and cs_able or cs_unable)
-		have_trophy = trophy[2611] and icons.current.trophy or x
-		have_ki = ki[1001] and icons.current.ki or x
+		have_trophy = trophy[2611] and icons.current.trophy or (other_chars.trophy[2611] and icons.other.trophy or x)
+		have_ki = ki[1001] and icons.current.ki or (other_chars.ki[1001] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Deep Purple Seal "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1007] and "\\cs("..formatRGB(colors.gold.r)..","..formatRGB(colors.gold.g)..","..formatRGB(colors.gold.b)..")" or (trophy[2621] and cs_able or cs_unable)
-		have_trophy = trophy[2621] and icons.current.trophy or x
-		have_ki = ki[1007] and icons.current.ki or x
+		have_trophy = trophy[2621] and icons.current.trophy or (other_chars.trophy[2621] and icons.other.trophy or x)
+		have_ki = ki[1007] and icons.current.ki or (other_chars.ki[1007] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Gold Seal        "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1013] and "\\cs("..formatRGB(colors.taupe.r)..","..formatRGB(colors.taupe.g)..","..formatRGB(colors.taupe.b)..")" or (trophy[2631] and cs_able or cs_unable)
-		have_trophy = trophy[2631] and icons.current.trophy or x
-		have_ki = ki[1013] and icons.current.ki or x
+		have_trophy = trophy[2631] and icons.current.trophy or (other_chars.trophy[2631] and icons.other.trophy or x)
+		have_ki = ki[1013] and icons.current.ki or (other_chars.ki[1013] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Taupe Seal"..cr.."\n"))
 	end
 
@@ -705,39 +724,39 @@ function updateBox()
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[999] and cs_able or cs_unable
-		have_pop = pop[2576] and icons.current.pop or x
-		have_trophy = trophy[2612] and icons.current.trophy or x
+		have_pop = pop[2576] and icons.current.pop or (other_chars.pop[2576] and icons.other.pop or x)
+		have_trophy = trophy[2612] and icons.current.trophy or (other_chars.trophy[2612] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Dea              "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1005] and cs_able or cs_unable
-		have_pop = pop[2586] and icons.current.pop or x
-		have_trophy = trophy[2622] and icons.current.trophy or x
+		have_pop = pop[2586] and icons.current.pop or (other_chars.pop[2586] and icons.other.pop or x)
+		have_trophy = trophy[2622] and icons.current.trophy or (other_chars.trophy[2622] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Achamoth         "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1011] and cs_able or cs_unable
-		have_pop = pop[2596] and icons.current.pop or x
-		have_trophy = trophy[2632] and icons.current.trophy or x
+		have_pop = pop[2596] and icons.current.pop or (other_chars.pop[2596] and icons.other.pop or x)
+		have_trophy = trophy[2632] and icons.current.trophy or (other_chars.trophy[2632] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Nuhn"..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[1002] and "\\cs("..formatRGB(colors.chestnut.r)..","..formatRGB(colors.chestnut.g)..","..formatRGB(colors.chestnut.b)..")" or (trophy[2612] and cs_able or cs_unable)
-		have_trophy = trophy[2612] and icons.current.trophy or x
-		have_ki = ki[1002] and icons.current.ki or x
+		have_trophy = trophy[2612] and icons.current.trophy or (other_chars.trophy[2612] and icons.other.trophy or x)
+		have_ki = ki[1002] and icons.current.ki or (other_chars.ki[1002] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Chestnut Seal    "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1008] and "\\cs("..formatRGB(colors.copper.r)..","..formatRGB(colors.copper.g)..","..formatRGB(colors.copper.b)..")" or (trophy[2622] and cs_able or cs_unable)
-		have_trophy = trophy[2622] and icons.current.trophy or x
-		have_ki = ki[1008] and icons.current.ki or x
+		have_trophy = trophy[2622] and icons.current.trophy or (other_chars.trophy[2622] and icons.other.trophy or x)
+		have_ki = ki[1008] and icons.current.ki or (other_chars.ki[1008] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Copper Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1014] and "\\cs("..formatRGB(colors.sienna.r)..","..formatRGB(colors.sienna.g)..","..formatRGB(colors.sienna.b)..")" or (trophy[2632] and cs_able or cs_unable)
-		have_trophy = trophy[2632] and icons.current.trophy or x
-		have_ki = ki[1014] and icons.current.ki or x
+		have_trophy = trophy[2632] and icons.current.trophy or (other_chars.trophy[2632] and icons.other.trophy or x)
+		have_ki = ki[1014] and icons.current.ki or (other_chars.ki[1014] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Sienna Seal"..cr.."\n"))
 	end
 
@@ -749,48 +768,47 @@ function updateBox()
 
 	if display == "All" or display == "Tinnin" then
 		cs = (ki[1000] and ki[1001] and ki[1002]) and cs_able or cs_unable
-		have_pop = pop[2573] and icons.current.pop or x
-		have_trophy = trophy[2609] and icons.current.trophy or x
+		have_pop = pop[2573] and icons.current.pop or (other_chars.pop[2573] and icons.other.pop or x)
+		have_trophy = trophy[2609] and icons.current.trophy or (other_chars.trophy[2609] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Tinnin           "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = (ki[1006] and ki[1007] and ki[1008]) and cs_able or cs_unable
-		have_pop = pop[2583] and icons.current.pop or x
-		have_trophy = trophy[2619] and icons.current.trophy or x
+		have_pop = pop[2583] and icons.current.pop or (other_chars.pop[2583] and icons.other.pop or x)
+		have_trophy = trophy[2619] and icons.current.trophy or (other_chars.trophy[2619] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Sarameya         "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = (ki[1012] and ki[1013] and ki[1014]) and cs_able or cs_unable
-		have_pop = pop[2593] and icons.current.pop or x
-		have_trophy = trophy[2629] and icons.current.trophy or x
+		have_pop = pop[2593] and icons.current.pop or (other_chars.pop[2593] and icons.other.pop or x)
+		have_trophy = trophy[2629] and icons.current.trophy or (other_chars.trophy[2629] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Tyger"..cr.."\n"))
 	end
 
 	if display == "All" or display == "Tinnin" then
 		cs = ki[1003] and "\\cs("..formatRGB(colors.lilac.r)..","..formatRGB(colors.lilac.g)..","..formatRGB(colors.lilac.b)..")" or (trophy[2609] and cs_able or cs_unable)
-		have_trophy = trophy[2609] and icons.current.trophy or x
-		have_ki = ki[1003] and icons.current.ki or x
+		have_trophy = trophy[2609] and icons.current.trophy or (other_chars.trophy[2609] and icons.other.trophy or x)
+		have_ki = ki[1003] and icons.current.ki or (other_chars.ki[1003] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Lilac Seal       "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
 		cs = ki[1009] and "\\cs("..formatRGB(colors.bright_blue.r)..","..formatRGB(colors.bright_blue.g)..","..formatRGB(colors.bright_blue.b)..")" or (trophy[2619] and cs_able or cs_unable)
-		have_trophy = trophy[2619] and icons.current.trophy or x
-		have_ki = ki[1009] and icons.current.ki or x
+		have_trophy = trophy[2619] and icons.current.trophy or (other_chars.trophy[2619] and icons.other.trophy or x)
+		have_ki = ki[1009] and icons.current.ki or (other_chars.ki[1009] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Bright Blue Seal "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
 		cs = ki[1015] and "\\cs("..formatRGB(colors.lavender.r)..","..formatRGB(colors.lavender.g)..","..formatRGB(colors.lavender.b)..")" or (trophy[2629] and cs_able or cs_unable)
-		have_trophy = trophy[2629] and icons.current.trophy or x
-		have_ki = ki[1015] and icons.current.ki or x
+		have_trophy = trophy[2629] and icons.current.trophy or (other_chars.trophy[2629] and icons.other.trophy or x)
+		have_ki = ki[1015] and icons.current.ki or (other_chars.ki[1015] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Lavender Seal"..cr.."\n"))
 	end
 
 	if display == "All" then
 		table.insert(text, (cs_tier.."                            Tier 5"..cr.."\n"))
 		cs = (ki[1003] and ki[1009] and ki[1015]) and cs_able or cs_unable
-		have_trophy = 
-		have
-		table.insert(text, ("                     ["..(pop[2572] and icons.current.pop or x).."]"..cs.."Pandemonium Warden"..cr))
+		have_pop = pop[2572] and icons.current.pop or (other_chars.pop[2572] and icons.other.pop or x)
+		table.insert(text, ("                     ["..have_pop.."]"..cs.."Pandemonium Warden"..cr))
 	end
 
 	local display_text = table.concat(text)
