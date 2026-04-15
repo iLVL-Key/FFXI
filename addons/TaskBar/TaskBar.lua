@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-6'
+_addon.version = '1.0 BETA-7'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -100,6 +100,7 @@ defaults = {
 	options_window = {
 		pos = {x = 300, y = 300}
 	},
+	mouse_vertical_offset = 0,
 }
 
 --Load those default settings into the 'settings' variable for the addon to use
@@ -1652,6 +1653,8 @@ end
 
 --Return which button the mouse is hovering over
 function getMouseOnButton(mouse_x, mouse_y)
+
+	mouse_y = mouse_y + settings.mouse_vertical_offset
 
 	--Confirm Window buttons
 	if confirm_window:visible() then
