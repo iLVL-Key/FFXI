@@ -36,6 +36,12 @@ All commands must be preceded with either `//znmtracker` or `//znmtrack` or `//z
 
 ## Changelog
 
+Version 1.3
+- Added tracking Zenmi amount on tracker window.
+- Added hide tracker window on zoning.
+- Fixed a few incorrect trophy id's.
+- Fixed an issue where the tracker window would incorrectly display the colored icon that indiciated another character had a pop item, after you used the pop item, if you reloaded the addon after obtaining the pop item.
+
 Version 1.2
 - Added items on other characters displaying on the tracker window.
 
