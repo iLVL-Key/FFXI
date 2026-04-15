@@ -26,7 +26,7 @@
 
 _addon.name = 'ZNMTracker'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.2'
+_addon.version = '1.3'
 _addon.commands = {'znmtracker', 'znmtrack', 'znmt'}
 
 require 'logger'
@@ -75,14 +75,14 @@ defaults = {
 		lilac			= {r = 200, g = 162, b = 200},
 		cerise			= {r = 222, g =  49, b =  99},
 		salmon			= {r = 250, g = 128, b = 114},
-		purplish_grey	= {r = 112, g = 102, b = 119},
+		purplish_grey	= {r = 136, g = 113, b = 145},
 		gold			= {r = 255, g = 215, b =   0},
 		copper			= {r = 184, g = 115, b =  51},
 		bright_blue		= {r =   0, g = 191, b = 255},
 		pine_green		= {r =   1, g = 121, b = 111},
 		amber			= {r = 255, g = 191, b =   0},
 		fallow			= {r = 193, g = 154, b = 107},
-		taupe			= {r = 139, g = 133, b = 137},
+		taupe			= {r = 188, g = 152, b = 126},
 		sienna			= {r = 160, g =  82, b =  45},
 		lavender		= {r = 230, g = 230, b = 250},
 	},
@@ -256,10 +256,12 @@ function loadExternalData()
 	}
 
 	for char_name, char_data in pairs(ext_data) do
-		for category, tbl in pairs(other_chars) do
-			if char_data[category] then
-				for item_id in pairs(char_data[category]) do
-					tbl[item_id] = true
+		if char_name ~= player_name then
+			for category, tbl in pairs(other_chars) do
+				if char_data[category] then
+					for item_id in pairs(char_data[category]) do
+						tbl[item_id] = true
+					end
 				end
 			end
 		end
@@ -443,6 +445,30 @@ function printItems()
 
 end
 
+--Add commas to numbers to make them easier to read
+function addCommas(number)
+	--Convert the number to a string
+	local formattedNumber = tostring(number)
+
+	local length = #formattedNumber
+
+	if length > 3 then
+		local insertIndex = length % 3
+		if insertIndex == 0 then
+			insertIndex = 3
+		end
+
+		while insertIndex < length do
+			formattedNumber = formattedNumber:sub(1, insertIndex)..","..formattedNumber:sub(insertIndex + 1)
+			insertIndex = insertIndex + 4
+			length = length + 1
+		end
+	end
+
+	--Return the number (albeit as a string, we're not doing any math on it at this point)
+    return formattedNumber
+end
+
 --Update the tracker box on screen
 function updateBox()
 
@@ -456,11 +482,21 @@ function updateBox()
 	local cs_able = "\\cs("..formatRGB(colors.available.r)..","..formatRGB(colors.available.g)..","..formatRGB(colors.available.b)..")"
 	local cr = "\\cr"
 	local x = "\\cs(050,050,050)×\\cr"
+	local zeni_display = "========================="
 
 	--Go through all the NMs and KIs and determine how to display them based on what we want displayed
 
+	if zeni then
+		local formatted_zeni = " "..addCommas(zeni).."z "
+		local pad_left_num = math.floor((25 - #formatted_zeni) / 2)
+		local pad_right_num = 25 - (#formatted_zeni + pad_left_num)
+		local pad_left = string.rep("=", pad_left_num)
+		local pad_right = string.rep("=", pad_right_num)
+		zeni_display = pad_left.."\\cs(000,191,255)"..formatted_zeni.."\\cr"..pad_right
+	end
+
 	if display == "All" then
-		table.insert(text, ("=== \\cs(000,191,255)ZNM Tracker\\cr =============================== \\cs(000,191,255)//znmt help\\cr ===\n"))
+		table.insert(text, ("=== \\cs(000,191,255)ZNM Tracker\\cr ==="..zeni_display.."=== \\cs(000,191,255)//znmt help\\cr ===\n"))
 		table.insert(text, ("    "..icons.current.pop.." = Pop   "..icons.current.trophy.." = Trophy   "..icons.current.ki.." = KI   "..cs_able.."Available\\cr   "..cs_unable.."Unavailable\\cr\n"))
 		table.insert(text, (cs_tier.."                            Tier 1"..cr.."\n"))
 	else
@@ -534,14 +570,14 @@ function updateBox()
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Maroon Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
-		cs = ki[1004] and "\\cs("..formatRGB(colors.cerise.r)..","..formatRGB(colors.cerise.g)..","..formatRGB(colors.cerise.b)..")" or ((trophy[2590] or trophy[2627] or trophy[2628]) and cs_able or cs_unable)
-		have_trophy = (trophy[2590] or trophy[2627] or trophy[2628]) and icons.current.trophy or ((other_chars.trophy[2590] or other_chars.trophy[2627] or other_chars.trophy[2628]) and icons.other.trophy or x)
+		cs = ki[1004] and "\\cs("..formatRGB(colors.cerise.r)..","..formatRGB(colors.cerise.g)..","..formatRGB(colors.cerise.b)..")" or ((trophy[2626] or trophy[2627] or trophy[2628]) and cs_able or cs_unable)
+		have_trophy = (trophy[2626] or trophy[2627] or trophy[2628]) and icons.current.trophy or ((other_chars.trophy[2626] or other_chars.trophy[2627] or other_chars.trophy[2628]) and icons.other.trophy or x)
 		have_ki = ki[1004] and icons.current.ki or (other_chars.ki[1004] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Cerise Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
-		cs = ki[1010] and "\\cs("..formatRGB(colors.pine_green.r)..","..formatRGB(colors.pine_green.g)..","..formatRGB(colors.pine_green.b)..")" or ((trophy[2600] or trophy[2637] or trophy[2638]) and cs_able or cs_unable)
-		have_trophy = (trophy[2600] or trophy[2637] or trophy[2638]) and icons.current.trophy or ((other_chars.trophy[2600] or other_chars.trophy[2637] or other_chars.trophy[2638]) and icons.other.trophy or x)
+		cs = ki[1010] and "\\cs("..formatRGB(colors.pine_green.r)..","..formatRGB(colors.pine_green.g)..","..formatRGB(colors.pine_green.b)..")" or ((trophy[2636] or trophy[2637] or trophy[2638]) and cs_able or cs_unable)
+		have_trophy = (trophy[2636] or trophy[2637] or trophy[2638]) and icons.current.trophy or ((other_chars.trophy[2636] or other_chars.trophy[2637] or other_chars.trophy[2638]) and icons.other.trophy or x)
 		have_ki = ki[1010] and icons.current.ki or (other_chars.ki[1010] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Pine Green Seal"..cr.."\n"))
 	end
@@ -608,22 +644,22 @@ function updateBox()
 		have_trophy = trophy[2633] and icons.current.trophy or (other_chars.trophy[2633] and icons.other.trophy or x)
 		table.insert(text, ("["..have_pop..have_trophy.."]"..cs.."Wulgaru"..cr.."\n"))
 	end
-	
+
 	if display == "All" or display == "Tinnin" then
-		cs = ki[999] and "\\cs("..formatRGB(colors.apple_green.r)..","..formatRGB(colors.apple_green.g)..","..formatRGB(colors.apple_green.b)..")" or ((trophy[2613] or trophy[2623] or trophy[2634]) and cs_able or cs_unable)
-		have_trophy = (trophy[2613] or trophy[2623] or trophy[2634]) and icons.current.trophy or ((other_chars.trophy[2613] or other_chars.trophy[2623] or other_chars.trophy[2634]) and icons.other.trophy or x)
+		cs = ki[999] and "\\cs("..formatRGB(colors.apple_green.r)..","..formatRGB(colors.apple_green.g)..","..formatRGB(colors.apple_green.b)..")" or ((trophy[2613] or trophy[2614] or trophy[2615]) and cs_able or cs_unable)
+		have_trophy = (trophy[2613] or trophy[2614] or trophy[2615]) and icons.current.trophy or ((other_chars.trophy[2613] or other_chars.trophy[2614] or other_chars.trophy[2615]) and icons.other.trophy or x)
 		have_ki = ki[999] and icons.current.ki or (other_chars.ki[999] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Apple Green Seal "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Sarameya" then
-		cs = ki[1005] and "\\cs("..formatRGB(colors.salmon.r)..","..formatRGB(colors.salmon.g)..","..formatRGB(colors.salmon.b)..")" or ((trophy[2615] or trophy[2624] or trophy[2635]) and cs_able or cs_unable)
-		have_trophy = (trophy[2615] or trophy[2624] or trophy[2635]) and icons.current.trophy or ((other_chars.trophy[2615] or other_chars.trophy[2624] or other_chars.trophy[2635]) and icons.other.trophy or x)
+		cs = ki[1005] and "\\cs("..formatRGB(colors.salmon.r)..","..formatRGB(colors.salmon.g)..","..formatRGB(colors.salmon.b)..")" or ((trophy[2623] or trophy[2624] or trophy[2625]) and cs_able or cs_unable)
+		have_trophy = (trophy[2623] or trophy[2624] or trophy[2625]) and icons.current.trophy or ((other_chars.trophy[2623] or other_chars.trophy[2624] or other_chars.trophy[2625]) and icons.other.trophy or x)
 		have_ki = ki[1005] and icons.current.ki or (other_chars.ki[1005] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Salmon Seal      "..cr..(display ~= "All" and "\n" or "")))
 	end
 	if display == "All" or display == "Tyger" then
-		cs = ki[1011] and "\\cs("..formatRGB(colors.amber.r)..","..formatRGB(colors.amber.g)..","..formatRGB(colors.amber.b)..")" or ((trophy[2614] or trophy[2625] or trophy[2633]) and cs_able or cs_unable)
-		have_trophy = (trophy[2614] or trophy[2625] or trophy[2633]) and icons.current.trophy or ((other_chars.trophy[2614] or other_chars.trophy[2625] or other_chars.trophy[2633]) and icons.other.trophy or x)
+		cs = ki[1011] and "\\cs("..formatRGB(colors.amber.r)..","..formatRGB(colors.amber.g)..","..formatRGB(colors.amber.b)..")" or ((trophy[2633] or trophy[2634] or trophy[2635]) and cs_able or cs_unable)
+		have_trophy = (trophy[2633] or trophy[2634] or trophy[2635]) and icons.current.trophy or ((other_chars.trophy[2633] or other_chars.trophy[2634] or other_chars.trophy[2635]) and icons.other.trophy or x)
 		have_ki = ki[1011] and icons.current.ki or (other_chars.ki[1011] and icons.other.ki or x)
 		table.insert(text, ("["..have_trophy..have_ki.."]"..cs.."Amber Seal"..cr.."\n"))
 	end
@@ -840,22 +876,31 @@ windower.register_event('incoming chunk', function(id, original, modified, injec
 		end
 	elseif id == 0x01D then --Loading Inventory
 		loading_inv = packet['Flag'] == 0 and true or false
+	elseif id == 0x113 then --Zeni currency update
+		zeni = packet['Zeni']
+		if box:visible() then
+			updateBox()
+		end
+	elseif id == 0xB and box_visible then --Zone start, hide box if visible
+		box:hide()
+	elseif id == 0xA and box_visible then --Zone finish, show box if visible
+		box:show()
 	end
 end)
 
 windower.register_event('load', function()
 	if windower.ffxi.get_info().logged_in then
+		setPlayerName()
 		loadExternalData()
 		run_at_login = true
-		setPlayerName()
 	end
 end)
 
 windower.register_event('login', function()
-	loadExternalData()
 	coroutine.schedule(function()
-		run_at_login = true
 		setPlayerName()
+		loadExternalData()
+		run_at_login = true
 	end, 5)
 end)
 
@@ -866,6 +911,27 @@ windower.register_event('logout', function()
 	--Save the players ZNM data then clear the player name
 	saveToFile()
 	player_name = nil
+
+end)
+
+windower.register_event('incoming text',function(original, modified, original_mode, modified_mode, blocked)
+
+	local zeni_used = original_mode == 151 and original:match("You use up (%d+) zeni")
+	local zeni_gained = original_mode == 151 and original:match("You earn (%d+) zeni")
+
+	if zeni and zeni_used then
+		zeni_used = tonumber(zeni_used)
+		zeni = zeni - zeni_used
+		if box:visible() then
+			updateBox()
+		end
+	elseif zeni and zeni_gained then
+		zeni_gained = tonumber(zeni_gained)
+		zeni = zeni + zeni_gained
+		if box:visible() then
+			updateBox()
+		end
+	end
 
 end)
 
@@ -884,20 +950,32 @@ windower.register_event('addon command', function(cmd, ...)
 
 	cmd = cmd and string.lower(cmd) or nil
 
+	local function openMenuMessage()
+		if not zeni then
+			windower.add_to_chat(8,('[ZNMTrcker] ':color(220))..('Open your '):color(8)..('Status > Currencies '):color(1)..('menu to load your Zeni point balance.'):color(8))
+		end
+	end
+
 	if not cmd and windower.ffxi.get_info().logged_in then
 		if box:visible() then
 			box:hide()
+			box_visible = false
 		else
 			updateBox()
 			box:show()
+			box_visible = true
+			openMenuMessage()
 		end
 
 	elseif cmd == "show" then
 		updateBox()
 		box:show()
+		box_visible = true
+		openMenuMessage()
 
 	elseif cmd == "hide" then
 		box:hide()
+		box_visible = false
 
 	elseif cmd == "check" or cmd == "list" then
 
@@ -913,21 +991,29 @@ windower.register_event('addon command', function(cmd, ...)
 		display = "Tinnin"
 		updateBox()
 		box:show()
+		box_visible = true
+		openMenuMessage()
 
 	elseif cmd and cmd:find("sar") then
 		display = "Sarameya"
 		updateBox()
 		box:show()
+		box_visible = true
+		openMenuMessage()
 
 	elseif cmd and cmd:find("tyg") then
 		display = "Tyger"
 		updateBox()
 		box:show()
+		box_visible = true
+		openMenuMessage()
 
 	elseif cmd and cmd:find("pan") or cmd == "all" or cmd == "pw" then
 		display = "All"
 		updateBox()
 		box:show()
+		box_visible = true
+		openMenuMessage()
 
 	elseif cmd == "help" then
 		local prefix = "//znmtracker, //znmtrack, //znmt"
