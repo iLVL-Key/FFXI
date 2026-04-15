@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-5'
+_addon.version = '1.0 BETA-6'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -345,6 +345,7 @@ confirm_message = nil --Stores what the confirmation message is.
 confirm_char_num = 0 --Used to count the number of characters in the confirmation message to determine how wide the confirmation window will be.
 pos_adjust_map = {} --The right-click menu has a different number of options depending on whether you clicked on the taskbar, main menu, or sub menu, so it needs to be adjusted upwards a different amount to line up the bottom option with the mouse.
 calculating_dimensions = false --Prevents a strange bug where if the mouse is moving while the setupMenu function is running and trying to calculate the dimensions of the main_menu it will not calculate correctly, instead returning a height and width of either 10 or sometimes 11. Moving the mouse while setupMenu runs immediately after load does not affect it, but when running it after doing things like closing the Options window it will do it. This makes no sense whatsoever. But sure, why not.
+last_poll = 0 --Used to keep polling rate cadence
 
 --Mapping of DirectInput key codes to characters, used to translate keyboard key presses into characters in the text input window
 key_map = {
@@ -1071,11 +1072,11 @@ function addPin(button)
 
 	local command_label = sorted_labels[sub_index]
 
-	-- Add to pins_data
+	--Add to pins_data
 	pins_data[category] = pins_data[category] or {}
 	pins_data[category][command_label] = true
 
-	-- Write updated pins_data to data/pins.lua
+	--Write updated pins_data to data/pins.lua
 	if pins_file then
 		pins_file:write(pins_help_msg..'return {\n'..sortedTableString(pins_data, '    ')..'\n}')
 	end
@@ -1219,13 +1220,13 @@ function updateTextInputWindow()
 	local message = " "..string.rep(" ", padding).."\\cs("..cn.r..","..cn.g..","..cn.b..")"..text_input_message.."\\cr"
 
 	local message_row_length = math.max(#text_input_message + 2, min_window_width + 2)
-	text_input_char_num = message_row_length -- Used to determine button positions
+	text_input_char_num = message_row_length --Used to determine button positions
 
 	--Title bar
 	local text_input_title = "──\\cs("..ch.r..","..ch.g..","..ch.b..")Text Input\\cr"
 	text_input_title = text_input_title..string.rep("─", message_row_length - 13).."─"
 
-	-- Keyboard input line
+	--Keyboard input line
 	local keyboard_input_display = (#keyboard_input < min_window_width) and (keyboard_input.."_") or keyboard_input
 	local input_length = #keyboard_input_display
 	local new_text = " \\cs("..ch.r..","..ch.g..","..ch.b..")"..keyboard_input_display.."\\cr"
@@ -1905,6 +1906,13 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 		updateTaskBar()
 	end
 
+	local clock = os.clock()
+	if clock > last_poll + 0.05 then
+		last_poll = clock
+	else
+		return
+	end
+
 	--Get the mouse position relative to the grid
 	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
 
@@ -1912,7 +1920,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 	updateTaskBar()
 
-	--Activate/show main menu when hovering over task bar
+	--Activate/show main menu when clicking the main TaskBar button
 	if mouse_is_on == "open_taskbar" then
 		if mouse_type == 2 then
 			if not (main_menu:visible() or right_click_menu:visible() or text_input_window:visible() or confirm_window:visible()) then
@@ -2276,7 +2284,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				end
 
 			elseif mouse_is_on == "add_category" then
-				-- Check if a category with the same name already exists
+				--Check if a category with the same name already exists
 				if keyboard_input == "" then
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Category name must not be empty.'):color(28))
 					displayTextInputWindow("add_category", "New category name:")
@@ -2288,7 +2296,7 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 				end
 
 			elseif mouse_is_on == "rename_category" then
-				-- Check if a category with the same name already exists
+				--Check if a category with the same name already exists
 				if keyboard_input == "" then
 					add_to_chat(8, ('[TaskBar] ':color(220))..('Category name must not be empty.'):color(28))
 					displayTextInputWindow("rename_category", "Rename category:")
