@@ -41,6 +41,9 @@ TaskBar is a quality-of-life Windower addon for Final Fantasy XI that adds a cus
 
 - **None!**
 
+## Mouse Position
+If you find the mouse is not lining up vertically with the menu, go into the `data/settings.xml` file and adjust the `mouse_vertical_offset` by a negative number of the pixel height of the bar at the top of the games window. Save and reload the addon. You may need to try a few times to get it right.
+
 ## Please Note
 Taskbar is only a mouse/menu based UI for running pre-defined, customizable Windower commands. It does not add the functionality of any of the default commands included. You will need to already have them loaded in order to function (i.e. If you do not have SuperWarp loaded, the "Travel" commands will do nothing). You may freely delete any categories/commands you do not have addons for, they are included only as examples and to get you started.
 
