@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'GaolPlan'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.3.2'
+_addon.version = '1.4'
 _addon.commands = {'gaolplan', 'gp'}
 
 require 'logger'
@@ -48,6 +48,7 @@ defaults = {
 	text = {alpha = 255, blue = 255, green = 255, red = 255, font = 'Consolas', size = 10},
 	flags = {draggable = true, italic = false, bold = true, right = false, bottom = false},
 	padding = 5,
+	mouse_vertical_offset = 0,
 	options = {
 		hover_effects = true
 	},
@@ -1276,6 +1277,8 @@ end
 
 --Handle mouse events
 register_event('mouse',function(mouse_type, mouse_x, mouse_y)
+
+	mouse_y = mouse_y + settings.mouse_vertical_offset
 
 	--Block if not visible
 	if not main_window_visible then return end
