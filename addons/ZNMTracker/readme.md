@@ -36,6 +36,9 @@ All commands must be preceded with either `//znmtracker` or `//znmtrack` or `//z
 
 ## Changelog
 
+Version 1.3.1
+- Adjusted add/remove item behavior. Rather than running a search on every add/remove (which moving an item from one location to another is both a remove and an add, so it did the search twice per single move) it checks the id of the item moved against the internal pop/trophy tables and adjusts them as needed. Much more efficient.
+
 Version 1.3
 - Added tracking Zeni amount on tracker window.
 - Added hide tracker window on zoning.
