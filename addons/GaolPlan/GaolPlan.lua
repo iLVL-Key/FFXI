@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'GaolPlan'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.3'
+_addon.version = '1.3.2'
 _addon.commands = {'gaolplan', 'gp'}
 
 require 'logger'
@@ -146,10 +146,10 @@ local function formatName(str)
 	--Check if the string length is less than 8 characters
 	if #str < 8 then
 		--Less than 8, pad with spaces to make it exactly 8
-		str = str .. string.rep(" ", 8 - #str)
+		str = str..string.rep(" ", 8 - #str)
 	elseif #str > 8 then
 		--More than 8, truncate to 7 and add an ellipsis
-		str = string.sub(str, 1, 7) .. "…"
+		str = string.sub(str, 1, 7).."…"
 	end
 
 	return str
@@ -238,7 +238,7 @@ function generatePlanOutput()
 				local player_name = get_party()["p"..(p-1)] and get_party()["p"..(p-1)].name or "Player "..p
 				--Truncate if the players name is longer than 8 characters
 				if #player_name > 8 then
-					player_name = string.sub(player_name, 1, 7) .. "."
+					player_name = string.sub(player_name, 1, 7).."."
 				end
 
 				--Find the job assigned to this player
@@ -420,7 +420,7 @@ function updateMainWindow()
 					local total_width = 35
 					local spaces = string.rep(" ", total_width - #boss - 13)
 
-					-- Check if the boss is selected for any phone
+					--Check if the boss is selected for any phone
 					local is_selected = false
 					for i = 1, 3 do
 						if phone_selection[i] == boss then
@@ -437,11 +437,11 @@ function updateMainWindow()
 						c = highlight --Use highlight color if boss is selected for any phone
 					end
 
-					-- Apply color formatting to the boss name
+					--Apply color formatting to the boss name
 					local row = "\\cs("..formatRGB(c.r)..","..formatRGB(c.g)..","..formatRGB(c.b)..")"..boss..spaces.."\\cr|"
 
 					for i = 1, 3 do
-						local assigned_boss = phone_selection[i] -- Get the boss assigned to this phone
+						local assigned_boss = phone_selection[i] --Get the boss assigned to this phone
 						local hover_over_boss = boss_map[hover_name] == boss and hover_phone == "ph"..i
 
 						--Determine the color: 
@@ -449,7 +449,7 @@ function updateMainWindow()
 						--Use the hover color if the mouse is hovering over it
 						local c = hover_over_boss and colors[hover_phone] or (assigned_boss == boss and colors["ph"..i] or off_white)
 
-						-- Check if the hovered boss matches the current selection or if the mouse is hovering over this box
+						--Check if the hovered boss matches the current selection or if the mouse is hovering over this box
 						if assigned_boss == boss or (hover_effects and hover_over_boss) then
 							row = row.." \\cs("..formatRGB(c.r)..","..formatRGB(c.g)..","..formatRGB(c.b)..")√\\cr "
 						else
@@ -1250,7 +1250,7 @@ function getMouseOnButton(mouse_x, mouse_y)
 		end
 	end
 
-	-- Determine which button the mouse is over
+	--Determine which button the mouse is over
 	for _, pos in ipairs(button_positions) do
 		local x_start = grid_pos.x + settings.padding + (button_width * (pos.x_begin - 1))
 		local x_end   = grid_pos.x + settings.padding + (button_width * pos.x_end)
@@ -1262,13 +1262,13 @@ function getMouseOnButton(mouse_x, mouse_y)
 		end
 	end
 
-	-- If not over a button, check if mouse is inside the window bounds
+	--If not over a button, check if mouse is inside the window bounds
 	if mouse_x >= grid_pos.x and mouse_x <= grid_pos.x + total_width
 	and mouse_y >= grid_pos.y and mouse_y <= grid_pos.y + total_height then
 		return "window"
 	end
 
-	-- Not over anything relevant
+	--Not over anything relevant
 	return "none"
 
 end
@@ -1376,7 +1376,7 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 			hideConfirmWindow()
 			return true --blocked from reaching game
 		elseif mouse_is_on == "confirm_clear_bosses" then
-			if isAnyJobAssigned() then
+			if isAnyBossAssigned() then
 				displayConfirmWindow("clear_bosses", "Clear all boss and job selections?")
 			end
 			updateMainWindow()
