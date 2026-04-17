@@ -26,7 +26,7 @@
 
 _addon.name = 'ZNMTracker'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.3'
+_addon.version = '1.3.1'
 _addon.commands = {'znmtracker', 'znmtrack', 'znmt'}
 
 require 'logger'
@@ -852,18 +852,36 @@ function updateBox()
 
 end
 
-windower.register_event('add item', function()
-	findItems()
+windower.register_event('add item', function(bag, index, id, count)
+
+	--if a pop/trophy item is added to any bag (this includes both dropping into inventory and moving from one to another) then add it to the appropriate table.
+	if pop_items[id] then
+		pop[id] = bag
+	elseif trophy_items[id] then
+		trophy[id] = bag
+	end
+
 	if box:visible() then
 		updateBox()
 	end
+
 end)
 
-windower.register_event('remove item', function()
-	findItems()
+windower.register_event('remove item', function(bag, index, id, count)
+
+	--if a pop/trophy item is removed from main inventory (bag 0) then remove from the appropriate table (moving it to another bag will then add it back above)
+	if bag == 0 then
+		if pop[id] then
+			pop[id] = nil
+		elseif trophy[id] then
+			trophy[id] = nil
+		end
+	end
+
 	if box:visible() then
 		updateBox()
 	end
+
 end)
 
 windower.register_event('incoming chunk', function(id, original, modified, injected, blocked)
