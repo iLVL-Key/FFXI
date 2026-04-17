@@ -46,6 +46,7 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 # Changelog
 
 Version 1.3.2
+- Added 0.05 second polling rate to help improve frame rate.
 - Fixed Clear button on Bosses screen not working correctly.
 
 Version 1.3.1
