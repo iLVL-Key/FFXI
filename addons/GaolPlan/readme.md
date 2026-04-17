@@ -21,6 +21,9 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 # Commands
 `//gaolplan` or `//gp` will bring up the GaolPlan window. That's it! The addon is otherwise entirely GUI-based.
 
+## Mouse Position
+If you find the mouse is not lining up vertically with the menu, go into the `data/settings.xml` file and adjust the `mouse_vertical_offset` by the number of pixels you think it is off. Save and reload the addon. You may need to try a few times to get it right.
+
 # Limitations
 
 - Save data does not save specific players, only the party member positions. If you load a save, take care to either use the party menu option to rearrange party members or adjust the jobs in the list to match the players.
@@ -45,7 +48,8 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 
 # Changelog
 
-Version 1.3.2
+Version 1.4
+- Added `mouse_verticaal_offset` setting. This should help the people who have issues with the mouse not lining up correctly with the buttons.
 - Added 0.05 second polling rate to help improve frame rate.
 - Fixed Clear button on Bosses screen not working correctly.
 
