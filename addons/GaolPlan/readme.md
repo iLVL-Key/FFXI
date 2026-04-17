@@ -45,6 +45,9 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 
 # Changelog
 
+Version 1.3.2
+- Fixed Clear button on Bosses screen not working correctly.
+
 Version 1.3.1
 - Fixed an occasional error when clearing jobs.
 
