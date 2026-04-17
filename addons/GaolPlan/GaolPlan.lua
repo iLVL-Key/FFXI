@@ -93,6 +93,7 @@ boss_num = 0 --Used to count the number of bosses selected to determine where th
 double_click_fix = true --Fix a weird double-click bug in windower
 bg_alpha_num = settings.bg.alpha --Temporarily store the bg_alpha value of the main window to be used when the confirm window is closed
 text_alpha_num = settings.text.alpha --Temporarily store the text_alpha value of the main window to be used when the confirm window is closed
+last_poll = 0 --Used to keep polling rate cadence
 
 --Define bosses list with section headers
 bosses = {
@@ -1278,6 +1279,14 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 
 	--Block if not visible
 	if not main_window_visible then return end
+
+	--0.05 second polling rate to help improve frame rate
+	local clock = os.clock()
+	if clock > last_poll + 0.05 then
+		last_poll = clock
+	else
+		return
+	end
 
 	--Get the mouse position relative to the grid
 	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
