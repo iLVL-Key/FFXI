@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-7'
+_addon.version = '1.0 BETA-8'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -346,7 +346,6 @@ confirm_message = nil --Stores what the confirmation message is.
 confirm_char_num = 0 --Used to count the number of characters in the confirmation message to determine how wide the confirmation window will be.
 pos_adjust_map = {} --The right-click menu has a different number of options depending on whether you clicked on the taskbar, main menu, or sub menu, so it needs to be adjusted upwards a different amount to line up the bottom option with the mouse.
 calculating_dimensions = false --Prevents a strange bug where if the mouse is moving while the setupMenu function is running and trying to calculate the dimensions of the main_menu it will not calculate correctly, instead returning a height and width of either 10 or sometimes 11. Moving the mouse while setupMenu runs immediately after load does not affect it, but when running it after doing things like closing the Options window it will do it. This makes no sense whatsoever. But sure, why not.
-last_poll = 0 --Used to keep polling rate cadence
 
 --Mapping of DirectInput key codes to characters, used to translate keyboard key presses into characters in the text input window
 key_map = {
@@ -1654,8 +1653,6 @@ end
 --Return which button the mouse is hovering over
 function getMouseOnButton(mouse_x, mouse_y)
 
-	mouse_y = mouse_y + settings.mouse_vertical_offset
-
 	--Confirm Window buttons
 	if confirm_window:visible() then
 		local confirm_grid_pos = {x = confirm_window:pos_x(), y = confirm_window:pos_y()}
@@ -1893,6 +1890,8 @@ end
 --Handle mouse events
 register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
+	mouse_y = mouse_y + settings.mouse_vertical_offset
+
 	if calculating_dimensions then return end
 	-- if calculating_dimensions or not main_menu:visible() then return end
 
@@ -1909,17 +1908,14 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 		updateTaskBar()
 	end
 
-	local clock = os.clock()
-	if clock > last_poll + 0.05 then
-		last_poll = clock
-	else
-		return
-	end
-
 	--Get the mouse position relative to the grid
 	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
 
 	-- print(mouse_is_on)
+
+	if mouse_is_on == "none" then
+		return
+	end
 
 	updateTaskBar()
 
