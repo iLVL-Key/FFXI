@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'GaolPlan'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.4'
+_addon.version = '1.4.1'
 _addon.commands = {'gaolplan', 'gp'}
 
 require 'logger'
@@ -94,7 +94,6 @@ boss_num = 0 --Used to count the number of bosses selected to determine where th
 double_click_fix = true --Fix a weird double-click bug in windower
 bg_alpha_num = settings.bg.alpha --Temporarily store the bg_alpha value of the main window to be used when the confirm window is closed
 text_alpha_num = settings.text.alpha --Temporarily store the text_alpha value of the main window to be used when the confirm window is closed
-last_poll = 0 --Used to keep polling rate cadence
 
 --Define bosses list with section headers
 bosses = {
@@ -113,10 +112,12 @@ boss_map = {
 	bumba = "Bumba"
 }
 
+jobs_map = {"blm", "blu", "brd", "bst", "cor", "dnc", "drg", "drk", "geo", "mnk", "nin", "pld", "pup", "rdm", "rng", "run", "sam", "sch", "smn", "thf", "war", "whm"}
+
 --Colors
 off_white = {r = 140, g = 140, b = 140}
 highlight = {r = 255, g = 255, b = 255}
-disable = {r = 200, g = 100, b = 100}
+disable   = {r = 200, g = 100, b = 100}
 ph1_color = {r = 75, g = 255, b = 75}
 ph2_color = {r = 0, g = 200, b = 255}
 ph3_color = {r = 255, g = 255, b = 50}
@@ -128,6 +129,8 @@ colors = {
 
 --Initialize boss selections
 phone_selection = {nil, nil, nil}
+pre_spaces = {nil, nil, nil}
+post_spaces = {nil, nil, nil}
 
 --Stores selected party member for each job
 player_jobs = {blm = nil, blu = nil, brd = nil, bst = nil, cor = nil, dnc = nil, drg = nil, drk = nil, geo = nil, mnk = nil, nin = nil, pld = nil, pup = nil, rdm = nil, rng = nil, run = nil, sam = nil, sch = nil, smn = nil, thf = nil, war = nil, whm = nil}
@@ -363,6 +366,11 @@ function updateMainWindow()
 
 	local display_text = ""
 	local pin = settings.flags.draggable and "○" or "•"
+	local highlight_cs = "\\cs("..formatRGB(highlight.r)..","..formatRGB(highlight.g)..","..formatRGB(highlight.b)..")"
+	local off_white_cs = "\\cs("..formatRGB(off_white.r)..","..formatRGB(off_white.g)..","..formatRGB(off_white.b)..")"
+	local ph1_color_cs = "\\cs("..formatRGB(ph1_color.r)..","..formatRGB(ph1_color.g)..","..formatRGB(ph1_color.b)..")"
+	local ph2_color_cs = "\\cs("..formatRGB(ph2_color.r)..","..formatRGB(ph2_color.g)..","..formatRGB(ph2_color.b)..")"
+	local ph3_color_cs = "\\cs("..formatRGB(ph3_color.r)..","..formatRGB(ph3_color.g)..","..formatRGB(ph3_color.b)..")"
 
 	--Return which Phone is hovered over
 	local function getPhone()
@@ -432,15 +440,16 @@ function updateMainWindow()
 					end
 
 					--Determine boss name color
-					local c = off_white
+					local cs = off_white_cs
 					if hover_effects and boss_map[hover_name] == boss then
-						c = colors[hover_phone] --Use phone color if mouse is over it
+						local phone_color_cs = (hover_phone == "ph1" and ph1_color_cs) or (hover_phone == "ph2" and ph2_color_cs) or ph3_color_cs
+						cs = phone_color_cs --Use phone color if mouse is over it
 					elseif is_selected then
-						c = highlight --Use highlight color if boss is selected for any phone
+						cs = highlight_cs --Use highlight color if boss is selected for any phone
 					end
 
 					--Apply color formatting to the boss name
-					local row = "\\cs("..formatRGB(c.r)..","..formatRGB(c.g)..","..formatRGB(c.b)..")"..boss..spaces.."\\cr|"
+					local row = cs..boss..spaces.."\\cr|"
 
 					for i = 1, 3 do
 						local assigned_boss = phone_selection[i] --Get the boss assigned to this phone
@@ -449,11 +458,13 @@ function updateMainWindow()
 						--Determine the color: 
 						--Use the phone's color if this boss is already assigned to the phone
 						--Use the hover color if the mouse is hovering over it
-						local c = hover_over_boss and colors[hover_phone] or (assigned_boss == boss and colors["ph"..i] or off_white)
+						local hover_color_cs = (hover_phone == "ph1" and ph1_color_cs) or (hover_phone == "ph2" and ph2_color_cs) or ph3_color_cs
+						local phone_color_cs = (i == 1 and ph1_color_cs) or (i == 2 and ph2_color_cs) or ph3_color_cs
+						local cs = hover_over_boss and hover_color_cs or (assigned_boss == boss and phone_color_cs or off_white_cs)
 
 						--Check if the hovered boss matches the current selection or if the mouse is hovering over this box
 						if assigned_boss == boss or (hover_effects and hover_over_boss) then
-							row = row.." \\cs("..formatRGB(c.r)..","..formatRGB(c.g)..","..formatRGB(c.b)..")√\\cr "
+							row = row.." "..cs.."√\\cr "
 						else
 							row = row.." \\cs(000,000,000)×\\cr "
 						end
@@ -583,16 +594,13 @@ function updateMainWindow()
 			if boss then
 
 				--Determine the appropriate color based on phone selection
-				local boss_color = i == 1 and ph1_color or i == 2 and ph2_color or ph3_color
+				local boss_color_cs = i == 1 and ph1_color_cs or i == 2 and ph2_color_cs or ph3_color_cs
 
 				--Create spacing and format the boss title with color
-				local total_width = 97
-				local pre_spaces = string.rep("-", math.floor((total_width - (10 + #boss)) / 2))
-				local post_spaces = string.rep("-", total_width - #pre_spaces - #boss - 10)
 				boss_num = boss_num + 1
 
 				--Insert colored boss name
-				table.insert(display_text_parts, "\\cs("..formatRGB(boss_color.r)..","..formatRGB(boss_color.g)..","..formatRGB(boss_color.b)..")"..pre_spaces.."Phone "..boss_num.." - "..boss..post_spaces.."\\cr\n")
+				table.insert(display_text_parts, boss_color_cs..pre_spaces[i].."Phone "..boss_num.." - "..boss..post_spaces[i].."\\cr\n")
 
 				--Extract job and phone number from mouse_is_on string if it matches the format
 				local hover_ph, hover_job = nil, nil
@@ -606,18 +614,18 @@ function updateMainWindow()
 				table.insert(job_row_parts, "        ")
 
 				local phone_prefix = "ph"..i --Current phone number string (e.g. "ph1")
-				local phone_color = (i == 1 and ph1_color) or (i == 2 and ph2_color) or ph3_color
+				local phone_color_cs = (i == 1 and ph1_color_cs) or (i == 2 and ph2_color_cs) or ph3_color_cs
 
-				for _, job in ipairs({"blm", "blu", "brd", "bst", "cor", "dnc", "drg", "drk", "geo", "mnk", "nin", "pld", "pup", "rdm", "rng", "run", "sam", "sch", "smn", "thf", "war", "whm"}) do
-					local color = off_white
+				for _, job in ipairs(jobs_map) do
+					local cs = off_white_cs
 
 					if hover_effects and hover_ph == phone_prefix and hover_job == job then
-						color = phone_color --Hovered over this job on this phone
+						cs = phone_color_cs --Hovered over this job on this phone
 					elseif player_jobs[job] then
-						color = highlight --Job is already assigned
+						cs = highlight_cs --Job is already assigned
 					end
 
-					table.insert(job_row_parts, "|\\cs("..formatRGB(color.r)..","..formatRGB(color.g)..","..formatRGB(color.b)..")"..job:upper().."\\cr")
+					table.insert(job_row_parts, "|"..cs..job:upper().."\\cr")
 				end
 
 				table.insert(job_row_parts, "|")
@@ -634,14 +642,14 @@ function updateMainWindow()
 					local phone_player, job_code = mouse_is_on and mouse_is_on:sub(1, 7), mouse_is_on and mouse_is_on:sub(-3) --Extract "phX_plY" and job code
 
 					--Loop through each job to fill in the selection field for it
-					for _, job in ipairs({"blm", "blu", "brd", "bst", "cor", "dnc", "drg", "drk", "geo", "mnk", "nin", "pld", "pup", "rdm", "rng", "run", "sam", "sch", "smn", "thf", "war", "whm"}) do
+					for _, job in ipairs(jobs_map) do
 						local hover_over_job = job_code == job and phone_player == "ph"..i.."_pl"..p
 						local player_is_job = player_jobs[job] == "ph"..i.."_pl"..p
-						local color = {r = 000, g = 000, b = 000}
+						local color_cs = "\\cs(000,000,000)"
 						if player_is_job or (hover_effects and hover_over_job) then
-							color = boss_color
+							color_cs = boss_color_cs
 						end
-						table.insert(player_job_parts, "|".."\\cs("..formatRGB(color.r)..","..formatRGB(color.g)..","..formatRGB(color.b)..")"..((player_is_job or (hover_effects and hover_over_job)) and job:upper() or " × ").."\\cr")
+						table.insert(player_job_parts, "|"..color_cs..((player_is_job or (hover_effects and hover_over_job)) and job:upper() or " × ").."\\cr")
 						if player_is_job then
 							is_selected = true
 						end
@@ -651,15 +659,16 @@ function updateMainWindow()
 					player_job_text = table.concat(player_job_parts)
 
 					--Determine player name color
-					local c = off_white
+					local cs = off_white_cs
 					if hover_effects and hover_player == "pl"..p and hover_phone == "ph"..i then
-						c = colors["ph"..i] --Use phone color if mouse is over it
+						local phone_color_cs = (i == 1 and ph1_color_cs) or (i == 2 and ph2_color_cs) or ph3_color_cs
+						cs = phone_color_cs --Use phone color if mouse is over it
 					elseif is_selected then
-						c = highlight --Use highlight color if boss is selected for any phone
+						cs = highlight_cs --Use highlight color if boss is selected for any phone
 					end
 
 					--Apply color formatting to the player name and add it to the table
-					player_name = "\\cs("..formatRGB(c.r)..","..formatRGB(c.g)..","..formatRGB(c.b)..")"..player_name.."\\cr"
+					player_name = cs..player_name.."\\cr"
 					table.insert(display_text_parts, player_name)
 
 					--Add the job selection field to the table
@@ -1283,20 +1292,15 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 	--Block if not visible
 	if not main_window_visible then return end
 
-	--0.05 second polling rate to help improve frame rate
-	local clock = os.clock()
-	if clock > last_poll + 0.05 then
-		last_poll = clock
-	else
+	--Get the mouse position relative to the grid
+	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
+
+	if mouse_is_on == "none" then
 		return
 	end
 
-	--Get the mouse position relative to the grid
-	mouse_is_on = getMouseOnButton(mouse_x, mouse_y)
 	if mouse_type == 1 then --leftmousedown
-		if mouse_is_on ~= "none" then --clicking anywhere inside the window
-			return true --blocked from reaching game
-		end
+		return true --blocked from reaching game
 		
 	elseif mouse_type == 2 then --leftmouseup
 
@@ -1781,16 +1785,19 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 					if mouse_is_on == "ph"..i.."_"..boss_button then
 						if phone_selection[i] == boss_name then
 							phone_selection[i] = nil
+							pre_spaces[i] = nil
+							post_spaces[i] = nil
 						else
 							phone_selection[i] = boss_name
+							local total_width = 97
+							pre_spaces[i] = string.rep("-", math.floor((total_width - (10 + #boss_name)) / 2))
+							post_spaces[i] = string.rep("-", total_width - #pre_spaces[i] - #boss_name - 10)
 						end
 					end
 				end
 			end
 			updateMainWindow()
-			if mouse_is_on ~= "none" then
-				return true --blocked from reaching game
-			end
+			return true --blocked from reaching game
 
 		--Handle button clicks on the Jobs screen
 		elseif current_screen == "jobs" then
@@ -1811,9 +1818,7 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y)
 				player_jobs[job_code] = phone_player
 			end
 			updateMainWindow()
-			if mouse_is_on ~= "none" then
-				return true --blocked from reaching game
-			end
+			return true --blocked from reaching game
 		end
 	end
 
