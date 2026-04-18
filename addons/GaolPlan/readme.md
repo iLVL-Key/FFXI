@@ -49,7 +49,7 @@ If you find the mouse is not lining up vertically with the menu, go into the `da
 # Changelog
 
 Version 1.4.1
-- Adjusted a number of instances of the formatRGB function as well as the spacing calculations for centeringboss names to be pre-calculated instead of run multiple times per update.
+- Adjusted a number of instances of the formatRGB function as well as the spacing calculations for centering boss names to be pre-calculated instead of run multiple times per update.
 - Removed 0.05 second polling rate. Determined it was causing issues when a mouse click down was caught and correctly prevented from going through to the game, but the mouse click up was not and would go through to the game and cause the game to thin you weree click and dragging your mouse.
 
 Version 1.4
