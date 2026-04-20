@@ -121,6 +121,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.1.2
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
+
 Version 20.1.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 - Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
@@ -534,6 +537,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.1.2
+- Adjusted AutoSubCharge, and AutoPianissimo to no longer need the "fixes" implemented to prevent double activiation.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
+
 Version 3.1.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 - Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
@@ -647,6 +654,10 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.2
+- Added `.capped_tp` sub-set to Weapon Skill sets in addition to the current `.high_buff` sub-set.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
+
 Version 2.1.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 - Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
@@ -729,6 +740,10 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.1.3
+- Adjusted AutoSubCharge, AutoFullCircle, and AutoEntrust to no longer need the "fixes" implemented to prevent double activiation.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
 Version 16.1.2
 -- Fixed an error in the code for checking if a party member has Immanence or Chain Affinity active.
@@ -1083,6 +1098,11 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.3
+- Added `.capped_tp` and `.high_buff` sub-sets to Weapon Skill sets.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
+- Removed the Capped Tp set.
+
 Version 8.2.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 - Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
@@ -1280,6 +1300,10 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.2.2
+- Adjusted AutoSubCharge, AutoMajesty, and AutoDEmblem to no longer need the "fixes" implemented to prevent double activiation.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
 Version 15.2.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
@@ -1642,6 +1666,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.2.2
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
+
 Version 10.2.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
 - Adjusted name of `MovementCastDelay` to `MoveCastWindow` to better represent it's purpose.
@@ -1918,6 +1945,10 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.3
+- Added `.capped_tp` sub-set to Weapon Skill sets in addition to the current `.high_buff` sub-set.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
 Version 16.2.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
@@ -2231,6 +2262,10 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3.2
+- Adjusted AutoSubCharge to no longer need the "fixes" implemented to prevent double activiation.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
+
 Version 1.3.1
 -Fixed an issue where going into a cutscene would trigger the choose_set function and giving in-game "unable to equip" errors.
 
@@ -2256,6 +2291,10 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.1.2
+- Adjusted AutoSubCharge, AutoFavor, and AutoRelease to no longer need the "fixes" implemented to prevent double activiation.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
 Version 14.1.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
@@ -2543,6 +2582,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.3
+- Added `.capped_tp` sub-set to Weapon Skill sets in addition to the current `.high_buff` sub-set.
+- Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
 Version 10.2.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
