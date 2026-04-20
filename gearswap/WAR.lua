@@ -83,15 +83,18 @@ from
 to
 	sets["Flat Blade"]
 
-Additionally, you can create a new "High Buff" Weapon Skill set (for when you are over the
-AttackCapThreshold set in the Advanced Options) by adding ".high_buff" to the end of the set name as such:
+Additionally, you can create "High Buff" (for when you are over the AttackCapThreshold set in the Advanced Options)
+and "Capped TP" (for when you are over the CappedTPThreshold set in the Advanced Options) versions of current Weapon Skill
+sets by copying a current Weapon Skill set and adding ".high_buff" or ".capped_tp" to the end of the set name as such:
 
 from
 	sets["Flat Blade"]
 to
 	sets["Flat Blade"].high_buff
+	or
+	sets["Flat Blade"].capped_tp
 
-NOTE: A High Buff set will only work if there is already a normal set for that specific Weapon Skill.
+NOTE: These extra sets will only work if there is already a normal set for that specific Weapon Skill.
 
 --]]
 
@@ -179,6 +182,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
+CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 AttackCapThreshold	=	4000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
@@ -574,7 +578,7 @@ sets.ws_accuracy = {
 }
 
 -- Armor Break (Magic Accuracy)
-sets["Armor Break"] = set_combine(sets.weapon_skill, {
+sets["Armor Break"] = {
 	head="Boii Mask +3",
 	body="Boii Lorica +3",
 	hands="Boii Mufflers +3",
@@ -582,31 +586,35 @@ sets["Armor Break"] = set_combine(sets.weapon_skill, {
 	feet="Boii Calligae +3",
 	neck="Null Loop",
 	waist="Null Belt",
+	left_ear="Digni. Earring",
+	right_ear="Boii Earring +2",
+	left_ring="Stikini Ring +1",
+	right_ring="Stikini Ring +1",
 	back="Null Shawl",
-})
+}
 
 -- Disaster (STR, VIT)
-sets["Disaster"] = set_combine(sets.weapon_skill, {
+sets["Disaster"] = {
 
-})
+}
 
 -- Disaster - High Buff (STR, VIT, PDL)
-sets["Disaster"].high_buff = set_combine(sets["Disaster"], {
+sets["Disaster"].high_buff = {
 
-})
+}
 
 -- Fimbulvetr (STR, VIT)
-sets["Fimbulvetr"] = set_combine(sets.weapon_skill, {
+sets["Fimbulvetr"] = {
 
-})
+}
 
 -- Fimbulvetr - High Buff (STR, VIT, PDL)
-sets["Fimbulvetr"].high_buff = set_combine(sets["Fimbulvetr"], {
+sets["Fimbulvetr"].high_buff = {
 
-})
+}
 
 -- Impulse Drive (STR, Crit (w/ Shining One))
-sets["Impulse Drive"] = set_combine(sets.weapon_skill, {
+sets["Impulse Drive"] = {
 	ammo="Yetshila +1",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
@@ -615,10 +623,10 @@ sets["Impulse Drive"] = set_combine(sets.weapon_skill, {
 	right_ear="Boii Earring +2",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Impulse Drive - High Buff (STR, Crit (w/ Shining One), PDL)
-sets["Impulse Drive"].high_buff = set_combine(sets["Impulse Drive"], {
+sets["Impulse Drive"].high_buff = {
 	ammo="Yetshila +1",
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
@@ -627,37 +635,46 @@ sets["Impulse Drive"].high_buff = set_combine(sets["Impulse Drive"], {
 	right_ear="Boii Earring +2",
 	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
+
+-- Impulse Drive Capped TP (Replace slots with unneeded TP Bonus)
+sets["Impulse Drive"].capped_tp = {
+	left_ear="Schere Earring",
+}
 
 -- Judgment (STR, MND, Fencer, TP Bonus)
-sets["Judgment"] = set_combine(sets.weapon_skill, {
+sets["Judgment"] = {
 	body="Nyame Mail",
 	right_ring="Regal Ring",
-})
+}
 
 -- Judgment - High Buff (STR, MND, Fencer, TP Bonus, PDL)
-sets["Judgment"].high_buff = set_combine(sets["Judgment"], {
+sets["Judgment"].high_buff = {
 	body="Sakpata's Plate",
 	hands="Boii Mufflers +3",
 	legs="Boii Cuisses +3",
 	right_ring="Sroda Ring",
-})
+}
+
+-- Judgment Capped TP (Replace slots with unneeded TP Bonus)
+sets["Judgment"].capped_tp = {
+	left_ear="Schere Earring",
+}
 
 -- Resolution (STR, TP Bonus)
-sets["Resolution"] = set_combine(sets.weapon_skill, {
+sets["Resolution"] = {
 	hands="Sakpata's Gauntlets",
 	legs="Boii Cuisses +3",
 	feet="Sakpata's Leggings",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	left_ear="Schere Earring",
-	right_ear="Moonshade Earring",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Resolution - High Buff (STR, TP Bonus, PDL)
-sets["Resolution"].high_buff = set_combine(sets["Resolution"], {
+sets["Resolution"].high_buff = {
 	head="Sakpata's Helm",
 	body="Sakpata's Plate",
 	hands="Sakpata's Gauntlets",
@@ -666,34 +683,38 @@ sets["Resolution"].high_buff = set_combine(sets["Resolution"], {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	left_ear="Schere Earring",
-	right_ear="Moonshade Earring",
 	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Sanguine Blade (Dark Elemental Magic Attack Bonus)
-sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
+sets["Sanguine Blade"] = {
 	ammo="Coiste Bodhar",
 	head="Pixie Hairpin +1",
 	waist="Eschan Stone",
 	right_ear="Friomisi Earring",
 	left_ring="Archon Ring",
-})
+}
 
 -- Savage Blade (STR, MND, Fencer, TP Bonus)
-sets["Savage Blade"] = set_combine(sets.weapon_skill, {
+sets["Savage Blade"] = {
 	left_ring="Regal Ring",
-})
+}
 
 -- Savage Blade - High Buff (STR, MND, Fencer, TP Bonus, PDL)
-sets["Savage Blade"].high_buff = set_combine(sets["Savage Blade"], {
+sets["Savage Blade"].high_buff = {
 	body="Sakpata's Plate",
 	legs="Boii Cuisses +3",
 	left_ring="Sroda Ring",
-})
+}
+
+-- Savage Blade Capped TP (Replace slots with unneeded TP Bonus)
+sets["Savage Blade"].capped_tp = {
+	left_ear="Schere Earring",
+}
 
 -- Stardiver (STR, MND, Fencer, TP Bonus)
-sets["Stardiver"] = set_combine(sets.weapon_skill, {
+sets["Stardiver"] = {
 	ammo="Yetshila +1",
 	head="Boii Mask +3",
 	body="Sakpata's Plate",
@@ -702,14 +723,13 @@ sets["Stardiver"] = set_combine(sets.weapon_skill, {
 	feet="Boii Calligae +3",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	left_ear="Moonshade Earring",
 	right_ear="Boii Earring +2",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Stardiver - High Buff (STR, MND, Fencer, TP Bonus, PDL)
-sets["Stardiver"].high_buff = set_combine(sets["Stardiver"], {
+sets["Stardiver"].high_buff = {
 	ammo="Yetshila +1",
 	head="Boii Mask +3",
 	body="Sakpata's Plate",
@@ -718,14 +738,18 @@ sets["Stardiver"].high_buff = set_combine(sets["Stardiver"], {
 	feet="Boii Calligae +3",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	left_ear="Moonshade Earring",
 	right_ear="Boii Earring +2",
 	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
+
+-- Stardiver Capped TP (Replace slots with unneeded TP Bonus)
+sets["Stardiver"].capped_tp = {
+	left_ear="Schere Earring",
+}
 
 -- Ukko's Fury (STR, TP Bonus, Multi-hit, Crit, Attack)
-sets["Ukko's Fury"] = set_combine(sets.weapon_skill, {
+sets["Ukko's Fury"] = {
 	ammo="Yetshila +1",
 	head="Boii Mask +3",
 	body="Sakpata's Plate",
@@ -734,10 +758,10 @@ sets["Ukko's Fury"] = set_combine(sets.weapon_skill, {
 	right_ear="Boii Earring +2",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Ukko's Fury - High Buff (STR, TP Bonus, Multi-hit, Crit, Attack, PDL)
-sets["Ukko's Fury"].high_buff = set_combine(sets["Ukko's Fury"], {
+sets["Ukko's Fury"].high_buff = {
 	ammo="Yetshila +1",
 	head="Boii Mask +3",
 	body="Sakpata's Plate",
@@ -748,23 +772,28 @@ sets["Ukko's Fury"].high_buff = set_combine(sets["Ukko's Fury"], {
 	right_ear="Boii Earring +2",
 	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Upheaval (VIT, TP Bonus, Multi-hit, Crit, Attack)
-sets["Upheaval"] = set_combine(sets.weapon_skill, {
+sets["Upheaval"] = {
 	legs="Boii Cuisses +3",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Upheaval - High Buff (VIT, TP Bonus, Multi-hit, Crit, Attack, PDL)
-sets["Upheaval"].high_buff = set_combine(sets["Upheaval"], {
+sets["Upheaval"].high_buff = {
 	body="Sakpata's Plate",
 	hands="Sakpata's Gauntlets",
 	legs="Boii Cuisses +3",
 	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
+
+-- Upheaval Capped TP (Replace slots with unneeded TP Bonus)
+sets["Upheaval"].capped_tp = {
+	left_ear="Schere Earring",
+}
 
 -- Hachirin-no-obi
 sets.hachirin_no_obi = {
@@ -926,7 +955,7 @@ end
 
 
 
-FileVersion = '10.2.1'
+FileVersion = '10.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2307,12 +2336,13 @@ function precast(spell)
 			return
 		end
 		local ws_set = sets[spell.english]
-		local base_set = ws_set and (player.attack >= AttackCapThreshold and ws_set.high_buff or ws_set) or sets.weapon_skill
+		local capped_attack = player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff or nil
+		local capped_tp = player.tp >= CappedTPThreshold and ws_set and ws_set.capped_tp or nil
 		local hachirin_no_obi = useHachirinNoObi(spell.english) and sets.hachirin_no_obi or nil
 		local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
 		local high_acc_mob = player.target.name and HighAccMobs[player.target.name]
 		local ws_accuracy = ((Mode == 'Mode3' or high_acc_mob) and not magical_ws[spell.english]) and sets.ws_accuracy or nil
-		equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
+		equip(set_combine(sets.weapon_skill, capped_attack, capped_tp, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
 		if player.equipment.main == "Chango" and spell.english == "Upheaval" then
 			pre_AMTimer = 181
 		elseif (player.equipment.main == 'Ragnarok' and spell.english == "Scourge") or (player.equipment.main == 'Bravura' and spell.english == "Metatron Torment") then
