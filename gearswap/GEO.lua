@@ -133,7 +133,7 @@ DMBind				=	'^d'	--Sets the keyboard shortcut you would like to switch between D
 								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 DangerSafeDelay		=	5		--Delay in seconds after Danger Mode (Auto) activates before it is considered safe again.
-DangerPTOnly		=	false	--[true/false]  Danger Mode (Auto) will only activate when in a party with other players (Trusts do not count).
+DangerPTOnly		=	true	--[true/false]  Danger Mode (Auto) will only activate when in a party with other players (Trusts do not count).
 NearDangerRange		=	10		--Being within this range of an active Battle Target will equip the Danger set when DT Override is on.
 WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
 RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
@@ -267,7 +267,7 @@ sets.idle = {
 	neck="Loricate Torque +1",
 	waist="Null Belt",
 	left_ear="Alabaster Earring",
-	right_ear="Azimuth Earring +1",
+	right_ear="Azimuth Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}},
@@ -349,24 +349,24 @@ sets.weapon_skill = {
 }
 
 -- Exudation (combines with Weapon Skill set above)
-sets["Exudation"] = set_combine(sets.weapon_skill, {
+sets["Exudation"] = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-})
+}
 
 -- Black Halo (combines with Weapon Skill set above)
-sets["Black Halo"] = set_combine(sets.weapon_skill, {
+sets["Black Halo"] = {
 
-})
+}
 
 -- Hexa Strike (combines with Weapon Skill set above)
-sets["Hexa Strike"] = set_combine(sets.weapon_skill, {
+sets["Hexa Strike"] = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-})
+}
 
 -- Cataclysm (combines with Weapon Skill set above)
-sets["Cataclysm"] = set_combine(sets.weapon_skill, {
+sets["Cataclysm"] = {
 	head="Pixie Hairpin +1",
 	body="Azimuth Coat +3",
 	hands="Azimuth Gloves +3",
@@ -379,7 +379,7 @@ sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	left_ring="Archon Ring",
 	right_ring="Metamor. Ring +1",
 	back="Aurist's Cape +1",
-})
+}
 
 -- Hachirin-no-obi
 sets.hachirin_no_obi = {
@@ -397,7 +397,7 @@ sets.fast_cast = {
 	neck="Baetyl Pendant", --4%
 	waist="Embla Sash", --5%
 	left_ear="Malignance Earring", --4%
-	right_ear="Azimuth Earring +1",
+	right_ear="Azimuth Earring +2",
 	left_ring="Prolix Ring", --2%
 	right_ring="Kishar Ring", --4%
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}}, --10%
@@ -476,7 +476,7 @@ sets.magic_accuracy = {
 	neck="Null Loop",
 	waist="Null Belt",
 	left_ear="Malignance Earring",
-	right_ear="Azimuth Earring +1",
+	right_ear="Azimuth Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Metamor. Ring +1",
 	back="Aurist's Cape +1",
@@ -660,7 +660,7 @@ end
 
 
 
-FileVersion = '16.1.2'
+FileVersion = '16.1.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1800,12 +1800,7 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
-	elseif command == 'double_full_circle_fix' then
-		double_full_circle_fix = false
-	elseif command == "double_sublimation_fix" then
-		double_sublimation_fix = false
 	elseif command == 'CancelUseEntrust' then --reset the label when we deactivate AutoEntrust
-		double_entrust_fix = false
 		if UseEntrust then
 			UseEntrust = false
 			if Entrust.recast == 0 then -- If we haven't used Entrust yet, reset the label too
@@ -1945,7 +1940,8 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
+		local ws_set = sets[spell.english] or nil
+		equip(set_combine(sets.weapon_skill, ws_set))
 	elseif spell.english == 'Bolster' and Bolster.recast < 2 then
 		equip(sets.bolster)
 	elseif spell.english == 'Full Circle' and FullCircle.recast < 2 then
@@ -1962,12 +1958,9 @@ function precast(spell)
 		equip(sets.holy_water)
 	elseif string.find(spell.english,'Geo-') and LuopanActive and AutoFullCircle and FullCircle.recast < 2 then
 		--if we're casting a Geo- spell with a Luopan already out, we'll use Full Circle instead
-		if not double_full_circle_fix then
-			double_full_circle_fix = true --prevents this from running through here a second time after being cast again below
-			cancel_spell()
-			send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_full_circle_fix')
-			return
-		end
+		cancel_spell()
+		send_command('input /ja "Full Circle" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw)
+		return
 		equip(sets.fast_cast)
 	elseif string.find(spell.english,'Indi-') then
 		if AutoEntrust and Entrust.recast == 0 and spell.target.ispartymember and spell.target.type ~= 'SELF' then
@@ -1983,13 +1976,10 @@ function precast(spell)
 				return
 			elseif UseEntrust then
 				--now that AutoEntrust was activated above, we can Do The Thing
-				if not double_entrust_fix then
-					double_entrust_fix = true --prevents this from running through here a second time after being cast again below
-					cancel_spell()
-					send_command('input /ja "Entrust" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw)
-					send_command('wait 5;gs c CancelUseEntrust')
-					return
-				end
+				cancel_spell()
+				send_command('input /ja "Entrust" <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw)
+				send_command('wait 5;gs c CancelUseEntrust')
+				return
 			end
 		elseif UseEntrust and spell.target.type == 'SELF' then
 			--if we cast an Indi- spell on ourselves we reset UseEntrust back to false, this allows us to cancel the use of AutoEntrust and go through the double-check above again for next time
@@ -2303,12 +2293,9 @@ function aftercast(spell)
 		send_command('input /echo [Widened Compass] 1:00;wait 30;input /echo [Widened Compass] 0:30;wait 10;input /echo [Widened Compass] 0:20;wait 10;input /echo [Widened Compass] 0:10')
 	end
 	choose_set()
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoFullCircle and spell.english == "Full Circle") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
-			local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
-			send_command('wait '..wait..';input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+	if AutoSubCharge and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoFullCircle and spell.english == "Full Circle") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+		local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
+		send_command('wait '..wait..';input /ja Sublimation <me>')
 	end
 end
 
@@ -2330,10 +2317,7 @@ windower.register_event('status change', function(status)
 	setNotification()
 
 	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
-			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+		send_command('input /ja Sublimation <me>')
 	end
 
 end)
@@ -3526,7 +3510,7 @@ windower.register_event('action',function(act)
 			if spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
 				addToActiveSkillchain(target_id)
 				active_chain_affinity[act.actor_id] = nil
-			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
+			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic       ATTEMPT TO INDEX FIELD ? (A NIL VALUE)
 				addToActiveSkillchain(target_id)
 				active_immanence[act.actor_id] = nil
 			end
