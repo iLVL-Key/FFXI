@@ -671,33 +671,33 @@ sets.weapon_skill = {
 
 -- Savage Blade (50% STR, 50% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Savage Blade"] = set_combine(sets.weapon_skill, {
+sets["Savage Blade"] = {
 	
-})
+}
 
 -- Sanguine Blade (Dark Magical, 50% STR, 50% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
+sets["Sanguine Blade"] = {
 	ammo="Coiste Bodhar",
 	head="Pixie Hairpin +1",
 	waist="Eschan Stone",
 	right_ear="Friomisi Earring",
 	left_ring="Archon Ring",
-})
+}
 
 -- Requiescat (~80% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Requiescat"] = set_combine(sets.weapon_skill, {
+sets["Requiescat"] = {
 	waist="Fotia Belt",
-})
+}
 
 -- Chant du Cygne (80% DEX mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Chant du Cyne"] = set_combine(sets.weapon_skill, {
+sets["Chant du Cyne"] = {
 	waist="Fotia Belt",
 	right_ear="Mache Earring +1",
 	left_ring="Hetairoi Ring",
-})
+}
 
 -- Atonement (Fotia Neck/Belt)
 -- Combines with Enmity set, only necessary to set the slots with specific desired stats
@@ -707,15 +707,15 @@ sets["Atonement"] = set_combine(sets.enmity, {
 
 -- Imperator (70% DEX, 70% MND, mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Imperator"] = set_combine(sets.weapon_skill, {
+sets["Imperator"] = {
 
-})
+}
 
 -- Fimbulvetr (60% STR, 60% VIT mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Fimbulvetr"] = set_combine(sets.weapon_skill, {
+sets["Fimbulvetr"] = {
 
-})
+}
 
 -- Invincible
 sets.invincible = {
@@ -806,7 +806,7 @@ end
 
 
 
-FileVersion = '15.2.1'
+FileVersion = '15.2.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2060,12 +2060,6 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
-	elseif command == 'double_divine_emblem_fix' then
-		double_divine_emblem_fix = false
-	elseif command == 'double_majesty_fix' then
-		double_majesty_fix = false
-	elseif command == "double_sublimation_fix" then
-		double_sublimation_fix = false
 	elseif command == "resetCapturedToggle" then
 		captured_spell_toggle = false
 	end
@@ -2200,7 +2194,8 @@ function precast(spell)
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
-		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
+		local ws_set = sets[spell.english] or nil
+		equip(set_combine(sets.weapon_skill, ws_set))
 		if player.equipment.main == "Sequence" and spell.english == "Requiescat" then
 			pre_AMTimer = 181
 		elseif (player.equipment.main == 'Excalibur' and spell.english == "Knights of Round") or (player.equipment.main == 'Ragnarok' and spell.english == "Scourge") then
@@ -2253,22 +2248,16 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(set_combine(sets.fast_cast, main_sub))
 	--if we're casting a cure or protect without Majesty up, we'll put it up before casting:
-	elseif AutoMajesty and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not (buffactive['Majesty'] or buffactive['amnesia'] or buffactive['impairment']) and Majesty.recast == 0 then
-		if not double_majesty_fix then
-			double_majesty_fix = true --prevents this from running through here a second time after being cast again below
-			cancel_spell()
-			send_command('input /ja Majesty <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_majesty_fix')
-			return
-		end
+	elseif AutoMajesty and spell.english ~= "Majesty" and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not (buffactive['Majesty'] or buffactive['amnesia'] or buffactive['impairment']) and Majesty.recast == 0 then
+		cancel_spell()
+		send_command('input /ja Majesty <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw)
+		return
 	elseif spell.english == "Flash" then
 		if windower.ffxi.get_spell_recasts()[112] and windower.ffxi.get_spell_recasts()[112] < 120 then
 			if AutoDEmblem and not (buffactive['amnesia'] or buffactive['impairment']) and DivineEmblem.recast == 0 then
-				if not double_divine_emblem_fix then
-					double_divine_emblem_fix = true --prevents this from running through here a second time after being cast again below
-					cancel_spell()
-					send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw..';wait 1;gs c double_divine_emblem_fix')
-					return
-				end
+				cancel_spell()
+				send_command('input /ja "Divine Emblem" <me>;wait 1;input /ma Flash '..spell.target.raw)
+				return
 			end
 			equip(set_combine(sets.fast_cast, main_sub))
 		elseif player.sub_job == 'BLU' and player.sub_job_level ~= 0 then
@@ -2420,12 +2409,9 @@ function aftercast(spell)
 		send_command('wait 3; input /ja Majesty <me>')
 	end
 	choose_set()
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoMajesty and spell.english == "Majesty") or (AutoDefender and spell.english == "Defender") or (AutoDEmblem and spell.english == "Divine Emblem") or (AutoSentinel and spell.english == "Sentinel") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
-			local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
-			send_command('wait '..wait..';input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+	if AutoSubCharge and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoMajesty and spell.english == "Majesty") or (AutoDefender and spell.english == "Defender") or (AutoDEmblem and spell.english == "Divine Emblem") or (AutoSentinel and spell.english == "Sentinel") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+		local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
+		send_command('wait '..wait..';input /ja Sublimation <me>')
 	end
 end
 
@@ -2447,10 +2433,7 @@ windower.register_event('status change', function(status)
 	setNotification()
 
 	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
-			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+		send_command('input /ja Sublimation <me>')
 	end
 
 end)
