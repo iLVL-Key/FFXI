@@ -73,15 +73,18 @@ from
 to
 	sets["Tachi: Hobaku"]
 
-Additionally, you can create a new "High Buff" Weapon Skill set (for when you are over the
-AttackCapThreshold set in the Advanced Options) by adding ".high_buff" to the end of the set name as such:
+Additionally, you can create "High Buff" (for when you are over the AttackCapThreshold set in the Advanced Options)
+and "Capped TP" (for when you are over the CappedTPThreshold set in the Advanced Options) versions of current Weapon Skill
+sets by copying a current Weapon Skill set and adding ".high_buff" or ".capped_tp" to the end of the set name as such:
 
 from
 	sets["Tachi: Hobaku"]
 to
 	sets["Tachi: Hobaku"].high_buff
+	or
+	sets["Tachi: Hobaku"].capped_tp
 
-NOTE: A High Buff set will only work if there is already a normal set for that specific Weapon Skill.
+NOTE: These extra sets will only work if there is already a normal set for that specific Weapon Skill.
 
 ------------------------------------------
 
@@ -177,6 +180,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, Super Jump will be used.
+CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 AttackCapThreshold	=	4200	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
@@ -526,7 +530,7 @@ sets.weapon_skill = {
 	neck="Sam. Nodowa +2",
 	waist="Sailfi Belt +1",
 	left_ear="Thrud Earring",
-	right_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
 	left_ring="Cornelia's Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
@@ -543,7 +547,7 @@ sets.ws_accuracy = {
 
 -- Tachi: Ageha (Magic Accuracy)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Ageha"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Ageha"] = {
 	ammo="Pemphredo Tathlum",
 	head="Kasuga Kabuto +3",
 	body="Kasuga Domaru +3",
@@ -552,153 +556,178 @@ sets["Tachi: Ageha"] = set_combine(sets.weapon_skill, {
 	feet="Kas. Sune-Ate +3",
 	neck="Null Loop",
 	waist="Null Belt",
-	right_ear="Kasuga Earring +2",
+	left_ear="Digni. Earring",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back="Null Shawl",
-})
+}
 
 -- Tachi: Jinpu (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
-sets["Tachi: Jinpu"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Jinpu"] = {
 	head="Nyame Helm",
 	hands="Nyame Gauntlets",
 	neck="Fotia Gorget",
 	waist="Orpheus's Sash",
 	left_ear="Schere Earring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Tachi: Jinpu - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
-sets["Tachi: Jinpu"].high_buff = set_combine(sets["Tachi: Jinpu"], {
+sets["Tachi: Jinpu"].high_buff = {
 	head="Nyame Helm",
 	hands="Nyame Gauntlets",
 	feet="Mpaca's Boots",
 	waist="Orpheus's Sash",
 	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Tachi: Kagero (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
-sets["Tachi: Kagero"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Kagero"] = {
 	head="Nyame Helm",
 	hands="Nyame Gauntlets",
 	neck="Fotia Gorget",
 	waist="Orpheus's Sash",
 	left_ear="Schere Earring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Tachi: Kagero - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
-sets["Tachi: Kagero"].high_buff = set_combine(sets["Tachi: Kagero"], {
+sets["Tachi: Kagero"].high_buff = {
 	body="Sakonji Domaru +4",
 	waist="Orpheus's Sash",
 	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Tachi: Koki (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
-sets["Tachi: Koki"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Koki"] = {
 	head="Nyame Helm",
 	hands="Nyame Gauntlets",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	left_ear="Schere Earring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Tachi: Koki - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
-sets["Tachi: Koki"].high_buff = set_combine(sets["Tachi: Koki"], {
+sets["Tachi: Koki"].high_buff = {
 	head="Nyame Helm",
 	hands="Nyame Gauntlets",
 	waist="Fotia Belt",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Tachi: Fudo (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Fudo"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Fudo"] = {
 	body="Sakonji Domaru +4",
-})
+}
 
 -- Tachi: Fudo - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Fudo"].high_buff = set_combine(sets["Tachi: Fudo"], {
+sets["Tachi: Fudo"].high_buff = {
 	body="Sakonji Domaru +4",
 	feet="Kas. Sune-Ate +3",
 	left_ring="Sroda Ring",
-})
+}
+
+-- Tachi: Fudo Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tachi: Fudo"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Tachi: Kaiten (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Kaiten"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Kaiten"] = {
 	head="Nyame Helm",
 	body="Sakonji Domaru +4",
 	left_ear="Schere Earring",
 	left_ring="Sroda Ring",
-})
+}
 
 -- Tachi: Kaiten - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Kaiten"].high_buff = set_combine(sets["Tachi: Kaiten"], {
+sets["Tachi: Kaiten"].high_buff = {
 	head="Nyame Helm",
 	body="Sakonji Domaru +4",
 	legs="Mpaca's Hose",
 	feet="Kas. Sune-Ate +3",
 	left_ear="Schere Earring",
 	left_ring="Sroda Ring",
-})
+}
 
 -- Tachi: Mumei (STR, DEX)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Mumei"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Mumei"] = {
 	body="Sakonji Domaru +4",
 	left_ring="Regal Ring",
-})
+}
 
 -- Tachi: Mumei - High Buff (STR, DEX, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Mumei"].high_buff = set_combine(sets["Tachi: Mumei"], {
+sets["Tachi: Mumei"].high_buff = {
 	body="Sakonji Domaru +4",
 	feet="Kas. Sune-Ate +3",
-})
+}
+
+-- Tachi: Mumei Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tachi: Mumei"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Tachi: Shoha (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Shoha"] = set_combine(sets.weapon_skill, {
+sets["Tachi: Shoha"] = {
 	legs="Mpaca's Hose",
 	feet="Kas. Sune-Ate +3",
 	left_ring="Sroda Ring",
-})
+}
 
 -- Tachi: Shoha - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Tachi: Shoha"].high_buff = set_combine(sets["Tachi: Shoha"], {
+sets["Tachi: Shoha"].high_buff = {
 	legs="Mpaca's Hose",
 	feet="Kas. Sune-Ate +3",
 	left_ring="Sroda Ring",
-})
+}
+
+-- Tachi: Shoha Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tachi: Shoha"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Impulse Drive (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Impulse Drive"] = set_combine(sets.weapon_skill, {
+sets["Impulse Drive"] = {
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Impulse Drive - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Impulse Drive"].high_buff = set_combine(sets["Impulse Drive"], {
+sets["Impulse Drive"].high_buff = {
 	feet="Kas. Sune-Ate +3",
 	legs="Mpaca's Hose",
 	left_ring="Sroda Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
+
+-- Impulse Drive Capped TP (Replace slots with unneeded TP Bonus)
+sets["Impulse Drive"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Stardiver (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Stardiver"] = set_combine(sets.weapon_skill, {
+sets["Stardiver"] = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-})
+}
+
+-- Stardiver Capped TP (Replace slots with unneeded TP Bonus)
+sets["Stardiver"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Hachirin-no-obi
 sets.hachirin_no_obi = {
@@ -847,7 +876,7 @@ end
 
 
 
-FileVersion = '16.2.1'
+FileVersion = '16.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2206,14 +2235,15 @@ function precast(spell)
 			return
 		end
 		local ws_set = sets[spell.english]
-		local base_set = ws_set and (player.attack >= AttackCapThreshold and ws_set.high_buff or ws_set) or sets.weapon_skill
+		local capped_attack = player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff or nil
+		local capped_tp = player.tp >= CappedTPThreshold and ws_set and ws_set.capped_tp or nil
 		local hachirin_no_obi = useHachirinNoObi(spell.english) and sets.hachirin_no_obi or nil
 		local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
 		local high_acc_mob = player.target.name and HighAccMobs[player.target.name]
 		local ws_accuracy = ((Mode == 'Mode3' or high_acc_mob) and not magical_ws[spell.english]) and sets.ws_accuracy or nil
 		local sekkanoki = buffactive['Sekkanoki'] and sets.sekkanoki or nil
 		local meikyo_shisui = buffactive['Meikyo Shisui'] and sets.meikyo_shisui or nil
-		equip(set_combine(base_set, hachirin_no_obi, ygnass_resolve_1, ws_accuracy, sekkanoki, meikyo_shisui))
+		equip(set_combine(sets.weapon_skill, capped_attack, capped_tp, hachirin_no_obi, ygnass_resolve_1, ws_accuracy, sekkanoki, meikyo_shisui))
 		if player.equipment.main == "Dojikiri Yasutsuna" and spell.english == "Tachi: Shoha" then
 			pre_AMTimer = 180
 		elseif player.equipment.main == 'Amanomurakumo' and spell.english == "Tachi: Kaiten" then
