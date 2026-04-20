@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-8'
+_addon.version = '1.0 BETA-9'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -346,6 +346,7 @@ confirm_message = nil --Stores what the confirmation message is.
 confirm_char_num = 0 --Used to count the number of characters in the confirmation message to determine how wide the confirmation window will be.
 pos_adjust_map = {} --The right-click menu has a different number of options depending on whether you clicked on the taskbar, main menu, or sub menu, so it needs to be adjusted upwards a different amount to line up the bottom option with the mouse.
 calculating_dimensions = false --Prevents a strange bug where if the mouse is moving while the setupMenu function is running and trying to calculate the dimensions of the main_menu it will not calculate correctly, instead returning a height and width of either 10 or sometimes 11. Moving the mouse while setupMenu runs immediately after load does not affect it, but when running it after doing things like closing the Options window it will do it. This makes no sense whatsoever. But sure, why not.
+clear_menu = true
 
 --Mapping of DirectInput key codes to characters, used to translate keyboard key presses into characters in the text input window
 key_map = {
@@ -1913,8 +1914,16 @@ register_event("mouse", function(mouse_type, mouse_x, mouse_y)
 
 	-- print(mouse_is_on)
 
-	if mouse_is_on == "none" then
+	--Cancel any calculations if the mouse is not on any part of the menu (unless we need to clear the current highlight or close the menu)
+	if mouse_is_on == "none" and not clear_menu then
+		if (mouse_type == 2 or mouse_type == 5) and main_menu:visible() then
+			closeMenus()
+		end
 		return
+	elseif mouse_is_on == "none" and clear_menu then
+		clear_menu = false
+	elseif mouse_is_on ~= "none" and not clear_menu then
+		clear_menu = true
 	end
 
 	updateTaskBar()
