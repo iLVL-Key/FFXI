@@ -582,7 +582,7 @@ sets.weapon_skill = {
 }
 
 -- Myrkr (combines with Weapon Skill set above)
-sets["Myrkr"] = set_combine(sets.weapon_skill, {
+sets["Myrkr"] = {
 	ammo="Ghastly Tathlum +1",
 	head="Arbatel Bonnet +3",
 	body="Acad. Gown +3",
@@ -596,10 +596,10 @@ sets["Myrkr"] = set_combine(sets.weapon_skill, {
 	left_ring="Zodiac Ring",
 	right_ring="Metamor. Ring +1",
 	back="Aurist's Cape +1",
-})
+}
 
 -- Omniscience (combines with Weapon Skill set above)
-sets["Omniscience"] = set_combine(sets.weapon_skill, {
+sets["Omniscience"] = {
 	ammo="Sroda Tathlum",
 	head="Pixie Hairpin +1",
 	body="Arbatel Gown +3",
@@ -613,10 +613,10 @@ sets["Omniscience"] = set_combine(sets.weapon_skill, {
 	left_ring="Archon Ring",
 	right_ring="Cornelia's Ring",
 	back="Bookworm's Cape",
-})
+}
 
 -- Cataclysm (combines with Weapon Skill set above)
-sets["Cataclysm"] = set_combine(sets.weapon_skill, {
+sets["Cataclysm"] = {
 	ammo="Sroda Tathlum",
 	head="Pixie Hairpin +1",
 	body="Arbatel Gown +3",
@@ -630,7 +630,7 @@ sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	left_ring="Archon Ring",
 	right_ring="Cornelia's Ring",
 	back="Lugh's Cape",
-})
+}
 
 -- Fast Cast (Precast)
 -- NOTE: Cap is 80%
@@ -1098,7 +1098,7 @@ end
 
 
 
-FileVersion = '1.3.1'
+FileVersion = '1.3.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2520,8 +2520,6 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
-	elseif command == "double_sublimation_fix" then
-		double_sublimation_fix = false
 	elseif command == 'light' then
 		if buffactive['Light Arts'] then
 			send_command('input /ja "Addendum: White" <me>')
@@ -2669,7 +2667,8 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
+		local ws_set = sets[spell.english] or nil
+		equip(set_combine(sets.weapon_skill, ws_set))
 		if player.equipment.main == "Khatvanga" and spell.english == "Shattersoul" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Hvergelmir' and spell.english == "Myrkr" then
@@ -2838,12 +2837,9 @@ function aftercast(spell)
 		end
 	end
 
-	if AutoSubCharge and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
-			local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
-			send_command('wait '..wait..';input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+	if AutoSubCharge and spell.english ~= "Sublimation" and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+		local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
+		send_command('wait '..wait..';input /ja Sublimation <me>')
 	end
 
 end
@@ -2866,10 +2862,7 @@ windower.register_event('status change', function(status)
 	setNotification()
 
 	if AutoSubCharge and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
-			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+		send_command('input /ja Sublimation <me>')
 	end
 
 end)
@@ -4053,11 +4046,11 @@ windower.register_event('action',function(act)
 		end
 
 		--Spell with Immanence or Chain Affinity active
-		if act.category == 4 then
-			if spells[act.param] and spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
+		if act.category == 4 and spells[act.param] then
+			if spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
 				addToActiveSkillchain(target_id)
 				active_chain_affinity[act.actor_id] = nil
-			elseif spells[act.param] and spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
+			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
 				addToActiveSkillchain(target_id)
 				active_immanence[act.actor_id] = nil
 			end
@@ -4125,10 +4118,3 @@ function file_unload()
 	send_command('unbind '..HelixIIBind)
 
 end
-
-
---[[
-
-Test if the enable() when losing Aftermath also works when you zone
-
-]]
