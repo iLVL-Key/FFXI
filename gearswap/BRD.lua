@@ -553,42 +553,42 @@ sets.weapon_skill = {
 
 -- Savage Blade (50% STR, 50% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Savage Blade"] = set_combine(sets.weapon_skill, {
+sets["Savage Blade"] = {
 
-})
+}
 
 -- Evisceration (combines with Weapon Skill set above)
-sets["Evisceration"] = set_combine(sets.weapon_skill, {
+sets["Evisceration"] = {
 	neck="Fotia Gorget",
 	neck="Baetyl Pendant",
 	waist="Fotia Belt",
 	right_ear="Mache Earring +1",
 	left_ring="Ilabrat Ring",
-})
+}
 
 -- Mordant Rime (combines with Weapon Skill set above)
-sets["Mordant Rime"] = set_combine(sets.weapon_skill, {
+sets["Mordant Rime"] = {
 
-})
+}
 
 -- Aeolian Edge (combines with Weapon Skill set above)
-sets["Aeolian Edge"] = set_combine(sets.weapon_skill, {
+sets["Aeolian Edge"] = {
 	body="Nyame Mail",
 	waist="Orpheus's Sash",
 	right_ear="Friomisi Earring",
 	left_ring="Shiva Ring +1",
-})
+}
 
 -- Exenterator (combines with Weapon Skill set above)
-sets["Exenterator"] = set_combine(sets.weapon_skill, {
+sets["Exenterator"] = {
 
-})
+}
 
 -- Rudra's Storm (combines with Weapon Skill set above)
-sets["Rudra's Storm"] = set_combine(sets.weapon_skill, {
+sets["Rudra's Storm"] = {
 	right_ear="Mache Earring +1",
 	left_ring="Ilabrat Ring",
-})
+}
 
 -- Songs Fast Cast (cap is 80%)
 sets.fast_cast_song = {
@@ -920,7 +920,7 @@ end
 
 
 
-FileVersion = '3.1.1'
+FileVersion = '3.1.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3022,10 +3022,6 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
-	elseif command == 'double_pianissimo_fix' then
-		double_pianissimo_fix = false
-	elseif command == "double_sublimation_fix" then
-		double_sublimation_fix = false
 	elseif command == "resetCapturedToggle" then
 		captured_spell_toggle = false
 	end
@@ -3157,7 +3153,8 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
+		local ws_set = sets[spell.english] or nil
+		equip(set_combine(sets.weapon_skill, ws_set))
 		if player.equipment.main == "Aeneas" and spell.english == "Exenterator" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Mandau' and spell.english == "Mercy Stroke" then
@@ -3202,13 +3199,10 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(sets.fast_cast_other)
 	elseif spell.type == 'BardSong' then
-		if AutoPianissimo and spell.target.ispartymember and spell.target.type ~= 'SELF' and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Pianissimo'] or string.find(spell.english,'Lullaby')) then --exempt lullabies so we can put charmed players to sleep
-			if not double_pianissimo_fix then
-				double_pianissimo_fix = true --prevents this from running through here a second time after being cast again below
-				cancel_spell()
-				send_command('input /ja "Pianissimo" <me>;wait 1.5;input /ma \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_pianissimo_fix')
-				return
-			end
+		if AutoPianissimo and spell.english ~= "Pianissimo" and spell.target.ispartymember and spell.target.type ~= 'SELF' and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Pianissimo'] or string.find(spell.english,'Lullaby')) then --exempt lullabies so we can put charmed players to sleep
+			cancel_spell()
+			send_command('input /ja "Pianissimo" <me>;wait 1.5;input /ma \"'..spell.english..'\" '..spell.target.raw)
+			return
 		end
 		local instrument
 		local main_sub = hasDualWield() and "buff_song_dual_wield" or "buff_song_single_wield"
@@ -3349,12 +3343,9 @@ function aftercast(spell)
 		max_songs = getMaxSongs()
 	end
 	choose_set()
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoPianissimo and spell.english == "Pianissimo") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
-			local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
-			send_command('wait '..wait..';input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+	if AutoSubCharge and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoPianissimo and spell.english == "Pianissimo") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+		local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
+		send_command('wait '..wait..';input /ja Sublimation <me>')
 	end
 end
 
@@ -3386,10 +3377,7 @@ windower.register_event('status change', function(status)
 	setNotification()
 
 	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
-			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+		send_command('input /ja Sublimation <me>')
 	end
 
 end)
