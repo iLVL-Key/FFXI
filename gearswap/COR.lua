@@ -115,6 +115,32 @@ actions, Job Ability and spell recasts, as well as specific information catered 
 Hide or show the HUD at any time by typing
 	//hud
 
+------------------------------------------
+
+WEAPONSKILL SETS
+
+To create a new set for a Weapon Skill that is not already listed, simply copy any other named
+Weapon Skill set and change the name to the desired Weapon Skill. For example, you can create
+a Numbing Shot set by copying the entire Last Stand set and changing the set name as such:
+
+from
+	sets["Last Stand"]
+to
+	sets["Numbing Shot"]
+
+Additionally, you can create "High Buff" (for when you are over the AttackCapThreshold set in the Advanced Options)
+and "Capped TP" (for when you are over the CappedTPThreshold set in the Advanced Options) versions of current Weapon Skill
+sets by copying a current Weapon Skill set and adding ".high_buff" or ".capped_tp" to the end of the set name as such:
+
+from
+	sets["Numbing Shot"]
+to
+	sets["Numbing Shot"].high_buff
+	or
+	sets["Numbing Shot"].capped_tp
+
+NOTE: These extra sets will only work if there is already a normal set for that specific Weapon Skill.
+
 --]]
 
 -------------------------------------------
@@ -211,6 +237,7 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 KeepTPThreshold		=	3000		--Main/Sub slots in the Phantom Roll set will not equip when TP is above this number (set to 3000 to always switch).
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
+CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
 AttackCapThreshold	=	4000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
 								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 DangerSafeDelay		=	5		--Delay in seconds after Danger Mode (Auto) activates before it is considered safe again.
@@ -593,8 +620,8 @@ sets.weapon_skill = {
 	feet="Lanun Bottes +4",
 	neck="Rep. Plat. Medal",
 	waist="Sailfi Belt +1",
-	left_ear="Moonshade Earring",
-	right_ear="Ishvara Earring",
+	left_ear="Ishvara Earring",
+	right_ear="Moonshade Earring",
 	left_ring="Karieyh Ring +1",
 	right_ring="Cornelia's Ring",
 	back={ name="Camulus's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
@@ -615,108 +642,144 @@ sets.ws_accuracy = {
 }
 
 -- Terminus (70% DEX, 70% AGI)
-sets["Terminus"] = set_combine(sets.weapon_skill, {
+sets["Terminus"] = {
 
-})
+}
 
 -- Terminus - High Buff (70% DEX, 70% AGI)
-sets["Terminus"].high_buff = set_combine(sets["Terminus"], {
+sets["Terminus"].high_buff = {
 
-})
+}
 
 -- Last Stand (73~85% AGI)
-sets["Last Stand"] = set_combine(sets.weapon_skill, {
+sets["Last Stand"] = {
 	hands="Chasseur's Gants +3",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	left_ring="Dingir Ring",
 	back={ name="Camulus's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','Accuracy+10','"Dual Wield"+10','Phys. dmg. taken-10%',}},
 
-})
+}
 
 -- Last Stand - High Buff (73~85% AGI)
-sets["Last Stand"].high_buff = set_combine(sets["Last Stand"], {
+sets["Last Stand"].high_buff = {
 	left_ring="Sroda Ring",
 	right_ring="Epaminondas's Ring",
-})
+}
+
+-- Last Stand Capped TP (Replace slots with unneeded TP Bonus)
+sets["Last Stand"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
 
 -- Hot Shot (70% AGI)
-sets["Hot Shot"] = set_combine(sets.weapon_skill, {
+sets["Hot Shot"] = {
 	ammo="Living Bullet",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	right_ear="Friomisi Earring",
+	left_ear="Friomisi Earring",
 	right_ring="Epaminondas's Ring",
 	back={ name="Camulus's Mantle", augments={'AGI+20','Mag. Acc+20 /Mag. Dmg.+20','AGI+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Hot Shot - High Buff (70% AGI)
-sets["Hot Shot"].high_buff = set_combine(sets["Hot Shot"], {
+sets["Hot Shot"].high_buff = {
 	left_ring="Sroda Ring",
 	right_ring="Epaminondas's Ring",
-})
+}
+
+-- Hot Shot Capped TP (Replace slots with unneeded TP Bonus)
+sets["Hot Shot"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
 
 -- Leaden Salute (100% AGI)
-sets["Leaden Salute"] = set_combine(sets.weapon_skill, {
+sets["Leaden Salute"] = {
 	ammo="Living Bullet",
 	head="Pixie Hairpin +1",
 	body="Lanun Frac +4",
 	neck="Comm. Charm +2",
 	waist="Skrymir Cord +1",
+	left_ear="Friomisi Earring",
 	left_ring="Dingir Ring",
 	back={ name="Camulus's Mantle", augments={'AGI+20','Mag. Acc+20 /Mag. Dmg.+20','AGI+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
+
+-- Leaden Salute Capped TP (Replace slots with unneeded TP Bonus)
+sets["Leaden Salute"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
 
 -- Wildfire (60% AGI)
-sets["Wildfire"] = set_combine(sets.weapon_skill, {
+sets["Wildfire"] = {
 	ammo="Living Bullet",
 	body="Lanun Frac +4",
 	neck="Comm. Charm +2",
 	waist="Skrymir Cord +1",
-	right_ear="Friomisi Earring",
+	left_ear="Friomisi Earring",
 	left_ring="Dingir Ring",
 	back={ name="Camulus's Mantle", augments={'AGI+20','Mag. Acc+20 /Mag. Dmg.+20','AGI+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
+
+-- Wildfire Capped TP (Replace slots with unneeded TP Bonus)
+sets["Wildfire"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
 
 -- Savage Blade (50% STR, 50% MND mod)
-sets["Savage Blade"] = set_combine(sets.weapon_skill, {
+sets["Savage Blade"] = {
 	left_ring="Regal Ring",
 	right_ring="Epaminondas's Ring",
-})
+}
 
 -- Savage Blade - High Buff (50% STR, 50% MND mod)
-sets["Savage Blade"].high_buff = set_combine(sets["Savage Blade"], {
+sets["Savage Blade"].high_buff = {
 
-})
+}
 
--- Evisceration (combines with Weapon Skill set above)
-sets["Evisceration"] = set_combine(sets.weapon_skill, {
+-- Savage Blade Capped TP (Replace slots with unneeded TP Bonus)
+sets["Savage Blade"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
+
+-- Evisceration (50% DEX mod)
+sets["Evisceration"] = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	left_ear="Odr Earring",
 	right_ear="Mache Earring +1",
 	left_ring="Regal Ring",
 	right_ring="Epona's Ring",
-})
+}
 
--- Aeolian Edge (combines with Weapon Skill set above)
-sets["Aeolian Edge"] = set_combine(sets.weapon_skill, {
+-- Aeolian Edge (40% DEX, 40% INT mod)
+sets["Aeolian Edge"] = {
 	body="Lanun Frac +4",
 	neck="Baetyl Pendant",
 	waist="Orpheus's Sash",
-	right_ear="Friomisi Earring",
+	left_ear="Friomisi Earring",
 	left_ring="Dingir Ring",
 	right_ring="Epaminondas's Ring",
-})
+}
 
--- Exenterator (combines with Weapon Skill set above)
-sets["Exenterator"] = set_combine(sets.weapon_skill, {
+-- Aeolian Edge Capped TP (Replace slots with unneeded TP Bonus)
+sets["Aeolian Edge"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
+
+-- Exenterator (73~85% AGI mod)
+sets["Exenterator"] = {
 	neck="Null Loop",
 	waist="Null Belt",
 	left_ring="Karieyh Ring +1",
 	right_ring="Cornelia's Ring",
 	back="Null Shawl",
-})
+}
+
+-- Exenterator Capped TP ((Replace slots with unneeded TP Bonus))
+sets["Exenterator"].capped_tp = {
+	right_ear="Chas. Earring +2",
+}
 
 -- Hachirin-no-obi
 sets.hachirin_no_obi = {
@@ -1001,7 +1064,7 @@ end
 
 
 
-FileVersion = '2.1.1'
+FileVersion = '2.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3289,12 +3352,13 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		local ws_set = sets[spell.english]
-		local base_set = ws_set and (player.attack >= AttackCapThreshold and ws_set.high_buff or ws_set) or sets.weapon_skill
+		local ws_set = sets[spell.english] or nil
+		local capped_attack = player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff or nil
+		local capped_tp = player.tp >= CappedTPThreshold and ws_set and ws_set.capped_tp or nil
 		local hachirin_no_obi = useHachirinNoObi(spell.english) and sets.hachirin_no_obi or nil
 		local high_acc_mob = spell.target.name and HighAccMobs[spell.target.name]
 		local accuracy_set = ((Mode == 'Mode3' or high_acc_mob) and not magical_ws[spell.english]) and sets.ws_accuracy or nil
-		equip(set_combine(base_set, hachirin_no_obi, accuracy_set))
+		equip(set_combine(sets.weapon_skill, capped_attack, capped_tp, hachirin_no_obi, accuracy_set))
 		if spell.skill == 'Marksmanship' then
 			checkAmmo()
 		end
