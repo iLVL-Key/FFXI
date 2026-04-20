@@ -608,7 +608,7 @@ sets.weapons_skill_accuracy = {
 
 -- Dimidiation (80% DEX mod, 2-hit)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Dimidiation"] = set_combine(sets.weapon_skill, {
+sets["Dimidiation"] = {
 	ammo="Coiste Bodhar",
 	neck="Fotia Gorget",
 	waist="Sailfi Belt +1",
@@ -616,11 +616,11 @@ sets["Dimidiation"] = set_combine(sets.weapon_skill, {
 	right_ear="Moonshade Earring",
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Resolution (73~85% STR mod, 5-hit)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Resolution"] = set_combine(sets.weapon_skill, {
+sets["Resolution"] = {
 	ammo="Coiste Bodhar",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
@@ -628,13 +628,13 @@ sets["Resolution"] = set_combine(sets.weapon_skill, {
 	right_ear="Moonshade Earring",
 	left_ring="Epona's Ring",
 	right_ring="Niqmaddu Ring",
-})
+}
 
 -- Fimbulvetr (60% STR, 60% VIT mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Fimbulvetr"] = set_combine(sets.weapon_skill, {
+sets["Fimbulvetr"] = {
 
-})
+}
 
 -- Elemental Sforzo
 sets.elemental_sforzo = {
@@ -747,7 +747,7 @@ end
 
 
 
-FileVersion = '10.2.1'
+FileVersion = '10.2.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2440,9 +2440,9 @@ function precast(spell)
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
-		local base_set = sets[spell.english] or sets.weapon_skill
+		local ws_set = sets[spell.english] or nil
 		local ws_acc_set = Mode ~= 'DPS' and sets.weapons_skill_accuracy or nil
-		equip(set_combine(base_set, ws_acc_set))
+		equip(set_combine(sets.weapon_skill, ws_set, ws_acc_set))
 		if player.equipment.main == "Lionheart" and spell.english == "Resolution" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == "Epeolatry" and spell.english == "Dimidiation" then
