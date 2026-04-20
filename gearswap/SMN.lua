@@ -367,10 +367,10 @@ sets.weapon_skill = {
 }
 
 -- Garland of Bliss (combines with Weapon Skill set above)
-sets["Garland of Bliss"] = set_combine(sets.weapon_skill, {
+sets["Garland of Bliss"] = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-})
+}
 
 -- Fast Cast (cap is 80%) (precast for casting summons)
 sets.fast_cast = {
@@ -625,7 +625,7 @@ end
 
 
 
-FileVersion = '14.1.1'
+FileVersion = '14.1.2'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1807,12 +1807,6 @@ function self_command(command)
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
-	elseif command == "double_avatars_favor_fix" then
-		double_avatars_favor_fix = false
-	elseif command == "double_release_fix" then
-		double_release_fix = false
-	elseif command == "double_sublimation_fix" then
-		double_sublimation_fix = false
 	elseif command == "resetCapturedToggle" then
 		captured_spell_toggle = false
 	end
@@ -1944,7 +1938,8 @@ function precast(spell)
 			cancel_spell()
 			return
 		end
-		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
+		local ws_set = sets[spell.english] or nil
+		equip(set_combine(sets.weapon_skill, ws_set))
 		if player.equipment.main == "Khatvanga" and spell.english == "Shattersoul" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Claustrum' and spell.english == "Gates of Tartarus" then
@@ -1966,13 +1961,10 @@ function precast(spell)
 		end
 	elseif (spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard') and not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
 		--if we're using a BP without Avatar's Favor up, we'll put it up before casting:
-		if AutoFavor and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
-			if not double_avatars_favor_fix then
-				double_avatars_favor_fix = true --prevents this from running through here a second time after being cast again below
-				cancel_spell()
-				send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw..';wait 1;gs c double_avatars_favor_fix')
-				return
-			end
+		if AutoFavor and spell.english ~= "Avatar's Favor" and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
+			cancel_spell()
+			send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw)
+			return
 		elseif (spell.type == 'BloodPactRage' and BloodPactRage.recast < 2) or (spell.type == 'BloodPactWard' and BloodPactWard.recast < 2) then
 			equip(set_combine(sets.bp_delay))
 		end
@@ -1986,12 +1978,9 @@ function precast(spell)
 		equip(set_combine(sets.elemental_siphon))
 	elseif (Avatars[spell.english] or Spirits[spell.english]) then
 		--if we're casting an avatar with one already out, we'll use Release before casting:
-		if pet.isvalid and AutoRelease and windower.ffxi.get_ability_recasts()[172] == 0 then
-			if not double_release_fix then
-				double_release_fix = true
-				cancel_spell()
-				send_command('input /pet "Release" <me>;wait 1;input /ma \"'..spell.english..'\" <me>;wait 1;gs c double_release_fix')
-			end
+		if pet.isvalid and AutoRelease and spell.english ~= "Release" and windower.ffxi.get_ability_recasts()[172] == 0 then
+			cancel_spell()
+			send_command('input /pet "Release" <me>;wait 1;input /ma \"'..spell.english..'\" <me>')
 		end
 		equip(set_combine(sets.summoning))
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
@@ -2069,7 +2058,7 @@ function aftercast(spell)
 		end
 	end
 	if spell.type == "SummonerPact" then
-		if AutoFavor and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
+		if AutoFavor and spell.english ~= "Avatar's Favor" and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
 			send_command('wait 3.5;input /ja "Avatar\'s Favor" <me>')
 		end
 		has_pet = true
@@ -2080,12 +2069,9 @@ function aftercast(spell)
 		has_pet = true
 		choose_set(has_pet)
 	end
-	if AutoSubCharge and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoFavor and spell.type == "SummonerPact") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running through here a second time after being cast again below
-			local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
-			send_command('wait '..wait..';input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+	if AutoSubCharge and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoFavor and spell.type == "SummonerPact") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+		local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
+		send_command('wait '..wait..';input /ja Sublimation <me>')
 	end
 end
 
@@ -2116,10 +2102,7 @@ windower.register_event('status change', function(status)
 	setNotification()
 
 	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
-		if not double_sublimation_fix then
-			double_sublimation_fix = true --prevents this from running a second time (as an aftercast above) after being run here
-			send_command('input /ja Sublimation <me>;wait 1;gs c double_sublimation_fix')
-		end
+		send_command('input /ja Sublimation <me>')
 	end
 
 end)
