@@ -462,13 +462,13 @@ sets.weapon_skill = {
 
 -- Savage Blade (50% STR, 50% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Savage Blade"] = set_combine(sets.weapon_skill, {
+sets["Savage Blade"] = {
 	right_ear="Ishvara Earring",
-})
+}
 
 -- Sanguine Blade (Dark Magical, 50% STR, 50% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
+sets["Sanguine Blade"] = {
 	ammo="Ghastly Tathlum +1",
 	head="Pixie Hairpin +1",
 	neck="Sibyl Scarf",
@@ -476,22 +476,22 @@ sets["Sanguine Blade"] = set_combine(sets.weapon_skill, {
 	left_ear="Friomisi Earring",
 	right_ear="Regal Earring",
 	left_ring="Archon Ring",
-})
+}
 
 -- Requiescat (~80% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Requiescat"] = set_combine(sets.weapon_skill, {
+sets["Requiescat"] = {
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
 	right_ear="Regal Earring",
 	left_ring="Stikini Ring +1",
 	right_ring="Metamor. Ring +1",
 	--right_ring="Rufescent Ring",
-})
+}
 
 -- Chant du Cygne (80% DEX mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Chant du Gyne"] = set_combine(sets.weapon_skill, {
+sets["Chant du Gyne"] = {
 	body="Gleti's Cuirass",
 	legs="Gleti's Breeches",
 	waist="Fotia Belt",
@@ -500,19 +500,19 @@ sets["Chant du Gyne"] = set_combine(sets.weapon_skill, {
 	left_ring="Epona's Ring",
 	right_ring="Hetairoi Ring",
 	back={ name="Rosmerta's Cape", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','Crit.hit rate+10','Damage taken-5%',}},
-})
+}
 
 -- Expiacion (30% STR, 30% INT, 20% DEX mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Expiacion"] = set_combine(sets.weapon_skill, {
+sets["Expiacion"] = {
 
-})
+}
 
 -- Imperator (70% DEX, 70% MND, mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Imperator"] = set_combine(sets.weapon_skill, {
+sets["Imperator"] = {
 
-})
+}
 
 -- Fast Cast (cap is 80%)
 sets.fast_cast = {
@@ -761,7 +761,7 @@ end
 
 
 
-FileVersion = '20.1.1'
+FileVersion = '20.1.2'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -2231,7 +2231,8 @@ function precast(spell)
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
-		equip(sets[spell.english] and sets[spell.english] or sets.weapon_skill)
+		local ws_set = sets[spell.english] or nil
+		equip(set_combine(sets.weapon_skill, ws_set))
 		if player.equipment.main == "Sequence" and spell.english == "Requiescat" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Almace' and spell.english == "Chant du Cygne" then
