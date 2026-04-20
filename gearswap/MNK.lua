@@ -71,6 +71,32 @@ actions, Job Ability and spell recasts, as well as specific information catered 
 Hide or show the HUD at any time by typing
 	//hud
 
+------------------------------------------
+
+WEAPONSKILL SETS
+
+To create a new set for a Weapon Skill that is not already listed, simply copy any other named
+Weapon Skill set and change the name to the desired Weapon Skill. For example, you can create
+a Shoulder Tackle set by copying the entire Raging Fists set and changing the set name as such:
+
+from
+	sets["Raging Fists"]
+to
+	sets["Shoulder Tackle"]
+
+Additionally, you can create "High Buff" (for when you are over the AttackCapThreshold set in the Advanced Options)
+and "Capped TP" (for when you are over the CappedTPThreshold set in the Advanced Options) versions of current Weapon Skill
+sets by copying a current Weapon Skill set and adding ".high_buff" or ".capped_tp" to the end of the set name as such:
+
+from
+	sets["Shoulder Tackle"]
+to
+	sets["Shoulder Tackle"].high_buff
+	or
+	sets["Shoulder Tackle"].capped_tp
+
+NOTE: These extra sets will only work if there is already a normal set for that specific Weapon Skill.
+
 --]]
 
 -------------------------------------------
@@ -156,6 +182,8 @@ WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Wea
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
 CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
+AttackCapThreshold	=	4000	--Using a WS while your attack is above this number will use a high_buff WS set if available.
+								--NOTE: This number is checked before WS gear is switched, base this on attack while in your TP set(s).
 WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
 RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes)
 NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
@@ -502,15 +530,8 @@ sets.ws_accuracy = {
 	right_ring="Cornelia's Ring",
 }
 
--- Weapon Skill - Capped TP (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
--- NOTE: Intended to override any TP Bonus pieces in your Weapon Skill set if you're already at capped TP
-sets.ws_capped_tp = {
-	head="Nyame Helm",
-	right_ear="Sherida Earring",
-}
-
 -- Tornado Kick (Kick Attacks, TP Bonus, STR, VIT )
-sets["Tornado Kick"] = set_combine(sets.weapon_skill, {
+sets["Tornado Kick"] = {
 	head="Mpaca's Cap",
 	body="Nyame Mail",
 	hands="Nyame Gauntlets",
@@ -521,10 +542,16 @@ sets["Tornado Kick"] = set_combine(sets.weapon_skill, {
 	left_ear="Schere Earring",
 	right_ear="Moonshade Earring",
 	back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
-})
+}
+
+-- Tornado Kick Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tornado Kick"].capped_tp = {
+	head="Nyame Helm",
+	right_ear="Sherida Earring",
+}
 
 -- Final Heaven (VIT, STR, WSD)
-sets["Final Heaven"] = set_combine(sets.weapon_skill, {
+sets["Final Heaven"] = {
 	ammo="Knobkierrie",
 	head="Nyame Helm",
 	body="Nyame Mail",
@@ -538,10 +565,10 @@ sets["Final Heaven"] = set_combine(sets.weapon_skill, {
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'VIT+20','Accuracy+20 Attack+20','VIT+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Ascetic's Fury (VIT, STR, crit+)
-sets["Ascetic's Fury"] = set_combine(sets.weapon_skill, {
+sets["Ascetic's Fury"] = {
 	ammo="Crepuscular Pebble",
 	head="Ken. Jinpachi +1",
 	body="Bhikku Cyclas +3",
@@ -555,10 +582,10 @@ sets["Ascetic's Fury"] = set_combine(sets.weapon_skill, {
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
-})
+}
 
 -- Victory Smite (STR, crit+)
-sets["Victory Smite"] = set_combine(sets.weapon_skill, {
+sets["Victory Smite"] = {
 	ammo="Coiste Bodhar",
 	head="Mpaca's Cap",
 	body="Bhikku Cyclas +3",
@@ -572,10 +599,15 @@ sets["Victory Smite"] = set_combine(sets.weapon_skill, {
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
-})
+}
+
+-- Victory Smite Capped TP (Replace slots with unneeded TP Bonus)
+sets["Victory Smite"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Shijin Spiral (DEX, STR)
-sets["Shijin Spiral"] = set_combine(sets.weapon_skill, {
+sets["Shijin Spiral"] = {
 	ammo="Coiste Bodhar",
 	head="Mpaca's Cap",
 	body="Bhikku Cyclas +3",
@@ -589,10 +621,15 @@ sets["Shijin Spiral"] = set_combine(sets.weapon_skill, {
 	left_ring="Regal Ring",
 	right_ring="Niqmaddu Ring",
 	back={ name="Segomo's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
-})
+}
+
+-- Shijin Spiral Capped TP (Replace slots with unneeded TP Bonus)
+sets["Shijin Spiral"].capped_tp = {
+	head="Nyame Helm",
+}
 
 -- Raging Fists (DEX, STR)
-sets["Raging Fists"] = set_combine(sets.weapon_skill, {
+sets["Raging Fists"] = {
 	ammo="Crepuscular Pebble",
 	head="Mpaca's Cap",
 	body="Bhikku Cyclas +3",
@@ -601,10 +638,16 @@ sets["Raging Fists"] = set_combine(sets.weapon_skill, {
 	left_ear="Schere Earring",
 	right_ear="Moonshade Earring",
 	back={ name="Segomo's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}},
-})
+}
+
+-- Raging Fists Capped TP (Replace slots with unneeded TP Bonus)
+sets["Raging Fists"].capped_tp = {
+	head="Nyame Helm",
+	right_ear="Sherida Earring",
+}
 
 -- Cataclysm (Dark Elem. MAB, INT, Magic Damage, WSD)
-sets["Cataclysm"] = set_combine(sets.weapon_skill, {
+sets["Cataclysm"] = {
 	ammo="Ghastly Tathlum +1",
 	head="Pixie Hairpin +1",
 	body="Nyame Mail",
@@ -617,12 +660,17 @@ sets["Cataclysm"] = set_combine(sets.weapon_skill, {
 	right_ear="Moonshade Earring",
 	left_ring="Archon Ring",
 	right_ring="Metamor. Ring +1",
-})
+}
+
+-- Cataclysm Capped TP (Replace slots with unneeded TP Bonus)
+sets["Cataclysm"].capped_tp = {
+	right_ear="Sherida Earring",
+}
 
 -- Maru Kala
-sets["Maru Kala"] = set_combine(sets.weapon_skill, {
+sets["Maru Kala"] = {
 
-})
+}
 
 -- Fast Cast (cap is 80%)
 sets.fast_cast = {
@@ -774,7 +822,7 @@ end
 
 
 
-FileVersion = '8.2.1'
+FileVersion = '8.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2075,12 +2123,13 @@ function precast(spell)
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
-		local base_set = sets[spell.english] and sets[spell.english] or sets.weapon_skill
+		local ws_set = sets[spell.english] or nil
+		local capped_attack = player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff or nil
+		local capped_tp = player.tp >= CappedTPThreshold and ws_set and ws_set.capped_tp or nil
 		local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
-		local capped_tp = player.tp >= CappedTPThreshold and sets.ws_capped_tp or nil
 		local high_acc_mob = player.target.name and HighAccMobs[player.target.name]
 		local ws_accuracy = ((Mode == 'Mode3' or high_acc_mob) and not magical_ws[spell.english]) and sets.ws_accuracy or nil
-		equip(set_combine(base_set, ygnass_resolve_1, capped_tp, ws_accuracy))
+		equip(set_combine(sets.weapon_skill, ws_set, capped_attack, capped_tp, ygnass_resolve_1, ws_accuracy))
 		if player.equipment.main == "Godhands" and spell.english == "Shijin Spiral" then
 			pre_AMTimer = 181
 		elseif player.equipment.main == 'Spharai' and spell.english == "Final Heaven" then
