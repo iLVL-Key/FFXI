@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-9'
+_addon.version = '1.0 BETA-10'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -1139,6 +1139,11 @@ end
 --Close the Confirm window (Origianlly made this thinking there would be other stuff to do here but apparently not :shrug:)
 function closeConfirmWindow()
 
+	coroutine.schedule(function()
+		--Release the Escape key back to normal use
+		send_command('unbind escape')
+	end, 0.5)
+
 	confirm_window:hide()
 
 end
@@ -1181,6 +1186,11 @@ end
 --Display the Confirm window
 function displayConfirmWindow(button, message)
 
+	--Hijack the Escape key to prevent it from passing through to the game while we have the menu open
+	--The 'hijacked' in the command is just garbage, just to give it something to do that doesn't actually do anything
+	--Thanks to Cyrite for the idea
+	send_command('bind escape hijacked')
+
 	confirm_yes = button --Store the button that was clicked for later use
 	confirm_message = message:text_strip_format() --Srip any formatting and store the message for later use
 
@@ -1192,6 +1202,12 @@ end
 
 --Close the Text Input window and reset stuff back to nil state for next time
 function closeTextInput()
+
+	coroutine.schedule(function()
+		--Release the Enter/Escape keys back to normal use
+		send_command('unbind enter')
+		send_command('unbind escape')
+	end, 0.5)
 
 	text_input_message = nil
 	text_input_accept = nil
@@ -1254,6 +1270,12 @@ end
 
 --Display the Text Input window
 function displayTextInputWindow(accept_button, message)
+
+	--Hijack the Enter/Escape keys to prevent them from passing through to the game while we have the menu open
+	--The 'hijacked' in the command is just garbage, just to give it something to do that doesn't actually do anything
+	--Thanks to Cyrite for the idea
+	send_command('bind enter hijacked')
+	send_command('bind escape hijacked')
 
 	text_input_accept = accept_button --Store the button that was clicked for later use
 	text_input_message = message:text_strip_format() --Srip any formatting and store the message for later use
