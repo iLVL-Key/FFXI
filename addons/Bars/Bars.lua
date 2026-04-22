@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.7.1'
+_addon.version = '4.7.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -3148,7 +3148,8 @@ function updateTargeting(actor_id, target_id, timestamp, icon)
 
 	--If the target of an action done by a monster (checked before this function was triggered)
 	--is in our alliance, or if the monster is on the open_mobs list, then add the monster to the aggro list table
-	if isInPartyOrAlliance(target_id) or aggro_list_open_mobs:contains(get_mob_by_id(actor_id).name) or current_zone == "Al Zahbi" then
+	local mob = get_mob_by_id(actor_id)
+	if isInPartyOrAlliance(target_id) or (mob and aggro_list_open_mobs:contains(mob.name)) or current_zone == "Al Zahbi" then
 		current_aggro_list[actor_id] = {
 			target_id = target_id,
 			timestamp = timestamp,
