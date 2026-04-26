@@ -1064,7 +1064,7 @@ end
 
 
 
-FileVersion = '2.2'
+FileVersion = '2.2.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3421,7 +3421,8 @@ function precast(spell)
 		equip(sets.fast_cast_other)
 	elseif spell.action_type == 'Ranged Attack' then
 		local base_set = buffactive["Flurry"] and sets.rapid_shot or sets.snapshot
-		local bullet = Mode == 'Mode3' and sets.ranged_accuracy_bullet or sets.ranged_attack_bullet
+		local high_acc_mob = spell.target.name and HighAccMobs[spell.target.name]
+		local bullet = (Mode == 'Mode3' or high_acc_mob) and sets.ranged_accuracy_bullet or sets.ranged_attack_bullet
 		equip(set_combine(base_set, bullet))
 		checkAmmo()
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
