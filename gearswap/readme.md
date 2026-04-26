@@ -654,6 +654,9 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.2.1
+- Adjusted Precast bullet to account for High Accuracy Mob
+
 Version 2.2
 - Added `.capped_tp` sub-set to Weapon Skill sets in addition to the current `.high_buff` sub-set.
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
