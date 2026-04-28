@@ -3012,8 +3012,6 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			print("Low MP")
 			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
 			lowMP = true
 			if AlertSounds then
@@ -3025,7 +3023,6 @@ windower.register_event('prerender', function()
 			NotiCountdown = NotiDelay	
 			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
 		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			print("Good MP")
 			lowMP = false
 			setNotification()
 		end
