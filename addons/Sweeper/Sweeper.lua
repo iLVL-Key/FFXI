@@ -26,9 +26,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
-_addon.name    = 'Boombox\'s Bomb Sweeper'
+_addon.name    = 'Sweeper'
 _addon.author  = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-1'
+_addon.version = '1.0'
 _addon.commands = {'sweeper',}
 
 texts = require('texts')
