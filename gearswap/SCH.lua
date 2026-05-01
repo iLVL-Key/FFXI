@@ -1098,7 +1098,7 @@ end
 
 
 
-FileVersion = '1.3.2'
+FileVersion = '1.3.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3794,10 +3794,10 @@ windower.register_event('prerender', function()
 			NotiCountdown = -1
 		end
 
-		if notifications.Doom and buffactive['doom'] then 
+		if notifications.Doom and buffactive['doom'] and Alive then 
 			flash('Debuffs')
 		end
-		if (notifications.Doom and buffactive['doom']) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and AlertSounds and WarningCountdown > 0 then
+		if (notifications.Doom and buffactive['doom'] and Alive) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and AlertSounds and WarningCountdown > 0 then
 			WarningCountdown = WarningCountdown - 1
 			play_sound(Notification_Danger)
 		end
