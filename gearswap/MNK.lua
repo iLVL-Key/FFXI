@@ -822,7 +822,7 @@ end
 
 
 
-FileVersion = '8.3'
+FileVersion = '8.3.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3402,7 +3402,7 @@ windower.register_event('prerender', function()
 		if AMTimer > 0 then
 			AMTimer = AMTimer - 1
 		end
-		if notifications.Doom and buffactive['doom'] then
+		if notifications.Doom and buffactive['doom'] and Alive then
 			flash('Debuffs')
 		end
 		if notifications.LowHP and LowHP and Alive then
@@ -3412,7 +3412,7 @@ windower.register_event('prerender', function()
 			flash('Noti')
 			NotiCountdown = -1
 		end
-		if (notifications.Doom and buffactive['doom']) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and AlertSounds and WarningCountdown > 0 then
+		if (notifications.Doom and buffactive['doom'] and Alive) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and AlertSounds and WarningCountdown > 0 then
 			WarningCountdown = WarningCountdown - 1
 			play_sound(Notification_Danger)
 		end
