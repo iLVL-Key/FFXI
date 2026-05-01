@@ -121,6 +121,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.1.3
+- Fixed Debuff area in HUD still flashing after dying from Doom.
+
 Version 20.1.2
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
@@ -537,6 +540,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.1.3
+- Adjusted Dual Wield check to make sure the subjob levels are correct.
+- Fixed Debuff area in HUD still flashing after dying from Doom.
+
 Version 3.1.2
 - Adjusted AutoSubCharge, and AutoPianissimo to no longer need the "fixes" implemented to prevent double activiation.
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
@@ -654,6 +661,10 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.2.2
+- Adjusted Dual Wield check to make sure the subjob levels are correct.
+- Fixed Debuff area in HUD still flashing after dying from Doom.
+
 Version 2.2.1
 - Adjusted Precast bullet to account for High Accuracy Mob
 
@@ -743,6 +754,9 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.1.4
+- Fixed Debuff area in HUD still flashing after dying from Doom.
 
 Version 16.1.3
 - Adjusted AutoSubCharge, AutoFullCircle, and AutoEntrust to no longer need the "fixes" implemented to prevent double activiation.
@@ -1101,6 +1115,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.3.1
+- Fixed Debuff area in HUD still flashing after dying from Doom.
+
 Version 8.3
 - Added `.capped_tp` and `.high_buff` sub-sets to Weapon Skill sets.
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
@@ -1303,6 +1320,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.2.3
+- Fixed Debuff area in HUD still flashing after dying from Doom.
 
 Version 15.2.2
 - Adjusted AutoSubCharge, AutoMajesty, and AutoDEmblem to no longer need the "fixes" implemented to prevent double activiation.
@@ -1669,6 +1689,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.2.3
+- Fixed Debuff area in HUD still flashing after dying from Doom.
+
 Version 10.2.2
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
@@ -1948,6 +1971,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.3.1
+- Fixed Debuff area in HUD still flashing after dying from Doom.
 
 Version 16.3
 - Added `.capped_tp` sub-set to Weapon Skill sets in addition to the current `.high_buff` sub-set.
@@ -2265,6 +2291,9 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3.3
+- Fixed Debuff area in HUD still flashing after dying from Doom.
+
 Version 1.3.2
 - Adjusted AutoSubCharge to no longer need the "fixes" implemented to prevent double activiation.
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
@@ -2294,6 +2323,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.1.3
+- Fixed Debuff area in HUD still flashing after dying from Doom.
 
 Version 14.1.2
 - Adjusted AutoSubCharge, AutoFavor, and AutoRelease to no longer need the "fixes" implemented to prevent double activiation.
@@ -2585,6 +2617,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.3.1
+- Fixed Debuff area in HUD still flashing after dying from Doom.
 
 Version 10.3
 - Added `.capped_tp` sub-set to Weapon Skill sets in addition to the current `.high_buff` sub-set.
