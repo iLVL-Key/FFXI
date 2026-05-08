@@ -39,6 +39,8 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - A simplified display of the actions performed by each party/alliance member.
 - Aggro List
   - A simplified list of all monsters aggressive to you/your party.
+- XP Bar
+  - Displays XP, CP, or EP in a bar meter with dynamic information based on your current job.
 - Focus Target.
   - A customizable list of targets to automatically track in a dedicated bar.
   - Update this list by name, id, or your current cursor target.
@@ -220,11 +222,13 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
 | → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
-| `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target` | These sections are for the 5 bars.<br>NOTE: Not all sections have all options. |
+| `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target`<br>`xp` | These sections are for the 6 bars.<br>NOTE: Not all sections have all options. |
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
 | → `bold` | Text within this section is bold. |
-| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). (Focus Target, Sub Target, and Target only) |
+| → `condensed_job_points` | Job Points are displayed in a condensed fashion. (XP bar only) |
+| → `condensed_merits` | Merit Points are displayed in a condensed fashion. (XP bar only) |
+| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). (Focus Target, Sub Target, and Target bars only) |
 | → `debuff_icon_size` | Size in pixels of the debuff icons (this number is used for both height and width). |
 | → `debuff_icon_spacing` | Number of pixels between each debuff icon. |
 | → `debuff_icons` | Show the debuff icons for monsters. |
@@ -232,16 +236,27 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `debuff_timer_offset` | Horizontal offset for the debuff timers (centered on the bar, positive moves downward, negative moves upward). |
 | → `debuff_timer_size` | Font size of the debuff timers text. |
 | → `debuff_timers` | Show the debuff timers for monsters. Requires `debuff_icons` to be `true`. |
+| → `exclude_from_fade` | Bar will not fade with other bars (XP bar only). |
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
+| → `legacy_per_hour_calculation` | use legacy calculations to determine points per hour. (XP bar only) |
+| → `per_hour_rolling_window_in_minutes` | The size of the window in minutes that xp calculations are made. (XP bar only) |
 | → `pos` | X and Y position of the bar. |
-| → `show` | Show this specific section. |
+| → `show` | Show this specific bar section. |
 | → `show_bar` | Show the progress bar in the Self Action section. |
 | → `show_cast_time_bar` | Displays the position of the bar when a self action completes, allowing a visual indication of your fast cast. |
+| → `show_job_levels` | Display main and sub job levels, as well as Master Levels if appropriate. (XP bar only) |
+| → `show_job_points_stored_after_master` | Will continue to display stored Job Points after current job has been mastered. (XP bar only) |
+| → `show_kills_per_hour` | Display approximate Kills per Hour. (XP bar only) |
+| → `show_merits` | Display the number of current Merit Points stored. (XP bar only) |
 | → `show_monster_level` | Show the level of the currently targeted monster. |
 | → `show_monster_target` | Show the currently targeted monster's target. |
+| → `show_percent` | Display the percentage of completion for the current level. (XP bar only) |
 | → `show_player_angle_from_target_facing` | Shows an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
+| → `show_points_per_kill` | Display the average number of points per kill. (XP bar only) |
+| → `show_seconds_per_kill` | Display the average seconds between kills. (XP bar only) |
 | → `show_target_angle_from_player_facing` | Shows an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
+| → `show_tnl` | Display the number of points until your next level. (XP bar only) |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
@@ -292,6 +307,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.8
+- Added XP Bar. Displays XP, CP, or EP in a bar meter with dynamic information based on your current job (Job/Master level, Merit Points, Job Points, current/required XP/CP/EP, points per hour, kills per hour, points per kill, and seconds per kill).
+- Fixed an issue where switching characters would occasionally display the wrong Player Stat bars under certain circumstances.
 
 Version 4.7.2
 - Fixed an error popping up within high lag areas (mostly Besieged, really).
