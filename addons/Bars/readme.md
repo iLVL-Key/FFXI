@@ -5,7 +5,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ↑ The `//bars ui` command triggers the Screen Test where you can drag any of the highlighted bars.
 <br><br><br>
 ![Bars_drain](https://github.com/user-attachments/assets/01955128-6341-4823-9211-8a225417f13e)  
-↑ New animations Bar Drain, Bar Pulse, and Floating TP shown.
+↑ Bar Drain, Bar Pulse, and Floating TP animations.
 <br><br><br>
 ![Bars_BLU](https://github.com/user-attachments/assets/c3c99ca5-4ec6-48e8-aceb-bee383615e0b)  
 ↑ The Target and Self Action bars visible and in action showing how many targets were hit and the total of all damage done.
@@ -16,14 +16,17 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
 ↑ Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
 <br><br><br>
-<img width="238" height="144" alt="Bars_debuffs" src="https://github.com/user-attachments/assets/52280a58-bc21-40cf-be3d-06907d707da5" />  
+![Bars_Debuffs](https://github.com/user-attachments/assets/52280a58-bc21-40cf-be3d-06907d707da5)  
 ↑ The Debuff Icons and Timers displayed above a target.
 <br><br><br>
 ![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
 ↑ The Party Actions displayed next to each of your party members.
 <br><br><br>
-<img width="385" height="189" alt="Bars_aggro_list" src="https://github.com/user-attachments/assets/b7c0a31a-7a1e-486d-ab5d-a075537818f4" />  
+![Bars_aggro_list](https://github.com/user-attachments/assets/b7c0a31a-7a1e-486d-ab5d-a075537818f4)  
 ↑ The Aggro List with most monsters asleep, set to display a maximum of 6 monsters at a time.
+<br><br><br>
+![Bars_xp](https://github.com/user-attachments/assets/01645ed2-358d-4050-9090-39807b1080d3)  
+↑ A cropped look at the end of the XP bar showing Kills Per Hour, Points Per Kill, and Seconds Per Kill.
 <br><br>
 ## Features
 - Target Actions.
