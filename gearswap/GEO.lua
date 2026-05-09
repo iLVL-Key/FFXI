@@ -660,7 +660,7 @@ end
 
 
 
-FileVersion = '16.1.4'
+FileVersion = '16.1.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1868,10 +1868,10 @@ function precast(spell)
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -2479,7 +2479,7 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local current_time = os.time()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
 	if captured.timestamp and current_time > last_captured_poll + 0.1 then
@@ -3455,7 +3455,7 @@ windower.register_event('action',function(act)
 	local ata = act.targets[1].actions[1]
 	local msg = ata.message
 	local target_id = act.targets[1].id
-	local clock = os.clock()
+	local time = os.time()
 
 	--Check if a monsters attack hits the player
 	if DangerMode == "Auto" and (not DangerPTOnly or playerIsInAPartyOrAlliance()) and isMonster(act.actor_id) then
@@ -3476,7 +3476,7 @@ windower.register_event('action',function(act)
 
 		local function addToActiveSkillchain(id)
 			active_skillchain_targets = {
-				[id] = clock + 10,
+				[id] = time + 10,
 			}
 		end
 
@@ -3492,15 +3492,15 @@ windower.register_event('action',function(act)
 
 		--Immanence and Chain Affinity usage so we can know if their next spell then opens a skillchain window
 		if act.category == 6 and msg == 100 then
-			if ata.param == 470 then --Chain Affinity
+			if ata.param == 164 then --Chain Affinity
 				local duration = 30
 				active_chain_affinity = {
-					[act.actor_id] = clock + duration,
+					[act.actor_id] = time + duration,
 				}
-			elseif ata.param == 164 then --Immanence
+			elseif ata.param == 470 then --Immanence
 				local duration = 60
 				active_immanence = {
-					[act.actor_id] = clock + duration,
+					[act.actor_id] = time + duration,
 				}
 			end
 		end
@@ -3510,7 +3510,7 @@ windower.register_event('action',function(act)
 			if spells[act.param].skill == 43 and active_chain_affinity[act.actor_id] then --Blue Magic
 				addToActiveSkillchain(target_id)
 				active_chain_affinity[act.actor_id] = nil
-			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic       ATTEMPT TO INDEX FIELD ? (A NIL VALUE)
+			elseif spells[act.param].skill == 36 and active_immanence[act.actor_id] then --Elemental Magic
 				addToActiveSkillchain(target_id)
 				active_immanence[act.actor_id] = nil
 			end
