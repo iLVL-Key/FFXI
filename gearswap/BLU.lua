@@ -139,7 +139,7 @@ HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing t
 FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer		=	17		--	Space in pixels between each Line of the HUD.
 ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD.
-ShowTPMeter		=	false	--[true/false]	Show the mini TP Meter inside the Weapons area of the HUD.
+ShowTPMeter		=	true	--[true/false]	Show the mini TP Meter inside the Weapons area of the HUD.
 
 modeName = {
 --HUD Mode Names
