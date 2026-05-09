@@ -2,7 +2,7 @@
 
 ## Features
 ### QOL Improvements
-Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.
+Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.  
 - Automatically uses an Echo Drop or Remedy instead of spell when you are silenced.
 - Automatically activates and keeps Majesty active.
 - Automatically activates and keeps Stances (Hasso/Seigan) active.
@@ -13,7 +13,8 @@ Lots of little things to improve your experience. Each file has an Options and A
 - Reminder to put Reraise up if it's down.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
-- NOTE: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
+- NOTE 1: All of the "auto" things will still require you to perform some action, depending on what it is, in order to trigger. None of them will act on their own without user input.
+- NOTE 2: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
 
 ### Gear Modes
 Certain jobs have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
