@@ -6,6 +6,10 @@ Tracks all ZNM pop items, trophy items, and key items that your character has in
 <img width="245" height="492" alt="ZNMTracker_tin02" src="https://github.com/user-attachments/assets/63b25695-ba83-4912-acba-d448f3b60bf7" />  
 <img width="626" height="233" alt="ZNMTracker_check" src="https://github.com/user-attachments/assets/4ff869cb-cdac-459a-bb20-55e9f0c5ab8e" />
 
+| PACKET USE |
+|------------|
+| **Read Only** |
+| All packet use in this addon is read only.<br>This addon does not send any outgoing packets. |
 
 ## Commands
 All commands must be preceded with either `//znmtracker` or `//znmtrack` or `//znmt` (ex: `//znmt tin`)  
