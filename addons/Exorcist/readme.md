@@ -8,6 +8,15 @@ Automatically uses Holy Waters when you are doomed.
 - Optional box on screen to let you know you are doomed
   - Tracks how many Holy Waters remain in your inventory as they are used.
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
+| AUTOMATION |
+|------------|
+| This addon will perform actions with no input from the user. |
+
 ------
 <p align="center">
   <em>Support development in Vana'diel</em>
