@@ -13,6 +13,11 @@ This can also be used as a simple notepad for just yourself, without putting any
 
 Additionally, you can prep what you send out to everyone ahead of time by using the `//bp <#>` addon commands to first build the box on your own screen, then use `//bp send` to send each line out through the chat log for other players once you are satisfied with it.
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ### Commands
 There are two types of commands: `Addon` and `Party`  
 All commands must be prefixed with `//battleplan` or `//bp` (ex: `//bp tutorial`)  
