@@ -37,6 +37,11 @@ TaskBar is a quality-of-life Windower addon for Final Fantasy XI that adds a cus
 - **Persistent Configuration**  
   Your menu layout and pinned items are saved and automatically restored each session.
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ## Commands
 
 - **None!**
