@@ -60,6 +60,11 @@ Displays a bar with information (much like InfoBar!)
 
 (NOTE: some data is updated when the packet for it is called, so may not be correct immediately upon loading the addon)
 
+| PACKET USE |
+|------------|
+| **Read Only** |
+| All packet use in this addon is read only.<br>This addon does not send any outgoing packets. |
+
 ## Commands
 All commands must be preceded with `//informer` or `//info` (ex: `//info color`)  
 `[optional] <required>`
