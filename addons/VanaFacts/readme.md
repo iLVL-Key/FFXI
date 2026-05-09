@@ -4,6 +4,10 @@ Display one of over 800 "facts" about Vana'diel and FFXI in general during zonin
 
 ![VanaFacts](https://github.com/user-attachments/assets/b85aaecf-a4cd-425b-8962-ba832752633d)
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
 
 ## Commands
 All commands must be preceded with either `//vanafacts` or `//vf` (ex: `//vf repeat`)  
