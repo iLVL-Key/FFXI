@@ -7,6 +7,11 @@ Requires LLMStudio and a LLM small enough to run quickly with your hardware.
 
 Please be aware that responses to queries are almost guaranteed to be incorrect. This should be used purely for the entertainment value.
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ## Setup
 
 1) Download and install [LM Studio](https://lmstudio.ai/) (it's free).
