@@ -18,6 +18,11 @@ Helps players plan and optimize their approach to *Odyssey Gaol* runs. It provid
 - Designed to reduce planning time and improve group coordination.
 - Compatible with the [BattlePlan](https://github.com/iLVL-Key/FFXI/tree/main/addons/BattlePlan) addon.
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 # Commands
 `//gaolplan` or `//gp` will bring up the GaolPlan window. That's it! The addon is otherwise entirely GUI-based.
 
