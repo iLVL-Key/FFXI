@@ -293,9 +293,9 @@ sets.avatar = set_combine(sets.idle, {
 	ammo="Epitaph",
 	head="Beckoner's Horn +3",
 	body="Beck. Doublet +3",		--Perp -8
-	hands="Asteria Mitts +1",
-	legs="Volte Brais",
-	feet="Baaya. Sabots +1",
+	hands="Beck. Bracers +3",
+	legs="Beck. Spats +3",
+	feet="Beck. Pigaches +3",		--Perep -9 (over cap but eh)
 	neck="Smn. Collar +2",
 	waist="Incarnation Sash",
 	left_ear="Lugalbanda Earring",
@@ -376,7 +376,6 @@ sets["Garland of Bliss"] = {
 sets.fast_cast = {
 	head="Amalric Coif +1", --11%
 	body="Inyanga Jubbah +2", --14%
-	hands="Leyline Gloves", --5+1
 	feet="Amalric Nails +1", --6%
 	neck="Baetyl Pendant", --4%
 	waist="Embla Sash", --5%
@@ -625,7 +624,7 @@ end
 
 
 
-FileVersion = '14.1.3'
+FileVersion = '14.1.4'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1866,10 +1865,10 @@ function precast(spell)
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -2325,7 +2324,7 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local current_time = os.time()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
 	if captured.timestamp and current_time > last_captured_poll + 0.1 then
