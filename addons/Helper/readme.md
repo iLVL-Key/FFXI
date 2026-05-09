@@ -71,6 +71,11 @@ The default Helper. Has no Faceplate, and uses the default sounds.
   - Enable/disable individual Helpers.
   - Modify Helper settings & messages in XML files.
 
+| PACKET USE |
+|------------|
+| **Read Only** |
+| All packet use in this addon is read only.<br>This addon does not send any outgoing packets. |
+
 ## How To Setup
 1. Save the addon to `/addons/Helper/Helper.lua`.
    - All you need to start is the `Helper.lua` file itself. Everything else will be downloaded in step 3.
