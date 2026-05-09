@@ -16,6 +16,11 @@ Allows players to automatically set and manage lockstyles based on their current
    - Options to disable functionality for each of these individually
    - Options to adjust timing for each.
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ## Commands
 All commands must be preceded with either `//vanity` or `//van` (ex: `//van set`)  
 `[optional] <required>`
