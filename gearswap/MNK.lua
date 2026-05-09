@@ -822,7 +822,7 @@ end
 
 
 
-FileVersion = '8.3.1'
+FileVersion = '8.3.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2061,10 +2061,10 @@ function precast(spell)
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -2450,7 +2450,7 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local current_time = os.time()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
 	if captured.timestamp and current_time > last_captured_poll + 0.1 then
