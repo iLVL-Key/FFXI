@@ -139,7 +139,7 @@ HUDposY			=	100		--	Y position for the HUD. 0 is top of the window, increasing t
 FontSize		=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
 LineSpacer		=	17		--	Space in pixels between each Line of the HUD.
 ColumnSpacer	=	95		--	Space in pixels between each Column of the HUD.
-ShowTPMeter		=	true	--[true/false]	Show the mini TP Meter inside the Weapons area of the HUD.
+ShowTPMeter		=	false	--[true/false]	Show the mini TP Meter inside the Weapons area of the HUD.
 
 modeName = {
 --HUD Mode Names
@@ -761,7 +761,7 @@ end
 
 
 
-FileVersion = '20.1.3'
+FileVersion = '20.1.4'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -2157,10 +2157,10 @@ function precast(spell)
 		captured_spell_toggle = true
 		if spell.prefix == "/range" then
 			captured.spell = "/range "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		else
 			captured.spell = spell.prefix.." \""..spell.name.."\" "..spell.target.raw
-			captured.timestamp = os.clock() + MoveCastWindow
+			captured.timestamp = os.time() + MoveCastWindow
 		end
 		cancel_spell()
 		return
@@ -2605,7 +2605,7 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local current_time = os.time()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
 	if captured.timestamp and current_time > last_captured_poll + 0.1 then
@@ -3012,6 +3012,7 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
+		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
 			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
 			lowMP = true
 			if AlertSounds then
