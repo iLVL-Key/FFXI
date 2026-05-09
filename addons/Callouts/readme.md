@@ -13,6 +13,11 @@ Various callouts for endgame things.
 - **Sortie:** Elements, gallimaufry total after run, rage timers
 - **Vagary:** Perfidien/Plouton pop, weaknesses
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ## Commands
 All commands must be preceded with `//callouts` or `//co` (ex: `//co mode`)  
 `[optional] <required>`
