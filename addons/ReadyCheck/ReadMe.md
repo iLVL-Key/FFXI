@@ -18,7 +18,12 @@ Initiate a basic automated Ready Check
    - Displays all members in party/alliance and their `ready`/`not ready` status
    - Displays the timer countdown
    - Activates even if started by another member
-  
+
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ## Commands ##
 All commands must be preceded with either `//vanafacts` or `//vf` (ex: `//rc cancel`)  
 - `//readycheck` or `//rc` (with no command) - Start/Stop a Ready Check.
