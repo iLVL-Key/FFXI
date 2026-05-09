@@ -25,8 +25,8 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ![Bars_aggro_list](https://github.com/user-attachments/assets/b7c0a31a-7a1e-486d-ab5d-a075537818f4)  
 ↑ The Aggro List with most monsters asleep, set to display a maximum of 6 monsters at a time.
 <br><br><br>
-![Bars_xp](https://github.com/user-attachments/assets/01645ed2-358d-4050-9090-39807b1080d3)  
-↑ A cropped look at the end of the XP bar showing Kills Per Hour, Points Per Kill, and Seconds Per Kill.
+![Bars_xp](https://github.com/user-attachments/assets/c89cbc68-d50f-4370-897d-9ed129fe0094)  
+↑ The XP bar in Exemplar Points mode showing various stats, including Kills Per Hour, Points Per Kill, and Seconds Per Kill.
 <br><br>
 ## Features
 - Target Actions.
