@@ -1,5 +1,9 @@
 When zoning into a Dynamis-Divergence, Omen, or Vagary zone, this copies a formatted list of attendees to the clipboard to paste into Discord for attendance tracking.  
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
 ------
 <p align="center">
   <em>Support development in Vana'diel</em>
