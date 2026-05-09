@@ -485,7 +485,7 @@ defaults = {
 			pos = {x = 200, y = 250},
 			show_player_angle_from_target_facing = false,
 			show_target_angle_from_player_facing = false,
-			show_monster_level = true,
+			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
