@@ -55,6 +55,10 @@ Tracks battle information and groups it together in different "boards".
 - **weaponskill/ws** - Running total of weapon skills.
 - **whiff/w** - Running total of whiffs.
 
+| PACKET USE |
+|------------|
+| **Read Only** |
+| All packet use in this addon is read only.<br>This addon does not send any outgoing packets. |
 
 ### Addon Commands
 All commands must be prefixed with `//leaderboard` or `//lb` (ex: `//lb show mb`)  
