@@ -74,6 +74,11 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 - Names and bars colored based on type (NPC, Party member, mob claimed by someone else, etc.).
 - Nearly every feature can be turned on/off or adjusted via settings file or in-game commands.
 
+| PACKET USE |
+|------------|
+| Default settings: **Read Only** |
+| The option `show_monster_level` will send outgoing Wide Scan request packets (this is simulating opening your map and hitting Wide Scan) in a controlled manor: Never in town, at a random interval between 30 and 60 seconds, and stops when you go idle (specifically, when the bars fade out).<br>All other packet use in this addon is read only. |
+
 ## How To Setup
 1. Load the addon with `//lua load bars`.
 2. Type `//bars ui` and follow the guide from there.
@@ -252,7 +257,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `show_job_points_stored_after_master` | Will continue to display stored Job Points after current job has been mastered. (XP bar only) |
 | → `show_kills_per_hour` | Display approximate Kills per Hour. (XP bar only) |
 | → `show_merits` | Display the number of current Merit Points stored. (XP bar only) |
-| → `show_monster_level` | Show the level of the currently targeted monster. |
+| → `show_monster_level` | Show the level of the currently targeted monster. (NOTE: Uses outgoing packets, see PACKET USE above) |
 | → `show_monster_target` | Show the currently targeted monster's target. |
 | → `show_percent` | Display the percentage of completion for the current level. (XP bar only) |
 | → `show_player_angle_from_target_facing` | Shows an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
