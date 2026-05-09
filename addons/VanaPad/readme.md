@@ -15,6 +15,11 @@ NotePad for Vana'diel!
 - Auto-fades when shrunk and not being used.
 - Pin the VanaPad bar in place using the button, or unpin it to move it around
 
+| PACKET USE |
+|------------|
+| **None** |
+| This addon does not use packets in any way. |
+
 ## Commands
 All commands must be preceded with `//vanapad` or `//vp` (ex: `//vp show`)  
 - `show/hide` - Show/hide the VanaPad window
