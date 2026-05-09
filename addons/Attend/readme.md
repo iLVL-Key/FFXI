@@ -4,6 +4,7 @@ When zoning into a Dynamis-Divergence, Omen, or Vagary zone, this copies a forma
 |------------|
 | **None** |
 | This addon does not use packets in any way. |
+
 ------
 <p align="center">
   <em>Support development in Vana'diel</em>
