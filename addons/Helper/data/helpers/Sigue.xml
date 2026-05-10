@@ -46,20 +46,22 @@
             <introduction>Hello, hello! The name&apos;s Sigue, and I&apos;m here to help ya!</introduction>
             <name>Sigue</name>
             <name_color>36</name_color>
+            <sha>86a4e19cd1005779aaea03fd95a1927e7f995afb</sha>
             <text_color>39</text_color>
             <type>Player</type>
         </info>
-		<inventory_full>Your inventory is full! You're starting to get as disorganized as Bastokan streets!</inventory_full>
+        <inventory_full>Your inventory is full! You&apos;re starting to get as disorganized as Bastokan streets!</inventory_full>
         <member_joined_alliance>Aw man, ${member} just hopped into the alliance - things are gettin&apos; exciting now!</member_joined_alliance>
         <member_joined_party>Hey now, ${member} just joined up! This party&apos;s lookin&apos; perty solid!</member_joined_party>
         <member_left_alliance>Well shoot, ${member} stepped out. Hope they ain&apos;t headin&apos; to Bastok...</member_left_alliance>
         <member_left_party>Well shoot, ${member} just left.</member_left_party>
         <mireu_popped>Aw man, Mireu just got spotted in ${zone}! Let&apos;s get in there!</mireu_popped>
+        <mog_locker_expiring>Ah, dang it, your Mog Locker lease is almost up! If this were San d&apos;Oria, you&apos;d get a proper vault.</mog_locker_expiring>
+        <moogle_power>You've got ${moogle_power} active! A fine blessing for any adventurer of San d'Oria!</moogle_power>
         <other_party_joined_alliance>Aw man, we got another group in here - things are about to get fun!</other_party_joined_alliance>
         <other_party_left_alliance>Welp, that other party packed up and left. Hope they&apos;re headin&apos; to San d&apos;Oria and not, y&apos;know, Bastok.</other_party_left_alliance>
         <party_low_mp>Looks like ${member} could use a lil&apos; pick-me-up. Somebody got a ${refresh} handy?</party_low_mp>
         <reminder_canteen>Another Mystical Canteen is ready - now go quench that thirst!</reminder_canteen>
-        <reminder_mog_locker>Ah, dang it, your Mog Locker lease is almost up! If this were San d&apos;Oria, you&apos;d get a proper vault.</reminder_mog_locker>
         <reminder_moglophone>Well hey now, another Moglophone! Just don&apos;t let Bastok hear about it!</reminder_moglophone>
         <reminder_plate>Ooooh, that&apos;s a good-lookin&apos; Ra&apos;Kaznarian Plate! Go on and grab it!</reminder_plate>
         <reraise_check>Oh lordy, you&apos;re running around without Reraise? That&apos;s a Bastokan move if I ever saw one!</reraise_check>
