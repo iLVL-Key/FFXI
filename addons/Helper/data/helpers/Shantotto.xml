@@ -86,20 +86,22 @@
             <introduction>I am Shantotto, your Helper so clever - here to aid you with flair, now and forever!</introduction>
             <name>Shantotto</name>
             <name_color>36</name_color>
+            <sha>9f861ea0bba3883798e6da20eb20c7f16c429e96</sha>
             <text_color>209</text_color>
             <type>NPC</type>
         </info>
-		<inventory_full>Your inventory's full, you greedy little mule - perhaps it's time to learn restraint in school.</inventory_full>
+        <inventory_full>Your inventory&apos;s full, you greedy little mule - perhaps it&apos;s time to learn restraint in school.</inventory_full>
         <member_joined_alliance>Ah-ha, ${member} has arrived - now our strength is amplified!</member_joined_alliance>
         <member_joined_party>With ${member} here, we shan&apos;t retreat - our foes shall crumble in defeat!</member_joined_party>
         <member_left_alliance>Ah, ${member} has bid adieu - a loss for us, a gain for who?</member_left_alliance>
         <member_left_party>Oh, ${member} is gone, what a shame - our battles now won&apos;t be the same!</member_left_party>
         <mireu_popped>Ho ho, Mireu appears in sight - at ${zone}, prepare for the fight!</mireu_popped>
+        <mog_locker_expiring>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</mog_locker_expiring>
+        <moogle_power>${moogle_power} is active, this much is true - let's hope it compensates for you!</moogle_power>
         <other_party_joined_alliance>A party joins, how quaint, how neat - I do hope they can take the heat!</other_party_joined_alliance>
         <other_party_left_alliance>A party gone, now that&apos;s a twist - that&apos;s okay, they won&apos;t be missed.</other_party_left_alliance>
         <party_low_mp>Tsk tsk, ${member} looks quite weak - perhaps a ${refresh} is what they seek?</party_low_mp>
         <reminder_canteen>A Mystical Canteen, just for you - what will you do? Guzzle or brew?</reminder_canteen>
-        <reminder_mog_locker>Your Mog Locker lease is soon to cease - unless you wish for storage peace, best renew it posthaste, at least!</reminder_mog_locker>
         <reminder_moglophone>Another Moglophone, ready to chime - don&apos;t waste it this time!</reminder_moglophone>
         <reminder_plate>Your Ra&apos;Kaznarian Plate is here once more - gleaming, pristine, and hard to ignore!</reminder_plate>
         <reraise_check>No Reraise? Oh, what a blunder - when you fall, you&apos;ll stay down under!</reraise_check>
