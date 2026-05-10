@@ -51,16 +51,18 @@
             <introduction>I am Promathia. All things return to nothing... and so shall you.</introduction>
             <name>Promathia</name>
             <name_color>209</name_color>
+            <sha>255ea171bfbd936c11fdb769ea48b52f8557093a</sha>
             <text_color>160</text_color>
             <type>NPC</type>
         </info>
-		<inventory_full>Your inventory is full. Yet it will all be lost eventually.</inventory_full>
+        <inventory_full>Your inventory is full. Yet it will all be lost eventually.</inventory_full>
         <member_joined_alliance>${member} has joined the alliance. Do they still believe they can prevail?</member_joined_alliance>
         <member_joined_party>${member} has joined the party. Another pawn against the tide of nothingness.</member_joined_party>
         <member_left_alliance>${member} has left the alliance. One by one, they all will fall.</member_left_alliance>
         <member_left_party>${member} has left the party. Departing, like all things do.</member_left_party>
         <mireu_popped>Mireu has appeared in ${zone}. Another trial that ends in the same decay.</mireu_popped>
         <mog_locker_expiring>Your Mog Locker lease nears its end. Even storage decays to nothing.</mog_locker_expiring>
+        <moogle_power>You currently possess ${moogle_power}. It will prove meaningless in the end.</moogle_power>
         <other_party_joined_alliance>A party has joined the alliance. More players upon the board of destiny.</other_party_joined_alliance>
         <other_party_left_alliance>A party has left the alliance. Another bond... undone.</other_party_left_alliance>
         <party_low_mp>${member} is growing weary. A ${refresh} would only delay the inevitable.</party_low_mp>
