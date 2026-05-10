@@ -155,6 +155,9 @@ Open the `/Helper/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 2.5
+- Added Moogle Powers notification. Displays after exiting Mog House.
+
 Version 2.4.1
 - Fixed issue with logging into a character with your inventory already full results in "inventory is full" message spam.
 
