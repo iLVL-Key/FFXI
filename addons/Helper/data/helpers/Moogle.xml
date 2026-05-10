@@ -81,20 +81,22 @@
             <introduction>Your handy Helper, the marvelous magical Moogle, master of multitasking, at your service!</introduction>
             <name>Moogle</name>
             <name_color>3</name_color>
+            <sha>b624f90da40fe6940b11152999c128d2cbd9adb9</sha>
             <text_color>53</text_color>
             <type>NPC</type>
         </info>
-		<inventory_full>Kupopo! Your beautiful bag is bursting with belongings, kupo!</inventory_full>
+        <inventory_full>Kupopo! Your beautiful bag is bursting with belongings, kupo!</inventory_full>
         <member_joined_alliance>${member} has joined the alliance, kupo!</member_joined_alliance>
         <member_joined_party>${member} has joined the party, kupo!</member_joined_party>
         <member_left_alliance>${member} has left the alliance, kupo!</member_left_alliance>
         <member_left_party>${member} has left the party, kupo!</member_left_party>
         <mireu_popped>Mireu has been mentioned in ${zone}, kupo!</mireu_popped>
+        <mog_locker_expiring>Kupo-po! Your marvelous Mog Locker lease is nearing its nerve-wracking nullification! Better renew, kupo!</mog_locker_expiring>
+        <moogle_power>Kupopo! The marvelous moogle magic ${moogle_power} means more maginificent meanderings, kupo!</moogle_power>
         <other_party_joined_alliance>Another party has joined the alliance, kupo!</other_party_joined_alliance>
         <other_party_left_alliance>A party has left the alliance, kupo!</other_party_left_alliance>
         <party_low_mp>Looks like ${member} could use a ${refresh}, kupo!</party_low_mp>
         <reminder_canteen>Kupo-ho! A fresh Mystical Canteen is ripe for the refilling!</reminder_canteen>
-        <reminder_mog_locker>Kupo-po! Your marvelous Mog Locker lease is nearing its nerve-wracking nullification! Better renew, kupo!</reminder_mog_locker>
         <reminder_moglophone>Kupo-kwee! Another Moglophone has managed to materialize!</reminder_moglophone>
         <reminder_plate>Kupo-po! Your Shiny Ra&apos;Kaznarian Plate is polished and prepared!</reminder_plate>
         <reraise_check>Kupo-po! You&apos;re prancing perilously without proper protective precautions! No Reraise, no revival, kupo!</reraise_check>
