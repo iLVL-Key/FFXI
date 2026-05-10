@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Helper'
-_addon.version = '2.4.1'
+_addon.version = '2.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'helper'}
 
@@ -141,6 +141,7 @@ defaults = {
 			custom_sounds = true,
 			sound_effects = true,
 		},
+		moogle_power = true,
 		notifications = {
 			capped_job_points = true,
 			capped_merit_points = true,
@@ -234,32 +235,33 @@ vana = {
 	capped_merit_points = "Your Merit Points are now capped.",
 	food_wears_off = "Your food has worn off.",
 	inventory_full = "Your inventory is full.",
+	member_joined_alliance = "${member} has joined the alliance.",
+	member_joined_party = "${member} has joined the party.",
+	member_left_alliance = "${member} has left the alliance.",
+	member_left_party = "${member} has left the party.",
+	mireu_popped = "Mireu was just mentioned in ${zone}.",
 	mog_locker_expiring = "Your Mog Locker lease is expiring soon.",
+	moogle_power = "You currently have ${moogle_power} active.",
+	other_party_joined_alliance = "A party has joined the alliance.",
+	other_party_left_alliance = "A party has left the alliance.",
+	party_low_mp = "It looks like ${member} could use a ${refresh}.",
 	reminder_canteen = "Another Mystical Canteen should be available now.",
 	reminder_moglophone = "Another Moglophone should be available now.",
 	reminder_plate = "Another Shiny Ra'Kaznarian Plate should be available now.",
-	party_low_mp = "It looks like ${member} could use a ${refresh}.",
 	reraise_check = "You do not have Reraise on.",
 	reraise_wears_off = "Your Reraise effect has worn off.",
 	signet_wears_off = "Your ${signet} effect has worn off.",
 	sparkolade_reminder = "Don't forget to spend your Sparkolades.",
 	sublimation_charged = "Sublimation is now fully charged and ready to use.",
-	mireu_popped = "Mireu was just mentioned in ${zone}.",
-	member_joined_party = "${member} has joined the party.",
-	member_left_party = "${member} has left the party.",
-	member_joined_alliance = "${member} has joined the alliance.",
-	member_left_alliance = "${member} has left the alliance.",
 	vorseal_wearing = "You have about 10 minutes left on your Vorseal effect.",
-	you_joined_party = "You have joined a party.",
-	you_left_party = "You have left the party.",
-	you_joined_alliance = "You have joined an alliance.",
-	you_left_alliance = "You have left the alliance.",
-	your_party_joined_alliance = "Your party has joined an alliance.",
-	your_party_left_alliance = "Your party has left the alliance.",
-	other_party_joined_alliance = "A party has joined the alliance.",
-	other_party_left_alliance = "A party has left the alliance.",
 	you_are_now_alliance_leader = "You are now the alliance leader.",
 	you_are_now_party_leader = "You are now the party leader.",
+	you_joined_alliance = "You have joined an alliance.",
+	you_joined_party = "You have joined a party.",
+	you_left_alliance = "You have left the alliance.",
+	you_left_party = "You have left the party.",
+	your_party_joined_alliance = "Your party has joined an alliance.",
+	your_party_left_alliance = "Your party has left the alliance.",
 }
 
 settings = config.load(defaults)
@@ -393,6 +395,71 @@ ability_name = {
 	tame = "Tame",
 	troubadour = "Troubadour",
 }
+moogle_power = {
+	[512] = "Moghancement: Fire",
+	[513] = "Moghancement: Ice",
+	[514] = "Moghancement: Wind",
+	[515] = "Moghancement: Earth",
+	[516] = "Moghancement: Lightning",
+	[517] = "Moghancement: Water",
+	[518] = "Moghancement: Light",
+	[519] = "Moghancement: Dark",
+	[520] = "Moghancement: Experience",
+	[521] = "Moghancement: Gardening",
+	[522] = "Moghancement: Desynthesis",
+	[523] = "Moghancement: Fishing",
+	[524] = "Moghancement: Woodworking",
+	[525] = "Moghancement: Smithing",
+	[526] = "Moghancement: Goldsmithing",
+	[527] = "Moghancement: Clothcraft",
+	[528] = "Moghancement: Leathercraft",
+	[529] = "Moghancement: Bonecraft",
+	[530] = "Moghancement: Alchemy",
+	[531] = "Moghancement: Cooking",
+	[532] = "Moghancement: Conquest",
+	[533] = "Moghancement: Region",
+	[534] = "Moghancement: Fishing",
+	[535] = "Moghancement: San. Conquest",
+	[536] = "Moghancement: Bas. Conquest",
+	[537] = "Moghancement: Win. Conquest",
+	[538] = "Moghancement: Money",
+	[539] = "Moghancement: Campaign",
+	[540] = "Moghancement: Money II",
+	[541] = "Moghancement: Skill Gains",
+	[542] = "Moghancement: Bounty",
+	[543] = "Moghancement: Mandragora Mania",
+	[544] = "Moglification: Fishing",
+	[545] = "Moglification: Woodworking",
+	[546] = "Moglification: Smithing",
+	[547] = "Moglification: Goldsmithing",
+	[548] = "Moglification: Clothcraft",
+	[549] = "Moglification: Leathercraft",
+	[550] = "Moglification: Bonecraft",
+	[551] = "Moglification: Alchemy",
+	[552] = "Moglification: Cooking",
+	[553] = "Mega Moglification: Fishing",
+	[554] = "Mega Moglification: Woodwork.",
+	[555] = "Mega Moglification: Smithing",
+	[556] = "Mega Moglification: Goldsmith.",
+	[557] = "Mega Moglification: Clothcraft",
+	[558] = "Mega Moglification: Leathrcrft.",
+	[559] = "Mega Moglification: Bonecraft",
+	[560] = "Mega Moglification: Alchemy",
+	[561] = "Mega Moglification: Cooking",
+	[562] = "Moglification: Experience Boost",
+	[563] = "Moglification: Capacity Boost",
+	[564] = "Moglification: Synergy Skill Gains",
+	[565] = "Moglification: Furnace Duration",
+	[566] = "Moglification: Resist Death",
+	[567] = "Moglification: A.M.A.N. Trove",
+	[2848] = "Moglification: Resist Sleep",
+	[2849] = "Moglification: Resist Poison",
+	[2850] = "Moglification: Resist Paralysis",
+	[2852] = "Moglification: Resist Silence",
+	[2853] = "Moglification: Resist Petrification",
+	[2854] = "Moglification: Resist Virus",
+	[2855] = "Moglification: Resist Curse",
+}
 recast = {}
 party_structure = {}
 heartbeat = 0
@@ -412,6 +479,7 @@ inventory_is_full = false
 inventory_full_toggle = true
 check_party_for_low_mp_toggle = true
 zoned = false
+mog_house = false
 paused = false
 alive = true
 new_updates = false
@@ -1503,6 +1571,34 @@ function checkMogLockerReminder()
 	end
 end
 
+--Check what the current Moogle Power is
+function checkMooglePowers()
+
+	local get_key_items = windower.ffxi.get_key_items()
+	if get_key_items then
+		for _, ki_id in pairs(get_key_items) do
+			if moogle_power[ki_id] then
+
+				local selected = getHelper()
+				local text = helpers[selected.helper].moogle_power
+				if text then
+
+					text = mooglePowerPlaceholder(text, ki_id)
+
+					add_to_chat(selected.c_text, ('['..selected.name..'] '):color(selected.c_name)..(text):color(selected.c_text))
+
+					playSound(selected.helper, 'moogle_power')
+					showFaceplate(selected.helper)
+
+				end
+				return
+
+			end
+		end
+	end
+
+end
+
 --Check if the player is in a town zone
 function isInTownZone()
 
@@ -1599,8 +1695,17 @@ register_event('incoming chunk', function(id, original, modified, injected, bloc
 
 	--Zone finish
 	elseif id == 0xA then
-		if get_info().logged_in then
+		local get_info = get_info()
+		if get_info.logged_in then
 			zoned = false
+			if get_info.mog_house then
+				mog_house = true
+			elseif mog_house then
+				mog_house = false
+				coroutine.schedule(function()
+					checkMooglePowers()
+				end,3)
+			end
 			--Short delay after zoning to prevent "left...joined" messages after every zone.
 			coroutine.schedule(function()
 				paused = false
@@ -1901,6 +2006,11 @@ function abilityPlaceholders(text, ability)
 
 	return text:gsub("%${ability}", ability_name)
 
+end
+
+--Replace the Moogle Powers placeholder
+function mooglePowerPlaceholder(text, ki_id)
+	return text:gsub("%${moogle_power}", moogle_power[ki_id])
 end
 
 -- Function to cycle to the next Helper
