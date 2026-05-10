@@ -65,20 +65,22 @@
             <introduction>I am Brygid, stylist extraordinaire, savior of silhouettes and slayer of style faux pas!</introduction>
             <name>Brygid</name>
             <name_color>53</name_color>
+            <sha>9f06e36c613948139226d98f59571c1fc0a08cd4</sha>
             <text_color>1</text_color>
             <type>NPC</type>
         </info>
-		<inventory_full>Your inventory is overflowing. Honestly, half of that is probably hideous anyway.</inventory_full>
+        <inventory_full>Your inventory is overflowing. Honestly, half of that is probably hideous anyway.</inventory_full>
         <member_joined_alliance>${member} joined the alliance - finally, someone with potential and polish.</member_joined_alliance>
         <member_joined_party>${member} joined the party... and can you believe what they&apos;re wearing?!</member_joined_party>
         <member_left_alliance>${member} left the alliance, but their fashion faux pas is still seared into my memory.</member_left_alliance>
         <member_left_party>${member} left the party. Hopefully they take their mismatched gear with them.</member_left_party>
         <mireu_popped>Mireu in ${zone}? That beast better not ruin my boots.</mireu_popped>
+        <mog_locker_expiring>That lease on your Mog Locker is fading faster than a discount dye job.</mog_locker_expiring>
+        <moogle_power>Ah, ${moogle_power}. A tasteful choice, for once.</moogle_power>
         <other_party_joined_alliance>Another party&apos;s joined the alliance. Do they come with fashion sense? TBD.</other_party_joined_alliance>
         <other_party_left_alliance>A party has left the alliance. May their fashion sins go with them.</other_party_left_alliance>
         <party_low_mp>Yikes! ${member} is looking rough. They could use a ${refresh} and a mirror.</party_low_mp>
         <reminder_canteen>Your Mystical Canteen is back - hydration is the foundation of flawless skin.</reminder_canteen>
-        <reminder_mog_locker>That lease on your Mog Locker is fading faster than a discount dye job.</reminder_mog_locker>
         <reminder_moglophone>Time to pickup another Moglophone again - don&apos;t leave it lying around like yesterday&apos;s bangles!</reminder_moglophone>
         <reminder_plate>Another Shiny Ra&apos;Kaznarian Plate is waiting - and so is your next dermatologist appointment.</reminder_plate>
         <reraise_check>No Reraise? What is this, a disaster couture show?</reraise_check>
