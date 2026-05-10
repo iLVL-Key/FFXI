@@ -40,20 +40,22 @@
             <introduction>I&apos;m Lefty! I&apos;m your Hamburger Helper!</introduction>
             <name>Lefty</name>
             <name_color>39</name_color>
+            <sha>044e823600b5a38bb3248dd4e7a618553f60e3b3</sha>
             <text_color>1</text_color>
             <type>Sp. Guest</type>
         </info>
-		<inventory_full>Your pantry's lookin a little full. Make sure to keep the right ingredients stocked.</inventory_full>
+        <inventory_full>Your pantry&apos;s lookin a little full. Make sure to keep the right ingredients stocked.</inventory_full>
         <member_joined_alliance>${member} got here just in time for dinner!</member_joined_alliance>
         <member_joined_party>${member} got here just in time for dinner!</member_joined_party>
         <member_left_alliance>${member} must&apos;ve had their fill!</member_left_alliance>
         <member_left_party>${member} must&apos;ve had their fill!</member_left_party>
         <mireu_popped>Oh gosh, Mireu showed up in ${zone}. That dragon seems a little hangry!</mireu_popped>
+        <mog_locker_expiring>Hey hey! Just a heads up - your Mog Locker lease is expiring soon. You don&apos;t wanna lose your stash - where else would you keep all your seasoning packets?</mog_locker_expiring>
+        <moogle_power>${moogle_power} is active! Sounds like a recipe for success!</moogle_power>
         <other_party_joined_alliance>Let&apos;s set the table for these folks, too!</other_party_joined_alliance>
         <other_party_left_alliance>Bye now, hope to see you all again!</other_party_left_alliance>
         <party_low_mp>I think ${member} might need another helping of ${refresh}.</party_low_mp>
         <reminder_canteen>Ooooh, another Mystical Canteen is ready! That&apos;s one more helping of adventure, hot and fresh!</reminder_canteen>
-        <reminder_mog_locker>Hey hey! Just a heads up - your Mog Locker lease is expiring soon. You don&apos;t wanna lose your stash - where else would you keep all your seasoning packets?</reminder_mog_locker>
         <reminder_moglophone>Ding ding! Another Moglophone should be available now! Time to stir things up and get cooking on something big!</reminder_moglophone>
         <reminder_plate>Whoa, would ya look at that? Another Shiny Ra&apos;Kaznarian Plate is up for grabs! That thing&apos;s shinier than a freshly buttered noodle!</reminder_plate>
         <reraise_check>Uh-oh... You don&apos;t have a reraise on. That&apos;s like cooking without seasoning - dangerous and kinda sad!</reraise_check>
