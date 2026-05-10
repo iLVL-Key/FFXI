@@ -102,20 +102,22 @@
             <introduction>Name&apos;s Gilgamesh, the one an&apos; only! Ye look like ye could use a hand - lucky for ye, I ain&apos;t just a legend.</introduction>
             <name>Gilgamesh</name>
             <name_color>1</name_color>
+            <sha>cc8971778ec7a967f6d78331008b125865057205</sha>
             <text_color>53</text_color>
             <type>NPC</type>
         </info>
-		<inventory_full>Inventory's full. Happens to the best of us.</inventory_full>
+        <inventory_full>Inventory&apos;s full. Happens to the best of us.</inventory_full>
         <member_joined_alliance>${member} be joinin&apos; the alliance. Hope they can pull their weight.</member_joined_alliance>
         <member_joined_party>${member} just came aboard the party. Let&apos;s see what they&apos;re made of.</member_joined_party>
         <member_left_alliance>${member} jumped ship from the alliance.</member_left_alliance>
         <member_left_party>${member} slipped outta the party. Guess they had other seas t&apos; sail.</member_left_party>
         <mireu_popped>Mireu&apos;s name just echoed through ${zone}... somethin&apos;s brewin&apos;, I&apos;d wager.</mireu_popped>
+        <mog_locker_expiring>Yer Mog Locker lease is runnin&apos; short - best square up &apos;fore ye lose it.</mog_locker_expiring>
+        <moogle_power>Ye've got ${moogle_power} active right now. Make good use of it.</moogle_power>
         <other_party_joined_alliance>Another crew&apos;s joined the alliance. Hope they ain&apos;t dead weight.</other_party_joined_alliance>
         <other_party_left_alliance>One o&apos; the parties cut ties with the alliance. Less mouths t&apos; feed.</other_party_left_alliance>
         <party_low_mp>${member} looks dry on MP. Toss &apos;em a ${refresh} &apos;fore they keel over.</party_low_mp>
         <reminder_canteen>Looks like another Mystical Canteen&apos;s ripe for the takin&apos;.</reminder_canteen>
-        <reminder_mog_locker>Yer Mog Locker lease is runnin&apos; short - best square up &apos;fore ye lose it.</reminder_mog_locker>
         <reminder_moglophone>Another Moglophone&apos;s ready - don&apos;t let it gather dust, mate.</reminder_moglophone>
         <reminder_plate>One more Shiny Ra&apos;Kaznarian Plate&apos;s waitin&apos; fer ya. Go nab it.</reminder_plate>
         <reraise_check>Ye ain&apos;t got Reraise on. If ye drop now, it&apos;s the long nap.</reraise_check>
