@@ -18,22 +18,22 @@
             <19>Remember, darling, it&apos;th not *what* you do, it&apos;th *how* you do it - with grathe, with drama, with pathion~!</19>
             <2>Your footwork - *atrothiouth*! We mutht rehearthe, rehearthe, rehearthe!</2>
             <20>Even in the heat of battle, a true performer never lotheth their compothure!</20>
-			<21>Perfecthion ith not opthional!</21>
-			<22>Thloppy technique ith the enemy of true beauty.</22>
-			<23>Adventurerth fight... but do they perform?</23>
-			<24>A proper performanthe requireth prethithe timing.</24>
-			<25>Thuch chaoth! where ith the choreography?</25>
-			<26>A tharp blade without elegance ith terribly dull.</26>
-			<27>I have theen tavern dantherth with better poithture!</27>
-			<28>Why ith no one thinking about the thpectacle?</28>
-			<29>Thuch effort but thuch little refinement.</29>
+            <21>Perfecthion ith not opthional!</21>
+            <22>Thloppy technique ith the enemy of true beauty.</22>
+            <23>Adventurerth fight... but do they perform?</23>
+            <24>A proper performanthe requireth prethithe timing.</24>
+            <25>Thuch chaoth! where ith the choreography?</25>
+            <26>A tharp blade without elegance ith terribly dull.</26>
+            <27>I have theen tavern dantherth with better poithture!</27>
+            <28>Why ith no one thinking about the thpectacle?</28>
+            <29>Thuch effort but thuch little refinement.</29>
             <3>Ah, your movementh are becoming *le magnifique!* Keep it up, yeth!</3>
-			<30>A true maethro never thtriketh without thtyle.</30>
-			<31>Your footing ith... how do I put thith... tragically unbalanced.</31>
-			<32>Thuch enthuthiathm... thuch terrible technique.</32>
-			<33>Your thtance ith doing you no favorth.</33>
-			<34>Have you conthidered... grathe?</34>
-			<35>You move like thomeone unfamiliar with their own limbth!</35>
+            <30>A true maethro never thtriketh without thtyle.</30>
+            <31>Your footing ith... how do I put thith... tragically unbalanced.</31>
+            <32>Thuch enthuthiathm... thuch terrible technique.</32>
+            <33>Your thtance ith doing you no favorth.</33>
+            <34>Have you conthidered... grathe?</34>
+            <35>You move like thomeone unfamiliar with their own limbth!</35>
             <4>A fight without rhythm ith like a danthe without thoul - thimply unthinkable!</4>
             <5>One doeth not *walk* through Vana&apos;diel! One glideth, one pirouetteth, one *commandth* the thpotlight!</5>
             <6>Tsk tsk, thuch thlow reactionth! You mutht move with the grathe of a *Danther*!</6>
@@ -47,16 +47,18 @@
             <introduction>Ah, yeth, another performer gratheth the thtage! I, Mayakov, thall enthure your every movement ith a mathterpiethe!</introduction>
             <name>Mayakov</name>
             <name_color>39</name_color>
+            <sha>591b8fa0a3bc27ca18f66eff91499bb9c971ea36</sha>
             <text_color>160</text_color>
             <type>NPC</type>
         </info>
-		<inventory_full>No more thpace? We cannot achieve perfecthion with thuch clutter!</inventory_full>
+        <inventory_full>No more thpace? We cannot achieve perfecthion with thuch clutter!</inventory_full>
         <member_joined_alliance>Ah-ha! Our enthemble growth! Welcome, ${member}, to the grandetht of productionth!</member_joined_alliance>
         <member_joined_party>*Ah!* A new catht member hath arrived! Welcome, ${member}, to our *dazzling* production!</member_joined_party>
         <member_left_alliance>Alath, ${member} hath taken their final bow and left the allianthe!</member_left_alliance>
         <member_left_party>A bitterthweet farewell! ${member} hath left the thtage. We *thall* meet again!</member_left_party>
         <mireu_popped>Oh-ho! Mireu hath entered the thtage in ${zone}! The drama! The exthitement!</mireu_popped>
         <mog_locker_expiring>Oh, diTHATHter! Your Mog Locker ith on the brink of exthpiration! What of the cothtumeth?! The accthethorieth?!</mog_locker_expiring>
+        <moogle_power>${moogle_power} ith active right now. At leatht *thomeone* ith properly prepared.</moogle_power>
         <other_party_joined_alliance>Oh-ho! Another group enterth the thtage - our production growth ever more *divine*!</other_party_joined_alliance>
         <other_party_left_alliance>Tragic! That party hath exited the performanthe! But fret not - the thow mutht go on!</other_party_left_alliance>
         <party_low_mp>Oh, tragedy! A performer without energy! Thomeone, *pleathe*, grant ${member} a ${refresh} before they *collapthe*!</party_low_mp>
