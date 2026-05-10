@@ -46,20 +46,22 @@
             <introduction>YO what the FUCK. It&apos;s ya boy, Kolo.</introduction>
             <name>Kolo</name>
             <name_color>39</name_color>
+            <sha>632ae01161ba83e2f97ab6ab669d82308700ff42</sha>
             <text_color>220</text_color>
             <type>Player</type>
         </info>
-		<inventory_full>Your inventory's full! I swear you hoard everything!</inventory_full>
+        <inventory_full>Your inventory&apos;s full! I swear you hoard everything!</inventory_full>
         <member_joined_alliance>${member} just joined the alliance. Fuck!</member_joined_alliance>
         <member_joined_party>${member} just joined the party. Fuck!</member_joined_party>
         <member_left_alliance>${member} left and didn&apos;t even say I love you, what the fuck?!</member_left_alliance>
         <member_left_party>Bye ${member}, I love you.</member_left_party>
         <mireu_popped>Mireu&apos;s in ${zone}. Fuck!</mireu_popped>
+        <mog_locker_expiring>YO, your Mog Locker lease is about to EXPIRE. SHIT! Better fix that before all your crap gets tossed out!</mog_locker_expiring>
+        <moogle_power>You've got ${moogle_power} active. I have no idea what that even does.</moogle_power>
         <other_party_joined_alliance>Hey a party joined the alliance.</other_party_joined_alliance>
         <other_party_left_alliance>Son of a BITCH! That whole party left and didn&apos;t say I love you.</other_party_left_alliance>
         <party_low_mp>${member} needs some MP. Fuck!</party_low_mp>
         <reminder_canteen>AYO! another Mystical Canteen is ready! Chug that shit!</reminder_canteen>
-        <reminder_mog_locker>YO, your Mog Locker lease is about to EXPIRE. SHIT! Better fix that before all your crap gets tossed out!</reminder_mog_locker>
         <reminder_moglophone>HOLY SHIT, another Moglophone is ready! LET&apos;S GOOOOO!</reminder_moglophone>
         <reminder_plate>OH SHIT, another Shiny Ra&apos;Kaznarian Plate is ready! Snatch that bad boy up!</reminder_plate>
         <reraise_check>YO, YOU DON&apos;T GOT RERAISE ON. YOU TRYNA DIE FOR REAL OR WHAT?!</reraise_check>
