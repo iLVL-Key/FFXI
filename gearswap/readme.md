@@ -122,6 +122,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.1.5
+- Fixed os.time() changes from previous update that broke some things. Oops.
+
 Version 20.1.4
 - Adjusted os.clock() to os.time()
 
@@ -544,6 +547,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.1.5
+- Fixed os.time() changes from previous update that broke some things. Oops.
+
 Version 3.1.4
 - Adjusted os.clock() to os.time()
 
@@ -668,6 +674,9 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.2.4
+- Fixed os.time() changes from previous update that broke some things. Oops.
+
 Version 2.2.3
 - Adjusted os.clock() to os.time()
 
@@ -764,6 +773,9 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.1.6
+- Fixed os.time() changes from previous update that broke some things. Oops.
 
 Version 16.1.5
 - Adjusted os.clock() to os.time()
@@ -1129,6 +1141,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.3.3
+- Fixed os.time() changes from previous update that broke some things. Oops.
+
 Version 8.3.2
 - Adjusted os.clock() to os.time()
 
@@ -1337,6 +1352,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.2.5
+- Fixed os.time() changes from previous update that broke some things. Oops.
 
 Version 15.2.4
 - Adjusted os.clock() to os.time()
@@ -1995,6 +2013,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 16.3.3
+- Fixed os.time() changes from previous update that broke some things. Oops.
+
 Version 16.3.2
 - Adjusted os.clock() to os.time()
 
@@ -2317,6 +2338,9 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3.5
+- Fixed os.time() changes from previous update that broke some things. Oops.
+
 Version 1.3.4
 - Adjusted os.clock() to os.time()
 - Fixed an issue with Active Skillchain tracking not working correctly with skillchains closed with Chain Affinity or Immanence
@@ -2353,6 +2377,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.1.5
+- Fixed os.time() changes from previous update that broke some things. Oops.
 
 Version 14.1.4
 - Adjusted os.clock() to os.time()
@@ -2650,6 +2677,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.3.3
+- Fixed os.time() changes from previous update that broke some things. Oops.
 
 Version 10.3.2
 - Adjusted os.clock() to os.time()
