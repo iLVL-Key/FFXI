@@ -88,6 +88,9 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 
 ## Version History
 
+2.6.1
+- Added `Lost Article` to the default targets.
+
 2.6
 - Added `sound` option. Toggle playing a found target's associated sound on or off.
 - Fixed missing listing of matched id number when target found based on an id number.
