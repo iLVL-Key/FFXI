@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.6'
+_addon.version = '2.6.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -133,6 +133,7 @@ default_targets = {
 	["Gyvewrapped Naraka"] = "default",
 	["Haughty Tulittia"] = "default",
 	["Mog-Tablet"] = "default",
+	["Lost Article"] = "default",
 	["???|Temenos"] = "default",
 	["???|Apollyon"] = "default",
 	["Academic's"] = "default",
