@@ -777,6 +777,9 @@ Version 1.0 BETA-1
 
 <summary>GEO</summary>
 
+Version 16.2
+- Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
+
 Version 16.1.6
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
@@ -1356,6 +1359,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 15.3
+- Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
+
 Version 15.2.5
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
@@ -1729,6 +1735,9 @@ Version 11.0
 <details>
  
 <summary>RUN</summary>
+
+Version 10.2.5
+- Fixed os.time() changes from previous update that broke some things. Oops.
 
 Version 10.2.4
 - Adjusted os.clock() to os.time()
@@ -2380,6 +2389,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.2
+- Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
 
 Version 14.1.5
 - Fixed os.time() changes from previous update that broke some things. Oops.
