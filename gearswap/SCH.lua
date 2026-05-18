@@ -179,7 +179,7 @@ StartingDangerMode	=	'Auto'	--[Auto/On/Off]
 								--	Determines the Danger Mode you start in. Danger Mode can be changed at any time by using any
 								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
 DefaultElement		= 	'Off'	--[Off/Light/Dark/Fire/Stone/Water/Aero/Blizzard/Thunder]
-								--	Starting Element for the Macro Condenser.
+								--	Starting Element for the Element Selector.
 AutoStratDelay		=	1		--	Delay in seconds between each strat used and the spell that triggered it when using the AutoTRStrats option.
 NMBind				=	'^g'	--Sets the keyboard shortcut you would like to cycle between Nuke Modes. CTRL+G (^g) is default.
 DMBind				=	'^d'	--Sets the keyboard shortcut you would like to switch between Danger Modes. CTRL+D (^d) is default.
@@ -581,7 +581,7 @@ sets.weapon_skill = {
 	back="Lugh's Cape",
 }
 
--- Myrkr (combines with Weapon Skill set above)
+-- Myrkr (Max MP gear)
 sets["Myrkr"] = {
 	ammo="Ghastly Tathlum +1",
 	head="Arbatel Bonnet +3",
@@ -598,7 +598,7 @@ sets["Myrkr"] = {
 	back="Aurist's Cape +1",
 }
 
--- Omniscience (combines with Weapon Skill set above)
+-- Omniscience (80% MND)
 sets["Omniscience"] = {
 	ammo="Sroda Tathlum",
 	head="Pixie Hairpin +1",
@@ -615,7 +615,7 @@ sets["Omniscience"] = {
 	back="Bookworm's Cape",
 }
 
--- Cataclysm (combines with Weapon Skill set above)
+-- Cataclysm (30% STR, 30% INT)
 sets["Cataclysm"] = {
 	ammo="Sroda Tathlum",
 	head="Pixie Hairpin +1",
@@ -1098,7 +1098,7 @@ end
 
 
 
-FileVersion = '1.3.4'
+FileVersion = '1.3.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1185,7 +1185,6 @@ AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
 strat_charge_timer = 0 --used to calculate number of Stratagem charges available (based on SCH level)
--- strat_recast = 240 --maximum recast time to go from 0 strat charges to full (reduced with 550 JP to 165)
 strat_charges = 0 --number of Stratagem charges available
 transport_locked = true
 transport_lock_timestamp = 0
@@ -1970,17 +1969,7 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-
 getHUDAbils()
-
-local function formatAMTime(input)
-
-	local am_time_minute = math.floor(input/60)
-	local am_time_second = input - (math.floor(input/60)*60)
-	am_time_second = string.format("%02d", am_time_second)
-	return am_time_minute..':'..am_time_second
-
-end
 
 local function getStratChargeTimer()
 	local player = windower.ffxi.get_player()
@@ -2004,6 +1993,15 @@ local function getStratChargeTimer()
 end
 getStratChargeTimer()
 
+local function formatAMTime(input)
+
+	local am_time_minute = math.floor(input/60)
+	local am_time_second = input - (math.floor(input/60)*60)
+	am_time_second = string.format("%02d", am_time_second)
+	return am_time_minute..':'..am_time_second
+
+end
+
 local function itemMatch(item_num)
 	local items = windower.ffxi.get_items()
 	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
@@ -2024,23 +2022,6 @@ local function getMainWeaponID()
 	local item_id = windower.ffxi.get_items(bag, index).id
 
 	return item_id
-
-end
-
-local function empyreanAMUpdate(tp)
-
-	local weapon_id = getMainWeaponID()
-	local afterglow = weapon_id == 22064
-
-	if tp >= 3000 then
-		pre_AMTimer = afterglow and 180 or 90
-		return
-	end
-
-	local tier = math.floor(tp / 1000)
-	local timers = afterglow and {60,120} or {30,60}
-
-	pre_AMTimer = timers[tier]
 
 end
 
@@ -2545,6 +2526,10 @@ end
 
 function choose_set(sublimation_activation)
 
+	local get_player = windower.ffxi.get_player()
+	local autorun = get_player and get_player.autorun
+	local auto_movement_speed = AutoMvmntSpeed and moving
+	local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
 	local light_arts = (buffactive['Light Arts'] or buffactive['Addendum: White']) and sets.idle.light_arts or nil
 	local dark_arts = (buffactive['Dark Arts'] or buffactive['Addendum: Black']) and sets.idle.dark_arts or nil
 	local sublimation = (buffactive['Sublimation: Activated'] or sublimation_activation) and sets.idle.sublimation or nil
@@ -2565,13 +2550,9 @@ function choose_set(sublimation_activation)
 		elseif TownZones[world.area] or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets.town, sublimation, sets.movement_speed))
 		else
-			equip(set_combine(sets.idle, light_arts, dark_arts, sublimation, full_mp, danger))
+			equip(set_combine(sets.idle, light_arts, dark_arts, sublimation, full_mp, danger, movement_speed))
 		end
 	elseif player.status ~= "Event" then
-		local get_player = windower.ffxi.get_player()
-		local autorun = get_player and get_player.autorun
-		local auto_movement_speed = AutoMvmntSpeed and moving
-		local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
 		equip(set_combine(sets.idle, light_arts, dark_arts, sublimation, rest, full_mp, melee, danger, movement_speed))
 	end
 
@@ -3517,20 +3498,24 @@ windower.register_event('prerender', function()
 		elementCheck()
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay	
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay	
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
