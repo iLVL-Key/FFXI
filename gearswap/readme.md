@@ -675,7 +675,7 @@ Version 1.0 BETA-1
 <summary>COR</summary>
 
 Version 2.2.5
-Fixed getting stuck in Danger gear set.
+- Fixed getting stuck in Danger gear set.
 
 Version 2.2.4
 - Fixed os.time() changes from previous update that broke some things. Oops.
