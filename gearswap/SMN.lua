@@ -171,45 +171,45 @@ AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -- Controls what is displayed in the HUD Recast section.
 -- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
---		Astral Flow, Astral Conduit, Apogee, Avatar's Favor, Blood Pact: Rage, Blood Pact: Ward, Convert, Dark Arts, Divine Seal, Elemental Siphon, Light Arts, Mana Cede, Sublimation
+--		Astral Flow, Astral Conduit, Apogee, Avatar's Favor, Blood Pact: Rage, Blood Pact: Ward, Convert, Dark Arts, Divine Seal, Elemental Siphon, Light Arts, Mana Cede, Stratagems, Sublimation
 -- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise.
 -- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
 
 sub = {
 	--SMN/WHM
 	WHM = {
-		Abil01 = "Apogee",				Abil01_sh = "",
-		Abil02 = "Mana Cede",			Abil02_sh = "",
-		Abil03 = "Elemental Siphon",	Abil03_sh = "E Siphon",
-		Abil04 = "Blood Pact: Ward",	Abil04_sh = "BP Ward",
-		Abil05 = "Blood Pact: Rage",	Abil05_sh = "BP Rage",
+		Abil01 = "Blood Pact: Ward",	Abil01_sh = "BP Ward",
+		Abil02 = "Blood Pact: Rage",	Abil02_sh = "BP Rage",
+		Abil03 = "Apogee",				Abil03_sh = "",
+		Abil04 = "Mana Cede",			Abil04_sh = "",
+		Abil05 = "Elemental Siphon",	Abil05_sh = "E Siphon",
 		Abil06 = "Divine Seal",			Abil06_sh = "Divn Seal",
 	},
 	--SMN/RDM
 	RDM = {
-		Abil01 = "Apogee",				Abil01_sh = "",
-		Abil02 = "Mana Cede",			Abil02_sh = "",
-		Abil03 = "Elemental Siphon",	Abil03_sh = "E Siphon",
-		Abil04 = "Blood Pact: Ward",	Abil04_sh = "BP Ward",
-		Abil05 = "Blood Pact: Rage",	Abil05_sh = "BP Rage",
+		Abil01 = "Blood Pact: Ward",	Abil01_sh = "BP Ward",
+		Abil02 = "Blood Pact: Rage",	Abil02_sh = "BP Rage",
+		Abil03 = "Apogee",				Abil03_sh = "",
+		Abil04 = "Mana Cede",			Abil04_sh = "",
+		Abil05 = "Elemental Siphon",	Abil05_sh = "E Siphon",
 		Abil06 = "Convert",				Abil06_sh = "",
 	},
 	--SMN/SCH
 	SCH = {
-		Abil01 = "Apogee",				Abil01_sh = "",
-		Abil02 = "Mana Cede",			Abil02_sh = "",
-		Abil03 = "Elemental Siphon",	Abil03_sh = "E Siphon",
-		Abil04 = "Blood Pact: Ward",	Abil04_sh = "BP Ward",
-		Abil05 = "Blood Pact: Rage",	Abil05_sh = "BP Rage",
+		Abil01 = "Blood Pact: Ward",	Abil01_sh = "BP Ward",
+		Abil02 = "Blood Pact: Rage",	Abil02_sh = "BP Rage",
+		Abil03 = "Apogee",				Abil03_sh = "",
+		Abil04 = "Elemental Siphon",	Abil04_sh = "E Siphon",
+		Abil05 = "Stratagems",			Abil05_sh = "Strats",
 		Abil06 = "Sublimation",			Abil06_sh = "Sublmation",
 	},
 	--SMN/other
 	OTH = {
-		Abil01 = "Apogee",				Abil01_sh = "",
-		Abil02 = "Mana Cede",			Abil02_sh = "",
-		Abil03 = "Elemental Siphon",	Abil03_sh = "E Siphon",
-		Abil04 = "Blood Pact: Ward",	Abil04_sh = "BP Ward",
-		Abil05 = "Blood Pact: Rage",	Abil05_sh = "BP Rage",
+		Abil01 = "Blood Pact: Ward",	Abil01_sh = "BP Ward",
+		Abil02 = "Blood Pact: Rage",	Abil02_sh = "BP Rage",
+		Abil03 = "Apogee",				Abil03_sh = "",
+		Abil04 = "Elemental Siphon",	Abil04_sh = "E Siphon",
+		Abil05 = "Mana Cede",			Abil05_sh = "",
 		Abil06 = "Avatar's Favor",		Abil06_sh = "Avtr Favor",
 	},
 }
@@ -309,7 +309,7 @@ sets.avatar = set_combine(sets.idle, {
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	feet="Herald's Gaiters",
+	right_ring="Shneddick Ring +1",
 }
 
 -- Danger
@@ -624,7 +624,7 @@ end
 
 
 
-FileVersion = '14.1.4'
+FileVersion = '14.2'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -740,6 +740,8 @@ currentAMTimer = 0
 TP_Window_Open = false
 transport_locked = true
 transport_lock_timestamp = 0
+strat_charge_timer = 0 --used to calculate number of Stratagem charges available (based on SCH level)
+strat_charges = 0 --number of Stratagem charges available
 player_x = nil
 player_y = nil
 moving = false
@@ -785,7 +787,7 @@ if ZoneGear ~= 'Off' then
 	send_command('wait 2;gs c Zone Gear')
 end
 
-AstralFlow = {} AstralConduit = {} Apogee = {} AvatarsFavor = {} BloodPactRage = {} BloodPactWard = {} Convert = {} DarkArts = {} DivineSeal = {} ElementalSiphon = {} LightArts = {} ManaCede = {} Sublimation = {} 
+AstralFlow = {} AstralConduit = {} Apogee = {} AvatarsFavor = {} BloodPactRage = {} BloodPactWard = {} Convert = {} DarkArts = {} DivineSeal = {} ElementalSiphon = {} LightArts = {} ManaCede = {} Stratagems = {}  Sublimation = {} 
 
 AstralFlow.flashed = true
 AstralConduit.flashed = true
@@ -800,6 +802,9 @@ ElementalSiphon.flashed = true
 LightArts.flashed = true
 ManaCede.flashed = true
 Sublimation.flashed = true
+
+max_charges = 3
+strat_flash_counter = 3
 
 --Space out each line and column properly
 HUDposYLine2 = HUDposYLine1 + LineSpacer
@@ -1282,6 +1287,7 @@ local function getRecasts()
 	ElementalSiphon.recast = ability_recast[175] and math.ceil(ability_recast[175])
 	LightArts.recast = ability_recast[228] and math.ceil(ability_recast[228])
 	ManaCede.recast = ability_recast[71] and math.ceil(ability_recast[71])
+	Stratagems.recast = ability_recast[231] and math.ceil(ability_recast[231])
 	Sublimation.recast = ability_recast[234] and math.ceil(ability_recast[234])
 
 end
@@ -1293,10 +1299,10 @@ local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Astral Flow", "Astral Conduit", "Apogee", "Avatar\'s Favor", "Blood Pact: Rage", "Blood Pact: Ward", "Convert", "Dark Arts", "Divine Seal", "Elemental Siphon", "Light Arts", "Mana Cede", "Sublimation"
+		"Astral Flow", "Astral Conduit", "Apogee", "Avatar\'s Favor", "Blood Pact: Rage", "Blood Pact: Ward", "Convert", "Dark Arts", "Divine Seal", "Elemental Siphon", "Light Arts", "Mana Cede", "Stratagems", "Sublimation"
 	}
 
-	local ab = {} ab['Astral Flow'] = AstralFlow ab['Astral Conduit'] = AstralConduit ab['Apogee'] = Apogee ab['Avatar\'s Favor'] = AvatarsFavor ab['Blood Pact: Rage'] = BloodPactRage ab['Blood Pact: Ward'] = BloodPactWard ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Divine Seal'] = DivineSeal ab['Elemental Siphon'] = ElementalSiphon ab['Light Arts'] = LightArts ab['Mana Cede'] = ManaCede ab['Sublimation'] = Sublimation
+	local ab = {} ab['Astral Flow'] = AstralFlow ab['Astral Conduit'] = AstralConduit ab['Apogee'] = Apogee ab['Avatar\'s Favor'] = AvatarsFavor ab['Blood Pact: Rage'] = BloodPactRage ab['Blood Pact: Ward'] = BloodPactWard ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Divine Seal'] = DivineSeal ab['Elemental Siphon'] = ElementalSiphon ab['Light Arts'] = LightArts ab['Mana Cede'] = ManaCede ab['Stratagems'] = Stratagems ab['Sublimation'] = Sublimation
 	
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -1326,7 +1332,22 @@ local function formatAbils(input,input_sh)
 
 			-- Get our output before we apply the brackets below
 			local formattedString = ''
-			if recast > 3600 then
+			if input == 'Stratagems' then
+
+				local charges_lost = math.ceil(recast / strat_charge_timer)
+				strat_charges = math.max(0, max_charges - charges_lost)
+
+				-- To Next Charge
+				local tnc = recast > strat_charge_timer and recast % strat_charge_timer or recast
+
+				if strat_charges == max_charges then
+					formattedString = formatOutputString(startingString, maxLength - 2)..'|'..max_charges
+				else
+					local padding = (tnc > 9) and 5 or 4
+					formattedString = formatOutputString(startingString, maxLength - padding)..':'..tnc..'|'..strat_charges
+				end
+
+			elseif recast > 3600 then
 				local hr = math.floor(recast / 3600)
 				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
 			elseif recast > 600 then
@@ -1352,6 +1373,13 @@ local function formatAbils(input,input_sh)
 
 			-- Determine recast coloring for brackets
 			local c = recast == 0 and color.abil.active or color.abil.ready
+			if input == "Stratagems" then
+				if strat_charges > 0 then
+					c = color.abil.active
+				else
+					c = color.abil.ready
+				end
+			end
 
 			-- Apply brackets with recast coloring
 			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
@@ -1432,8 +1460,25 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-
 getHUDAbils()
+
+local function getStratChargeTimer()
+	if subjob ~= 'SCH' then return end
+	local player = windower.ffxi.get_player()
+	local level = player.sub_job_level
+	if level >= 50 then
+		strat_charge_timer = 80
+	elseif level >= 30 then
+		strat_charge_timer = 120
+	elseif level >= 10 then
+		strat_charge_timer = 240
+	end
+
+	max_charges = 240 / strat_charge_timer
+	strat_flash_counter = max_charges
+
+end
+getStratChargeTimer()
 
 local function formatAMTime(input)
 
@@ -2801,20 +2846,24 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay	
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay	
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
@@ -3099,6 +3148,16 @@ windower.register_event('prerender', function()
 			textColor('Mana Cede','notfound')
 		end
 
+		if Stratagems.recast then
+			if strat_charges > strat_flash_counter then
+				flash('Stratagems')
+			end
+			strat_flash_counter = strat_charges
+			textColor('Stratagems', strat_charges == 0 and 'cooldown' or 'ready')
+		else
+			textColor('Stratagems','notfound')
+		end
+
 		if Sublimation.recast then
 			if buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] then
 				textColor('Sublimation','active')
@@ -3235,10 +3294,14 @@ function sub_job_change(newSubjob, oldSubjob)
 	-- Reset HUD Abilities/Spells and Macro Page
 	if newSubjob == 'WHM' then
 		subjob = 'WHM'
+		if SubWHMPage ~= "Off" then
+			send_command('wait 2;input /macro set '..SubWHMPage)
+		end
 	elseif newSubjob == 'RDM' then
 		subjob = 'RDM'
 	elseif newSubjob == 'SCH' then
 		subjob = 'SCH'
+		getStratChargeTimer()
 	else
 		subjob = 'OTH'
 	end
@@ -3249,6 +3312,19 @@ function sub_job_change(newSubjob, oldSubjob)
 	end
 
 end
+
+-----------------------------------------
+--           LEVEL CHANGE              --
+-----------------------------------------
+
+--Stratagem recharge time is based on SCH level, so check every time our level changes
+windower.register_event('level up',function()
+	getStratChargeTimer()
+end)
+
+windower.register_event('level down',function()
+	getStratChargeTimer()
+end)
 
 -------------------------------------------
 --        INCOMING TEXT CHECKS           --
