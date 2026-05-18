@@ -1064,7 +1064,7 @@ end
 
 
 
-FileVersion = '2.2.3'
+FileVersion = '2.2.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -4724,7 +4724,7 @@ windower.register_event('prerender', function()
 		if SafeTimer > 0 then
 			SafeTimer = SafeTimer - 1
 		elseif SafeTimer == 0 then
-			AutoOhShitActive = false
+			TakingDamage = false
 			SafeTimer = -1
 			choose_set()
 		end
