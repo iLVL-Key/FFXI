@@ -2350,6 +2350,9 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3.6
+- Fixed Movement Speed set not equipping correctly when Idle.
+
 Version 1.3.5
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
