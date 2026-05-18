@@ -149,7 +149,7 @@ AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -- Controls what is displayed in the HUD Recast section.
 -- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
---		Bolster, Widened Compass, Blaze of Glory, Collimated Fervor, Concentric Pulse, Convert, Dark Arts, Dematerialize, Divine Seal, Ecliptic Attrition, Elemental Seal, Entrust, Full Circle, Lasting Emanation, Life Cycle, Light Arts, Mending Halation, Radial Arcana, Sublimation, Theurgic Focus
+--		Bolster, Widened Compass, Blaze of Glory, Collimated Fervor, Concentric Pulse, Convert, Dark Arts, Dematerialize, Divine Seal, Ecliptic Attrition, Elemental Seal, Entrust, Full Circle, Lasting Emanation, Life Cycle, Light Arts, Mending Halation, Radial Arcana, Stratagems, Sublimation, Theurgic Focus
 -- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise.
 -- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
 
@@ -293,7 +293,7 @@ sets.idle_luopan = set_combine(sets.idle, {
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	feet="Geo. Sandals +4",
+	-- feet="Geo. Sandals +4",
 }
 
 -- Danger
@@ -344,7 +344,7 @@ sets.weapon_skill = {
 	left_ear="Ishvara Earring",
 	right_ear="Moonshade Earring",
 	left_ring="Hetairoi Ring",
-	right_ring="Karieyh Ring +1",
+	right_ring="Epaminondas's Ring",
 	back="Null Shawl",
 }
 
@@ -548,13 +548,11 @@ sets.cursna = {
 }
 
 -- Impact (Twilight/Crepuscular Cloak)
-sets.impact = {
+-- Combines with Magic Accuracy set, only necessary to set the slots with specific desired stats
+sets.impact = set_combine(sets.magic_accuracy, {
 	head=empty,
 	body="Twilight Cloak",
-	hands="Geo. Mitaines +4", --temp for Bumba
-	legs="Geomancy Pants +4", --temp for Bumba
-	feet="Geo. Sandals +4", --temp for Bumba
-}
+})
 
 -- Dispelga (Daybreak)
 sets.dispelga = {
@@ -660,7 +658,7 @@ end
 
 
 
-FileVersion = '16.1.5'
+FileVersion = '16.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -736,6 +734,8 @@ LuopanDelay = false --used to create a short delay between casting a luopan and 
 EntrustCountdown = 0
 EntrustTarget = nil
 party_count = party and party.count or 1
+strat_charge_timer = 0 --used to calculate number of Stratagem charges available (based on SCH level)
+strat_charges = 0 --number of Stratagem charges available
 transport_locked = true
 transport_lock_timestamp = 0
 player_x = nil
@@ -792,7 +792,7 @@ if ZoneGear ~= 'Off' then
 	send_command('wait 2;gs c Zone Gear')
 end
 
-Bolster = {} WidenedCompass = {} BlazeofGlory = {} CollimatedFervor = {} ConcentricPulse = {} Convert = {} DarkArts = {} Dematerialize = {} DivineSeal = {} EclipticAttrition = {} ElementalSeal = {} Entrust = {} FullCircle = {} LastingEmanation = {} LifeCycle = {} LightArts = {} MendingHalation = {} RadialArcana = {} Sublimation = {} TheurgicFocus = {}
+Bolster = {} WidenedCompass = {} BlazeofGlory = {} CollimatedFervor = {} ConcentricPulse = {} Convert = {} DarkArts = {} Dematerialize = {} DivineSeal = {} EclipticAttrition = {} ElementalSeal = {} Entrust = {} FullCircle = {} LastingEmanation = {} LifeCycle = {} LightArts = {} MendingHalation = {} RadialArcana = {} Stratagems = {}  Sublimation = {} TheurgicFocus = {}
 
 --Start true so the HUD recasts don't flash on load
 Bolster.flashed = true
@@ -815,6 +815,9 @@ MendingHalation.flashed = true
 RadialArcana.flashed = true
 Sublimation.flashed = true
 TheurgicFocus.flashed = true
+
+max_charges = 3
+strat_flash_counter = 3
 
 --Space out each line and column properly
 HUDposYLine2 = HUDposYLine1 + LineSpacer
@@ -1353,6 +1356,7 @@ local function getRecasts()
 	LightArts.recast = ability_recast[228] and math.ceil(ability_recast[228])
 	MendingHalation.recast = ability_recast[251] and math.ceil(ability_recast[251])
 	RadialArcana.recast = ability_recast[252] and math.ceil(ability_recast[252])
+	Stratagems.recast = ability_recast[231] and math.ceil(ability_recast[231])
 	Sublimation.recast = ability_recast[234] and math.ceil(ability_recast[234])
 	TheurgicFocus.recast = ability_recast[249] and math.ceil(ability_recast[249])
 
@@ -1365,10 +1369,10 @@ local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Bolster", "Widened Compass", "Blaze of Glory", "Collimated Fervor", "Concentric Pulse", "Convert", "Dark Arts", "Dematerialize", "Divine Seal", "Ecliptic Attrition", "Elemental Seal", "Entrust", "Full Circle", "Lasting Emanation", "Life Cycle", "Light Arts", "Mending Halation", "Radial Arcana", "Sublimation", "Theurgic Focus"
+		"Bolster", "Widened Compass", "Blaze of Glory", "Collimated Fervor", "Concentric Pulse", "Convert", "Dark Arts", "Dematerialize", "Divine Seal", "Ecliptic Attrition", "Elemental Seal", "Entrust", "Full Circle", "Lasting Emanation", "Life Cycle", "Light Arts", "Mending Halation", "Radial Arcana", "Stratagems", "Sublimation", "Theurgic Focus"
 	}
 
-	local ab = {} ab['Bolster'] = Bolster ab['Widened Compass'] = WidenedCompass ab['Blaze of Glory'] = BlazeofGlory ab['Collimated Fervor'] = CollimatedFervor ab['Concentric Pulse'] = ConcentricPulse ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Dematerialize'] = Dematerialize ab['Divine Seal'] = DivineSeal ab['Ecliptic Attrition'] = EclipticAttrition ab['Elemental Seal'] = ElementalSeal ab['Entrust'] = Entrust ab['Full Circle'] = FullCircle ab['Lasting Emanation'] = LastingEmanation ab['Life Cycle'] = LifeCycle ab['Light Arts'] = LightArts ab['Mending Halation'] = MendingHalation ab['Radial Arcana'] = RadialArcana ab['Sublimation'] = Sublimation ab['Theurgic Focus'] = TheurgicFocus
+	local ab = {} ab['Bolster'] = Bolster ab['Widened Compass'] = WidenedCompass ab['Blaze of Glory'] = BlazeofGlory ab['Collimated Fervor'] = CollimatedFervor ab['Concentric Pulse'] = ConcentricPulse ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Dematerialize'] = Dematerialize ab['Divine Seal'] = DivineSeal ab['Ecliptic Attrition'] = EclipticAttrition ab['Elemental Seal'] = ElementalSeal ab['Entrust'] = Entrust ab['Full Circle'] = FullCircle ab['Lasting Emanation'] = LastingEmanation ab['Life Cycle'] = LifeCycle ab['Light Arts'] = LightArts ab['Mending Halation'] = MendingHalation ab['Radial Arcana'] = RadialArcana ab['Stratagems'] = Stratagems ab['Sublimation'] = Sublimation ab['Theurgic Focus'] = TheurgicFocus
 	
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -1398,7 +1402,22 @@ local function formatAbils(input,input_sh)
 
 			-- Get our output before we apply the brackets below
 			local formattedString = ''
-			if recast > 3600 then
+			if input == 'Stratagems' then
+
+				local charges_lost = math.ceil(recast / strat_charge_timer)
+				strat_charges = math.max(0, max_charges - charges_lost)
+
+				-- To Next Charge
+				local tnc = recast > strat_charge_timer and recast % strat_charge_timer or recast
+
+				if strat_charges == max_charges then
+					formattedString = formatOutputString(startingString, maxLength - 2)..'|'..max_charges
+				else
+					local padding = (tnc > 9) and 5 or 4
+					formattedString = formatOutputString(startingString, maxLength - padding)..':'..tnc..'|'..strat_charges
+				end
+
+			elseif recast > 3600 then
 				local hr = math.floor(recast / 3600)
 				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
 			elseif recast > 600 then
@@ -1424,6 +1443,13 @@ local function formatAbils(input,input_sh)
 
 			-- Determine recast coloring for brackets
 			local c = recast == 0 and color.abil.active or color.abil.ready
+			if input == "Stratagems" then
+				if strat_charges > 0 then
+					c = color.abil.active
+				else
+					c = color.abil.ready
+				end
+			end
 
 			-- Apply brackets with recast coloring
 			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
@@ -1500,8 +1526,25 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-
 getHUDAbils()
+
+local function getStratChargeTimer()
+	if subjob ~= 'SCH' then return end
+	local player = windower.ffxi.get_player()
+	local level = player.sub_job_level
+	if level >= 50 then
+		strat_charge_timer = 80
+	elseif level >= 30 then
+		strat_charge_timer = 120
+	elseif level >= 10 then
+		strat_charge_timer = 240
+	end
+
+	max_charges = 240 / strat_charge_timer
+	strat_flash_counter = max_charges
+
+end
+getStratChargeTimer()
 
 local function useHachirinNoObi(nuke_element)
 	local opposites = {
@@ -2732,20 +2775,24 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
@@ -3156,6 +3203,16 @@ windower.register_event('prerender', function()
 			textColor('Radial Arcana','notfound')
 		end
 
+		if Stratagems.recast then
+			if strat_charges > strat_flash_counter then
+				flash('Stratagems')
+			end
+			strat_flash_counter = strat_charges
+			textColor('Stratagems', strat_charges == 0 and 'cooldown' or 'ready')
+		else
+			textColor('Stratagems','notfound')
+		end
+
 		if Sublimation.recast then
 			if buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] then
 				textColor('Sublimation','active')
@@ -3352,6 +3409,7 @@ function sub_job_change(newSubjob, oldSubjob)
 		end
 	elseif newSubjob == 'SCH' then
 		subjob = 'SCH'
+		getStratChargeTimer()
 		if SubSCHPage ~= "Off" then
 			send_command('wait 2;input /macro set '..SubSCHPage)
 		end
@@ -3365,6 +3423,19 @@ function sub_job_change(newSubjob, oldSubjob)
 	end
 
 end
+
+-----------------------------------------
+--           LEVEL CHANGE              --
+-----------------------------------------
+
+--Stratagem recharge time is based on SCH level, so check every time our level changes
+windower.register_event('level up',function()
+	getStratChargeTimer()
+end)
+
+windower.register_event('level down',function()
+	getStratChargeTimer()
+end)
 
 -------------------------------------------
 --        INCOMING TEXT CHECKS           --
