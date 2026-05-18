@@ -201,7 +201,7 @@ AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -- Controls what is displayed in the HUD Recast section.
 -- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
---		Invincible, Intervene, Aggressor, Berserk, Chivalry, Cocoon, Cover, Crusade, Defender, Divine Emblem, Enlight II, Fealty, Holy Circle, Majesty, Palisade, Phalanx, Rampart, Refueling, Reprisal, Sentinel, Sepulcher, Shield Bash, Stoneskin, Warcry
+--		Invincible, Intervene, Aggressor, Berserk, Chivalry, Cocoon, Cover, Crusade, Defender, Divine Emblem, Enlight II, Fealty, Holy Circle, Majesty, Palisade, Phalanx, Rampart, Refueling, Reprisal, Sentinel, Sepulcher, Shield Bash, Stoneskin, Stratagems, Sublimation, Warcry
 -- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise.
 -- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
 
@@ -229,7 +229,7 @@ sub = {
 		Abil01 = "Crusade",		Abil01_sh = "",
 		Abil02 = "Phalanx",		Abil02_sh = "",
 		Abil03 = "Stoneskin",	Abil03_sh = "",
-		Abil04 = "Palisade",	Abil04_sh = "",
+		Abil04 = "Stratagems",	Abil04_sh = "Strats",
 		Abil05 = "Rampart",		Abil05_sh = "",
 		Abil06 = "Sentinel",	Abil06_sh = "",
 	},
@@ -436,7 +436,7 @@ sets.idle = set_combine(sets.tank, {
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	legs="Carmine Cuisses +1",
+	right_ring="Shneddick Ring +1",
 }
 
 -- Rest
@@ -665,7 +665,7 @@ sets.weapon_skill = {
 	left_ear="Moonshade Earring",
 	right_ear="Thrud Earring",
 	left_ring="Moonlight Ring",
-	right_ring="Karieyh Ring +1",
+	right_ring="Cornelia's Ring",
 	back="Moonlight Cape",
 }
 
@@ -806,7 +806,7 @@ end
 
 
 
-FileVersion = '15.2.4'
+FileVersion = '15.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -885,6 +885,8 @@ primeNum = 0
 AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
+strat_charge_timer = 0 --used to calculate number of Stratagem charges available (based on SCH level)
+strat_charges = 0 --number of Stratagem charges available
 player_x = nil
 player_y = nil
 moving = false
@@ -950,7 +952,7 @@ if ZoneGear ~= 'Off' then
 	send_command('wait 2;gs c Zone Gear')
 end
 
-Invincible = {} Intervene = {} Aggressor = {} Berserk = {} Chivalry = {} Cocoon = {} Cover = {} Crusade = {} DarkArts = {} Defender = {} DivineEmblem = {} Enlight = {} Fealty = {} HolyCircle = {} LightArts = {} Majesty = {} Palisade = {} Phalanx = {} Rampart = {} Refueling = {} Reprisal = {} Sentinel = {} Sepulcher = {} ShieldBash = {} Stoneskin = {} Sublimation = {} Warcry = {}
+Invincible = {} Intervene = {} Aggressor = {} Berserk = {} Chivalry = {} Cocoon = {} Cover = {} Crusade = {} DarkArts = {} Defender = {} DivineEmblem = {} Enlight = {} Fealty = {} HolyCircle = {} LightArts = {} Majesty = {} Palisade = {} Phalanx = {} Rampart = {} Refueling = {} Reprisal = {} Sentinel = {} Sepulcher = {} ShieldBash = {} Stoneskin = {} Stratagems = {}  Sublimation = {} Warcry = {}
 
 --Start true so the HUD recasts don't flash on load
 Invincible.flashed = true
@@ -979,6 +981,9 @@ ShieldBash.flashed = true
 Stoneskin.flashed = true
 Sublimation.flashed = true
 Warcry.flashed = true
+
+max_charges = 3
+strat_flash_counter = 3
 
 --Space out each line and column properly
 HUDposYLine2 = HUDposYLine1 + LineSpacer
@@ -1520,6 +1525,7 @@ local function getRecasts()
 	Sepulcher.recast = ability_recast[41] and math.ceil(ability_recast[41])
 	ShieldBash.recast = ability_recast[73] and math.ceil(ability_recast[73])
 	Stoneskin.recast = stoneskin() and math.ceil(spell_recast[54] / 60)
+	Stratagems.recast = ability_recast[231] and math.ceil(ability_recast[231])
 	Sublimation.recast = ability_recast[234] and math.ceil(ability_recast[234])
 	Warcry.recast = ability_recast[2] and math.ceil(ability_recast[2])
 
@@ -1532,10 +1538,10 @@ local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Invincible", "Intervene", "Aggressor", "Berserk", "Chivalry", "Cocoon", "Cover", "Crusade", "Dark Arts", "Defender", "Divine Emblem", "Enlight", "Enlight II", "Fealty", "Holy Circle", "Light Arts", "Majesty", "Palisade", "Phalanx", "Rampart", "Refueling", "Reprisal", "Sentinel", "Sepulcher", "Shield Bash", "Stoneskin", "Sublimation", "Warcry"
+		"Invincible", "Intervene", "Aggressor", "Berserk", "Chivalry", "Cocoon", "Cover", "Crusade", "Dark Arts", "Defender", "Divine Emblem", "Enlight", "Enlight II", "Fealty", "Holy Circle", "Light Arts", "Majesty", "Palisade", "Phalanx", "Rampart", "Refueling", "Reprisal", "Sentinel", "Sepulcher", "Shield Bash", "Stoneskin", "Stratagems", "Sublimation", "Warcry"
 	}
 
-	local ab = {} ab['Invincible'] = Invincible ab['Intervene'] = Intervene ab['Aggressor'] = Aggressor ab['Berserk'] = Berserk ab['Chivalry'] = Chivalry ab['Cocoon'] = Cocoon ab['Cover'] = Cover ab['Crusade'] = Crusade ab['Dark Arts'] = DarkArts ab['Defender'] = Defender ab['Divine Emblem'] = DivineEmblem ab['Enlight'] = Enlight ab['Enlight II'] = Enlight ab['Fealty'] = Fealty ab['Holy Circle'] = HolyCircle ab['Light Arts'] = LightArts ab['Majesty'] = Majesty ab['Palisade'] = Palisade ab['Phalanx'] = Phalanx ab['Rampart'] = Rampart ab['Refueling'] = Refueling ab['Reprisal'] = Reprisal ab['Sentinel'] = Sentinel ab['Sepulcher'] = Sepulcher ab['Shield Bash'] = ShieldBash ab['Stoneskin'] = Stoneskin ab['Sublimation'] = Sublimation ab['Warcry'] = Warcry
+	local ab = {} ab['Invincible'] = Invincible ab['Intervene'] = Intervene ab['Aggressor'] = Aggressor ab['Berserk'] = Berserk ab['Chivalry'] = Chivalry ab['Cocoon'] = Cocoon ab['Cover'] = Cover ab['Crusade'] = Crusade ab['Dark Arts'] = DarkArts ab['Defender'] = Defender ab['Divine Emblem'] = DivineEmblem ab['Enlight'] = Enlight ab['Enlight II'] = Enlight ab['Fealty'] = Fealty ab['Holy Circle'] = HolyCircle ab['Light Arts'] = LightArts ab['Majesty'] = Majesty ab['Palisade'] = Palisade ab['Phalanx'] = Phalanx ab['Rampart'] = Rampart ab['Refueling'] = Refueling ab['Reprisal'] = Reprisal ab['Sentinel'] = Sentinel ab['Sepulcher'] = Sepulcher ab['Shield Bash'] = ShieldBash ab['Stoneskin'] = Stoneskin ab['Stratagems'] = Stratagems ab['Sublimation'] = Sublimation ab['Warcry'] = Warcry
 
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -1565,7 +1571,22 @@ local function formatAbils(input,input_sh)
 
 			-- Get our output before we apply the brackets below
 			local formattedString = ''
-			if recast > 3600 then
+			if input == 'Stratagems' then
+
+				local charges_lost = math.ceil(recast / strat_charge_timer)
+				strat_charges = math.max(0, max_charges - charges_lost)
+
+				-- To Next Charge
+				local tnc = recast > strat_charge_timer and recast % strat_charge_timer or recast
+
+				if strat_charges == max_charges then
+					formattedString = formatOutputString(startingString, maxLength - 2)..'|'..max_charges
+				else
+					local padding = (tnc > 9) and 5 or 4
+					formattedString = formatOutputString(startingString, maxLength - padding)..':'..tnc..'|'..strat_charges
+				end
+
+			elseif recast > 3600 then
 				local hr = math.floor(recast / 3600)
 				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
 			elseif recast > 600 then
@@ -1591,6 +1612,13 @@ local function formatAbils(input,input_sh)
 
 			-- Determine recast coloring for brackets
 			local c = recast == 0 and color.abil.active or color.abil.ready
+			if input == "Stratagems" then
+				if strat_charges > 0 then
+					c = color.abil.active
+				else
+					c = color.abil.ready
+				end
+			end
 
 			-- Apply brackets with recast coloring
 			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
@@ -1671,8 +1699,25 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-
 getHUDAbils()
+
+local function getStratChargeTimer()
+	if subjob ~= 'SCH' then return end
+	local player = windower.ffxi.get_player()
+	local level = player.sub_job_level
+	if level >= 50 then
+		strat_charge_timer = 80
+	elseif level >= 30 then
+		strat_charge_timer = 120
+	elseif level >= 10 then
+		strat_charge_timer = 240
+	end
+
+	max_charges = 240 / strat_charge_timer
+	strat_flash_counter = max_charges
+
+end
+getStratChargeTimer()
 
 local function formatAMTime(input)
 
@@ -3118,20 +3163,24 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
@@ -3667,6 +3716,16 @@ windower.register_event('prerender', function()
 			textColor('Stoneskin','notfound')
 		end
 
+		if Stratagems.recast then
+			if strat_charges > strat_flash_counter then
+				flash('Stratagems')
+			end
+			strat_flash_counter = strat_charges
+			textColor('Stratagems', strat_charges == 0 and 'cooldown' or 'ready')
+		else
+			textColor('Stratagems','notfound')
+		end
+
 		if Sublimation.recast then
 			if buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] then
 				textColor('Sublimation','active')
@@ -3821,6 +3880,7 @@ function sub_job_change(newSubjob, oldSubjob)
 		end
 	elseif newSubjob == 'SCH' then
 		subjob = 'SCH'
+		getStratChargeTimer()
 		if SubSCHPage ~= "Off" then
 			send_command('wait 2;input /macro set '..SubSCHPage)
 		end
@@ -3834,6 +3894,19 @@ function sub_job_change(newSubjob, oldSubjob)
 	end
 
 end
+
+-----------------------------------------
+--           LEVEL CHANGE              --
+-----------------------------------------
+
+--Stratagem recharge time is based on SCH level, so check every time our level changes
+windower.register_event('level up',function()
+	getStratChargeTimer()
+end)
+
+windower.register_event('level down',function()
+	getStratChargeTimer()
+end)
 
 -------------------------------------------
 --        INCOMING TEXT CHECKS           --
