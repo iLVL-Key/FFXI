@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Taskbar'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.0 BETA-10'
+_addon.version = '1.0 BETA-11'
 _addon.commands = {'taskbar'}
 
 require 'logger'
@@ -43,7 +43,6 @@ input = windower.chat.input
 open_url = windower.open_url
 register_event = windower.register_event
 send_command = windower.send_command
-open_url = windower.open_url
 copy_to_clipboard = windower.copy_to_clipboard
 
 --Default settings the addon will use to create the data\settings.xml file
@@ -665,10 +664,12 @@ function setupMenu()
 
 		label = "│"..label.." >"
 		local formatted = formatButton(label, button_name)
-		table.insert(temp_lines, formatted.."\n")
+		table.insert(temp_lines, formatted)
 	end
 
-	main_menu:text(table.concat(temp_lines))
+	local final_menu = table.concat(temp_lines, "\n")
+
+	main_menu:text(final_menu)
 	main_menu:pos(-1000, -1000)
 	main_menu:show()
 
@@ -1407,10 +1408,11 @@ function updateMainMenu()
 		local is_hovered = (mouse_is_on == pos.button)
 		local main_menu_index = pos.button:match("^main_menu_(%d+)")
 		local is_active_menu = main_menu_index and tonumber(main_menu_index) == active_sub_menu	
-		table.insert(display_text_parts, ("│"..formatted.." %s\n"):format((is_hovered or is_active_menu) and ">" or ""))
+		table.insert(display_text_parts, ("│"..formatted.." %s"):format((is_hovered or is_active_menu) and ">" or ""))
 	end
 
-	display_text = table.concat(display_text_parts)
+	local display_text = table.concat(display_text_parts, "\n")
+
 	main_menu:text(display_text)
 
 end
@@ -1451,10 +1453,12 @@ function updateSubMenu()
 		end
 
 		local button_text = formatButton(formatted_label, button_name)
-		table.insert(display_text_parts, prefix_char..button_text.."\n")
+		table.insert(display_text_parts, prefix_char..button_text)
 	end
 
-	sub_menu:text(table.concat(display_text_parts))
+	local display_text = table.concat(display_text_parts, "\n")
+
+	sub_menu:text(display_text)
 
 	local anchor_x, anchor_y = main_menu:pos()
 	local pos_data = sub_menu_positions[button_key]
