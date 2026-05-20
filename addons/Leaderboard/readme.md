@@ -125,6 +125,9 @@ Intended to be used by the party. The host must have Party or Lite Mode running 
 
 ### Version History
 
+Version 5.3.3
+- Fixed the On Screen Display showing an extra blank line at the bottom after the latest Windower update.
+
 Version 5.3.2
 - Fixed issues with Optout list not matching names correctly.
 - Fixed issues where the Eft Bomb in Mog Kart would not work correctly.
