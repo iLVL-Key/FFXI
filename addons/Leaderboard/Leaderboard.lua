@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Leaderboard'
-_addon.version = '5.3.2'
+_addon.version = '5.3.3'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'leaderboard','lb'}
 
@@ -797,7 +797,7 @@ function updateBox(box_display)
 				end
 				local left_text = cs..place..name..cr
 				spaces = spaces_cs..spaces..cr
-				local right_text = cs..score_info..cr..'\n'
+				local right_text = cs..score_info..cr..(i ~= osd_show_number and '\n' or '')
 				text = text..left_text..spaces..right_text
 
 			end
