@@ -453,7 +453,7 @@ sets.idle = {
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	legs="Carmine Cuisses +1",
+	right_ring="Shneddick Ring +1",
 }
 
 -- Enmity (full Enmity+ for spells/abilities)
@@ -586,7 +586,7 @@ sets.weapon_skill = {
 	left_ear="Ishvara Earring",
 	right_ear="Moonshade Earring",
 	left_ring="Cornelia's Ring",
-	right_ring="Karieyh Ring +1",
+	right_ring="Epaminondas's Ring",
 	back={ name="Ogma's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Mag. Evasion+15',}},
 }
 
@@ -747,7 +747,7 @@ end
 
 
 
-FileVersion = '10.2.5'
+FileVersion = '10.2.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1771,7 +1771,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-
 getHUDAbils()
 
 local function formatAMTime(input)
@@ -1904,6 +1903,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	elseif player.status == "Idle" and ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player_in_combat) then
 		hud_noti_shdw:text('Status: Kiting')
 		hud_noti:text('Status: Kiting')
@@ -3299,21 +3299,25 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					hud_noti_bg:bg_alpha(0)
+					NotiCountdown = NotiDelay
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			hud_noti_bg:bg_alpha(0)
-			NotiCountdown = NotiDelay
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
