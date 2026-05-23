@@ -546,7 +546,7 @@ sets.weapon_skill = {
 	waist="Sailfi Belt +1",
 	left_ear="Moonshade Earring",
 	right_ear="Ishvara Earring",
-	left_ring="Karieyh Ring +1",
+	left_ring="Epaminondas's Ring",
 	right_ring="Cornelia's Ring",
 	back={ name="Intarabus's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
@@ -920,7 +920,7 @@ end
 
 
 
-FileVersion = '3.1.5'
+FileVersion = '3.1.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2249,12 +2249,12 @@ local function getJPGiftBonusDuration()
 end
 getJPGiftBonusDuration()
 
-local function getSongDuration(spell)
+local function getSongDuration(spell, set)
 
 	song_duration = nil
 
 	--Miracle Cheer ignores all song duration gear and puts songs at exactly 15 minutes.
-	if player.equipment.range == 'Miracle Cheer' then
+	if set.range == 'Miracle Cheer' then
 		return 900
 	end
 
@@ -2262,17 +2262,16 @@ local function getSongDuration(spell)
 
 	--1200 job point gift duration nonus
 	multiplier = multiplier + jp_gift_bonus_duration
--- print(multiplier)
-
+-- print(multiplier, jp_gift_bonus_duration)
 	--weapons
-	if player.equipment.main == "Legato Dagger" or player.equipment.sub == "Legato Dagger" then
+	if set.main == "Legato Dagger" or set.sub == "Legato Dagger" then
 		multiplier = multiplier + .05
 	end
-	if player.equipment.main == "Kali" or player.equipment.sub == "Kali" then
+	if set.main == "Kali" or set.sub == "Kali" then
 		multiplier = multiplier + .05
 	end
--- print(multiplier)
-	if player.equipment.main == "Carnwenhan" then
+-- print(multiplier, set.main)
+	if set.main == "Carnwenhan" then
 		if itemMatch(20586,'main') or itemMatch(20562,'main') or itemMatch(20561,'main') or itemMatch(19957,'main') or itemMatch(19828,'main') then --99
 			multiplier = multiplier + .5
 		elseif itemMatch(19719,'main') or itemMatch(19621,'main') then --95/90
@@ -2286,7 +2285,6 @@ local function getSongDuration(spell)
 		end
 	end
 -- print(multiplier)
-
 	--"all songs+" instruments
 	if player.equipment.range == 'Daurdabla' then
 		if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
@@ -2324,110 +2322,105 @@ local function getSongDuration(spell)
 		multiplier = multiplier + .2
 	end
 -- print(multiplier)
-
 	--body
-	if player.equipment.body == "Aoidos' Hngrln. +1" then
+	if set.body == "Aoidos' Hngrln. +1" then
 		multiplier = multiplier + .05
-	elseif player.equipment.body == "Aoidos' Hngrln. +2" then
+	elseif set.body == "Aoidos' Hngrln. +2" then
 		multiplier = multiplier + .1
-	elseif player.equipment.body == "Fili Hongreline" then
+	elseif set.body == "Fili Hongreline" then
 		multiplier = multiplier + .11
-	elseif player.equipment.body == "Fili Hongreline +1" then
+	elseif set.body == "Fili Hongreline +1" then
 		multiplier = multiplier + .12
-	elseif player.equipment.body == "Fili Hongreline +2" then
+	elseif set.body == "Fili Hongreline +2" then
 		multiplier = multiplier + .13
-	elseif player.equipment.body == "Fili Hongreline +3" then
+	elseif set.body == "Fili Hongreline +3" then
 		-- print('test')
 		multiplier = multiplier + .14
 	end
--- print(multiplier)
-
+-- print(multiplier, set.body)
 	--legs
-	if player.equipment.legs == "Mdk. Shalwar +1" then
+	if set.legs == "Mdk. Shalwar +1" then
 		multiplier = multiplier + .1
-	elseif player.equipment.legs == "Inyanga Shalwar" then
+	elseif set.legs == "Inyanga Shalwar" then
 		multiplier = multiplier + .12
-	elseif player.equipment.legs == "Inyanga Shalwar +1" then
+	elseif set.legs == "Inyanga Shalwar +1" then
 		multiplier = multiplier + .15
-	elseif player.equipment.legs == "Inyanga Shalwar +2" then
+	elseif set.legs == "Inyanga Shalwar +2" then
 		multiplier = multiplier + .17
 	end
 -- print(multiplier)
-
 	--feet
-	if player.equipment.feet == "Brioso Slippers" then
+	if set.feet == "Brioso Slippers" then
 		multiplier = multiplier + .1
-	elseif player.equipment.feet == "Brioso Slippers +1" then
+	elseif set.feet == "Brioso Slippers +1" then
 		multiplier = multiplier + .11
-	elseif player.equipment.feet == "Brioso Slippers +2" then
+	elseif set.feet == "Brioso Slippers +2" then
 		multiplier = multiplier + .13
-	elseif player.equipment.feet == "Brioso Slippers +3" or player.equipment.feet == "Brioso Slippers +4" then
+	elseif set.feet == "Brioso Slippers +3" or set.feet == "Brioso Slippers +4" then
 		multiplier = multiplier + .15
 	end
 -- print(multiplier)
-
 	--neck
-	if player.equipment.neck == "Aoidos' Matinee" or player.equipment.neck == "Brioso Whistle" then
+	if set.neck == "Aoidos' Matinee" or set.neck == "Brioso Whistle" then
 		multiplier = multiplier + .1
-	elseif player.equipment.neck == "Moonbow Whistle" then
+	elseif set.neck == "Moonbow Whistle" then
 		multiplier = multiplier + .2
-	elseif player.equipment.neck == "Mnbw. Whistle +1" then
+	elseif set.neck == "Mnbw. Whistle +1" then
 		multiplier = multiplier + .3
 	end
 -- print(multiplier)
-
 	--specific song bonus gear
 	if string.find(spell,'Ballad') then
-		if player.equipment.legs == "Aoidos' Rhing. +2" or player.equipment.legs == "Fili Rhingrave" or player.equipment.legs == "Fili Rhingrave +1" or player.equipment.legs == "Fili Rhingrave +2" or player.equipment.legs == "Fili Rhingrave +3" then
+		if set.legs == "Aoidos' Rhing. +2" or set.legs == "Fili Rhingrave" or set.legs == "Fili Rhingrave +1" or set.legs == "Fili Rhingrave +2" or set.legs == "Fili Rhingrave +3" then
 			multiplier = multiplier + .1
 		end
 	elseif string.find(spell,'Carol') then
-		if player.equipment.hands == "Mousai Gages" then
+		if set.hands == "Mousai Gages" then
 			multiplier = multiplier + .1	
-		elseif player.equipment.hands == "Mousai Gages +1" then
+		elseif set.hands == "Mousai Gages +1" then
 			multiplier = multiplier + .2
 		end
 	elseif string.find(spell,'Etude') then
-		if player.equipment.head == "Mousai Turban" then
+		if set.head == "Mousai Turban" then
 			multiplier = multiplier + .1	
-		elseif player.equipment.head == "Mousai Turban +1" then
+		elseif set.head == "Mousai Turban +1" then
 			multiplier = multiplier + .2
 		end
 	elseif string.find(spell,'Madrigal') then
-		if player.equipment.head == "Aoidos' Calot +2" or player.equipment.head == "Fili Calot" or player.equipment.head == "Fili Calot +1" or player.equipment.head == "Fili Calot +2" or player.equipment.head == "Fili Calot +3" then
+		if set.head == "Aoidos' Calot +2" or set.head == "Fili Calot" or set.head == "Fili Calot +1" or set.head == "Fili Calot +2" or set.head == "Fili Calot +3" then
 			multiplier = multiplier + .1
 		end
-		if player.equipment.back == "Intarabus's Cape" then
+		if set.back == "Intarabus's Cape" then
 			multiplier = multiplier + .1
 		end
 	elseif string.find(spell,'Mambo') then
-		if player.equipment.legs == "Mousai Crackows" then
+		if set.legs == "Mousai Crackows" then
 			multiplier = multiplier + .1	
-		elseif player.equipment.legs == "Mou. Crackows +1" then
+		elseif set.legs == "Mou. Crackows +1" then
 			multiplier = multiplier + .2
 		end
 	elseif string.find(spell,'March') then
-		if player.equipment.hands == "Ad. Mnchtte. +2" or player.equipment.hands == "Fili Manchettes" or player.equipment.hands == "Fili Manchettes +1" or player.equipment.hands == "Fili Manchettes +2" or player.equipment.hands == "Fili Manchettes +3" then
+		if set.hands == "Ad. Mnchtte. +2" or set.hands == "Fili Manchettes" or set.hands == "Fili Manchettes +1" or set.hands == "Fili Manchettes +2" or set.hands == "Fili Manchettes +3" then
 			multiplier = multiplier + .1
 		end
 	elseif string.find(spell,'Minne') then
-		if player.equipment.legs == "Mousai Seraweels" then
+		if set.legs == "Mousai Seraweels" then
 			multiplier = multiplier + .1	
-		elseif player.equipment.legs == "Mou. Seraweels +1" then
+		elseif set.legs == "Mou. Seraweels +1" then
 			multiplier = multiplier + .2
 		end
 	elseif string.find(spell,'Minuet') then
-		if player.equipment.body == "Aoidos' Hngrln. +2" or player.equipment.body == "Fili Hongreline" or player.equipment.body == "Fili Hongreline +1" or player.equipment.body == "Fili Hongreline +2" or player.equipment.body == "Fili Hongreline +3" then
+		if set.body == "Aoidos' Hngrln. +2" or set.body == "Fili Hongreline" or set.body == "Fili Hongreline +1" or set.body == "Fili Hongreline +2" or set.body == "Fili Hongreline +3" then
 			multiplier = multiplier + .1
 		end
 	elseif string.find(spell,'Paeon') then
-		if player.equipment.head == "Brioso Roundlet" or player.equipment.head == "Brioso Roundlet +1" or player.equipment.head == "Brioso Roundlet +2" then
+		if set.head == "Brioso Roundlet" or set.head == "Brioso Roundlet +1" or set.head == "Brioso Roundlet +2" then
 			multiplier = multiplier + .1
-		elseif player.equipment.head == "Brioso Roundlet +3" or player.equipment.head == "Brioso Roundlet +4" then
+		elseif set.head == "Brioso Roundlet +3" or set.head == "Brioso Roundlet +4" then
 			multiplier = multiplier + .2
 		end
 	elseif spell == "Sentinel's Scherzo" then
-		if player.equipment.feet == "Aoidos' Cothrn. +2" or player.equipment.feet == "Fili Cothurnes" or player.equipment.feet == "Fili Cothurnes +1" or player.equipment.feet == "Fili Cothurnes +2" or player.equipment.feet == "Fili Cothurnes +3" then
+		if set.feet == "Aoidos' Cothrn. +2" or set.feet == "Fili Cothurnes" or set.feet == "Fili Cothurnes +1" or set.feet == "Fili Cothurnes +2" or set.feet == "Fili Cothurnes +3" then
 			multiplier = multiplier + 0.1
 		end
 		--For Scherzo, Soul Voice and Marcato are multiplicative with Troubadour below
@@ -2438,7 +2431,6 @@ local function getSongDuration(spell)
 		end
 	end
 -- print(multiplier)
-
 	--base duration is multiplied by the total multiplier number we get from all relevant gear combined.
 	local total_duration = math.floor(120 * multiplier)
 
@@ -2455,21 +2447,9 @@ local function getSongDuration(spell)
 	return total_duration
 end
 
---Are we using a dummy instrument and not one for full strength songs?
--- local function isDummySong()
-
--- 	local is_dummy_song = false
-
--- 	if player.equipment.range == "Daurdabla" or player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
--- 		is_dummy_song = true
--- 	end
-
--- 	return is_dummy_song
-
--- end
-
 local function getMaxSongs()
-	max_songs = 2
+	local max_songs = 2
+	-- max_songs = 2
 
 	if player.equipment.range == "Daurdabla" then
 		if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
@@ -2595,8 +2575,9 @@ local function getCurrentSongList()
 		end
 	end
 
-	local header = ShowSongListHeader and "[SONG LIST         //songs]\n" or ""
-	local formatted_list = header
+	local temp_list = {}
+	local header = ShowSongListHeader and "[SONG LIST        //songs]" or ""
+	table.insert(temp_list, header)
 
 	--Combine columns into final string
 	if string.lower(SongListOrientation) == "horizontal" then
@@ -2605,23 +2586,28 @@ local function getCurrentSongList()
 			if #col > max_lines then max_lines = #col end
 		end
 		for i = 1, max_lines do
+			local temp_list_part = ''
 			for c = 1, #columns do
-				formatted_list = formatted_list..(columns[c][i] or string.rep(" ", 26))
+				temp_list_part = temp_list_part..(columns[c][i] or string.rep(" ", 26))
 				if c < #columns then
-					formatted_list = formatted_list.."│" --line between columns
+					temp_list_part = temp_list_part.."│" --line between columns
 				end
 			end
-			formatted_list = formatted_list.."\n"
+			table.insert(temp_list, temp_list_part)
+			-- formatted_list = formatted_list.."\n"
 		end
 	else --Vertical (default)
 		for _, col in ipairs(columns) do
 			for _, line in ipairs(col) do
-				formatted_list = formatted_list..line.."\n"
+				table.insert(temp_list, line)
+				-- formatted_list = formatted_list..line.."\n"
 			end
 		end
 	end
 
-	return formatted_list
+	local final_list = table.concat(temp_list, "\n")
+
+	return final_list
 end
 
 --Reset the current_songs list (full clear)
@@ -2635,7 +2621,7 @@ end
 
 --Set gear based on song and a few other factors
 local function setSongGear(song, instrument)
-	-- print(instrument)
+
 	local set_name = "buff_song"
 	local main_sub = hasDualWield() and "buff_song_dual_wield" or "buff_song_single_wield"
 	local is_dummy_song = player.equipment.range == inst.dummy or (instrument and instrument == inst.dummy)
@@ -2678,12 +2664,17 @@ local function setSongGear(song, instrument)
 	end
 
 	if instrument then --If we're sent an instrument then we have nitro up, therefore use buff main/sub
-		-- print('yeah')
-		equip(set_combine(sets[set_name], sets[main_sub], {range=instrument}))
+		local set = set_combine(sets[set_name], sets[main_sub], {range=instrument})
+		equip(set)
+		song_duration = getSongDuration(song, set)
 	elseif player.status == "Engaged" then
-		equip(set_combine(sets[set_name], {main=pair[1],sub=pair[2]}))
+		local set = set_combine(sets[set_name], {main=pair[1],sub=pair[2]})
+		equip(set)
+		song_duration = getSongDuration(song, set)
 	else
-		equip(set_combine(sets[set_name], sets[main_sub]))
+		local set = set_combine(sets[set_name], sets[main_sub])
+		equip(set)
+		song_duration = getSongDuration(song, set)
 	end
 
 end
@@ -2720,6 +2711,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	else
 		local status = player.status
 		hud_noti_shdw:text('Status: '..status)
@@ -3302,6 +3294,9 @@ end
 function midcast(spell)
 	if spell.type == 'BardSong' then
 		setSongGear(spell.english)
+		dummy_song = player.equipment.range == inst.dummy
+		soul_voice_song = buffactive['Soul Voice']
+		max_songs = getMaxSongs()
 	elseif spell.skill == 'Enfeebling Magic' then
 		local engaged = player.status == "Engaged" and {main=pair[1],sub=pair[2]} or nil
 		equip(set_combine(sets.enfeeble, engaged))
@@ -3334,13 +3329,6 @@ function aftercast(spell)
 		end
 	elseif spell.english == 'Clarion Call' and CCTimer and not spell.interrupted then
 		send_command('input /echo [Clarion Call] 3:00;wait 30;input /echo [Clarion Call] 2:30;wait 30;input /echo [Clarion Call] 2:00;wait 30;input /echo [Clarion Call] 1:30;wait 30;input /echo [Clarion Call] 1:00;wait 30;input /echo [Clarion Call] 0:30;wait 10;input /echo [Clarion Call] 0:20;wait 10;input /echo [Clarion Call] 0:10')
-	end
-	if spell.type == 'BardSong' and not spell.interrupted then
-		song_duration = getSongDuration(spell.english)
-		dummy_song = player.equipment.range == inst.dummy
-		-- dummy_song = isDummySong()
-		soul_voice_song = buffactive['Soul Voice']
-		max_songs = getMaxSongs()
 	end
 	choose_set()
 	if AutoSubCharge and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoPianissimo and spell.english == "Pianissimo") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
@@ -4024,20 +4012,24 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and subJobWithMP() and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and subJobWithMP() and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
@@ -4753,10 +4745,11 @@ windower.register_event('action',function(act)
 		if (act.param and spells[act.param] and spells[act.param].type == "BardSong") then
 			if act.targets[1].id and get_mob_by_id(act.targets[1].id).in_party then
 
+				local song_name = spells[act.param].en
+
 				for i = 1, act.target_count do
 					local target_id = act.targets[i].id
 					local target_name = target_id and get_mob_by_id(target_id).name
-					local song_name = spells[act.param].en
 
 					-- Initialize the player's song list if it doesn't exist
 					if target_name and current_songs[target_name] == nil then
@@ -4809,6 +4802,10 @@ windower.register_event('action',function(act)
 						end
 					end
 				end
+
+				dummy_song = false
+				soul_voice_song = false
+				max_songs = 2
 
 			end
 		end
