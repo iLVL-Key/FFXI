@@ -122,6 +122,9 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.1.6
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
+
 Version 20.1.5
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
@@ -547,6 +550,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.1.6
+- Adjusted the way Song Durations are calculated. Now bypasses checking what is equipped (which would be thrown off since precast and midcast are sent in the same packet) and instead reads directly from the set being sent for midcast.
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
+
 Version 3.1.5
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
@@ -674,6 +681,10 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.2.6
+- Adjusted the way Roll Durations are calculated. Now bypasses checking what is equipped (which would be thrown off since precast and midcast are sent in the same packet) and instead reads directly from the set being sent for midcast.
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
+
 Version 2.2.5
 - Fixed getting stuck in Danger gear set.
 
@@ -776,6 +787,9 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.2.1
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
 
 Version 16.2
 - Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
@@ -1359,6 +1373,9 @@ Version 3.0
  
 <summary>PLD</summary>
 
+Version 15.3.1
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
+
 Version 15.3
 - Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
 
@@ -1735,6 +1752,9 @@ Version 11.0
 <details>
  
 <summary>RUN</summary>
+
+Version 10.2.6
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
 
 Version 10.2.5
 - Fixed os.time() changes from previous update that broke some things. Oops.
@@ -2350,6 +2370,10 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.3.7
+- Adjusted AutoStrats to not activate when Immanence is active.
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
+
 Version 1.3.6
 - Fixed Movement Speed set not equipping correctly when Idle.
 
@@ -2392,6 +2416,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.2.1
+- Fixed Low MP Notification occasionally getting stuck under specific circumstances.
 
 Version 14.2
 - Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
