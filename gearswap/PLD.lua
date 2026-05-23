@@ -806,7 +806,7 @@ end
 
 
 
-FileVersion = '15.3'
+FileVersion = '15.3.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1711,6 +1711,8 @@ local function getStratChargeTimer()
 		strat_charge_timer = 120
 	elseif level >= 10 then
 		strat_charge_timer = 240
+	else
+		strat_charge_timer = nil
 	end
 
 	max_charges = 240 / strat_charge_timer
@@ -1886,6 +1888,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	elseif player.status == "Idle" and ((Mode == 'Auto' and player_in_combat) or Mode == "Kite") then
 		hud_noti_shdw:text('Status: Kiting')
 		hud_noti:text('Status: Kiting')
@@ -3854,6 +3857,9 @@ windower.register_event('zone change',function()
 
 	--Clear any debuffs
 	send_command('gs c ClearDebuffs')
+
+	--Reset Stratagem Charge Timer (for when you zone into or out of subjob restrictions areas)
+	getStratChargeTimer()
 
 end)
 
