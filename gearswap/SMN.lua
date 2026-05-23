@@ -624,7 +624,7 @@ end
 
 
 
-FileVersion = '14.2'
+FileVersion = '14.2.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1638,6 +1638,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	else
 		local status = player.status
 		hud_noti_shdw:text('Status: '..status)
@@ -3274,6 +3275,9 @@ windower.register_event('zone change',function()
 
 	--Clear any debuffs
 	send_command('gs c ClearDebuffs')
+
+	--Reset Stratagem Charge Timer (for when you zone into or out of subjob restrictions areas)
+	getStratChargeTimer()
 
 	--Unlock Transport spells
 	transport_locked = true
