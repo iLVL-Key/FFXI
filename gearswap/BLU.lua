@@ -311,7 +311,7 @@ color = {
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
 WeaponCycle = {
 	{"Tizona", "Bunzi's Rod"},
-	{"Tizona", "Almace"},
+	{"Tizona", "Zantetsuken"},
 	{"Tizona", "Thibron"},
 	{"Naegling", "Thibron"},
 	{"Maxentius", "Thibron"},
@@ -380,7 +380,7 @@ sets.Mode5.idle = set_combine(sets.Mode1.idle, {
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	legs="Carmine Cuisses +1",
+	right_ring="Shneddick Ring +1",
 }
 
 -- DPS (Dual Weild, Double/Triple Attack, Accuracy, DEX, Store TP, Attack)
@@ -455,7 +455,7 @@ sets.weapon_skill = {
 	waist="Sailfi Belt +1",
 	left_ear="Moonshade Earring",
 	right_ear="Hashi. Earring +2",
-	left_ring="Karieyh Ring +1",
+	left_ring="Epaminondas's Ring",
 	right_ring="Cornelia's Ring",
 	back={ name="Rosmerta's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Damage taken-5%',}},
 }
@@ -761,7 +761,7 @@ end
 
 
 
-FileVersion = '20.1.5'
+FileVersion = '20.1.6'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -1670,7 +1670,6 @@ local function getHUDAbils()
 
 	end
 end
-
 getHUDAbils()
 
 local function formatAMTime(input)
@@ -1816,6 +1815,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	else
 		local status = player.status
 		hud_noti_shdw:text('Status: '..status)
@@ -2618,7 +2618,7 @@ windower.register_event('prerender', function()
 			end
 		else
 			send_command('wait '..MoveCastDelay..';input '..captured.spell)
-				captured = {}
+			captured = {}
 			send_command('wait '..(MoveCastDelay + 1)..';gs c resetCapturedToggle')
 		end
 	end
@@ -3012,20 +3012,24 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay	
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay	
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
