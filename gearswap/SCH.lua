@@ -1098,7 +1098,7 @@ end
 
 
 
-FileVersion = '1.3.6'
+FileVersion = '1.3.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2211,6 +2211,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	else
 		local status = player.status
 		hud_noti_shdw:text('Status: '..status)
@@ -2683,7 +2684,7 @@ function precast(spell)
 		equip(set_combine(sets.fast_cast))
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		-- if AutoTRStrats and auto_valve_open and not (buffactive['amnesia'] or buffactive['impairment']) then
-		if AutoTRStrats and buffactive['Tabula Rasa'] and auto_valve_open and not (buffactive['amnesia'] or buffactive['impairment']) then
+		if AutoTRStrats and buffactive['Tabula Rasa'] and auto_valve_open and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Immanence']) then
 			auto_valve_open = false
 			local spell_name = spell.english
 			--Collect all abilities that this spell is associated with
