@@ -234,7 +234,7 @@ GMBind				=	'^g'	--Sets the keyboard shortcut you would like to cycle between Ge
 RCBind				=	'!h'	--Sets the keyboard shortcut you would like to activate the Ranged Cycle. ALT+H (!h) is default.
 WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
 								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
-KeepTPThreshold		=	3000		--Main/Sub slots in the Phantom Roll set will not equip when TP is above this number (set to 3000 to always switch).
+KeepTPThreshold		=	3000	--Main/Sub slots in the Phantom Roll set will not equip when TP is above this number (set to 3000 to always switch).
 LowHPThreshold		=	1000	--Below this number is considered Low HP.
 AutoSaveThreshold	=	1000	--If your HP goes below this number, a "save" will be used.
 CappedTPThreshold	=	2550	--Using a WS with this much TP or higher will use the Capped TP WS set instead.
@@ -516,14 +516,14 @@ sets.idle = {
 	left_ear="Alabaster Earring",
 	right_ear="Eabani Earring",
 	left_ring="Defending Ring",
-	right_ring="Shadow Ring",
+	right_ring="Shneddick Ring +1",
 }
 
 -- Movement Speed
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	legs="Carmine Cuisses +1",
+	-- legs="Carmine Cuisses +1",
 }
 
 -- Danger
@@ -622,7 +622,7 @@ sets.weapon_skill = {
 	waist="Sailfi Belt +1",
 	left_ear="Ishvara Earring",
 	right_ear="Moonshade Earring",
-	left_ring="Karieyh Ring +1",
+	left_ring="Epaminondas's Ring",
 	right_ring="Cornelia's Ring",
 	back={ name="Camulus's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
@@ -637,7 +637,7 @@ sets.ws_accuracy = {
 	feet="Chass. Bottes +3",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	left_ring="Karieyh Ring +1",
+	left_ring="Chirich Ring +1",
 	right_ring="Cornelia's Ring",
 }
 
@@ -771,7 +771,7 @@ sets["Aeolian Edge"].capped_tp = {
 sets["Exenterator"] = {
 	neck="Null Loop",
 	waist="Null Belt",
-	left_ring="Karieyh Ring +1",
+	left_ring="Epaminondas's Ring",
 	right_ring="Cornelia's Ring",
 	back="Null Shawl",
 }
@@ -1064,7 +1064,7 @@ end
 
 
 
-FileVersion = '2.2.5'
+FileVersion = '2.2.6'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2332,8 +2332,12 @@ getJPsAndMerits()
 
 local function getRollDuration()
 
-	--Rolls start with a base duration of 5 minutes (minus 2 seconds to get it to line up with in-game timer)
-	local roll_duration = 298
+	local use_mainsub = player.tp <= KeepTPThreshold
+	local main_sub = use_mainsub and {main=nil, sub=nil} or {main="", sub=""}
+	local set = set_combine(sets.phantom_roll, main_sub)
+
+	--Rolls start with a base duration of 5 minutes
+	local roll_duration = 300
 
 	--Job Point roll duration increase
 	roll_duration = roll_duration + (jp_duration_upgrades * 2) --2 seconds per upgrade
@@ -2342,45 +2346,44 @@ local function getRollDuration()
 	roll_duration = roll_duration + (winning_streak_merits * 20) --20 seconds per merit
 
 	--Weapons (we're going to have to assume the augment ranks are capped)
-	if player.equipment.main == "Rostam" then
-
+	if set.main == "Rostam" then
 		roll_duration = roll_duration + 60
-	elseif player.equipment.main == "Lanun Knife" then
+	elseif set.main == "Lanun Knife" then
 		roll_duration = roll_duration + 45
-	elseif player.equipment.main == "Commodore's Knife" then
+	elseif set.main == "Commodore's Knife" then
 		roll_duration = roll_duration + 30
 	end
-	if player.equipment.range == 'Compensator' then
+	if set.range == 'Compensator' then
 		roll_duration = roll_duration + 20
 	end
 
 	--Head (additional 6 seconds per Winning Streak merit)
-	if player.equipment.head == 'Comm. Tricorne +2' or player.equipment.head == 'Lanun Tricorne' or player.equipment.head == 'Lanun Tricorne +1' or player.equipment.head == 'Lanun Tricorne +2' or player.equipment.head == 'Lanun Tricorne +3' or player.equipment.head == 'Lanun Tricorne +4' then
+	if set.head == 'Comm. Tricorne +2' or set.head == 'Lanun Tricorne' or set.head == 'Lanun Tricorne +1' or set.head == 'Lanun Tricorne +2' or set.head == 'Lanun Tricorne +3' or set.head == 'Lanun Tricorne +4' then
 		roll_duration = roll_duration + (winning_streak_merits * 6)
 	end
 
 	--Hands
-	if player.equipment.hands == "Nvrch. Gants +1" then
+	if set.hands == "Nvrch. Gants +1" then
 		roll_duration = roll_duration + 20
-	elseif player.equipment.hands == "Nvrch. Gants +2" then
+	elseif set.hands == "Nvrch. Gants +2" then
 		roll_duration = roll_duration + 40
-	elseif player.equipment.hands == "Chasseur's Gants" then
+	elseif set.hands == "Chasseur's Gants" then
 		roll_duration = roll_duration + 45
-	elseif player.equipment.hands == "Chasseur's Gants +1" then
+	elseif set.hands == "Chasseur's Gants +1" then
 		roll_duration = roll_duration + 50
-	elseif player.equipment.hands == "Chasseur's Gants +2" then
+	elseif set.hands == "Chasseur's Gants +2" then
 		roll_duration = roll_duration + 55
-	elseif player.equipment.hands == "Chasseur's Gants +3" then
+	elseif set.hands == "Chasseur's Gants +3" then
 		roll_duration = roll_duration + 60
 	end
 
 	--Neck
-	if player.equipment.neck == "Regal Necklace" then
+	if set.neck == "Regal Necklace" then
 		roll_duration = roll_duration + 20
 	end
 
 	--Back
-	if player.equipment.back == "Camulus's Mantle" then
+	if set.back == "Camulus's Mantle" or set.back.name == "Camulus's Mantle" then
 		roll_duration = roll_duration + 30
 	end
 
@@ -2951,6 +2954,7 @@ local function setNotification()
 		hud_noti_shdw:text('«« Low MP »»')
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
+		send_command('wait 1;gs c ClearNotifications')
 	else
 		local status = player.status
 		hud_noti_shdw:text('Status: '..status)
@@ -3389,6 +3393,11 @@ function precast(spell)
 			local main_sub = use_mainsub and {main=nil, sub=nil} or {main="", sub=""}
 			equip(set_combine(sets.phantom_roll, luzafs_ring, main_sub))
 		end
+		if current_roll ~= spell.english then
+			DoubleUp.timer = 45
+			current_roll = spell.english
+			current_roll_timer = getRollDuration()
+		end
 	elseif spell.english == 'Double-Up' and DoubleUp.recast < 2 then
 		local luzafs_ring = LuzafsRing and sets.luzafs_ring or nil
 		equip(set_combine(sets.double_up, luzafs_ring))
@@ -3465,10 +3474,6 @@ function aftercast(spell)
 		local double_up = false
 		local snake_eye = true
 		displayRollInfo(act, double_up, snake_eye)
-	elseif spell.type == 'CorsairRoll' and current_roll ~= spell.english and not spell.interrupted then
-		DoubleUp.timer = 45
-		current_roll = spell.english
-		current_roll_timer = getRollDuration()
 	elseif spell.english == 'Crooked Cards' and not spell.interrupted then
 		next_roll_is_crooked = true
 	end
@@ -4146,20 +4151,24 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and subJobWithMP() and player and player.mpp <= 20 and not NotiLowMPToggle then
-			NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
-			lowMP = true
-			if AlertSounds then
-				play_sound(Notification_Bad)
+		if notifications.LowMP and subJobWithMP() and player then
+			if player.mpp <= 20 then
+				if not NotiLowMPToggle then
+					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
+					lowMP = true
+					if AlertSounds then
+						play_sound(Notification_Bad)
+					end
+					hud_noti_shdw:text('«« Low MP »»')
+					hud_noti:text('«« Low MP »»')
+					hud_noti:color(255,50,50)
+					NotiCountdown = NotiDelay
+					send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
+				end
+			elseif lowMP then
+				lowMP = false
+				setNotification()
 			end
-			hud_noti_shdw:text('«« Low MP »»')
-			hud_noti:text('«« Low MP »»')
-			hud_noti:color(255,50,50)
-			NotiCountdown = NotiDelay
-			send_command('wait 30;gs c NotiLowMPToggle') --wait 30 sec then turns the toggle back off
-		elseif notifications.LowMP and player and player.mpp > 20 and lowMP then
-			lowMP = false
-			setNotification()
 		end
 
 		--HP checks
