@@ -495,7 +495,7 @@ sets.idle = {
 	left_ear="Alabaster Earring",
 	right_ear="Kasuga Earring +2",
 	left_ring="Defending Ring",
-	right_ring="Karieyh Ring +1",
+	right_ring="Shadow Ring",
 	back="Null Shawl",
 }
 
@@ -503,7 +503,7 @@ sets.idle = {
 -- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
 -- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-	feet="Danzo Sune-ate",
+	right_ring="Shneddick Ring +1",
 }
 
 -- Oh Shit
@@ -1707,7 +1707,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-
 getHUDAbils()
 
 local function formatAMTime(input)
