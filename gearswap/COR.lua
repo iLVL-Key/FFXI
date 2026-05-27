@@ -1064,7 +1064,7 @@ end
 
 
 
-FileVersion = '2.2.6'
+FileVersion = '2.2.7'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3362,7 +3362,7 @@ function precast(spell)
 		local hachirin_no_obi = useHachirinNoObi(spell.english) and sets.hachirin_no_obi or nil
 		local high_acc_mob = spell.target.name and HighAccMobs[spell.target.name]
 		local accuracy_set = ((Mode == 'Mode3' or high_acc_mob) and not magical_ws[spell.english]) and sets.ws_accuracy or nil
-		equip(set_combine(sets.weapon_skill, capped_attack, capped_tp, hachirin_no_obi, accuracy_set))
+		equip(set_combine(sets.weapon_skill, ws_set, capped_attack, capped_tp, hachirin_no_obi, accuracy_set))
 		if spell.skill == 'Marksmanship' then
 			checkAmmo()
 		end
