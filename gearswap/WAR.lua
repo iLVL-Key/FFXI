@@ -955,7 +955,7 @@ end
 
 
 
-FileVersion = '10.3.3'
+FileVersion = '10.3.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2335,14 +2335,14 @@ function precast(spell)
 		elseif checkProcWeapons(player.equipment.main, player.equipment.sub) and string.find(world.area,'Abyssea') then
 			return
 		end
-		local ws_set = sets[spell.english]
+		local ws_set = sets[spell.english] or nil
 		local capped_attack = player.attack >= AttackCapThreshold and ws_set and ws_set.high_buff or nil
 		local capped_tp = player.tp >= CappedTPThreshold and ws_set and ws_set.capped_tp or nil
 		local hachirin_no_obi = useHachirinNoObi(spell.english) and sets.hachirin_no_obi or nil
 		local ygnass_resolve_1 = buffactive['Reive Mark'] and sets.ygnass_resolve_1 or nil
 		local high_acc_mob = player.target.name and HighAccMobs[player.target.name]
 		local ws_accuracy = ((Mode == 'Mode3' or high_acc_mob) and not magical_ws[spell.english]) and sets.ws_accuracy or nil
-		equip(set_combine(sets.weapon_skill, capped_attack, capped_tp, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
+		equip(set_combine(sets.weapon_skill, ws_set, capped_attack, capped_tp, hachirin_no_obi, ygnass_resolve_1, ws_accuracy))
 		if player.equipment.main == "Chango" and spell.english == "Upheaval" then
 			pre_AMTimer = 181
 		elseif (player.equipment.main == 'Ragnarok' and spell.english == "Scourge") or (player.equipment.main == 'Bravura' and spell.english == "Metatron Torment") then
