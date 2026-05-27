@@ -681,6 +681,9 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.2.7
+- Fixed Weapon Skills all using the base Weapon Skill set instead of their specific sets for individual Weapon Skills. Broke this some time in the last couple updates, woops. (Thanks turbotronixx!)
+
 Version 2.2.6
 - Adjusted the way Roll Durations are calculated. Now bypasses checking what is equipped (which would be thrown off since precast and midcast are sent in the same packet) and instead reads directly from the set being sent for midcast.
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
