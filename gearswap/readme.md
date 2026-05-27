@@ -2048,6 +2048,9 @@ Version 6.0.0
  
 <summary>SAM</summary>
 
+Version 16.3.4
+- Fixed Weapon Skills all using the base Weapon Skill set instead of their specific sets for individual Weapon Skills. Broke this some time in the last couple updates, woops. (Thanks turbotronixx!)
+
 Version 16.3.3
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
@@ -2725,6 +2728,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.3.4
+- Fixed Weapon Skills all using the base Weapon Skill set instead of their specific sets for individual Weapon Skills. Broke this some time in the last couple updates, woops. (Thanks turbotronixx!)
 
 Version 10.3.3
 - Fixed os.time() changes from previous update that broke some things. Oops.
