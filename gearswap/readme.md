@@ -812,7 +812,7 @@ Version 16.1.3
 - Adjusted all Weapon Skill sets to no longer combine in the sets themselves but in the rules instead.
 
 Version 16.1.2
--- Fixed an error in the code for checking if a party member has Immanence or Chain Affinity active.
+- Fixed an error in the code for checking if a party member has Immanence or Chain Affinity active.
 
 Version 16.1.1
 - Added `MoveCastDelay` Advanced Option. Allows you to adjust the delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
