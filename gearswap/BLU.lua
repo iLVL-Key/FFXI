@@ -129,6 +129,7 @@ AlertSounds		=	true	--[true/false]	Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoGearCheck	=	true	--[true/false]	Automatically checks and equips appropriate gear set on player movement.
 AutoMvmntSpeed	=	true	--[true/false]	Automatically equips Movement Speed set on player movement when idle.
+AutoPhalanxSet	=	true	--[true/false]	Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 AutoSubCharge	=	false	--[true/false]	Automatically attempts to keep Sublimation charging.
 TransportLock	=	true	--[true/false]	Cancels your first Transport spell and unlocks for 3 min or until zone.
 OccShadows		=	14		--				How many shadows does your Occultation create. Every 50 Blue Magic Skill is 1 shadow (ie 12 at 600 skill).
@@ -491,7 +492,7 @@ sets["Requiescat"] = {
 
 -- Chant du Cygne (80% DEX mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
-sets["Chant du Gyne"] = {
+sets["Chant du Cyne"] = {
 	body="Gleti's Cuirass",
 	legs="Gleti's Breeches",
 	waist="Fotia Belt",
@@ -508,7 +509,7 @@ sets["Expiacion"] = {
 
 }
 
--- Imperator (70% DEX, 70% MND, mod)
+-- Imperator (70% DEX, 70% MND mod)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Imperator"] = {
 
@@ -524,8 +525,8 @@ sets.fast_cast = {
 	feet="Amalric Nails +1", --6%
 	neck="Baetyl Pendant", --4%
 	waist="Witful Belt", --3%
-	left_ear="Odnowa Earring +1",
-	right_ear="Alabaster Earring",
+	left_ear="Alabaster Earring",
+	right_ear="Odnowa Earring +1",
 	left_ring="Defending Ring",
 	right_ring="Kishar Ring", --4%
 	back={ name="Rosmerta's Cape", augments={'VIT+20','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','"Fast Cast"+10','Phys. dmg. taken-10%',}}, --10%
@@ -663,8 +664,8 @@ sets.white_wind = set_combine(sets.healing, {
 	feet="Nyame Sollerets",
 	neck="Unmoving Collar +1",
 	waist="Plat. Mog. Belt",
-	left_ear="Odnowa Earring +1",
-	right_ear="Tuisto Earring",
+	left_ear="Tuisto Earring",
+	right_ear="Odnowa Earring +1",
 	left_ring="Ilabrat Ring",
 	right_ring="Prolix Ring",
 	back="Moonlight Cape",
@@ -675,6 +676,23 @@ sets.battery_charge = {
 	head="Amalric Coif +1",
 	back="Grapevine Cape",
 	waist="Gishdubar Sash",
+}
+
+-- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
+-- NOTE: Barrier Tusk IS NOT affected by Phalanx+ gear and does not use this set, this is specifically for /RDM casting Phalanx.
+-- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between or higher than 500 is wasted
+-- NOTE: This set is also used when another player casts a Phalanx II or Accessioned Phalanx on you.
+sets.phalanx = {
+	head="Herculean Helm",
+	body={ name="Herculean Vest", augments={'Pet: INT+5','Phalanx +3',}},
+	hands={ name="Herculean Gloves", augments={'INT+3','Crit.hit rate+2','Phalanx +3','Accuracy+12 Attack+12',}},
+	legs={ name="Herculean Trousers", augments={'DEX+7','"Mag.Atk.Bns."+1','Phalanx +4','Accuracy+17 Attack+17','Mag. Acc.+2 "Mag.Atk.Bns."+2',}},
+	feet={ name="Herculean Boots", augments={'Pet: STR+9','Accuracy+18','Phalanx +3','Accuracy+19 Attack+19',}},
+	waist="Plat. Mog. Belt",
+	left_ear="Alabaster Earring",
+	left_ring="Murky Ring",
+	right_ring="Defending Ring",
+	back="Moonlight Cape",
 }
 
 -- Cursna (Cursna+, Healing Magic)
@@ -761,7 +779,7 @@ end
 
 
 
-FileVersion = '20.1.6'
+FileVersion = '20.2'
 
 -------------------------------------------
 --            SPELL MAPPING              --
@@ -890,6 +908,7 @@ player_y = nil
 moving = false
 captured = {}
 captured_spell_toggle = false
+active_accession = {}
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -1840,6 +1859,18 @@ local function playerIsInAPartyOrAlliance()
 	return false
 end
 
+local party_positions = {'p1', 'p2', 'p3', 'p4', 'p5'}
+--Check that the given player is in the party
+local function isPlayerInParty(player_id)
+	for _, pos in ipairs(party_positions) do
+		local member = windower.ffxi.get_mob_by_target(pos)
+		if member and member.id == player_id then
+			return true
+		end
+	end
+	return false
+end
+
 --Is the actor a monster?
 local function isMonster(id)
 	local actor = windower.ffxi.get_mob_by_id(id)
@@ -2329,6 +2360,8 @@ function midcast(spell)
 		equip(sets.magic_accuracy)
 	elseif spell.english == 'Cursna' then
 		equip(sets.cursna)
+	elseif spell.english == 'Phalanx' then
+		equip(sets.phalanx)
 	elseif string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
 		equip(set_combine(sets.buff, sets.healing))
 	elseif spell.type == 'Trust' then
@@ -2605,12 +2638,12 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local clock = os.clock()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
-	if captured.timestamp and current_time > last_captured_poll + 0.1 then
-		last_captured_poll = current_time
-		if captured.timestamp > current_time then
+	if captured.timestamp and clock > last_captured_poll + 0.1 then
+		last_captured_poll = clock
+		if captured.timestamp > clock then
 			if not moving then
 				send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
@@ -2624,9 +2657,9 @@ windower.register_event('prerender', function()
 	end
 
 	--Polling rate
-	if current_time - last_poll >= 1 / PollingRate then
+	if clock - last_poll >= 1 / PollingRate then
 
-		last_poll = current_time
+		last_poll = clock
 
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
@@ -2655,6 +2688,13 @@ windower.register_event('prerender', function()
 				end
 				player_x = get_player.x
 				player_y = get_player.y
+			end
+		end
+
+		--Clear expired Accession timers
+		for id, timestamp in pairs(active_accession) do
+			if timestamp <= clock then
+				active_accession[id] = nil
 			end
 		end
 
@@ -3928,9 +3968,9 @@ windower.register_event('prerender', function()
 	end
 
 	--1 second heartbeat
-	if current_time - last_second >= 1 then
+	if clock - last_second >= 1 then
 
-		last_second = current_time
+		last_second = clock
 
 		if notifications.ReraiseReminder then
 			if RRRCountdown > 0 then
@@ -4070,6 +4110,9 @@ end
 -------------------------------------------
 
 windower.register_event('incoming text',function(org)
+
+	if not org then return end
+
 	if org:find('wishes to trade with you') then
 		if AlertSounds then
 			play_sound(Notification_Good)
@@ -4168,10 +4211,14 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---         DAMAGE NOTIFICATIONS          --
+--             ACTION EVENTS             --
 -------------------------------------------
 
 windower.register_event('action',function(act)
+
+	local ata = act.targets[1].actions[1]
+	local msg = ata.message
+	local target_id = act.targets[1].id
 
 	--Check if a monsters attack hits the player
 	if DangerMode == "Auto" and (not DangerPTOnly or playerIsInAPartyOrAlliance()) and isMonster(act.actor_id) then
@@ -4185,10 +4232,29 @@ windower.register_event('action',function(act)
 		end
 	end
 
-	if not notifications.Damage then return end
+	--Track Phalanx things our party is doing
+	if AutoPhalanxSet and isPlayerInParty(act.actor_id) then
+		if act.category == 4 then --Completion of spell
+			if act.param == 106 and active_accession[act.actor_id] then --Phalanx + Accession active
+				choose_set()
+				active_accession[act.actor_id] = nil --Remove active Accession after it's been used
+			elseif act.param == 107 and target_id == player.id then --Phalanx II on player
+				choose_set()
+			end
+		elseif act.category == 6 and msg == 100 then --Uses ability
+			if act.param == 218 then --Accession
+				active_accession = { --Player now has Accession active
+					[act.actor_id] = os.clock() + 60, --Accession wears off after 60 seconds
+				}
+			end
+		elseif act.category == 8 then --Start of spell
+			if (ata.param == 106 and active_accession[act.actor_id]) or (ata.param == 107 and target_id == player.id) then --Phalanx + Accession active or Phalanx II on player
+				equip(sets.phalanx)
+			end
+		end
+	end
 
-	local ata = act.targets[1].actions[1]
-	local msg = ata.message
+	if not notifications.Damage then return end
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
