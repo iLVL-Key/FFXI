@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Jingle'
-_addon.version = '2.6.1'
+_addon.version = '2.6.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'jingle','jin'}
 
@@ -305,6 +305,11 @@ function removeLeadingZeros(input)
 	--Return original if not purely numeric
 	if not str:match("^%d+$") then
 		return input
+	end
+
+	--Return original if the string is longer than 3 characters (preserving hex entries with no letters)
+	if #str <= 3 then
+		return str
 	end
 
 	--Remove leading zeroes
