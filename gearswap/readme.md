@@ -122,6 +122,11 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.2
+- Added gear set for Phalanx spell.
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+- Fixed misspelling "Chant Du Cyne" Weapon Skill gear set (thanks Kaminat!)
+
 Version 20.1.6
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
 
@@ -550,6 +555,10 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.2
+- Added gear set for Phalanx spell.
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+
 Version 3.1.6
 - Adjusted the way Song Durations are calculated. Now bypasses checking what is equipped (which would be thrown off since precast and midcast are sent in the same packet) and instead reads directly from the set being sent for midcast.
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
@@ -681,6 +690,9 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.3
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+
 Version 2.2.7
 - Fixed Weapon Skills all using the base Weapon Skill set instead of their specific sets for individual Weapon Skills. Broke this some time in the last couple updates, woops. (Thanks turbotronixx!)
 
@@ -790,6 +802,11 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.3
+- Added gear set for Phalanx spell
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+- Fixed missing checks to clear expired Chain Affinity and Immanence buffs that are tracked
 
 Version 16.2.1
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
@@ -1164,6 +1181,9 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.4
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+
 Version 8.3.3
 - Fixed os.time() changes from previous update that broke some things. Oops.
 
@@ -1375,6 +1395,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.4
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
 Version 15.3.1
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
@@ -1756,6 +1779,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.3
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+
 Version 10.2.6
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
 
@@ -2047,6 +2073,9 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.4
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
 Version 16.3.4
 - Fixed Weapon Skills all using the base Weapon Skill set instead of their specific sets for individual Weapon Skills. Broke this some time in the last couple updates, woops. (Thanks turbotronixx!)
@@ -2376,6 +2405,11 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.4
+- Added gear set for Phalanx spell.
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
+- Fixed missing checks to clear expired Chain Affinity and Immanence buffs that are tracked
+
 Version 1.3.7
 - Adjusted AutoStrats to not activate when Immanence is active.
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
@@ -2422,6 +2456,10 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.3
+- Added gear set for Phalanx spell.
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
 Version 14.2.1
 - Fixed Low MP Notification occasionally getting stuck under specific circumstances.
@@ -2728,6 +2766,9 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.4
+- Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
 Version 10.3.4
 - Fixed Weapon Skills all using the base Weapon Skill set instead of their specific sets for individual Weapon Skills. Broke this some time in the last couple updates, woops. (Thanks turbotronixx!)
