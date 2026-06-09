@@ -88,6 +88,9 @@ Open the `/Jingle/data/settings.xml` file to adjust these settings.
 
 ## Version History
 
+2.6.2
+- Fixed an issue with setting a target as a hex code without any letters in it and a leading zero (ie 029) would strip the leading zero and then not be able to correctly identify the intended target.
+
 2.6.1
 - Added `Lost Article` to the default targets.
 
