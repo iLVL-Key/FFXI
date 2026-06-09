@@ -307,8 +307,8 @@ function removeLeadingZeros(input)
 		return input
 	end
 
-	--Return original if the string is longer than 3 characters (preserving hex entries with no letters)
-	if #str <= 3 then
+	--Return original if the string is 3 characters (preserving hex entries with no letters)
+	if #str == 3 then
 		return str
 	end
 
