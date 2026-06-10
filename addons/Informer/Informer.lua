@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.4'
+_addon.version = '5.5'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -38,13 +38,12 @@ res = require('resources')
 defaults = {}
 
 defaults.first_load = true
-default_layout = '${job}(${mlvl}) | ${zone} [${zone_timer}] ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
+default_layout = '${job} | ${zone} [${zone_timer}] ${pos} ${direction} | ${day} (${time}) ${weather} | Inv: ${inventory} | ${food}'
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${mlvl} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
-defaults.layout.ac_help = '(NOTE: some data is updated when the packet for it is called, so may not be correct immediately upon loading the addon)'
-defaults.layout.ad_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
+defaults.layout.ab_help = 'List of placeholders: ${accolades} ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${sparks} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
+defaults.layout.ac_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
 defaults.layout.main = {}
 defaults.layout.main.brd = default_layout
 defaults.layout.main.blm = default_layout
@@ -229,6 +228,8 @@ moon_direction = nil
 title = nil
 time_in_zone = 0
 zone_timestamp = 0
+sparks = nil
+accolades = nil
 
 tnml = {
 	[2500] = 0, [5550] = 1, [8721] = 2, [11919] = 3, [15122] = 4, [18327] = 5, [21532] = 6, [24737] = 7, [27942] = 8, [31147] = 9, [41205] = 10, [48130] = 11, [53677] = 12, [58618] = 13, [63292] = 14, [67848] = 15, [72353] = 16, [76835] = 17, [81307] = 18, [85775] = 19, [109112] = 20, [127014] = 21, [141329] = 22, [153277] = 23, [163663] = 24, [173018] = 25, [181692] = 26, [189917] = 27, [197845] = 28, [205578] = 29, [258409] = 30, [307400] = 31, [353012] = 32, [395651] = 33, [435673] = 34, [473392] = 35, [509085] = 36, [542995] = 37, [575336] = 38, [606296] = 39, [769426] = 40, [951369] = 41, [1154006] = 42, [1379407] = 43, [1629848] = 44, [1907833] = 45, [2216116] = 46, [2557728] = 47, [2936001] = 48, [3354601] = 49, [3817561] = 50
@@ -270,37 +271,74 @@ function hideInformerBars()
 end
 
 register_event('incoming chunk', function(id, original, modified, injected, blocked)
+
 	if injected or blocked then return end
 	local packet = packets.parse('incoming', original)
-	--Master Level info
+
+	--Character stats
 	if id == 0x061 then
 		master_level = tnml[packet['Required Exemplar Points']]
 		synced_master_level = packet['Master Level']
 		title = packet['Title']
+		accolades = packet['Unity Points']
+
 	--Loading Inventory
 	elseif id == 0x01D then
 		loading_inv = packet['Flag'] == 0 and true or false
+
+	--Currencies update
+	elseif id == 0x113 then
+		accolades = packet['Unity Accolades']
+
+	--Sparks update
+	elseif id == 0x110 then
+		sparks = packet['Sparks Total']
 	end
+
 end)
 
--- Check if we have food active
+--Pull data from the last_incoming packets if found (loads data faster instead of waiting for a fresh packet update)
+function checkLastPackets()
+
+	local char_stats = windower.packets.last_incoming(0x061)
+	local curr_update = windower.packets.last_incoming(0x113)
+	local sparks_update = windower.packets.last_incoming(0x110)
+
+	if char_stats then
+		local parsed = packets.parse('incoming', char_stats)
+		master_level = tnml[parsed['Required Exemplar Points']]
+		synced_master_level = parsed['Master Level']
+		title = parsed['Title']
+		accolades = parsed['Unity Points']
+	end
+
+	if curr_update then
+		local parsed = packets.parse('incoming', curr_update)
+		accolades = parsed['Unity Accolades']
+	end
+
+	if sparks_update then
+		local parsed = packets.parse('incoming', sparks_update)
+		sparks = parsed['Sparks Total']
+	end
+
+end
+
+--Check if we have food active
 function foodActive()
 	local buffs = get_player().buffs
-
 	for _, buffId in ipairs(buffs) do
 		if buffId == 251 then
 			return true
 		end
 	end
-
 	return false
-
 end
 
--- Replace ${track:Item Name}
+--Replace ${track:Item Name}
 function updateTrackItems(loading)
 
-	-- Count the number of given item and return the number and the color
+	--Count the number of given item and return the number and the color
 	local function countItem(item_id)
 
 		if loading then
@@ -315,17 +353,16 @@ function updateTrackItems(loading)
 		local invColor = colors.none
 		local otherColor = colors.none
 
-		-- Find the item and get the count
+		--Find the item and get the count
 		for i, item in ipairs(inventory) do
 			if item.id == item_id then
 				invNum = invNum + item.count
-				--break
 			end
 		end
 
-		-- Iterate through each container
+		--Iterate through each container
 		for _, container in ipairs(containers) do
-			-- Find the item and add to the count if found
+			--Find the item and add to the count if found
 			for _, item in ipairs(container) do
 				if item.id == item_id then
 					otherNum = otherNum + item.count
@@ -333,7 +370,7 @@ function updateTrackItems(loading)
 			end
 		end
 
-		-- Determine the color based on the count / stack
+		--Determine the color based on the count / stack
 		if use_colors and invNum == 0 then
 			invColor = colors.bad
 		elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
@@ -352,7 +389,7 @@ function updateTrackItems(loading)
 
 	end
 
-	-- Find the id of an item based on its name
+	--Find the id of an item based on its name
 	local function getIdFromName(item_name)
 		for _, item in pairs(res.items) do
 			if item.name == item_name then
@@ -385,8 +422,9 @@ function updateTrackItems(loading)
 
 end
 
--- Update Zone
+--Update Zone
 function updateZone()
+
 	local zone_id = get_info().zone
 	local zone = res.zones[zone_id].name
 	local zone_width = options.min_width.zone
@@ -464,10 +502,9 @@ function updateZone()
 			region_name = "International Waters"
 		elseif zone_id == 223 or zone_id == 224 or zone_id == 225 or zone_id == 226 then
 			region_name = "International Airspace"
+		else
+			region_name = "Unknown Region"
 		end
-	end
-	if not region_name then
-		region_name = "Unknown Region"
 	end
 
 	zone_timestamp = os.time()
@@ -475,37 +512,27 @@ function updateZone()
 end
 
 function updateTimeInZone(time)
-
 	if not time then
 		time = os.time()
 	end
-
 	local seconds = math.max(time - zone_timestamp, 0)
-
 	local days = math.floor(seconds / 86400)
 	seconds = seconds % 86400
-
 	local hours = math.floor(seconds / 3600)
 	seconds = seconds % 3600
-
 	local min = math.floor(seconds / 60)
 	local sec = seconds % 60
-
 	local result = ""
-
 	if days > 0 then
 		result = string.format("%02d:", days)
 	end
-
 	if hours > 0 or days > 0 then
 		result = result..string.format("%02d:", hours)
 	end
-
 	time_in_zone = result..string.format("%02d:%02d", min, sec)
-
 end
 
--- Update Game Day
+--Update Game Day
 function updateGameDay()
 	local day_width = options.min_width.day
 	local day = string.format("%-"..day_width.."s", res.days[get_info().day].name)
@@ -516,7 +543,7 @@ function updateGameDay()
 	game_day = '\\cs('..game_day_color..')'..day..'\\cr'
 end
 
--- Update Game Time
+--Update Game Time
 function updateGameTime()
 	local game = get_info()
 	local game_time_hour = math.floor(game.time/60)
@@ -537,14 +564,14 @@ function updateGameTime()
 	game_time = '\\cs('..game_time_color..')'..formatted_time..'\\cr'
 end
 
--- Update Earth Time
+--Update Earth Time
 function updateEarthData()
 	earth_date = os.date(options.earth_date_format)
 	earth_day = os.date(options.earth_day_format)
 	earth_time = os.date(options.earth_time_format)
 end
 
--- Update Weather
+--Update Weather
 function updateWeather()
 	local weather_width = options.min_width.weather
 	local formatted_weather = string.format("%-"..weather_width.."s", res.weather[get_info().weather].name)
@@ -555,11 +582,10 @@ function updateWeather()
 	weather = '\\cs('..weather_color..')'..formatted_weather..'\\cr'
 end
 
--- Update Inventory
+--Update Inventory
 function updateInventory(loading)
 	local inventory_color = colors.none
 	local inv = ''
-
 	if loading then
 		inv = ' ?/?'
 	else
@@ -571,13 +597,11 @@ function updateInventory(loading)
 			inventory_color = colors.warning
 		end
 	end
-
 	local formatted_inventory = string.format("%5s", inv)
-
 	inventory = '\\cs('..inventory_color..')'..formatted_inventory..'\\cr'
 end
 
--- Update Food
+--Update Food
 function updateFood()
 	local player = get_player()
 	local food_width = options.min_width.food
@@ -597,10 +621,9 @@ function updateFood()
 	food = '\\cs('..food_color..')'..formatted_food..'\\cr'
 end
 
--- Update Reraise
+--Update Reraise
 function updateReraise()
-
-	-- Check if we have reraise active
+	--Check if we have reraise active
 	local function reraiseActive()
 		local buffs = get_player().buffs
 
@@ -625,21 +648,21 @@ function updateReraise()
 		end
 	end
 	reraise = '\\cs('..reraise_color..')'..rr..'\\cr'
-
 end
 
--- Update Player Name
+--Update Player Name
 function updatePlayerName()
 	name = get_player().name
 end
 
--- Update Player Job
+--Update Player Job
 function updatePlayerJob()
 	local player = get_player()
 	job = player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----')
+	jp_capped = player.main_job ~= "MON" and player.job_points[string.lower(player.main_job)].jp_spent == 2100 or nil
 end
 
--- Update TP
+--Update TP
 function updateTP(player_tp)
 	local tp_width = options.min_width.tp
 	local player = get_player()
@@ -652,7 +675,7 @@ function updateTP(player_tp)
 	tp = '\\cs('..tp_color..')'..player_tp..'\\cr'
 end
 
--- Update Gil
+--Update Gil
 function updateGil(player_tp)
 	local gil_width = options.min_width.gil
 	local player_gil = get_items().gil
@@ -660,7 +683,7 @@ function updateGil(player_tp)
 	gil = string.format("%-"..gil_width.."s", player_gil)
 end
 
--- Get Direction
+--Get Direction
 function getDirection()
 	local player = get_mob_by_target('me')
 	local facing = player and player.facing or 10
@@ -686,7 +709,7 @@ function getDirection()
 	return direction
 end
 
--- Get Target
+--Get Target
 function getTarget(name_type)
 	local player = get_player()
 	local target_width = options.min_width.target
@@ -777,25 +800,28 @@ end
 
 function updateInformerMain()
 
-	local mlvl = master_level or '--'
-	local smlvl = synced_master_level ~= master_level and synced_master_level.."/" or ''
+	local mlvl = jp_capped and master_level or '--'
+	local smlvl = synced_master_level ~= master_level and synced_master_level.."|" or ''
+	local formatted_job = job..(jp_capped and '('..smlvl..mlvl..')' or '')
 	local speed = get_mob_by_target('me') and math.floor(100 * (get_mob_by_target('me').movement_speed / 5 - 1) + .1)
-	local formatted_speed = speed and (speed >= 0 and '+' or '')..speed..'%'
+	local formatted_speed = speed and (speed >= 60 and "\\cs(40,140,255)" or "")..(speed >= 0 and '+' or '')..speed..'%'..(speed >= 60 and "\\cr" or "")
 	local target = get_mob_by_target('st','t')
 	local target_distance = target and (string.format("%5.2f", math.floor(target.distance:sqrt()*100)/100)) or ''
 	local formatted_title = title and res.titles[title].en or "Unknown Title"
+	local formatted_accolades = accolades and (accolades == 99999 and "\\cs(40,140,255)" or "")..addCommas(accolades)..(accolades == 99999 and "\\cr" or "") or "???"
+	local formatted_sparks = sparks and (sparks == 99999 and "\\cs(40,140,255)" or "")..addCommas(sparks)..(sparks == 99999 and "\\cr" or "") or "???"
 
 	local pos = get_position()
 
-	-- Replace placeholders
+	--Replace placeholders
 	local function replacePlaceholders(str, replacements)
 		return str:gsub("%${(.-)}", replacements)
 	end
 
-	-- Rebuild the text string to be displayed in the bar
+	--Rebuild the text string to be displayed in the bar
 	local placeholders = {
 		name = name,
-		job = job,
+		job = formatted_job,
 		gil = gil,
 		zone = zone_name,
 		region = region_name,
@@ -812,20 +838,21 @@ function updateInformerMain()
 		target = getTarget(),
 		target_w_hpp = getTarget("w_hpp"),
 		tp = tp,
-		mlvl = smlvl..mlvl,
 		reraise = reraise,
 		speed = formatted_speed,
 		distance = target_distance,
 		moon_percent = moon_percent,
 		moon_phase = moon_phase,
 		title = formatted_title,
-		zone_timer = time_in_zone
+		zone_timer = time_in_zone,
+		accolades = formatted_accolades,
+		sparks = formatted_sparks,
 	}
 	local text = replacePlaceholders(layout_main, placeholders)
 	local text_sub1 = replacePlaceholders(layout_sub1, placeholders)
 	local text_sub2 = replacePlaceholders(layout_sub2, placeholders)
 
-	-- Update the bars with the rebuilt text strings (the spaces add a touch of padding at the begining and end)
+	--Update the bars with the rebuilt text strings (the spaces add a touch of padding at the begining and end)
 	informer_main.current_string = ' '..text..' '
 	informer_sub1.current_string = ' '..text_sub1..' '
 	informer_sub2.current_string = ' '..text_sub2..' '
@@ -864,7 +891,7 @@ function updateInformerMain()
 		end
 	end
 
-	-- Hide while zoning
+	--Hide while zoning
 	if pos == "(?-?)" and not zoning then
 		zoning = true
 		hideInformerBars()
@@ -875,9 +902,9 @@ function updateInformerMain()
 
 end
 
--- Add commas to numbers to make them easier to read
+--Add commas to numbers to make them easier to read
 function addCommas(number)
-	-- Convert the number to a string
+	--Convert the number to a string
 	local formattedNumber = tostring(number)
 
 	local length = #formattedNumber
@@ -895,50 +922,50 @@ function addCommas(number)
 		end
 	end
 
-	-- Return the number (albeit as a string, we're not doing any math on it at this point)
+	--Return the number (albeit as a string, we're not doing any math on it at this point)
     return formattedNumber
 end
 
--- Is this player in our party
+--Is this player in our party
 function isInParty(id)
 	local actor = get_mob_by_id(id)
 
 	if actor == nil or not actor.in_party then
-		-- Not in our party
+		--Not in our party
 		return false
 	else
-		-- In our party
+		--In our party
 		return true
 	end
 
 end
 
--- Is this player in our alliance
+--Is this player in our alliance
 function isInAlliance(id)
 	local actor = get_mob_by_id(id)
 
 	if actor == nil or not actor.in_alliance then
-		-- Not in our alliance
+		--Not in our alliance
 		return false
 	else
-		-- In our alliance
+		--In our alliance
 		return true
 	end
 
 end
 
--- Record the last item used
+--Record the last item used
 register_event('action',function(act)
 	if not foodActive() and isInParty(act.actor_id) and act.category == 9 and act.targets[1].actions[1].message == 28 then
 		last_item_used = res.items[act.targets[1].actions[1].param].en
 	end
 end)
 
--- Gain buffs
+--Gain buffs
 register_event('gain buff', function(buff)
 	local player = get_player()
 
-	if buff == 251 then -- Food, so the last item used was food
+	if buff == 251 then --Food, so the last item used was food
 
 		--First check if we already have food saved, if do that means we just logged back into a character with food on
 		if settings.food[string.lower(player.name)] then
@@ -954,35 +981,43 @@ register_event('gain buff', function(buff)
 		last_item_used = nil --delete the last item used after we gain the food buff
 		updateFood()
 
-	elseif buff == 113 then -- Reraise
+	elseif buff == 113 then --Reraise
 		updateReraise()
 
-	elseif buff == 157 then -- SJ Restriction
+	elseif buff == 157 then --SJ Restriction
 		updatePlayerJob()
 
 	end
 end)
 
--- Lose buffs
+--Lose buffs
 register_event('lose buff', function(buff)
 	local player = get_player()
 
-	if buff == 251 and not char_loading then -- Food
+	if buff == 251 and not char_loading then --Food
 		settings.food[string.lower(player.name)] = nil
 		settings:save('all')
 		updateFood()
 
-	elseif buff == 113 then -- Reraise
+	elseif buff == 113 then --Reraise
 		updateReraise()
 
 	end
+end)
+
+--Level Up/Down
+register_event('level up', function(level)
+	updatePlayerJob()
+end)
+register_event('level down', function(level)
+	updatePlayerJob()
 end)
 
 register_event('prerender', function()
 
 	local time = os.time()
 
-	-- Main call to update the Informer bar
+	--Main call to update the Informer bar
 	if get_info().logged_in then
 		updateInformerMain()
 		if not char_loading then
@@ -996,7 +1031,7 @@ register_event('prerender', function()
 		end
 	end
 
-	-- Once per second...
+	--Once per second...
 	if time > earth_time_raw then
 		earth_time_raw = time
 		updateEarthData()
@@ -1007,7 +1042,7 @@ register_event('prerender', function()
 
 end)
 
--- Load
+--Load
 register_event('load', function()
 	if get_info().logged_in then
 		updateEarthData()
@@ -1024,13 +1059,14 @@ register_event('load', function()
 		updateTP()
 		updateMoon()
 		updateTimeInZone()
+		checkLastPackets()
 		if settings.first_load then
 			firstLoadMessage()
 		end
 	end
 end)
 
--- Login
+--Login
 register_event('login', function()
 	char_loading = true --prevents food clearing immediately on login
 	login_loading = true --prevents frame lag while loading inventory from a login
@@ -1058,13 +1094,13 @@ register_event('login', function()
 	updatePlayerJob()
 end)
 
--- Logout
+--Logout
 register_event('logout', function()
 	hideInformerBars()
 	last_item_used = nil --delete the last item used when we switch characters
 end)
 
--- Item movement
+--Item movement
 register_event('add item', function(bag,index,id,count)
 	updateTrackItems(login_loading)
 	updateInventory(login_loading)
@@ -1074,65 +1110,65 @@ register_event('remove item', function(bag,index,id,count)
 	updateInventory()
 end)
 
--- Job Change
+--Job Change
 register_event('job change', function()
 	updateTrackItems()
 	updatePlayerJob()
 end)
 
--- Zone Change
+--Zone Change
 register_event('zone change', function()
 	updateZone()
 	updatePlayerJob()
 end)
 
--- Time Change
+--Time Change
 register_event('time change', function()
 	updateGameTime()
 end)
 
--- Day Change
+--Day Change
 register_event('day change', function()
 	updateGameDay()
 end)
 
--- Weather Change
+--Weather Change
 register_event('weather change', function()
 	updateWeather()
 end)
 
--- TP Change
+--TP Change
 register_event('tp change', function(new_tp)
 	updateTP(new_tp)
 end)
 
--- Unrecognized command
+--Unrecognized command
 function displayUnregnizedCommand()
 	add_to_chat(220,'[Informer] '..('Unrecognized command. Type'):color(39)..(' //informer help'):color(1)..(' if you need help.'):color(39))
 end
 
 register_event('addon command',function(addcmd, ...)
 
-	-- Update the Main bar position
+	--Update the Main bar position
 	if addcmd == 'pos' or addcmd == 'posmain' or addcmd == 'mainpos' then
 		local pos = {...}
 
-		-- If there are not enough parameters then output the current position and remind how to update
+		--If there are not enough parameters then output the current position and remind how to update
 		if #pos < 2 then
 			add_to_chat(220,'[Informer] '..('Main Bar Position:'):color(36)..(' '..settings.pos.x..' '..settings.pos.y):color(200))
 			add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer mainpos 100 200'):color(1)..(')'):color(8))
 
-		-- X and Y coordinates are provided
+		--X and Y coordinates are provided
 		else
-			-- Take the provided string parameters and turn them into numbers
+			--Take the provided string parameters and turn them into numbers
 			settings.pos.x = tonumber(pos[1])
 			settings.pos.y = tonumber(pos[2])
 
-			-- Position must be numbers
+			--Position must be numbers
 			if settings.pos.x == nil or settings.pos.y == nil then
 				displayUnregnizedCommand()
 
-			-- Save the new setting, update the position, then alert the user
+			--Save the new setting, update the position, then alert the user
 			else
 				settings:save('all')
 				texts.pos(informer_main, settings.pos.x, settings.pos.y)
@@ -1141,26 +1177,26 @@ register_event('addon command',function(addcmd, ...)
 			end
 		end
 
-	-- Update the Sub1 bar position
+	--Update the Sub1 bar position
 	elseif addcmd == 'possub1' or addcmd == 'sub1pos' then
 		local pos = {...}
 
-		-- If there are not enough parameters then output the current position and remind how to update
+		--If there are not enough parameters then output the current position and remind how to update
 		if #pos < 2 then
 			add_to_chat(220,'[Informer] '..('Sub1 Bar Position: '):color(36)..(options.sub1.pos_x..' '..options.sub1.pos_y):color(200)..(options.sub1.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
 			add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub1pos 100 200'):color(1)..(')'):color(8))
 
-		-- X and Y coordinates are provided
+		--X and Y coordinates are provided
 		else
-			-- Take the provided string parameters and turn them into numbers
+			--Take the provided string parameters and turn them into numbers
 			options.sub1.pos_x = tonumber(pos[1])
 			options.sub1.pos_y = tonumber(pos[2])
 
-			-- Position must be numbers
+			--Position must be numbers
 			if options.sub1.pos_x == nil or options.sub1.pos_y == nil then
 				displayUnregnizedCommand()
 
-			-- Save the new setting, update the position, then alert the user
+			--Save the new setting, update the position, then alert the user
 			else
 				settings:save('all')
 				texts.pos(informer_sub1, options.sub1.pos_x, options.sub1.pos_y)
@@ -1169,26 +1205,26 @@ register_event('addon command',function(addcmd, ...)
 			end
 		end
 
-	-- Update the Sub2 bar position
+	--Update the Sub2 bar position
 	elseif addcmd == 'possub2' or addcmd == 'sub2pos' then
 		local pos = {...}
 
-		-- If there are not enough parameters then output the current position and remind how to update
+		--If there are not enough parameters then output the current position and remind how to update
 		if #pos < 2 then
 			add_to_chat(220,'[Informer] '..('Sub2 Bar Position: '):color(36)..(options.sub2.pos_x..' '..options.sub2.pos_y):color(200)..(options.sub2.visible and '' or (' Visible: '):color(8)..('Off'):color(200)))
 			add_to_chat(220,'[Informer] '..('Update by adding X and Y coordinates (ex.'):color(8)..(' //informer sub2pos 100 200'):color(1)..(')'):color(8))
 
-		-- X and Y coordinates are provided
+		--X and Y coordinates are provided
 		else
-			-- Take the provided string parameters and turn them into numbers
+			--Take the provided string parameters and turn them into numbers
 			options.sub2.pos_x = tonumber(pos[1])
 			options.sub2.pos_y = tonumber(pos[2])
 
-			-- Position must be numbers
+			--Position must be numbers
 			if options.sub2.pos_x == nil or options.sub2.pos_y == nil then
 				displayUnregnizedCommand()
 
-			-- Save the new setting, update the position, then alert the user
+			--Save the new setting, update the position, then alert the user
 			else
 				settings:save('all')
 				texts.pos(informer_sub2, options.sub2.pos_x, options.sub2.pos_y)
@@ -1197,21 +1233,21 @@ register_event('addon command',function(addcmd, ...)
 			end
 		end
 
-	-- Update the font size
+	--Update the font size
 	elseif addcmd == 'size' or addcmd == 'fontsize' then
 		local size = {...}
 
-		-- If there are no parameters then output the current size and remind how to update
+		--If there are no parameters then output the current size and remind how to update
 		if #size < 1 then
 			add_to_chat(220,'[Informer] '..('Font size:'):color(36)..(' '..settings.text.size):color(200))
 			add_to_chat(220,'[Informer] '..('Update by adding a number (ex.'):color(8)..(' //informer size 12'):color(1)..(')'):color(8))
 
-		-- Size number is provided
+		--Size number is provided
 		else
-			-- Take the provided string parameter and turn it into a number
+			--Take the provided string parameter and turn it into a number
 			settings.text.size = tonumber(size[1])
 					
-			-- Save the new setting, update the size, then alert the user
+			--Save the new setting, update the size, then alert the user
 			if settings.text.size == nil then
 				displayUnregnizedCommand()
 			else
@@ -1223,18 +1259,18 @@ register_event('addon command',function(addcmd, ...)
 			end
 		end
 
-	-- Turn bold on or off
+	--Turn bold on or off
 	elseif addcmd == 'bold' then
 		flags.bold = not flags.bold
 
-		-- Save the new setting, update the bold setting, then alert the user
+		--Save the new setting, update the bold setting, then alert the user
 		settings:save('all')
 		texts.bold(informer_main, flags.bold)
 		texts.bold(informer_sub1, flags.bold)
 		texts.bold(informer_sub2, flags.bold)
 		add_to_chat(220,'[Informer] '..('Bold:'):color(36)..(' %s':format(flags.bold and 'ON' or 'OFF')):color(200))
 
-	-- Turn colors on or off
+	--Turn colors on or off
 	elseif addcmd == 'color' or addcmd == 'colors' then
 		options.colors = not options.colors
 		use_colors = options.colors
@@ -1249,7 +1285,7 @@ register_event('addon command',function(addcmd, ...)
 		updateReraise()
 		updateTP()
 
-		-- Save the new setting, update the colors setting, then alert the user
+		--Save the new setting, update the colors setting, then alert the user
 		settings:save('all')
 		add_to_chat(220,'[Informer] '..('Colors:'):color(36)..(' %s':format(options.colors and 'ON' or 'OFF')):color(200))
 
