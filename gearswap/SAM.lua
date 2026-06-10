@@ -115,6 +115,7 @@ AlertSounds		=	true	--[true/false]	Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoGearCheck	=	true	--[true/false]	Automatically checks and equips appropriate gear set on player movement.
 AutoMvmntSpeed	=	true	--[true/false]	Automatically equips Movement Speed set on player movement when idle.
+AutoPhalanxSet	=	true	--[true/false]	Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 AutoStance		=	true	--[true/false]	Automatically activates and keeps Stances active.
 AutoSave		=	true	--[true/false]	Attempts to use High Jump when your HP gets critically low.
 							--				NOTE: Will not activate while in Seigan Stance.
@@ -746,6 +747,13 @@ sets.fast_cast = {
 	right_ring="Prolix Ring",
 }
 
+-- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
+-- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between or higher than 500 is wasted
+-- NOTE: This set is also used when another player casts a Phalanx II or Accessioned Phalanx on you.
+sets.phalanx = {
+
+}
+
 -- Snapshot
 sets.snapshot = {
 
@@ -876,7 +884,7 @@ end
 
 
 
-FileVersion = '16.3.4'
+FileVersion = '16.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -967,6 +975,7 @@ player_y = nil
 moving = false
 captured = {}
 captured_spell_toggle = false
+active_accession = {}
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -1902,6 +1911,18 @@ local function setNotification()
 
 end
 
+local party_positions = {'p1', 'p2', 'p3', 'p4', 'p5'}
+--Check that the given player is in the party
+local function isPlayerInParty(player_id)
+	for _, pos in ipairs(party_positions) do
+		local member = windower.ffxi.get_mob_by_target(pos)
+		if member and member.id == player_id then
+			return true
+		end
+	end
+	return false
+end
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -2587,12 +2608,12 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local clock = os.clock()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
-	if captured.timestamp and current_time > last_captured_poll + 0.1 then
-		last_captured_poll = current_time
-		if captured.timestamp > current_time then
+	if captured.timestamp and clock > last_captured_poll + 0.1 then
+		last_captured_poll = clock
+		if captured.timestamp > clock then
 			if not moving then
 				send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
@@ -2606,9 +2627,9 @@ windower.register_event('prerender', function()
 	end
 
 	--Polling rate
-	if current_time - last_poll >= 1 / PollingRate then
+	if clock - last_poll >= 1 / PollingRate then
 
-		last_poll = current_time
+		last_poll = clock
 
 		--Attempt an AutoSave
 		if AutoSave and player.sub_job == 'DRG' and player.hp <= AutoSaveThreshold and Alive and not (buffactive['Weakness'] or buffactive['amnesia'] or buffactive['impairment'] or buffactive['terror'] or buffactive['petrification'] or buffactive['sleep'] or Stance == 'Seigan') and player.status == "Engaged" and not (TownZones[world.area] or windower.ffxi.get_info().mog_house) and not AutoSaveUsed then
@@ -2644,6 +2665,13 @@ windower.register_event('prerender', function()
 				end
 				player_x = get_player.x
 				player_y = get_player.y
+			end
+		end
+
+		--Clear expired Accession timers
+		for id, timestamp in pairs(active_accession) do
+			if timestamp <= clock then
+				active_accession[id] = nil
 			end
 		end
 
@@ -3504,9 +3532,9 @@ windower.register_event('prerender', function()
 	end
 
 	--1 second heartbeat
-	if current_time - last_second >= 1 then
+	if clock - last_second >= 1 then
 
-		last_second = current_time
+		last_second = clock
 
 		if notifications.ReraiseReminder then
 			if RRRCountdown > 0 then
@@ -3682,6 +3710,9 @@ end
 -------------------------------------------
 
 windower.register_event('incoming text',function(org)
+
+	if not org then return end
+
 	if org:find('wishes to trade with you') then
 		if AlertSounds then
 			play_sound(Notification_Good)
@@ -3756,13 +3787,36 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---         DAMAGE NOTIFICATIONS          --
+--             ACTION EVENTS             --
 -------------------------------------------
 
 windower.register_event('action',function(act)
 
 	local ata = act.targets[1].actions[1]
 	local msg = ata.message
+	local target_id = act.targets[1].id
+
+	--Track Phalanx things our party is doing
+	if AutoPhalanxSet and isPlayerInParty(act.actor_id) then
+		if act.category == 4 then --Completion of spell
+			if act.param == 106 and active_accession[act.actor_id] then --Phalanx + Accession active
+				choose_set()
+				active_accession[act.actor_id] = nil --Remove active Accession after it's been used
+			elseif act.param == 107 and target_id == player.id then --Phalanx II on player
+				choose_set()
+			end
+		elseif act.category == 6 and msg == 100 then --Uses ability
+			if act.param == 218 then --Accession
+				active_accession = { --Player now has Accession active
+					[act.actor_id] = os.clock() + 60, --Accession wears off after 60 seconds
+				}
+			end
+		elseif act.category == 8 then --Start of spell
+			if (ata.param == 106 and active_accession[act.actor_id]) or (ata.param == 107 and target_id == player.id) then --Phalanx + Accession active or Phalanx II on player
+				equip(sets.phalanx)
+			end
+		end
+	end
 
 	--Weapon Skills and Skillchains:
 	if notifications.Damage and act.category == 3 and act.actor_id == player.id then
