@@ -28,6 +28,7 @@ Displays a bar with information (much like InfoBar!)
   - Can be disabled.
 
 ## Placeholders
+- **${accolades}** - Current Accolades amount.
 - **${day}** - Current Vana'diel day.
 - **${direction}** - Current direction your character is facing.
 - **${distance}** - Distance to current target/sub-target.
@@ -45,6 +46,7 @@ Displays a bar with information (much like InfoBar!)
 - **${pos}** - Current map position.
 - **${region}** - Current region.
 - **${reraise}** - Current reraise status.
+- **${sparks}** - Current Sparks amount.
 - **${speed}** - Current movement speed.
 - **${target}** - Current target/subtarget.
 - **${target_w_hpp}** - Current target/subtarget including its HP%.
@@ -114,6 +116,10 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 ------
 
 ## Changelog
+
+Version 5.5
+- Added Sparks and Accolades placeholders.
+- Merged Master Level into Job placeholder. Allows for better control if Master Level is shown or not based on Master status. Previous defualt layout would show `main/sub(--)` which the dashes in parenthesize might confuse new players as to what that meant.
 
 Version 5.4
 - Added Zone Timer placeholder.
