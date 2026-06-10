@@ -75,6 +75,7 @@ AlertSounds		=	true	--[true/false]	Plays a sound on alerts.
 UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
 AutoGearCheck	=	true	--[true/false]	Automatically checks and equips appropriate gear set on player movement.
 AutoMvmntSpeed	=	true	--[true/false]	Automatically equips Movement Speed set on player movement when idle.
+AutoPhalanxSet	=	true	--[true/false]	Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 AutoFullCircle	=	true	--[true/false]	Automatically uses Full Circle when you cast a Geo- spell with a Luopan already out.
 AutoEntrust		=	true	--[true/false]	Automatically uses Entrust when you cast an Indi- spell on a party member. The first cast onto
 							--				a party member will engage the AutoEntrust system, the second cast will execute as intended.
@@ -285,7 +286,6 @@ sets.idle_luopan = set_combine(sets.idle, {
 	body="Azimuth Coat +3",
 	hands="Geo. Mitaines +4",
 	feet="Bagua Sandals +4",
-	waist="Isa Belt",
 	back={ name="Nantosuelta's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Mag. Evasion+10','Pet: "Regen"+10','Pet: "Regen"+5',}},
 })
 
@@ -564,10 +564,12 @@ sets.enhancing = set_combine(sets.buff, {
 
 })
 
--- Phalanx (Phalanx+)
-sets.phalanx = set_combine(sets.enhancing, {
+-- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
+-- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between or higher than 500 is wasted
+-- NOTE: This set is also used when another player casts a Phalanx II or Accessioned Phalanx on you.
+sets.phalanx = {
 
-})
+}
 
 -- Aquaveil (Aquaveil+)
 sets.aquaveil = set_combine(sets.enhancing, {
@@ -658,7 +660,7 @@ end
 
 
 
-FileVersion = '16.2.1'
+FileVersion = '16.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -746,6 +748,7 @@ captured_spell_toggle = false
 active_skillchain_targets = {}
 active_chain_affinity = {}
 active_immanence = {}
+active_accession = {}
 
 local play_sound = windower.play_sound
 local addon_path = windower.addon_path
@@ -1644,12 +1647,6 @@ local function playerIsInAPartyOrAlliance()
 	return false
 end
 
---Is the actor a monster?
-local function isMonster(id)
-	local actor = windower.ffxi.get_mob_by_id(id)
-	return actor and actor.spawn_type == 16 and not actor.in_party
-end
-
 --Is this player in our party or alliance?
 local function isInOurPartyOrAlliance(id)
 	local actor = windower.ffxi.get_mob_by_id(id)
@@ -1665,6 +1662,24 @@ local function isInOurPartyOrAlliance(id)
 		end
 	end
 	return false --Not in our party or alliance
+end
+
+local party_positions = {'p1', 'p2', 'p3', 'p4', 'p5'}
+--Check that the given player is in the party
+local function isPlayerInParty(player_id)
+	for _, pos in ipairs(party_positions) do
+		local member = windower.ffxi.get_mob_by_target(pos)
+		if member and member.id == player_id then
+			return true
+		end
+	end
+	return false
+end
+
+--Is the actor a monster?
+local function isMonster(id)
+	local actor = windower.ffxi.get_mob_by_id(id)
+	return actor and actor.spawn_type == 16 and not actor.in_party
 end
 
 -------------------------------------------
@@ -2523,12 +2538,13 @@ windower.register_event('prerender', function()
 		return
 	end
 
-	local current_time = os.clock()
+	local clock = os.clock()
+	local time = os.time()
 
 	--Check for captured spells (to delay them while coming to a stop from moving)
-	if captured.timestamp and current_time > last_captured_poll + 0.1 then
-		last_captured_poll = current_time
-		if captured.timestamp > current_time then
+	if captured.timestamp and clock > last_captured_poll + 0.1 then
+		last_captured_poll = clock
+		if captured.timestamp > clock then
 			if not moving then
 				send_command('wait '..MoveCastDelay..';input '..captured.spell)
 				captured = {}
@@ -2542,9 +2558,9 @@ windower.register_event('prerender', function()
 	end
 
 	--Polling rate
-	if current_time - last_poll >= 1 / PollingRate then
+	if clock - last_poll >= 1 / PollingRate then
 
-		last_poll = current_time
+		last_poll = clock
 
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
@@ -2591,8 +2607,29 @@ windower.register_event('prerender', function()
 
 		--Clear expired Skillchain timers
 		for id, timestamp in pairs(active_skillchain_targets) do
-			if timestamp <= current_time then
+			if timestamp <= clock then
 				active_skillchain_targets[id] = nil
+			end
+		end
+
+		--Clear expired Chain Affinity timers
+		for id, timestamp in pairs(active_chain_affinity) do
+			if timestamp <= clock then
+				active_chain_affinity[id] = nil
+			end
+		end
+
+		--Clear expired Immanence timers
+		for id, timestamp in pairs(active_immanence) do
+			if timestamp <= clock then
+				active_immanence[id] = nil
+			end
+		end
+
+		--Clear expired Accession timers
+		for id, timestamp in pairs(active_accession) do
+			if timestamp <= clock then
+				active_accession[id] = nil
 			end
 		end
 
@@ -3265,9 +3302,9 @@ windower.register_event('prerender', function()
 	end
 
 	--1 second heartbeat
-	if current_time - last_second >= 1 then
+	if clock - last_second >= 1 then
 
-		last_second = current_time
+		last_second = clock
 
 		if EntrustCountdown > 0 then
 			EntrustCountdown = EntrustCountdown -1
@@ -3347,7 +3384,7 @@ windower.register_event('prerender', function()
 			party_count = 1
 		end
 
-		if transport_lock_timestamp ~= 0 and os.time() > transport_lock_timestamp then
+		if transport_lock_timestamp ~= 0 and time > transport_lock_timestamp then
 			transport_locked = true
 			transport_lock_timestamp = 0
 			windower.add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
@@ -3446,6 +3483,9 @@ end)
 -------------------------------------------
 
 windower.register_event('incoming text',function(org)
+
+	if not org then return end
+
 	if org:find('Luopan') and org:find('Dematerialize') and org:find('effect wears off.')then
 		DematerializeActive = false
 	elseif org:find('wishes to trade with you') then
@@ -3522,7 +3562,7 @@ windower.register_event('incoming text',function(org)
 end)
 
 -------------------------------------------
---         DAMAGE NOTIFICATIONS          --
+--             ACTION EVENTS             --
 -------------------------------------------
 
 windower.register_event('action',function(act)
@@ -3591,6 +3631,28 @@ windower.register_event('action',function(act)
 			end
 		end
 
+	end
+
+	--Track Phalanx things our party is doing
+	if AutoPhalanxSet and isPlayerInParty(act.actor_id) then
+		if act.category == 4 then --Completion of spell
+			if act.param == 106 and active_accession[act.actor_id] then --Phalanx + Accession active
+				choose_set()
+				active_accession[act.actor_id] = nil --Remove active Accession after it's been used
+			elseif act.param == 107 and target_id == player.id then --Phalanx II on player
+				choose_set()
+			end
+		elseif act.category == 6 and msg == 100 then --Uses ability
+			if act.param == 218 then --Accession
+				active_accession = { --Player now has Accession active
+					[act.actor_id] = os.clock() + 60, --Accession wears off after 60 seconds
+				}
+			end
+		elseif act.category == 8 then --Start of spell
+			if (ata.param == 106 and active_accession[act.actor_id]) or (ata.param == 107 and target_id == player.id) then --Phalanx + Accession active or Phalanx II on player
+				equip(sets.phalanx)
+			end
+		end
 	end
 
 	if not notifications.Damage then return end
