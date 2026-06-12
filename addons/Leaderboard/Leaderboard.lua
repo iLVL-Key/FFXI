@@ -748,8 +748,7 @@ function updateBox(box_display)
 		text = text..' Waiting For Data...'
 	else
 		--Pull the list of the top names/scores and add it to the text string
-		for i = 1, osd_show_number, 1
-		do
+		for i = 1, osd_show_number, 1 do
 			if info.name[i] ~= nil then --This may look redundant at first glance, but it removes any trailing empty places
 
 				local t_c = textColor
@@ -795,9 +794,9 @@ function updateBox(box_display)
 					end
 					text_width = text_width + 1
 				end
-				local left_text = cs..place..name..cr
+				local left_text = (i ~= 1 and '\n' or '')..cs..place..name..cr
 				spaces = spaces_cs..spaces..cr
-				local right_text = cs..score_info..cr..(i ~= osd_show_number and '\n' or '')
+				local right_text = cs..score_info..cr
 				text = text..left_text..spaces..right_text
 
 			end
