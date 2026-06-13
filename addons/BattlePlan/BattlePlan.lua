@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 _addon.name = 'Battle Plan'
-_addon.version = '3.1'
+_addon.version = '3.1.1'
 _addon.author = 'Key'
 _addon.commands = {'battleplan','bp'}
 
@@ -222,7 +222,7 @@ function updateBox()
     local text = T{}
 
     -- The header always goes first, at the top
-    text[1] = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')[ -- Battle Plan -- ]\\cr \n'
+    text[1] = ' \\cs('..headerColor.r..', '..headerColor.g..', '..headerColor.b..')[ -- Battle Plan -- ]\\cr'
 
     -- Starting at the bottom, check each line for content
     for i = #line, 1, -1
@@ -233,7 +233,7 @@ function updateBox()
         if line[i] ~= "" then
             for j = i, 1, -1
             do
-                text[j+1] = ' \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[j]..'\\cr \n'
+                text[j+1] = '\n \\cs('..textColor.r..', '..textColor.g..', '..textColor.b..')'..line[j]..'\\cr \n'
             end
 
         -- If a line does not have content (is empty), then do nothing and check the next line upward
