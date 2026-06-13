@@ -71,6 +71,9 @@ This is line 3
 
 ### Version History
 
+**3.1.1**
+- Fixed extra blank line issue introduced wiuth new Windower update.
+
 **3.1**
 - Fixed error introduced in patch 3.0.1 with party commands not working correctly.
 - Adjusted the Tutorial to now save your previous BP box content and restore it after running.
