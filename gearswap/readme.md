@@ -1779,6 +1779,9 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.4
+- Adjusted  `Auto-Parry` and `Auto-DT` down into just a single `Auto` mode. Now defaults to using the Tank-Parry set and includes a list of mobs to use the Tank-DT set for (see new `TANK DT MOBS` section).
+
 Version 10.3
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
