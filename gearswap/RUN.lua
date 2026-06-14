@@ -31,8 +31,7 @@ GEAR MODES
 
 Adjusts the sets used based on the situation.
 
-Auto-Parry		-	Automatically chooses appropriate gear sets to equip based on certain conditions. Uses the Combat-Parry tank set.
-Auto-DT			-	Automatically chooses appropriate gear sets to equip based on certain conditions. Uses the Combat-DT tank set.
+Auto			-	Automatically chooses appropriate gear sets to equip based on certain conditions.
 Combat-Parry	-	Equips gear sets as if you are always actively tanking. Uses the Combat-Parry tank set.
 Combat-DT		-	Equips gear sets as if you are always actively tanking. Uses the Combat-DT tank set.
 Neutral			-	Equips gear sets as if you are always neutral (not in battle).
@@ -114,17 +113,17 @@ Hide or show the HUD at any time by typing
 --               PRO TIPS                --
 -------------------------------------------
 
-There are 4 Modes available in this file:
-Auto*-		Will decide gear based on whether or not the game thinks you are in combat. Spells will
-			use their specific gear sets by themselves when you are not in combat (so you can get full
-			gear bonuses), and will override them with the SIRD set if you are in combat. Will use
-			idle/tank set if disengaged but in combat (ie kiting), or idle/refresh set if disengaged
-			and not in combat.
-Combat*-	Gear set choices will always behave as if you are in combat.
-Neutral-	Gear set choices will always behave as if you are not in combat.
-DPS-		Uses the DPS gear set when in combat.
-*Auto and Combat have 2 submodes, Parry and DT, that are for situations when you can and cannot parry
-(such as NMs that all moves are considered TP moves)
+There are 5 Modes available in this file:
+Auto:			Will decide gear based on whether or not the game thinks you are in combat. Spells will
+				use their specific gear sets by themselves when you are not in combat (so you can get full
+				gear bonuses), and will override them with the SIRD set if you are in combat. Will use
+				idle/tank set if disengaged but in combat (ie kiting), or idle/refresh set if disengaged
+				and not in combat. Tanking defaults to the `tank_parry` unless the mob you are engaged on is
+				in the Tank DT Mobs list (found directly above the Gear Sets section).
+Combat-Parry:	Gear set choices will always behave as if you are in combat. Uses the `tank_parry` gear set.
+Combat-DT:		Gear set choices will always behave as if you are in combat. Uses the `tank_dt` gear set.
+Neutral:		Gear set choices will always behave as if you are not in combat.
+DPS:			Uses the DPS gear set when in combat.
 
 NOTE: Auto should work fine in most cases, but be aware that the game isn't always correct about when you
 are in combat. For example, if you run by a mob and aggro it, you'll notice the battle music does not start.
@@ -203,23 +202,23 @@ notifications = {
 --           ADVANCED OPTIONS            --
 -------------------------------------------
 
-ShowHUD				=	true		--[true/false]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
-StartingGearMode	=	'Auto-Parry'--[Auto-Parry/Auto-DT/Combat-Parry/Combat-DT/Neutral/DPS]
-									--	Determines the Gear Mode you start in. Gear Mode can be changed at any time by using any
-									--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-DefaultRune			=	'Ignis'		--Starting Rune element for the Rune Activator function.
-GMBind				=	'^g'		--Sets the keyboard shortcut you would like to cycle between Gear Modes. CTRL+G (^g) is default.
-WCBind				=	'^h'		--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
-									--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
-AutoStanceWindow	=	60			--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
-LowHPThreshold		=	1000		--Below this number is considered Low HP.
-WarningRepeat		=	5			--Maximum number of times the Warning Sound will repeat, once per second.
-RRReminderTimer		=	3600		--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
-NotiDelay			=	6			--Delay in seconds before certain notifications will automatically clear.
-PollingRate			=	5			--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
-MoveCastWindow		=	1			--[#]  Window in seconds to wait to come a stop from moving before cassting a spell to help prevent interruption. Set to 0 to disable.
-MoveCastDelay		=	0.25		--[#]  Delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
-AddCommas			=	true		--[true/false]  Adds commas to damage numbers.
+ShowHUD				=	true	--[true/false]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
+StartingGearMode	=	'Auto'	--[Auto/Combat-Parry/Combat-DT/Neutral/DPS]
+								--	Determines the Gear Mode you start in. Gear Mode can be changed at any time by using any
+								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
+DefaultRune			=	'Ignis'	--Starting Rune element for the Rune Activator function.
+GMBind				=	'^g'	--Sets the keyboard shortcut you would like to cycle between Gear Modes. CTRL+G (^g) is default.
+WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
+								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
+AutoStanceWindow	=	60		--Time in seconds left before a Stance wears off that AutoStance will activate after another ability.
+LowHPThreshold		=	1000	--Below this number is considered Low HP.
+WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
+RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
+NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
+PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
+MoveCastWindow		=	1		--[#]  Window in seconds to wait to come a stop from moving before cassting a spell to help prevent interruption. Set to 0 to disable.
+MoveCastDelay		=	0.25	--[#]  Delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
+AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
 
 -------------------------------------------
 --              HUD RECAST               --
@@ -303,8 +302,7 @@ sub = {
 
 color = {
 	-- MODES --
-	AutoParry	= {r = 125, g = 200, b = 255},
-	AutoDT		= {r = 25, g = 150, b = 255},
+	Auto		= {r = 25, g = 150, b = 255},
 	CombatParry	= {r = 255, g = 125, b = 125},
 	CombatDT	= {r = 255, g = 125, b = 50},
 	Neutral		= {r = 150, g = 255, b = 150},
@@ -356,6 +354,61 @@ AbysseaProcCycle = {
 	{"Chocobo Wand", "Chanter's Shield"},
 	{"Hapy Staff", "Flanged Grip"},
 	--{"Main Slot", "Sub Slot"},
+}
+
+-------------------------------------------
+--             TANK DT MOBS              --
+-------------------------------------------
+
+-- These targets automatically use the Tank DT set while in Auto Mode.
+
+TankDTMobs = {
+	--Sortie
+	["Ghatjot"] = true,
+	["Leshonn"] = true,
+	["Skomora"] = true,
+	["Degei"] = true,
+	["Dhartok"] = true,
+	["Gartell"] = true,
+	["Triboulex"] = true,
+	["Aita"] = true,
+	["Aminon"] = true,
+	--Odyssey (Right now based on tanking a few of the A3 NMs on RUN and not being able to parry I'm just assuming all are like that)
+	["Dealan-dhe"] = true,
+	["Sgili"] = true,
+	["U Bnai"] = true,
+	["Gogmagog"] = true,
+	["Aristaeus"] = true,
+	["Raskovniche"] = true,
+	["Marmorkrebs"] = true,
+	["Gigelorum"] = true,
+	["Procne"] = true,
+	["Henwen"] = true,
+	["Xevioso"] = true,
+	["Ngai"] = true,
+	["Kalunga"] = true,
+	["Ongo"] = true,
+	["Mboze"] = true,
+	["Arebati"] = true,
+	["Bumba"] = true,
+	--Iron Giants
+	["Ironclad Cleaver"] = true,
+	["Ironclad Executioner"] = true,
+	["Ironclad Observer"] = true,
+	["Ironclad Severer"] = true,
+	["Ironclad Smiter"] = true,
+	["Ironclad Sunderer"] = true,
+	["Ironclad Triturator"] = true,
+	["Apex Ironclad"] = true,
+	["Ironclad"] = true,
+	["Voidwrought"] = true,
+	["Paramount Ironclad"] = true,
+	["Veiled Ironclad"] = true,
+	["Ironclad Harbinger"] = true,
+	["Ironclad Pulverizer"] = true,
+	["Ironclad Vaporizer"] = true,
+	["Ironside"] = true,
+	["Pallikari Ironclad"] = true,
 }
 
 -------------------------------------------
@@ -755,7 +808,7 @@ end
 
 
 
-FileVersion = '10.3'
+FileVersion = '10.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -786,7 +839,7 @@ TownZones = {
 -------------------------------------------
 
 sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
-fMode = {} fMode['Auto-Parry'] = 'AutoParry' fMode['Auto-DT'] = 'AutoDT' fMode['Combat-Parry'] = 'CombatParry' fMode['Combat-DT'] = 'CombatDT' fMode['Neutral'] = 'Neutral' fMode['DPS'] = 'DPS'
+fMode = {} fMode['Auto'] = 'Auto' fMode['Combat-Parry'] = 'CombatParry' fMode['Combat-DT'] = 'CombatDT' fMode['Neutral'] = 'Neutral' fMode['DPS'] = 'DPS'
 --debuffs table used so we're not spamming the Debuff Notifications with text updates (when they get flipped to true it stops updating)
 debuffs = {Amnesia = false, Animated = false, Charm = false, Curse = false, Doom = false, Encumbrance = false, Haunt = false, Impairment = false, Mute = false, None = false, Paralysis = false, Petrification = false, Plague = false, Silence = false, Sleep = false, Stun = false, Taint = false, Terror = false, Zombie = false}
 SIL = '    '
@@ -1913,7 +1966,7 @@ local function setNotification()
 		hud_noti:text('«« Low MP »»')
 		hud_noti:color(255,50,50)
 		send_command('wait 1;gs c ClearNotifications')
-	elseif player.status == "Idle" and ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player_in_combat) then
+	elseif player.status == "Idle" and (Mode == 'Auto' and player_in_combat) then
 		hud_noti_shdw:text('Status: Kiting')
 		hud_noti:text('Status: Kiting')
 		hud_noti:color(255,255,255)
@@ -1947,9 +2000,7 @@ end
 
 function self_command(command)
 	if command == 'Mode' then
-		if Mode == 'Auto-Parry' then
-			Mode = 'Auto-DT'
-		elseif Mode == 'Auto-DT' then
+		if Mode == 'Auto' then
 			Mode = 'Combat-Parry'
 		elseif Mode == 'Combat-Parry' then
 			Mode = 'Combat-DT'
@@ -1958,7 +2009,7 @@ function self_command(command)
 		elseif Mode == 'Neutral' then
 			Mode = 'DPS'
 		elseif Mode == 'DPS' then
-			Mode = 'Auto-Parry'
+			Mode = 'Auto'
 		end
 		hud_mode_shdw:text('Mode: '..Mode)
 		hud_mode:text('Mode: '..Mode)
@@ -2341,15 +2392,16 @@ end
 
 function choose_set()
 
+	local tank_dt_mob = player.target.name and TankDTMobs[player.target.name]
 	local low_hp = LowHP and sets.oh_shit or nil
 
 	if player.status == "Resting" then
 		equip(set_combine(sets.idle, sets.rest, low_hp))
 	elseif player.status == "Engaged" then
-		if Mode == 'Auto-Parry' or Mode == 'Combat-Parry' then
-			equip(set_combine(sets.tank_parry, low_hp))
-		elseif Mode == 'Auto-DT' or  Mode == 'Combat-DT' then
+		if (Mode == 'Auto' and tank_dt_mob) or Mode == 'Combat-DT' then
 			equip(set_combine(sets.tank_dt, low_hp))
+		elseif Mode == 'Auto' or Mode == 'Combat-Parry' then
+			equip(set_combine(sets.tank_parry, low_hp))
 		elseif Mode == 'Neutral' then
 			equip(set_combine(sets.idle, low_hp))
 		elseif Mode == 'DPS' then
@@ -2367,7 +2419,7 @@ function choose_set()
 		elseif TownZones[world.area] or windower.ffxi.get_info().mog_house then
 			equip(set_combine(sets.town, sets.movement_speed))
 		else
-			local auto_combat = ((Mode == 'Auto-Parry' or Mode == 'Auto-DT') and player_in_combat)
+			local auto_combat = (Mode == 'Auto' and player_in_combat)
 			local base_set = auto_combat and sets.tank_dt or sets.idle
 			local get_player = windower.ffxi.get_player()
 			local autorun = get_player and get_player.autorun
@@ -3302,26 +3354,18 @@ windower.register_event('prerender', function()
 		end
 
 		--Auto Mode Combat check
-		if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
+		if Mode == 'Auto' then
 			if windower.ffxi.get_player() and windower.ffxi.get_player().in_combat then
 				if not player_in_combat then
 					player_in_combat = true
 					choose_set()
 					setNotification()
-					-- hud_mode_shdw:text('Mode: Auto (Combat)')
-					-- hud_mode:text('Mode: Auto (Combat)')
-					-- local c = Mode == 'Auto-Parry' and color.CombatParry or color.CombatDT
-					-- hud_bg_color:bg_color(c.r,c.g,c.b)
 				end
 			else
 				if player_in_combat then
 					player_in_combat = false
 					choose_set()
 					setNotification()
-					-- hud_mode_shdw:text('Mode: Auto (Neutral)')
-					-- hud_mode:text('Mode: Auto (Neutral)')
-					-- local c = color.Neutral
-					-- hud_bg_color:bg_color(c.r,c.g,c.b)
 				end
 			end
 		end
@@ -3401,11 +3445,11 @@ windower.register_event('prerender', function()
 			hud_mode_shdw:text('Mode: '..Mode..' (Beast)')
 			hud_mode:text('Mode: '..Mode..' (Beast)')
 		else
-			if Mode == 'Auto-Parry' or Mode == 'Auto-DT' then
+			if Mode == 'Auto' then
 				if player_in_combat then
 					hud_mode_shdw:text('Mode: '..Mode..' (Combat)')
 					hud_mode:text('Mode: '..Mode..' (Combat)')
-					local c = Mode == 'Auto-Parry' and color.CombatParry or color.CombatDT
+					local c = color.Auto
 					hud_bg_color:bg_color(c.r,c.g,c.b)
 				else
 					if TownZones[world.area] or windower.ffxi.get_info().mog_house then
