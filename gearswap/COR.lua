@@ -2578,6 +2578,7 @@ local function displayRollInfo(act, double_up, snake_eye)
 			"EMOTIONAL DAMAGE",
 			"*KOLO SWEARING*",
 			"YOU DID THIS TO ME",
+			"THAT'S SHOWBIZ, BABY!",
 		}
 
 		--20% chance to throw in some sass
