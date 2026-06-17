@@ -117,9 +117,12 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 
 ## Changelog
 
+Version 5.5.1
+- Fixed subjob level not resetting correctly when losing SJ Restriction buff.
+
 Version 5.5
 - Added Sparks and Accolades placeholders.
-- Merged Master Level into Job placeholder. Allows for better control if Master Level is shown or not based on Master status. Previous defualt layout would show `main/sub(--)` which the dashes in parenthesize might confuse new players as to what that meant.
+- Merged Master Level into Job placeholder. Allows for better control if Master Level is shown or not based on Master status. Previous defualt layout would show `main/sub(--)` which the dashes in parentheses might confuse new players as to what that meant.
 
 Version 5.4
 - Added Zone Timer placeholder.
