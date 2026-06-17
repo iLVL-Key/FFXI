@@ -632,7 +632,7 @@ end
 
 
 
-FileVersion = '14.3'
+FileVersion = '14.3.1'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -750,6 +750,8 @@ transport_locked = true
 transport_lock_timestamp = 0
 strat_charge_timer = 0 --used to calculate number of Stratagem charges available (based on SCH level)
 strat_charges = 0 --number of Stratagem charges available
+max_charges = 3
+strat_flash_counter = 3
 player_x = nil
 player_y = nil
 moving = false
@@ -811,9 +813,6 @@ ElementalSiphon.flashed = true
 LightArts.flashed = true
 ManaCede.flashed = true
 Sublimation.flashed = true
-
-max_charges = 3
-strat_flash_counter = 3
 
 --Space out each line and column properly
 HUDposYLine2 = HUDposYLine1 + LineSpacer
@@ -1343,11 +1342,11 @@ local function formatAbils(input,input_sh)
 			local formattedString = ''
 			if input == 'Stratagems' then
 
-				local charges_lost = math.ceil(recast / strat_charge_timer)
-				strat_charges = math.max(0, max_charges - charges_lost)
+				local charges_lost = strat_charge_timer and math.ceil(recast / strat_charge_timer) or 0
+				strat_charges = strat_charge_timer and math.max(0, max_charges - charges_lost) or 0
 
 				-- To Next Charge
-				local tnc = recast > strat_charge_timer and recast % strat_charge_timer or recast
+				local tnc = strat_charge_timer and recast > strat_charge_timer and recast % strat_charge_timer or recast
 
 				if strat_charges == max_charges then
 					formattedString = formatOutputString(startingString, maxLength - 2)..'|'..max_charges
@@ -1481,9 +1480,11 @@ local function getStratChargeTimer()
 		strat_charge_timer = 120
 	elseif level >= 10 then
 		strat_charge_timer = 240
+	else
+		strat_charge_timer = nil
 	end
 
-	max_charges = 240 / strat_charge_timer
+	max_charges = strat_charge_timer and 240 / strat_charge_timer or 0
 	strat_flash_counter = max_charges
 
 end
