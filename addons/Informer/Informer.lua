@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.5'
+_addon.version = '5.5.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -1001,6 +1001,9 @@ register_event('lose buff', function(buff)
 
 	elseif buff == 113 then --Reraise
 		updateReraise()
+
+	elseif buff == 157 then --SJ Restriction
+		updatePlayerJob()
 
 	end
 end)
