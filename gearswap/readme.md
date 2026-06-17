@@ -803,6 +803,9 @@ Version 1.0 BETA-1
 
 <summary>GEO</summary>
 
+Version 16.3.1
+- Fixed errors when sub Scholar level is below 10
+
 Version 16.3
 - Added gear set for Phalanx spell
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
@@ -1395,6 +1398,9 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.4.1
+- Fixed errors when sub Scholar level is below 10
 
 Version 15.4
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
@@ -2459,6 +2465,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.3.1
+- Fixed errors when sub Scholar level is below 10
 
 Version 14.3
 - Added gear set for Phalanx spell.
