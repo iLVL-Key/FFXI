@@ -3,17 +3,17 @@
 ## Features
 ### QOL Improvements
 Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.  
-- Automatically uses an Echo Drop or Remedy instead of spell when you are silenced.
-- Automatically activates and keeps Majesty active.
-- Automatically activates and keeps Stances (Hasso/Seigan) active.
-- Automatically equips Movement Speed gear while you are moving.
+- Automatically* uses an Echo Drop or Remedy instead of spell when you are silenced.
+- Automatically* activates and keeps Majesty active.
+- Automatically* activates and keeps Stances (Hasso/Seigan) active.
+- Automatically* equips Movement Speed gear while you are moving.
 - Delays casting if you're coming to a stop from moving to help prevent "spell interrupted" even though you KNOW you weren't moving!
 - Set your specific macro book and page for that job (and common subjobs) when the file loads.
 - DD jobs will attempt to use a "save" when you are at low HP (High Jump, Chakra, etc depending on main/sub job).
 - Reminder to put Reraise up if it's down.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
-- NOTE 1: All of the "auto" things will still require you to perform some action, depending on what it is, in order to trigger. None of them will act on their own without user input.
+- *NOTE 1: All of the "auto" things will still require you to perform some action, depending on what it is, in order to trigger. None of them will act on their own without user input.
 - NOTE 2: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
 
 ### Gear Modes
@@ -44,7 +44,7 @@ In general, each HUD has..
 - Status Notifications. Things like Sneak & Invis, WS & SC damage, party invites, and others general things to be notified of.
 - Debuff Notifications. A number of the more common/important debuffs (ie Paralyze, Amnesia, Silence) are displayed in their own slots side-by-side, whereas the debuffs that fully debilitate you (ie Charm, Terror, Sleep) take priority and are displayed on top of those others.
 - Gear Mode. Files that have this feature will also change background color of the HUD based on which mode is currently active.
-- AftermathWeapon Notifications. Displays your currently equipped weapon(s) and Aftermath info (including potency and timers!) when appropriate, as well as a TP meter behind it.
+- Aftermath Weapon Notifications. Displays your currently equipped weapon(s) and Aftermath info (including potency and timers!) when appropriate, as well as a TP meter behind it.
 - Recasts. Display 6 CUSTOMIZABLE ability/spell recasts (GREEN is currently active, ORANGE is not active but not ready to use, RED is not active but ready to use). The brackets indicate if the ability/spell is ready to use currently (GREEN is ready, RED is not ready). Gives a short flash when it is available to use again.  
 - Some files show more specialized information such as SMN Avatars, GEO bubbles (with realtime potency numbers!), and RUN runes.  
 
