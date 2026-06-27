@@ -44,6 +44,12 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - A simplified list of all monsters aggressive to you/your party.
 - XP Bar
   - Displays XP, CP, or EP in a bar meter with dynamic information based on your current job.
+- Chat Bar
+  - Displays tabs for All, Say, Tell, Party, LS1, LS2, Unity, and Shout.
+  - Each tab can be individually disabled if you don't want or need it.
+  - Messages will persist between logouts and different characters.
+  - By default will hold up to a maximum of 500 messages before oldest are removed.
+  - Can be minimized to a bar when you don't need it, or maximized to a window to read messages.
 - Focus Target.
   - A customizable list of targets to automatically track in a dedicated bar.
   - Update this list by name, id, or your current cursor target.
@@ -230,6 +236,27 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
 | → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
+| `chat` | The On Screen Display box for the Aggro List. |
+| → `bar_width` | Width in characters of the bar. This can also be adjusted by dragging the ↔ icon. |
+| → `bg_alpha` | Opacity level for the background in this section (0-255). |
+| → `display_you_for_outgoing` | Messages sent by your current character will display in the message log as from "YOU" instead of your character name. |
+| → `font` | Text within this section is this font (MUST be a monospaced font for UI elements to line up properly). |
+| → `indent_width` | Number of spaces allowed for the message sender name and it's formatting before the message begins. |
+| → `max_lines` | Maximum number of message lines displayed in the window. This can also be adjusted by dragging the ↕ icon. |
+| → `max_message_limit` | Maximum number of messages saved before oldest are deleted. |
+| → `minimized` | Controls if the bar is currently minimized or not. Can be toggled by clicking the □ and ▬ icons. |
+| → `pad` | Padding around the bar |
+| → `pos` | X and Y position of the Chat bar. |
+| → `save_to_file` | Saves all current messages to an external file, allowing messages to persist between reloads of the addon. |
+| → `show` | Show the Chat bar. |
+| → `show_during_zoning` | Continue to display the Chat bar while zoning. |
+| → `show_message_counter` | Display the current number of messages in memory compared to the `max_message_limit`. |
+| → `show_timestamps` | Display a timestamp in front of each message. |
+| → `size` | Font size of the text within this section. |
+| → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
+| → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
+| → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
+| → `tabs` | Toggle individual chat tabs on or off. |
 | `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target`<br>`xp` | These sections are for the 6 bars.<br>NOTE: Not all sections have all options. |
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
@@ -315,6 +342,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.9
+- Added Chat Bar.
+- Added Blind I & II, Paralyze I & II, and Slow I & II to the list of spells that get boosted with Quick Draw. (You will need to make sure to get the 6 new icons representing them.)
+- Added Flash and Stun debuffs.
 
 Version 4.8
 - Added XP Bar. Displays XP, CP, or EP in a bar meter with dynamic information based on your current job (Job/Master level, Merit Points, Job Points, current/required XP/CP/EP, points per hour, kills per hour, points per kill, and seconds per kill).
