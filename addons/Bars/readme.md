@@ -27,6 +27,9 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 <br><br><br>
 ![Bars_xp](https://github.com/user-attachments/assets/c89cbc68-d50f-4370-897d-9ed129fe0094)  
 ↑ The XP bar in Exemplar Points mode showing various stats, including Kills Per Hour, Points Per Kill, and Seconds Per Kill.
+<br><br><br>
+![Bars_chat](https://github.com/user-attachments/assets/358f5f3f-b1d3-4be4-9c27-a243dff6ddf9)  
+↑ The Chat bar showing the All tab with messages from different chat channels.
 <br><br>
 ## Features
 - Target Actions.
