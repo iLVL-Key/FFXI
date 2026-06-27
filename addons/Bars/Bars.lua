@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.8'
+_addon.version = '4.9 BETA-9'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -53,7 +53,7 @@ register_event = windower.register_event
 windower_path = windower.windower_path
 
 defaults = {
-	bg = {alpha = 240, red = 0, green = 0, blue = 0},
+	bg = {alpha = 240, red = 18, green = 18, blue = 20},
 	text = {
 		alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas',
 		drop_shadow = {
@@ -313,6 +313,38 @@ defaults = {
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 1,
 		},
+		chat = {
+			bar_width = 60,
+			bg_alpha = 200,
+			display_you_for_outgoing = true,
+			font = 'Consolas',
+			indent_width = 15,
+			max_lines = 10,
+			max_message_limit = 500,
+			minimized = true,
+			pad = 8,
+			pos = {x = windower.get_windower_settings().ui_x_res - 750, y = 25},
+			save_to_file = true,
+			show = true,
+			show_during_zoning = true,
+			show_message_counter = true,
+			show_timestamps = true,
+			size = 10,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 1,
+			tabs = {
+				say = true,
+				party = true,
+				linkshell1 = true,
+				linkshell2 = true,
+				tell = true,
+				shout = true,
+				yell = true,
+				unity = true,
+				dmg = false,
+			},
+		},
 		focus_target = {
 			bar_size = 10,
 			bar_width = 50,
@@ -536,7 +568,7 @@ defaults = {
 	},
 	colors = {
 		bar_bg = {
-			normal = {r = 0, g = 0, b = 0},
+			normal = {r = 18, g = 18, b = 20},
 			dead = {r = 150, g = 30, b = 30},
 		},
 		target = {
@@ -624,7 +656,17 @@ defaults = {
 			xp_meter = {r = 0, g = 165, b = 40},
 			jp_meter = {r = 45, g = 140, b = 255},
 			ep_meter = {r = 117, g = 60, b = 148},
-		}
+		},
+		chat = {
+			all = {r = 240, g = 240, b = 240},
+			party = {r = 90, g = 255, b = 255},
+			ls1 = {r = 180, g = 255, b = 130},
+			ls2 = {r = 30, g = 255, b = 30},
+			say = {r = 240, g = 240, b = 240},
+			shoutyell = {r = 200, g = 120, b = 100},
+			unity = {r = 255, g = 255, b = 125},
+			tell = {r = 238, g = 117, b = 238}
+		},
 	},
 }
 
@@ -1083,9 +1125,7 @@ xp_update_interval = settings.options.update_intervals.xp
 
 --Format RGB values with leading zeros (helps prevent an issue with the shadow text not lining up correctly)
 function formatRGB(value)
-
 	return string.format("%03d", value)
-
 end
 
 color = settings.colors
@@ -1194,10 +1234,16 @@ custom_spells = {
 	[9230]	= "Boosted Bio",
 	[9231]	= "Boosted Bio II",
 	[9232]	= "Boosted Bio III",
+	[9254]	= "Boosted Blind",
+	[9276]	= "Boosted Blind II",
 	[9235]	= "Boosted Burn",
 	[9236]	= "Boosted Frost",
+	[9058]	= "Boosted Paralyze",
+	[9080]	= "Boosted Paralyze II",
 	[9237]	= "Boosted Choke",
 	[9238]	= "Boosted Rasp",
+	[9056]	= "Boosted Slow",
+	[9079]	= "Boosted Slow II",
 	[9239]	= "Boosted Shock",
 	[9240]	= "Boosted Drown",
 	[9219]	= "Comet",
@@ -1339,6 +1385,312 @@ target_bar_pixel_height = 0
 num_party1_members = 0
 num_party2_members = 0
 num_party3_members = 0
+
+chat_calculated_char_width = 0
+chat_calculated_char_height = 0
+chat_initialized = false
+chat_width_resizing = false
+chat_height_resizing = false
+chat_minimized = settings.sections.chat.minimized
+chat_grabbed_window = false
+chat_grabbed_scrollbar = false
+chat_min_char_width = 0 --(set dynamically below based on enabled tabs)
+chat_min_max_lines = 5
+chat_max_raw_history = settings.sections.chat.max_message_limit
+chat_drag_offset_x = 0
+chat_drag_offset_y = 0
+chat_last_outbound = { --used to fix occasional duplicated outgoing chat
+	text = "",
+	mode = -1,
+	time = 0
+}
+chat_box = {
+	current_tab = 'All', -- Default focus view on load
+	raw_history = {}, 
+	tab_order = {'All', 'Say', 'Tell', 'Party', 'Linkshell1', 'Linkshell2', 'Unity', 'ShoutYell', 'DMG'},
+	tabs = {
+		All = {
+			name = "All",
+			color = color.chat.all,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Say = {
+			name = "Say",
+			color = color.chat.say,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Party = {
+			name = "Party",
+			color = color.chat.party,
+			messages = {}, 
+			has_new = false,
+			scroll_offset = 0
+		},
+		Linkshell1 = {
+			name = "LS1",
+			color = color.chat.ls1,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Linkshell2 = {
+			name = "LS2",
+			color = color.chat.ls2,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		ShoutYell = {
+			name = "Shout",
+			color = color.chat.shoutyell,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Unity = {
+			name = "Unity",
+			color = color.chat.unity,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Tell = {
+			name = "Tell",
+			color = color.chat.tell,
+			messages = {},
+			scroll_offset = 0,
+			has_new = false,
+		},
+		DMG = {
+			name = "DMG",
+			color = color.chat.all,
+			messages = {},
+			scroll_offset = 0,
+			has_new = false,
+		},
+	}
+}
+
+--Formats channel decorations, forces player name capitalization, truncates long names, and pads to margin
+function formatSenderHeader(sender, source_tab, view_key, tell_target)
+
+	local player = get_player()
+
+	--Sender name adjustments
+	if tell_target then
+		sender = tell_target
+	elseif player and settings.sections.chat.display_you_for_outgoing and sender:lower() == player.name:lower() then
+		sender = "YOU"
+	end
+
+	--Sender name wrappers
+	local prefix = ""
+	local suffix = ""
+
+	if source_tab == 'Party' then
+		prefix, suffix = "(", ")"
+	elseif source_tab == 'Linkshell1' then
+		--Only include the LS number if we are viewing the combined 'All' tab
+		if view_key == 'All' then
+			prefix, suffix = "[1]<", ">"
+		else
+			prefix, suffix = "<", ">"
+		end
+	elseif source_tab == 'Linkshell2' then
+		if view_key == 'All' then
+			prefix, suffix = "[2]<", ">"
+		else
+			prefix, suffix = "<", ">"
+		end
+	elseif source_tab == 'Say' then
+		prefix, suffix = "", ":"
+	elseif source_tab == 'Shout' then
+		prefix, suffix = "[S]", ":"
+	elseif source_tab == 'Yell' then
+		prefix, suffix = "[Y]", ":"
+	elseif source_tab == 'Unity' then
+		prefix, suffix = "{", "}"
+	elseif source_tab == 'Tell' then
+		if tell_target then
+			prefix, suffix = "To ", ":"
+		else
+			prefix, suffix = "", ">>"
+		end
+	else
+		prefix, suffix = "[", "]"
+	end
+
+	local wrapper_len = #prefix + #suffix
+	local total_allotted = settings.sections.chat.indent_width
+
+	--Truncate name if needed
+	local max_name_len = total_allotted - wrapper_len
+
+	--Check the mob_abbreviations.lua list first, just in case
+	if abbreviate_common_mob_names then
+		for key, abbreviation in pairs(mob_abbreviations_data) do
+			sender = sender:gsub(key, abbreviation, 1)
+		end
+	end
+
+	if #sender > max_name_len then
+		local cut_length = math.max(0, max_name_len - 1)
+		sender = sender:sub(1, cut_length).."…"
+	end
+
+	local header = prefix..sender..suffix
+	local current_len = #header
+	local needed_padding = math.max(0, total_allotted - current_len)
+
+	return header..(" "):rep(needed_padding).." "
+end
+
+--Word Wrapper
+function wrapTextByChars(sender_header, message_body, char_limit, indent_spaces)
+	local lines = {}
+	local pad = (" "):rep(indent_spaces or 0)
+
+	local current_line = sender_header or pad
+	local is_first_word = true
+
+	local max_text_width_per_line = char_limit - #pad
+
+	for word in message_body:gmatch("%S+") do
+		--If an individual word is physically wider than a clean row's allotment
+		if #word > max_text_width_per_line then
+
+			if current_line ~= "" and current_line ~= pad then
+				table.insert(lines, current_line)
+				current_line = pad
+			end
+
+			local word_index = 1
+			while word_index <= #word do
+				local available_space = char_limit - #current_line
+
+				if available_space < 1 then
+					table.insert(lines, current_line)
+					current_line = pad
+					available_space = max_text_width_per_line
+				end
+
+				local chunk = word:sub(word_index, word_index + available_space - 1)
+
+				if word_index + #chunk > #word then
+					current_line = current_line .. chunk
+				else
+					table.insert(lines, current_line .. chunk)
+					current_line = pad
+				end
+
+				word_index = word_index + #chunk
+			end
+
+			is_first_word = false
+		else
+			local test_line
+			if is_first_word and sender_header then
+				test_line = current_line..word
+				is_first_word = false
+			else
+				test_line = (current_line == "" or current_line == pad) and (current_line..word) or (current_line.." "..word)
+			end
+
+			if #test_line > char_limit then
+				if current_line ~= "" and current_line ~= pad then
+					table.insert(lines, current_line)
+				end
+				current_line = pad .. word
+			else
+				current_line = test_line
+			end
+		end
+	end
+
+	if current_line ~= "" and current_line ~= pad then
+		table.insert(lines, current_line)
+	end
+
+	return lines
+end
+
+--Re-wrap text history with destination-specific header wrappers, timestamp histories, and dynamic margins
+function rebuildWrappedHistory()
+	for _, tab_data in pairs(chat_box.tabs) do
+		tab_data.messages = {}
+	end
+
+	local usable_width = settings.sections.chat.bar_width - 1
+	local base_indent = settings.sections.chat.indent_width
+
+	local last_senders_by_view = {}
+	local last_sources_by_view = {}
+
+	for _, entry in ipairs(chat_box.raw_history) do
+
+		local primary_tab = entry.tab
+		if entry.tab == 'Shout' or entry.tab == 'Yell' then
+			primary_tab = 'ShoutYell'
+		end
+
+		local targets = { primary_tab, 'All' }
+
+		for _, view_key in ipairs(targets) do
+			local target_tab = chat_box.tabs[view_key]
+			if target_tab then
+
+				--Assemble our timestamp string prefix from history entries if enabled
+				local timestamp_prefix = ""
+				if settings.sections.chat.show_timestamps and entry.time then
+					timestamp_prefix = entry.time.." "
+				end
+
+				local total_layout_indent = base_indent + #timestamp_prefix + 1
+				local pass_header = nil
+
+				if last_senders_by_view[view_key] == entry.sender and last_sources_by_view[view_key] == entry.tab then
+					--Keep timestamp, but turn name space into an empty padding block
+					pass_header = timestamp_prefix..(" "):rep(base_indent).." "
+				else
+					local base_header = formatSenderHeader(entry.sender, entry.tab, view_key)
+					pass_header = timestamp_prefix..base_header
+					
+					last_senders_by_view[view_key] = entry.sender
+					last_sources_by_view[view_key] = entry.tab
+				end
+
+				local wrapped = wrapTextByChars(pass_header, entry.text, usable_width, total_layout_indent)
+				for _, line in ipairs(wrapped) do
+					table.insert(target_tab.messages, {
+						text = line,
+						source_tab = entry.tab 
+					})
+				end
+			end
+		end
+	end
+end
+
+--Location of the chat file
+chat_file = files.new('data\\chat.lua')
+
+chat_help_msg = "--This file stores live chat messages as they come in, handled entirely within the addon itself. There are no options or settings to adjust in here. Oldest messages will be automatically deleted once the number of messages hits the limit (see data/settings.xml > sections > chat > max_message_limit), and can be manually deleted by tab/channel or in it's entirety via the 'Clear Tab' or 'Clear All' buttons in the chat window. Messages are stored here for persistance across reloads and in case you want to copy the chat log externally.\n\n"
+
+--If the data\chat.lua file doesn't exist, create it
+if not chat_file:exists() then
+
+	chat_file:write(chat_help_msg..'return {\n'..sortedTableString(chat_box.raw_history, '    ')..'\n}')
+
+else
+	--File already exists, load it
+	chat_box.raw_history = require('data.chat')
+	rebuildWrappedHistory()
+end
+
 Screen_Test = false
 screen_test_focus_target = {
 	name = "Focus Target",
@@ -1438,6 +1790,7 @@ job_points_stored = nil
 xp_table = {}
 cp_table = {}
 ep_table = {}
+ctrl_down = false
 
 wide_scan_exclude_zones = S{
 	"Western Adoulin","Eastern Adoulin","Celennia Memorial Library","Silver Knife","Bastok Markets","Bastok Mines","Metalworks","Port Bastok","Chateau d'Oraguille","Northern San d'Oria","Port San d'Oria","Southern San d'Oria","Heavens Tower","Port Windurst","Windurst Walls","Windurst Waters","Windurst Woods","Lower Jeuno","Port Jeuno","Ru'Lude Gardens","Upper Jeuno","Aht Urhgan Whitegate","The Colosseum","Tavnazian Safehold","Southern San d'Oria [S]","Bastok Markets [S]","Windurst Waters [S]","Mhaura","Selbina","Rabao","Kazham","Norg","Nashmau","Mog Garden","Leafallia","Chocobo Circuit"
@@ -1448,6 +1801,207 @@ tnml = {
 }
 
 --CREATE IMAGE/TEXT OBJECTS
+
+--CHAT BAR
+
+chat_ui = {
+	tabs = {}
+}
+
+function updateChatUIPositions(base_x, base_y)
+	chat_ui.bg_window:pos(base_x - settings.sections.chat.pad, base_y - settings.sections.chat.pad)
+
+	if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
+		local running_x = base_x
+		local separation_gap_chars = 2
+
+		for _, tab_key in ipairs(chat_box.tab_order) do
+			local tab_data = chat_box.tabs[tab_key]
+			local obj = chat_ui.tabs[tab_key]
+
+			if obj and tab_data then
+				local is_enabled = true
+				if tab_key == 'ShoutYell' then
+					is_enabled = (settings.sections.chat.tabs.shout ~= false) or (settings.sections.chat.tabs.yell ~= false)
+				elseif tab_key ~= 'All' then
+					is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+				end
+				if is_enabled then
+					obj:pos(running_x, base_y)
+					local current_tab_total_chars = 1 + #tab_data.name
+					local step_distance = (current_tab_total_chars + separation_gap_chars) * chat_calculated_char_width
+					running_x = running_x + step_distance
+				end
+			end
+		end
+
+		--Align the Toggle button all the way to the right
+		local toggle_btn_x = base_x + ((settings.sections.chat.bar_width - 1) * chat_calculated_char_width)
+		chat_ui.toggle_btn:pos(toggle_btn_x, base_y)
+
+		--Align the scroll system all the way to the right
+		local max_lines = settings.sections.chat.max_lines
+		local scroll_x = base_x + ((settings.sections.chat.bar_width - 1) * chat_calculated_char_width)
+		local scroll_y_top = base_y + 27
+
+		--Position the scroll background
+		chat_ui.scroll_bar:pos(scroll_x, scroll_y_top)
+
+		--Handle sliding the scroll handle up and down
+		local active_tab = chat_box.tabs[chat_box.current_tab]
+		local total_lines = #active_tab.messages
+
+		if total_lines > max_lines then
+			local max_scrollable_slots = total_lines - max_lines
+			local current_scroll_ratio = active_tab.scroll_offset / max_scrollable_slots
+
+			local scroll_y_bottom = scroll_y_top + ((max_lines - 1) * chat_calculated_char_height)
+
+			local total_track_pixel_span = scroll_y_bottom - scroll_y_top
+			local pixel_offset_from_bottom = current_scroll_ratio * total_track_pixel_span
+			local handle_y = scroll_y_bottom - pixel_offset_from_bottom
+
+			chat_ui.scroll_handle:pos(scroll_x + 1, handle_y)
+		end
+
+		--Footer alignment
+		local footer_y = base_y + 27 + (max_lines * chat_calculated_char_height) + 4 -- The +4 adds a little spacing
+
+		--Align the Resize Width Handle all the way to the right
+		chat_ui.resize_width_handle:pos(scroll_x, footer_y)
+
+		--Align the Resize Height Handle all the way to the left
+		chat_ui.resize_height_handle:pos(base_x, footer_y)
+
+		--Clear All Button (left of the resize handle)
+		local clear_all_chars = 12 -- Length of "[Clear All]" (plus 1 to give a little space)
+		local clear_all_x = scroll_x - (clear_all_chars * chat_calculated_char_width)
+		chat_ui.clear_all_btn:pos(clear_all_x, footer_y)
+
+		--Clear Tab Button (left of the Clear All button)
+		local clear_tab_chars = 12 -- Length of "[Clear Tab]" (plus 1 to give a little space)
+		local clear_tab_x = clear_all_x - (clear_tab_chars * chat_calculated_char_width)
+		chat_ui.clear_tab_btn:pos(clear_tab_x, footer_y)
+
+		--Align Message Counter to the far left
+		local counter_x = base_x + (chat_calculated_char_width * 2)
+		chat_ui.message_counter:pos(counter_x, footer_y)
+	end
+
+	chat_ui.divider:pos(base_x, base_y + 13)
+	chat_ui.body:pos(base_x, base_y + 27)
+end
+
+function applyBaseChatBarStyle(obj)
+	obj:font(settings.sections.chat.font)
+	obj:size(settings.sections.chat.size)
+	obj:bg_visible(false)
+	obj:draggable(false)
+	obj:stroke_width(1)
+	obj:stroke_color(0,0,0)
+	obj:stroke_alpha(255)
+end
+
+--Chat BG Window Object
+chat_ui.bg_window = texts.new()
+chat_ui.bg_window:font(settings.sections.chat.font)
+chat_ui.bg_window:size(settings.sections.chat.size)
+chat_ui.bg_window:bg_alpha(settings.sections.chat.bg_alpha)
+chat_ui.bg_window:bg_visible(true)
+chat_ui.bg_window:pad(settings.sections.chat.pad)
+chat_ui.bg_window:draggable(false)
+chat_ui.bg_window:bg_color(18,18,20)
+
+--Chat Tab Objects
+for _, tab_key in ipairs(chat_box.tab_order) do
+	chat_ui.tabs[tab_key] = texts.new()
+	applyBaseChatBarStyle(chat_ui.tabs[tab_key])
+end
+
+--Chat Horizontal Divider Line Object
+chat_ui.divider = texts.new()
+applyBaseChatBarStyle(chat_ui.divider)
+
+--Chat Body/Message Box Object
+chat_ui.body = texts.new()
+applyBaseChatBarStyle(chat_ui.body)
+chat_ui.body:bold(true)
+
+--Chat Scroll Bar Background Track Object
+chat_ui.scroll_bar = texts.new()
+applyBaseChatBarStyle(chat_ui.scroll_bar)
+chat_ui.scroll_bar:bg_color(0, 0, 0)
+chat_ui.scroll_bar:bg_alpha(100)
+chat_ui.scroll_bar:bg_visible(true)
+chat_ui.scroll_bar:stroke_alpha(0)
+
+--Chat Scroll Bar Handle Object
+chat_ui.scroll_handle = texts.new()
+applyBaseChatBarStyle(chat_ui.scroll_handle)
+chat_ui.scroll_handle:text("█")
+chat_ui.scroll_handle:bg_visible(false)
+chat_ui.scroll_handle:stroke_alpha(0)
+
+--Chat Toggle Minimize/Maximize Button Object
+chat_ui.toggle_btn = texts.new()
+applyBaseChatBarStyle(chat_ui.toggle_btn)
+chat_ui.toggle_btn:stroke_width(0.5)
+chat_ui.toggle_btn:stroke_color(255,255,255)
+
+--Chat Footer Control Bar Elements
+chat_ui.resize_width_handle = texts.new()
+applyBaseChatBarStyle(chat_ui.resize_width_handle)
+chat_ui.resize_width_handle:text("↔ ")
+chat_ui.resize_width_handle:size(settings.sections.chat.size + 2)
+
+chat_ui.resize_height_handle = texts.new()
+applyBaseChatBarStyle(chat_ui.resize_height_handle)
+chat_ui.resize_height_handle:text("↕ ")
+chat_ui.resize_height_handle:size(settings.sections.chat.size + 2)
+
+chat_ui.clear_all_btn = texts.new()
+applyBaseChatBarStyle(chat_ui.clear_all_btn)
+chat_ui.clear_all_btn:text("[Clear All]")
+
+chat_ui.clear_tab_btn = texts.new()
+applyBaseChatBarStyle(chat_ui.clear_tab_btn)
+chat_ui.clear_tab_btn:text("[Clear Tab]")
+
+chat_ui.message_counter = texts.new()
+applyBaseChatBarStyle(chat_ui.message_counter)
+
+--Chat Context Menu (right-click)
+chat_context_menu = {
+	visible = false,
+	target_player = nil,
+	x = 0,
+	y = 0,
+	ui = {
+		bg = texts.new(),
+		name = texts.new(),
+		tell = texts.new(),
+		invite = texts.new(),
+		search = texts.new(),
+		target = texts.new(),
+	}
+}
+
+applyBaseChatBarStyle(chat_context_menu.ui.bg)
+chat_context_menu.ui.bg:bg_visible(true)
+chat_context_menu.ui.bg:bg_alpha(220)
+applyBaseChatBarStyle(chat_context_menu.ui.name)
+applyBaseChatBarStyle(chat_context_menu.ui.tell)
+applyBaseChatBarStyle(chat_context_menu.ui.invite)
+applyBaseChatBarStyle(chat_context_menu.ui.search)
+applyBaseChatBarStyle(chat_context_menu.ui.target)
+
+chat_context_menu.ui.name:text()
+chat_context_menu.ui.tell:text(" Tell")
+chat_context_menu.ui.invite:text(" Invite")
+chat_context_menu.ui.search:text(" Search")
+chat_context_menu.ui.target:text(" Target")
+
+updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
 
 --MONSTER AGGRO LIST
 
@@ -1606,6 +2160,12 @@ target_bar_lock_underline:pad(-(focus_target_bar_size - settings.sections.target
 target_bar_lock_underline:bg_alpha(bg_alpha)
 target_bar_lock_underline:draggable(false)
 target_bar_lock_underline:size(focus_target_bar_size)
+
+--CHAT MESSAGES
+
+chat_bg = texts.new()
+local text = (" "):rep(20)
+chat_bg:text(text)
 
 --BAR BACKGROUNDS
 
@@ -3140,6 +3700,37 @@ function hideBars()
 
 end
 
+function hideChatBar()
+
+	chat_ui.bg_window:hide()
+	chat_ui.divider:hide()
+	chat_ui.body:hide()
+	chat_ui.toggle_btn:hide()
+	chat_ui.scroll_bar:hide()
+	chat_ui.scroll_handle:hide()
+	chat_ui.message_counter:hide()
+	chat_ui.clear_tab_btn:hide()
+	chat_ui.clear_all_btn:hide()
+	chat_ui.resize_width_handle:hide()
+	chat_ui.resize_height_handle:hide()
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local obj = chat_ui.tabs[tab_key]
+		if obj then
+			local is_enabled = true
+			if tab_key == 'ShoutYell' then
+				is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+			elseif tab_key ~= 'All' then
+				is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+			end
+			if is_enabled then
+				obj:hide() --hide all the tabs that we have enabled
+			end
+		end
+	end
+
+end
+
 --Hide only the Player Stats bars
 function hidePlayerStatBars()
 
@@ -3262,6 +3853,592 @@ function showBars(target)
 		party_actions_pt3_p5_text:show()
 	end
 
+end
+
+function showChatBar()
+
+	if settings.sections.chat.show then
+
+		determineChatMinMaxState()
+		chat_ui.toggle_btn:show()
+
+		for _, tab_key in ipairs(chat_box.tab_order) do
+			local obj = chat_ui.tabs[tab_key]
+			if obj then
+				local is_enabled = true
+				if tab_key == 'ShoutYell' then
+					is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+				elseif tab_key ~= 'All' then
+					is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+				end
+				--Show all the tabs that we have enabled
+				if is_enabled then
+					obj:show()
+				end
+			end
+		end
+
+	end
+
+	refreshChatUI()
+
+end
+
+--Generate the Space-Grid Background String for the Chat BG Window (and the Context Menu)
+function generateChatBGString(width, height)
+    local row = (" "):rep(width).."\n"
+    local full_bg = row:rep(height + 3)
+    return full_bg:sub(1, -2) 
+end
+
+--Update the Chat Tabs with new message notifications
+function updateChatTabs()
+
+	--Global Notification Clear - Only wipe notifications if looking at 'All' AND the window is open
+	if chat_box.current_tab == 'All' and not chat_minimized then
+		for _, tab_data in pairs(chat_box.tabs) do
+			tab_data.has_new = false
+		end
+	end
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local tab_data = chat_box.tabs[tab_key]
+		local obj = chat_ui.tabs[tab_key]
+		local is_current = (tab_key == chat_box.current_tab)
+		local is_enabled = true
+
+		if tab_key == 'ShoutYell' then
+			--ShoutYell is enabled if EITHER Shout or Yell is toggled true
+			is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+		elseif tab_key ~= 'All' then
+			is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+		end
+
+		if not is_enabled then
+			if obj then obj:hide() end
+
+		else
+
+			obj:color(tab_data.color.r, tab_data.color.g, tab_data.color.b)
+
+			if chat_minimized then
+				obj:bold(tab_data.has_new)
+			else
+				obj:bold(is_current or tab_data.has_new)
+			end
+
+			obj:show()
+
+			if is_current and not chat_minimized then
+
+				--Highlight the current tab
+				local text_value = "|"..tab_data.name:upper().."|"
+				obj:text(text_value)
+				obj:bg_visible(true)
+				if tab_key == 'All' then
+					new_tell_pulse = false
+				end
+
+				--Light background highlight behind current tab name
+				local color = {
+					r = math.floor(tab_data.color.r * 0.25), 
+					g = math.floor(tab_data.color.g * 0.25), 
+					b = math.floor(tab_data.color.b * 0.25)
+				}
+
+				obj:bg_color(color.r, color.g, color.b)
+
+			else
+
+				--Dim not-current tabs just a little bit
+				local color = {
+					r = math.floor(tab_data.color.r * 0.9), 
+					g = math.floor(tab_data.color.g * 0.9), 
+					b = math.floor(tab_data.color.b * 0.9)
+				}
+
+				local text_value = tab_data.name
+
+				--Tab has new messages
+				if tab_data.has_new then
+
+					text_value = "●\\cs("..color.r..","..color.g..","..color.b..")"..text_value.."\\cr "
+
+					--New tell comes in Tell tab is either not the current tab or the window is minimized
+					if tab_key == 'Tell' and not new_tell_pulse_override then
+						new_tell_pulse_alpha = 0
+						new_tell_pulse_direction = true
+						new_tell_pulse = true
+						obj:bg_alpha(new_tell_pulse_alpha)
+						obj:bg_visible(true)
+						obj:bg_color(tab_data.color.r,tab_data.color.g,tab_data.color.b)
+
+					--Same as above except we've now replied back to it so no need to pulse any more
+					else
+						new_tell_pulse = false
+						obj:bg_visible(false)
+
+					end
+
+				--Tab has no new messages
+				else
+					text_value = " \\cs("..color.r..","..color.g..","..color.b..")"..text_value.."\\cr "
+					obj:bg_visible(false)
+					if tab_key == 'Tell' then
+						new_tell_pulse = false
+					end
+
+				end
+
+				obj:text(text_value)
+
+			end
+		end
+	end
+end
+
+--Show the correct Chat UI elements
+function determineChatMinMaxState()
+
+	if chat_minimized then
+		--Passing -2 cancels out the function's internal +2 padding, forcing the background string to render exactly 1 text row high.
+		--Kinda hacky, but if it works...
+		chat_ui.bg_window:text(generateChatBGString(settings.sections.chat.bar_width, -2))
+		chat_ui.divider:hide()
+		chat_ui.body:hide()
+		chat_ui.resize_width_handle:hide()
+		chat_ui.resize_height_handle:hide()
+		chat_ui.message_counter:hide()
+		chat_ui.clear_all_btn:hide()
+		chat_ui.scroll_bar:hide()
+		chat_ui.scroll_handle:hide()
+		chat_ui.clear_tab_btn:hide()
+	else
+		chat_ui.bg_window:text(generateChatBGString(settings.sections.chat.bar_width, settings.sections.chat.max_lines))
+		chat_ui.divider:show()
+		chat_ui.body:show()
+		chat_ui.resize_width_handle:show()
+		chat_ui.resize_height_handle:show()
+		chat_ui.clear_all_btn:show()
+		chat_ui.scroll_bar:show()
+		chat_ui.scroll_handle:show()
+		if settings.sections.chat.show_message_counter then
+			chat_ui.message_counter:show()
+		end
+		if chat_box.current_tab == 'All' then
+			chat_ui.clear_tab_btn:hide()
+		else
+			chat_ui.clear_tab_btn:show()
+		end
+	end
+
+end
+
+--Main Refresh and Render Chat Window function
+function refreshChatUI()
+
+	if not settings.sections.chat.show or not chat_initialized or (zoning and not settings.sections.chat.show_during_zoning) or (in_cutscene and not zoning) then return end
+
+	local active_tab = chat_box.tabs[chat_box.current_tab]
+	local max_lines = settings.sections.chat.max_lines
+	local total_lines = #active_tab.messages
+
+	chat_ui.divider:text(("─"):rep(settings.sections.chat.bar_width))
+	chat_ui.divider:color(active_tab.color.r, active_tab.color.g, active_tab.color.b)
+	chat_ui.body:color(active_tab.color.r, active_tab.color.g, active_tab.color.b)
+
+	local display_lines = {}
+	if total_lines > 0 then
+		local ending_index = total_lines - active_tab.scroll_offset
+		local starting_index = math.max(1, ending_index - max_lines + 1)
+
+		for i = starting_index, ending_index do
+			local line_data = active_tab.messages[i]
+			local lookup_key = line_data.source_tab
+			if lookup_key == 'Shout' or lookup_key == 'Yell' then
+				lookup_key = 'ShoutYell'
+			end
+
+			--Escape backslashes so Windower treats them as plain text strings instead of broken control commands!
+			local sanitized_text = line_data.text:gsub('\\', '\\\\')
+			local source_config = chat_box.tabs[lookup_key] and chat_box.tabs[lookup_key].color or active_tab.color
+			local colorized_line = string.format("\\cs(%d,%d,%d)%s\\cr", source_config.r, source_config.g, source_config.b, sanitized_text)
+			table.insert(display_lines, colorized_line)
+		end
+	else
+		table.insert(display_lines, " No messages yet.")
+	end
+	chat_ui.body:text(table.concat(display_lines, "\n"))
+
+	--Scroll Track and Scroll Handle display
+	if not chat_minimized and total_lines > max_lines then
+		local background_track_string = (" \n"):rep(max_lines - 1).." "
+		chat_ui.scroll_bar:text(background_track_string)
+		chat_ui.scroll_handle:color(active_tab.color.r, active_tab.color.g, active_tab.color.b)
+
+		if active_tab.scroll_offset > 0 then
+			chat_ui.scroll_bar:bg_color(100, 100, 100) 
+		else
+			chat_ui.scroll_bar:bg_color(0, 0, 0)       
+		end
+
+		chat_ui.scroll_bar:show()
+		chat_ui.scroll_handle:show()
+	else
+		chat_ui.scroll_bar:hide()
+		chat_ui.scroll_handle:hide()
+	end
+
+	--Footer components display
+	local active_color = active_tab.color
+	chat_ui.resize_width_handle:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.resize_height_handle:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.clear_all_btn:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.clear_tab_btn:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.message_counter:color(active_color.r, active_color.g, active_color.b)
+
+	--Toggle button display
+	chat_ui.toggle_btn:color(active_color.r * 0.9, active_color.g * 0.9, active_color.b * 0.9)
+	chat_ui.toggle_btn:stroke_color(active_color.r * 0.9, active_color.g * 0.9, active_color.b * 0.9)
+	chat_ui.toggle_btn:text(chat_minimized and "□ " or "▬ ")
+	chat_ui.toggle_btn:show()
+
+	--Message Counter display
+	local current_raw_count = #chat_box.raw_history
+	chat_ui.message_counter:text(string.format("%d/%d", current_raw_count, chat_max_raw_history))
+
+	determineChatMinMaxState()
+
+	updateChatTabs()
+	updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+
+	chat_ui.bg_window:show()
+
+end
+
+function updateChatContextMenu(mouse_x, mouse_y, show_menu, player_name)
+	chat_context_menu.visible = show_menu
+	chat_context_menu.target_player = player_name or chat_context_menu.target_player
+
+	if not chat_context_menu.visible then
+		chat_context_menu.ui.bg:hide()
+		chat_context_menu.ui.name:hide()
+		chat_context_menu.ui.tell:hide()
+		chat_context_menu.ui.invite:hide()
+		chat_context_menu.ui.search:hide()
+		chat_context_menu.ui.target:hide()
+		return
+	end
+
+	chat_context_menu.x = mouse_x
+	chat_context_menu.y = mouse_y
+
+	local menu_char_width = math.max(9, #player_name + 3)
+	local menu_lines = 3
+
+	chat_context_menu.ui.bg:text(generateChatBGString(menu_char_width, menu_lines))
+	chat_context_menu.ui.bg:pos(mouse_x, mouse_y)
+	chat_context_menu.ui.bg:show()
+
+	--Selected Players Name
+	chat_context_menu.ui.name:text(' '..player_name)
+	chat_context_menu.ui.name:pos(mouse_x + 4, mouse_y + 4)
+	chat_context_menu.ui.name:color(255, 255, 255)
+	chat_context_menu.ui.name:show()
+	chat_context_menu.ui.name:bold(true)
+
+	--Send Tell
+	chat_context_menu.ui.tell:pos(mouse_x + 4, mouse_y + 4 + chat_calculated_char_height)
+	chat_context_menu.ui.tell:color(240, 240, 240)
+	chat_context_menu.ui.tell:show()
+
+	--Invite Player
+	chat_context_menu.ui.invite:pos(mouse_x + 4, mouse_y + 4 + (chat_calculated_char_height * 2))
+	chat_context_menu.ui.invite:color(240, 240, 240)
+	chat_context_menu.ui.invite:show()
+
+	--Search Player
+	chat_context_menu.ui.search:pos(mouse_x + 4, mouse_y + 4 + (chat_calculated_char_height * 3))
+	chat_context_menu.ui.search:color(240, 240, 240)
+	chat_context_menu.ui.search:show()
+
+	--Target Player
+	chat_context_menu.ui.target:pos(mouse_x + 4, mouse_y + 4 + (chat_calculated_char_height * 4))
+	chat_context_menu.ui.target:color(240, 240, 240)
+	chat_context_menu.ui.target:show()
+end
+
+function getChatSenderAtMouseY(mouse_y)
+	local active_tab = chat_box.tabs[chat_box.current_tab]
+	local max_lines = settings.sections.chat.max_lines
+	local total_lines = #active_tab.messages
+	if total_lines == 0 then return nil end
+
+	--Determine screen boundary for where messages start
+	local start_y = settings.sections.chat.pos.y + 27
+
+	--Calculate exactly which text line index the mouse is floating over
+	local dynamic_row_index = math.floor((mouse_y - start_y) / chat_calculated_char_height) + 1
+
+	--Ensure the click was inside the actual body box
+	if dynamic_row_index >= 1 and dynamic_row_index <= math.min(max_lines, total_lines) then
+		local ending_index = total_lines - active_tab.scroll_offset
+		local starting_index = math.max(1, ending_index - max_lines + 1)
+
+		local target_msg_index = starting_index + (dynamic_row_index - 1)
+		local msg_data = active_tab.messages[target_msg_index]
+
+		if msg_data and msg_data.sender then
+			return msg_data.sender
+		end
+	end
+	return nil
+end
+
+function calculateDynamicChatMinWidth()
+	local total_chars = 0
+	local separation_gap_chars = 2
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local tab_data = chat_box.tabs[tab_key]
+
+		local is_enabled = true
+		if tab_key == 'ShoutYell' then
+			is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+		elseif tab_key ~= 'All' then
+			is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+		end
+
+		if is_enabled and tab_data then
+			-- Tab name length plus 1
+			local current_tab_chars = 1 + #tab_data.name
+			total_chars = total_chars + current_tab_chars + separation_gap_chars
+		end
+	end
+
+	total_chars = total_chars + 1 --add 1 for the toggle button at the end
+
+	chat_min_char_width = total_chars
+
+	-- If the user's saved setting is narrower than the active tab layout bar, scale it up so elements don't overlap.
+	if settings.sections.chat.bar_width < chat_min_char_width then
+		settings.sections.chat.bar_width = chat_min_char_width
+	end
+end
+
+--Calculate exact pixel width and height of a single chat line so we can build things spaced out correctly
+function initializeChatUIGrid()
+
+	--Single line string to measure base metrics
+	local probe1 = texts.new()
+	probe1:font(settings.sections.chat.font)
+	probe1:size(settings.sections.chat.size)
+	probe1:pos(-500, -500)
+	probe1:bg_visible(false)
+	probe1:text((" "):rep(100))
+	probe1:show()
+
+	--Two-line string to capture multi-line spacing padding
+	local probe2 = texts.new()
+	probe2:font(settings.sections.chat.font)
+	probe2:size(settings.sections.chat.size)
+	probe2:pos(-500, -500)
+	probe2:bg_visible(false)
+	probe2:text("Line 1\nLine 2")
+	probe2:show()
+
+	coroutine.sleep(0.1)
+
+	--Extract widths and heights
+	local width1, height1 = probe1:extents()
+	local _, height2 = probe2:extents()
+
+	chat_calculated_char_width = width1 / 100
+
+	--The difference between 2 lines and 1 line gives us the precise vertical spacing used by multi-line text blocks.
+	chat_calculated_char_height = height2 - height1
+
+	--Thank you for your service
+	probe1:destroy()
+	probe2:destroy()
+
+	chat_initialized = true
+	if logged_in then
+		refreshChatUI()
+	end
+end
+
+function saveToChatFile()
+
+	if not settings.sections.chat.save_to_file then return end
+
+	coroutine.schedule(function()
+		chat_file:write(chat_help_msg..'return {\n'..sortedTableString(chat_box.raw_history, '    ')..'\n}')
+	end, 0)
+
+end
+
+--Add messages to the correct tab table and save related data attached to the message
+function addMessageToChatTab(target_tab_key, sender, message, tell_target)
+
+	if message then
+		message = windower.convert_auto_trans(message)
+	end
+
+	local captured_time = os.date('%H:%M:%S')
+
+	table.insert(chat_box.raw_history, { 
+		tab = target_tab_key, 
+		sender = sender,
+		text = message,
+		time = captured_time,
+		tell_target = tell_target,
+	})
+
+	--Remove oldest message if over limit
+	if #chat_box.raw_history > chat_max_raw_history then
+		table.remove(chat_box.raw_history, 1)
+	end
+
+	--Save chat message updates to the external chat file
+	saveToChatFile()
+
+	local usable_width = settings.sections.chat.bar_width - 1
+	local base_indent = settings.sections.chat.indent_width
+
+	if target_tab_key == 'Shout' or target_tab_key == 'Yell' then
+		target_tab_key = 'ShoutYell'
+	end
+
+	local targets = {target_tab_key, 'All'}
+
+	for _, view_key in ipairs(targets) do
+		local target_tab = chat_box.tabs[view_key]
+
+		local last_line = target_tab.messages[#target_tab.messages]
+		local last_sender = nil
+		local last_source = nil
+		local last_tell_target = nil
+
+		if last_line then
+			for i = #chat_box.raw_history - 1, 1, -1 do
+				if chat_box.raw_history[i].tab == last_line.source_tab then
+					last_sender = chat_box.raw_history[i].sender
+					last_source = chat_box.raw_history[i].tab
+					last_tell_target = chat_box.raw_history[i].tell_target
+					break
+				end
+			end
+		end
+
+		--Timestamp if enabled
+		local timestamp_prefix = ""
+		if settings.sections.chat.show_timestamps then
+			timestamp_prefix = captured_time.." "
+		end
+
+		--Calculate the exact layout indent including the timestamp width
+		local total_layout_indent = base_indent + #timestamp_prefix + 1
+
+		local pass_header = nil
+		if last_sender == sender and last_source == target_tab_key and last_tell_target == tell_target then
+			--Header is just the timestamp followed by spaces matching the base indent if it's a repeat sender
+			pass_header = timestamp_prefix..(" "):rep(base_indent).." "
+		else
+			--Header is the timestamp followed by the wrapped sender name
+			local base_header = formatSenderHeader(sender, target_tab_key, view_key, tell_target)
+			pass_header = timestamp_prefix..base_header
+		end
+
+		local wrapped = wrapTextByChars(pass_header, message, usable_width, total_layout_indent)
+		for _, line in ipairs(wrapped) do
+			table.insert(target_tab.messages, { 
+				text = line, 
+				source_tab = target_tab_key,
+				sender = sender,
+			})
+
+		end
+
+		--Clear all new chat notifications if the current tab is All
+		if not chat_minimized and (chat_box.current_tab == 'All' or view_key == 'All') then
+			target_tab.has_new = false
+		else
+			--Flag true if the message arrives for a different tab, if scrolled up, OR if the window is minimized
+			if view_key ~= chat_box.current_tab or target_tab.scroll_offset > 0 or chat_minimized then
+				--Do not apply the visual "has_new" bullet to the master 'All' tab label
+				if view_key ~= 'All' then
+					target_tab.has_new = true
+				end
+			end
+		end
+	end
+
+	refreshChatUI()
+end
+
+--Delete all messages from the current chat tab
+function clearCurrentChatTab()
+
+	local current_key = chat_box.current_tab
+
+	local tab_data = chat_box.tabs[current_key]
+	if tab_data then
+		tab_data.messages = {}
+		tab_data.scroll_offset = 0
+		tab_data.has_new = false
+
+		--Delete matching entries from the raw history buffer
+		for i = #chat_box.raw_history, 1, -1 do
+			local raw_tab = chat_box.raw_history[i].tab
+			if raw_tab == 'Shout' or raw_tab == 'Yell' then
+				raw_tab = 'ShoutYell'
+			end
+
+			if raw_tab == current_key then
+				table.remove(chat_box.raw_history, i)
+			end
+		end
+
+		saveToChatFile()
+
+		--Delete matching entries out of the All tab
+		local all_tab = chat_box.tabs['All']
+		if all_tab then
+			for i = #all_tab.messages, 1, -1 do
+				local lookup_key = all_tab.messages[i].source_tab
+				if lookup_key == 'Shout' or lookup_key == 'Yell' then
+					lookup_key = 'ShoutYell'
+				end
+				if lookup_key == current_key then
+					table.remove(all_tab.messages, i)
+				end
+			end
+			--Reset scroll position if it overflows after all the deletions
+			if all_tab.scroll_offset > #all_tab.messages then
+				all_tab.scroll_offset = 0
+			end
+		end
+
+		refreshChatUI()
+	end
+end
+
+--Delete ALL messages
+function clearAllChatHistory()
+
+	chat_box.raw_history = {}
+
+	saveToChatFile()
+
+	--Loop through every single tab entry block and delete all the things
+	for _, tab_data in pairs(chat_box.tabs) do
+		tab_data.messages = {}
+		tab_data.scroll_offset = 0
+		tab_data.has_new = false
+	end
+
+	refreshChatUI()
 end
 
 --Set what job we are currently
@@ -4009,6 +5186,7 @@ function getIconFile(spell_name, debuff_id)
 	local shot_boosted_names = {
 		'boosted dia', 'boosted bio', 'boosted shock', 'boosted rasp',
 		'boosted choke', 'boosted frost', 'boosted burn', 'boosted drown',
+		'boosted blind', 'boosted blind ii', 'boosted slow', 'boosted slow ii', 'boosted paralyze', 'boosted paralyze ii'
 	}
 
 	spell_name = spell_name:lower()
@@ -6898,7 +8076,6 @@ register_event('mpp change', mpChange)
 
 --TP Changing
 register_event('tp change', function(new_tp,old_tp)
-
 	if in_cutscene or zoning then return end
 
 	if job and job_specific[job].tp then
@@ -6976,8 +8153,20 @@ end
 register_event('load', function()
 
 	if get_info().logged_in then
+		logged_in = true
 		initialize()
 		checkLastPackets()
+	end
+
+	if settings.sections.chat.show then
+		initializeChatUIGrid()
+		calculateDynamicChatMinWidth()
+		coroutine.schedule(function()
+			rebuildWrappedHistory()
+			if logged_in then
+				refreshChatUI()
+			end
+		end, 2)
 	end
 
 end)
@@ -6988,16 +8177,23 @@ register_event('login', function()
 	initialize()
 	resetFadeDelay()
 	logged_in = true
+	if settings.sections.chat.show then
+		coroutine.schedule(function()
+			rebuildWrappedHistory()
+			refreshChatUI()
+		end, 2)
+	end
 
 end)
 
 --Logout
 register_event('logout', function()
 
+	logged_in = false
 	hideBars()
 	resetFadeDelay()
 	clearTables()
-	logged_in = false
+	hideChatBar()
 
 	--Clear XP tables
 	xp_table = {}
@@ -7012,12 +8208,14 @@ register_event('status change', function(status)
 	if status == 4 and not in_cutscene then
 		in_cutscene = true
 		hideBars()
+		hideChatBar()
 
 	--Out of cutscene: Show the bars
 	elseif status ~= 4 and in_cutscene then
 		in_cutscene = false
 		local target = get_mob_by_target('t')
 		showBars(target)
+		showChatBar()
 
 	end
 	resetFadeDelay()
@@ -7067,6 +8265,23 @@ register_event('prerender', function()
 	end
 	if job and job_specific[job].pet then
 		updatePetBarAnimations(pet)
+	end
+
+	if new_tell_pulse then
+		if new_tell_pulse_direction then
+			if new_tell_pulse_alpha < 255 then
+				new_tell_pulse_alpha = new_tell_pulse_alpha + 5
+			else
+				new_tell_pulse_direction = false
+			end
+		else
+			if new_tell_pulse_alpha > 0 then
+				new_tell_pulse_alpha = new_tell_pulse_alpha - 5
+			else
+				new_tell_pulse_direction = true
+			end
+		end
+		chat_ui.tabs.Tell:bg_alpha(new_tell_pulse_alpha)
 	end
 
 	if clock - last_party_actions_update >= party_actions_update_interval then
@@ -7121,11 +8336,6 @@ register_event('prerender', function()
 		end
 		last_sub_target_update = clock
 	end
-
-	-- if clock - last_xp_update >= xp_update_interval then
-	-- 	updateXPBar(player, time)
-	-- 	last_xp_update = clock
-	-- end
 
 	if (not target and not sub_target and not Screen_Test) and target_bar_lock_left:visible() and not calculating_dimensions then
 		target_bar_lock_left:hide()
@@ -7582,24 +8792,24 @@ register_event('action', function (act)
 			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--No Effect
 		elseif act.category == 3 and (msg == 156 or msg == 323) then
-			target_action_result = ' ('..count..'No Effect)'
-			target_action_result_shdw = ' ('..count..'No Effect)'
+			target_action_result = ' (No Effect)'
+			target_action_result_shdw = ' (No Effect)'
 		--Anticipated
 		elseif act.category == 3 and msg == 30 then
-			target_action_result = ' ('..count..'Anticipated)'
-			target_action_result_shdw = ' ('..count..'Anticipated)'
+			target_action_result = ' (Anticipated)'
+			target_action_result_shdw = ' (Anticipated)'
 		--Blinked
 		elseif act.category == 3 and msg == 31 then
-			target_action_result = ' ('..count..'Blinked)'
-			target_action_result_shdw = ' ('..count..'Blinked)'
+			target_action_result = ' (Blinked)'
+			target_action_result_shdw = ' (Blinked)'
 		--Dodged
 		elseif act.category == 3 and msg == 32 then
-			target_action_result = ' ('..count..'Dodged)'
-			target_action_result_shdw = ' ('..count..'Dodged)'
+			target_action_result = ' (Dodged)'
+			target_action_result_shdw = ' (Dodged)'
 		--Missed
 		elseif act.category == 3 and (msg == 158 or msg == 324 or msg == 658) then
-			target_action_result = ' ('..count..'Missed)'
-			target_action_result_shdw = ' ('..count..'Missed)'
+			target_action_result = ' (Missed)'
+			target_action_result_shdw = ' (Missed)'
 		--Buff/Debuff
 		elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
 			local landed = calculateInfo(act).landed
@@ -7726,20 +8936,20 @@ register_event('action', function (act)
 					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 				--Anticipated
 				elseif msg == 30 then
-					target_action_result = ' ('..count..'Anticipated)'
-					target_action_result_shdw = ' ('..count..'Anticipated)'
+					target_action_result = ' (Anticipated)'
+					target_action_result_shdw = ' (Anticipated)'
 				--Blinked
 				elseif msg == 31 then
-					target_action_result = ' ('..count..'Blinked)'
-					target_action_result_shdw = ' ('..count..'Blinked)'
+					target_action_result = ' (Blinked)'
+					target_action_result_shdw = ' (Blinked)'
 				--Dodged
 				elseif msg == 32 then
-					target_action_result = ' ('..count..'Dodged)'
-					target_action_result_shdw = ' ('..count..'Dodged)'
+					target_action_result = ' (Dodged)'
+					target_action_result_shdw = ' (Dodged)'
 				--Missed
 				elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-					target_action_result = ' ('..count..'Missed)'
-					target_action_result_shdw = ' ('..count..'Missed)'
+					target_action_result = ' (Missed)'
+					target_action_result_shdw = ' (Missed)'
 				end
 			end
 		--Most job abilities
@@ -7762,8 +8972,8 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				amount = addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param)
 				count = count == '' and '' or ' '..count
-				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
@@ -7804,20 +9014,20 @@ register_event('action', function (act)
 						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
 					end
 				end
 			--Cover
@@ -8125,20 +9335,20 @@ register_event('action', function (act)
 						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
 					end
 				end
 			--Dazes
@@ -8221,14 +9431,29 @@ register_event('action', function (act)
 			if msg == 103 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount.." Absorbed + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Absorbed
-			elseif msg == 103 or msg == 318 then
+			elseif player.id == act.actor_id and (msg == 103 or msg == 318) then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
 				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg and msg == 103 then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..count..amount.." absorbed"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Creates a Skillchain
 			elseif msg == 185 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Plain Damage
 			elseif msg == 185 or msg == 317 then
 				local info = calculateInfo(act)
@@ -8238,6 +9463,11 @@ register_event('action', function (act)
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg and msg == 185 then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount..count..amount_total
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
@@ -8278,20 +9508,40 @@ register_event('action', function (act)
 						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Anticipated"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Blinked"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Dodged"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Missed"
+							addMessageToChatTab('DMG', target, message)
+						end
 					end
 				end
 			--Recover/Absorb MP
@@ -8345,6 +9595,11 @@ register_event('action', function (act)
 			if msg == 2 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Plain Damage
 			elseif msg == 2 then
 				local info = calculateInfo(act)
@@ -8353,11 +9608,21 @@ register_event('action', function (act)
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": "..amount..count..amount_total
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Absorbed and creates a Skillchain
 			elseif msg == 7 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
-			--Cures/Absorbed
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": Absorbed "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
+				--Cures/Absorbed
 			elseif msg == 7 then
 				local info = calculateInfo(act)
 				local amount_total = info.amount_total
@@ -8383,6 +9648,11 @@ register_event('action', function (act)
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": "..amount..count..amount_total.." Magic Burst"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Drain
 			elseif msg == 227 or msg == 274 then
 				local info = calculateInfo(act)
@@ -8451,20 +9721,20 @@ register_event('action', function (act)
 						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
 					end
 				end
 			--Dispel/Erase
@@ -8547,6 +9817,11 @@ register_event('action', function (act)
 			if act.targets[1].actions[1].has_add_effect then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Accuracy/Evasion Down
 			elseif msg == 144 then
 				target_action_result = ' ('..count..'Acc./Eva. Down)'
@@ -8562,6 +9837,11 @@ register_event('action', function (act)
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount..count..amount_total.." Magic Burst"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Plain Damage
 			elseif msg == 317 then
 				local info = calculateInfo(act)
@@ -8570,6 +9850,11 @@ register_event('action', function (act)
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount..count..amount_total
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Cures
 			elseif msg == 318 then
 				local info = calculateInfo(act)
@@ -8637,20 +9922,40 @@ register_event('action', function (act)
 						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Anticipated"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Blinked"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Dodged"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Missed"
+							addMessageToChatTab('DMG', target, message)
+						end
 					end
 				end
 			--Stat Boost
@@ -8798,20 +10103,20 @@ register_event('action', function (act)
 					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 				--Anticipated
 				elseif msg == 30 then
-					target_action_result = ' ('..count..'Anticipated)'
-					target_action_result_shdw = ' ('..count..'Anticipated)'
+					target_action_result = ' (Anticipated)'
+					target_action_result_shdw = ' (Anticipated)'
 				--Blinked
 				elseif msg == 31 then
-					target_action_result = ' ('..count..'Blinked)'
-					target_action_result_shdw = ' ('..count..'Blinked)'
+					target_action_result = ' (Blinked)'
+					target_action_result_shdw = ' (Blinked)'
 				--Dodged
 				elseif msg == 32 then
-					target_action_result = ' ('..count..'Dodged)'
-					target_action_result_shdw = ' ('..count..'Dodged)'
+					target_action_result = ' (Dodged)'
+					target_action_result_shdw = ' (Dodged)'
 				--Missed
 				elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-					target_action_result = ' ('..count..'Missed)'
-					target_action_result_shdw = ' ('..count..'Missed)'
+					target_action_result = ' (Missed)'
+					target_action_result_shdw = ' (Missed)'
 				end
 			end
 		--Aspir
@@ -8984,6 +10289,10 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		check_override = false
 		duration = 60 --lasts only 60 seconds
 		removal_timer = duration
+	--Stun
+	elseif effect_id == 10 then
+		duration = 3
+		removal_timer = 4
 	--Shadowbind
 	elseif effect_id == 11 and spell_id == 57 then
 		local base_duration = 30
@@ -9003,6 +10312,10 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Angon"]or nil
 		duration = bonus and base_duration + bonus or base_duration
 		removal_timer = bonus and duration or max_duration
+	--Flash
+	elseif effect_id == 156 then
+		duration = 13
+		removal_timer = 14
 	--Chainbound
 	elseif effect_id == 164 then
 		check_override = false
@@ -9204,20 +10517,54 @@ function handleAction(act)
 	local spell_id = act.param
 	local target_count = act.target_count
 	local shot_boosts = {
-		[131] = { --Light Shot -> Dia
-			effect_id = 134,
-			spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
+		[131] = { -- Light Shot
+			{
+				effect_id = 134, -- Dia
+				spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
+			}
 		},
-		[132] = { --Dark Shot -> Bio
-			effect_id = 135,
-			spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
+		[132] = { -- Dark Shot
+			{
+				effect_id = 135, -- Bio
+				spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
+			},
+			{
+				effect_id = 5, -- Blind
+				spell_map = {[254] = 9254, [276] = 9276}
+			}
 		},
-		[125] = {effect_id = 128, spell_map = {[235] = 9235}}, --Fire Shot		-> Burn
-		[126] = {effect_id = 129, spell_map = {[236] = 9236}}, --Ice Shot		-> Frost
-		[127] = {effect_id = 130, spell_map = {[237] = 9237}}, --Wind Shot		-> Choke
-		[128] = {effect_id = 131, spell_map = {[238] = 9238}}, --Earth Shot		-> Rasp
-		[129] = {effect_id = 132, spell_map = {[239] = 9239}}, --Thunder Shot	-> Shock
-		[130] = {effect_id = 133, spell_map = {[240] = 9240}}, --Water Shot		-> Drown
+		[125] = { -- Fire Shot
+			{ effect_id = 128, spell_map = {[235] = 9235} } -- Burn
+		},
+		[126] = { -- Ice Shot
+			{
+				effect_id = 129, -- Frost
+				spell_map = {[236] = 9236}
+			},
+			{
+				effect_id = 4, -- Paralyze
+				spell_map = {[58] = 9058, [80] = 9080}
+			}
+		},
+		[127] = { -- Wind Shot
+			{ effect_id = 130, spell_map = {[237] = 9237} } -- Choke
+		},
+		[128] = { -- Earth Shot
+			{
+				effect_id = 131, -- Rasp
+				spell_map = {[238] = 9238}
+			},
+			{
+				effect_id = 13, -- Slow
+				spell_map = {[56] = 9056, [79] = 9079}
+			}
+		},
+		[129] = { -- Thunder Shot
+			{ effect_id = 132, spell_map = {[239] = 9239} } -- Shock
+		},
+		[130] = { -- Water Shot
+			{ effect_id = 133, spell_map = {[240] = 9240} } -- Drown
+		},
 	}
 	for i = 1, target_count do
 
@@ -9285,8 +10632,14 @@ function handleAction(act)
 			elseif debuff_spell_messages:contains(message_id) then
 				local effect_id = act.targets[i].actions[1].param
 				local spell_status = res.spells[spell_id] and res.spells[spell_id].status
+				--Flash
+				if spell_id == 112 then
+					spell_status = 156
+				--Stun
+				elseif spell_id == 252 then
+					spell_status = 10
 				--Poisonga
-				if spell_id == 220 or spell_id == 225 then
+				elseif spell_id == 220 or spell_id == 225 then
 					spell_id = 220 --Poisonga (225) puts Poison (220/3) on each target
 					spell_status = 3
 					effect_id = 3
@@ -9331,15 +10684,18 @@ function handleAction(act)
 				effect_id = 9503
 				saveDebuff(actor_id, target_id, effect_id, spell_id)
 			end
-			--Boost debuff based on Corsair shot type
-			local boost = shot_boosts[act.param]
-			if act.category == 6 and boost and current_debuffs[main_target_id] then
-				local debuff = current_debuffs[main_target_id][boost.effect_id]
-				if debuff then
-					local boosted_id = boost.spell_map[debuff.id]
-					if boosted_id then
-						--Update the debuff id to the boosted version
-						debuff.id = boosted_id
+			--Boost debuffs based on Corsair shot type
+			local boost_list = shot_boosts[act.param]
+			if act.category == 6 and boost_list and current_debuffs[main_target_id] then
+				--Loop through all potential debuffs this shot can boost
+				for _, boost in ipairs(boost_list) do
+					local debuff = current_debuffs[main_target_id][boost.effect_id]
+					if debuff then
+						local boosted_id = boost.spell_map[debuff.id]
+						if boosted_id then
+							--Update the debuff id to the boosted version
+							debuff.id = boosted_id
+						end
 					end
 				end
 			end
@@ -9452,12 +10808,135 @@ function handleActionMessage(data)
 
 end
 
+--Track in-game chat log
+register_event('chat message', function(message, sender, mode, is_gm)
+
+	if not settings.sections.chat.show then return end
+
+	local target_tab_key = nil
+
+	if mode == 0 then
+		target_tab_key = 'Say'
+	elseif mode == 1 then
+		target_tab_key = 'Shout'
+	elseif mode == 3 then
+		target_tab_key = 'Tell'
+		new_tell_pulse_override = false
+	elseif mode == 4 then
+		target_tab_key = 'Party'
+	elseif mode == 5 then
+		target_tab_key = 'Linkshell1'
+	elseif mode == 26 then
+		target_tab_key = 'Yell'
+	elseif mode == 27 then
+		target_tab_key = 'Linkshell2'
+	elseif mode == 33 then
+		target_tab_key = 'Unity'
+		if sender == '' then return end
+	end
+
+	if target_tab_key then
+		--If this channel is disabled in settings.xml, discard the message
+		if settings.sections.chat.tabs[target_tab_key:lower()] == false then
+			return
+		end
+
+		--Combine Shout and Yell
+		if target_tab_key == 'Shout' or target_tab_key == 'Yell' then
+			target_tab_key = 'ShoutYell'
+		end
+
+		addMessageToChatTab(target_tab_key, sender, message)
+	end
+end)
+
+--Track outgoing packets
+register_event('outgoing chunk', function(id, data, modified, injected, blocked)
+
+	--Standard chat (0x0B5) or outgoing tells (0x0B6)
+	if (id == 0x0B5 or id == 0x0B6) and settings.sections.chat.show then
+		local msg = nil
+		local mode = nil
+		local target_tab_key = nil
+		local tell_target = nil
+
+		--Standard chat packet
+		if id == 0x0B5 then
+			local packet = packets.parse('outgoing', data)
+			mode = packet['Mode']
+			msg = packet['Message']
+
+			if mode == 0 then
+				target_tab_key = 'Say'
+			elseif mode == 1 then
+				target_tab_key = 'Shout'
+			elseif mode == 4 then
+				target_tab_key = 'Party'
+			elseif mode == 5 then
+				target_tab_key = 'Linkshell1'
+			elseif mode == 26 then
+				target_tab_key = 'Yell'
+			elseif mode == 27 then
+				target_tab_key = 'Linkshell2'
+			elseif mode == 33 then
+				target_tab_key = 'Unity'
+			end
+
+		--Outgoing tell packet
+		elseif id == 0x0B6 then
+			local packet = packets.parse('outgoing', data)
+			msg = packet['Message']
+
+			mode = 99 --Custom mode for deduplication logic
+
+			target_tab_key = 'Tell'
+
+			local target_name = packet['Target Name']
+			if target_name and target_name ~= "" then
+				tell_target = target_name
+				new_tell_pulse_override = true
+				updateChatTabs()
+			end
+		end
+
+		if msg then msg = msg:trim() end
+		if not msg or msg == "" then return end
+
+		--Depulication check
+		local current_time = os.clock()
+
+		if msg == chat_last_outbound.text and mode == chat_last_outbound.mode then
+			--If it's the exact same message and channel within 0.5 seconds, skip it
+			if (current_time - chat_last_outbound.time) < 0.5 then
+				return
+			end
+		end
+
+		if target_tab_key then
+			if settings.sections.chat.tabs[target_tab_key:lower()] == false then
+				return
+			end
+
+			--Update our deduplication tracking
+			chat_last_outbound.text = msg
+			chat_last_outbound.mode = mode
+			chat_last_outbound.time = current_time
+
+			local player =get_player()
+			local sender_name = player and player.name or "You"
+
+			addMessageToChatTab(target_tab_key, sender_name, msg, tell_target)
+		end
+	end
+end)
+
+--Track incoming packets
 register_event('incoming chunk',function(id,original,modified,injected,blocked)
 
 	if injected then return end
 
 	local packet = packets.parse('incoming', original)
-	local player = windower.ffxi.get_player()
+	local player = get_player()
 	local msg = packet['Message']
 
 	--XP/JP/EP related info
@@ -9535,13 +11014,17 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 	--Wide scan (for monster levels)
 	elseif id == 0xF4 then
 		current_levels[packet.Index] = packet.Level
-		-- print(packet.Type)
 
 	--Zone start
 	elseif id == 0xB then
 		zoning = true
 		hideBars()
 		clearTables()
+		if settings.sections.chat.show_during_zoning then
+			showChatBar()
+		else
+			hideChatBar()
+		end
 		if Screen_Test then
 			windower.send_command('bars ui')
 		end
@@ -9551,8 +11034,30 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 		zoning = false
 		local target = get_mob_by_target('t')
 		showBars(target)
+		showChatBar()
 		resetFadeDelay()
 
+	end
+
+end)
+
+windower.register_event('incoming text',function(original, modified, original_mode, modified_mode, blocked)
+
+	local function parseMessage(original)
+
+		local message = original:match("%[EchoPets%]%s*(.*)")
+
+		if not message then return nil, "" end
+
+		local name = original:match("%([^%a]*([%a%s]+)[^%a]*%)")
+		
+		return name, message
+	end
+
+	local name, message = parseMessage(original)
+	if name then
+		print(name, message)
+		return true
 	end
 
 end)
@@ -9615,8 +11120,7 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('[Bars] '):color(220)..('Please lock the UI with '):color(28)..('//bars lock '):color(1)..('before using the '):color(28)..(addcmd):color(1)..(' command.'):color(28))
 		else
 			job_specific[job].hp = not job_specific[job].hp
-			-- settings:save('all')
-			config.save(settings, 'all')
+			settings:save('all')
 			hideBars()
 			setPositions()
 			showBars(target)
@@ -9927,6 +11431,7 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200)..(' ('):color(8)..('//bars psts #'):color(1)..(')'):color(8))
 		add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200)..(' ('):color(8)..('//bars sats #'):color(1)..(')'):color(8))
 		add_to_chat(8,('[Bars] '):color(220)..('XP Text Size:'):color(36)..(' '..xp_text_size):color(200)..(' ('):color(8)..('//bars xpts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Chat Text Size:'):color(36)..(' '..settings.sections.chat.size):color(200)..(' ('):color(8)..('//bars cts #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target text size
 	elseif addcmd == 'ftts' then
@@ -10033,6 +11538,23 @@ register_event('addon command',function(addcmd, ...)
 			xp_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('XP Text Size:'):color(36)..(' '..xp_text_size):color(200))
+			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+		end
+
+	--Update the Chat text size
+	elseif addcmd == 'chts' or addcmd == 'cts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.chat.size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Chat Text Size:'):color(36)..(' '..new_size):color(200))
+			updateChatbarSize(settings.sections.chat.size)
+			initializeChatUIGrid()
+			updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Chat Text Size:'):color(36)..(' '..settings.sections.chat.size):color(200))
 			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
 
@@ -10181,9 +11703,9 @@ register_event('addon command',function(addcmd, ...)
 
 		resetFadeDelay()
 		screenTest()
-		local r = 0
-		local g = Screen_Test and 255 or 0
-		local b = 0
+		local r = color.bar_bg.normal.r
+		local g = Screen_Test and 255 or color.bar_bg.normal.g
+		local b = color.bar_bg.normal.b
 		local player_stat_bars = {
 			hp = player_stats_hp_bar_bg,
 			mp = player_stats_mp_bar_bg,
@@ -10203,6 +11725,7 @@ register_event('addon command',function(addcmd, ...)
 		player_stat_bars[player_stats_top_bar]:bg_color(r,g,b)
 		xp_bar_bg:draggable(Screen_Test)
 		xp_bar_bg:bg_color(r,g,b)
+		chat_ui.bg_window:bg_color(r,g,b)
 
 		if Screen_Test then
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Dragging enabled for highlighted bars.'):color(36))
@@ -10266,82 +11789,440 @@ register_event('addon command',function(addcmd, ...)
 	end
 end)
 
---Handle mouse events
-register_event('mouse',function(mouse_type, mouse_x, mouse_y)
+--Handle keyboard events
+register_event('keyboard',function(dik, down)
 
-	if logged_in and Screen_Test and mouse_type == 2 and not calculating_dimensions then --leftmouseup
-
-		local player_stats_bars = {
-			hp = player_stats_hp_bar_bg,
-			mp = player_stats_mp_bar_bg,
-			tp = player_stats_tp_bar_bg,
-			pet = player_stats_pet_bar_bg,
-		}
-
-		--Save Bar positions after dragged
-		local focus_target_x = focus_target_bar_bg:pos_x()
-		local focus_target_y = focus_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.focus_target
-
-		local sub_target_x = sub_target_bar_bg:pos_x()
-		local sub_target_y = sub_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.sub_target
-
-		local target_x = target_bar_bg:pos_x()
-		local target_y = target_bar_bg:pos_y() - job_specific[job].vertical_offsets.target
-
-		local self_action_x = self_action_bar_bg:pos_x()
-		local self_action_y = self_action_bar_bg:pos_y() - job_specific[job].vertical_offsets.self_action
-
-		local player_stats_x = player_stats_bars[player_stats_top_bar]:pos_x()
-		local player_stats_y = player_stats_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
-
-		local aggro_list_x = aggro_list_box:pos_x()
-		local aggro_list_y = aggro_list_box:pos_y()
-
-		local xp_x = xp_bar_bg:pos_x()
-		local xp_y = xp_bar_bg:pos_y()
-
-		if focus_target_x >= 0 and focus_target_y >= 0
-		and settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
-			settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
-			settings:save('all')
-			setPositions()
-
-		elseif sub_target_x >= 0 and sub_target_y >= 0
-		and settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
-			settings.sections.sub_target.pos = {x = sub_target_x, y = sub_target_y}
-			settings:save('all')
-			setPositions()
-
-		elseif target_x >= 0 and target_y >= 0
-		and settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
-			settings.sections.target.pos = {x = target_x, y = target_y}
-			settings:save('all')
-			setPositions()
-
-		elseif self_action_x >= 0 and self_action_y >= 0
-		and settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
-			settings.sections.self_action.pos = {x = self_action_x, y = self_action_y}
-			settings:save('all')
-			setPositions()
-
-		elseif player_stats_x >= 0 and player_stats_y >= 0
-		and settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
-			settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
-			settings:save('all')
-			setPositions()
-
-		elseif aggro_list_x >= 0 and aggro_list_y >= 0
-		and settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
-			settings.sections.aggro_list.pos = {x = aggro_list_x, y = aggro_list_y}
-			settings:save('all')
-
-		elseif xp_x >= 0 and xp_y >= 0
-		and settings.sections.xp.pos.x ~= xp_x or settings.sections.xp.pos.y ~= xp_y then
-			settings.sections.xp.pos = {x = xp_x, y = xp_y}
-			settings:save('all')
-			setPositions()
-
-		end
+	--Update shift state
+	if dik == 0x1D or dik == 0x9D then  --0x1D and 0x9D are Left CTRL and Right CTRL
+		ctrl_down = down
+		return false
 	end
 
+end)
+
+function updateChatbarSize(size)
+
+	chat_ui.bg_window:size(size)
+	chat_ui.toggle_btn:size(size)
+	chat_ui.scroll_bar:size(size)
+	chat_ui.scroll_handle:size(size)
+	chat_ui.resize_width_handle:size(size + 2)
+	chat_ui.resize_height_handle:size(size + 2)
+	chat_ui.clear_all_btn:size(size)
+	chat_ui.clear_tab_btn:size(size)
+	chat_ui.message_counter:size(size)
+	chat_ui.divider:size(size)
+	chat_ui.body:size(size)
+	chat_context_menu.ui.name:size(size)
+	chat_context_menu.ui.tell:size(size)
+	chat_context_menu.ui.invite:size(size)
+	chat_context_menu.ui.search:size(size)
+	chat_context_menu.ui.target:size(size)
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		chat_ui.tabs[tab_key]:size(size)
+	end
+
+end
+
+--Handle mouse events
+register_event('mouse',function(mouse_type, mouse_x, mouse_y, delta)
+
+	if logged_in and not calculating_dimensions then
+
+		--All bars except Chat (handled separately because it is a difficult child)
+		if mouse_type == 2 and Screen_Test then --leftmouseup
+
+			local player_stats_bars = {
+				hp = player_stats_hp_bar_bg,
+				mp = player_stats_mp_bar_bg,
+				tp = player_stats_tp_bar_bg,
+				pet = player_stats_pet_bar_bg,
+			}
+
+			--Save Bar positions after dragged
+			local focus_target_x = focus_target_bar_bg:pos_x()
+			local focus_target_y = focus_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.focus_target
+
+			local sub_target_x = sub_target_bar_bg:pos_x()
+			local sub_target_y = sub_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.sub_target
+
+			local target_x = target_bar_bg:pos_x()
+			local target_y = target_bar_bg:pos_y() - job_specific[job].vertical_offsets.target
+
+			local self_action_x = self_action_bar_bg:pos_x()
+			local self_action_y = self_action_bar_bg:pos_y() - job_specific[job].vertical_offsets.self_action
+
+			local player_stats_x = player_stats_bars[player_stats_top_bar]:pos_x()
+			local player_stats_y = player_stats_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
+
+			local aggro_list_x = aggro_list_box:pos_x()
+			local aggro_list_y = aggro_list_box:pos_y()
+
+			local xp_x = xp_bar_bg:pos_x()
+			local xp_y = xp_bar_bg:pos_y()
+
+			if focus_target_x >= 0 and focus_target_y >= 0
+			and settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
+				settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
+				settings:save('all')
+				setPositions()
+
+			elseif sub_target_x >= 0 and sub_target_y >= 0
+			and settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
+				settings.sections.sub_target.pos = {x = sub_target_x, y = sub_target_y}
+				settings:save('all')
+				setPositions()
+
+			elseif target_x >= 0 and target_y >= 0
+			and settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
+				settings.sections.target.pos = {x = target_x, y = target_y}
+				settings:save('all')
+				setPositions()
+
+			elseif self_action_x >= 0 and self_action_y >= 0
+			and settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
+				settings.sections.self_action.pos = {x = self_action_x, y = self_action_y}
+				settings:save('all')
+				setPositions()
+
+			elseif player_stats_x >= 0 and player_stats_y >= 0
+			and settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
+				settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
+				settings:save('all')
+				setPositions()
+
+			elseif aggro_list_x >= 0 and aggro_list_y >= 0
+			and settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
+				settings.sections.aggro_list.pos = {x = aggro_list_x, y = aggro_list_y}
+				settings:save('all')
+
+			elseif xp_x >= 0 and xp_y >= 0
+			and settings.sections.xp.pos.x ~= xp_x or settings.sections.xp.pos.y ~= xp_y then
+				settings.sections.xp.pos = {x = xp_x, y = xp_y}
+				settings:save('all')
+				setPositions()
+
+			end
+
+		end
+
+		--Context Menu - Right-Click Down to show the menu
+		if mouse_type == 4 and chat_ui.bg_window:visible() then
+			if chat_ui.bg_window:hover(mouse_x, mouse_y) and not chat_minimized then
+				local sender = getChatSenderAtMouseY(mouse_y)
+				--Don't open the menu on your own name or empty/system rows
+				local player = get_player()
+				if sender and sender ~= "" and not (sender:lower() == "you" or sender:lower() == player.name:lower()) then
+					updateChatContextMenu(mouse_x, mouse_y, true, sender)
+				end
+			end
+		end
+
+		--Context Menu - Left-Click Down (1) while menu is actively displayed
+		if chat_context_menu.visible and mouse_type == 1 then
+			--Send Tell
+			if chat_context_menu.ui.tell:hover(mouse_x, mouse_y) then
+				local target = chat_context_menu.target_player
+
+				updateChatContextMenu(0, 0, false, nil)
+
+				--Simulate hitting CTRL+T to both open the chat input and load the /tell into it
+				windower.send_command('setkey ctrl down; wait 0.05; setkey t down; wait 0.05; setkey t up; wait 0.05; setkey ctrl up')
+
+				coroutine.sleep(0.15)
+
+				--Add the targets name into the chat input
+				windower.chat.add_to_input(target)
+
+				return true
+			end
+
+			--Invite Player
+			if chat_context_menu.ui.invite:hover(mouse_x, mouse_y) then
+				if chat_context_menu.target_player then
+					windower.chat.input('/pcmd add '..chat_context_menu.target_player)
+				end
+				updateChatContextMenu(0, 0, false, nil)
+				return true
+			end
+
+			--Search Player
+			if chat_context_menu.ui.search:hover(mouse_x, mouse_y) then
+				if chat_context_menu.target_player then
+					windower.chat.input('/sea all '..chat_context_menu.target_player)
+				end
+				updateChatContextMenu(0, 0, false, nil)
+				return true
+			end
+
+			--Target Player
+			if chat_context_menu.ui.target:hover(mouse_x, mouse_y) then
+				if chat_context_menu.target_player then
+					windower.chat.input('/target '..chat_context_menu.target_player)
+				end
+				updateChatContextMenu(0, 0, false, nil)
+				return true
+			end
+
+			--User clicked anywhere else while menu was active
+			updateChatContextMenu(0, 0, false, nil)
+		end
+
+		local active_tab = chat_box.tabs[chat_box.current_tab]
+		local is_hovering_on_chat = chat_ui.bg_window:hover(mouse_x, mouse_y)
+		local chat_window_visible = chat_ui.bg_window:visible()
+
+		--Actions that require the chat window to be visible and hovered over
+		if chat_window_visible and is_hovering_on_chat then
+
+			--Scrolling inside panel boundary
+			if mouse_type == 10 then
+				if ctrl_down then
+					if delta > 0 then
+						settings.sections.chat.size = settings.sections.chat.size + .25
+						settings:save('all')
+						updateChatbarSize(settings.sections.chat.size)
+						initializeChatUIGrid()
+						updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+					else
+						settings.sections.chat.size = settings.sections.chat.size - .25
+						settings:save('all')
+						updateChatbarSize(settings.sections.chat.size)
+						initializeChatUIGrid()
+						updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+					end
+				else
+					local max_lines = settings.sections.chat.max_lines
+					if delta > 0 then
+						if #active_tab.messages > max_lines + active_tab.scroll_offset then
+							active_tab.scroll_offset = active_tab.scroll_offset + 1
+						end
+					elseif delta < 0 then
+						if active_tab.scroll_offset > 0 then
+							active_tab.scroll_offset = active_tab.scroll_offset - 1
+						end
+						if active_tab.scroll_offset == 0 then
+							active_tab.has_new = false
+						end
+					end
+					refreshChatUI()
+					return true
+				end
+			end
+
+			--Clicked a Chat UI element
+			if mouse_type == 1 then
+				local total_lines = #active_tab.messages
+				local max_lines = settings.sections.chat.max_lines
+
+				--Scrollbar Handle
+				if total_lines > max_lines and chat_ui.scroll_handle:hover(mouse_x, mouse_y) then
+					chat_grabbed_scrollbar = true
+					return true
+				end
+
+				--Resize Width Handle
+				if chat_ui.resize_width_handle:hover(mouse_x, mouse_y) then
+					chat_width_resizing = true
+					return true
+				end
+
+				--Resize Height Handle
+				if chat_ui.resize_height_handle:hover(mouse_x, mouse_y) then
+					chat_height_resizing = true
+					return true
+				end
+
+				--Tab Headers
+				for _, tab_key in ipairs(chat_box.tab_order) do
+					local tab_obj = chat_ui.tabs[tab_key]
+					if tab_obj and tab_obj:hover(mouse_x, mouse_y) then
+						if chat_box.current_tab ~= tab_key or chat_minimized then
+							chat_box.current_tab = tab_key
+							chat_box.tabs[tab_key].scroll_offset = 0
+
+							if chat_minimized then
+								chat_minimized = false
+								chat_box.tabs[tab_key].has_new = false
+								settings.sections.chat.minimized = chat_minimized
+								settings:save('all')
+							else
+								chat_box.tabs[tab_key].has_new = false
+							end
+
+							refreshChatUI()
+						end
+						return true 
+					end
+				end
+
+				--Buttons (Clear All, Clear Tab, Toggle View)
+				if chat_ui.toggle_btn:hover(mouse_x, mouse_y) then
+					chat_minimized = not chat_minimized
+					settings.sections.chat.minimized = chat_minimized
+					settings:save('all')
+
+					if not chat_minimized then
+						local current_key = chat_box.current_tab
+						if chat_box.tabs[current_key] then
+							chat_box.tabs[current_key].has_new = false
+						end
+					end
+
+					refreshChatUI()
+					return true
+				end
+
+				if chat_ui.clear_all_btn:hover(mouse_x, mouse_y) then
+					clearAllChatHistory()
+					return true
+				end
+
+				if chat_box.current_tab ~= 'All' and chat_ui.clear_tab_btn:hover(mouse_x, mouse_y) then
+					clearCurrentChatTab()
+					return true
+				end
+
+				if Screen_Test then
+					--Move window frame
+					chat_grabbed_window = true
+					local bg_x, bg_y = chat_ui.bg_window:pos()
+					chat_drag_offset_x = mouse_x - bg_x
+					chat_drag_offset_y = mouse_y - bg_y
+				end
+				return true
+			end
+		end
+
+		--Actions that track GLOBALLY once a drag is initiated (Even outside window boundary)
+		if chat_window_visible then
+
+			--Scroll Bar Handle dragging
+			if chat_grabbed_scrollbar then
+				if mouse_type == 0 then
+					local max_lines = settings.sections.chat.max_lines
+					local total_lines = #active_tab.messages
+					local max_scrollable_slots = total_lines - max_lines
+
+					local scroll_y_top = settings.sections.chat.pos.y + 27
+					local padding_offset = math.floor(chat_calculated_char_height * 0.5)
+					local scroll_y_bottom = scroll_y_top + ((max_lines - 1) * chat_calculated_char_height) - padding_offset
+					local total_track_pixel_span = scroll_y_bottom - scroll_y_top
+
+					if total_track_pixel_span > 0 then
+						local clamped_mouse_y = math.max(scroll_y_top, math.min(scroll_y_bottom, mouse_y))
+						local progress_ratio = (clamped_mouse_y - scroll_y_top) / total_track_pixel_span
+						local inverted_ratio = 1.0 - progress_ratio
+						local target_offset = math.floor((inverted_ratio * max_scrollable_slots) + 0.5)
+
+						target_offset = math.max(0, math.min(max_scrollable_slots, target_offset))
+
+						if active_tab.scroll_offset ~= target_offset then
+							active_tab.scroll_offset = target_offset
+							if active_tab.scroll_offset == 0 then
+								active_tab.has_new = false
+							end
+							refreshChatUI()
+						end
+					end
+					return true
+
+				elseif mouse_type == 2 then
+					chat_grabbed_scrollbar = false
+					return true
+				end
+
+			--Width Resize Handle dragging
+			elseif chat_width_resizing then
+				if mouse_type == 0 then
+					if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
+						local current_pixel_width = mouse_x - settings.sections.chat.pos.x
+
+						local target_char_width = math.floor(current_pixel_width / chat_calculated_char_width)
+
+						target_char_width = math.max(chat_min_char_width, target_char_width)
+
+						if target_char_width ~= settings.sections.chat.bar_width then
+							settings.sections.chat.bar_width = target_char_width
+
+							if rebuildWrappedHistory then
+								rebuildWrappedHistory()
+							end
+
+							refreshChatUI()
+						end
+					end
+					return true
+
+				elseif mouse_type == 2 then
+					chat_width_resizing = false
+					settings:save('all')
+					return true
+				end
+
+			--Resize Handle dragging
+			elseif chat_height_resizing then
+				if mouse_type == 0 then
+					if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
+						local current_pixel_height = mouse_y - settings.sections.chat.pos.y
+
+						local target_max_lines = math.floor((current_pixel_height - 27) / chat_calculated_char_height)
+
+						target_max_lines = math.max(chat_min_max_lines, target_max_lines)
+
+						if target_max_lines ~= settings.sections.chat.max_lines then
+							settings.sections.chat.max_lines = target_max_lines
+
+							if rebuildWrappedHistory then
+								rebuildWrappedHistory()
+							end
+
+							refreshChatUI()
+						end
+					end
+					return true
+
+				elseif mouse_type == 2 then
+					chat_height_resizing = false
+					settings:save('all')
+					return true
+				end
+
+			--Entire Window dragging
+			elseif chat_grabbed_window and Screen_Test then
+				if mouse_type == 0 then
+					local new_bg_x = mouse_x - chat_drag_offset_x
+					local new_bg_y = mouse_y - chat_drag_offset_y
+
+					local target_x = new_bg_x + settings.sections.chat.pad
+					local target_y = new_bg_y + settings.sections.chat.pad
+
+					updateChatUIPositions(target_x, target_y)
+					return true
+
+				elseif mouse_type == 2 then
+					chat_grabbed_window = false
+
+					local bg_x, bg_y = chat_ui.bg_window:pos()
+					local target_x = bg_x + settings.sections.chat.pad
+					local target_y = bg_y + settings.sections.chat.pad
+
+					if target_x ~= settings.sections.chat.pos.x or target_y ~= settings.sections.chat.pos.y then
+						settings.sections.chat.pos.x = target_x
+						settings.sections.chat.pos.y = target_y
+						settings:save('all')
+					end
+					return true
+				end
+			end
+
+			-- If no drag state was active but we are hovering the window, 
+			-- still swallow the release event to block FFXI from picking up a click.
+			if mouse_type == 2 and is_hovering_on_chat then
+				return true
+			end
+		end
+
+	end
 end)
