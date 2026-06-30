@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.9 BETA-9'
+_addon.version = '4.9'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
