@@ -351,7 +351,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 Version 4.10
 - Added `show_battle_target_by_default` option to the Focus Target bar. Displays your party's current battle target (not guaranteed to be the same as <bt>) when no Focus Target or Focus Target Override is active.
-- Added `show_base_conq_pt_per_hour` option to the XP bar. Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in.
+- Added `show_base_conq_pt_per_hour` option to the XP bar. Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in. (Thanks for the suggestion macy85!)
 - Added `show_time_tnl` option to the XP bar. Shows the estimated amount of time until your next level/master/master level at the current points/hour rate.
 - Adjusted the XP bar so that when you are mastering a job the bar meter will be based on progress towards the 63m Capacity Points needed for all 2100 Job Points to master. The meter will now progress as Capacity Points are gained instead of when you spend your stored Job Points.
 - Adjusted default Fade Delay to 120 seconds (will not affect previously saved setting).
