@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.9'
+_addon.version = '4.10'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -207,7 +207,7 @@ defaults = {
 			drain_target_bars = true,
 			drain_tp_bar = true,
 			fade_after_a_delay = true,
-			fade_delay = 60,
+			fade_delay = 120,
 			fade_down_to_alpha = 0,
 			fade_speed = 2,
 			floating_tp_number = false,
@@ -361,6 +361,7 @@ defaults = {
 			italic = false,
 			pos = {x = 576, y = 180},
 			show = true,
+			show_battle_target_by_default = true,
 			show_player_angle_from_target_facing = false,
 			show_target_angle_from_player_facing = false,
 			show_monster_level = false,
@@ -538,8 +539,6 @@ defaults = {
 			ui_bg_alpha = 100,
 		},
 		xp = {
-			pos = {x = 200, y = 350},
-			show = true,
 			bar_size = 15,
 			bar_width = 67,
 			bold = true,
@@ -548,7 +547,11 @@ defaults = {
 			exclude_from_fade = true,
 			font = 'Consolas',
 			italic = false,
+			legacy_per_hour_calculation = false,
 			per_hour_rolling_window_in_minutes = 15,
+			pos = {x = 200, y = 350},
+			show = true,
+			show_base_conq_pt_per_hour = false,
 			show_job_levels = true,
 			show_job_points_stored_after_master = false,
 			show_kills_per_hour = true,
@@ -556,6 +559,7 @@ defaults = {
 			show_percent = true,
 			show_points_per_kill = true,
 			show_seconds_per_kill = true,
+			show_time_tnl = true,
 			show_tnl = true,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -563,7 +567,6 @@ defaults = {
 			text_offset = 4,
 			text_shadow_offset = 2,
 			text_size = 11,
-			legacy_per_hour_calculation = false,
 		},
 	},
 	colors = {
@@ -796,16 +799,19 @@ end
 --Capitalize accordingly
 function capitalize(str)
 
-	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
-		return string.upper(firstLetter)..string.lower(rest)
+	str = string.gsub(str, "(%w)(%w*)", function(first_letter, rest)
+		return string.upper(first_letter)..string.lower(rest)
 	end)
 
-	-- Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
+	--Fix capitalizing " of " back to lowercase " of "
+	str = string.gsub(str, "%f[%a][Oo]f%f[%A]", "of")
+
+	--Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
 	str = string.gsub(str, " Ii$", " II")
 
-	-- Ensure letters after an apostrophe are not capitalized
-	str = string.gsub(str, "('%w)", function(apostropheLetter)
-		return string.lower(apostropheLetter)
+	--Ensure letters after an apostrophe are not capitalized
+	str = string.gsub(str, "('%w)", function(apostrophe_letter)
+		return string.lower(apostrophe_letter)
 	end)
 
 	return str
@@ -1007,6 +1013,8 @@ short_skillchain_names = settings.options.short_skillchain_names
 show_action_status_indicators = settings.options.show_action_status_indicators
 show_aggro_list = settings.sections.aggro_list.show
 show_automaton_mp = settings.options.show_automaton_mp
+show_battle_target_by_default = settings.sections.focus_target.show_battle_target_by_default
+show_chat_bar = settings.sections.chat.show
 show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_cursor_target = settings.sections.aggro_list.show_cursor_target
 show_dyna_jobs = settings.options.show_dyna_jobs
@@ -1017,6 +1025,7 @@ show_hp_tp_markers = settings.options.show_hp_tp_markers
 show_job_levels = settings.sections.xp.show_job_levels
 show_job_points_stored_after_master = settings.sections.xp.show_job_points_stored_after_master
 show_kills_per_hour = settings.sections.xp.show_kills_per_hour
+show_base_conq_pt_per_hour = settings.sections.xp.show_base_conq_pt_per_hour
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
 show_merits = settings.sections.xp.show_merits
 show_percent = settings.sections.xp.show_percent
@@ -1042,7 +1051,9 @@ show_target_distance_colors = settings.options.show_target_distance_colors
 show_target_hex = settings.options.show_target_hex
 show_target_index = settings.options.show_target_index
 show_target_lock = settings.options.show_target_lock
+show_time_tnl = settings.sections.xp.show_time_tnl
 show_tnl = settings.sections.xp.show_tnl
+show_xp_bar = settings.sections.xp.show
 
 focus_target_bar_size = settings.sections.focus_target.bar_size
 focus_target_bar_width = settings.sections.focus_target.bar_width
@@ -3818,13 +3829,12 @@ function showBars(target)
 
 	end
 
-	if settings.sections.xp.show then
+	if show_xp_bar then
 		xp_bar_meter:show()
 		xp_bar_bg:show()
 		xp_text:show()
 		xp_text_shadow:show()
 	end
-
 
 	if party_1_actions.show then
 		party_actions_pt1_p0_text:show()
@@ -3857,27 +3867,25 @@ end
 
 function showChatBar()
 
-	if settings.sections.chat.show then
+	if not show_chat_bar then return end
 
-		determineChatMinMaxState()
-		chat_ui.toggle_btn:show()
+	determineChatMinMaxState()
+	chat_ui.toggle_btn:show()
 
-		for _, tab_key in ipairs(chat_box.tab_order) do
-			local obj = chat_ui.tabs[tab_key]
-			if obj then
-				local is_enabled = true
-				if tab_key == 'ShoutYell' then
-					is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
-				elseif tab_key ~= 'All' then
-					is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
-				end
-				--Show all the tabs that we have enabled
-				if is_enabled then
-					obj:show()
-				end
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local obj = chat_ui.tabs[tab_key]
+		if obj then
+			local is_enabled = true
+			if tab_key == 'ShoutYell' then
+				is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+			elseif tab_key ~= 'All' then
+				is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+			end
+			--Show all the tabs that we have enabled
+			if is_enabled then
+				obj:show()
 			end
 		end
-
 	end
 
 	refreshChatUI()
@@ -4037,7 +4045,7 @@ end
 --Main Refresh and Render Chat Window function
 function refreshChatUI()
 
-	if not settings.sections.chat.show or not chat_initialized or (zoning and not settings.sections.chat.show_during_zoning) or (in_cutscene and not zoning) then return end
+	if not show_chat_bar or not chat_initialized or (zoning and not settings.sections.chat.show_during_zoning) or (in_cutscene and not zoning) then return end
 
 	local active_tab = chat_box.tabs[chat_box.current_tab]
 	local max_lines = settings.sections.chat.max_lines
@@ -5286,11 +5294,137 @@ function inDyna()
 
 end
 
+function inSignetZone()
+
+	local zone = current_zone or getZone()
+	local signet_zones = {
+		["North Gustaberg"] = true,
+		["South Gustaberg"] = true,
+		["Zeruhn Mines"] = true,
+		["Dangruf Wadi"] = true,
+		["Palborough Mines"] = true,
+		["Waughroon Shrine"] = true,
+		["East Ronfaure"] = true,
+		["West Ronfaure"] = true,
+		["Bostaunieux Oubliette"] = true,
+		["King Ranperre's Tomb"] = true,
+		["Ghelsba Outpost"] = true,
+		["Yughott Grotto"] = true,
+		["Fort Ghelsba"] = true,
+		["Horlais Peak"] = true,
+		["East Sarutabaruta"] = true,
+		["West Sarutabaruta"] = true,
+		["Toraimarai Canal"] = true,
+		["Outer Horutoto Ruins"] = true,
+		["Inner Horutoto Ruins"] = true,
+		["Giddeus"] = true,
+		["Balga's Dais"] = true,
+		["Konschtat Highlands"] = true,
+		["Gusgen Mines"] = true,
+		["La Theine Plateau"] = true,
+		["Ordelle's Caves"] = true,
+		["Valkurm Dunes"] = true,
+		["Tahrongi Canyon"] = true,
+		["Maze of Shakhrami"] = true,
+		["Buburimu Peninsula"] = true,
+		["Pashhow Marshlands"] = true,
+		["Beadeaux"] = true,
+		["Qulun Dome"] = true,
+		["Rolanberry Fields"] = true,
+		["Crawlers' Nest"] = true,
+		["Jugner Forest"] = true,
+		["Davoi"] = true,
+		["Monastic Cavern"] = true,
+		["Batallia Downs"] = true,
+		["The Eldieme Necropolis"] = true,
+		["Meriphataud Mountains"] = true,
+		["Castle Oztroja"] = true,
+		["Altar Room"] = true,
+		["Sauromugue Champaign"] = true,
+		["Garlaige Citadel"] = true,
+		["Qufim Island"] = true,
+		["Lower Delkfutt's Tower"] = true,
+		["Middle Delkfutt's Tower"] = true,
+		["Upper Delkfutt's Tower"] = true,
+		["Behemoth's Dominion"] = true,
+		["Ranguemont Pass"] = true,
+		["Beaucedine Glacier"] = true,
+		["Fei'Yin"] = true,
+		["Qu'Bia Arena"] = true,
+		["Xarcabard"] = true,
+		["Castle Zvahl Baileys"] = true,
+		["Castle Zvahl Keep"] = true,
+		["Throne Room"] = true,
+		["San d'Oria-Jeuno Airship"] = true,
+		["Bastok-Jeuno Airship"] = true,
+		["Windurst-Jeuno Airship"] = true,
+		["Kazham-Jeuno Airship"] = true,
+		["Ship bound for Selbina"] = true,
+		["Ship bound for Mhaura"] = true,
+		["The Boyahda Tree"] = true,
+		["Cape Teriggan"] = true,
+		["Celestial Nexus"] = true,
+		["Chamber of Oracles"] = true,
+		["Cloister of Flames"] = true,
+		["Cloister of Frost"] = true,
+		["Cloister of Gales"] = true,
+		["Cloister of Storms"] = true,
+		["Cloister of Tides"] = true,
+		["Cloister of Tremors"] = true,
+		["Den of Rancor"] = true,
+		["Dragon's Aery"] = true,
+		["Eastern Altepa Desert"] = true,
+		["Full Moon Fountain"] = true,
+		["Gustav Tunnel"] = true,
+		["Ifrit's Cauldron"] = true,
+		["Korroloka Tunnel"] = true,
+		["Kuftal Tunnel"] = true,
+		["Labyrinth of Onzozo"] = true,
+		["La'Loff Amphitheater"] = true,
+		["Quicksand Caves"] = true,
+		["Ro'Maeve"] = true,
+		["Ru'Aun Gardens"] = true,
+		["Sacrificial Chamber"] = true,
+		["The Sanctuary of Zi'Tah"] = true,
+		["Sea Serpent Grotto"] = true,
+		["The Shrine of Ru'Avitau"] = true,
+		["Stellar Fulcrum"] = true,
+		["Temple of Uggalepih"] = true,
+		["Valley of Sorrows"] = true,
+		["Ve'Lugannon Palace"] = true,
+		["Western Altepa Desert"] = true,
+		["Yhoator Jungle"] = true,
+		["Yuhtunga Jungle"] = true,
+		["Al'Taieu"] = true,
+		["Attohwa Chasm"] = true,
+		["Bibiki Bay"] = true,
+		["Carpenters' Landing"] = true,
+		["Grand Palace of Hu'Xzoi"] = true,
+		["Lufaise Meadows"] = true,
+		["Misareaux Coast"] = true,
+		["Newton Movalpolos"] = true,
+		["Oldton Movalpolos"] = true,
+		["Phanauet Channel"] = true,
+		["Phomiuna Aqueducts"] = true,
+		["Pso'Xja"] = true,
+		["Riverne - Site A01"] = true,
+		["Riverne - Site B01"] = true,
+		["Sacrarium"] = true,
+		["Sealion's Den"] = true,
+		["The Garden of Ru'Hmet"] = true,
+		["Uleguerand Range"] = true,
+		["Manaclipper"] = true,
+	}
+
+	return signet_zones[zone]
+
+end
+
 --Update the Aggro List
 function updateAggroList(player, t, st)
 
 	--If the Aggro List is turned off, hide it
-	if not show_aggro_list and not Screen_Test then
+	if not show_aggro_list then
 		if aggro_list_box:visible() then
 			aggro_list_box:hide()
 		end
@@ -5482,7 +5616,8 @@ function updateFocusTargetBar(player, target, clock)
 	local timer_set = debuff_timers.focus_target
 
 	--Hide the Focus Target bar if there is no Focus Target to display, or the Focus Target is targeted
-	if not (focus_target_override or focus_target)
+	if not (focus_target_override or focus_target or battle_target)
+	or (battle_target and target and not show_focus_target_when_targeted and target.id == battle_target.id)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
 		if focus_target_bar_bg:visible() then
 			focus_target_bar_meter:hide()
@@ -5506,7 +5641,7 @@ function updateFocusTargetBar(player, target, clock)
 		return
 	end
 
-	local ft = focus_target_override and focus_target_override or focus_target
+	local ft = focus_target_override and focus_target_override or (battle_target and battle_target or focus_target)
 	local hpp_raw = ft and ft.hpp or 0
 	local sp_active = ft and hpp_raw ~= 0 and current_sp_actions[ft.id]
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[ft.id].timestamp - clock, 0))
@@ -5706,7 +5841,8 @@ end
 function updateFocusTargetBarAnimations(player, target)
 
 	if not show_focus_target_bar
-	or not (focus_target_override or focus_target)
+	or not (focus_target_override or focus_target or battle_target)
+	or (battle_target and target and not show_focus_target_when_targeted and target.id == battle_target.id)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
 		return
 	end
@@ -5742,7 +5878,7 @@ function updateFocusTargetBarAnimations(player, target)
 
 	if drain_target_bars then
 
-		local ft = focus_target_override and focus_target_override or focus_target
+		local ft = focus_target_override and focus_target_override or (battle_target and battle_target or focus_target)
 		local hpp_raw = ft and ft.hpp or 0
 		local hpp_diff = drain_ft_hpp - hpp_raw
 		local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
@@ -7033,7 +7169,7 @@ end
 
 function updateXPBar(player, time)
 
-	if not player then return end
+	if not player or not show_xp_bar then return end
 
 	if not time then
 		time = os.time()
@@ -7148,7 +7284,7 @@ function updateXPBar(player, time)
 			end
 			percent = current_xp / required_xp
 			formatted_percent = show_percent and " "..(math.floor(percent * 10000) / 100).."%" or ""
-			spaces = math.floor((xp_bar_width * 10) * percent)
+			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
 			local cmp = current_mp == max_merit_points and color.xp.capped or text_color
 			local cmp_r = formatRGB(cmp.r)
 			local cmp_g = formatRGB(cmp.g)
@@ -7164,6 +7300,9 @@ function updateXPBar(player, time)
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
 			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
+			in_signet_zone = in_signet_zone or inSignetZone()
+			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
+			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
 			local c = xp_capped and color.xp.capped or text_color
 			local c_r = formatRGB(c.r)
 			local c_g = formatRGB(c.g)
@@ -7173,14 +7312,21 @@ function updateXPBar(player, time)
 			local colorized_xp = " XP: \\cs("..c_r..","..c_g..","..c_b..")"..formatted_current_xp.."/"..formatted_required_xp.."\\cr"
 			local colorized_xp_shdw = " XP: \\cs(000,000,000)"..formatted_current_xp.."/"..formatted_required_xp.."\\cr"
 			local tnl = math.max(required_xp - current_xp, 0)
-			local formatted_tnl = show_tnl and " ("..addCommas(tnl).." TNL)" or ""
-			text = job..colorized_merit_points..colorized_xp..formatted_percent..formatted_tnl..formatted_xp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill
-			text_shdw = job..colorized_merit_points_shdw..colorized_xp_shdw..formatted_percent..formatted_tnl..formatted_xp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / cp_per_hour) * 3600 or 0
+			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
+			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
+			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
+			local formatted_time_tnl = total_seconds_tnl > 0 and (total_seconds_tnl < 60 and string.format("%02ds", seconds_tnl) or string.format("%dh:%02dm", hours_tnl, minutes_tnl)) or ""
+			local formatted_tnl = (show_tnl or show_time_tnl) and " ("..(show_tnl and addCommas(tnl) or "")..(show_time_tnl and (show_tnl and total_seconds_tnl > 0 and "/" or "")..formatted_time_tnl or "").." TNL)" or ""
+			text = job..colorized_merit_points..colorized_xp..formatted_percent..formatted_tnl..formatted_xp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			text_shdw = job..colorized_merit_points_shdw..colorized_xp_shdw..formatted_percent..formatted_tnl..formatted_xp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
 			cm = Fade and not exclude_from_fade and text_color or color.xp.xp_meter
 		elseif job_points_spent and job_points_spent < 2100 then --CP/JP
-			percent = job_points_spent / 2100
+			local total_cp = (((job_points_spent + (job_points_stored and job_points_stored or 0)) * 30000) + (current_cp and current_cp or 0))
+			percent = math.min(total_cp / 63000000, 1)
 			formatted_percent = show_percent and " "..(math.floor(percent * 10000) / 100).."%" or ""
-			spaces = math.floor((xp_bar_width * 10) * percent)
+			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
+			local tnl = math.max(63000000 - total_cp, 0)
 			local cmp = current_mp == max_merit_points and color.xp.capped or text_color
 			local cmp_r = formatRGB(cmp.r)
 			local cmp_g = formatRGB(cmp.g)
@@ -7188,9 +7334,7 @@ function updateXPBar(player, time)
 			local merit_points = show_merits and max_merit_points and (condensed_merits and current_mp or current_mp.."/"..max_merit_points) or nil
 			local colorized_merit_points = merit_points and " [\\cs("..cmp_r..","..cmp_g..","..cmp_b..")"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
 			local colorized_merit_points_shdw = merit_points and " [\\cs(000,000,000)"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
-			local tnl = math.max(2100 - job_points_spent, 0)
-			local formatted_tnl = show_tnl and " ("..addCommas(tnl).." TM)" or ""
-			local cjp = job_points_stored and job_points_stored >= tnl and color.xp.capped or text_color
+			local cjp = tnl == 0 and color.xp.capped or text_color
 			local cjp_r = formatRGB(cjp.r)
 			local cjp_g = formatRGB(cjp.g)
 			local cjp_b = formatRGB(cjp.b)
@@ -7213,8 +7357,17 @@ function updateXPBar(player, time)
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
 			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(cp_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
-			text = job..colorized_merit_points..colorized_jp_stored..formatted_jp_spent..formatted_percent..formatted_tnl..formatted_cp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill
-			text_shdw = job..colorized_merit_points_shdw..colorized_jp_stored_shdw..formatted_jp_spent..formatted_percent..formatted_tnl..formatted_cp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill
+			in_signet_zone = in_signet_zone or inSignetZone()
+			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
+			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / cp_per_hour) * 3600 or 0
+			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
+			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
+			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
+			local formatted_time_tnl = total_seconds_tnl > 0 and (total_seconds_tnl < 60 and string.format("%02ds", seconds_tnl) or string.format("%dh:%02dm", hours_tnl, minutes_tnl)) or ""
+			local formatted_tnl = (show_tnl or show_time_tnl) and " ("..(show_tnl and addCommas(tnl) or "")..(show_time_tnl and (show_tnl and total_seconds_tnl > 0 and "/" or "")..formatted_time_tnl or "").." TM)" or ""
+			text = job..colorized_merit_points..colorized_jp_stored..formatted_jp_spent..formatted_percent..formatted_tnl..formatted_cp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			text_shdw = job..colorized_merit_points_shdw..colorized_jp_stored_shdw..formatted_jp_spent..formatted_percent..formatted_tnl..formatted_cp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
 			cm = Fade and not exclude_from_fade and text_color or color.xp.jp_meter
 		elseif not job_points_spent then
 			return 0, 0, " Waiting for data...", " Waiting for data..."
@@ -7224,7 +7377,7 @@ function updateXPBar(player, time)
 			end
 			percent = current_ep / required_ep
 			formatted_percent = show_percent and " "..(math.floor(percent * 10000) / 100).."%" or ""
-			spaces = math.floor((xp_bar_width * 10) * percent)
+			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
 			local ep_per_hour = calculatePointsPerHour(ep_table)
 			local formatted_ep_per_hour = ep_per_hour > 0 and " "..string.format("%.1f", math.floor(ep_per_hour / 100) / 10).."k/h" or ""
 			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(ep_table) or 0
@@ -7233,6 +7386,9 @@ function updateXPBar(player, time)
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
 			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(ep_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
+			in_signet_zone = in_signet_zone or inSignetZone()
+			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
+			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
 			local mlvl = show_job_levels and (master_level or '--') or ""
 			local smlvl = show_job_levels and synced_master_level ~= master_level and synced_master_level.."|" or ""
 			local formatted_mlvl = show_job_levels and "("..smlvl..mlvl..")" or ""
@@ -7259,9 +7415,14 @@ function updateXPBar(player, time)
 			local colorized_ep = " EP: \\cs("..cep_r..","..cep_g..","..cep_b..")"..formatted_current_ep.."/"..formatted_required_ep.."\\cr"
 			local colorized_ep_shdw = " EP: \\cs(000,000,000)"..formatted_current_ep.."/"..formatted_required_ep.."\\cr"
 			local tnl = math.max(required_ep - current_ep, 0)
-			local formatted_tnl = show_tnl and " ("..addCommas(tnl).." TNML)" or ""
-			text = job..formatted_mlvl..colorized_merit_points..colorized_jp_stored..colorized_ep..formatted_percent..formatted_tnl..formatted_ep_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill
-			text_shdw = job..formatted_mlvl..colorized_merit_points_shdw..colorized_jp_stored_shdw..colorized_ep_shdw..formatted_percent..formatted_tnl..formatted_ep_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / ep_per_hour) * 3600 or 0
+			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
+			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
+			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
+			local formatted_time_tnl = total_seconds_tnl > 0 and (total_seconds_tnl < 60 and string.format("%02ds", seconds_tnl) or string.format("%dh:%02dm", hours_tnl, minutes_tnl)) or ""
+			local formatted_tnl = (show_tnl or show_time_tnl) and " ("..(show_tnl and addCommas(tnl) or "")..(show_time_tnl and (show_tnl and total_seconds_tnl > 0 and "/" or "")..formatted_time_tnl or "").." TNML)" or ""
+			text = job..formatted_mlvl..colorized_merit_points..colorized_jp_stored..colorized_ep..formatted_percent..formatted_tnl..formatted_ep_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			text_shdw = job..formatted_mlvl..colorized_merit_points_shdw..colorized_jp_stored_shdw..colorized_ep_shdw..formatted_percent..formatted_tnl..formatted_ep_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
 			cm = Fade and not exclude_from_fade and text_color or color.xp.ep_meter
 		end
 		return percent, spaces, text, text_shdw
@@ -7890,7 +8051,9 @@ function screenTest()
 		focus_target_override = screen_test_focus_target
 	end
 
-	self_action_bar_bg:show()
+	if show_self_action then
+		self_action_bar_bg:show()
+	end
 
 	if show_aggro_list then
 		aggro_list_box:show()
@@ -8149,6 +8312,26 @@ function initialize()
 
 end
 
+function signetActive()
+
+	local player = windower.ffxi.get_player()
+
+	if not player or not player.buffs then
+		signet_active = false
+	end
+
+	for index, buff_id in ipairs(player.buffs) do
+
+		if buff_id == 253 then
+			signet_active = true
+			return
+		end
+	end
+
+	signet_active = false
+
+end
+
 --Load
 register_event('load', function()
 
@@ -8156,9 +8339,10 @@ register_event('load', function()
 		logged_in = true
 		initialize()
 		checkLastPackets()
+		signetActive()
 	end
 
-	if settings.sections.chat.show then
+	if show_chat_bar then
 		initializeChatUIGrid()
 		calculateDynamicChatMinWidth()
 		coroutine.schedule(function()
@@ -8177,7 +8361,7 @@ register_event('login', function()
 	initialize()
 	resetFadeDelay()
 	logged_in = true
-	if settings.sections.chat.show then
+	if show_chat_bar then
 		coroutine.schedule(function()
 			rebuildWrappedHistory()
 			refreshChatUI()
@@ -8225,11 +8409,28 @@ register_event('zone change', function()
 
 	current_zone = getZone()
 	in_dyna = inDyna()
+	in_signet_zone = inSignetZone()
 
 	--Clear XP tables
 	xp_table = {}
 	cp_table = {}
 	ep_table = {}
+
+end)
+
+register_event('gain buff', function(buff_id)
+
+	if buffid == 253 then --Signet
+		signet_active = true
+	end
+
+end)
+
+register_event('lose buff', function(buff_id)
+
+	if buffid == 253 then --Signet
+		signet_active = false
+	end
 
 end)
 
@@ -8243,6 +8444,10 @@ register_event('prerender', function()
 	local pet = get_mob_by_target('pet')
 	local clock = os.clock()
 	local time = os.time()
+
+	if show_battle_target_by_default then
+		battle_target = get_mob_by_target('bt')
+	end
 
 	if sub_target and not condense_target_and_subtarget_bars then
 		updateSubTargetBarAnimations(player, sub_target)
@@ -10811,7 +11016,7 @@ end
 --Track in-game chat log
 register_event('chat message', function(message, sender, mode, is_gm)
 
-	if not settings.sections.chat.show then return end
+	if not show_chat_bar then return end
 
 	local target_tab_key = nil
 
@@ -10854,11 +11059,13 @@ end)
 register_event('outgoing chunk', function(id, data, modified, injected, blocked)
 
 	--Standard chat (0x0B5) or outgoing tells (0x0B6)
-	if (id == 0x0B5 or id == 0x0B6) and settings.sections.chat.show then
+	if (id == 0x0B5 or id == 0x0B6) and show_chat_bar then
+
 		local msg = nil
 		local mode = nil
 		local target_tab_key = nil
 		local tell_target = nil
+		local current_time = os.clock()
 
 		--Standard chat packet
 		if id == 0x0B5 then
@@ -10903,8 +11110,6 @@ register_event('outgoing chunk', function(id, data, modified, injected, blocked)
 		if not msg or msg == "" then return end
 
 		--Depulication check
-		local current_time = os.clock()
-
 		if msg == chat_last_outbound.text and mode == chat_last_outbound.mode then
 			--If it's the exact same message and channel within 0.5 seconds, skip it
 			if (current_time - chat_last_outbound.time) < 0.5 then
@@ -10927,6 +11132,7 @@ register_event('outgoing chunk', function(id, data, modified, injected, blocked)
 
 			addMessageToChatTab(target_tab_key, sender_name, msg, tell_target)
 		end
+
 	end
 end)
 
@@ -10940,14 +11146,14 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 	local msg = packet['Message']
 
 	--XP/JP/EP related info
-	if id == 0x061 then
+	if id == 0x061 and show_xp_bar then
 		master_level = tnml[packet['Required Exemplar Points']]
 		synced_master_level = packet['Master Level']
 		current_xp = packet["Current EXP"]
 		required_xp = packet["Required EXP"]
 		current_ep = packet["Current Exemplar Points"]
 		required_ep = packet["Required Exemplar Points"]
-	elseif id == 0x063 then
+	elseif id == 0x063 and show_xp_bar then
 		if packet['Order'] == 2 then
 			xp_capped = packet["EXP Capped"]
 			current_lp = packet['Limit Points'] or current_lp
@@ -10958,7 +11164,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 			current_cp = packet[job..' Capacity Points'] or current_cp
 			job_points_stored = packet[job..' Job Points'] or job_points_stored
 		end
-	elseif id == 0x02D then
+	elseif id == 0x02D and show_xp_bar then
 		local points = packet['Param 1']
 		local timestamp = os.time()
 		if msg == 8 or msg == 105 or msg == 253 then --Gain XP
@@ -10975,6 +11181,11 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 			else
 				current_lp = current_lp and current_lp + points or current_lp
 			end
+			--Add LP into the XP table since XP and LP are 1:1 and you only get one or the other at a time
+			table.insert(xp_table, {
+				timestamp = timestamp,
+				points = points,
+			})
 		elseif msg == 718 or msg == 735 then --Gain CP
 			table.insert(cp_table, {
 				timestamp = timestamp,
@@ -11065,33 +11276,36 @@ end)
 --Pull data from the last_incoming packets if found (loads data faster instead of waiting for a fresh packet update)
 function checkLastPackets()
 
-	local char_stats_1 = windower.packets.last_incoming(0x061)
-	local char_stats_2 = windower.packets.last_incoming(0x063)
-	local wide_scan = windower.packets.last_incoming(0xF4)
+	if show_xp_bar then
+		local char_stats_1 = windower.packets.last_incoming(0x061)
+		local char_stats_2 = windower.packets.last_incoming(0x063)
 
-	if char_stats_1 then
-		local packet = packets.parse('incoming', char_stats_1)
-		master_level = tnml[packet['Required Exemplar Points']]
-		synced_master_level = packet['Master Level']
-		current_xp = packet["Current EXP"]
-		required_xp = packet["Required EXP"]
-		current_ep = packet["Current Exemplar Points"]
-		required_ep = packet["Required Exemplar Points"]
-	end
+		if char_stats_1 then
+			local packet = packets.parse('incoming', char_stats_1)
+			master_level = tnml[packet['Required Exemplar Points']]
+			synced_master_level = packet['Master Level']
+			current_xp = packet["Current EXP"]
+			required_xp = packet["Required EXP"]
+			current_ep = packet["Current Exemplar Points"]
+			required_ep = packet["Required Exemplar Points"]
+		end
 
-	if char_stats_2 then
-		local packet = packets.parse('incoming', char_stats_2)
-		if packet['Order'] == 2 then
-			xp_capped = packet["EXP Capped"]
-			current_lp = packet['Limit Points'] or current_lp
-			current_mp = packet['Merit Points'] or current_mp
-			max_merit_points = packet['Max Merit Points'] or max_merit_points
-		elseif packet['Order'] == 5 then
-			local job = get_player().main_job_full
-			current_cp = packet[job..' Capacity Points'] or current_cp
-			job_points_stored = packet[job..' Job Points'] or job_points_stored
+		if char_stats_2 then
+			local packet = packets.parse('incoming', char_stats_2)
+			if packet['Order'] == 2 then
+				xp_capped = packet["EXP Capped"]
+				current_lp = packet['Limit Points'] or current_lp
+				current_mp = packet['Merit Points'] or current_mp
+				max_merit_points = packet['Max Merit Points'] or max_merit_points
+			elseif packet['Order'] == 5 then
+				local job = get_player().main_job_full
+				current_cp = packet[job..' Capacity Points'] or current_cp
+				job_points_stored = packet[job..' Job Points'] or job_points_stored
+			end
 		end
 	end
+
+	local wide_scan = windower.packets.last_incoming(0xF4)
 
 	if wide_scan then
 		local packet = packets.parse('incoming', wide_scan)
