@@ -660,7 +660,7 @@ end
 
 
 
-FileVersion = '16.3.1'
+FileVersion = '16.3.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1972,6 +1972,8 @@ function precast(spell)
 			end
 		end
 		flash('Debuffs')
+	elseif midaction() then
+		return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds then
