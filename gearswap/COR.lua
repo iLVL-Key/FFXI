@@ -654,6 +654,7 @@ sets["Terminus"].high_buff = {
 
 -- Last Stand (73~85% AGI)
 sets["Last Stand"] = {
+	body="Ikenga's Vest",
 	hands="Chasseur's Gants +3",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
@@ -670,6 +671,7 @@ sets["Last Stand"].high_buff = {
 
 -- Last Stand Capped TP (Replace slots with unneeded TP Bonus)
 sets["Last Stand"].capped_tp = {
+	body="Nyame Mail",
 	right_ear="Chas. Earring +2",
 }
 
@@ -735,7 +737,7 @@ sets["Savage Blade"] = {
 
 -- Savage Blade - High Buff (50% STR, 50% MND mod)
 sets["Savage Blade"].high_buff = {
-
+	body="Ikenga's Vest",
 }
 
 -- Savage Blade Capped TP (Replace slots with unneeded TP Bonus)
@@ -823,10 +825,10 @@ sets.ranged_accuracy_bullet = set_combine(sets.ranged_attack_bullet, {
 -- NOTE: Do not define your bullet in this set (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
 sets.ranged_attack = {
 	head="Malignance Chapeau", --Ikenga
-	body="Malignance Tabard", --Ikenga
+	body="Ikenga's Vest",
 	hands="Chasseur's Gants +3", --Ikenga
 	legs="Chas. Culottes +3",
-	feet="Meg. Jam. +2", --Ikenga
+	feet="Ikenga's Clogs",
 	neck="Iskur Gorget",
 	waist="Yemaya Belt",
 	left_ear="Crep. Earring",
@@ -1083,7 +1085,7 @@ end
 
 
 
-FileVersion = '2.3'
+FileVersion = '2.3.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2248,18 +2250,6 @@ local function formatAMTime(input)
 
 end
 
-local function itemMatch(item_num)
-	local items = windower.ffxi.get_items()
-	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
-	for _, location in ipairs(locations) do
-		local weapon_id = items[location][items.equipment.main].id
-		if weapon_id == item_num then
-			return true --match found
-		end
-	end
-	return false --no match found
-end
-
 local function getMainWeaponID(slot)
 	local get_items = windower.ffxi.get_items()
 	local bag = get_items.equipment[slot.."_bag"]
@@ -3361,6 +3351,8 @@ function precast(spell)
 			end
 		end
 		flash('Debuffs')
+	elseif midaction() then
+		return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds then
