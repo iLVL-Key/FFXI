@@ -122,6 +122,10 @@ In general, each HUD has..
 <details>
 <summary>BLU</summary>
 
+Version 20.2.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
+
 Version 20.2
 - Added gear set for Phalanx spell.
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
@@ -555,6 +559,14 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 3.3
+- Adjusted the way songs are calculated (again). Numbers for max songs and song duration bonuses from certain gear are callculated at file load now.
+- Adjusted song durations to account for exact number of JPs into Clarion Call Effect and Marcato Effect (previously missing entirely), instead of assuming a full 20 points into it at 99.
+- Adjusted song durations to account for Marcato and Soul Voice's affect on Hymnus and Mazurka.
+- Adjusted song duration on the BRD to account for Tenuto Effect Job Points.
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
+
 Version 3.2
 - Added gear set for Phalanx spell.
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
@@ -690,6 +702,10 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.3.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
+
 Version 2.3
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
@@ -802,6 +818,9 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.3.2
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
 
 Version 16.3.1
 - Fixed errors when sub Scholar level is below 10
@@ -1184,6 +1203,10 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Versioon 8.4.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
+
 Version 8.4
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
 
@@ -1398,6 +1421,10 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Verison 15.4.2
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
 
 Version 15.4.1
 - Fixed errors when sub Scholar level is below 10
@@ -1785,6 +1812,10 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.4.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
+
 Version 10.4
 - Adjusted  `Auto-Parry` and `Auto-DT` down into just a single `Auto` mode. Now defaults to using the Tank-Parry set and includes a list of mobs to use the Tank-DT set for (see new `TANK DT MOBS` section).
 
@@ -2082,6 +2113,10 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.4.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
 
 Version 16.4
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
@@ -2414,6 +2449,10 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.4.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
+
 Version 1.4
 - Added gear set for Phalanx spell.
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
@@ -2465,6 +2504,9 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.3.2
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
 
 Version 14.3.1
 - Fixed errors when sub Scholar level is below 10
@@ -2778,6 +2820,10 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.4.1
+- Adjusted precast to cancel processing while in midcast of another spell/ability.
+- Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
 
 Version 10.4
 - Added AutoPhalanxSet option. Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
