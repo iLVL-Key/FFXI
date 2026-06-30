@@ -273,7 +273,7 @@ sets.idle = {
 	ammo="Staunch Tathlum +1",
 	head="Beckoner's Horn +3",
 	body="Apo. Dalmatica +1",
-	hands="Nyame Gauntlets",
+	hands="Volte Gloves",
 	legs="Volte Brais",
 	feet="Nyame Sollerets",
 	neck="Smn. Collar +2",
@@ -296,7 +296,7 @@ sets.avatar = set_combine(sets.idle, {
 	body="Beck. Doublet +3",		--Perp -8
 	hands="Beck. Bracers +3",
 	legs="Beck. Spats +3",
-	feet="Beck. Pigaches +3",		--Perep -9 (over cap but eh)
+	feet="Beck. Pigaches +3",		--Perp -9 (over cap but eh)
 	neck="Smn. Collar +2",
 	waist="Incarnation Sash",
 	left_ear="Lugalbanda Earring",
@@ -377,6 +377,7 @@ sets["Garland of Bliss"] = {
 sets.fast_cast = {
 	head="Amalric Coif +1", --11%
 	body="Inyanga Jubbah +2", --14%
+	hands="Volte Gloves", --6%
 	feet="Amalric Nails +1", --6%
 	neck="Baetyl Pendant", --4%
 	waist="Embla Sash", --5%
@@ -632,7 +633,7 @@ end
 
 
 
-FileVersion = '14.3.1'
+FileVersion = '14.3.2'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1977,6 +1978,8 @@ function precast(spell)
 			end
 		end
 		flash('Debuffs')
+	elseif midaction() then
+		return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds then
