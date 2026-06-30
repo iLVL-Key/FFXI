@@ -409,6 +409,8 @@ TankDTMobs = {
 	["Ironclad Vaporizer"] = true,
 	["Ironside"] = true,
 	["Pallikari Ironclad"] = true,
+	--Misc.
+	["Hrosshvalur"] = true,
 }
 
 -------------------------------------------
@@ -808,7 +810,7 @@ end
 
 
 
-FileVersion = '10.4'
+FileVersion = '10.4.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1842,18 +1844,6 @@ local function formatAMTime(input)
 	am_time_second = string.format("%02d", am_time_second)
 	return am_time_minute..':'..am_time_second
 
-end
-
-local function itemMatch(item_num)
-	local items = windower.ffxi.get_items()
-	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
-	for _, location in ipairs(locations) do
-		local weapon_id = items[location][items.equipment.main].id
-		if weapon_id == item_num then
-			return true --match found
-		end
-	end
-	return false --no match found
 end
 
 local function getMainWeaponID()
