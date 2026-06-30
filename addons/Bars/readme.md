@@ -282,6 +282,8 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `pos` | X and Y position of the bar. |
 | → `show` | Show this specific bar section. |
 | → `show_bar` | Show the progress bar in the Self Action section. |
+| → `show_base_conq_pt_per_hour` | Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in. (XP bar only) |
+| → `show_battle_target_by_default` | Displays your party's current battle target (not guaranteed to be the same as <bt>) when no Focus Target or Focus Target Override is active. (Focus Taraget bar only) |
 | → `show_cast_time_bar` | Displays the position of the bar when a self action completes, allowing a visual indication of your fast cast. |
 | → `show_job_levels` | Display main and sub job levels, as well as Master Levels if appropriate. (XP bar only) |
 | → `show_job_points_stored_after_master` | Will continue to display stored Job Points after current job has been mastered. (XP bar only) |
@@ -294,6 +296,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `show_points_per_kill` | Display the average number of points per kill. (XP bar only) |
 | → `show_seconds_per_kill` | Display the average seconds between kills. (XP bar only) |
 | → `show_target_angle_from_player_facing` | Shows an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
+| → `show_time_tnl` | Shows the estimated amount of time until your next level/master/master level at the current points/hour rate. (XP bar only) |
 | → `show_tnl` | Display the number of points until your next level. (XP bar only) |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
@@ -345,6 +348,17 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.10
+- Added `show_battle_target_by_default` option to the Focus Target bar. Displays your party's current battle target (not guaranteed to be the same as <bt>) when no Focus Target or Focus Target Override is active.
+- Added `show_base_conq_pt_per_hour` option to the XP bar. Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in.
+- Added `show_time_tnl` option to the XP bar. Shows the estimated amount of time until your next level/master/master level at the current points/hour rate.
+- Adjusted the XP bar so that when you are mastering a job the bar meter will be based on progress towards the 63m Capacity Points needed for all 2100 Job Points to master. The meter will now progress as Capacity Points are gained instead of when you spend your stored Job Points.
+- Adjusted default Fade Delay to 120 seconds (will not affect previously saved setting).
+- Adjusted a few options so that when they are disabled, their functions are stopped higher up in their respective processing paths.
+- Adjusted the Aggro List to no longer display during the Screen Test (`//bars ui`) when disabled.
+- Fixed the Self Action bar background from displaying during the Screen Test (`//bars ui`) when disabled.
+- Fixed targets with " of " in their name not working correctly when added to the Auto Focus Target list via the full command with name (ie `//bars a "Keeper of Halidom"`). (Thanks darsinger!)
 
 Version 4.9
 - Added Chat Bar.
