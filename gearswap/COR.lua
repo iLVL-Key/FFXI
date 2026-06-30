@@ -820,7 +820,7 @@ sets.ranged_accuracy_bullet = set_combine(sets.ranged_attack_bullet, {
 
 -- Ranged Attack (AGI, STR, Ranged Accuracy, Ranged Attack)
 -- NOTE: Triple Shot + gear DOES NOT have any affect unless Triple Shot ability is active
--- NOTE: Set the bullet in the set below (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
+-- NOTE: Do not define your bullet in this set (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
 sets.ranged_attack = {
 	head="Malignance Chapeau", --Ikenga
 	body="Malignance Tabard", --Ikenga
@@ -837,7 +837,7 @@ sets.ranged_attack = {
 }
 
 -- Ranged Attack Accuracy (Ranged Accuracy, AGI, STR)
--- NOTE: Set the bullet in the set below (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
+-- NOTE: Do not define your bullet in this set (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
 sets.ranged_accuracy = set_combine(sets.ranged_attack, {
 	head="Chass. Tricorne +3",
 	body="Chasseur's Frac +3",
@@ -849,6 +849,7 @@ sets.ranged_accuracy = set_combine(sets.ranged_attack, {
 })
 
 -- Ranged Attack W/ Triple Shot Active (Triple Shot+ gear)
+-- NOTE: Do not define your bullet in this set (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
 sets.triple_shot = {
 	head="Oshosi Mask +1",
 	body="Chasseur's Frac +3",
@@ -858,6 +859,7 @@ sets.triple_shot = {
 }
 
 -- Ranged Attack W/ Armageddon Aftermath Active (Critical Hit, Critical Damage, Dead Aim)
+-- NOTE: Do not define your bullet in this set (the bullet is equipped separately in the precast phase so Rare/EX bullets can be checked for)
 sets.armageddon_am = set_combine(sets.ranged_attack, {
 	head="Meghanada Visor +2",
 	body="Meg. Jam. +2",
