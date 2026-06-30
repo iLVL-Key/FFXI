@@ -810,7 +810,7 @@ end
 
 
 
-FileVersion = '15.4.1'
+FileVersion = '15.4.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1734,18 +1734,6 @@ local function formatAMTime(input)
 
 end
 
-local function itemMatch(item_num)
-	local items = windower.ffxi.get_items()
-	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
-	for _, location in ipairs(locations) do
-		local weapon_id = items[location][items.equipment.main].id
-		if weapon_id == item_num then
-			return true --match found
-		end
-	end
-	return false --no match found
-end
-
 local function getMainWeaponID()
 	local get_items = windower.ffxi.get_items()
 	local bag = get_items.equipment.main_bag
@@ -2227,6 +2215,8 @@ function precast(spell)
 			end
 		end
 		flash('Debuffs')
+	elseif midaction() then
+		return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds then
