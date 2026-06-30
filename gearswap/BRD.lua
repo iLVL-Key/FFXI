@@ -595,7 +595,7 @@ sets["Rudra's Storm"] = {
 sets.fast_cast_song = {
 	head="Fili Calot +3",
 	body="Inyanga Jubbah +2",
-	hands="Leyline Gloves",
+	hands="Volte Gloves",
 	legs="Volte Brais",
 	feet="Fili Cothurnes +3",
 	neck="Baetyl Pendant",
@@ -928,7 +928,7 @@ end
 
 
 
-FileVersion = '3.2'
+FileVersion = '3.3'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1015,7 +1015,6 @@ song_duration = nil
 dummy_song = false
 soul_voice_song = false
 max_songs = 2
-jp_gift_bonus_duration = 0
 set_weapon_timestamp = 0
 player_x = nil
 player_y = nil
@@ -1748,6 +1747,7 @@ local function hasDualWield()
 		return false
 	end
 end
+has_dual_wield = hasDualWield()
 
 --Check if our subjob has MP
 local function subJobWithMP()
@@ -1762,13 +1762,13 @@ end
 local function setWeaponPair()
 	WeaponCycleIndex = 1 --used to cycle through the WeaponCycle sets
 	if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
-		if hasDualWield() then
+		if has_dual_wield then
 			pair = DualWieldCyclePlusAbyssea[WeaponCycleIndex]
 		else
 			pair = WeaponCyclePlusAbyssea[WeaponCycleIndex]
 		end
 	else --otherwise, use just the basic WeaponCycle table
-		if hasDualWield() then
+		if has_dual_wield then
 			pair = DualWieldCycle[WeaponCycleIndex]
 		else
 			pair = WeaponCycle[WeaponCycleIndex]
@@ -2142,18 +2142,6 @@ local function formatAMTime(input)
 
 end
 
-local function itemMatch(item_num)
-	local items = windower.ffxi.get_items()
-	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
-	for _, location in ipairs(locations) do
-		local weapon_id = items[location][items.equipment.main].id
-		if weapon_id == item_num then
-			return true --match found
-		end
-	end
-	return false --no match found
-end
-
 local function getMainWeaponID()
 	local get_items = windower.ffxi.get_items()
 	local bag = get_items.equipment.main_bag
@@ -2239,26 +2227,75 @@ local function primeAMUpdate(tp)
 	end
 end
 
-local function itemMatch(input,slot)
-	local locations = {"inventory", "wardrobe", "wardrobe2", "wardrobe3", "wardrobe4", "wardrobe5", "wardrobe6", "wardrobe7", "wardrobe8"}
-	for _, location in ipairs(locations) do
-		local weapon_id = windower.ffxi.get_items()[location][windower.ffxi.get_items().equipment[slot]].id
-		if weapon_id == input then
-			return true --match found
+windower.add_to_chat(8,('[Notice] '):color(39)..('Pre-calculating item stats for max songs and durations...'):color(8))
+
+--Get the different stages/levels for the various items that affect songs ahead of time so we don't have to do it every time we sing
+function getItemLevels()
+
+	local items = windower.ffxi.get_items()
+	local inventory = items.inventory
+	local containers = {items.inventory, items.safe, items.safe2, items.storage, items.locker, items.satchel, items.sack, items.case, items.wardrobe, items.wardrobe2, items.wardrobe3, items.wardrobe4, items.wardrobe5, items.wardrobe6, items.wardrobe7, items.wardrobe8}
+
+	loughnashade_songs = 0
+	loughnashade_multiplier = 0
+	daurdabla_songs = 0
+	daurdabla_multiplier = 0
+	gjallarhorn_multiplier = 0
+	carnwenhan_multiplier = 0
+
+	--Iterate through each container
+	for _, container in ipairs(containers) do
+
+		--Match the item to the different item id's
+		for _, item in ipairs(container) do
+
+			--Loughnashade
+			if item.id == 22307 then --Stage 5
+				loughnashade_songs = 2
+				loughnashade_multiplier = .4
+			elseif item.id == 22306 then --Stage 4
+				loughnashade_songs = 1
+				loughnashade_multiplier = .3
+			elseif item.id == 22305 then --Stage 3
+				loughnashade_multiplier = .2
+
+			--Daurdabla
+			elseif item.id == 18571 or item.id == 18839 then --Level 99
+				daurdabla_songs = 2
+				daurdabla_multiplier = .3
+			elseif item.id == 18576 then --Level 95
+				daurdabla_songs = 1
+				daurdabla_multiplier = .3
+			elseif item.id == 18575 then --Level 90
+				daurdabla_songs = 1
+				daurdabla_multiplier = .25
+
+			--Gjallarhorn
+			elseif item.id == 18840 or item.id == 18572 then --Level 99
+				gjallarhorn_multiplier = .4
+			elseif item.id == 18580 or item.id == 18579 then --Level 95/90
+				gjallarhorn_multiplier = .3
+			elseif item.id == 18578 or item.id == 18577 or item.id == 18342 then --Level 85/80/75
+				gjallarhorn_multiplier = .2
+
+			--Carnwenhan
+			elseif item.id == 20586 or item.id == 20562 or item.id == 20561 or item.id == 19957 or item.id == 19828 then --Level 99
+				carnwenhan_multiplier = .5
+			elseif item.id == 19719 or item.id == 19621 then --Level 95/90
+				carnwenhan_multiplier = .4
+			elseif item.id == 19089 then --Level 85
+				carnwenhan_multiplier = .3
+			elseif item.id == 19069 then --Level 80
+				carnwenhan_multiplier = .2
+			elseif item.id == 19000 then --Level 75(complete)
+				carnwenhan_multiplier = .1
+
+			end
 		end
 	end
-	return false --no match found
 end
 
-local function getJPGiftBonusDuration()
-	local player = windower.ffxi.get_player()
-	if player and player.job_points.brd.jp_spent >= 1200 then
-		jp_gift_bonus_duration = .05
-	end
-end
-getJPGiftBonusDuration()
-
-local function getSongDuration(spell, set)
+local function getSongDuration(song, set)
 
 	song_duration = nil
 
@@ -2268,10 +2305,11 @@ local function getSongDuration(spell, set)
 	end
 
 	local multiplier = 1
+	local sv_marcato_duration = false
 
 	--1200 job point gift duration nonus
-	multiplier = multiplier + jp_gift_bonus_duration
--- print(multiplier, jp_gift_bonus_duration)
+	multiplier = multiplier + (player.job_points.brd.jp_spent >= 1200 and .05 or 0)
+-- print("1", multiplier, (player.job_points.brd.jp_spent >= 1200 and .05 or 0))
 	--weapons
 	if set.main == "Legato Dagger" or set.sub == "Legato Dagger" then
 		multiplier = multiplier + .05
@@ -2279,58 +2317,30 @@ local function getSongDuration(spell, set)
 	if set.main == "Kali" or set.sub == "Kali" then
 		multiplier = multiplier + .05
 	end
--- print(multiplier, set.main)
+-- print("2", multiplier, set.main, set.sub)
 	if set.main == "Carnwenhan" then
-		if itemMatch(20586,'main') or itemMatch(20562,'main') or itemMatch(20561,'main') or itemMatch(19957,'main') or itemMatch(19828,'main') then --99
-			multiplier = multiplier + .5
-		elseif itemMatch(19719,'main') or itemMatch(19621,'main') then --95/90
-			multiplier = multiplier + .4
-		elseif itemMatch(19089,'main') then --85
-			multiplier = multiplier + .3
-		elseif itemMatch(19069,'main') then --80
-			multiplier = multiplier + .2
-		elseif itemMatch(19000,'main') then --75 (complete)
-			multiplier = multiplier + .1
-		end
+		multiplier = multiplier + carnwenhan_multiplier
 	end
--- print(multiplier)
+-- print("3", multiplier)
 	--"all songs+" instruments
-	if player.equipment.range == 'Daurdabla' then
-		if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
-			multiplier = multiplier + .3
-		elseif itemMatch(18576,'range') then --95
-			multiplier = multiplier + .3
-		elseif itemMatch(18575,'range') then --90
-			multiplier = multiplier + .25
-		end
-	elseif player.equipment.range == "Gjallarhorn" then
-		if itemMatch(18840,'range') or itemMatch(18572,'range') then --99
-			multiplier = multiplier + .4
-		elseif itemMatch(18580,'range') or itemMatch(18579,'range') then --95/90
-			multiplier = multiplier + .3
-		elseif itemMatch(18578,'range') or itemMatch(18577,'range') or itemMatch(18342,'range') then --85/80/75
-			multiplier = multiplier + .2
-		end
-	elseif player.equipment.range == "Marsyas" then
+	if set.range == 'Daurdabla' then
+		multiplier = multiplier + daurdabla_multiplier
+	elseif set.range == "Gjallarhorn" then
+		multiplier = multiplier + gjallarhorn_multiplier
+	elseif set.range == "Marsyas" then
 		multiplier = multiplier + .5
-	elseif player.equipment.range == "Loughnashade" then
-		if itemMatch(22307,'range') then --stage 5
-			multiplier = multiplier + .4
-		elseif itemMatch(22306,'range') then --stage 4
-			multiplier = multiplier + .3
-		elseif itemMatch(22305,'range') then --stage 3
-			multiplier = multiplier + .2
-		end
-	elseif player.equipment.range == "Linos" then
+	elseif set.range == "Loughnashade" then
+		multiplier = multiplier + loughnashade_multiplier
+	elseif set.range == "Linos" then
 		multiplier = multiplier + .1
-	elseif player.equipment.range == "Blurred Harp" then
+	elseif set.range == "Blurred Harp" then
 		multiplier = multiplier + .1
-	elseif player.equipment.range == "Blurred Harp +1" then
+	elseif set.range == "Blurred Harp +1" then
 		multiplier = multiplier + .2
-	elseif player.equipment.range == "Eminent Flute" then
+	elseif set.range == "Eminent Flute" then
 		multiplier = multiplier + .2
 	end
--- print(multiplier)
+-- print("4", multiplier, set.range)
 	--body
 	if set.body == "Aoidos' Hngrln. +1" then
 		multiplier = multiplier + .05
@@ -2343,10 +2353,9 @@ local function getSongDuration(spell, set)
 	elseif set.body == "Fili Hongreline +2" then
 		multiplier = multiplier + .13
 	elseif set.body == "Fili Hongreline +3" then
-		-- print('test')
 		multiplier = multiplier + .14
 	end
--- print(multiplier, set.body)
+-- print("5", multiplier, set.body)
 	--legs
 	if set.legs == "Mdk. Shalwar +1" then
 		multiplier = multiplier + .1
@@ -2357,7 +2366,7 @@ local function getSongDuration(spell, set)
 	elseif set.legs == "Inyanga Shalwar +2" then
 		multiplier = multiplier + .17
 	end
--- print(multiplier)
+-- print("6", multiplier, set.legs)
 	--feet
 	if set.feet == "Brioso Slippers" then
 		multiplier = multiplier + .1
@@ -2368,7 +2377,7 @@ local function getSongDuration(spell, set)
 	elseif set.feet == "Brioso Slippers +3" or set.feet == "Brioso Slippers +4" then
 		multiplier = multiplier + .15
 	end
--- print(multiplier)
+-- print("7", multiplier, set.feet)
 	--neck
 	if set.neck == "Aoidos' Matinee" or set.neck == "Brioso Whistle" then
 		multiplier = multiplier + .1
@@ -2377,80 +2386,89 @@ local function getSongDuration(spell, set)
 	elseif set.neck == "Mnbw. Whistle +1" then
 		multiplier = multiplier + .3
 	end
--- print(multiplier)
+-- print("8", multiplier, set.neck)
 	--specific song bonus gear
-	if string.find(spell,'Ballad') then
+	if string.find(song,'Ballad') then
 		if set.legs == "Aoidos' Rhing. +2" or set.legs == "Fili Rhingrave" or set.legs == "Fili Rhingrave +1" or set.legs == "Fili Rhingrave +2" or set.legs == "Fili Rhingrave +3" then
 			multiplier = multiplier + .1
 		end
-	elseif string.find(spell,'Carol') then
+	elseif string.find(song,'Carol') then
 		if set.hands == "Mousai Gages" then
 			multiplier = multiplier + .1	
 		elseif set.hands == "Mousai Gages +1" then
 			multiplier = multiplier + .2
 		end
-	elseif string.find(spell,'Etude') then
+	elseif string.find(song,'Etude') then
 		if set.head == "Mousai Turban" then
 			multiplier = multiplier + .1	
 		elseif set.head == "Mousai Turban +1" then
 			multiplier = multiplier + .2
 		end
-	elseif string.find(spell,'Madrigal') then
+	elseif string.find(song,'Madrigal') then
 		if set.head == "Aoidos' Calot +2" or set.head == "Fili Calot" or set.head == "Fili Calot +1" or set.head == "Fili Calot +2" or set.head == "Fili Calot +3" then
 			multiplier = multiplier + .1
 		end
 		if set.back == "Intarabus's Cape" then
 			multiplier = multiplier + .1
 		end
-	elseif string.find(spell,'Mambo') then
+	elseif string.find(song,'Mambo') then
 		if set.legs == "Mousai Crackows" then
 			multiplier = multiplier + .1	
 		elseif set.legs == "Mou. Crackows +1" then
 			multiplier = multiplier + .2
 		end
-	elseif string.find(spell,'March') then
+	elseif string.find(song,'March') then
 		if set.hands == "Ad. Mnchtte. +2" or set.hands == "Fili Manchettes" or set.hands == "Fili Manchettes +1" or set.hands == "Fili Manchettes +2" or set.hands == "Fili Manchettes +3" then
 			multiplier = multiplier + .1
 		end
-	elseif string.find(spell,'Minne') then
+	elseif string.find(song,'Minne') then
 		if set.legs == "Mousai Seraweels" then
 			multiplier = multiplier + .1	
 		elseif set.legs == "Mou. Seraweels +1" then
 			multiplier = multiplier + .2
 		end
-	elseif string.find(spell,'Minuet') then
+	elseif string.find(song,'Minuet') then
 		if set.body == "Aoidos' Hngrln. +2" or set.body == "Fili Hongreline" or set.body == "Fili Hongreline +1" or set.body == "Fili Hongreline +2" or set.body == "Fili Hongreline +3" then
 			multiplier = multiplier + .1
 		end
-	elseif string.find(spell,'Paeon') then
+	elseif string.find(song,'Paeon') then
 		if set.head == "Brioso Roundlet" or set.head == "Brioso Roundlet +1" or set.head == "Brioso Roundlet +2" then
 			multiplier = multiplier + .1
 		elseif set.head == "Brioso Roundlet +3" or set.head == "Brioso Roundlet +4" then
 			multiplier = multiplier + .2
 		end
-	elseif spell == "Sentinel's Scherzo" then
+	elseif song == "Sentinel's Scherzo" then
+		sv_marcato_duration = true
 		if set.feet == "Aoidos' Cothrn. +2" or set.feet == "Fili Cothurnes" or set.feet == "Fili Cothurnes +1" or set.feet == "Fili Cothurnes +2" or set.feet == "Fili Cothurnes +3" then
 			multiplier = multiplier + 0.1
 		end
-		--For Scherzo, Soul Voice and Marcato are multiplicative with Troubadour below
-		if buffactive['Soul Voice'] then
-			multiplier = multiplier * 2
-		elseif buffactive['Marcato'] then
-			multiplier = multiplier * 1.5
-		end
+	elseif string.find(song,'Mazurka') or song == "Goddess's Hymnus" then
+		sv_marcato_duration = true
 	end
--- print(multiplier)
-	--base duration is multiplied by the total multiplier number we get from all relevant gear combined.
-	local total_duration = math.floor(120 * multiplier)
+-- print("9", multiplier)
+	--Base duration is multiplied by the total multiplier number we get from all relevant gear combined.
+	local total_duration = math.ceil(120 * multiplier)
 
-	--Troubadour doubles duration after all other bonuses are applied
+	--Soul Voice/Marcato affects duration for specific songs
+	if buffactive['Soul Voice'] then
+		total_duration = sv_marcato_duration and total_duration * 2 or total_duration
+	elseif buffactive['Marcato'] then
+		total_duration = sv_marcato_duration and math.ceil(total_duration * 1.5) or total_duration
+	end
+
+	--Troubadour doubles duration after all other bonuses are applied (except for Job Point Bonuses, done below)
 	if buffactive['Troubadour'] then
 		total_duration = total_duration * 2
 	end
 
-	--Again we make the assumption that if you are 99 then you are mastered and have the Clarion Call 40 second song duration bonus
+	--Marcato Effect Job Point Bonus (extra 1 second per upgrade)
+	if buffactive['Marcato'] then
+		total_duration = total_duration + player.job_points.brd.marcato_effect
+	end
+
+	--Clarion Call Effect Job Point bonus (extra 2 seconds per upgrade)
 	if player.main_job_level == 99 and buffactive['Clarion Call'] then
-		total_duration = math.ceil(total_duration + 40)
+		total_duration = total_duration + (player.job_points.brd.clarion_call_effect * 2)
 	end
 
 	return total_duration
@@ -2458,20 +2476,11 @@ end
 
 local function getMaxSongs()
 	local max_songs = 2
-	-- max_songs = 2
 
 	if player.equipment.range == "Daurdabla" then
-		if itemMatch(18571,'range') or itemMatch(18839,'range') then --99
-			max_songs = max_songs + 2
-		else
-			max_songs = max_songs + 1
-		end
+		max_songs = max_songs + daurdabla_songs
 	elseif player.equipment.range == "Loughnashade" then
-		if itemMatch(22307,'range') then --stage 5
-			max_songs = max_songs + 2
-		elseif itemMatch(22306,'range') then --stage 4
-			max_songs = max_songs + 1
-		end
+		max_songs = max_songs + loughnashade_songs
 	elseif player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
 		max_songs = max_songs + 1
 	end
@@ -2603,13 +2612,11 @@ local function getCurrentSongList()
 				end
 			end
 			table.insert(temp_list, temp_list_part)
-			-- formatted_list = formatted_list.."\n"
 		end
 	else --Vertical (default)
 		for _, col in ipairs(columns) do
 			for _, line in ipairs(col) do
 				table.insert(temp_list, line)
-				-- formatted_list = formatted_list..line.."\n"
 			end
 		end
 	end
@@ -2629,11 +2636,11 @@ local function resetCurrentSongs(player)
 end
 
 --Set gear based on song and a few other factors
-local function setSongGear(song, instrument)
+local function setSongGear(song, nightingale)
 
 	local set_name = "buff_song"
-	local main_sub = hasDualWield() and "buff_song_dual_wield" or "buff_song_single_wield"
-	local is_dummy_song = player.equipment.range == inst.dummy or (instrument and instrument == inst.dummy)
+	local main_sub = has_dual_wield and "buff_song_dual_wield" or "buff_song_single_wield"
+	local is_dummy_song = nightingale and instrument == inst.dummy
 
 	if is_dummy_song then
 		--doing a dummy song, don't use buff_song set so the durations are much lower making them easier to overwrite
@@ -2660,9 +2667,9 @@ local function setSongGear(song, instrument)
 		set_name = "prelude"
 	elseif string.find(song,'Horde Lullaby II') then
 		set_name = "horde_lullaby_II"
-		main_sub = hasDualWield() and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
+		main_sub = has_dual_wield and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
 	else
-		main_sub = hasDualWield() and "debuff_song_dual_wield" or "debuff_song_single_wield"
+		main_sub = has_dual_wield and "debuff_song_dual_wield" or "debuff_song_single_wield"
 		if string.find(song,'Lullaby') then
 			set_name = "lullaby"
 		elseif string.find(song,'Requiem') or string.find(song,'Elegy') or string.find(song,'Nocturne') or string.find(song,'Finale') or string.find(song,'Virelai') then
@@ -2672,16 +2679,16 @@ local function setSongGear(song, instrument)
 		end
 	end
 
-	if instrument then --If we're sent an instrument then we have nitro up, therefore use buff main/sub
+	if nightingale then --Nightingale active, use buff main/sub
 		local set = set_combine(sets[set_name], sets[main_sub], {range=instrument})
 		equip(set)
 		song_duration = getSongDuration(song, set)
 	elseif player.status == "Engaged" then
-		local set = set_combine(sets[set_name], {main=pair[1],sub=pair[2]})
+		local set = set_combine(sets[set_name], {main=pair[1],sub=pair[2]}, {range=instrument})
 		equip(set)
 		song_duration = getSongDuration(song, set)
 	else
-		local set = set_combine(sets[set_name], sets[main_sub])
+		local set = set_combine(sets[set_name], sets[main_sub], {range=instrument})
 		equip(set)
 		song_duration = getSongDuration(song, set)
 	end
@@ -2948,7 +2955,7 @@ function self_command(command)
 	elseif command == 'WC' then
 		CurrentEquip = ''
 		if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
-			if hasDualWield() then
+			if has_dual_wield then
 				pair = DualWieldCyclePlusAbyssea[WeaponCycleIndex]
 				if pair == nil then
 					WeaponCycleIndex = 1
@@ -2962,7 +2969,7 @@ function self_command(command)
 				end
 			end
 		else --otherwise, use just the basic WeaponCycle table
-			if hasDualWield() then
+			if has_dual_wield then
 				pair = DualWieldCycle[WeaponCycleIndex]
 				if pair == nil then
 					WeaponCycleIndex = 1
@@ -3138,6 +3145,8 @@ function precast(spell)
 			end
 		end
 		flash('Debuffs')
+	elseif midaction() then
+		return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if AlertSounds then
@@ -3217,8 +3226,8 @@ function precast(spell)
 			send_command('input /ja "Pianissimo" <me>;wait 1.5;input /ma \"'..spell.english..'\" '..spell.target.raw)
 			return
 		end
-		local instrument
-		local main_sub = hasDualWield() and "buff_song_dual_wield" or "buff_song_single_wield"
+		instrument = nil
+		local main_sub = has_dual_wield and "buff_song_dual_wield" or "buff_song_single_wield"
 		if spell.english == "Honor March" then
 			instrument = "Marsyas"
 		elseif spell.english == "Aria of Passion" then
@@ -3271,9 +3280,9 @@ function precast(spell)
 			instrument = inst.sirvente
 		elseif string.find(spell.english,'Horde Lullaby II') then
 			instrument = inst.horde_lullaby_II
-			main_sub = hasDualWield() and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
+			main_sub = has_dual_wield and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
 		else
-			main_sub = hasDualWield() and "debuff_song_dual_wield" or "debuff_song_single_wield"
+			main_sub = has_dual_wield and "debuff_song_dual_wield" or "debuff_song_single_wield"
 			if string.find(spell.english,'Elegy') then
 				instrument = inst.elegy
 			elseif string.find(spell.english,'Finale') then
@@ -3290,10 +3299,9 @@ function precast(spell)
 				instrument = inst.virelai
 			end
 		end
-		--NiTro active, go straight into song midcast set and the proper instrument
+		--Nightingale active, go straight into song midcast set and the proper instrument
 		if buffactive['Nightingale'] then
-			setSongGear(spell.english, instrument)
-		--No NiTro active
+			setSongGear(spell.english, true)
 		else
 			--Engaged, equip fast cast + current weapon cycler weapons (to keep TP) + proper instrument
 			if player.status == "Engaged" then
@@ -3314,10 +3322,9 @@ end
 
 function midcast(spell)
 	if spell.type == 'BardSong' then
-		setSongGear(spell.english)
 		dummy_song = player.equipment.range == inst.dummy
+		setSongGear(spell.english, false)
 		soul_voice_song = buffactive['Soul Voice']
-		max_songs = getMaxSongs()
 	elseif spell.skill == 'Enfeebling Magic' then
 		local engaged = player.status == "Engaged" and {main=pair[1],sub=pair[2]} or nil
 		equip(set_combine(sets.enfeeble, engaged))
@@ -3420,6 +3427,8 @@ windower.register_event('gain buff', function(buff)
 		setNotification()
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
+	elseif buff == 157 then --SJ Restriction
+		has_dual_wield = hasDualWield()
 	end
 
 end)
@@ -3500,6 +3509,8 @@ windower.register_event('lose buff', function(buff)
 		setNotification()
 	elseif buff == 252 then --Mounted
 		send_command('wait .5;gs c ClearNotifications')
+	elseif buff == 157 then --SJ Restriction
+		has_dual_wield = hasDualWield()
 	end
 
 end)
@@ -4514,6 +4525,8 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			GreetingDelay = -1
 			setNotification()
+			getItemLevels()
+			windower.add_to_chat(8,('[Notice] '):color(39)..('Done.'):color(8))
 		end
 
 		if party and party_count == 1 and party_count ~= party.count then
@@ -4623,9 +4636,6 @@ windower.register_event('zone change',function()
 	--Clear current_songs list
 	resetCurrentSongs()
 
-	--Update in case we just recently spent more JPs
-	getJPGiftBonusDuration()
-
 	--Unlock Transport spells
 	transport_locked = true
 	transport_lock_timestamp = 0
@@ -4679,6 +4689,8 @@ function sub_job_change(newSubjob, oldSubjob)
 	if ZoneGear ~= 'Off' then
 		send_command('wait 2;gs c Zone Gear')
 	end
+
+	has_dual_wield = hasDualWield()
 
 	resetCurrentSongs(player.name)
 
@@ -4780,12 +4792,13 @@ windower.register_event('action',function(act)
 			if act.targets[1].id and get_mob_by_id(act.targets[1].id).in_party then
 
 				local song_name = spells[act.param].en
+				max_songs = getMaxSongs()
 
 				for i = 1, act.target_count do
 					local target_id = act.targets[i].id
 					local target_name = target_id and get_mob_by_id(target_id).name
 
-					-- Initialize the player's song list if it doesn't exist
+					--Initialize the player's song list if it doesn't exist
 					if target_name and current_songs[target_name] == nil then
 						current_songs[target_name] = {}
 					end
@@ -4796,24 +4809,28 @@ windower.register_event('action',function(act)
 						for _ in pairs(player_songs) do song_count = song_count + 1 end
 					end
 
+					--If the player has fewer songs than max_songs, add or update the song
 					if player_songs and song_count < max_songs then
-						-- If the player has fewer songs than max_songs, add or update the song
+						local tenuto_bonus = target_name == my_name and buffactive['Tenuto'] and (player.job_points.brd.tenuto_effect * 2) or 0
 						player_songs[song_name] = {
-							duration = song_duration,
+							duration = song_duration + tenuto_bonus, --Tenuto JP duration bonus only applies to the BRD
 							dummy = dummy_song,
 							soul_voice = soul_voice_song,
 						}
+
+					--If the player has max_songs or more, check if the song exists
 					elseif player_songs then
-						-- If the player has max_songs or more, check if the song exists
+
+						--If the song already exists, update the duration
 						if player_songs[song_name] then
-							-- Update the existing song duration
 							player_songs[song_name] = {
 								duration = song_duration,
 								dummy = dummy_song,
 								soul_voice = soul_voice_song,
 							}
+
+						--Otherwise find the song with the lowest duration
 						else
-							-- Find the song with the lowest duration
 							local lowest_duration = nil
 							local lowest_song_name = nil
 
@@ -4824,7 +4841,7 @@ windower.register_event('action',function(act)
 								end
 							end
 
-							-- Replace the lowest duration song with the new song
+							--Replace the lowest duration song with the new song
 							if lowest_song_name then
 								player_songs[lowest_song_name] = nil
 								player_songs[song_name] = {
