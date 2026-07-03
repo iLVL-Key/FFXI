@@ -349,6 +349,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.10.2
+- Fixed (I hope) parts of the Chat bar UI occasionally loading all in the top left corner of the screen.
+- Fixed an issue where the Scroll Bar and Handle would occasionally get stuck displaying in the Chat window.
+
 Version 4.10.1
 - Fixed issues with Signet not being tracked properly for the new `show_base_conq_pt_per_hour` option.
 - Fixed an issue with the `show_battle_target_by_default` option where a dead target would occasionally get stuck displaying on screen. This feature no longer uses Windower's `get_mob_by_target('bt')` and instead pulls from the Aggro List table.
