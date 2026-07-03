@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.10'
+_addon.version = '4.10.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -4988,9 +4988,9 @@ function colorizeDistance(text, distance, target)
 				max_distance = 20.0666
 			end
 			
-			local target_distance = max_distance + target.model_size + player.model_size
-			local outer_blue_distance = outer_blue_max + target.model_size + player.model_size
-			local inner_blue_distance = inner_blue_max + target.model_size + player.model_size
+			local target_distance = max_distance + (target and target.model_size or 0) + (player and player.model_size or 0)
+			local outer_blue_distance = outer_blue_max + (target and target.model_size or 0) + (player and player.model_size or 0)
+			local inner_blue_distance = inner_blue_max + (target and target.model_size or 0) + (player and player.model_size or 0)
 
 			--In Range (Song AOE), party members only
 			if job == 'brd' and target.in_party and distance < song_aoe_max then
@@ -5045,10 +5045,10 @@ function colorizeDistance(text, distance, target)
 
 			local max_distance = 25
 			local range_skill = range and range.id and res.items[range.id] and res.items[range.id].skill or nil
-			local square_max = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
-			local true_max = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
-			local true_min = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
-			local square_min = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
+			local square_max = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
+			local true_max = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
+			local true_min = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
+			local square_min = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
 
 			--Bow
 			if range_type == "Bow" then
@@ -5128,7 +5128,7 @@ function colorizeDistance(text, distance, target)
 				max_distance = 16.2
 			end
 
-			local target_distance = max_distance + target.model_size + player.model_size
+			local target_distance = max_distance + (target and target.model_size or 0) + (player and player.model_size or 0)
 
 			--In range
 			if distance < target_distance then
@@ -5428,6 +5428,10 @@ function updateAggroList(player, t, st)
 		if aggro_list_box:visible() then
 			aggro_list_box:hide()
 		end
+	end
+
+	--Skip entirely if neither the Aggro List or the show_battle_target_by_default option are enabled
+	if not (show_aggro_list or show_battle_target_by_default) then
 		return
 	end
 
@@ -5442,9 +5446,17 @@ function updateAggroList(player, t, st)
 		local cursor_target = show_cursor_target and t and t.id == actor_id
 		local cursor_sub_target = show_cursor_target and st and st.id == actor_id
 
+		--Update Battle Target with the first mob on the list
+		if show_battle_target_by_default and num == 0 and actor and actor.valid_target and actor.hpp ~= 0 then
+			battle_target = actor
+		end
+
 		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) and actor.hpp ~= 0 then
 
 			num = num + 1
+
+			--Break the loop if the Aggro List is off since we don't need to process anything past the first entry (for the `show_battle_target_by_default` option)
+			if not show_aggro_list then break end
 
 			if num <= max_monsters_listed then
 				local actor_name = truncateName(actor.name)
@@ -5500,6 +5512,12 @@ function updateAggroList(player, t, st)
 		end
 
 	end
+
+	--Clear the Battle Target from the Focus Target bar once the Aggro List is empty
+	if num == 0 and battle_target then
+		battle_target = nil
+	end
+
 	local padding = ""
 	local plus_text = max_monsters_listed > 0 and plus_num_more > 0 and "+"..plus_num_more.." more" or ((num == 0 or max_monsters_listed == 0) and "Aggro List" or "")
 	local total_text = "Total: "..num
@@ -5514,7 +5532,7 @@ function updateAggroList(player, t, st)
 	--If in a cutscene or less aggro than we have set to show, hide the entire list
 	if aggro_list_box:visible() and (in_cutscene or num < min_monsters_to_show) and not Screen_Test then
 		aggro_list_box:hide()
-	elseif not aggro_list_box:visible() and num >= min_monsters_to_show and not in_cutscene then
+	elseif show_aggro_list and not aggro_list_box:visible() and num >= min_monsters_to_show and not in_cutscene then
 		aggro_list_box:show()
 	end
 
@@ -5655,7 +5673,6 @@ function updateFocusTargetBar(player, target, clock)
 			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = ft and show_dyna_jobs and in_dyna and dynaJob(ft.name) or false
 	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
@@ -5954,7 +5971,6 @@ function updateSubTargetBar(player, st, target, clock)
 			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = st and show_dyna_jobs and in_dyna and dynaJob(st.name) or false
 	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
@@ -6246,7 +6262,6 @@ function updateTargetBar(player, t, clock)
 			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	in_dyna = in_dyna or inDyna()
 	local dyna_job_raw = t and show_dyna_jobs and in_dyna and dynaJob(t.name) or false
 	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
@@ -7300,7 +7315,6 @@ function updateXPBar(player, time)
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
 			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
-			in_signet_zone = in_signet_zone or inSignetZone()
 			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
 			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
 			local c = xp_capped and color.xp.capped or text_color
@@ -7312,7 +7326,7 @@ function updateXPBar(player, time)
 			local colorized_xp = " XP: \\cs("..c_r..","..c_g..","..c_b..")"..formatted_current_xp.."/"..formatted_required_xp.."\\cr"
 			local colorized_xp_shdw = " XP: \\cs(000,000,000)"..formatted_current_xp.."/"..formatted_required_xp.."\\cr"
 			local tnl = math.max(required_xp - current_xp, 0)
-			local total_seconds_tnl = points_per_kill > 0 and (tnl / cp_per_hour) * 3600 or 0
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / xp_per_hour) * 3600 or 0
 			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
 			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
 			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
@@ -7357,7 +7371,6 @@ function updateXPBar(player, time)
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
 			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(cp_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
-			in_signet_zone = in_signet_zone or inSignetZone()
 			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
 			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
 			local total_seconds_tnl = points_per_kill > 0 and (tnl / cp_per_hour) * 3600 or 0
@@ -7386,7 +7399,6 @@ function updateXPBar(player, time)
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
 			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(ep_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
-			in_signet_zone = in_signet_zone or inSignetZone()
 			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
 			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
 			local mlvl = show_job_levels and (master_level or '--') or ""
@@ -8336,21 +8348,35 @@ end
 register_event('load', function()
 
 	if get_info().logged_in then
+
 		logged_in = true
+
 		initialize()
 		checkLastPackets()
 		signetActive()
+
+		--Update Zone Stuff
+		current_zone = getZone()
+		in_dyna = inDyna()
+		in_signet_zone = inSignetZone()
+
 	end
 
 	if show_chat_bar then
+
 		initializeChatUIGrid()
 		calculateDynamicChatMinWidth()
+
 		coroutine.schedule(function()
+
 			rebuildWrappedHistory()
+
 			if logged_in then
 				refreshChatUI()
 			end
+
 		end, 2)
+
 	end
 
 end)
@@ -8358,15 +8384,26 @@ end)
 --Login
 register_event('login', function()
 
+	logged_in = true
+
 	initialize()
 	resetFadeDelay()
-	logged_in = true
-	if show_chat_bar then
-		coroutine.schedule(function()
+
+	coroutine.schedule(function()
+
+		if show_chat_bar then
 			rebuildWrappedHistory()
 			refreshChatUI()
-		end, 2)
-	end
+		end
+
+		signetActive()
+
+		--Update Zone Stuff
+		current_zone = getZone()
+		in_dyna = inDyna()
+		in_signet_zone = inSignetZone()
+
+	end, 2)
 
 end)
 
@@ -8374,6 +8411,7 @@ end)
 register_event('logout', function()
 
 	logged_in = false
+
 	hideBars()
 	resetFadeDelay()
 	clearTables()
@@ -8402,11 +8440,14 @@ register_event('status change', function(status)
 		showChatBar()
 
 	end
+
 	resetFadeDelay()
+
 end)
 
 register_event('zone change', function()
 
+	--Update Zone Stuff
 	current_zone = getZone()
 	in_dyna = inDyna()
 	in_signet_zone = inSignetZone()
@@ -8420,7 +8461,7 @@ end)
 
 register_event('gain buff', function(buff_id)
 
-	if buffid == 253 then --Signet
+	if buff_id == 253 then --Signet
 		signet_active = true
 	end
 
@@ -8428,7 +8469,7 @@ end)
 
 register_event('lose buff', function(buff_id)
 
-	if buffid == 253 then --Signet
+	if buff_id == 253 then --Signet
 		signet_active = false
 	end
 
@@ -8444,10 +8485,6 @@ register_event('prerender', function()
 	local pet = get_mob_by_target('pet')
 	local clock = os.clock()
 	local time = os.time()
-
-	if show_battle_target_by_default then
-		battle_target = get_mob_by_target('bt')
-	end
 
 	if sub_target and not condense_target_and_subtarget_bars then
 		updateSubTargetBarAnimations(player, sub_target)
@@ -11167,6 +11204,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 	elseif id == 0x02D and show_xp_bar then
 		local points = packet['Param 1']
 		local timestamp = os.time()
+		local target_id = packet['Player']
 		if msg == 8 or msg == 105 or msg == 253 then --Gain XP
 			--Immediately add the points to the current xp total, unless that would push it over the req xp tnl then we'll let the packet update handle that
 			current_xp = current_xp and required_xp and current_xp + points < required_xp and current_xp + points or current_xp
@@ -11198,7 +11236,7 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 				timestamp = timestamp,
 				points = points,
 			})
-		elseif msg == 719 then --New JP Total on kill
+		elseif msg == 719 and player.id == target_id then --New JP Total on kill
 			job_points_stored = points
 		end
 
