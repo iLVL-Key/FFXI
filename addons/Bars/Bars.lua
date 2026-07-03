@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.10.1'
+_addon.version = '4.10.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1820,6 +1820,7 @@ chat_ui = {
 }
 
 function updateChatUIPositions(base_x, base_y)
+
 	chat_ui.bg_window:pos(base_x - settings.sections.chat.pad, base_y - settings.sections.chat.pad)
 
 	if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
@@ -1897,6 +1898,10 @@ function updateChatUIPositions(base_x, base_y)
 		--Align Message Counter to the far left
 		local counter_x = base_x + (chat_calculated_char_width * 2)
 		chat_ui.message_counter:pos(counter_x, footer_y)
+	else
+		coroutine.schedule(function()
+			initializeChatUIGrid()
+		end, .5)
 	end
 
 	chat_ui.divider:pos(base_x, base_y + 13)
@@ -4078,6 +4083,8 @@ function refreshChatUI()
 	end
 	chat_ui.body:text(table.concat(display_lines, "\n"))
 
+	determineChatMinMaxState()
+
 	--Scroll Track and Scroll Handle display
 	if not chat_minimized and total_lines > max_lines then
 		local background_track_string = (" \n"):rep(max_lines - 1).." "
@@ -4114,8 +4121,6 @@ function refreshChatUI()
 	--Message Counter display
 	local current_raw_count = #chat_box.raw_history
 	chat_ui.message_counter:text(string.format("%d/%d", current_raw_count, chat_max_raw_history))
-
-	determineChatMinMaxState()
 
 	updateChatTabs()
 	updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
@@ -11286,27 +11291,6 @@ register_event('incoming chunk',function(id,original,modified,injected,blocked)
 		showChatBar()
 		resetFadeDelay()
 
-	end
-
-end)
-
-windower.register_event('incoming text',function(original, modified, original_mode, modified_mode, blocked)
-
-	local function parseMessage(original)
-
-		local message = original:match("%[EchoPets%]%s*(.*)")
-
-		if not message then return nil, "" end
-
-		local name = original:match("%([^%a]*([%a%s]+)[^%a]*%)")
-		
-		return name, message
-	end
-
-	local name, message = parseMessage(original)
-	if name then
-		print(name, message)
-		return true
 	end
 
 end)
