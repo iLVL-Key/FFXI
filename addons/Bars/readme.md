@@ -349,6 +349,12 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.10.1
+- Fixed issues with Signet not being tracked properly for the new `show_base_conq_pt_per_hour` option.
+- Fixed an issue with the `show_battle_target_by_default` option where a dead target would occasionally get stuck displaying on screen. This feature no longer uses Windower's `get_mob_by_target('bt')` and instead pulls from the Aggro List table.
+- Fixed an issue with the recent update to the XP bar that would capture other players Job Points earned and use that as the player's own stored amount. (Thanks Galin and Moonstrahl!)
+- Fixed an an error with the XP bar when leveling a sub-99 job causing errors on leveling up. (Thanks Asura.Jintawk!)
+
 Version 4.10
 - Added `show_battle_target_by_default` option to the Focus Target bar. Displays your party's current battle target (not guaranteed to be the same as `<bt>`) when no Focus Target or Focus Target Override is active.
 - Added `show_base_conq_pt_per_hour` option to the XP bar. Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in. (Thanks for the suggestion macy85!)
