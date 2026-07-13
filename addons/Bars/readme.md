@@ -349,6 +349,21 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.11
+- Added `focus` `sub` `chat` and `xp` in game commands to toggle those bars on/off.
+- Added `cbs` and `als` in game commands for adjusting the size of the Chat Bar and Aggro List.
+- Added `bg_alpha` and `meter_alpha` settings to the Focus Target, Sub Target, Target, Player Stats, Self Actions, and XP sections in the settings file.
+- Added missing results for Beastmaster and Puppetmaster pet actions. (thanks rkfogg and Galin!)
+- Added new Limbus NMs to the default list of open mobs (attackable by anyone) for the Aggro List.
+- Added missing `font` setting under Target section in the settings file. (Thanks zeta!)
+- Adjusted the Aggro List to work like other bars in the Screen Test (`//bars ui`). It is now only draggable during the Screen Test, will highlight in green, and will show fake test data in order to show the full size of the window.
+- Adjusted the previous `focus` in game command to `ft` instead (alternate `f` command has not changed) to make room for new bar toggle commands.
+- Adjusted the Seconds Per Kill number on the XP bar to display to one decimal place.
+- Adjusted the Self Action bar to display "Self Action" during the Screen Test (`//bars ui`) instead of "Screen Test" to align with the other bars labeling themselves.
+- Adjusted individual Player Stats bars (HP, MP, TP, and Pet) drain settings to condense to a single `drain_player_stats_bars` setting. Note that if you are upgrading from a previous verison this will leave the previous individual settings in your settings file, though they will no longer be functional.
+- Fixed tiny black square showing up on screen when the addon is loaded before a character is logged in.
+- Fixed Focus Target bar meter getting occasionally stuck on screen until another target replaces it, when the `show_battle_target_by_default` settings is enabled.
+
 Version 4.10.2
 - Fixed (I hope) parts of the Chat bar UI occasionally loading all in the top left corner of the screen.
 - Fixed an issue where the Scroll Bar and Handle would occasionally get stuck displaying in the Chat window.
