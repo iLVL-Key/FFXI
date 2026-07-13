@@ -86,7 +86,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 | PACKET USE |
 |------------|
 | Default settings: **Read Only** |
-| The option `show_monster_level` will send outgoing Wide Scan request packets (this is simulating opening your map and hitting Wide Scan) in a controlled manor: Never in town, at a random interval between 30 and 60 seconds, and stops when you go idle (specifically, when the bars fade out).<br>All other packet use in this addon is read only. |
+| The option `show_monster_level` will send outgoing Wide Scan request packets (this is simulating opening your map and hitting Wide Scan) in a controlled manner: Never in town, at a random interval between 30 and 60 seconds, and stops when you go idle (specifically, when the bars fade out).<br>All other packet use in this addon is read only. |
 
 ## How To Setup
 1. Load the addon with `//lua load bars`.
@@ -107,9 +107,8 @@ All commands must be preceded with `//bars` (ex: `//bars focus`)
 |---------|-------------|
 | `add/a [target]` | Add a target to the Auto Focus Target list.<br> - Valid targets: Names, IDs,  or current highlighted target.<br> - Use quotes to surround names with spaces. |
 | `remove/r [target]` | Remove a target from the Auto Focus Target list.<br> - Valid targets: Names, IDs,  or current highlighted target.<br> - Use quotes to surround names with spaces. |
-| `focus/f` | Temporarily override the Auto Focus Target with the current cursor target.<br> - Type again to remove the override.<br> - Automatically removed when target moves out of range. |
+| `ft/f` | Temporarily override the Auto Focus Target with the current cursor target.<br> - Type again to remove the override.<br> - Automatically removed when target moves out of range. |
 | `list/l` | Show the Auto Focus Target list. |
-| `aggro/agg` | Toggle the Aggro List. |
 | `help` | Display a list of commands and addon info. |
 | **Target Bar Display Options** |
 | `distance/d` | Toggle the target Distance option. |
@@ -117,8 +116,9 @@ All commands must be preceded with `//bars` (ex: `//bars focus`)
 | `hex/h` | Toggle the target Hex option (overrides Index). |
 | `index/i` | Toggle the target Index option (overrides Hex). |
 | **UI Adjustments** |
+| `focus/sub/target/aggro/chat/xp` | Toggle the display of the different bars. |
 | `hp/mp/tp/pet` | Toggle HP/MP/TP/Pet bar display setting for current job. |
-| `ui/lock/unlock` | Toggle Screen Test to drag sections of the UI around. |
+| `ui` | Toggle Screen Test to drag sections of the UI around. |
 | `width/w` | Display bar widths and how to update them. |
 | `size/s` | Display bar sizes and how to update them. |
 | `text/t` | Display text sizes and how to update them. |
@@ -157,12 +157,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `abbreviate_common_mob_names` | Common mob names will be abbreviated to save space (ex. Sweetwater Rabbit → Swt. Rabbit). Does not apply to the main name on the Target bar. |
 | `animations` | Controls various aspects of the different types of animations. |
 | → `drain_brightness` | Brightness (alpha) of the Bar Drain effect.<br># 1-10<br>1 = 10% of the meters alpha<br> 10 = 100% of the meters alpha |
-| → `drain_hp_bar` | Display the Bar Drain effect for the Player Stats **HP** bar. |
-| → `drain_mp_bar` | Display the Bar Drain effect for the Player Stats **MP** bar. |
-| → `drain_pet_bar` | Display the Bar Drain effect for the Player Stats **PET** bar. |
+| → `drain_player_stats_bars` | Display the Bar Drain effect for the Player Stats bars (HP, MP, TP, Pet). |
 | → `drain_speed` | Speed of the Bar Drain effect.<br># >= 1<br>Higher = faster |
 | → `drain_target_bars` | Display the Bar Drain effect on the Focus Target, Sub Target, and Target bars. |
-| → `drain_tp_bar` | Display the Bar Drain effect for the Player Stats **TP** bar. |
 | → `fade_after_a_delay` | Fades all bars out of view after a set time delay of inaction. |
 | → `fade_delay` | Time in seconds to delay fade. |
 | → `fade_down_to_alpha` | Number the alpha will stop at after fading.<br>0 = completely invisible<br>255 = completely visible |
@@ -231,6 +228,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `ignore_list` | Comma separated list of monster names to not display. |
 | → `italic` | Text within this section is italic. |
 | → `max_monsters_listed` | Maximum number of monsters to display separately (0-15). |
+| → `meter_alpha` | Opacity level for the meter in this section (0-255). |
 | → `min_monsters_to_show` | Minimum number of monsters before the Aggro List will display (0-15). |
 | → `open_mobs` | Comma separated list of monster names that anyone can fight and are not claimed (bypassing the party/alliance only filter). |
 | → `pos` | X and Y position of the Aggro List. |
