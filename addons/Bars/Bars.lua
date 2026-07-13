@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.10.2'
+_addon.version = '4.11'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -53,7 +53,7 @@ register_event = windower.register_event
 windower_path = windower.windower_path
 
 defaults = {
-	bg = {alpha = 240, red = 18, green = 18, blue = 20},
+	bg = {red = 18, green = 18, blue = 20},
 	text = {
 		alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas',
 		drop_shadow = {
@@ -200,12 +200,9 @@ defaults = {
 		abbreviate_common_mob_names = true,
 		animations = {
 			drain_brightness = 6,
-			drain_hp_bar = true,
-			drain_mp_bar = true,
-			drain_pet_bar = true,
 			drain_speed = 5,
+			drain_player_stats_bars = true,
 			drain_target_bars = true,
-			drain_tp_bar = true,
 			fade_after_a_delay = true,
 			fade_delay = 120,
 			fade_down_to_alpha = 0,
@@ -303,7 +300,13 @@ defaults = {
 				"Plunderer's", "Pteroslaver", "Pummeler's", "Reverence",
 				"Runeist", "Sakonji", "Spaekona's", "Theophany",
 				"Totemic", "Vishap", "Vitiation", "Wakido",
-				"Ultima Forerunner", "Omega Forerunner", "Omega's Bit"
+				"Ischyros Sandworm", "Ischyros Mantis", "Ischyros Adamantoise",
+				"Tolimi Wyrm", "Tolimi Dvergr", "Tolimi Vampyr",
+				"Agrios Ixion", "Agrios Alicorn", "Agrios Aern",
+				"Pallikari Khrysokhimaira", "Pallikari Ironclad", "Pallikari Mammet",
+				"Ultima Forerunner", "Omega Forerunner", "Omega's Bit",
+				"Temenos Hume Echo", "Temenos Galka Echo", "Temenos Tarutaru Echo", "Temenos Elvaan Echo", "Temenos Mithra Echo",
+				"Apollyon Hume Shade", "Apollyon Galka Shade", "Apollyon Tarutaru Shade", "Apollyon Elvaan Shade", "Apollyon Mithra Shade",
 			},
 			pos = {x = 200, y = 320},
 			show = true,
@@ -348,6 +351,7 @@ defaults = {
 		focus_target = {
 			bar_size = 10,
 			bar_width = 50,
+			bg_alpha = 240,
 			bold = true,
 			debuff_icon_offset = -37,
 			debuff_icon_size = 18,
@@ -359,6 +363,7 @@ defaults = {
 			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 576, y = 180},
 			show = true,
 			show_battle_target_by_default = true,
@@ -440,9 +445,11 @@ defaults = {
 		player_stats = {
 			bar_size = 10,
 			bar_width = 100,
+			bg_alpha = 240,
 			bold = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 330},
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -455,9 +462,11 @@ defaults = {
 		self_action = {
 			bar_size = 10,
 			bar_width = 100,
+			bg_alpha = 240,
 			bold = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 300},
 			show = true,
 			show_bar = true,
@@ -474,6 +483,7 @@ defaults = {
 		sub_target = {
 			bar_size = 10,
 			bar_width = 50,
+			bg_alpha = 240,
 			bold = true,
 			debuff_icon_offset = -37,
 			debuff_icon_size = 18,
@@ -485,6 +495,7 @@ defaults = {
 			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 180},
 			show = true,
 			show_player_angle_from_target_facing = false,
@@ -507,6 +518,7 @@ defaults = {
 		target= {
 			bar_size = 10,
 			bar_width = 100,
+			bg_alpha = 240,
 			debuff_icon_offset = -44,
 			debuff_icon_size = 20,
 			debuff_icon_spacing = 2,
@@ -515,6 +527,8 @@ defaults = {
 			debuff_timer_offset = -31, 
 			debuff_timer_size = 9,
 			debuff_timers = true,
+			font = 'Consolas',
+			meter_alpha = 240,
 			pos = {x = 200, y = 250},
 			show_player_angle_from_target_facing = false,
 			show_target_angle_from_player_facing = false,
@@ -540,7 +554,8 @@ defaults = {
 		},
 		xp = {
 			bar_size = 15,
-			bar_width = 67,
+			bar_width = 76,
+			bg_alpha = 240,
 			bold = true,
 			condensed_job_points = true,
 			condensed_merits = true,
@@ -548,8 +563,9 @@ defaults = {
 			font = 'Consolas',
 			italic = false,
 			legacy_per_hour_calculation = false,
+			meter_alpha = 240,
 			per_hour_rolling_window_in_minutes = 15,
-			pos = {x = 200, y = 350},
+			pos = {x = 600, y = windower.get_windower_settings().ui_y_res -17},
 			show = true,
 			show_base_conq_pt_per_hour = false,
 			show_job_levels = true,
@@ -843,7 +859,7 @@ if not auto_focus_targets_file:exists() then
 				end
 			end
 			add_to_chat(8,('[Bars] '):color(220)..('Migration of old Auto Focus Target data complete.'):color(36))
-			add_to_chat(8,('[Bars] '):color(220)..('You may safely delete '):color(8)..('auto_focus_target_list '):color(1)..('data in '):color(8)..('data/settings.xml '):color(1)..('if you wish.'):color(8))
+			add_to_chat(8,('You may safely delete '):color(8)..('auto_focus_target_list '):color(1)..('data in '):color(8)..('data/settings.xml '):color(1)..('if you wish.'):color(8))
 			return migrated_targets
 		else
 			return nil
@@ -946,7 +962,6 @@ else
 	durations_data = require('data.durations')
 end
 
-bg_alpha = settings.bg.alpha
 text_alpha = settings.text.alpha
 
 abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
@@ -964,12 +979,8 @@ condensed_merits = settings.sections.xp.condensed_merits
 debuff_duration_cap = settings.options.debuffs.duration_cap
 drain_decay = (settings.options.animations.drain_speed / 10)
 drain_brightness = math.max(1, math.min(10, settings.options.animations.drain_brightness))
-drain_bg_alpha = bg_alpha * (drain_brightness / 10)
-drain_hp_bar = settings.options.animations.drain_hp_bar
-drain_mp_bar = settings.options.animations.drain_mp_bar
-drain_pet_bar = settings.options.animations.drain_pet_bar
+drain_player_stats_bars = settings.options.animations.drain_player_stats_bars
 drain_target_bars = settings.options.animations.drain_target_bars
-drain_tp_bar = settings.options.animations.drain_tp_bar
 exclude_from_fade = settings.sections.xp.exclude_from_fade
 fade_after_a_delay = settings.options.animations.fade_after_a_delay
 fade_down_to_alpha = settings.options.animations.fade_down_to_alpha
@@ -995,7 +1006,6 @@ max_icons = {
 max_monster_target_length = settings.options.max_monster_target_length
 max_monsters_listed = math.max(0, math.min(settings.sections.aggro_list.max_monsters_listed, 15))
 max_name_length = settings.options.max_name_length
-meter_bg_alpha = bg_alpha * ((10 - drain_brightness) / 10)
 min_monsters_to_show = math.max(0, math.min(settings.sections.aggro_list.min_monsters_to_show, 15))
 monster_target_confidence_timer = settings.options.monster_target_confidence_timer
 per_hour_rolling_window_in_minutes = math.max(settings.sections.xp.per_hour_rolling_window_in_minutes, 10)
@@ -1057,30 +1067,44 @@ show_xp_bar = settings.sections.xp.show
 
 focus_target_bar_size = settings.sections.focus_target.bar_size
 focus_target_bar_width = settings.sections.focus_target.bar_width
+focus_target_bg_alpha = settings.sections.focus_target.bg_alpha
+focus_target_meter_alpha = settings.sections.focus_target.meter_alpha
 focus_target_stroke_alpha = settings.sections.focus_target.stroke_alpha
 focus_target_stroke_color = settings.sections.focus_target.stroke_color
 focus_target_stroke_width = settings.sections.focus_target.stroke_width
 focus_target_sub_text_size = settings.sections.focus_target.sub_text_size
 focus_target_text_size = settings.sections.focus_target.text_size
+focus_target_drain_bg_alpha = focus_target_meter_alpha * (drain_brightness / 10)
+focus_target_meter_bg_alpha = drain_target_bars and focus_target_meter_alpha * ((10 - drain_brightness) / 10) or focus_target_meter_alpha
 
 sub_target_bar_size = settings.sections.sub_target.bar_size
 sub_target_bar_width = settings.sections.sub_target.bar_width
+sub_target_bg_alpha = settings.sections.sub_target.bg_alpha
+sub_target_meter_alpha = settings.sections.sub_target.meter_alpha
 sub_target_stroke_alpha = settings.sections.sub_target.stroke_alpha
 sub_target_stroke_color = settings.sections.sub_target.stroke_color
 sub_target_stroke_width = settings.sections.sub_target.stroke_width
 sub_target_sub_text_size = settings.sections.sub_target.sub_text_size
 sub_target_text_size = settings.sections.sub_target.text_size
+sub_target_drain_bg_alpha = sub_target_meter_alpha * (drain_brightness / 10)
+sub_target_meter_bg_alpha = drain_target_bars and sub_target_meter_alpha * ((10 - drain_brightness) / 10) or sub_target_meter_alpha
 
 target_bar_size = settings.sections.target.bar_size
 target_bar_width = settings.sections.target.bar_width
+target_bg_alpha = settings.sections.target.bg_alpha
+target_meter_alpha = settings.sections.target.meter_alpha
 target_stroke_alpha = settings.sections.target.stroke_alpha
 target_stroke_color = settings.sections.target.stroke_color
 target_stroke_width = settings.sections.target.stroke_width
 target_sub_text_size = settings.sections.target.sub_text_size
 target_text_size = settings.sections.target.text_size
+target_drain_bg_alpha = target_meter_alpha * (drain_brightness / 10)
+target_meter_bg_alpha = drain_target_bars and target_meter_alpha * ((10 - drain_brightness) / 10) or target_meter_alpha
 
 self_action_bar_size = settings.sections.self_action.bar_size
 self_action_bar_width = settings.sections.self_action.bar_width
+self_action_bg_alpha = settings.sections.self_action.bg_alpha
+self_action_meter_alpha = settings.sections.self_action.meter_alpha
 self_action_stroke_alpha = settings.sections.self_action.stroke_alpha
 self_action_stroke_color = settings.sections.self_action.stroke_color
 self_action_stroke_width = settings.sections.self_action.stroke_width
@@ -1088,13 +1112,19 @@ self_action_text_size = settings.sections.self_action.text_size
 
 player_stats_bar_size = settings.sections.player_stats.bar_size
 player_stats_bar_width = settings.sections.player_stats.bar_width
+player_stats_bg_alpha = settings.sections.player_stats.bg_alpha
+player_stats_meter_alpha = settings.sections.player_stats.meter_alpha
 player_stats_stroke_alpha = settings.sections.player_stats.stroke_alpha
 player_stats_stroke_color = settings.sections.player_stats.stroke_color
 player_stats_stroke_width = settings.sections.player_stats.stroke_width
 player_stats_text_size = settings.sections.player_stats.text_size
+player_stats_drain_bg_alpha = player_stats_meter_alpha * (drain_brightness / 10)
+player_stats_meter_bg_alpha = drain_player_stats_bars and player_stats_meter_alpha * ((10 - drain_brightness) / 10) or player_stats_meter_alpha
 
 xp_bar_size = settings.sections.xp.bar_size
 xp_bar_width = settings.sections.xp.bar_width
+xp_bg_alpha = settings.sections.xp.bg_alpha
+xp_meter_alpha = settings.sections.xp.meter_alpha
 xp_stroke_alpha = settings.sections.xp.stroke_alpha
 xp_stroke_color = settings.sections.xp.stroke_color
 xp_stroke_width = settings.sections.xp.stroke_width
@@ -2022,13 +2052,14 @@ updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y
 --MONSTER AGGRO LIST
 
 aggro_list_box = texts.new()
-aggro_list_box:text(test_text)
+aggro_list_box:text()
 aggro_list_box:pos(settings.sections.aggro_list.pos.x,settings.sections.aggro_list.pos.y)
 aggro_list_box:bold(true)
 aggro_list_box:show(true)
 aggro_list_box:font(font)
-aggro_list_box:size(settings.sections.aggro_list.size)
+aggro_list_box:size(aggro_list_size)
 aggro_list_box:bg_alpha(aggro_list_bg_alpha)
+aggro_list_box:draggable(false)
 aggro_list_box:pad(2)
 
 --MONSTER DEBUFFS
@@ -2173,7 +2204,7 @@ target_bar_lock_right:size(target_lock_icon_size)
 target_bar_lock_underline = texts.new()
 target_bar_lock_underline:font(font)
 target_bar_lock_underline:pad(-(focus_target_bar_size - settings.sections.target.target_lock_underline_pixel_width))
-target_bar_lock_underline:bg_alpha(bg_alpha)
+target_bar_lock_underline:bg_alpha(target_bg_alpha)
 target_bar_lock_underline:draggable(false)
 target_bar_lock_underline:size(focus_target_bar_size)
 
@@ -2190,7 +2221,7 @@ focus_target_bar_bg = texts.new()
 focus_target_bar_bg:font('Consolas')
 focus_target_bar_bg:pad(-4)
 focus_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-focus_target_bar_bg:bg_alpha(bg_alpha)
+focus_target_bar_bg:bg_alpha(focus_target_bg_alpha)
 focus_target_bar_bg:draggable(false)
 focus_target_bar_bg:size(focus_target_bar_size)
 
@@ -2199,7 +2230,7 @@ sub_target_bar_bg = texts.new()
 sub_target_bar_bg:font('Consolas')
 sub_target_bar_bg:pad(-4)
 sub_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-sub_target_bar_bg:bg_alpha(bg_alpha)
+sub_target_bar_bg:bg_alpha(sub_target_bg_alpha)
 sub_target_bar_bg:draggable(false)
 sub_target_bar_bg:size(sub_target_bar_size)
 
@@ -2208,7 +2239,7 @@ target_bar_bg = texts.new()
 target_bar_bg:font('Consolas')
 target_bar_bg:pad(-4)
 target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-target_bar_bg:bg_alpha(bg_alpha)
+target_bar_bg:bg_alpha(target_bg_alpha)
 target_bar_bg:draggable(false)
 target_bar_bg:size(target_bar_size)
 
@@ -2217,7 +2248,7 @@ self_action_bar_bg = texts.new()
 self_action_bar_bg:font('Consolas')
 self_action_bar_bg:pad(-4)
 self_action_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-self_action_bar_bg:bg_alpha(bg_alpha)
+self_action_bar_bg:bg_alpha(self_action_bg_alpha)
 self_action_bar_bg:draggable(false)
 self_action_bar_bg:size(self_action_bar_size)
 
@@ -2226,7 +2257,7 @@ player_stats_hp_bar_bg = texts.new()
 player_stats_hp_bar_bg:font('Consolas')
 player_stats_hp_bar_bg:pad(-4)
 player_stats_hp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_hp_bar_bg:bg_alpha(bg_alpha)
+player_stats_hp_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_hp_bar_bg:draggable(false)
 player_stats_hp_bar_bg:size(player_stats_bar_size)
 
@@ -2235,7 +2266,7 @@ player_stats_mp_bar_bg = texts.new()
 player_stats_mp_bar_bg:font('Consolas')
 player_stats_mp_bar_bg:pad(-4)
 player_stats_mp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_mp_bar_bg:bg_alpha(bg_alpha)
+player_stats_mp_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_mp_bar_bg:draggable(false)
 player_stats_mp_bar_bg:size(player_stats_bar_size)
 
@@ -2244,7 +2275,7 @@ player_stats_tp_bar_bg = texts.new()
 player_stats_tp_bar_bg:font('Consolas')
 player_stats_tp_bar_bg:pad(-4)
 player_stats_tp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_tp_bar_bg:bg_alpha(bg_alpha)
+player_stats_tp_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_tp_bar_bg:draggable(false)
 player_stats_tp_bar_bg:size(player_stats_bar_size)
 
@@ -2253,7 +2284,7 @@ player_stats_pet_bar_bg = texts.new()
 player_stats_pet_bar_bg:font('Consolas')
 player_stats_pet_bar_bg:pad(-4)
 player_stats_pet_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_pet_bar_bg:bg_alpha(bg_alpha)
+player_stats_pet_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_pet_bar_bg:draggable(false)
 player_stats_pet_bar_bg:size(player_stats_bar_size)
 
@@ -2262,7 +2293,7 @@ xp_bar_bg = texts.new()
 xp_bar_bg:font('Consolas')
 xp_bar_bg:pad(-4)
 xp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-xp_bar_bg:bg_alpha(bg_alpha)
+xp_bar_bg:bg_alpha(xp_bg_alpha)
 xp_bar_bg:draggable(false)
 xp_bar_bg:size(xp_bar_size)
 
@@ -2333,7 +2364,7 @@ target_bar_pulse:size(target_bar_size)
 focus_target_bar_drain_meter = texts.new()
 focus_target_bar_drain_meter:font('Consolas')
 focus_target_bar_drain_meter:pad(-5)
-focus_target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
+focus_target_bar_drain_meter:bg_alpha(drain_target_bars and focus_target_drain_bg_alpha or 0)
 focus_target_bar_drain_meter:draggable(false)
 focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 
@@ -2341,7 +2372,7 @@ focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 sub_target_bar_drain_meter = texts.new()
 sub_target_bar_drain_meter:font('Consolas')
 sub_target_bar_drain_meter:pad(-5)
-sub_target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
+sub_target_bar_drain_meter:bg_alpha(drain_target_bars and sub_target_drain_bg_alpha or 0)
 sub_target_bar_drain_meter:draggable(false)
 sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 
@@ -2349,7 +2380,7 @@ sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 target_bar_drain_meter = texts.new()
 target_bar_drain_meter:font('Consolas')
 target_bar_drain_meter:pad(-5)
-target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
+target_bar_drain_meter:bg_alpha(drain_target_bars and target_drain_bg_alpha or 0)
 target_bar_drain_meter:draggable(false)
 target_bar_drain_meter:size(target_bar_size / 10)
 
@@ -2357,7 +2388,7 @@ target_bar_drain_meter:size(target_bar_size / 10)
 player_stats_hp_bar_drain_meter = texts.new()
 player_stats_hp_bar_drain_meter:font('Consolas')
 player_stats_hp_bar_drain_meter:pad(-5)
-player_stats_hp_bar_drain_meter:bg_alpha(drain_hp_bar and drain_bg_alpha or 0)
+player_stats_hp_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_hp_bar_drain_meter:draggable(false)
 player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -2365,7 +2396,7 @@ player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_mp_bar_drain_meter = texts.new()
 player_stats_mp_bar_drain_meter:font('Consolas')
 player_stats_mp_bar_drain_meter:pad(-5)
-player_stats_mp_bar_drain_meter:bg_alpha(drain_mp_bar and drain_bg_alpha or 0)
+player_stats_mp_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_mp_bar_drain_meter:draggable(false)
 player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -2373,7 +2404,7 @@ player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_tp_bar_drain_meter = texts.new()
 player_stats_tp_bar_drain_meter:font('Consolas')
 player_stats_tp_bar_drain_meter:pad(-5)
-player_stats_tp_bar_drain_meter:bg_alpha(drain_tp_bar and drain_bg_alpha or 0)
+player_stats_tp_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_tp_bar_drain_meter:draggable(false)
 player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -2381,7 +2412,7 @@ player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_pet_bar_drain_meter = texts.new()
 player_stats_pet_bar_drain_meter:font('Consolas')
 player_stats_pet_bar_drain_meter:pad(-5)
-player_stats_pet_bar_drain_meter:bg_alpha(drain_pet_bar and drain_bg_alpha or 0)
+player_stats_pet_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_pet_bar_drain_meter:draggable(false)
 player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -2391,7 +2422,7 @@ player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 focus_target_bar_meter = texts.new()
 focus_target_bar_meter:font('Consolas')
 focus_target_bar_meter:pad(-5)
-focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
+focus_target_bar_meter:bg_alpha(focus_target_meter_bg_alpha)
 focus_target_bar_meter:draggable(false)
 focus_target_bar_meter:size(focus_target_bar_size / 10)
 
@@ -2399,7 +2430,7 @@ focus_target_bar_meter:size(focus_target_bar_size / 10)
 sub_target_bar_meter = texts.new()
 sub_target_bar_meter:font('Consolas')
 sub_target_bar_meter:pad(-5)
-sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
+sub_target_bar_meter:bg_alpha(sub_target_meter_bg_alpha)
 sub_target_bar_meter:draggable(false)
 sub_target_bar_meter:size(sub_target_bar_size / 10)
 
@@ -2407,7 +2438,7 @@ sub_target_bar_meter:size(sub_target_bar_size / 10)
 target_bar_meter = texts.new()
 target_bar_meter:font('Consolas')
 target_bar_meter:pad(-5)
-target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
+target_bar_meter:bg_alpha(target_meter_bg_alpha)
 target_bar_meter:draggable(false)
 target_bar_meter:size(target_bar_size / 10)
 
@@ -2415,7 +2446,7 @@ target_bar_meter:size(target_bar_size / 10)
 self_action_bar_meter = texts.new()
 self_action_bar_meter:font('Consolas')
 self_action_bar_meter:pad(-5)
-self_action_bar_meter:bg_alpha(bg_alpha)
+self_action_bar_meter:bg_alpha(self_action_meter_alpha)
 self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
 self_action_bar_meter:draggable(false)
 self_action_bar_meter:size(self_action_bar_size / 10)
@@ -2434,7 +2465,7 @@ self_action_bar_cast_meter:size(self_action_bar_size / 10)
 player_stats_hp_bar_meter = texts.new()
 player_stats_hp_bar_meter:font('Consolas')
 player_stats_hp_bar_meter:pad(-5)
-player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
+player_stats_hp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_hp_bar_meter:draggable(false)
 player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -2442,7 +2473,7 @@ player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_mp_bar_meter = texts.new()
 player_stats_mp_bar_meter:font('Consolas')
 player_stats_mp_bar_meter:pad(-5)
-player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
+player_stats_mp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_mp_bar_meter:draggable(false)
 player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -2450,7 +2481,7 @@ player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_tp_bar_meter = texts.new()
 player_stats_tp_bar_meter:font('Consolas')
 player_stats_tp_bar_meter:pad(-5)
-player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
+player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_tp_bar_meter:draggable(false)
 player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -2458,7 +2489,7 @@ player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_pet_bar_meter = texts.new()
 player_stats_pet_bar_meter:font('Consolas')
 player_stats_pet_bar_meter:pad(-5)
-player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
+player_stats_pet_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_pet_bar_meter:draggable(false)
 player_stats_pet_bar_meter:size(player_stats_bar_size / 10)
 
@@ -2466,7 +2497,7 @@ player_stats_pet_bar_meter:size(player_stats_bar_size / 10)
 xp_bar_meter = texts.new()
 xp_bar_meter:font('Consolas')
 xp_bar_meter:pad(-5)
-xp_bar_meter:bg_alpha(bg_alpha)
+xp_bar_meter:bg_alpha(xp_meter_alpha)
 xp_bar_meter:draggable(false)
 xp_bar_meter:size(xp_bar_size / 10)
 
@@ -4890,7 +4921,7 @@ function removeFromAutoFocusTargetList(target)
 
 	else
 		add_to_chat(8,('[Bars] '):color(220)..(target):color(1)..(' was not found.'):color(28))
-		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars list'):color(1)..(' to see stored targets.'):color(8))
+		add_to_chat(8,('Type '):color(8)..('//bars list'):color(1)..(' to see stored targets.'):color(8))
 
 	end
 end
@@ -5428,6 +5459,25 @@ end
 --Update the Aggro List
 function updateAggroList(player, t, st)
 
+	--Fake list for the Screen Test
+	local screen_test_aggro_list = {
+		['1'] = {},
+		['2'] = {},
+		['3'] = {},
+		['4'] = {},
+		['5'] = {},
+		['6'] = {},
+		['7'] = {},
+		['8'] = {},
+		['9'] = {},
+		['10'] = {},
+		['11'] = {},
+		['12'] = {},
+		['13'] = {},
+		['14'] = {},
+		['15'] = {},
+	}
+
 	--If the Aggro List is turned off, hide it
 	if not show_aggro_list then
 		if aggro_list_box:visible() then
@@ -5445,9 +5495,20 @@ function updateAggroList(player, t, st)
 	local plus_num_more = 0
 	local text = ""
 
-	for actor_id, data in pairs(current_aggro_list) do
+	for actor_id, data in pairs(Screen_Test and screen_test_aggro_list or current_aggro_list) do
 
-		local actor = get_mob_by_id(actor_id)
+		local actor
+		if Screen_Test then
+			actor = {
+				id = tonumber(actor_id),
+				name = "Test Enemy " .. actor_id,
+				valid_target = true,
+				hpp = 100 - (tonumber(actor_id - 1) * 6)
+			}
+		else
+			actor = get_mob_by_id(actor_id)
+		end
+
 		local cursor_target = show_cursor_target and t and t.id == actor_id
 		local cursor_sub_target = show_cursor_target and st and st.id == actor_id
 
@@ -5466,10 +5527,12 @@ function updateAggroList(player, t, st)
 			if num <= max_monsters_listed then
 				local actor_name = truncateName(actor.name)
 				actor_name = actor_name and ((cursor_target or cursor_sub_target) and uppercase(actor_name) or actor_name)
-				local target = data.target_id and get_mob_by_id(data.target_id)
-				local target_name = target and target.name and truncateMonsterTarget(target.name)
+
+				local target = Screen_Test and player or (data.target_id and get_mob_by_id(data.target_id))
+				local target_name = Screen_Test and player.name or target and target.name and truncateMonsterTarget(target.name)
 				target_name = target_name and ((cursor_target or cursor_sub_target) and uppercase(target_name) or target_name)
-				local target_icon = os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
+
+				local target_icon = Screen_Test and settings.icons.monster_target or os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
 				local hpp_raw = actor.hpp or 0
 				local hpp = string.format("%3s", hpp_raw)..'%' or ''
 				local sp_active = current_sp_actions[actor_id]
@@ -5503,7 +5566,7 @@ function updateAggroList(player, t, st)
 				target_name = "\\cs("..ct_r..","..ct_g..","..ct_b..")"..(target_name and target_name or "").."\\cr" --add color start and reset to name
 				hpp = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..hpp.."\\cr" or hpp
 				targeted = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..targeted.."\\cr" or targeted
-				info = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..info.."\\cr" or info
+				info = Screen_Test and " " or (sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..info.."\\cr" or info)
 				target_icon = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..target_icon.."\\cr" or target_icon
 				text = text..hpp..targeted..actor_name..padding..info..(target_name and target_icon..target_name).."\n"
 			else
@@ -5512,8 +5575,9 @@ function updateAggroList(player, t, st)
 
 		else
 			--Remove monster from the Aggro List when it's no longer a valid target or dies
-			--(Prevents monsters from getting stuck on the list in certain circumstances, mostly high lag areas)
-			current_aggro_list[actor_id] = nil
+			if not Screen_Test then
+				current_aggro_list[actor_id] = nil
+			end
 		end
 
 	end
@@ -5638,7 +5702,7 @@ function updateFocusTargetBar(player, target, clock)
 	local icon_set = debuff_icons.focus_target
 	local timer_set = debuff_timers.focus_target
 
-	--Hide the Focus Target bar if there is no Focus Target to display, or the Focus Target is targeted
+	--Hide the Focus Target bar if there is nothing to display, or the Focus Target is targeted
 	if not (focus_target_override or focus_target or battle_target)
 	or (battle_target and target and not show_focus_target_when_targeted and target.id == battle_target.id)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
@@ -5681,8 +5745,8 @@ function updateFocusTargetBar(player, target, clock)
 	local dyna_job_raw = ft and show_dyna_jobs and in_dyna and dynaJob(ft.name) or false
 	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
-	local dist_raw = ft and math.floor(ft.distance:sqrt()*100)/100
-	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local dist_raw = ft and ft.distance and math.floor(ft.distance:sqrt()*100)/100
+	local dist = ft and ft.distance and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
 	local ft_angle = ft and not Screen_Test and ft_settings.show_target_angle_from_player_facing and getAngleToTarget(ft) or nil
 	local ft_angle_icon = ft_angle and getAngleIcon(ft_angle) or ''
 	local p_angle = ft and not Screen_Test and ft_settings.show_player_angle_from_target_facing and getAngleToPlayer(ft) or nil
@@ -5866,6 +5930,7 @@ function updateFocusTargetBarAnimations(player, target)
 	or not (focus_target_override or focus_target or battle_target)
 	or (battle_target and target and not show_focus_target_when_targeted and target.id == battle_target.id)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
+		focus_target_bar_drain_meter:hide()
 		return
 	end
 
@@ -5979,8 +6044,8 @@ function updateSubTargetBar(player, st, target, clock)
 	local dyna_job_raw = st and show_dyna_jobs and in_dyna and dynaJob(st.name) or false
 	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
-	local dist_raw = st and math.floor(st.distance:sqrt()*100)/100
-	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local dist_raw = st and st.distance and math.floor(st.distance:sqrt()*100)/100
+	local dist = st and st.distance and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
 	local st_angle = st and not Screen_Test and st_settings.show_target_angle_from_player_facing and getAngleToTarget(st) or nil
 	local st_angle_icon = st_angle and getAngleIcon(st_angle) or ''
 	local p_angle = st and not Screen_Test and st_settings.show_player_angle_from_target_facing and getAngleToPlayer(st) or nil
@@ -6270,8 +6335,8 @@ function updateTargetBar(player, t, clock)
 	local dyna_job_raw = t and show_dyna_jobs and in_dyna and dynaJob(t.name) or false
 	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
-	local dist_raw = t and math.floor(t.distance:sqrt()*100)/100
-	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local dist_raw = t and t.distance and math.floor(t.distance:sqrt()*100)/100
+	local dist = t and t.distance and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
 	local t_angle = t and not Screen_Test and t_settings.show_target_angle_from_player_facing and getAngleToTarget(t) or nil
 	local t_angle_icon = t_angle and getAngleIcon(t_angle) or ''
 	local p_angle = t and not Screen_Test and t_settings.show_player_angle_from_target_facing and getAngleToPlayer(t) or nil
@@ -6691,7 +6756,7 @@ function updateHPBar(player)
 	if spaces == 0 then
 		player_stats_hp_bar_meter:bg_alpha(0)
 	else
-		player_stats_hp_bar_meter:bg_alpha(not Fade and (drain_hp_bar and meter_bg_alpha or bg_alpha))
+		player_stats_hp_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and hp > 0 then
 			spaces = 13
@@ -6764,7 +6829,7 @@ function updateHPBarAnimations(player)
 	end
 
 	--HP Bar Drain animation
-	if drain_hp_bar then
+	if drain_player_stats_bars then
 
 		local hpp = player and player.vitals.hpp or 0
 		local hp_diff = drain_ps_hpp - hpp
@@ -6785,7 +6850,7 @@ function updateHPBarAnimations(player)
 				drain_meter = drain_meter..' '
 			end
 			player_stats_hp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_hp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -6811,7 +6876,7 @@ function updateMPBar(player)
 	if spaces == 0 then
 		player_stats_mp_bar_meter:bg_alpha(0)
 	else
-		player_stats_mp_bar_meter:bg_alpha(not Fade and (drain_mp_bar and meter_bg_alpha or bg_alpha))
+		player_stats_mp_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and mp >= 0 then
 			spaces = 13
@@ -6878,13 +6943,13 @@ function updateMPBarAnimations(player)
 			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
 		elseif not pulse_mp_direction_up and pulse_mp_alpha_num <= 10 then
 			pulse_mp_alpha_num = 10
-			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
 			pulse_mp_direction_up = true
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
 		end
 	end
 
 	--MP Bar Drain animation
-	if drain_mp_bar then
+	if drain_player_stats_bars then
 
 		local mpp = player and player.vitals.mpp or 0
 		local mp_diff = drain_ps_mpp - mpp
@@ -6905,7 +6970,7 @@ function updateMPBarAnimations(player)
 				drain_meter = drain_meter..' '
 			end
 			player_stats_mp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_mp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -6932,11 +6997,7 @@ function updateTPBar(player)
 		player_stats_tp_bar_meter:bg_alpha(0)
 	else
 		if not Fade then
-			if drain_tp_bar then
-				player_stats_tp_bar_meter:bg_alpha(meter_bg_alpha)
-			else
-				player_stats_tp_bar_meter:bg_alpha(bg_alpha)
-			end
+			player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 		end
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces < 13 and tp > 0 then
@@ -7005,7 +7066,7 @@ function updateTPBarAnimations(player)
 	end
 
 	--TP Bar Drain animation
-	if drain_tp_bar then
+	if drain_player_stats_bars then
 
 		local tp = player and player.vitals.tp or 0
 		local tp_diff = drain_ps_tp - tp
@@ -7026,7 +7087,7 @@ function updateTPBarAnimations(player)
 				drain_meter = drain_meter..' '
 			end
 			player_stats_tp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_tp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -7073,7 +7134,7 @@ function updatePetBar(pet)
 	if spaces == 0 then
 		player_stats_pet_bar_meter:bg_alpha(0)
 	else
-		player_stats_pet_bar_meter:bg_alpha(not Fade and (drain_pet_bar and meter_bg_alpha or bg_alpha))
+		player_stats_pet_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces == 0 and hpp > 0 then
 			spaces = 13
@@ -7159,7 +7220,7 @@ function updatePetBarAnimations(pet)
 	end
 
 	--Pet Bar Drain animation
-	if drain_pet_bar then
+	if drain_player_stats_bars then
 
 		local hpp = pet and pet.hpp or 0
 		local pet_diff = drain_ps_pet - hpp
@@ -7171,7 +7232,7 @@ function updatePetBarAnimations(pet)
 		--Fix the pad issue
 		if drain_spaces <= 6 then
 			player_stats_pet_bar_drain_meter:bg_alpha(0)
-		elseif drain_pet_bar and not Fade then
+		elseif drain_player_stats_bars and not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 			if drain_spaces < 13 and drain_ps_pet > 0 then
 				drain_spaces = 13
@@ -7180,7 +7241,7 @@ function updatePetBarAnimations(pet)
 				drain_meter = drain_meter..' '
 			end
 			player_stats_pet_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_pet_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -7284,7 +7345,7 @@ function updateXPBar(player, time)
 		if diff_seconds <= 0 then
 			return nil
 		end
-		local average = math.floor(diff_seconds / total_kills)
+		local average = string.format("%.1f", math.floor((diff_seconds / total_kills) * 10) / 10)
 		return average
 
 	end
@@ -7452,7 +7513,7 @@ function updateXPBar(player, time)
 	if spaces == 0 then
 		xp_bar_meter:bg_alpha(0)
 	else
-		xp_bar_meter:bg_alpha((not Fade or exclude_from_fade) and bg_alpha)
+		xp_bar_meter:bg_alpha((not Fade or exclude_from_fade) and xp_meter_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
 		if spaces == 0 and percent > 0 then
 			spaces = 13
@@ -7687,9 +7748,6 @@ function checkForFocusTarget(target)
 	--Update focus_target if its new, will remove/nil if nothing in the auto_focus_targets_data
 	if focus_target ~= nearby then
 		focus_target = nearby
-		if not nearby then
-			focus_target_bar_drain_meter:hide()
-		end
 	end
 
 end
@@ -7717,7 +7775,6 @@ function checkForFocusTargetOverride(target)
 	else
 		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
 		focus_target_override = nil
-		focus_target_bar_drain_meter:hide()
 	end
 
 end
@@ -7869,9 +7926,9 @@ function unFade()
 	local player = get_player()
 	local pet = get_mob_by_target('pet')
 
-	focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
-	focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
-	focus_target_bar_bg:bg_alpha(bg_alpha)
+	focus_target_bar_meter:bg_alpha(focus_target_meter_bg_alpha)
+	focus_target_bar_drain_meter:bg_alpha(focus_target_drain_bg_alpha)
+	focus_target_bar_bg:bg_alpha(focus_target_bg_alpha)
 	focus_target_text:alpha(text_alpha)
 	focus_target_text:stroke_alpha(ft_text_stroke.a)
 	focus_target_text_shadow:alpha(text_alpha)
@@ -7879,9 +7936,9 @@ function unFade()
 	focus_target_action_text:stroke_alpha(ft_text_stroke.a)
 	focus_target_action_text_shadow:alpha(text_alpha)
 
-	sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
-	sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
-	sub_target_bar_bg:bg_alpha(bg_alpha)
+	sub_target_bar_meter:bg_alpha(sub_target_meter_bg_alpha)
+	sub_target_bar_drain_meter:bg_alpha(sub_target_drain_bg_alpha)
+	sub_target_bar_bg:bg_alpha(sub_target_bg_alpha)
 	sub_target_text:alpha(text_alpha)
 	sub_target_text:stroke_alpha(st_text_stroke.a)
 	sub_target_text_shadow:alpha(text_alpha)
@@ -7889,12 +7946,12 @@ function unFade()
 	sub_target_action_text:stroke_alpha(st_text_stroke.a)
 	sub_target_action_text_shadow:alpha(text_alpha)
 
-	target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
-	target_bar_drain_meter:bg_alpha(drain_bg_alpha)
-	target_bar_bg:bg_alpha(bg_alpha)
+	target_bar_meter:bg_alpha(target_meter_bg_alpha)
+	target_bar_drain_meter:bg_alpha(target_drain_bg_alpha)
+	target_bar_bg:bg_alpha(target_bg_alpha)
 	target_bar_lock_left:alpha(text_alpha)
 	target_bar_lock_right:alpha(text_alpha)
-	target_bar_lock_underline:bg_alpha(bg_alpha)
+	target_bar_lock_underline:bg_alpha(target_bg_alpha)
 	target_text:alpha(text_alpha)
 	target_text:stroke_alpha(t_text_stroke.a)
 	target_text_shadow:alpha(text_alpha)
@@ -7903,54 +7960,54 @@ function unFade()
 	target_action_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.hp > 0 then
-		player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
-		player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_hp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_hp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
 	player_stats_hp_bar_meter:bg_color(color.hp.bar.r,color.hp.bar.g,color.hp.bar.b)
-	player_stats_hp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_hp_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_hp_marker:alpha(text_alpha)
 	player_stats_hp_text:alpha(text_alpha)
 	player_stats_hp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_hp_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.mp > 0 then
-		player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
-		player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_mp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_mp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
 	player_stats_mp_bar_meter:bg_color(color.mp.bar.r,color.mp.bar.g,color.mp.bar.b)
-	player_stats_mp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_mp_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_mp_text:alpha(text_alpha)
 	player_stats_mp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_mp_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.tp > 0 then
-		player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
-		player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_tp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
-	player_stats_tp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_tp_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_tp_marker:alpha(text_alpha)
 	player_stats_tp_text:alpha(text_alpha)
 	player_stats_tp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_tp_text_shadow:alpha(text_alpha)
 
 	if pet and pet.hpp > 0 then
-		player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
-		player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_pet_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_pet_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
 	player_stats_pet_bar_meter:bg_color(color.pet.bar.r,color.pet.bar.g,color.pet.bar.b)
-	player_stats_pet_bar_bg:bg_alpha(bg_alpha)
+	player_stats_pet_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_pet_text:alpha(text_alpha)
 	player_stats_pet_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_pet_text_shadow:alpha(text_alpha)
 
-	self_action_bar_meter:bg_alpha(bg_alpha)
-	self_action_bar_bg:bg_alpha(bg_alpha)
+	self_action_bar_meter:bg_alpha(self_action_meter_alpha)
+	self_action_bar_bg:bg_alpha(self_action_bg_alpha)
 	self_action_text:alpha(text_alpha)
 	self_action_text:stroke_alpha(sa_text_stroke.a)
 	self_action_text_shadow:alpha(text_alpha)
 
-	xp_bar_meter:bg_alpha(bg_alpha)
-	xp_bar_bg:bg_alpha(bg_alpha)
+	xp_bar_meter:bg_alpha(xp_meter_alpha)
+	xp_bar_bg:bg_alpha(xp_bg_alpha)
 	xp_text:alpha(text_alpha)
 	xp_text:stroke_alpha(xp_text_stroke.a)
 	xp_text_shadow:alpha(text_alpha)
@@ -8050,8 +8107,8 @@ function screenTest()
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
 
-	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Screen Test '..targeting_icon..'\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
-	local target_action_shdw = ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Screen Test '..targeting_icon..'\\cr \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..get_player().name..'\\cr'
+	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Self Action '..targeting_icon..'\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
+	local target_action_shdw = ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Self Action '..targeting_icon..'\\cr \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..get_player().name..'\\cr'
 	local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
 	local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..casting_icon..'\\cr'
 	local target_action_result = ''
@@ -8281,13 +8338,13 @@ function greeting()
 	if settings.first_run then
 		add_to_chat(8,('[Bars] '):color(220)..('Welcome to Bars '.._addon.version.."!"):color(36))
 		coroutine.sleep(0.5)
-		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars ui '):color(1)..('to unlock and drag the UI sections around.'):color(8))
+		add_to_chat(8,('Type '):color(8)..('//bars ui '):color(1)..('to unlock and drag the UI sections around.'):color(8))
 		coroutine.sleep(0.5)
-		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars help '):color(1)..('for a list of other commands.'):color(8))
+		add_to_chat(8,('Type '):color(8)..('//bars help '):color(1)..('for a list of other commands.'):color(8))
 		coroutine.sleep(0.5)
-		add_to_chat(8,('[Bars] '):color(220)..('More detailed settings can be found in the '):color(8)..('Bars/data/settings.xml '):color(1)..('file.'):color(8))
+		add_to_chat(8,('More detailed settings can be found in the '):color(8)..('Bars/data/settings.xml '):color(1)..('file.'):color(8))
 		coroutine.sleep(0.5)
-		add_to_chat(8,('[Bars] '):color(220)..('NOTE: Monster Debuff timers are generally close enough but NOT 100% accurate.'):color(8))
+		add_to_chat(8,('NOTE: Monster Debuff timers are generally close enough but NOT 100% accurate.'):color(8))
 		settings.first_run = false
 		settings:save('all')
 	end
@@ -8721,6 +8778,7 @@ register_event('action', function (act)
 		341,342,362,373,375,379,408,412,413,435,441,570,645,658
 	}
 	local player = get_player()
+	local get_player = get_mob_by_id(player.id)
 	local actor = get_mob_by_id(act.actor_id)
 	local target_count = act.target_count
 	local action_id = act.targets[1].actions[1].param
@@ -8860,8 +8918,8 @@ register_event('action', function (act)
 
 	--Debug Stuff
 	if actor.name == player.name and act.category ~=1 then
-		-- print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
-		-- add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
+		-- print(actor.name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
+		-- add_to_chat(1, actor.name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
 	end
 
 	--Action failed/interrupted
@@ -9631,8 +9689,11 @@ register_event('action', function (act)
 
 		end
 
-	--Finish weapon skill(3), spell(4), item(5), or Pet TP move(13)
-	elseif act.category == 3 or act.category == 5 or act.category == 13 or (act.category == 4 and not ((msg == 0 or msg == 29 or msg == 84 or msg == 106) and act.param == 0)) then
+	--Finish weapon skill(3), spell(4), item(5), or Pet TP move(13, 11)
+	elseif act.category == 3 or act.category == 5 or act.category == 13
+	or (act.category == 4 and not ((msg == 0 or msg == 29 or msg == 84 or msg == 106) and act.param == 0))
+	or (act.category == 11 and actor and get_player and actor.index == get_player.pet_index)
+	then
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
@@ -10056,7 +10117,7 @@ register_event('action', function (act)
 			end
 
 		--Pets
-		elseif act.category == 13 then
+		elseif act.category == 13 or (act.category == 11 and actor and get_player and actor.index == get_player.pet_index) then
 			local action_id = act.param
 			action_name = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 			action_name_shdw = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
@@ -10064,7 +10125,7 @@ register_event('action', function (act)
 			if act.targets[1].actions[1].has_add_effect then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
-				if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index and settings.sections.chat.tabs.dmg then
+				if actor and get_player and actor.index == get_player.pet_index and settings.sections.chat.tabs.dmg then
 					local target = action_target and truncateName(action_target.name) or 'Unknown'
 					local message = action_name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
 					addMessageToChatTab('DMG', target, message)
@@ -10078,26 +10139,26 @@ register_event('action', function (act)
 				target_action_result = ' ('..count..'Acc./Eva. Boost)'
 				target_action_result_shdw = ' ('..count..'Acc./Eva. Boost)'
 			--Magic Burst
-			elseif msg == 379 then
+			elseif msg == 379 or msg == 747 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
-				if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index and settings.sections.chat.tabs.dmg then
+				if actor and get_player and actor.index == get_player.pet_index and settings.sections.chat.tabs.dmg then
 					local target = action_target and truncateName(action_target.name) or 'Unknown'
 					local message = action_name..": "..amount..count..amount_total.." Magic Burst"
 					addMessageToChatTab('DMG', target, message)
 				end
 			--Plain Damage
-			elseif msg == 317 then
+			elseif msg == 317 or msg == 185 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
-				if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index and settings.sections.chat.tabs.dmg then
+				if actor and get_player and actor.index == get_player.pet_index and settings.sections.chat.tabs.dmg then
 					local target = action_target and truncateName(action_target.name) or 'Unknown'
 					local message = action_name..": "..amount..count..amount_total
 					addMessageToChatTab('DMG', target, message)
@@ -10118,7 +10179,7 @@ register_event('action', function (act)
 					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				end
 			--Buff/Debuff
-			elseif msg == 319 or msg == 320 then
+			elseif msg == 319 or msg == 320 or msg == 243 then
 				local landed = calculateInfo(act).landed
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
@@ -10235,7 +10296,7 @@ register_event('action', function (act)
 		target_action_shdw = action_name_shdw..action_target_name_shdw
 
 		--The actor is our pet
-		if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index then
+		if actor and get_player and actor.index == get_player.pet_index then
 
 			self_action_bar_meter:bg_color(050,255,050)
 			self_action_bar_cast_meter:hide()
@@ -11416,12 +11477,13 @@ register_event('addon command',function(addcmd, ...)
 
 	--Update the Focus Target bar widths
 	elseif addcmd == 'width' or addcmd == 'w' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200)..(' ('):color(8)..('//bars ftbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200)..(' ('):color(8)..('//bars stbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200)..(' ('):color(8)..('//bars tbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200)..(' ('):color(8)..('//bars psbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200)..(' ('):color(8)..('//bars sabw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('XP Bar Width:'):color(36)..(' '..xp_bar_width):color(200)..(' ('):color(8)..('//bars xpbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Bar widths (width/length of the meter)'):color(220))
+		add_to_chat(8,('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200)..(' ('):color(8)..('//bars ftbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200)..(' ('):color(8)..('//bars stbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200)..(' ('):color(8)..('//bars tbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200)..(' ('):color(8)..('//bars psbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200)..(' ('):color(8)..('//bars sabw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('XP Bar Width:'):color(36)..(' '..xp_bar_width):color(200)..(' ('):color(8)..('//bars xpbw #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target bar width
 	elseif addcmd == 'ftbw' then
@@ -11436,7 +11498,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target bar width
@@ -11452,7 +11514,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target bar width
@@ -11468,7 +11530,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
 	--Update the Player Stats bar width
@@ -11484,7 +11546,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
 	--Update the Self Action bar width
@@ -11500,7 +11562,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
 	--Update the XP bar width
@@ -11516,17 +11578,20 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('XP Bar Width:'):color(36)..(' '..xp_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
-	--Update the Focus Target bar sizes
+	--Show the bar sizes and commands for each
 	elseif addcmd == 'size' or addcmd == 's' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200)..(' ('):color(8)..('//bars ftbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200)..(' ('):color(8)..('//bars stbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200)..(' ('):color(8)..('//bars tbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200)..(' ('):color(8)..('//bars psbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200)..(' ('):color(8)..('//bars sabs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('XP Bar Size:'):color(36)..(' '..xp_bar_size):color(200)..(' ('):color(8)..('//bars xpbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Bar Sizes (the bar/meter/window itself)'):color(220))
+		add_to_chat(8,('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200)..(' ('):color(8)..('//bars ftbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200)..(' ('):color(8)..('//bars stbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200)..(' ('):color(8)..('//bars tbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200)..(' ('):color(8)..('//bars psbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200)..(' ('):color(8)..('//bars sabs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Aggro List Size:'):color(36)..(' '..settings.sections.aggro_list.size):color(200)..(' ('):color(8)..('//bars als #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Chat Bar Size:'):color(36)..(' '..settings.sections.chat.size):color(200)..(' ('):color(8)..('//bars cbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('XP Bar Size:'):color(36)..(' '..xp_bar_size):color(200)..(' ('):color(8)..('//bars xpbs #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target bar size
 	elseif addcmd == 'ftbs' then
@@ -11545,7 +11610,7 @@ register_event('addon command',function(addcmd, ...)
 			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target bar size
@@ -11565,7 +11630,7 @@ register_event('addon command',function(addcmd, ...)
 			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target bar size
@@ -11585,7 +11650,7 @@ register_event('addon command',function(addcmd, ...)
 			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Player Stats bar size
@@ -11618,7 +11683,7 @@ register_event('addon command',function(addcmd, ...)
 			player_stats_pet_bar_pulse:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Self Action bar size
@@ -11637,7 +11702,7 @@ register_event('addon command',function(addcmd, ...)
 			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the XP bar size
@@ -11656,18 +11721,51 @@ register_event('addon command',function(addcmd, ...)
 			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('XP Bar Size:'):color(36)..(' '..xp_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
-	--Update the Focus Target text sizes
+	--Update the Chat Bar size
+	elseif addcmd == 'cbs' or addcmd == 'chbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.chat.size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Chat Bar Size:'):color(36)..(' '..new_size):color(200))
+			updateChatbarSize(settings.sections.chat.size)
+			initializeChatUIGrid()
+			updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Chat Bar Size:'):color(36)..(' '..settings.sections.chat.size):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+		end
+
+	--Update the Aggro List size
+	elseif addcmd == 'als' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.aggro_list.size = new_size
+			aggro_list_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Aggro List Size:'):color(36)..(' '..new_size):color(200))
+			aggro_list_box:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Aggro List Size:'):color(36)..(' '..aggro_list_size):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Show the text sizes and commands for each
 	elseif addcmd == 'text' or addcmd == 't' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200)..(' ('):color(8)..('//bars ftts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200)..(' ('):color(8)..('//bars stts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..target_text_size):color(200)..(' ('):color(8)..('//bars tts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200)..(' ('):color(8)..('//bars psts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200)..(' ('):color(8)..('//bars sats #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('XP Text Size:'):color(36)..(' '..xp_text_size):color(200)..(' ('):color(8)..('//bars xpts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Chat Text Size:'):color(36)..(' '..settings.sections.chat.size):color(200)..(' ('):color(8)..('//bars cts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Text Sizes (text above/on the meter)'):color(220))
+		add_to_chat(8,('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200)..(' ('):color(8)..('//bars ftts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200)..(' ('):color(8)..('//bars stts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Text Size:'):color(36)..(' '..target_text_size):color(200)..(' ('):color(8)..('//bars tts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200)..(' ('):color(8)..('//bars psts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200)..(' ('):color(8)..('//bars sats #'):color(1)..(')'):color(8))
+		add_to_chat(8,('XP Text Size:'):color(36)..(' '..xp_text_size):color(200)..(' ('):color(8)..('//bars xpts #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target text size
 	elseif addcmd == 'ftts' then
@@ -11683,7 +11781,7 @@ register_event('addon command',function(addcmd, ...)
 			focus_target_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target text size
@@ -11700,7 +11798,7 @@ register_event('addon command',function(addcmd, ...)
 			sub_target_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target text size
@@ -11717,7 +11815,7 @@ register_event('addon command',function(addcmd, ...)
 			target_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..target_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 14'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 14'):color(1)..(')'):color(8))
 		end
 
 	--Update the Player Stats text size
@@ -11740,7 +11838,7 @@ register_event('addon command',function(addcmd, ...)
 			player_stats_pet_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Self Action text size
@@ -11757,7 +11855,7 @@ register_event('addon command',function(addcmd, ...)
 			self_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
 
 	--Update the XP text size
@@ -11774,31 +11872,15 @@ register_event('addon command',function(addcmd, ...)
 			xp_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('XP Text Size:'):color(36)..(' '..xp_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
-		end
-
-	--Update the Chat text size
-	elseif addcmd == 'chts' or addcmd == 'cts' then
-		local args = {...}
-		local new_size = tonumber(args[1])
-
-		if new_size then
-			settings.sections.chat.size = new_size
-			settings:save('all')
-			add_to_chat(8,('[Bars] '):color(220)..('Chat Text Size:'):color(36)..(' '..new_size):color(200))
-			updateChatbarSize(settings.sections.chat.size)
-			initializeChatUIGrid()
-			updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
-		else
-			add_to_chat(8,('[Bars] '):color(220)..('Chat Text Size:'):color(36)..(' '..settings.sections.chat.size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
 
 	--Update the Focus Target sub text sizes
 	elseif addcmd == 'subtext' or addcmd == 'st' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ftsts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ststs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200)..(' ('):color(8)..('//bars tsts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Text Sizes (text below the meter)'):color(220))
+		add_to_chat(8,('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ftsts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ststs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200)..(' ('):color(8)..('//bars tsts #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target sub text size
 	elseif addcmd == 'ftsts' then
@@ -11814,7 +11896,7 @@ register_event('addon command',function(addcmd, ...)
 			focus_target_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target sub text size
@@ -11831,7 +11913,7 @@ register_event('addon command',function(addcmd, ...)
 			sub_target_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target sub text size
@@ -11848,16 +11930,8 @@ register_event('addon command',function(addcmd, ...)
 			target_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
-
-	--Toggle the Aggro List setting
-	elseif addcmd == 'aggro' or addcmd == 'agg' then
-
-		settings.sections.aggro_list.show = not settings.sections.aggro_list.show
-		show_aggro_list = settings.sections.aggro_list.show
-		settings:save('all')
-		add_to_chat(8,('[Bars] '):color(220)..('Aggro List:'):color(36)..(' %s':format(settings.sections.aggro_list.show and 'ON' or 'OFF')):color(200))
 
 	--Toggle the target distance setting
 	elseif addcmd == 'distance' or addcmd == 'dist' or addcmd == 'd' then
@@ -11917,7 +11991,7 @@ register_event('addon command',function(addcmd, ...)
 		listAutoFocusTargets()
 
 	--Focus Target Override
-	elseif addcmd == 'focus' or addcmd == 'f' then
+	elseif addcmd == 'ft' or addcmd == 'f' then
 
 		--Remove the current Focus Target Override
 		if focus_target_override then
@@ -11929,7 +12003,7 @@ register_event('addon command',function(addcmd, ...)
 				focus_target_override = target
 				local currFTMDist = settings.options.focus_target_max_distance
 				add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Added: '):color(36)..(focus_target_override.name):color(1))
-				add_to_chat(8,('[Bars] '):color(220)..('Override removed when out of range ('):color(8)..(''..currFTMDist):color(200)..(') or by typing '):color(8)..('//bars '..addcmd):color(1)..(' again.'):color(8))
+				add_to_chat(8,('Override removed when out of range ('):color(8)..(''..currFTMDist):color(200)..(') or by typing '):color(8)..('//bars '..addcmd):color(1)..(' again.'):color(8))
 			else
 				add_to_chat(8,('[Bars] '):color(220)..('Please highlight a target and try again.'):color(28))
 			end
@@ -11942,13 +12016,15 @@ register_event('addon command',function(addcmd, ...)
 		local r = color.bar_bg.normal.r
 		local g = Screen_Test and 255 or color.bar_bg.normal.g
 		local b = color.bar_bg.normal.b
-		local player_stat_bars = {
+		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
 			mp = player_stats_mp_bar_bg,
 			tp = player_stats_tp_bar_bg,
 			pet = player_stats_pet_bar_bg,
 		}
 
+		aggro_list_box:draggable(Screen_Test)
+		aggro_list_box:bg_color(r,g,b)
 		target_bar_bg:draggable(Screen_Test)
 		target_bar_bg:bg_color(r,g,b)
 		focus_target_bar_bg:draggable(Screen_Test)
@@ -11957,22 +12033,135 @@ register_event('addon command',function(addcmd, ...)
 		sub_target_bar_bg:bg_color(r,g,b)
 		self_action_bar_bg:draggable(Screen_Test)
 		self_action_bar_bg:bg_color(r,g,b)
-		player_stat_bars[player_stats_top_bar]:draggable(Screen_Test)
-		player_stat_bars[player_stats_top_bar]:bg_color(r,g,b)
+		player_stats_bars[player_stats_top_bar]:draggable(Screen_Test)
+		player_stats_bars[player_stats_top_bar]:bg_color(r,g,b)
 		xp_bar_bg:draggable(Screen_Test)
 		xp_bar_bg:bg_color(r,g,b)
 		chat_ui.bg_window:bg_color(r,g,b)
 
 		if Screen_Test then
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Dragging enabled for highlighted bars.'):color(36))
-			add_to_chat(8,('[Bars] '):color(220)..('NOTICE: May not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust sub text sizes: '):color(8)..('//bars subtext'):color(1))
+			add_to_chat(8,('NOTICE: May not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
+			add_to_chat(8,('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
+			add_to_chat(8,('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
+			add_to_chat(8,('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
+			add_to_chat(8,('Display and adjust sub text sizes: '):color(8)..('//bars subtext'):color(1))
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing locked.'):color(36))
 		end
+
+	--Toggle the Aggro List setting
+	elseif addcmd == 'aggro' or addcmd == 'agg' then
+
+		settings.sections.aggro_list.show = not settings.sections.aggro_list.show
+		show_aggro_list = settings.sections.aggro_list.show
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Aggro List:'):color(36)..(' %s':format(settings.sections.aggro_list.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the Chat bar
+	elseif addcmd == 'chat' then
+
+		settings.sections.chat.show = not settings.sections.chat.show
+		show_chat_bar = settings.sections.chat.show
+
+		if show_chat_bar then
+			showChatBar()
+		else
+			hideChatBar()
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Chat Bar:'):color(36)..(' %s':format(settings.sections.chat.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the Focus Target bar
+	elseif addcmd == 'focus' then
+
+		settings.sections.focus_target.show = not settings.sections.focus_target.show
+		show_focus_target_bar = settings.sections.focus_target.show
+
+		if not show_focus_target_bar then
+			focus_target_bar_meter:hide()
+			focus_target_bar_drain_meter:hide()
+			focus_target_bar_bg:hide()
+			focus_target_bar_pulse:hide()
+			focus_target_text:hide()
+			focus_target_text_shadow:hide()
+			focus_target_action_text:hide()
+			focus_target_action_text_shadow:hide()
+			ui_bg_left.focus_target:hide()
+			ui_bg_middle.focus_target:hide()
+			ui_bg_right.focus_target:hide()
+			local ft_icon_set = debuff_icons.focus_target
+			local ft_settings = settings.sections.focus_target
+			local ft_timer_set = debuff_timers.focus_target
+			if ft_icon_set[1]:visible() then
+				for k = 1, max_icons.focus_target do
+					ft_icon_set[k]:hide()
+					if ft_settings.debuff_timers then
+						ft_timer_set[k]:hide()
+					end
+				end
+			end
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar:'):color(36)..(' %s':format(settings.sections.focus_target.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the Sub Target bar
+	elseif addcmd == 'sub' then
+
+		settings.sections.sub_target.show = not settings.sections.sub_target.show
+		show_sub_target_bar = settings.sections.sub_target.show
+
+		if not show_sub_target_bar then
+
+			sub_target_bar_meter:hide()
+			sub_target_bar_drain_meter:hide()
+			sub_target_bar_bg:hide()
+			sub_target_bar_pulse:hide()
+			sub_target_text:hide()
+			sub_target_text_shadow:hide()
+			sub_target_action_text:hide()
+			sub_target_action_text_shadow:hide()
+			ui_bg_left.sub_target:hide()
+			ui_bg_middle.sub_target:hide()
+			ui_bg_right.sub_target:hide()
+			local st_icon_set = debuff_icons.sub_target
+			local st_settings = settings.sections.sub_target
+			local st_timer_set = debuff_timers.sub_target
+			if st_icon_set[1]:visible() then
+				for k = 1, max_icons.sub_target do
+					st_icon_set[k]:hide()
+					if st_settings.debuff_timers then
+						st_timer_set[k]:hide()
+					end
+				end
+			end
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar:'):color(36)..(' %s':format(settings.sections.sub_target.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the XP bar
+	elseif addcmd == 'xp' then
+
+		settings.sections.xp.show = not settings.sections.xp.show
+		show_xp_bar = settings.sections.xp.show
+
+		if show_xp_bar then
+			xp_bar_meter:show()
+			xp_bar_bg:show()
+			xp_text:show()
+			xp_text_shadow:show()
+		else
+			xp_bar_meter:hide()
+			xp_bar_bg:hide()
+			xp_text:hide()
+			xp_text_shadow:hide()
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('XP Bar:'):color(36)..(' %s':format(settings.sections.xp.show and 'ON' or 'OFF')):color(200))
 
 	--Display help text
 	elseif addcmd == 'help' then
@@ -11981,7 +12170,6 @@ register_event('addon command',function(addcmd, ...)
 		local currMP = job_specific[job].mp
 		local currTP = job_specific[job].tp
 		local currPet = job_specific[job].pet
-		local currAggro = settings.sections.aggro_list.show
 		local currDistance = settings.options.show_target_distance
 		local currMarker = settings.options.show_hp_tp_markers
 		local currHex = settings.options.show_target_hex
@@ -11993,15 +12181,15 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
+		add_to_chat(8,(' Focus Targets '):color(220))
 		add_to_chat(8,(' add/a '):color(36)..('[target]'):color(53)..(' - Add a target to the Auto Focus Target list.'):color(8))
 		add_to_chat(8,('   - Valid targets: Names, IDs or current cursor target.'):color(8))
 		add_to_chat(8,('   - Use quotes to surround names with spaces.'):color(8))
 		add_to_chat(8,(' remove/r '):color(36)..('[target]'):color(53)..(' - Remove a target from the Auto Focus Target list.'):color(8))
-		add_to_chat(8,(' focus/f '):color(36)..(' - Temporarily override the Auto Focus Target with current cursor target.'):color(8))
+		add_to_chat(8,(' ft/f '):color(36)..(' - Temporarily override the Auto Focus Target with current cursor target.'):color(8))
 		add_to_chat(8,('   - Type again to remove the override.'):color(8))
 		add_to_chat(8,('   - Automatically removed when target moves out of range ('):color(8)..(tostring(currFTMDist)):color(200)..(').'):color(8))
 		add_to_chat(8,(' list/l'):color(36)..(' - Show the Auto Focus Target list.'):color(8))
-		add_to_chat(8,(' aggro/agg '):color(36)..(' - Toggle the Aggro List. ['):color(8)..('%s':format(currAggro and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Target Bar Display Options '):color(220))
 		add_to_chat(8,(' distance/d '):color(36)..(' - Toggle the target Distance. ['):color(8)..('%s':format(currDistance and 'ON' or 'OFF')):color(200)..(']'):color(8))
@@ -12009,10 +12197,11 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' hex/h '):color(36)..(' - Toggle the target Hex (overrides Index). ['):color(8)..('%s':format(currHex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index (overrides Hex). ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
-		add_to_chat(8,(' UI Adjustents '):color(220))
+		add_to_chat(8,(' UI Adjustments '):color(220))
+		add_to_chat(8,(' focus/sub/target/aggro/chat/xp'):color(36)..(' - Toggle the display of the different bars.'):color(8))
 		add_to_chat(8,(' hp/mp/tp/pet'):color(36)..(' - Toggle HP/MP/TP/Pet bar display for current job.'):color(8))
 		add_to_chat(8,('   ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(' Pet: '):color(8)..('%s':format(currPet and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' ui/lock/unlock'):color(36)..(' - Toggle Screen Test to drag sections of the UI around.'):color(8))
+		add_to_chat(8,(' ui'):color(36)..(' - Toggle Screen Test to drag sections of the UI around.'):color(8))
 		add_to_chat(8,(' width/w '):color(36)..(' - Display bar widths and how to update them.'):color(8))
 		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
 		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
