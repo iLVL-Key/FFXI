@@ -347,6 +347,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.11.1
+- Added Raksha Stance and Yaksha Stance to the list of moves that remove all mob debuffs.
+- Adjusted the distance threshold for mob movement to determine if the mob has moved after Sleep, Petrify, or Bind back from 2 to 3.
+
 Version 4.11
 - Added `focus` `sub` `chat` and `xp` in game commands to toggle those bars on/off.
 - Added `cbs` and `als` in game commands for adjusting the size of the Chat Bar and Aggro List.
