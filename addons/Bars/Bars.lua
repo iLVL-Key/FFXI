@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.11'
+_addon.version = '4.11.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1341,6 +1341,8 @@ remove_all_debuffs = S{
 	"Depuration",
 	"Stygian Sphere",
 	"Oppressive Yawp",
+	"Raksha Stance",
+	"Yaksha Stance",
 }
 
 in_cutscene = false
@@ -5877,7 +5879,7 @@ function updateFocusTargetBar(player, target, clock)
 		end
 
 		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
-		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 2 or math.abs(debuff_list.pos.y - ft.y) > 2)
+		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 3 or math.abs(debuff_list.pos.y - ft.y) > 3)
 		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
 		if moved then
 			local watch_effects = {2, 7, 11, 19}
