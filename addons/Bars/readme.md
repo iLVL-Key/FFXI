@@ -347,6 +347,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.11.2
+- Fixed errors on a fresh install when the bars fade out, introduced with moving `bg_alpha` inside each bar section.
+- Adjusted the function that returns the Dynamis mob jobs. Now uses a static lookup table with an instant return, instead of the previous looping string match, hella more efficient. Will additionally label NM monsters.
+
 Version 4.11.1
 - Added Raksha Stance and Yaksha Stance to the list of moves that remove all mob debuffs.
 - Adjusted the distance threshold for mob movement to determine if the mob has moved after Sleep, Petrify, or Bind back from 2 to 3.
