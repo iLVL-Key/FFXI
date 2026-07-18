@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Callouts'
-_addon.version = '2.0'
+_addon.version = '2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'callouts','co'}
 
@@ -67,7 +67,9 @@ Heartbeat = 0
 
 charmed = T{}
 
+galli_start = 0
 gallimaufry = 0
+seg_start = 0
 segments = 0
 
 --These track each Omen boss and their moves so we know which is the next one
@@ -709,13 +711,22 @@ register_event('action',function(act)
 				if m_abil.en == 'Target' then
 					if not kin_used.target_at_75 then
 						kin_used.target_at_75 = true
-						input('/%s Next Target @ 50%%%s':format(chatmode, call))
+						input('/%s Target used on %s%s':format(chatmode, get_mob_by_id(act.targets[1].id).name, call))
+						coroutine.schedule(function()
+							input('/%s Next Target @ 50%%%s':format(chatmode, call))
+						end, 2)
 					elseif not kin_used.target_at_50 then
 						kin_used.target_at_50 = true
-						input('/%s Next Target @ 25%%%s':format(chatmode, call))
+						input('/%s Target used on %s%s':format(chatmode, get_mob_by_id(act.targets[1].id).name, call))
+						coroutine.schedule(function()
+							input('/%s Next Target @ 25%%%s':format(chatmode, call))
+						end, 2)
 					elseif not kin_used.target_at_25 then
 						kin_used.target_at_25 = true
-						input('/%s Next Target @ 10%%%s':format(chatmode, call))
+						input('/%s Target used on %s%s':format(chatmode, get_mob_by_id(act.targets[1].id).name, call))
+						coroutine.schedule(function()
+							input('/%s Next Target @ 10%%%s':format(chatmode, call))
+						end, 2)
 					end
 				end
 
@@ -752,11 +763,6 @@ register_event('action',function(act)
 							end, 10)
 						end
 					end, 10)
-				end
-
-			elseif actor == 'Kin' then
-				if m_abil.en == 'Target' then
-					input('/%s Target used on %s%s':format(chatmode, get_mob_by_id(act.targets[1].id).name, call))
 				end
 			end
 		end
@@ -839,6 +845,34 @@ register_event('action',function(act)
 		end
 
 	elseif act.category == 4 then
+
+		if actor == "Skatelife" then
+			if act.param == 502 then --Kaustra
+				input('/p Kaustra landed for '..act.targets[1].actions[1].param..' damage.')
+				coroutine.schedule(function()
+					input('/p Start Skillchain in 10 seconds! <call14>')
+				end, 94)
+				coroutine.schedule(function()
+					input('/p Start Skillchain NOW! <call14>')
+				end, 104)
+			elseif act.param == 885 then --Geohelix II
+				-- input('/p Geohelix II landed for '..act.targets[1].actions[1].param..' damage.')
+				coroutine.schedule(function()
+					input('/p Geohelix II wearing in 10 seconds! <call14>')
+				end, 350)
+				coroutine.schedule(function()
+					input('/p Geohelix II is OFF! <call14>')
+				end, 360)
+			elseif act.param == 889 then --Cryohelix II
+				-- input('/p Cryohelix II landed for '..act.targets[1].actions[1].param..' damage.')
+				coroutine.schedule(function()
+					input('/p Cryohelix II wearing off in 10 seconds! <call14>')
+				end, 350)
+				coroutine.schedule(function()
+					input('/p Cryohelix II is OFF! <call14>')
+				end, 360)
+			end
+		end
 
 		if callout.dynamis then
 			local spell = act and act.param
@@ -966,20 +1000,28 @@ register_event('incoming text',function(org)
 
 	if zone:find("^Outer Ra'Kaznar") then
 
-		local galli_match = org:match("received (%d+) gallimaufry for a total of (%d+).")
-		if galli_match then
+		local galli_match, galli_total_match = org:match("received (%d+) gallimaufry for a total of (%d+).")
+		if galli_match and galli_total_match then
+			local total = tonumber(galli_total_match)
 			local gained = tonumber(galli_match)
-			gallimaufry = gallimaufry + gained
+			if galli_start == 0 then
+				galli_start = total - gained
+			end
+			gallimaufry = total - galli_start
 		end
 
 	end
 
 	if zone:find("^Walk of Echoes") then
 
-		local seg_match = org:match("receive (%d+) moogle segments for a total of (%d+).")
-		if seg_match then
+		local seg_match, seg_total_match = org:match("receive (%d+) moogle segments for a total of (%d+).")
+		if seg_match and seg_total_match then
+			local total = tonumber(seg_total_match)
 			local gained = tonumber(seg_match)
-			segments = segments + gained
+			if seg_start == 0 then
+				seg_start = total - gained
+			end
+			segments = total - seg_start
 		end
 
 	end
@@ -1000,6 +1042,7 @@ register_event('zone change', function(new_id, old_id)
 			end
 
 			--Reset gallimaufry/boss claims
+			galli_start = 0
 			gallimaufry = 0
 			aita_claimed = false
 			degei_claimed = false
@@ -1023,6 +1066,7 @@ register_event('zone change', function(new_id, old_id)
 			end
 
 			--Reset segments
+			seg_start = 0
 			segments = 0
 
 		end, settings.galli_segs_after_zone_delay)
@@ -1050,6 +1094,7 @@ register_event('addon command', function(addcmd, ...)
 			chatmode = 'echo'
 		end
 		call = chatmode == 'party' and ' <call'..call_num..'>' or ''
+		settings.chatmode = chatmode
 		add_to_chat(8,('[Callouts] '):color(220)..('Chat mode is now set to '):color(8)..(chatmode == 'party' and 'Party' or 'Echo'):color(200)..('.'):color(8))
 		settings:save('all')
 
