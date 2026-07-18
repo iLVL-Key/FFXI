@@ -47,6 +47,11 @@ All commands must be preceded with `//callouts` or `//co` (ex: `//co mode`)
 
 ## Changelog
 
+Version 2.1
+- Adjusted how the Gallimaufry and Segment totals are calculated. This increases accuracy of the totals reported at the end of a run. Previously, every missed packet that displayed a gain of points would not be counted in the total. Now, the first points gained displayed creates a starting point total amount, and each new points gained displayed will have the new total compared to that starting point total to created a running total for that run.
+- Fixed `chatmode` in game command not saving to the settings file.
+- Fixed Kin not calling out who Target was cast on.
+
 Version 2.0
 - Overhauled a lot of code for efficiency. Checking for Omen and Sortie bosses nearby now scans memory for them and stops when one is found (one call/loop per scan) instead of checking for each one individually (9 calls per scan for Omen, 4 for Sortie).
 - Added callouts for all Omen bosses and mid-bosses similar to Ou callouts.
