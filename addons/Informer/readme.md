@@ -39,7 +39,6 @@ Displays a bar with information (much like InfoBar!)
 - **${gil}** - Current gil amount.
 - **${inventory}** - Current number of items in your main inventory / total main inventory slots.
 - **${job}** - Current job/sub you are on.
-- **${mlvl}** - Current master level. Displays current synced level as well when level synced.
 - **${moon_percent}** - Current moon phase by percent.
 - **${moon_phase}** - Current moon phase by name.
 - **${name}** - Current character's name.
