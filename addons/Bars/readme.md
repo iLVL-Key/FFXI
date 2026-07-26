@@ -367,7 +367,6 @@ Version 4.11
 - Adjusted the Seconds Per Kill number on the XP bar to display to one decimal place.
 - Adjusted the Self Action bar to display "Self Action" during the Screen Test (`//bars ui`) instead of "Screen Test" to align with the other bars labeling themselves.
 - Adjusted individual Player Stats bars (HP, MP, TP, and Pet) drain settings to condense to a single `drain_player_stats_bars` setting. Note that if you are upgrading from a previous verison this will leave the previous individual settings in your settings file, though they will no longer be functional.
-- Fixed tiny black square showing up on screen when the addon is loaded before a character is logged in.
 - Fixed Focus Target bar meter getting occasionally stuck on screen until another target replaces it, when the `show_battle_target_by_default` settings is enabled.
 
 Version 4.10.2
