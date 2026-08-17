@@ -2505,6 +2505,10 @@ Version 1.0
 
 <summary>SMN</summary>
 
+Version 14.3.3
+- Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+
 Version 14.3.2
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
 
