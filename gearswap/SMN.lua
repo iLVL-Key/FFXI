@@ -313,8 +313,7 @@ sets.movement_speed = {
 	right_ring="Shneddick Ring +1",
 }
 
--- Danger
--- Full DT- and everything you've got with Absorbs or Annuls Damage
+-- Danger (Full DT- and everything you've got with Absorbs or Annuls Damage)
 sets.danger = {
 	head="Beckoner's Horn +3",
 	body="Beck. Doublet +3",
@@ -405,12 +404,12 @@ sets.bp_delay = {
 	hands="Baayami Cuffs +1",		--Skill +33		BPD-I -7
 	legs="Baayami Slops +1",		--Skill +35		BPD-I -8
 	feet="Baaya. Sabots +1",		--Skill +29
-	neck="Incanter's Torque",		--Skill +10
+	neck="Hoxne Torque",			--Skill +30
 	waist="Kobo Obi",				--Skill +8
 	left_ear="Lodurr Earring",		--Skill +10
 	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",	--Skill +8
-	right_ring="Stikini Ring +1",	--Skill +8
+	right_ring="Evoker's Ring",		--Skill +10
 	back="Conveyance Cape",			--Skill +13
 }
 
@@ -481,12 +480,12 @@ sets.bp_ward_buff = {
 	hands="Baayami Cuffs +1",
 	legs="Baayami Slops +1",
 	feet="Baaya. Sabots +1",
-	neck="Incanter's Torque",
+	neck="Hoxne Torque",
 	waist="Kobo Obi",
 	left_ear="Lodurr Earring",
 	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
-	right_ring="Stikini Ring +1",
+	right_ring="Evoker's Ring",
 	back="Conveyance Cape",
 }
 
@@ -500,12 +499,12 @@ sets.bp_ward_debuff = {
 	hands="Lamassu Mitts +1",
 	legs="Beck. Spats +3",
 	feet="Bunzi's Sabots",
-	neck="Incanter's Torque",
+	neck="Hoxne Torque",
 	waist="Kobo Obi",
 	left_ear="Lodurr Earring",
 	right_ear="Beck. Earring +2",
 	left_ring="Stikini Ring +1",
-	right_ring="Stikini Ring +1",
+	right_ring="Evoker's Ring",
 	back={ name="Campestres's Cape", augments={'Pet: M.Acc.+20 Pet: M.Dmg.+20','Eva.+20 /Mag. Eva.+20','Pet: Magic Damage+10','"Fast Cast"+10','Mag. Evasion+15',}},
 }
 
@@ -633,7 +632,7 @@ end
 
 
 
-FileVersion = '14.3.2'
+FileVersion = '14.3.3'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -1753,10 +1752,10 @@ function self_command(command)
 		send_command('wait 4.5;input /ja "Elemental Siphon" <me>;wait 1;input /pet Release <me>')
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
+		send_command('gs c ShowHUD')
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		windower.send_command('gs c HideHUD')
+		send_command('gs c HideHUD')
 	elseif command == 'ShowHUD' then
 		hud_bg_color:show()
 		hud_bg:show()
@@ -1887,7 +1886,7 @@ end
 function choose_set(has_pet)
 
 	local base_set = (pet.isvalid or has_pet) and sets.avatar or sets.idle
-	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage)) and sets.danger or nil
+	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage)) and not midaction() and sets.danger or nil
 	local main_sub = LockWeaponOnEngage and {main="", sub=""} or {main=nil, sub=nil}
 
 	if player.status == "Resting" then
@@ -1949,7 +1948,7 @@ function precast(spell)
 	if TransportLock and transport_spells[spell.en] and transport_locked then
 		cancel_spell()
 		transport_locked = false
-		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
+		add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
 		if AlertSounds then
 			play_sound(Notification_Cancel)
 		end
@@ -2164,10 +2163,10 @@ windower.register_event('status change', function(status)
 
 	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
-		windower.send_command('gs c HideHUD')
+		send_command('gs c HideHUD')
 	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
-		windower.send_command('gs c ShowHUD')
+		send_command('gs c ShowHUD')
 	end
 
 	choose_set()
@@ -2881,7 +2880,7 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player then
+		if notifications.LowMP and player and GreetingDelay == -1 then
 			if player.mpp <= 20 then
 				if not NotiLowMPToggle then
 					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
@@ -3287,7 +3286,7 @@ windower.register_event('prerender', function()
 		if transport_lock_timestamp ~= 0 and os.time() > transport_lock_timestamp then
 			transport_locked = true
 			transport_lock_timestamp = 0
-			windower.add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
+			add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
 		end
 
 	end
@@ -3534,7 +3533,7 @@ windower.register_event('action',function(act)
 		NotiCountdown = -1
 	--Blood Pact: Rages:
 	elseif act.category == 13 then
-	local job_ability = job_ability
+	local job_ability = jobabilities[act.param].english
 	--Blood Pact misses:
 		if msg == 324 then
 			hud_noti_shdw:text('«« '..job_ability..' Missed »»')
