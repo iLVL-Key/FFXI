@@ -1,169 +1,514 @@
-------------------------------------------
---   Keys Gearswap lua file for Bard    --
-------------------------------------------
-
---[[
-------------------------------------------
---                NOTES                 --
-------------------------------------------
-
-IMPORTANT:
-When you load this file for the first time, your HUD may not be in a good position, or may be too large.
-If the HUD is not in a good position, go to the Heads Up Display options below and adjust the HUDposX and HUDposY
-options, then save and reload the file. Adjust and repeat until positioned as desired.
-If the HUD is too large (or small), adjust the FontSize, LineSpacer, and ColumnSpacer options as needed.
-Suggested placement is center screen, just above your chat log.
-
-------------------------------------------
+--[[---------------------------------------
+--    Keys Gearswap lua file for Bard    --
+-------------------------------------------
 
 Updates to this file and other GearSwap files and addons can be found at
 https://github.com/iLVL-Key/FFXI
 
-Place both this file and the sounds folder inside the GearSwap data folder
+1) Place both this file and the sounds folder inside the GearSwap/data folder
 	/addons/GearSwap/data/sounds/
 	/addons/GearSwap/data/BRD.lua
 
+2) Load the file through GearSwap and it will automatically create the files it needs to function.
+
+3) Options and gear sets can then be found in the [player_name]_BRD_profile.lua file (created on first load).
+
+	--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--
+	--XXXXXXXXXXXXXXXXXX                                               XXXXXXXXXXXXXXXXXX--
+	--XXXXXXXXXXXXXXXXXX         THIS FILE HAS NOTHING TO EDIT         XXXXXXXXXXXXXXXXXX--
+	--XXXXXXXXXXXXXXXXXX                                               XXXXXXXXXXXXXXXXXX--
+	--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--
+
+]]--
+
+FileVersion = '4.0'
+
+-------------------------------------------
+--             AREA MAPPING              --
+-------------------------------------------
+
+AdoulinZones = {
+	["Western Adoulin"] = true, ["Eastern Adoulin"] = true, ["Celennia Memorial Library"] = true, ["Silver Knife"] = true
+}
+
+BastokZones = {
+	["Bastok Markets"] = true, ["Bastok Mines"] = true, ["Metalworks"] = true, ["Port Bastok"] = true
+}
+
+SandyZones = {
+	["Chateau d'Oraguille"] = true, ["Northern San d'Oria"] = true, ["Port San d'Oria"] = true, ["Southern San d'Oria"] = true
+}
+
+WindyZones = {
+	["Heavens Tower"] = true, ["Port Windurst"] = true, ["Windurst Walls"] = true, ["Windurst Waters"] = true, ["Windurst Woods"] = true
+}
+
+TownZones = {
+	["Western Adoulin"] = true, ["Eastern Adoulin"] = true, ["Celennia Memorial Library"] = true, ["Silver Knife"] = true, ["Bastok Markets"] = true, ["Bastok Mines"] = true, ["Metalworks"] = true, ["Port Bastok"] = true, ["Chateau d'Oraguille"] = true, ["Northern San d'Oria"] = true, ["Port San d'Oria"] = true, ["Southern San d'Oria"] = true, ["Heavens Tower"] = true, ["Port Windurst"] = true, ["Windurst Walls"] = true, ["Windurst Waters"] = true, ["Windurst Woods"] = true, ["Lower Jeuno"] = true, ["Port Jeuno"] = true, ["Ru'Lude Gardens"] = true, ["Upper Jeuno"] = true, ["Aht Urhgan Whitegate"] = true, ["The Colosseum"] = true, ["Tavnazian Safehold"] = true, ["Southern San d'Oria [S]"] = true, ["Bastok Markets [S]"] = true, ["Windurst Waters [S]"] = true, ["Mhaura"] = true, ["Selbina"] = true, ["Rabao"] = true, ["Kazham"] = true, ["Norg"] = true, ["Nashmau"] = true, ["Mog Garden"] = true, ["Leafallia"] = true, ["Chocobo Circuit"] = true
+}
+
+-------------------------------------------
+--              FILE LOAD                --
+-------------------------------------------
+
+res = require('resources')
+texts = require('texts')
+files = require('files')
+weaponskills = res.weapon_skills
+items = res.items
+spells = res.spells
+
+local play_sound = windower.play_sound
+local addon_path = windower.addon_path
+local Notification_Good = addon_path..'data/sounds/NotiGood.wav'
+local Notification_Bad = addon_path..'data/sounds/NotiBad.wav'
+local Notification_Danger = addon_path..'data/sounds/Danger.wav'
+local Notification_Cancel = addon_path..'data/sounds/Cancel.wav'
+local Notification_Aftermath_On = addon_path..'data/sounds/AftermathOn.wav'
+local Notification_Aftermath_Off = addon_path..'data/sounds/AftermathOff.wav'
+local Notification_3000TP = addon_path..'data/sounds/3000TP.wav'
+
+function sortedTableString(tbl, indent)
+	indent = indent or ""
+	local lines = {}
+	local keys = {}
+
+	for k in pairs(tbl) do
+		table.insert(keys, k)
+	end
+	table.sort(keys, function(a, b) return tostring(a):lower() < tostring(b):lower() end)
+
+	for _, k in ipairs(keys) do
+		local v = tbl[k]
+		local formatted_key = type(k) == "string" and string.format("[%q]", k) or string.format("[%s]", tostring(k))
+		if type(v) == "table" then
+			table.insert(lines, indent..formatted_key.."={")
+			table.insert(lines, sortedTableString(v, indent.."    "))
+			table.insert(lines, indent.."},")
+		else
+			local formatted_val = type(v) == "string" and string.format("%q", v) or tostring(v)
+			table.insert(lines, indent..formatted_key.."="..formatted_val..",")
+		end
+	end
+
+	return table.concat(lines, "\n")
+end
+
+default_live_settings = {
+	[player.name]  = {
+		brd = {
+			danger_mode = 1,
+			hud_pos_x = 400,
+			hud_pos_y = 400,
+			song_mode = 1,
+			song_list_pos_x = 500,
+			song_list_pos_y = 300,
+			song_list_show = true,
+		},
+	},
+}
+
+--Location of the live file
+live_file = files.new('data\\live.lua')
+
+live_msg = "--This file stores live data used by Key's GearSwap files and IS NOT intended to be edited by the user.\n--See the [player_name]_[job]_profile.lua file for options and gear sets you can edit.\n\n"
+
+live = {}
+
+--Save the live table to the live file
+local function saveLiveData()
+	live_file:write(live_msg..'return {\n'..sortedTableString(live, '    ')..'\n}')
+end
+
+--If the data\live.lua file doesn't exist, create it
+if not live_file:exists() then
+	live = default_live_settings
+	saveLiveData()
+else
+	--File already exists, load it
+	live = require('live')
+	
+	--Track if we actually made any updates so we only write to disk if necessary
+	local data_updated = false
+
+	--Check if this specific character exists in the file, if not then create it
+	if not live[player.name] then
+		live[player.name] = {}
+		data_updated = true
+	end
+
+	--Check if this specific job exists for this character, if not then create it
+	if not live[player.name].brd then
+
+		local default_job_data = default_live_settings[player.name] and default_live_settings[player.name].brd
+
+		if default_job_data then
+			live[player.name].brd = table.copy(default_job_data)
+			data_updated = true
+		end
+	end
+
+	--Save the updated live table to the live file, only if we made any updates
+	if data_updated then
+		saveLiveData()
+	end
+end
+
+default_profile = [[
 ------------------------------------------
 --         HOW TO USE THIS FILE         --
 ------------------------------------------
-
-DUMMY SONGS & INSTRUMENT MODES
-
-This file supports both "Dummy song" techniques:
-
--Potency Mode (Partial Dummy Songs)-
-	Use Potency Mode to use full potency for your first 2 songs (or 3 with Clarion), switch to Dummy Mode to use an "extra song"
-	instrument for the rest, then switch back to Potency Mode to repeat only the extra songs with full potency. You only need to
-		switch to Dummy Mode if party members are missing any extra songs. This technique is slightly more involved (switching Modes)
-		but faster and all songs are immediately useful.
-		ex:
-		[Start in Potency Mode]
-		Sing: Honor March + Victory March
-		[Change to Dummy Mode]
-		Sing: Valor Minuet V + Valor Minuet IV
-		[Change to Potency Mode]
-		Sing: Valor Minuet V + Valor Minuet IV
-
--Dummy Mode (All Dummy Songs)-
-	Set specific songs to use an "extra song" instrument for all songs then overwrite all songs using full potency instrument. This
-		technique is simpler (no Mode switching), but slower and the initial dummy songs are not beneficial to the party.
-		ex:
-		Sing: Fowl Aubade + Gold Capriccio + Shining Fantasia + Goblin Gavotte
-		Sing: Honor March + Victory March + Valor Minuet V + Valor Minuet IV
-
-To switch between Instrument Modes, use any of these three options:
-1. A macro
-	/console mode
-2. An alias command
-	//mode
-3. A keybind shortcut
-	CTRL+G
-	(Can be changed in the Advanced Options section)
-
+--
+--DUMMY SONGS & INSTRUMENT MODES
+--
+--This file supports both "Dummy song" techniques:
+--
+-- -Potency Mode (Partial Dummy Songs)-
+--	Use Potency Mode to use full potency for your first 2 songs (or 3 with Clarion), switch to Dummy Mode to use an "extra song"
+--	instrument for the rest, then switch back to Potency Mode to repeat only the extra songs with full potency. You only need to
+--		switch to Dummy Mode if party members are missing any extra songs. This technique is slightly more involved (switching Modes)
+--		but faster and all songs are immediately useful.
+--		ex:
+--		[Start in Potency Mode]
+--		Sing: Honor March + Victory March
+--		[Change to Dummy Mode]
+--		Sing: Valor Minuet V + Valor Minuet IV
+--		[Change to Potency Mode]
+--		Sing: Valor Minuet V + Valor Minuet IV
+--
+-- -Dummy Mode (All Dummy Songs)-
+--	Set specific songs to use an "extra song" instrument for all songs then overwrite all songs using full potency instrument. This
+--		technique is simpler (no Mode switching), but slower and the initial dummy songs are not beneficial to the party.
+--		ex:
+--		Sing: Fowl Aubade + Gold Capriccio + Shining Fantasia + Goblin Gavotte
+--		Sing: Honor March + Victory March + Valor Minuet V + Valor Minuet IV
+--
+--To switch between Instrument Modes, use any of these three options:
+--1. A macro
+--		/console mode
+--2. An alias command
+--		//mode
+--3. A keybind shortcut
+--		CTRL+G
+--		(Can be changed in the Advanced Options section)
+--
 ------------------------------------------
-
-DANGER MODE
-
-Auto -	Automatically layers the Danger set on top of other sets if it detects you are taking damage from a monster
-		your party is fighting. Disabled after a configurable amount of time has passed. Does not activate when engaged.
-On   - 	Always layers the Danger gear set on top of other gear sets.
-Off  -	Disables this functionality.
-
-To switch between Danger Modes, use any of these three options:
-1. A macro
-	/console dt
-2. An alias command
-	//dt
-3. A keybind shortcut
-	CTRL+D
-	(Can be changed in the Advanced Options section)
-
+--
+--DANGER MODE
+--
+--Auto -	Automatically layers the Danger set on top of other sets if it detects you are taking damage from a monster
+--			your party is fighting. Disabled after a configurable amount of time has passed. Does not activate when engaged.
+--On   - 	Always layers the Danger gear set on top of other gear sets.
+--Off  -	Disables this functionality.
+--
+--To switch between Danger Modes, use any of these three options:
+--1. A macro
+--		/console dt
+--2. An alias command
+--		//dt
+--3. A keybind shortcut
+--		CTRL+D
+--		(Can be changed in the Advanced Options section)
+--
 ------------------------------------------
-
-WEAPON CYCLER
-
-Quickly switch between multiple weapon sets.
-
-To activate the Weapon Cycler, use any of these three options:
-1. A macro
-	/console WC
-2. An alias command
-	//wc
-3. A keybind shortcut
-	CTRL+H
-	(Can be changed in the Advanced Options section)
-
+--
+--WEAPON CYCLER
+--
+--Quickly switch between multiple weapon sets.
+--
+--To activate the Weapon Cycler, use any of these three options:
+--1. A macro
+--		/console WC
+--2. An alias command
+--		//wc
+--3. A keybind shortcut
+--		CTRL+H
+--		(Can be changed in the Advanced Options section)
+--
 ------------------------------------------
-
-KEEPING TP
-
-When engaged, weapons will be equipped based on your current Weapon Cycle selection. Weapons will also not be switched out for songs
-when engaged. This allows you to keep your TP when desired, as well as utilize the weapon slots for songs/spells when disengaged.
-TL;DR:
-		Idle: full gear swapping, may lose TP.
-		Engaged: Weapon slots ignored in gear sets, will keep TP.
-
+--
+--KEEPING TP
+--
+--When engaged, weapons will be equipped based on your current Weapon Cycle selection. Weapons will also not be switched out for songs
+--when engaged. This allows you to keep your TP when desired, as well as utilize the weapon slots for songs/spells when disengaged.
+--TL;DR:
+--		Idle: full gear swapping, may lose TP.
+--		Engaged: Weapon slots ignored in gear sets, will keep TP.
+--
 ------------------------------------------
+--
+--JOB HUD
+--
+--Displays real-time information including various notifications, debilitating debuffs preventing you from taking
+--actions, Job Ability and spell recasts, as well as specific information catered to how the job functions.
+--
+--Hide or show the HUD at any time by typing
+--		//hud
+--
+--Hide or show the Song List at any time by typing
+--		//songs
+--or creating a macro with
+--		/console songs
+--
+------------------------------------------
+--
+--TIPS
+--
+--Add a `/target <me>` line at the start of your song macros so you don't accidentally pianissimo if someone casts on you. (use_pianissimo_when_singing_on_another_player)
+--
+------------------------------------------
+--
 
-JOB HUD
-
-Displays real-time information including various notifications, debilitating debuffs preventing you from taking
-actions, Job Ability and spell recasts, as well as specific information catered to how the job functions.
-
-Hide or show the HUD at any time by typing
-	//hud
-
-Hide or show the Song List at any time by typing
-	//songs
-or creating a macro with
-	/console songs
-
---]]
+local profile = {}
 
 -------------------------------------------
---                OPTIONS                --
+--             MAIN OPTIONS              --
 -------------------------------------------
 
-Book			=	'9'		--[1-20/Off]	Sets your Macro book to any number from 1 to 20 (or Off) on file load.
-SubDNCPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing DNC.
-SubNINPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing NIN.
-SubRDMPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing RDM.
-SubSCHPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing SCH.
-SubWHMPage		=	'1'		--[1-10/Off]	Sets your Macro page to any number from 1 to 10 (or Off) on file load or subjob change when subbing WHM.
-Chat			=	'p'		--[s/p/l/l2/Off]Sets your Default chat mode (say, party, linkshell, linkshell2, or Off) on file load.
-SVTimer			=	true	--[true/false]	Displays a timer for Soul Voice in echo.
-CCTimer			=	true	--[true/false]	Displays a timer for Clarion Call in echo.
-ZoneGear		=	'All'	--[All/Town/Off]Automatically re-equips your gear after you zone based on certain conditions
-							--				(Town limits this to town gear only).
-AlertSounds		=	true	--[true/false]	Plays a sound on alerts. 
-UseEcho			=	'R'		--[E/R/Off]		Automatically uses an (E)cho Drop or (R)emedy instead of spell when you are silenced.
-AutoGearCheck	=	true	--[true/false]	Automatically checks and equips appropriate gear set on player movement.
-AutoMvmntSpeed	=	true	--[true/false]	Automatically equips Movement Speed set on player movement when idle.
-AutoPhalanxSet	=	true	--[true/false]	Automatically equips Phalanx gear set when another player casts Phalanx II or Accession Phalanx on you.
-AutoPianissimo	=	true	--[true/false]	Automatically uses Pianissimo when you cast a song on a party member.
-							--				Add a `/target <me>` line at the start of your song macros so you don't accidentally pianisimo if someone casts on you.
-AutoSubCharge	=	true	--[true/false]	Automatically attempts to keep Sublimation charging.
-TransportLock	=	true	--[true/false]	Cancels your first Transport spell and unlocks for 3 min or until zone.
+profile.command_reminder_at_load = true
+profile.confirm_transportation_spells_before_casting = true
+profile.echo_timer_for_soul_voice = true
+profile.echo_timer_for_clarion_call = true
+profile.equip_gear_when_moving = true
+profile.equip_movement_speed_set_when_moving = true
+profile.equip_phalanx_set_when_cast_on = true
+profile.keep_sublimation_charging = true
+profile.set_chat_mode_on_load = true
+profile.set_chat_mode_to = 'party'
+profile.set_macro_book_to = 9
+profile.set_sub_dnc_macro_page_to = 1
+profile.set_sub_nin_macro_page_to = 1
+profile.set_sub_rdm_macro_page_to = 1
+profile.set_sub_sch_macro_page_to = 1
+profile.set_sub_whm_macro_page_to = 1
+profile.sound_effects = true
+profile.use_remedy_or_echo_when_silenced_and_casting = true
+profile.use_pianissimo_when_singing_on_another_player = true
 
--- Heads Up Display --
-HUDposX				=	100	--	X position for the HUD. 0 is left of the window, increasing this number will move it to the right.
-HUDposY				=	100		--	Y position for the HUD. 0 is top of the window, increasing this number will move it downward.
-SongposX			=	500		--	X position for the Song list. 0 is left of the window, increasing this number will move it to the right.
-SongposY			=	300		--	Y position for the Song list. 0 is top of the window, increasing this number will move it downward.
-FontSize			=	10.5	--	Adjust the font size. Changing this may require you to adjust the Spacers below as well.
-LineSpacer			=	17		--	Space in pixels between each Line of the HUD.
-ColumnSpacer		=	95		--	Space in pixels between each Column of the HUD.
-ShowTPMeter			=	true	--[true/false]	Show the mini TP Meter inside the Weapons area of the HUD.
-PTMemNearDist		=	10		--	Maximum distance for a party member to be highlighted as "nearby".
+-------------------------------------------
+--           ADVANCED OPTIONS            --
+-------------------------------------------
 
-modeName = {
---HUD Mode Names
-	Mode1 = 'Potency',	--Use Full Potency Instrument.
-	Mode2 = 'Dummy',	--Use "Extra Song" Instrument.
+profile.danger_mode_auto_safe_again_delay_in_seconds = 5
+profile.delay_casting_after_stopping_in_seconds = 0.25
+profile.delay_casting_while_moving_in_seconds = 1
+profile.low_hp_threshold = 1000
+profile.polling_rate_times_per_second = 5
+profile.set_macro_book_page_on_load = true
+profile.warning_sound_times_to_repeat = 5
+
+--KEYBINDS--
+
+profile.keybind_for_danger_mode = '^d'
+profile.keybind_for_song_mode = '^g'
+profile.keybind_for_weapon_cycler = '^h'
+
+-------------------------------------------
+--              HUD OPTIONS              --
+-------------------------------------------
+
+profile.add_commas_to_numbers = true
+profile.clear_notifications_delay_in_seconds = 6
+profile.pad = 2
+profile.show_debuffs = true
+profile.show_hud = true
+profile.show_tp_meter = true
+profile.size = 10.5
+
+--NOTIFICATIONS--
+
+profile.notifications = {
+	damage = false,
+	food_wears_off = false,
+	invisible_wearing_off = true,
+	invite_offer = true,
+	low_hp_warning = true,
+	low_mp_warning = true,
+	regional_buff_wears_off = false,
+	reraise_reminder = false,
+	reraise_reminder_delay_in_minutes = 60,
+	reraise_wears_off = false,
+	sneak_wearing_off = true,
+	time_remaining = true,
+	tp_hits_3000 = true,
+	trade_offer = true,
+	vorseal_wears_off = true,
 }
--- Instruments --
 
-inst = {
+--HUD RECAST--
+
+-- Controls what is displayed in the HUD Recast section.
+-- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
+--		Sould Voice, Clarion Call, Contradance, Convert, Dark Arts, Divine Seal, Flourishes I, Flourishes II, Jigs, Light Arts, Marcato, Nightingale,
+--		Pianissimo, Sambas, Steps, Sublimation, Tenuto, Troubadour
+-- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise.
+-- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
+
+profile.sub = {
+
+	--BRD/DNC
+	DNC = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Sambas",			Abil04_sh = "Samba",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+
+	--BRD/NIN
+	NIN = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+
+	--BRD/RDM
+	RDM = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Convert",			Abil06_sh = ""
+	},
+
+	--BRD/SCH
+	SCH = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Soul Voice",		Abil04_sh = "",
+		Abil05 = "Stratagems",		Abil05_sh = "Strats",
+		Abil06 = "Sublimation",		Abil06_sh = "Sublmation"
+	},
+
+	--BRD/WHM
+	WHM = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto", 			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	},
+
+	--BRD/OTH (other)
+	OTH = {
+		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
+		Abil02 = "Troubadour",		Abil02_sh = "",
+		Abil03 = "Marcato",			Abil03_sh = "",
+		Abil04 = "Tenuto",			Abil04_sh = "",
+		Abil05 = "Soul Voice",		Abil05_sh = "",
+		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
+	}
+
+}
+
+-------------------------------------------
+--               SONG LIST               --
+-------------------------------------------
+
+profile.show_song_list_header = true
+profile.song_list_font_size = 9
+profile.song_list_horizontal_orientation = false
+
+-- Song Renaming --
+
+--Feel free to rename songs as you see fit (included are commented out examples of the types of things you can do)
+profile.song_renaming = {
+	-- ["Herb Pastoral"] = "Dummy Song",
+	-- ["Valor Minuet V"] = "Attack 5",
+	-- ["Valor"] = "V.",						-- Turns all songs starting with "Valor" into "V." (ie "Valor Minuet" into "V. Minuet")
+	-- ["Blade "] = "",							-- Turns all songs starting with "Blade" (ie "Blade Madrigal") into "Madrigal"
+}
+
+-------------------------------------------
+--             COLOR VALUES              --
+-------------------------------------------
+
+profile.color = {
+
+	-- MODES --
+	potency	= {r = 125, g = 200, b = 255},
+	dummy	= {r = 255, g = 255, b = 125},
+
+	-- AFTERMATH --
+	AM1	= {r = 75, g = 255, b = 75},
+	AM2	= {r = 0, g = 200, b = 255},
+	AM3	= {r = 255, g = 255, b = 50},
+
+	-- ELEMENTS --
+	Light	= {r = 255, g = 248, b = 220},
+	Fire	= {r = 255, g = 0, b = 0},
+	Ice		= {r = 135, g = 206, b = 250},
+	Air		= {r = 50, g = 205, b = 50},
+	Earth	= {r = 250, g = 130, b = 40},
+	Thunder	= {r = 186, g = 85, b = 211},
+	Water	= {r = 30, g = 144, b = 255},
+	Dark	= {r = 200, g = 30, b = 80},
+
+	-- SONG LIST --
+	song_list = {
+
+		-- Bullet (the dot next to the song name)
+		Paeon		= {r = 0, g = 102, b = 204},
+		Ballad		= {r = 0, g = 154, b = 0},
+		Minne		= {r = 207, g = 205, b = 0},
+		Minuet		= {r = 207, g = 51, b = 49},
+		Madrigal	= {r = 154, g = 51, b = 207},
+		Mazurka		= {r = 241, g = 222, b = 70},
+		Prelude		= {r = 185, g = 244, b = 190},
+		Mambo		= {r = 0, g = 205, b = 0},
+		Dummy		= {r = 162, g = 164, b = 206},
+		March		= {r = 0, g = 154, b = 205},
+		Etude		= {r = 154, g = 132, b = 102},
+		Carol		= {r = 155, g = 102, b = 0},
+		Sirvente	= {r = 255, g = 102, b = 99},
+		Dirge		= {r = 101, g = 154, b = 155},
+		Scherzo		= {r = 155, g = 205, b = 207},
+		Aria		= {r = 90, g = 90, b = 90},
+
+		-- Song Name
+		soul_voice	= {r = 255, g = 223, b = 0},
+		marcato		= {r = 100, g = 200, b = 255},
+		normal		= {r = 255, g = 255, b = 255},
+
+		-- Duration
+		very_long	= {r = 200, g = 100, b = 255},	-- Over 10 minutes
+		long		= {r = 100, g = 200, b = 255},	-- Over 5 minutes
+		regular		= {r = 150, g = 255, b = 150},	-- Under 5 minutes
+		low			= {r = 255, g = 165, b = 0},	-- Under 1 minute
+		critical	= {r = 255, g = 50, b = 50},	-- Under 30 seconds
+		none		= {r = 255, g = 255, b = 255}	-- No songs
+	},
+
+	-- HUD RECAST --
+	abil = {
+		ready		= {r = 255, g = 50, b = 50},	-- Ready to use
+		active		= {r = 75, g = 255, b = 75},	-- Currently active
+		cooldown	= {r = 255, g = 165, b = 0},	-- On cooldown
+		flash		= {r = 255, g = 255, b = 125},	-- Flash (now ready)
+		notfound	= {r = 125, g = 125, b = 125}	-- Not Found
+	},
+
+	-- DANGER MODE --
+	danger_mode = {
+		auto = {r = 255, g = 255, b = 255},
+		on = {r = 250, g = 160, b = 0},
+		off = {r = 175, g = 175, b = 175},
+	},
+
+}
+
+-------------------------------------------
+--              INSTRUMENTS              --
+-------------------------------------------
+
+profile.inst = {
 --"Partial Dummy Songs" - Using the Potency/Dummy Modes to trigger the extra songs
 	dummy	= "Daurdabla",
 
@@ -204,257 +549,33 @@ inst = {
 	virelai			= "Loughnashade",
 }
 
-notifications = {
--- General Notifications --
-	ReraiseReminder	=	true,	--[true/false]	Displays an occasional reminder if Reraise is not up.
-	TP3000			=	true,	--[true/false]	Displays a notification when you have 3000 TP.
-	Damage			=	true,	--[true/false]	Displays your Weapon Skill, Skillchain, and Magic Burst damage.
-	Food			=	true,	--[true/false]	Displays a notification when food wears off.
-	Invis			=	true,	--[true/false]	Displays a notification when Invisible is about to wear off.
-	Invite			=	true,	--[true/false]	Displays a notification when someone invites to a party/alliance.
-	LowHP			=	true,	--[true/false]	Displays a notification when HP is low.
-	LowMP			=	true,	--[true/false]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
-	Reraise			=	true,	--[true/false]	Displays a notification when reraise wears off.
-	Signet			=	true,	--[true/false]	Displays a notification when Signet/Sanction/Sigil/Ionis wears off.
-	Sneak			=	true,	--[true/false]	Displays a notification when Sneak is about to wear off.
-	Time			=	true,	--[true/false]	Displays a notification for time remaining notices.
-	Trade			=	true,	--[true/false]	Displays a notification when someone trades you.
-	Vorseal			=	true,	--[true/false]	Displays a notification when Vorseal wears off.
-
--- Debuff Notifications --
-	Amnesia			=	true,	--[true/false]	Displays a notification when you have amnesia.
-	Charm			=	true,	--[true/false]	Displays a notification when you are charmed/animated.
-	Curse			=	true,	--[true/false]	Displays a notification when you are cursed/haunted/zombied.
-	Doom			=	true,	--[true/false]	Displays a notification when you are doomed.
-	Encumbrance		=	true,	--[true/false]	Displays a notification when you are encumbered.
-	Paralysis		=	true,	--[true/false]	Displays a notification when you are paralyzed.
-	Petrification	=	true,	--[true/false]	Displays a notification when you are petrified.
-	Plague			=	true,	--[true/false]	Displays a notification when you are plagued.
-	Silence			=	true,	--[true/false]	Displays a notification when you are silenced/muted.
-	Sleep			=	true,	--[true/false]	Displays a notification when you are slept.
-	Stun			=	true,	--[true/false]	Displays a notification when you are stunned.
-	Taint			=	true,	--[true/false]	Displays a notification when you are tainted.
-	Terror			=	true,	--[true/false]	Displays a notification when you are terrorized.
-}
-
--------------------------------------------
---           ADVANCED OPTIONS            --
--------------------------------------------
-
-ShowHUD				=	true	--[true/false]  Initial state of the HUD. Use `//hud` to show/hide the HUD in game.
-StartingGearMode	=	'Mode1'	--[Mode1/Mode2]  (Mode1 = Full Potency Instrument, Mode2 = "Extra Song" Instrument)
-								--	Determines the Gear Mode you start in. Gear Mode can be changed at any time by using any
-								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-StartingDangerMode	=	'Auto'	--[Auto/On/Off]
-								--	Determines the Danger Mode you start in. Danger Mode can be changed at any time by using any
-								--	of the three options listed above in the Notes section (a macro, alias, or keyboard shortcut).
-DMBind				=	'^d'	--Sets the keyboard shortcut you would like to switch between Danger Modes. CTRL+D (^d) is default.
-GMBind				=	'^g'	--Sets the keyboard shortcut you would like to cycle between Gear Modes. CTRL+G (^g) is default.
-WCBind				=	'^h'	--Sets the keyboard shortcut you would like to activate the Weapon Cycle. CTRL+H (^h) is default.
-								--    ^ = CTRL    ! = ALT    @ = WIN    # = APPS    ~ = SHIFT
-LowHPThreshold		=	1000	--Below this number is considered Low HP.
-DangerSafeDelay		=	5		--Delay in seconds after Danger Mode (Auto) activates before it is considered safe again.
-DangerPTOnly		=	true	--[true/false]  Danger Mode (Auto) will only activate when in a party with other players (Trusts do not count).
-WarningRepeat		=	5		--Maximum number of times the Warning Sound will repeat, once per second.
-RRReminderTimer		=	3600	--Delay in seconds between checks to see if Reraise is up (300 is 5 minutes).
-NotiDelay			=	6		--Delay in seconds before certain notifications will automatically clear.
-PollingRate			=	5		--Times per second to check for various conditions (debuffs, recasts, etc). Higher rates use more CPU.
-MoveCastWindow		=	1		--[#]  Window in seconds to wait to come a stop from moving before cassting a spell to help prevent interruption. Set to 0 to disable.
-MoveCastDelay		=	0.25	--[#]  Delay in seconds to wait AFTER coming to a stop before casting the pending spell to help prevent interruption.
-AddCommas			=	true	--[true/false]  Adds commas to damage numbers.
-
--------------------------------------------
---              HUD RECAST               --
--------------------------------------------
-
--- Controls what is displayed in the HUD Recast section.
--- The first column tells the file which ability/spell to place in that slot, the following are valid for use:
---		Sould Voice, Clarion Call, Contradance, Convert, Dark Arts, Divine Seal, Flourishes I, Flourishes II, Jigs, Light Arts, Marcato, Nightingale,
---		Pianissimo, Sambas, Steps, Sublimation, Tenuto, Troubadour
--- The "_sh" column allows you to change the name displayed if you would like, leave blank otherwise.
--- NOTE: Names will automatically be truncated to 10 characters to fit correctly.
-
-sub = {
-	--BRD/DNC
-	DNC = {
-		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
-		Abil02 = "Troubadour",		Abil02_sh = "",
-		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Sambas",			Abil04_sh = "Samba",
-		Abil05 = "Soul Voice",		Abil05_sh = "",
-		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
-	},
-	--BRD/NIN
-	NIN = {
-		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
-		Abil02 = "Troubadour",		Abil02_sh = "",
-		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Tenuto",			Abil04_sh = "",
-		Abil05 = "Soul Voice",		Abil05_sh = "",
-		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
-	},
-	--BRD/RDM
-	RDM = {
-		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
-		Abil02 = "Troubadour",		Abil02_sh = "",
-		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Tenuto",			Abil04_sh = "",
-		Abil05 = "Soul Voice",		Abil05_sh = "",
-		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
-	},
-	--BRD/SCH
-	SCH = {
-		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
-		Abil02 = "Troubadour",		Abil02_sh = "",
-		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Soul Voice",		Abil04_sh = "",
-		Abil05 = "Clarion Call",	Abil05_sh = "Clarion",
-		Abil06 = "Sublimation",		Abil06_sh = "Sublmation"
-	},
-	--BRD/WHM
-	WHM = {
-		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
-		Abil02 = "Troubadour",		Abil02_sh = "",
-		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Tenuto", 			Abil04_sh = "",
-		Abil05 = "Soul Voice",		Abil05_sh = "",
-		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
-	},
-	--BRD/OTH (other)
-	OTH = {
-		Abil01 = "Nightingale",		Abil01_sh = "Nightngale",
-		Abil02 = "Troubadour",		Abil02_sh = "",
-		Abil03 = "Marcato",			Abil03_sh = "",
-		Abil04 = "Tenuto",			Abil04_sh = "",
-		Abil05 = "Soul Voice",		Abil05_sh = "",
-		Abil06 = "Clarion Call",	Abil06_sh = "Clarion"
-	}
-}
-
--------------------------------------------
---               SONG LIST               --
--------------------------------------------
-
-ShowSongList		=	true		--[true/false]  Initial state of the Song List. Use `//songs` to show/hide the Song List in game.
-ShowSongListHeader	=	true		--[true/false]  Show the header on the Song List.
-SongsFontSize		=	9			--	Adjust the font size of the Songs List.
-SongListOrientation	=	"Vertical"	--  [Vertical/Horizontal]	Orientation of the Song List.
-									--	Vertical: All players and their songs in one column.
-									--	Horizontal: Each player and their songs in their own column.
-
--- Song Renaming --
-
---Feel free to rename songs as you see fit (included are commented out examples of the types of things you can do)
-song_renaming = {
-	-- ["Valor Minuet V"] = "Attack 5",
-	-- ["Valor"] = "V.",						Turns all songs starting with "Valor" into "V." (ie "Valor Minuet" into "V. Minuet")
-	-- ["Herb Pastoral"] = "Dummy Song",
-	-- ["Blade "] = "",							Turns all songs starting with "Blade" (ie "Blade Madrigal") into "Madrigal"
-}
-
--------------------------------------------
---             COLOR VALUES              --
--------------------------------------------
-
-color = {
-	-- MODES --
-	Mode1	= {r = 125, g = 200, b = 255},  -- Full Potency Instrument
-	Mode2	= {r = 255, g = 255, b = 125},  -- "Extra Song" Instrument
-
-	-- AFTERMATH --
-	AM1	= {r = 75, g = 255, b = 75},
-	AM2	= {r = 0, g = 200, b = 255},
-	AM3	= {r = 255, g = 255, b = 50},
-
-	-- ELEMENTS --
-	Light	= {r = 255, g = 248, b = 220},
-	Fire	= {r = 255, g = 0, b = 0},
-	Ice		= {r = 135, g = 206, b = 250},
-	Air		= {r = 50, g = 205, b = 50},
-	Earth	= {r = 250, g = 130, b = 40},
-	Thunder	= {r = 186, g = 85, b = 211},
-	Water	= {r = 30, g = 144, b = 255},
-	Dark	= {r = 200, g = 30, b = 80},
-
-	-- SONG LIST --
-	song_list = {
-
-		-- Bullet (dot)
-		Paeon		= {r = 0, g = 102, b = 204},
-		Ballad		= {r = 0, g = 154, b = 0},
-		Minne		= {r = 207, g = 205, b = 0},
-		Minuet		= {r = 207, g = 51, b = 49},
-		Madrigal	= {r = 154, g = 51, b = 207},
-		Mazurka		= {r = 241, g = 222, b = 70},
-		Prelude		= {r = 185, g = 244, b = 190},
-		Mambo		= {r = 0, g = 205, b = 0},
-		Dummy		= {r = 162, g = 164, b = 206},
-		March		= {r = 0, g = 154, b = 205},
-		Etude		= {r = 154, g = 132, b = 102},
-		Carol		= {r = 155, g = 102, b = 0},
-		Sirvente	= {r = 255, g = 102, b = 99},
-		Dirge		= {r = 101, g = 154, b = 155},
-		Scherzo		= {r = 155, g = 205, b = 207},
-		Aria		= {r = 90, g = 90, b = 90},
-
-		-- Song Name
-		soul_voice	= {r = 255, g = 223, b = 0},
-		normal		= {r = 255, g = 255, b = 255},
-
-		-- Duration
-		very_long	= {r = 200, g = 100, b = 255},	-- Over 10 minutes
-		long		= {r = 100, g = 200, b = 255},	-- Over 5 minutes
-		regular		= {r = 150, g = 255, b = 150},	-- Under 5 minutes
-		low			= {r = 255, g = 165, b = 0},	-- Under 1 minute
-		critical	= {r = 255, g = 50, b = 50},	-- Under 30 seconds
-		none		= {r = 255, g = 255, b = 255}	-- No songs
-	},
-
-	-- HUD RECAST --
-	abil = {
-		ready		= {r = 255, g = 50, b = 50},	-- Ready to use
-		active		= {r = 75, g = 255, b = 75},	-- Currently active
-		cooldown	= {r = 255, g = 165, b = 0},	-- On cooldown
-		flash		= {r = 255, g = 255, b = 125},	-- Flash (now ready)
-		notfound	= {r = 125, g = 125, b = 125}	-- Not Found
-	},
-
-	-- DANGER MODE --
-	danger_mode = {
-		["Auto"] = {r = 255, g = 255, b = 255},
-		["On"] = {r = 250, g = 160, b = 0},
-		["Off"] = {r = 175, g = 175, b = 175},
-	},
-
-}
-
 -------------------------------------------
 --                WEAPONS                --
 -------------------------------------------
 
 -- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed.
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
-WeaponCycle = {
-	{"Carnwenhan", "Genmei Shield"},
-	{"Naegling", "Genmei Shield"},
+profile.WeaponCycle = {
 	{"Mpu Gandring", "Genmei Shield"},
+	{"Naegling", "Genmei Shield"},
+	-- {"Carnwenhan", "Genmei Shield"},
 	--{"Main Slot", "Sub Slot"},
 }
 
 -- These are the Main/Sub combos that the Weapon Cycle goes through. Add more pairs on new lines as needed.
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
-DualWieldCycle = {
-	{"Carnwenhan", "Gleti's Knife"},
-	{"Naegling", "Centovente"},
-	{"Naegling", "Gleti's Knife"},
-	{"Mpu Gandring", "Centovente"},
+profile.DualWieldCycle = {
 	{"Mpu Gandring", "Gleti's Knife"},
+	{"Mpu Gandring", "Centovente"},
+	{"Naegling", "Gleti's Knife"},
+	{"Naegling", "Centovente"},
+	-- {"Carnwenhan", "Gleti's Knife"},
 	--{"Main Slot", "Sub Slot"},
 }
 
 -- These are the Main/Sub combos that get added to the Weapon Cycle while in Abyssea for Procs. Add more pairs on new lines as needed.
 -- NOTE: if a slot should be empty, use `empty` with no quotation marks. ie: {"Fruit Punches", empty},
-AbysseaProcCycle = {
+profile.AbysseaProcCycle = {
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -465,7 +586,10 @@ AbysseaProcCycle = {
 -- NOTE:	Do not set instruments for songs in these sets (Linos for non-song stats is fine).
 --			Instruments are instead set in the Options above.
 
-function get_sets()
+profile.sets = {}
+local sets = profile.sets
+
+--MAIN STATUS SETS--
 
 -- Idle (Movement Speed, Refresh, Regen, Damage Taken-, Enmity-)
 -- NOTE: Do not use weapons in this set or it will override your Weapon Cycle choice every time you disengage.
@@ -485,29 +609,9 @@ sets.idle = {
 }
 
 -- Movement Speed
--- Equipped while in town, and automatically while moving outside of town if the AutoMvmntSpeed option is enabled.
--- NOTE: If AutoMvmntSpeed is disabled, be sure to include your movement speed gear in the Idle set above.
+-- Equipped while in town, and automatically while moving outside of town if the `equip_movement_speed_set_when_moving` option is enabled.
+-- NOTE: If `equip_movement_speed_set_when_moving` is disabled, be sure to include your movement speed gear in the Idle set above.
 sets.movement_speed = {
-
-}
-
--- Danger
--- Full DT- and everything you've got with Absorbs or Annuls Damage
-sets.danger = {
-	head="Fili Calot +3",
-	body="Nyame Mail",
-	hands="Nyame Gauntlets",
-	legs="Nyame Flanchard",
-	neck="Warder's Charm +1",
-	waist="Null Belt",
-	left_ear="Eabani Earring",
-	left_ring="Shadow Ring",
-	right_ring="Defending Ring",
-	back="Shadow Mantle"
-}
-
--- Rest
-sets.rest = {
 
 }
 
@@ -534,6 +638,13 @@ sets.melee_dual_wield = set_combine(sets.melee, {
 	waist="Reiki Yotai",
 	left_ear="Eabani Earring",
 })
+
+-- Rest
+sets.rest = {
+
+}
+
+--WEAPON SKILL SETS--
 
 -- Weapon Skill - Basic (STR, Weapon Skill Damage, Attack, Multi Attack)
 sets.weapon_skill = {
@@ -591,6 +702,8 @@ sets["Rudra's Storm"] = {
 	left_ring="Ilabrat Ring",
 }
 
+--PRECAST SETS--
+
 -- Songs Fast Cast (cap is 80%)
 sets.fast_cast_song = {
 	head="Fili Calot +3",
@@ -611,6 +724,8 @@ sets.fast_cast_song = {
 sets.fast_cast_other = set_combine(sets.fast_cast_song, {
 	head="Bunzi's Hat",
 })
+
+--SONG SETS--
 
 -- Song Buffs
 -- NOTE: Do not set your main/sub here, set them in the sets below
@@ -694,16 +809,6 @@ sets.scherzo = set_combine(sets.buff_song, {
 	feet="Fili Cothurnes +3",
 })
 
--- Non-Song Buffs (Conserve MP)
-sets.buff_other = {
-	head="Vanya Hood",
-	hands="Shrieker's Cuffs",
-	legs="Vanya Slops",
-	left_ear="Calamitous Earring",
-	right_ear="Mendi. Earring",
-	back="Solemnity Cape",
-}
-
 -- Song Debuffs
 -- NOTE: Do not set your main/sub here, set them in the sets below
 sets.debuff_song = {
@@ -766,6 +871,18 @@ sets.horde_lullaby_II_single_wield = {
 
 }
 
+--GENERAL SPELL SETS--
+
+-- Non-Song Buffs (Conserve MP)
+sets.buff_other = {
+	head="Vanya Hood",
+	hands="Shrieker's Cuffs",
+	legs="Vanya Slops",
+	left_ear="Calamitous Earring",
+	right_ear="Mendi. Earring",
+	back="Solemnity Cape",
+}
+
 -- Non-Song Magic Accuracy
 sets.magic_accuracy = {
 	head="Brioso Roundlet +4",
@@ -804,6 +921,8 @@ sets.enfeeble = set_combine(sets.magic_accuracy, {
 	left_ring="Kishar Ring",
 })
 
+--SPECIFIC SPELL SETS--
+
 -- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 -- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between or higher than 500 is wasted
 -- NOTE: This set is also used when another player casts a Phalanx II or Accessioned Phalanx on you.
@@ -828,6 +947,8 @@ sets.cursna = {
 	left_ring="Haoma's Ring",
 	right_ring="Haoma's Ring",
 }
+
+--JOB ABILITY SETS--
 
 -- Soul Voice (Enhances Soul Voice gear)
 sets.soul_voice = {
@@ -877,12 +998,35 @@ sets.violent_flourish = {
 
 }
 
+--MISCELLANEOUS SETS--
+
+-- Danger (Full DT- and everything you've got with Absorbs or Annuls Damage)
+sets.danger = {
+	head="Fili Calot +3",
+	body="Nyame Mail",
+	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	neck="Warder's Charm +1",
+	waist="Null Belt",
+	left_ear="Eabani Earring",
+	left_ring="Shadow Ring",
+	right_ring="Defending Ring",
+	back="Shadow Mantle"
+}
+
 -- Holy Water (Holy Water+)
 sets.holy_water = {
 	neck="Nicander's Necklace",
 	left_ring="Blenmot's Ring +1",
 	right_ring="Blenmot's Ring +1",
 }
+
+-- Unity Trust Gear
+sets.unity = {
+	body="Sylvie Unity Shirt",
+}
+
+--TOWN SETS--
 
 -- Default Town Gear (Put all your fancy-pants gear in here you want to showboat around town in. Does not lockstyle this gear, only equips)
 sets.town = set_combine(sets.idle, {
@@ -909,54 +1053,271 @@ sets.windurst = set_combine(sets.town, {
 	--body="Federation Aketon", --Note: only increases your speed if you are a citizen of Windurst
 })
 
--- Unity Trust Gear
-sets.unity = {
-	body="Sylvie Unity Shirt",
-}
+return profile
 
+]]
+
+--Location of the profile file
+profile_file = files.new('data\\'..player.name..'_BRD_profile.lua')
+
+--If the data\[player.name]_BRD_profile.lua file doesn't exist, create it
+if not profile_file:exists() then
+	profile_file:write(default_profile)
+	add_to_chat(8,('[Notice] '):color(39)..('Options and gear sets can now be found in '):color(8)..(player.name..'_BRD_profile.lua'):color(1)..'.':color(8))
 end
 
+profile = require(player.name..'_BRD_profile')
 
+--Validate that all appropriate options are valid after loading
+local function validateProfileOptions()
 
+	local function get_nested_field(tbl, key_path)
+		local current = tbl
+		for key in key_path:gmatch('[^%.]+') do
+			if type(current) ~= 'table' then return nil end
+			current = current[key]
+		end
+		return current
+	end
 
-	--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--
-	--XXXXXXXXXXXXXXXXXX                                               XXXXXXXXXXXXXXXXXX--
-	--XXXXXXXXXXXXXXXXXX          DO NOT EDIT BELOW THIS LINE          XXXXXXXXXXXXXXXXXX--
-	--XXXXXXXXXXXXXXXXXX                                               XXXXXXXXXXXXXXXXXX--
-	--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--
+	local file_name = player.name..'_BRD_profile.lua'
 
+	if not profile then
+		windower.add_to_chat(8, ('[Notice] '):color(39)..file_name:color(1)..': File missing or failed to load.':color(8))
+		return
+	end
 
+	local required_options = {
+		--Main Options
+		'command_reminder_at_load',
+		'confirm_transportation_spells_before_casting',
+		'echo_timer_for_soul_voice',
+		'echo_timer_for_clarion_call',
+		'equip_gear_when_moving',
+		'equip_movement_speed_set_when_moving',
+		'equip_phalanx_set_when_cast_on',
+		'keep_sublimation_charging',
+		'set_chat_mode_on_load',
+		'set_chat_mode_to',
+		'set_macro_book_to',
+		'set_sub_dnc_macro_page_to',
+		'set_sub_nin_macro_page_to',
+		'set_sub_rdm_macro_page_to',
+		'set_sub_sch_macro_page_to',
+		'set_sub_whm_macro_page_to',
+		'sound_effects',
+		'use_remedy_or_echo_when_silenced_and_casting',
+		'use_pianissimo_when_singing_on_another_player',
 
+		--Advanced Options
+		'danger_mode_auto_safe_again_delay_in_seconds',
+		'delay_casting_after_stopping_in_seconds',
+		'delay_casting_while_moving_in_seconds',
+		'low_hp_threshold',
+		'polling_rate_times_per_second',
+		'set_macro_book_page_on_load',
+		'warning_sound_times_to_repeat',
 
-FileVersion = '3.3'
+		--Keybinds
+		'keybind_for_danger_mode',
+		'keybind_for_song_mode',
+		'keybind_for_weapon_cycler',
 
--------------------------------------------
---             AREA MAPPING              --
--------------------------------------------
+		--HUD Options
+		'add_commas_to_numbers',
+		'clear_notifications_delay_in_seconds',
+		'pad',
+		'show_debuffs',
+		'show_hud',
+		'show_tp_meter',
+		'size',
 
-AdoulinZones = {
-	["Western Adoulin"] = true, ["Eastern Adoulin"] = true, ["Celennia Memorial Library"] = true, ["Silver Knife"] = true
-}
+		--Song List
+		'show_song_list_header',
+		'song_list_font_size',
+		'song_list_horizontal_orientation',
+		
+		--Sub-table top-level checks
+		'notifications',
+		'sub',
+		'song_renaming',
+		'color',
+		'inst',
+		'sets',
 
-BastokZones = {
-	["Bastok Markets"] = true, ["Bastok Mines"] = true, ["Metalworks"] = true, ["Port Bastok"] = true
-}
+		--Notifications sub-tables
+		"notifications.damage",
+		"notifications.food_wears_off",
+		"notifications.invisible_wearing_off",
+		"notifications.invite_offer",
+		"notifications.low_hp_warning",
+		"notifications.low_mp_warning",
+		"notifications.regional_buff_wears_off",
+		"notifications.reraise_reminder",
+		"notifications.reraise_reminder_delay_in_minutes",
+		"notifications.reraise_wears_off",
+		"notifications.sneak_wearing_off",
+		"notifications.time_remaining",
+		"notifications.tp_hits_3000",
+		"notifications.trade_offer",
+		"notifications.vorseal_wears_off",
 
-SandyZones = {
-	["Chateau d'Oraguille"] = true, ["Northern San d'Oria"] = true, ["Port San d'Oria"] = true, ["Southern San d'Oria"] = true
-}
+		--Sub Job sub-tables
+		"sub.DNC.Abil01", "sub.DNC.Abil01_sh",
+		"sub.DNC.Abil02", "sub.DNC.Abil02_sh",
+		"sub.DNC.Abil03", "sub.DNC.Abil03_sh",
+		"sub.DNC.Abil04", "sub.DNC.Abil04_sh",
+		"sub.DNC.Abil05", "sub.DNC.Abil05_sh",
+		"sub.DNC.Abil06", "sub.DNC.Abil06_sh",
+		"sub.NIN.Abil01", "sub.NIN.Abil01_sh",
+		"sub.NIN.Abil02", "sub.NIN.Abil02_sh",
+		"sub.NIN.Abil03", "sub.NIN.Abil03_sh",
+		"sub.NIN.Abil04", "sub.NIN.Abil04_sh",
+		"sub.NIN.Abil05", "sub.NIN.Abil05_sh",
+		"sub.NIN.Abil06", "sub.NIN.Abil06_sh",
+		"sub.RDM.Abil01", "sub.RDM.Abil01_sh",
+		"sub.RDM.Abil02", "sub.RDM.Abil02_sh",
+		"sub.RDM.Abil03", "sub.RDM.Abil03_sh",
+		"sub.RDM.Abil04", "sub.RDM.Abil04_sh",
+		"sub.RDM.Abil05", "sub.RDM.Abil05_sh",
+		"sub.RDM.Abil06", "sub.RDM.Abil06_sh",
+		"sub.SCH.Abil01", "sub.SCH.Abil01_sh",
+		"sub.SCH.Abil02", "sub.SCH.Abil02_sh",
+		"sub.SCH.Abil03", "sub.SCH.Abil03_sh",
+		"sub.SCH.Abil04", "sub.SCH.Abil04_sh",
+		"sub.SCH.Abil05", "sub.SCH.Abil05_sh",
+		"sub.SCH.Abil06", "sub.SCH.Abil06_sh",
+		"sub.WHM.Abil01", "sub.WHM.Abil01_sh",
+		"sub.WHM.Abil02", "sub.WHM.Abil02_sh",
+		"sub.WHM.Abil03", "sub.WHM.Abil03_sh",
+		"sub.WHM.Abil04", "sub.WHM.Abil04_sh",
+		"sub.WHM.Abil05", "sub.WHM.Abil05_sh",
+		"sub.WHM.Abil06", "sub.WHM.Abil06_sh",
+		"sub.OTH.Abil01", "sub.OTH.Abil01_sh",
+		"sub.OTH.Abil02", "sub.OTH.Abil02_sh",
+		"sub.OTH.Abil03", "sub.OTH.Abil03_sh",
+		"sub.OTH.Abil04", "sub.OTH.Abil04_sh",
+		"sub.OTH.Abil05", "sub.OTH.Abil05_sh",
+		"sub.OTH.Abil06", "sub.OTH.Abil06_sh",
 
-WindyZones = {
-	["Heavens Tower"] = true, ["Port Windurst"] = true, ["Windurst Walls"] = true, ["Windurst Waters"] = true, ["Windurst Woods"] = true
-}
+		--Color sub-tables
+		"color.potency",
+		"color.dummy",
+		"color.AM1",
+		"color.AM2",
+		"color.AM3",
+		"color.Light",
+		"color.Fire",
+		"color.Ice",
+		"color.Air",
+		"color.Earth",
+		"color.Thunder",
+		"color.Water",
+		"color.Dark",
+		"color.song_list.Paeon",
+		"color.song_list.Ballad",
+		"color.song_list.Minne",
+		"color.song_list.Minuet",
+		"color.song_list.Madrigal",
+		"color.song_list.Mazurka",
+		"color.song_list.Prelude",
+		"color.song_list.Mambo",
+		"color.song_list.Dummy",
+		"color.song_list.March",
+		"color.song_list.Etude",
+		"color.song_list.Carol",
+		"color.song_list.Sirvente",
+		"color.song_list.Dirge",
+		"color.song_list.Scherzo",
+		"color.song_list.Aria",
+		"color.song_list.soul_voice",
+		"color.song_list.normal",
+		"color.song_list.very_long",
+		"color.song_list.long",
+		"color.song_list.regular",
+		"color.song_list.low",
+		"color.song_list.critical",
+		"color.song_list.none",
+		"color.abil.ready",
+		"color.abil.active",
+		"color.abil.cooldown",
+		"color.abil.flash",
+		"color.abil.notfound",
+		"color.danger_mode.auto",
+		"color.danger_mode.on",
+		"color.danger_mode.off",
 
-TownZones = {
-	["Western Adoulin"] = true, ["Eastern Adoulin"] = true, ["Celennia Memorial Library"] = true, ["Silver Knife"] = true, ["Bastok Markets"] = true, ["Bastok Mines"] = true, ["Metalworks"] = true, ["Port Bastok"] = true, ["Chateau d'Oraguille"] = true, ["Northern San d'Oria"] = true, ["Port San d'Oria"] = true, ["Southern San d'Oria"] = true, ["Heavens Tower"] = true, ["Port Windurst"] = true, ["Windurst Walls"] = true, ["Windurst Waters"] = true, ["Windurst Woods"] = true, ["Lower Jeuno"] = true, ["Port Jeuno"] = true, ["Ru'Lude Gardens"] = true, ["Upper Jeuno"] = true, ["Aht Urhgan Whitegate"] = true, ["The Colosseum"] = true, ["Tavnazian Safehold"] = true, ["Southern San d'Oria [S]"] = true, ["Bastok Markets [S]"] = true, ["Windurst Waters [S]"] = true, ["Mhaura"] = true, ["Selbina"] = true, ["Rabao"] = true, ["Kazham"] = true, ["Norg"] = true, ["Nashmau"] = true, ["Mog Garden"] = true, ["Leafallia"] = true, ["Chocobo Circuit"] = true
-}
+		--Gear sets sub-tables
+		'sets.idle',
+		'sets.movement_speed',
+		'sets.melee',
+		'sets.melee_dual_wield',
+		'sets.rest',
+		'sets.weapon_skill',
+		'sets.fast_cast_song',
+		'sets.fast_cast_other',
+		'sets.buff_song',
+		'sets.buff_song_dual_wield',
+		'sets.buff_song_single_wield',
+		'sets.ballad',
+		'sets.carol',
+		'sets.etude',
+		'sets.madrigal',
+		'sets.mambo',
+		'sets.march',
+		'sets.minne',
+		'sets.minuet',
+		'sets.paeon',
+		'sets.prelude',
+		'sets.scherzo',
+		'sets.debuff_song',
+		'sets.debuff_song_dual_wield',
+		'sets.debuff_song_single_wield',
+		'sets.threnody',
+		'sets.lullaby',
+		'sets.horde_lullaby_II',
+		'sets.horde_lullaby_II_dual_wield',
+		'sets.horde_lullaby_II_single_wield',
+		'sets.buff_other',
+		'sets.magic_accuracy',
+		'sets.healing',
+		'sets.enfeeble',
+		'sets.phalanx',
+		'sets.refresh',
+		'sets.cursna',
+		'sets.soul_voice',
+		'sets.nightingale',
+		'sets.troubadour',
+		'sets.steps',
+		'sets.waltzes',
+		'sets.animated_flourish',
+		'sets.violent_flourish',
+		'sets.danger',
+		'sets.holy_water',
+		'sets.unity',
+		'sets.town',
+		'sets.adoulin',
+		'sets.bastok',
+		'sets.sandoria',
+		'sets.windurst',
 
--------------------------------------------
---              FILE LOAD                --
--------------------------------------------
+	}
+
+	--Check each option key against the loaded profile table
+	for _, option_path in ipairs(required_options) do
+		if get_nested_field(profile, option_path) == nil then
+			add_to_chat(8, ('[Notice] '):color(39)..file_name:color(1)..': ':color(8)..option_path:color(1)..' is missing.':color(8))
+		end
+	end
+end
+validateProfileOptions()
+
+--Import gear sets
+function get_sets()
+	if profile and profile.sets then
+		table.update(sets, profile.sets)
+	end
+end
 
 sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
 --debuffs table used so we're not spamming the Debuff Notifications with text updates (when they get flipped to true it stops updating)
@@ -968,16 +1329,17 @@ CUR = '     '
 AMN = '     '
 TNT = '     '
 ENC = '     '
-res = require('resources')
-texts = require('texts')
-weaponskills = res.weapon_skills
-items = res.items
-spells = res.spells
-Mode = StartingGearMode --sets the starting mode (selected in the Advanced Options)
-DangerMode = StartingDangerMode
+song_mode = (live[player.name].brd.song_mode == 1 or live[player.name].brd.song_mode == 2) and live[player.name].brd.song_mode or 1
+song_mode_names = {'Potency', 'Dummy'} --Mode1 Mode2
+danger_mode_names = {"Auto", "On", "Off"}
+danger_mode = danger_mode_names[live[player.name].brd.danger_mode] and live[player.name].brd.danger_mode or 1
 NotiLowMPToggle = false --start with the toggle off for the Low MP Notification so that it can trigger
-RRRCountdown = RRReminderTimer
-HUDposYLine1 = HUDposY
+RRRCountdown = profile.notifications.reraise_reminder_delay_in_minutes * 60
+NotiDelay = profile.clear_notifications_delay_in_seconds
+PollingRate = profile.polling_rate_times_per_second
+MoveCastWindow = profile.delay_casting_while_moving_in_seconds
+MoveCastDelay = profile.delay_casting_after_stopping_in_seconds
+AddCommas = profile.add_commas_to_numbers
 last_poll = 0 --keeps the timing for things that happen at the polling rate
 last_captured_poll = 0 --keeps the timing for the MoveCastWindow polling rate (0.1 seconds)
 last_second = 0 --keeps the timing for things that happen every second
@@ -1008,12 +1370,17 @@ primeNum = 0
 AMTimer = 0
 currentAMTimer = 0
 TP_Window_Open = false
+strat_charge_timer = 0 --used to calculate number of Stratagem charges available (based on SCH level)
+strat_charges = 0 --number of Stratagem charges available
+max_charges = 3
+strat_flash_counter = 3
 transport_locked = true
 transport_lock_timestamp = 0
 current_songs = {}
 song_duration = nil
 dummy_song = false
 soul_voice_song = false
+marcato_song = false
 max_songs = 2
 set_weapon_timestamp = 0
 player_x = nil
@@ -1022,75 +1389,58 @@ moving = false
 captured = {}
 captured_spell_toggle = false
 active_accession = {}
-
-local play_sound = windower.play_sound
-local addon_path = windower.addon_path
-local Notification_Good = addon_path..'data/sounds/NotiGood.wav'
-local Notification_Bad = addon_path..'data/sounds/NotiBad.wav'
-local Notification_Danger = addon_path..'data/sounds/Danger.wav'
-local Notification_Cancel = addon_path..'data/sounds/Cancel.wav'
-local Notification_Aftermath_On = addon_path..'data/sounds/AftermathOn.wav'
-local Notification_Aftermath_Off = addon_path..'data/sounds/AftermathOff.wav'
-local Notification_3000TP = addon_path..'data/sounds/3000TP.wav'
+calculated_char_width = 0
+calculated_char_height = 0
+probe1 = nil
+probe2 = nil
+hud_drag_offset_x = 0
+hud_drag_offset_y = 0
+sl_drag_offset_x = 0
+sl_drag_offset_y = 0
+mouse_event_id = nil
 
 --create a new table that combines both the WeaponCycle/DualWieldCycle and AbysseaProcCycle weapons into one table to be used while inside Abyssea
 local WeaponCyclePlusAbyssea = {}
-for _, v in ipairs(WeaponCycle) do
+for _, v in ipairs(profile.WeaponCycle) do
 	table.insert(WeaponCyclePlusAbyssea, {v[1], v[2]})
 end
-for _, v in ipairs(AbysseaProcCycle) do
+for _, v in ipairs(profile.AbysseaProcCycle) do
 	table.insert(WeaponCyclePlusAbyssea, {v[1], v[2]})
 end
 local DualWieldCyclePlusAbyssea = {}
-for _, v in ipairs(DualWieldCycle) do
+for _, v in ipairs(profile.DualWieldCycle) do
 	table.insert(DualWieldCyclePlusAbyssea, {v[1], v[2]})
 end
-for _, v in ipairs(AbysseaProcCycle) do
+for _, v in ipairs(profile.AbysseaProcCycle) do
 	table.insert(DualWieldCyclePlusAbyssea, {v[1], v[2]})
-end
-
--- Sets the inital subjob
-local subjob = 'OTH'
-if player.sub_job == 'DNC' then
-	subjob = 'DNC'
-elseif player.sub_job == 'NIN' then
-	subjob = 'NIN'
-elseif player.sub_job == 'RDM' then
-	subjob = 'RDM'
-elseif player.sub_job == 'SCH' then
-	subjob = 'SCH'
-elseif player.sub_job == 'WHM' then
-	subjob = 'WHM'
 end
 
 -- Sets the Chat Mode
-if Chat ~= "Off" then
-	send_command('input /cm '..Chat)
+if profile.set_chat_mode_on_load then
+	local chat_mode_map = {
+		['say'] = 's',
+		['s'] = 's',
+		['party'] = 'p',
+		['p'] = 'p',
+		['linkshell'] = 'l',
+		['l'] = 'l',
+		['ls'] = 'l',
+		['linkshell1'] = 'l',
+		['l1'] = 'l',
+		['ls1'] = 'l',
+		['linkshell2'] = 'l2',
+		['l2'] = 'l2',
+		['ls2'] = 'l2',
+	}
+	send_command('input /cm '..chat_mode_map[profile.set_chat_mode_to])
 end
 
--- Sets the Macro Book and Page
-if Book ~= "Off" then
-	send_command('input /macro book '..Book)
-end
-if SubWHMPage ~= "Off" and player.sub_job == 'DNC' then
-	send_command('wait 2;input /macro set '..SubDNCPage)
-elseif SubRDMPage ~= "Off" and player.sub_job == 'NIN' then
-	send_command('wait 2;input /macro set '..SubNINPage)
-elseif SubBLMPage ~= "Off" and player.sub_job == 'RDM' then
-	send_command('wait 2;input /macro set '..SubRDMPage)
-elseif SubSCHPage ~= "Off" and player.sub_job == 'SCH' then
-	send_command('wait 2;input /macro set '..SubSCHPage)
-elseif SubSCHPage ~= "Off" and player.sub_job == 'WHM' then
-	send_command('wait 2;input /macro set '..SubWHMPage)
-else
-	send_command('wait 2;input /macro set 1')
-end
+send_command('wait 2;gs c Choose Set')
 
-if ZoneGear ~= 'Off' then
-	send_command('wait 2;gs c Zone Gear')
-end
+local pre_calc = true
+send_command('wait 1;gs c getItemLevels1;wait 1;gs c getItemLevels2;wait 1;gs c getItemLevels3')
 
-SoulVoice = {} ClarionCall = {} Contradance = {} Convert = {} DarkArts = {} DivineSeal = {} FlourishesI = {} FlourishesII = {} Jigs = {} LightArts = {} Marcato = {} Nightingale = {} Pianissimo = {} Sambas = {} Steps = {} Sublimation = {} Tenuto = {} Troubadour = {}
+SoulVoice = {} ClarionCall = {} Contradance = {} Convert = {} DarkArts = {} DivineSeal = {} FlourishesI = {} FlourishesII = {} Jigs = {} LightArts = {} Marcato = {} Nightingale = {} Pianissimo = {} Sambas = {} Steps = {} Stratagems = {} Sublimation = {} Tenuto = {} Troubadour = {}
 
 --Start true so the HUD recasts don't flash on load
 SoulVoice.flashed = true
@@ -1112,17 +1462,6 @@ Sublimation.flashed = true
 Tenuto.flashed = true
 Troubadour.flashed = true
 
---Space out each line and column properly
-HUDposYLine2 = HUDposYLine1 + LineSpacer
-HUDposYLine3 = HUDposYLine2 + LineSpacer
-HUDposYLine4 = HUDposYLine3 + LineSpacer
-HUDposXColumn1 = HUDposX
-HUDposXColumn2 = HUDposXColumn1 + ColumnSpacer
-HUDposXColumn3 = HUDposXColumn2 + ColumnSpacer
-HUDposXColumn4 = HUDposXColumn3 + ColumnSpacer
-HUDposXColumn5 = HUDposXColumn4 + ColumnSpacer
-HUDposXColumn6 = HUDposXColumn5 + ColumnSpacer
-
 -------------------------------------------
 --             TEXT OBJECTS              --
 -------------------------------------------
@@ -1134,196 +1473,179 @@ local hud_bg_str = '                                                            
 local song_list = texts.new()
 song_list:font('Consolas')
 song_list:bold(true)
-song_list:size(SongsFontSize)
+song_list:size(profile.song_list_font_size)
 song_list:bg_alpha(170)
-song_list:pos(SongposX,SongposY)
+song_list:pad(profile.pad)
 song_list:draggable(true)
 
 -- Create the HUD BG Color text object
 local hud_bg_color = texts.new(hud_bg_str..'\n'..hud_bg_str..'\n'..hud_bg_str..'\n'..hud_bg_str)
 hud_bg_color:font('Consolas')
-hud_bg_color:size(FontSize)
+hud_bg_color:size(profile.size)
 hud_bg_color:bg_alpha(100)
-hud_bg_color:pos(HUDposXColumn1,HUDposYLine1)
+hud_bg_color:pad(profile.pad)
 hud_bg_color:draggable(false)
 
 -- Create the HUD Background text object
 local hud_bg = texts.new(hud_bg_str..'\n'..hud_bg_str..'\n'..hud_bg_str..'\n'..hud_bg_str)
 hud_bg:font("Consolas")
-hud_bg:size(FontSize)
+hud_bg:size(profile.size)
 hud_bg:bg_alpha(170)
-hud_bg:pos(HUDposXColumn1,HUDposYLine1)
+hud_bg:pad(profile.pad)
 hud_bg:draggable(false)
 
 -- Create the HUD TP Meter BG1 text object
 local hud_tp_meter_bg1 = texts.new('                                    ')
-local c = color.AM1
+local c = profile.color.AM1
 hud_tp_meter_bg1:bg_color(c.r,c.g,c.b)
 hud_tp_meter_bg1:font("Consolas")
-hud_tp_meter_bg1:size(FontSize)
+hud_tp_meter_bg1:size(profile.size)
 hud_tp_meter_bg1:bg_alpha(0)
-hud_tp_meter_bg1:pos(HUDposXColumn4,HUDposYLine2)
 hud_tp_meter_bg1:draggable(false)
 
 -- Create the HUD TP Meter BG2 text object
 local hud_tp_meter_bg2 = texts.new('                                    ')
-local c = color.AM2
+local c = profile.color.AM2
 hud_tp_meter_bg2:bg_color(c.r,c.g,c.b)
 hud_tp_meter_bg2:font("Consolas")
-hud_tp_meter_bg2:size(FontSize)
+hud_tp_meter_bg2:size(profile.size)
 hud_tp_meter_bg2:bg_alpha(0)
-hud_tp_meter_bg2:pos(HUDposXColumn4,HUDposYLine2)
 hud_tp_meter_bg2:draggable(false)
 
 -- Create the HUD TP Meter text object
 local hud_tp_meter = texts.new()
 hud_tp_meter:font("Consolas")
-hud_tp_meter:size(FontSize)
+hud_tp_meter:size(profile.size)
 hud_tp_meter:bg_alpha(0)
-hud_tp_meter:pos(HUDposXColumn4,HUDposYLine2)
 hud_tp_meter:draggable(false)
 
 -- Create the HUD Notifications BG text object
 local hud_noti_bg = texts.new('                                    ')
 hud_noti_bg:font("Consolas")
-hud_noti_bg:size(FontSize)
+hud_noti_bg:size(profile.size)
 hud_noti_bg:bg_alpha(0)
-hud_noti_bg:pos(HUDposXColumn1,HUDposYLine1)
 hud_noti_bg:draggable(false)
 hud_noti_bg:bold(true)
 
 -- Create the HUD Debuffs BG text object
 local hud_debuffs_bg = texts.new('                                    ')
 hud_debuffs_bg:font("Consolas")
-hud_debuffs_bg:size(FontSize)
+hud_debuffs_bg:size(profile.size)
 hud_debuffs_bg:bg_alpha(0)
-hud_debuffs_bg:pos(HUDposXColumn4,HUDposYLine1)
 hud_debuffs_bg:draggable(false)
 hud_debuffs_bg:bold(true)
 
 -- Create the HUD PTMember01 BG text object
 local hud_ptmember01_bg = texts.new('            ')
 hud_ptmember01_bg:font("Consolas")
-hud_ptmember01_bg:size(FontSize)
+hud_ptmember01_bg:size(profile.size)
 hud_ptmember01_bg:pad(-1)
 hud_ptmember01_bg:bg_color(250,250,250)
 hud_ptmember01_bg:bg_alpha(50)
-hud_ptmember01_bg:pos(HUDposXColumn1+.5,HUDposYLine3)
 hud_ptmember01_bg:draggable(false)
 hud_ptmember01_bg:bold(true)
 
 -- Create the HUD PTMember02 BG text object
 local hud_ptmember02_bg = texts.new('            ')
 hud_ptmember02_bg:font("Consolas")
-hud_ptmember02_bg:size(FontSize)
+hud_ptmember02_bg:size(profile.size)
 hud_ptmember02_bg:pad(-1)
 hud_ptmember02_bg:bg_color(250,250,250)
 hud_ptmember02_bg:bg_alpha(0)
-hud_ptmember02_bg:pos(HUDposXColumn2+1,HUDposYLine3)
 hud_ptmember02_bg:draggable(false)
 hud_ptmember02_bg:bold(true)
 
 -- Create the HUD PTMember03 BG text object
 local hud_ptmember03_bg = texts.new('            ')
 hud_ptmember03_bg:font("Consolas")
-hud_ptmember03_bg:size(FontSize)
+hud_ptmember03_bg:size(profile.size)
 hud_ptmember03_bg:pad(-1)
 hud_ptmember03_bg:bg_color(250,250,250)
 hud_ptmember03_bg:bg_alpha(0)
-hud_ptmember03_bg:pos(HUDposXColumn3+1,HUDposYLine3)
 hud_ptmember03_bg:draggable(false)
 hud_ptmember03_bg:bold(true)
 
 -- Create the HUD PTMember04 BG text object
 local hud_ptmember04_bg = texts.new('            ')
 hud_ptmember04_bg:font("Consolas")
-hud_ptmember04_bg:size(FontSize)
+hud_ptmember04_bg:size(profile.size)
 hud_ptmember04_bg:pad(-1)
 hud_ptmember04_bg:bg_color(250,250,250)
 hud_ptmember04_bg:bg_alpha(0)
-hud_ptmember04_bg:pos(HUDposXColumn4+1,HUDposYLine3)
 hud_ptmember04_bg:draggable(false)
 hud_ptmember04_bg:bold(true)
 
 -- Create the HUD PTMember05 BG text object
 local hud_ptmember05_bg = texts.new('            ')
 hud_ptmember05_bg:font("Consolas")
-hud_ptmember05_bg:size(FontSize)
+hud_ptmember05_bg:size(profile.size)
 hud_ptmember05_bg:pad(-1)
 hud_ptmember05_bg:bg_color(250,250,250)
 hud_ptmember05_bg:bg_alpha(0)
-hud_ptmember05_bg:pos(HUDposXColumn5+1,HUDposYLine3)
 hud_ptmember05_bg:draggable(false)
 hud_ptmember05_bg:bold(true)
 
 -- Create the HUD PTMember06 BG text object
 local hud_ptmember06_bg = texts.new('            ')
 hud_ptmember06_bg:font("Consolas")
-hud_ptmember06_bg:size(FontSize)
+hud_ptmember06_bg:size(profile.size)
 hud_ptmember06_bg:pad(-1)
 hud_ptmember06_bg:bg_color(250,250,250)
 hud_ptmember06_bg:bg_alpha(0)
-hud_ptmember06_bg:pos(HUDposXColumn6+1,HUDposYLine3)
 hud_ptmember06_bg:draggable(false)
 hud_ptmember06_bg:bold(true)
 
 -- Create the HUD Abil01 BG text object
 local hud_abil01_bg = texts.new('            ')
 hud_abil01_bg:font("Consolas")
-hud_abil01_bg:size(FontSize)
+hud_abil01_bg:size(profile.size)
 hud_abil01_bg:pad(-0.5)
 hud_abil01_bg:bg_alpha(0)
-hud_abil01_bg:pos(HUDposXColumn1+1,HUDposYLine4)
 hud_abil01_bg:draggable(false)
 hud_abil01_bg:bold(true)
 
 -- Create the HUD Abil02 BG text object
 local hud_abil02_bg = texts.new('            ')
 hud_abil02_bg:font("Consolas")
-hud_abil02_bg:size(FontSize)
+hud_abil02_bg:size(profile.size)
 hud_abil02_bg:pad(-0.5)
 hud_abil02_bg:bg_alpha(0)
-hud_abil02_bg:pos(HUDposXColumn2+1,HUDposYLine4)
 hud_abil02_bg:draggable(false)
 hud_abil02_bg:bold(true)
 
 -- Create the HUD Abil03 BG text object
 local hud_abil03_bg = texts.new('            ')
 hud_abil03_bg:font("Consolas")
-hud_abil03_bg:size(FontSize)
+hud_abil03_bg:size(profile.size)
 hud_abil03_bg:pad(-0.5)
 hud_abil03_bg:bg_alpha(0)
-hud_abil03_bg:pos(HUDposXColumn3+1,HUDposYLine4)
 hud_abil03_bg:draggable(false)
 hud_abil03_bg:bold(true)
 
 -- Create the HUD Abil04 BG text object
 local hud_abil04_bg = texts.new('            ')
 hud_abil04_bg:font("Consolas")
-hud_abil04_bg:size(FontSize)
+hud_abil04_bg:size(profile.size)
 hud_abil04_bg:pad(-0.5)
 hud_abil04_bg:bg_alpha(0)
-hud_abil04_bg:pos(HUDposXColumn4+1,HUDposYLine4)
 hud_abil04_bg:draggable(false)
 hud_abil04_bg:bold(true)
 
 -- Create the HUD Abil05 BG text object
 local hud_abil05_bg = texts.new('            ')
 hud_abil05_bg:font("Consolas")
-hud_abil05_bg:size(FontSize)
+hud_abil05_bg:size(profile.size)
 hud_abil05_bg:pad(-0.5)
 hud_abil05_bg:bg_alpha(0)
-hud_abil05_bg:pos(HUDposXColumn5+1,HUDposYLine4)
 hud_abil05_bg:draggable(false)
 hud_abil05_bg:bold(true)
 
 -- Create the HUD Abil06 BG text object
 local hud_abil06_bg = texts.new('            ')
 hud_abil06_bg:font("Consolas")
-hud_abil06_bg:size(FontSize)
+hud_abil06_bg:size(profile.size)
 hud_abil06_bg:pad(-0.5)
 hud_abil06_bg:bg_alpha(0)
-hud_abil06_bg:pos(HUDposXColumn6+1,HUDposYLine4)
 hud_abil06_bg:draggable(false)
 hud_abil06_bg:bold(true)
 
@@ -1331,29 +1653,26 @@ hud_abil06_bg:bold(true)
 local hud_weapons_shdw = texts.new('« Weapons loading... »')
 hud_weapons_shdw:color(0,0,0)
 hud_weapons_shdw:font("Consolas")
-hud_weapons_shdw:size(FontSize)
+hud_weapons_shdw:size(profile.size)
 hud_weapons_shdw:bg_alpha(0)
-hud_weapons_shdw:pos(HUDposXColumn4+1.5,HUDposYLine2+0.5)
 hud_weapons_shdw:draggable(false)
 hud_weapons_shdw:bold(true)
 
 -- Create the HUD Mode Text Shadow text object
-local hud_mode_shdw = texts.new('Mode: '..modeName[Mode]..' ('..EquipRange..')')
+local hud_mode_shdw = texts.new('Mode: '..song_mode_names[song_mode]..' ('..EquipRange..')')
 hud_mode_shdw:color(0,0,0)
 hud_mode_shdw:font("Consolas")
-hud_mode_shdw:size(FontSize)
+hud_mode_shdw:size(profile.size)
 hud_mode_shdw:bg_alpha(0)
-hud_mode_shdw:pos(HUDposXColumn1+2.5,HUDposYLine2+0.5)
 hud_mode_shdw:draggable(false)
 hud_mode_shdw:bold(true)
 
 -- Create the HUD Notifications Text Shadow text object
-local hud_noti_shdw = texts.new('Keys BRD Gearswap file v'..FileVersion)
+local hud_noti_shdw = texts.new('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats.')
 hud_noti_shdw:color(0,0,0)
 hud_noti_shdw:font("Consolas")
-hud_noti_shdw:size(FontSize)
+hud_noti_shdw:size(profile.size)
 hud_noti_shdw:bg_alpha(0)
-hud_noti_shdw:pos(HUDposXColumn1+2.5,HUDposYLine1+0.5)
 hud_noti_shdw:draggable(false)
 hud_noti_shdw:bold(true)
 
@@ -1361,9 +1680,8 @@ hud_noti_shdw:bold(true)
 local hud_debuffs_shdw = texts.new()
 hud_debuffs_shdw:color(0,0,0)
 hud_debuffs_shdw:font("Consolas")
-hud_debuffs_shdw:size(FontSize)
+hud_debuffs_shdw:size(profile.size)
 hud_debuffs_shdw:bg_alpha(0)
-hud_debuffs_shdw:pos(HUDposXColumn4+1.5,HUDposYLine1+0.5)
 hud_debuffs_shdw:draggable(false)
 hud_debuffs_shdw:bold(true)
 
@@ -1371,9 +1689,8 @@ hud_debuffs_shdw:bold(true)
 local hud_ptmember01_shdw = texts.new()
 hud_ptmember01_shdw:color(0,0,0)
 hud_ptmember01_shdw:font("Consolas")
-hud_ptmember01_shdw:size(FontSize)
+hud_ptmember01_shdw:size(profile.size)
 hud_ptmember01_shdw:bg_alpha(0)
-hud_ptmember01_shdw:pos(HUDposXColumn1+1.5,HUDposYLine3-0.5)
 hud_ptmember01_shdw:draggable(false)
 hud_ptmember01_shdw:bold(true)
 
@@ -1381,9 +1698,8 @@ hud_ptmember01_shdw:bold(true)
 local hud_ptmember02_shdw = texts.new()
 hud_ptmember02_shdw:color(0,0,0)
 hud_ptmember02_shdw:font("Consolas")
-hud_ptmember02_shdw:size(FontSize)
+hud_ptmember02_shdw:size(profile.size)
 hud_ptmember02_shdw:bg_alpha(0)
-hud_ptmember02_shdw:pos(HUDposXColumn2+1.5,HUDposYLine3-0.5)
 hud_ptmember02_shdw:draggable(false)
 hud_ptmember02_shdw:bold(true)
 
@@ -1391,9 +1707,8 @@ hud_ptmember02_shdw:bold(true)
 local hud_ptmember03_shdw = texts.new()
 hud_ptmember03_shdw:color(0,0,0)
 hud_ptmember03_shdw:font("Consolas")
-hud_ptmember03_shdw:size(FontSize)
+hud_ptmember03_shdw:size(profile.size)
 hud_ptmember03_shdw:bg_alpha(0)
-hud_ptmember03_shdw:pos(HUDposXColumn3+1.5,HUDposYLine3-0.5)
 hud_ptmember03_shdw:draggable(false)
 hud_ptmember03_shdw:bold(true)
 
@@ -1401,9 +1716,8 @@ hud_ptmember03_shdw:bold(true)
 local hud_ptmember04_shdw = texts.new()
 hud_ptmember04_shdw:color(0,0,0)
 hud_ptmember04_shdw:font("Consolas")
-hud_ptmember04_shdw:size(FontSize)
+hud_ptmember04_shdw:size(profile.size)
 hud_ptmember04_shdw:bg_alpha(0)
-hud_ptmember04_shdw:pos(HUDposXColumn4+1.5,HUDposYLine3-0.5)
 hud_ptmember04_shdw:draggable(false)
 hud_ptmember04_shdw:bold(true)
 
@@ -1411,9 +1725,8 @@ hud_ptmember04_shdw:bold(true)
 local hud_ptmember05_shdw = texts.new()
 hud_ptmember05_shdw:color(0,0,0)
 hud_ptmember05_shdw:font("Consolas")
-hud_ptmember05_shdw:size(FontSize)
+hud_ptmember05_shdw:size(profile.size)
 hud_ptmember05_shdw:bg_alpha(0)
-hud_ptmember05_shdw:pos(HUDposXColumn5+1.5,HUDposYLine3-0.5)
 hud_ptmember05_shdw:draggable(false)
 hud_ptmember05_shdw:bold(true)
 
@@ -1421,9 +1734,8 @@ hud_ptmember05_shdw:bold(true)
 local hud_ptmember06_shdw = texts.new()
 hud_ptmember06_shdw:color(0,0,0)
 hud_ptmember06_shdw:font("Consolas")
-hud_ptmember06_shdw:size(FontSize)
+hud_ptmember06_shdw:size(profile.size)
 hud_ptmember06_shdw:bg_alpha(0)
-hud_ptmember06_shdw:pos(HUDposXColumn6+1.5,HUDposYLine3-0.5)
 hud_ptmember06_shdw:draggable(false)
 hud_ptmember06_shdw:bold(true)
 
@@ -1431,9 +1743,8 @@ hud_ptmember06_shdw:bold(true)
 local hud_abil01_shdw = texts.new()
 hud_abil01_shdw:color(0,0,0)
 hud_abil01_shdw:font("Consolas")
-hud_abil01_shdw:size(FontSize)
+hud_abil01_shdw:size(profile.size)
 hud_abil01_shdw:bg_alpha(0)
-hud_abil01_shdw:pos(HUDposXColumn1+1.5,HUDposYLine4+0.5)
 hud_abil01_shdw:draggable(false)
 hud_abil01_shdw:bold(true)
 
@@ -1441,9 +1752,8 @@ hud_abil01_shdw:bold(true)
 local hud_abil02_shdw = texts.new()
 hud_abil02_shdw:color(0,0,0)
 hud_abil02_shdw:font("Consolas")
-hud_abil02_shdw:size(FontSize)
+hud_abil02_shdw:size(profile.size)
 hud_abil02_shdw:bg_alpha(0)
-hud_abil02_shdw:pos(HUDposXColumn2+1.5,HUDposYLine4+0.5)
 hud_abil02_shdw:draggable(false)
 hud_abil02_shdw:bold(true)
 
@@ -1451,9 +1761,8 @@ hud_abil02_shdw:bold(true)
 local hud_abil03_shdw = texts.new()
 hud_abil03_shdw:color(0,0,0)
 hud_abil03_shdw:font("Consolas")
-hud_abil03_shdw:size(FontSize)
+hud_abil03_shdw:size(profile.size)
 hud_abil03_shdw:bg_alpha(0)
-hud_abil03_shdw:pos(HUDposXColumn3+1.5,HUDposYLine4+0.5)
 hud_abil03_shdw:draggable(false)
 hud_abil03_shdw:bold(true)
 
@@ -1461,9 +1770,8 @@ hud_abil03_shdw:bold(true)
 local hud_abil04_shdw = texts.new()
 hud_abil04_shdw:color(0,0,0)
 hud_abil04_shdw:font("Consolas")
-hud_abil04_shdw:size(FontSize)
+hud_abil04_shdw:size(profile.size)
 hud_abil04_shdw:bg_alpha(0)
-hud_abil04_shdw:pos(HUDposXColumn4+1.5,HUDposYLine4+0.5)
 hud_abil04_shdw:draggable(false)
 hud_abil04_shdw:bold(true)
 
@@ -1471,9 +1779,8 @@ hud_abil04_shdw:bold(true)
 local hud_abil05_shdw = texts.new()
 hud_abil05_shdw:color(0,0,0)
 hud_abil05_shdw:font("Consolas")
-hud_abil05_shdw:size(FontSize)
+hud_abil05_shdw:size(profile.size)
 hud_abil05_shdw:bg_alpha(0)
-hud_abil05_shdw:pos(HUDposXColumn5+1.5,HUDposYLine4+0.5)
 hud_abil05_shdw:draggable(false)
 hud_abil05_shdw:bold(true)
 
@@ -1481,9 +1788,8 @@ hud_abil05_shdw:bold(true)
 local hud_abil06_shdw = texts.new()
 hud_abil06_shdw:color(0,0,0)
 hud_abil06_shdw:font("Consolas")
-hud_abil06_shdw:size(FontSize)
+hud_abil06_shdw:size(profile.size)
 hud_abil06_shdw:bg_alpha(0)
-hud_abil06_shdw:pos(HUDposXColumn6+1.5,HUDposYLine4+0.5)
 hud_abil06_shdw:draggable(false)
 hud_abil06_shdw:bold(true)
 
@@ -1491,31 +1797,28 @@ hud_abil06_shdw:bold(true)
 local hud_weapons = texts.new('« Weapons loading... »')
 hud_weapons:color(255,255,255)
 hud_weapons:font("Consolas")
-hud_weapons:size(FontSize)
+hud_weapons:size(profile.size)
 hud_weapons:bg_alpha(0)
-hud_weapons:pos(HUDposXColumn4,HUDposYLine2-1)
 hud_weapons:draggable(false)
 hud_weapons:bold(true)
 
 -- Create the HUD Mode text object
-local hud_mode = texts.new('Mode: '..modeName[Mode]..' ('..EquipRange..')')
+local hud_mode = texts.new('Mode: '..song_mode_names[song_mode]..' ('..EquipRange..')')
 hud_mode:font("Consolas")
-hud_mode:size(FontSize)
+hud_mode:size(profile.size)
 hud_mode:bg_alpha(0)
-hud_mode:pos(HUDposXColumn1+1,HUDposYLine2-1)
 hud_mode:draggable(false)
 hud_mode:bold(true)
 
-local c = color[Mode]
+local c = song_mode == 1 and profile.color.potency or profile.color.dummy
 hud_mode:color(c.r,c.g,c.b)
 hud_bg_color:bg_color(c.r,c.g,c.b)
 
 -- Create the HUD Notifications text object
-local hud_noti = texts.new('Keys BRD Gearswap file v'..FileVersion)
+local hud_noti = texts.new('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats.')
 hud_noti:font("Consolas")
-hud_noti:size(FontSize)
+hud_noti:size(profile.size)
 hud_noti:bg_alpha(0)
-hud_noti:pos(HUDposXColumn1+1,HUDposYLine1-1)
 hud_noti:draggable(false)
 hud_noti:bold(true)
 
@@ -1523,121 +1826,108 @@ hud_noti:bold(true)
 local hud_debuffs = texts.new()
 hud_debuffs:color(255,50,50)
 hud_debuffs:font("Consolas")
-hud_debuffs:size(FontSize)
+hud_debuffs:size(profile.size)
 hud_debuffs:bg_alpha(0)
-hud_debuffs:pos(HUDposXColumn4,HUDposYLine1-1)
 hud_debuffs:draggable(false)
 hud_debuffs:bold(true)
 
 -- Create the HUD PTMember01 text object
 local hud_ptmember01 = texts.new('')
 hud_ptmember01:font("Consolas")
-hud_ptmember01:size(FontSize)
+hud_ptmember01:size(profile.size)
 hud_ptmember01:bg_alpha(0)
-hud_ptmember01:pos(HUDposXColumn1,HUDposYLine3-2)
 hud_ptmember01:draggable(false)
 hud_ptmember01:bold(true)
 
 -- Create the HUD PTMember02 text object
 local hud_ptmember02 = texts.new('')
 hud_ptmember02:font("Consolas")
-hud_ptmember02:size(FontSize)
+hud_ptmember02:size(profile.size)
 hud_ptmember02:bg_alpha(0)
-hud_ptmember02:pos(HUDposXColumn2,HUDposYLine3-2)
 hud_ptmember02:draggable(false)
 hud_ptmember02:bold(true)
 
 -- Create the HUD PTMember03 text object
 local hud_ptmember03 = texts.new('')
 hud_ptmember03:font("Consolas")
-hud_ptmember03:size(FontSize)
+hud_ptmember03:size(profile.size)
 hud_ptmember03:bg_alpha(0)
-hud_ptmember03:pos(HUDposXColumn3,HUDposYLine3-2)
 hud_ptmember03:draggable(false)
 hud_ptmember03:bold(true)
 
 -- Create the HUD PTMember04 text object
 local hud_ptmember04 = texts.new('')
 hud_ptmember04:font("Consolas")
-hud_ptmember04:size(FontSize)
+hud_ptmember04:size(profile.size)
 hud_ptmember04:bg_alpha(0)
-hud_ptmember04:pos(HUDposXColumn4,HUDposYLine3-2)
 hud_ptmember04:draggable(false)
 hud_ptmember04:bold(true)
 
 -- Create the HUD PTMember05 text object
 local hud_ptmember05 = texts.new('')
 hud_ptmember05:font("Consolas")
-hud_ptmember05:size(FontSize)
+hud_ptmember05:size(profile.size)
 hud_ptmember05:bg_alpha(0)
-hud_ptmember05:pos(HUDposXColumn5,HUDposYLine3-2)
 hud_ptmember05:draggable(false)
 hud_ptmember05:bold(true)
 
 -- Create the HUD PTMember06 text object
 local hud_ptmember06 = texts.new('')
 hud_ptmember06:font("Consolas")
-hud_ptmember06:size(FontSize)
+hud_ptmember06:size(profile.size)
 hud_ptmember06:bg_alpha(0)
-hud_ptmember06:pos(HUDposXColumn6,HUDposYLine3-2)
 hud_ptmember06:draggable(false)
 hud_ptmember06:bold(true)
 
 -- Create the HUD Abil01 text object
 local hud_abil01 = texts.new()
 hud_abil01:font("Consolas")
-hud_abil01:size(FontSize)
+hud_abil01:size(profile.size)
 hud_abil01:bg_alpha(0)
-hud_abil01:pos(HUDposXColumn1,HUDposYLine4-1)
 hud_abil01:draggable(false)
 hud_abil01:bold(true)
 
 -- Create the HUD Abil02 text object
 local hud_abil02 = texts.new()
 hud_abil02:font("Consolas")
-hud_abil02:size(FontSize)
+hud_abil02:size(profile.size)
 hud_abil02:bg_alpha(0)
-hud_abil02:pos(HUDposXColumn2,HUDposYLine4-1)
 hud_abil02:draggable(false)
 hud_abil02:bold(true)
 
 -- Create the HUD Abil03 text object
 local hud_abil03 = texts.new()
 hud_abil03:font("Consolas")
-hud_abil03:size(FontSize)
+hud_abil03:size(profile.size)
 hud_abil03:bg_alpha(0)
-hud_abil03:pos(HUDposXColumn3,HUDposYLine4-1)
 hud_abil03:draggable(false)
 hud_abil03:bold(true)
 
 -- Create the HUD Abil04 text object
 local hud_abil04 = texts.new()
 hud_abil04:font("Consolas")
-hud_abil04:size(FontSize)
+hud_abil04:size(profile.size)
 hud_abil04:bg_alpha(0)
-hud_abil04:pos(HUDposXColumn4,HUDposYLine4-1)
 hud_abil04:draggable(false)
 hud_abil04:bold(true)
 
 -- Create the HUD Abil05 text object
 local hud_abil05 = texts.new()
 hud_abil05:font("Consolas")
-hud_abil05:size(FontSize)
+hud_abil05:size(profile.size)
 hud_abil05:bg_alpha(0)
-hud_abil05:pos(HUDposXColumn5,HUDposYLine4-1)
 hud_abil05:draggable(false)
 hud_abil05:bold(true)
 
 -- Create the HUD Abil06 text object
 local hud_abil06 = texts.new()
 hud_abil06:font("Consolas")
-hud_abil06:size(FontSize)
+hud_abil06:size(profile.size)
 hud_abil06:bg_alpha(0)
-hud_abil06:pos(HUDposXColumn6,HUDposYLine4-1)
 hud_abil06:draggable(false)
 hud_abil06:bold(true)
 
-if ShowHUD then
+if profile.show_hud then
 	hud_bg_color:show()
 	hud_bg:show()
 	if ShowTPMeter then
@@ -1692,9 +1982,6 @@ if ShowHUD then
 	hud_abil05:show()
 	hud_abil06:show()
 end
-if ShowSongList then
-	song_list:show()
-end
 
 -------------------------------------------
 --            CUSTOM ALIASES             --
@@ -1705,9 +1992,9 @@ send_command('alias mode gs c Mode') --creates the Gear Mode alias
 send_command('alias wc gs c WC') --creates the Weapon Cycle alias
 send_command('alias hud gs c HUD') --creates the HUD alias
 send_command('alias songs gs c Songs') --creates the Song List alias
-send_command('bind '..DMBind..' gs c DT') --creates the Danger Mode keyboard shortcut
-send_command('bind '..GMBind..' gs c Mode') --creates the Gear Mode keyboard shortcut
-send_command('bind '..WCBind..' gs c WC') --creates the Weapon Cycle keyboard shortcut
+send_command('bind '..profile.keybind_for_danger_mode..' gs c DT') --creates the Danger Mode keyboard shortcut
+send_command('bind '..profile.keybind_for_song_mode..' gs c Mode') --creates the Gear Mode keyboard shortcut
+send_command('bind '..profile.keybind_for_weapon_cycler..' gs c WC') --creates the Weapon Cycle keyboard shortcut
 
 -------------------------------------------
 --           CUSTOM FUNCTIONS            --
@@ -1747,7 +2034,6 @@ local function hasDualWield()
 		return false
 	end
 end
-has_dual_wield = hasDualWield()
 
 --Check if our subjob has MP
 local function subJobWithMP()
@@ -1769,18 +2055,17 @@ local function setWeaponPair()
 		end
 	else --otherwise, use just the basic WeaponCycle table
 		if has_dual_wield then
-			pair = DualWieldCycle[WeaponCycleIndex]
+			pair = profile.DualWieldCycle[WeaponCycleIndex]
 		else
-			pair = WeaponCycle[WeaponCycleIndex]
+			pair = profile.WeaponCycle[WeaponCycleIndex]
 		end
 	end
 end
-setWeaponPair()
 
 --Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
 local function checkProcWeapons(mainSlot, subSlot)
 
-	for _, equipmentPair in pairs(AbysseaProcCycle) do
+	for _, equipmentPair in pairs(profile.AbysseaProcCycle) do
 
 		if equipmentPair[1] == mainSlot and equipmentPair[2] == subSlot then
 			return true
@@ -1809,24 +2094,24 @@ end
 --Color the appropriate Ability/spell recast
 local function textColor(abil,state)
 
-	local c = color.abil[state]
+	local c = profile.color.abil[state]
 
-	if sub[subjob].Abil01 == abil then
+	if profile.sub[sub_job].Abil01 == abil then
 		hud_abil01:color(c.r,c.g,c.b)
 
-	elseif sub[subjob].Abil02 == abil then
+	elseif profile.sub[sub_job].Abil02 == abil then
 		hud_abil02:color(c.r,c.g,c.b)
 
-	elseif sub[subjob].Abil03 == abil then
+	elseif profile.sub[sub_job].Abil03 == abil then
 		hud_abil03:color(c.r,c.g,c.b)
 
-	elseif sub[subjob].Abil04 == abil then
+	elseif profile.sub[sub_job].Abil04 == abil then
 		hud_abil04:color(c.r,c.g,c.b)
 
-	elseif sub[subjob].Abil05 == abil then
+	elseif profile.sub[sub_job].Abil05 == abil then
 		hud_abil05:color(c.r,c.g,c.b)
 
-	elseif sub[subjob].Abil06 == abil then
+	elseif profile.sub[sub_job].Abil06 == abil then
 		hud_abil06:color(c.r,c.g,c.b)
 
 	end
@@ -1835,22 +2120,22 @@ end
 --Flash a specific text area
 local function flash(area)
 
-	if sub[subjob].Abil01 == area then
+	if profile.sub[sub_job].Abil01 == area then
 		send_command('gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B;wait .25;gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B;wait .25;gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B;wait .25;gs c Flash_Abil01_A;wait .25;gs c Flash_Abil01_B')
 
-	elseif sub[subjob].Abil02 == area then
+	elseif profile.sub[sub_job].Abil02 == area then
 		send_command('gs c Flash_Abil02_A;wait .25;gs c Flash_Abil02_B;wait .25;gs c Flash_Abil02_A;wait .25;gs c Flash_Abil02_B;wait .25;gs c Flash_Abil02_A;wait .25;gs c Flash_Abil02_B;wait .25;gs c Flash_Abil02_A;wait .25;gs c Flash_Abil02_B')
 
-	elseif sub[subjob].Abil03 == area then
+	elseif profile.sub[sub_job].Abil03 == area then
 		send_command('gs c Flash_Abil03_A;wait .25;gs c Flash_Abil03_B;wait .25;gs c Flash_Abil03_A;wait .25;gs c Flash_Abil03_B;wait .25;gs c Flash_Abil03_A;wait .25;gs c Flash_Abil03_B;wait .25;gs c Flash_Abil03_A;wait .25;gs c Flash_Abil03_B')
 
-	elseif sub[subjob].Abil04 == area then
+	elseif profile.sub[sub_job].Abil04 == area then
 		send_command('gs c Flash_Abil04_A;wait .25;gs c Flash_Abil04_B;wait .25;gs c Flash_Abil04_A;wait .25;gs c Flash_Abil04_B;wait .25;gs c Flash_Abil04_A;wait .25;gs c Flash_Abil04_B;wait .25;gs c Flash_Abil04_A;wait .25;gs c Flash_Abil04_B')
 
-	elseif sub[subjob].Abil05 == area then
+	elseif profile.sub[sub_job].Abil05 == area then
 		send_command('gs c Flash_Abil05_A;wait .25;gs c Flash_Abil05_B;wait .25;gs c Flash_Abil05_A;wait .25;gs c Flash_Abil05_B;wait .25;gs c Flash_Abil05_A;wait .25;gs c Flash_Abil05_B;wait .25;gs c Flash_Abil05_A;wait .25;gs c Flash_Abil05_B')
 
-	elseif sub[subjob].Abil06 == area then
+	elseif profile.sub[sub_job].Abil06 == area then
 		send_command('gs c Flash_Abil06_A;wait .25;gs c Flash_Abil06_B;wait .25;gs c Flash_Abil06_A;wait .25;gs c Flash_Abil06_B;wait .25;gs c Flash_Abil06_A;wait .25;gs c Flash_Abil06_B;wait .25;gs c Flash_Abil06_A;wait .25;gs c Flash_Abil06_B')
 
 	elseif area == 'Noti' then
@@ -1881,22 +2166,22 @@ local function getRecasts()
 	Pianissimo.recast = ability_recast[112] and math.ceil(ability_recast[112])
 	Sambas.recast = ability_recast[216] and math.ceil(ability_recast[216])
 	Steps.recast = ability_recast[220] and math.ceil(ability_recast[220])
+	Stratagems.recast = ability_recast[231] and math.ceil(ability_recast[231])
 	Sublimation.recast = ability_recast[234] and math.ceil(ability_recast[234])
 	Tenuto.recast = ability_recast[47] and math.ceil(ability_recast[47])
 	Troubadour.recast = ability_recast[110] and math.ceil(ability_recast[110])
 
 end
-getRecasts()
 
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
 
 	-- Valid abilities/spells
 	local validAbilities = {
-		"Soul Voice", "Clarion Call", "Contradance", "Convert", "Dark Arts", "Divine Seal", "Flourishes I", "Flourishes II", "Jigs", "Light Arts", "Marcato", "Nightingale", "Pianissimo", "Sambas", "Steps", "Sublimation", "Tenuto", "Troubadour"
+		"Soul Voice", "Clarion Call", "Contradance", "Convert", "Dark Arts", "Divine Seal", "Flourishes I", "Flourishes II", "Jigs", "Light Arts", "Marcato", "Nightingale", "Pianissimo", "Sambas", "Steps", "Stratagems", "Sublimation", "Tenuto", "Troubadour"
 	}
 
-	local ab = {} ab['Soul Voice'] = SoulVoice ab['Clarion Call'] = ClarionCall ab['Contradance'] = Contradance ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Divine Seal'] = DivineSeal ab['Flourishes I'] = FlourishesI ab['Flourishes II'] = FlourishesII ab['Jigs'] = Jigs ab['Light Arts'] = LightArts ab['Marcato'] = Marcato ab['Nightingale'] = Nightingale ab['Pianissimo'] = Pianissimo ab['Sambas'] = Sambas ab['Steps'] = Steps ab['Sublimation'] = Sublimation ab['Tenuto'] = Tenuto ab['Troubadour'] = Troubadour
+	local ab = {} ab['Soul Voice'] = SoulVoice ab['Clarion Call'] = ClarionCall ab['Contradance'] = Contradance ab['Convert'] = Convert ab['Dark Arts'] = DarkArts ab['Divine Seal'] = DivineSeal ab['Flourishes I'] = FlourishesI ab['Flourishes II'] = FlourishesII ab['Jigs'] = Jigs ab['Light Arts'] = LightArts ab['Marcato'] = Marcato ab['Nightingale'] = Nightingale ab['Pianissimo'] = Pianissimo ab['Sambas'] = Sambas ab['Steps'] = Steps ab['Stratagems'] = Stratagems ab['Sublimation'] = Sublimation ab['Tenuto'] = Tenuto ab['Troubadour'] = Troubadour
 	
 	-- Check if the input matches any of the valid abilities/spells
 	for _, ability in ipairs(validAbilities) do
@@ -1926,7 +2211,22 @@ local function formatAbils(input,input_sh)
 
 			-- Get our output before we apply the brackets below
 			local formattedString = ''
-			if recast > 3600 then
+			if input == 'Stratagems' then
+
+				local charges_lost = strat_charge_timer and math.ceil(recast / strat_charge_timer) or 0
+				strat_charges = strat_charge_timer and math.max(0, max_charges - charges_lost) or 0
+
+				-- To Next Charge
+				local tnc = strat_charge_timer and recast > strat_charge_timer and recast % strat_charge_timer or recast
+
+				if strat_charges == max_charges then
+					formattedString = formatOutputString(startingString, maxLength - 2)..'|'..max_charges
+				else
+					local padding = (tnc > 9) and 5 or 4
+					formattedString = formatOutputString(startingString, maxLength - padding)..':'..tnc..'|'..strat_charges
+				end
+
+			elseif recast > 3600 then
 				local hr = math.floor(recast / 3600)
 				formattedString = formatOutputString(startingString, maxLength - 3)..':'..hr..'h'
 			elseif recast > 600 then
@@ -1951,7 +2251,14 @@ local function formatAbils(input,input_sh)
 			local rightPadding = string.rep(" ", rightPaddingLength)
 
 			-- Determine recast coloring for brackets
-			local c = recast == 0 and color.abil.active or color.abil.ready
+			local c = recast == 0 and profile.color.abil.active or profile.color.abil.ready
+			if input == "Stratagems" then
+				if strat_charges > 0 then
+					c = profile.color.abil.active
+				else
+					c = profile.color.abil.ready
+				end
+			end
 
 			-- Apply brackets with recast coloring
 			formattedString = leftPadding..'\\cs('..c.r..','..c.g..','..c.b..')[\\cr'..formattedString..'\\cs('..c.r..','..c.g..','..c.b..')]\\cr'..rightPadding
@@ -2065,10 +2372,10 @@ local function getNameColor(input)
 
 end
 
--- Format Notifications/Debuffs to be centered in their allotted 36 spaces
-local function format36(input)
+-- Format Arts/Mode/Element to be centered in their allotted 12 spaces
+local function format12(input)
 
-	local maxLength = 40 --add 4 since the 4 « characters count as 2 each
+	local maxLength = 12
 	local paddingTotalLength = maxLength - #input
 
 	-- Determine the number of left and right spaces in order to center the formatted string
@@ -2109,12 +2416,12 @@ end
 
 local function getHUDAbils()
 
-	abil01 = formatAbils(sub[subjob].Abil01,sub[subjob].Abil01_sh)
-	abil02 = formatAbils(sub[subjob].Abil02,sub[subjob].Abil02_sh)
-	abil03 = formatAbils(sub[subjob].Abil03,sub[subjob].Abil03_sh)
-	abil04 = formatAbils(sub[subjob].Abil04,sub[subjob].Abil04_sh)
-	abil05 = formatAbils(sub[subjob].Abil05,sub[subjob].Abil05_sh)
-	abil06 = formatAbils(sub[subjob].Abil06,sub[subjob].Abil06_sh)
+	abil01 = formatAbils(profile.sub[sub_job].Abil01,profile.sub[sub_job].Abil01_sh)
+	abil02 = formatAbils(profile.sub[sub_job].Abil02,profile.sub[sub_job].Abil02_sh)
+	abil03 = formatAbils(profile.sub[sub_job].Abil03,profile.sub[sub_job].Abil03_sh)
+	abil04 = formatAbils(profile.sub[sub_job].Abil04,profile.sub[sub_job].Abil04_sh)
+	abil05 = formatAbils(profile.sub[sub_job].Abil05,profile.sub[sub_job].Abil05_sh)
+	abil06 = formatAbils(profile.sub[sub_job].Abil06,profile.sub[sub_job].Abil06_sh)
 
 	hud_abil01_shdw:text(abil01:text_strip_format())
 	hud_abil02_shdw:text(abil02:text_strip_format())
@@ -2131,7 +2438,25 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
+
+local function getStratChargeTimer()
+	if sub_job ~= 'SCH' then return end
+	local player = windower.ffxi.get_player()
+	local level = player.sub_job_level
+	if level >= 50 then
+		strat_charge_timer = 80
+	elseif level >= 30 then
+		strat_charge_timer = 120
+	elseif level >= 10 then
+		strat_charge_timer = 240
+	else
+		strat_charge_timer = nil
+	end
+
+	max_charges = strat_charge_timer and 240 / strat_charge_timer or 0
+	strat_flash_counter = max_charges
+
+end
 
 local function formatAMTime(input)
 
@@ -2226,8 +2551,6 @@ local function primeAMUpdate(tp)
 		pre_AMTimer = 180
 	end
 end
-
-windower.add_to_chat(8,('[Notice] '):color(39)..('Pre-calculating item stats for max songs and durations...'):color(8))
 
 --Get the different stages/levels for the various items that affect songs ahead of time so we don't have to do it every time we sing
 function getItemLevels()
@@ -2476,12 +2799,13 @@ end
 
 local function getMaxSongs()
 	local max_songs = 2
+	local range = instrument or player.equipment.range
 
-	if player.equipment.range == "Daurdabla" then
+	if range == "Daurdabla" then
 		max_songs = max_songs + daurdabla_songs
-	elseif player.equipment.range == "Loughnashade" then
+	elseif range == "Loughnashade" then
 		max_songs = max_songs + loughnashade_songs
-	elseif player.equipment.range == "Blurred Harp" or player.equipment.range == "Blurred Harp +1" or player.equipment.range == "Terpander" then
+	elseif range == "Blurred Harp" or range == "Blurred Harp +1" or range == "Terpander" then
 		max_songs = max_songs + 1
 	end
 
@@ -2492,8 +2816,12 @@ local function getMaxSongs()
 	return max_songs
 end
 
+
 --Create the song list to be displayed on the screen for tracking
-local function getCurrentSongList()
+local function updateCurrentSongList()
+
+	if not live[player.name].brd.song_list_show then return end
+
 	local party = windower.ffxi.get_party()
 	local party_order = {}
 
@@ -2514,7 +2842,7 @@ local function getCurrentSongList()
 	for _, player_name in ipairs(party_order) do
 		if current_songs[player_name] then
 			local col = {}
-			local cn = color.song_list[getNameColor(player_name)] or color.song.none
+			local cn = profile.color.song_list[getNameColor(player_name)] or profile.color.song_list.none
 			local r = formatRGB(cn.r)
 			local g = formatRGB(cn.g)
 			local b = formatRGB(cn.b)
@@ -2531,51 +2859,52 @@ local function getCurrentSongList()
 
 			local song_list = {}
 			for song_name, song_data in pairs(current_songs[player_name]) do
-				for key, new_name in pairs(song_renaming) do
+				for key, new_name in pairs(profile.song_renaming) do
 					song_name = song_name:gsub(key, new_name, 1)
 				end
 				table.insert(song_list, {
 					name = song_name,
 					duration = song_data.duration,
 					dummy = song_data.dummy,
-					soul_voice = song_data.soul_voice
+					soul_voice = song_data.soul_voice,
+					marcato = song_data.marcato,
 				})
 			end
 
 			table.sort(song_list, function(a, b) return a.duration > b.duration end)
 
 			for _, song in ipairs(song_list) do
-				local cd = color.song_list.very_long
+				local cd = profile.color.song_list.very_long
 				if song.duration <= 60 then
-					cd = color.song_list.critical
+					cd = profile.color.song_list.critical
 				elseif song.duration <= 120 then
-					cd = color.song_list.low
+					cd = profile.color.song_list.low
 				elseif song.duration <= 300 then
-					cd = color.song_list.regular
+					cd = profile.color.song_list.regular
 				elseif song.duration <= 600 then
-					cd = color.song_list.long
+					cd = profile.color.song_list.long
 				end
 
-				local cn = song.soul_voice and color.song_list.soul_voice or color.song_list.normal
-				local cb = color.song_list.none
+				local cn = song.soul_voice and profile.color.song_list.soul_voice or (song.marcato and profile.color.song_list.marcato or profile.color.song_list.normal)
+				local cb = profile.color.song_list.none
 
-				if string.find(song.name, "Paeon") then cb = color.song_list.Paeon
-				elseif string.find(song.name, "Ballad") then cb = color.song_list.Ballad
-				elseif string.find(song.name, "Minne") then cb = color.song_list.Minne
-				elseif string.find(song.name, "Minuet") then cb = color.song_list.Minuet
-				elseif string.find(song.name, "Madrigal") then cb = color.song_list.Madrigal
-				elseif string.find(song.name, "Mazurka") then cb = color.song_list.Mazurka
-				elseif string.find(song.name, "Prelude") then cb = color.song_list.Prelude
-				elseif string.find(song.name, "Mambo") then cb = color.song_list.Mambo
-				elseif string.find(song.name, "March") then cb = color.song_list.March
-				elseif string.find(song.name, "Etude") then cb = color.song_list.Etude
-				elseif string.find(song.name, "Carol") then cb = color.song_list.Carol
-				elseif string.find(song.name, "Sirvente") then cb = color.song_list.Sirvente
-				elseif string.find(song.name, "Dirge") then cb = color.song_list.Dirge
-				elseif string.find(song.name, "Scherzo") then cb = color.song_list.Scherzo
-				elseif string.find(song.name, "Aria") then cb = color.song_list.Aria
+				if string.find(song.name, "Paeon") then cb = profile.color.song_list.Paeon
+				elseif string.find(song.name, "Ballad") then cb = profile.color.song_list.Ballad
+				elseif string.find(song.name, "Minne") then cb = profile.color.song_list.Minne
+				elseif string.find(song.name, "Minuet") then cb = profile.color.song_list.Minuet
+				elseif string.find(song.name, "Madrigal") then cb = profile.color.song_list.Madrigal
+				elseif string.find(song.name, "Mazurka") then cb = profile.color.song_list.Mazurka
+				elseif string.find(song.name, "Prelude") then cb = profile.color.song_list.Prelude
+				elseif string.find(song.name, "Mambo") then cb = profile.color.song_list.Mambo
+				elseif string.find(song.name, "March") then cb = profile.color.song_list.March
+				elseif string.find(song.name, "Etude") then cb = profile.color.song_list.Etude
+				elseif string.find(song.name, "Carol") then cb = profile.color.song_list.Carol
+				elseif string.find(song.name, "Sirvente") then cb = profile.color.song_list.Sirvente
+				elseif string.find(song.name, "Dirge") then cb = profile.color.song_list.Dirge
+				elseif string.find(song.name, "Scherzo") then cb = profile.color.song_list.Scherzo
+				elseif string.find(song.name, "Aria") then cb = profile.color.song_list.Aria
 				elseif string.find(song.name, "Aubade") or string.find(song.name, "Pastoral") or string.find(song.name, "Fantasia") or string.find(song.name, "Operetta") or string.find(song.name, "Capriccio") or string.find(song.name, "Round") or string.find(song.name, "Gavotte") then
-					cb = color.song_list.Dummy
+					cb = profile.color.song_list.Dummy
 				end
 
 				local bullet = "\\cs("..formatRGB(cb.r)..","..formatRGB(cb.g)..","..formatRGB(cb.b)..")"..(song.dummy and "♫" or "●").."\\cr "
@@ -2594,11 +2923,11 @@ local function getCurrentSongList()
 	end
 
 	local temp_list = {}
-	local header = ShowSongListHeader and "[SONG LIST        //songs]" or ""
+	local header = profile.show_song_list_header and "[SONG LIST        //songs]" or ""
 	table.insert(temp_list, header)
 
 	--Combine columns into final string
-	if string.lower(SongListOrientation) == "horizontal" then
+	if profile.song_list_horizontal_orientation then
 		local max_lines = 0
 		for _, col in ipairs(columns) do
 			if #col > max_lines then max_lines = #col end
@@ -2623,7 +2952,12 @@ local function getCurrentSongList()
 
 	local final_list = table.concat(temp_list, "\n")
 
-	return final_list
+	if not live[player.name].brd.song_list_show or #columns == 0 then
+		song_list:hide()
+	else
+		song_list:show()
+		song_list:text(final_list)
+	end
 end
 
 --Reset the current_songs list (full clear)
@@ -2640,7 +2974,7 @@ local function setSongGear(song, nightingale)
 
 	local set_name = "buff_song"
 	local main_sub = has_dual_wield and "buff_song_dual_wield" or "buff_song_single_wield"
-	local is_dummy_song = nightingale and instrument == inst.dummy
+	local is_dummy_song = instrument and instrument == profile.inst.dummy
 
 	if is_dummy_song then
 		--doing a dummy song, don't use buff_song set so the durations are much lower making them easier to overwrite
@@ -2730,9 +3064,14 @@ local function setNotification()
 		send_command('wait 1;gs c ClearNotifications')
 	else
 		local status = player.status
+		local color_map = {
+			[1] = "auto",
+			[2] = "on",
+			[3] = "off",
+		}
 		hud_noti_shdw:text('Status: '..status)
 		hud_noti:text('Status: '..status)
-		local c = color.danger_mode[DangerMode]
+		local c = profile.color.danger_mode[color_map[danger_mode]]
 		hud_noti:color(c.r,c.g,c.b)
 	end
 
@@ -2770,53 +3109,524 @@ local function isMonster(id)
 	return actor and actor.spawn_type == 16 and not actor.in_party
 end
 
+local function updateMode()
+	local text = format12(song_mode_names[song_mode])
+	local c = song_mode == 1 and profile.color.potency or profile.color.dummy
+	hud_mode:text(text)
+	hud_mode_shdw:text(text)
+	hud_mode:color(c.r,c.g,c.b)
+end
+
+--Count the number of Remedies and return the number
+local function countRemedies()
+	local inventory = windower.ffxi.get_items().inventory
+	local invNum = 0
+	--Find the item and get the count
+	for i, item in ipairs(inventory) do
+		if item.id == 4155 then --id number of Remedy
+			invNum = invNum + item.count
+			break
+		end
+	end
+	return invNum
+end
+
+--Count the number of Echo Drops and return the number
+local function countEchoDrops()
+	local inventory = windower.ffxi.get_items().inventory
+	local invNum = 0
+	--Find the item and get the count
+	for i, item in ipairs(inventory) do
+		if item.id == 4151 then --id number of Echo Drops
+			invNum = invNum + item.count
+			break
+		end
+	end
+	return invNum
+end
+
+--Setup the HUD positions
+local function setHUDPosition(pos_x, pos_y)
+
+	--Space out each line and column properly
+	HUDposYLine1 = pos_y
+	HUDposYLine2 = HUDposYLine1 + calculated_char_height
+	HUDposYLine3 = HUDposYLine2 + calculated_char_height
+	HUDposYLine4 = HUDposYLine3 + calculated_char_height
+	HUDposXColumn1 = pos_x
+	HUDposXColumn2 = HUDposXColumn1 + calculated_char_width * 12
+	HUDposXColumn3 = HUDposXColumn2 + calculated_char_width * 12
+	HUDposXColumn4 = HUDposXColumn3 + calculated_char_width * 12
+	HUDposXColumn5 = HUDposXColumn4 + calculated_char_width * 12
+	HUDposXColumn6 = HUDposXColumn5 + calculated_char_width * 12
+
+	song_list:pos(live[player.name].brd.song_list_pos_x - profile.pad,live[player.name].brd.song_list_pos_y - profile.pad)
+	hud_bg_color:pos(HUDposXColumn1 - profile.pad,HUDposYLine1 - profile.pad)
+	hud_bg:pos(HUDposXColumn1 - profile.pad,HUDposYLine1 - profile.pad)
+	hud_tp_meter_bg1:pos(HUDposXColumn4,HUDposYLine2)
+	hud_tp_meter_bg2:pos(HUDposXColumn4,HUDposYLine2)
+	hud_tp_meter:pos(HUDposXColumn4,HUDposYLine2)
+	hud_noti_bg:pos(HUDposXColumn1,HUDposYLine1)
+	hud_debuffs_bg:pos(HUDposXColumn4,HUDposYLine1)
+	hud_ptmember01_bg:pos(HUDposXColumn1+.5,HUDposYLine3)
+	hud_ptmember02_bg:pos(HUDposXColumn2+1,HUDposYLine3)
+	hud_ptmember03_bg:pos(HUDposXColumn3+1,HUDposYLine3)
+	hud_ptmember04_bg:pos(HUDposXColumn4+1,HUDposYLine3)
+	hud_ptmember05_bg:pos(HUDposXColumn5+1,HUDposYLine3)
+	hud_ptmember06_bg:pos(HUDposXColumn6+1,HUDposYLine3)
+	hud_abil01_bg:pos(HUDposXColumn1+1,HUDposYLine4)
+	hud_abil02_bg:pos(HUDposXColumn2+1,HUDposYLine4)
+	hud_abil03_bg:pos(HUDposXColumn3+1,HUDposYLine4)
+	hud_abil04_bg:pos(HUDposXColumn4+1,HUDposYLine4)
+	hud_abil05_bg:pos(HUDposXColumn5+1,HUDposYLine4)
+	hud_abil06_bg:pos(HUDposXColumn6+1,HUDposYLine4)
+	hud_weapons_shdw:pos(HUDposXColumn4+1.5,HUDposYLine2+0.5)
+	hud_mode_shdw:pos(HUDposXColumn1+2.5,HUDposYLine2+0.5)
+	hud_noti_shdw:pos(HUDposXColumn1+2.5,HUDposYLine1+0.5)
+	hud_debuffs_shdw:pos(HUDposXColumn4+1.5,HUDposYLine1+0.5)
+	hud_ptmember01_shdw:pos(HUDposXColumn1+1.5,HUDposYLine3-0.5)
+	hud_ptmember02_shdw:pos(HUDposXColumn2+1.5,HUDposYLine3-0.5)
+	hud_ptmember03_shdw:pos(HUDposXColumn3+1.5,HUDposYLine3-0.5)
+	hud_ptmember04_shdw:pos(HUDposXColumn4+1.5,HUDposYLine3-0.5)
+	hud_ptmember05_shdw:pos(HUDposXColumn5+1.5,HUDposYLine3-0.5)
+	hud_ptmember06_shdw:pos(HUDposXColumn6+1.5,HUDposYLine3-0.5)
+	hud_abil01_shdw:pos(HUDposXColumn1+1.5,HUDposYLine4+0.5)
+	hud_abil02_shdw:pos(HUDposXColumn2+1.5,HUDposYLine4+0.5)
+	hud_abil03_shdw:pos(HUDposXColumn3+1.5,HUDposYLine4+0.5)
+	hud_abil04_shdw:pos(HUDposXColumn4+1.5,HUDposYLine4+0.5)
+	hud_abil05_shdw:pos(HUDposXColumn5+1.5,HUDposYLine4+0.5)
+	hud_abil06_shdw:pos(HUDposXColumn6+1.5,HUDposYLine4+0.5)
+	hud_weapons:pos(HUDposXColumn4,HUDposYLine2-1)
+	hud_mode:pos(HUDposXColumn1+1,HUDposYLine2-1)
+	hud_noti:pos(HUDposXColumn1+1,HUDposYLine1-1)
+	hud_debuffs:pos(HUDposXColumn4,HUDposYLine1-1)
+	hud_ptmember01:pos(HUDposXColumn1,HUDposYLine3-2)
+	hud_ptmember02:pos(HUDposXColumn2,HUDposYLine3-2)
+	hud_ptmember03:pos(HUDposXColumn3,HUDposYLine3-2)
+	hud_ptmember04:pos(HUDposXColumn4,HUDposYLine3-2)
+	hud_ptmember05:pos(HUDposXColumn5,HUDposYLine3-2)
+	hud_ptmember06:pos(HUDposXColumn6,HUDposYLine3-2)
+	hud_abil01:pos(HUDposXColumn1,HUDposYLine4-1)
+	hud_abil02:pos(HUDposXColumn2,HUDposYLine4-1)
+	hud_abil03:pos(HUDposXColumn3,HUDposYLine4-1)
+	hud_abil04:pos(HUDposXColumn4,HUDposYLine4-1)
+	hud_abil05:pos(HUDposXColumn5,HUDposYLine4-1)
+	hud_abil06:pos(HUDposXColumn6,HUDposYLine4-1)
+end
+
+--Ready the probes
+function initializeProbes()
+
+	if not probe1 then
+		probe1 = texts.new()
+		probe1:font('Consolas')
+		probe1:size(profile.size)
+		probe1:pos(-500, -500) --Hidden off-screen
+		probe1:bg_visible(false)
+		probe1:text((" "):rep(100))
+		probe1:show()
+	end
+
+	if not probe2 then
+		probe2 = texts.new()
+		probe2:font('Consolas')
+		probe2:size(profile.size)
+		probe2:pos(-500, -500)
+		probe2:bg_visible(false)
+		probe2:text("Line 1\nLine 2")
+		probe2:show()
+	end
+
+end
+
+--Calculate exact pixel width and height of a single chat line so we can build things spaced out correctly
+local function getTextDimensions()
+
+	--Cancel if we've already got the data we need
+	if calculated_char_width ~= 0 and calculated_char_height ~= 0 then return end
+
+	--Make sure the probes are ready
+	initializeProbes()
+
+	--Extract widths and heights
+	local width1, height1 = probe1:extents()
+	local _, height2 = probe2:extents()
+
+	--If the graphics engine hasn't calculated them yet, cancel and try next frame
+	if width1 == 0 or height1 == 0 or height2 == 0 then
+		return
+	end
+
+	--We have real data!
+	calculated_char_width = width1 / 100
+	calculated_char_height = height2 - height1
+
+	--Once we have the text dimension data we need, setup the HUD
+	setHUDPosition(live[player.name].brd.hud_pos_x, live[player.name].brd.hud_pos_y)
+
+	--Thank you for your service
+	probe1:destroy()
+	probe2:destroy()
+	probe1 = nil
+	probe2 = nil
+
+end
+
+local function formatKeybind(bind_str)
+
+	local modifiers = {
+		['^'] = 'CTRL+',
+		['!'] = 'ALT+',
+		['@'] = 'WIN+',
+		['#'] = 'APPS+',
+		['~'] = 'SHIFT+',
+	}
+
+	--Replace modifier keys (CTRL, ALT, etc)
+	local result = bind_str:gsub('([%^%!%@%#%~])', function(symbol)
+		return modifiers[symbol] or symbol
+	end)
+
+	--Capitalize letters
+	result = result:gsub('%a', string.upper)
+
+	return result
+end
+
+local function displayKeyinds()
+
+	if not profile.command_reminder_at_load then return end
+
+	local dm_kb = formatKeybind(profile.keybind_for_danger_mode)
+	local sm_kb = formatKeybind(profile.keybind_for_song_mode)
+	local wc_kb = formatKeybind(profile.keybind_for_weapon_cycler)
+
+	if dm_kb or sm_kb or wc_kb then
+		add_to_chat(8,('--BRD Commands--'):color(220))
+	end
+	if dm_kb then
+		add_to_chat(8,('Danger Mode: '):color(36)..dm_kb:color(1))
+	end
+	if sm_kb then
+		add_to_chat(8,('Song Mode: '):color(36)..sm_kb:color(1))
+	end
+	if wc_kb then
+		add_to_chat(8,('Weapon Cycler: '):color(36)..wc_kb:color(1))
+	end
+	add_to_chat(8,('Move HUD: '):color(36)..('//hud'):color(1))
+	add_to_chat(8,('Toggle Song List: '):color(36)..('//songs'):color(1))
+
+end
+
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	if ShowTPMeter then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_ptmember01_bg:show()
+	hud_ptmember02_bg:show()
+	hud_ptmember03_bg:show()
+	hud_ptmember04_bg:show()
+	hud_ptmember05_bg:show()
+	hud_ptmember06_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_weapons_shdw:show()
+	hud_mode_shdw:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_ptmember01_shdw:show()
+	hud_ptmember02_shdw:show()
+	hud_ptmember03_shdw:show()
+	hud_ptmember04_shdw:show()
+	hud_ptmember05_shdw:show()
+	hud_ptmember06_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_weapons:show()
+	hud_mode:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_ptmember01:show()
+	hud_ptmember02:show()
+	hud_ptmember03:show()
+	hud_ptmember04:show()
+	hud_ptmember05:show()
+	hud_ptmember06:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	song_list:hide()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_tp_meter_bg1:hide()
+	hud_tp_meter_bg2:hide()
+	hud_tp_meter:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_ptmember01_bg:hide()
+	hud_ptmember02_bg:hide()
+	hud_ptmember03_bg:hide()
+	hud_ptmember04_bg:hide()
+	hud_ptmember05_bg:hide()
+	hud_ptmember06_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_weapons_shdw:hide()
+	hud_mode_shdw:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_ptmember01_shdw:hide()
+	hud_ptmember02_shdw:hide()
+	hud_ptmember03_shdw:hide()
+	hud_ptmember04_shdw:hide()
+	hud_ptmember05_shdw:hide()
+	hud_ptmember06_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_weapons:hide()
+	hud_mode:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_ptmember01:hide()
+	hud_ptmember02:hide()
+	hud_ptmember03:hide()
+	hud_ptmember04:hide()
+	hud_ptmember05:hide()
+	hud_ptmember06:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+--Sets the Macro Book and Page
+local function setMacros()
+	if profile.set_macro_book_page_on_load then
+		send_command('input /macro book '..profile.set_macro_book_to)
+		if player.sub_job == 'DNC' then
+			send_command('wait 2;input /macro set '..profile.set_sub_dnc_macro_page_to)
+		elseif player.sub_job == 'NIN' then
+			send_command('wait 2;input /macro set '..profile.set_sub_nin_macro_page_to)
+		elseif player.sub_job == 'RDM' then
+			send_command('wait 2;input /macro set '..profile.set_sub_rdm_macro_page_to)
+		elseif player.sub_job == 'SCH' then
+			send_command('wait 2;input /macro set '..profile.set_sub_sch_macro_page_to)
+		elseif player.sub_job == 'WHM' then
+			send_command('wait 2;input /macro set '..profile.set_sub_whm_macro_page_to)
+		else
+			send_command('wait 2;input /macro set 1')
+		end
+	end
+end
+
+--Reset HUD Abilities/spells
+local function setSubJob()
+
+	local sub = player.sub_job
+	local valid_sub_jobs = {
+		['DNC'] = true,
+		['NIN'] = true,
+		['RDM'] = true,
+		['SCH'] = true,
+		['WHM'] = true,
+	}
+
+	if valid_sub_jobs[sub] then
+		sub_job = sub
+	else
+		sub_job = 'OTH'
+	end
+
+end
+
+local function handle_mouse_event(mouse_type, mouse_x, mouse_y, delta)
+
+	local hovering_on_hud = hud_bg:hover(mouse_x, mouse_y)
+	local hud_visible = hud_bg:visible()
+	local hovering_on_sl = song_list:hover(mouse_x, mouse_y)
+	local sl_visible = song_list:visible()
+
+	--HUD is visible and mouse is over it
+	if hud_visible then
+
+		if grabbed_hud then
+			--Mouse movement
+			if mouse_type == 0 then
+				local new_bg_x = mouse_x - hud_drag_offset_x
+				local new_bg_y = mouse_y - hud_drag_offset_y
+
+				local target_x = new_bg_x + profile.pad
+				local target_y = new_bg_y + profile.pad
+
+				setHUDPosition(target_x, target_y)
+				return true
+
+			--Left click up
+			elseif mouse_type == 2 then
+				grabbed_hud = false
+				
+				local bg_x, bg_y = hud_bg:pos()
+				local target_x = math.floor(bg_x + profile.pad)
+				local target_y = math.floor(bg_y + profile.pad)
+
+				if target_x ~= live[player.name].brd.hud_pos_x or target_y ~= live[player.name].brd.hud_pos_y then
+					live[player.name].brd.hud_pos_x = target_x
+					live[player.name].brd.hud_pos_y = target_y
+					setHUDPosition(target_x, target_y)
+					saveLiveData()
+				end
+				return true
+			end
+		end
+
+		if hovering_on_hud then
+			--Left click down
+			if mouse_type == 1 then
+				grabbed_hud = true
+				local bg_x, bg_y = hud_bg:pos()
+				hud_drag_offset_x = mouse_x - bg_x
+				hud_drag_offset_y = mouse_y - bg_y
+				return true
+			end
+
+			--If no drag state was active but we are hovering the window, block FFXI from picking up a click.
+			if mouse_type == 2 then
+				return true
+			end
+		end
+
+	end
+
+	--Song List is visible and mouse is over it
+	if sl_visible then
+
+		if grabbed_sl then
+			--Left click up
+			if mouse_type == 2 then
+				grabbed_sl = false
+				
+				local bg_x, bg_y = song_list:pos()
+				local target_x = math.floor(bg_x + profile.pad)
+				local target_y = math.floor(bg_y + profile.pad)
+
+				if target_x ~= live[player.name].brd.song_list_pos_x or target_y ~= live[player.name].brd.song_list_pos_y then
+					live[player.name].brd.song_list_pos_x = target_x
+					live[player.name].brd.song_list_pos_y = target_y
+					saveLiveData()
+				end
+				return true
+			end
+		end
+
+		if hovering_on_sl then
+			--Left click down
+			if mouse_type == 1 then
+				grabbed_sl = true
+				local bg_x, bg_y = song_list:pos()
+				sl_drag_offset_x = mouse_x - bg_x
+				sl_drag_offset_y = mouse_y - bg_y
+				return true
+			end
+
+			--If no drag state was active but we are hovering the window, block FFXI from picking up a click.
+			if mouse_type == 2 then
+				return true
+			end
+		end
+
+	end
+end
+
+local function toggleHUDLock(locked)
+	if locked then
+		--Unregister event if currently active
+		if mouse_event_id then
+			windower.unregister_event(mouse_event_id)
+			mouse_event_id = nil
+			add_to_chat(8,('[Notice] '):color(39)..('HUD Locked'):color(36)..(' - Mouse dragging disabled.'):color(8))
+		end
+	else
+		--Register event if not already active
+		if not mouse_event_id then
+			mouse_event_id = windower.register_event('mouse', handle_mouse_event)
+			add_to_chat(8,('[Notice] '):color(39)..('HUD Unlocked'):color(36)..(' - Mouse dragging enabled.'):color(8))
+		end
+	end
+end
+
+setSubJob()
+getRecasts()
+getHUDAbils()
+getStratChargeTimer()
+has_dual_wield = hasDualWield()
+setWeaponPair()
+updateMode()
+displayKeyinds()
+setMacros()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
 
 function self_command(command)
 	if command == 'DT' then
-		if DangerMode == 'Auto' then
-			DangerMode = 'On'
-		elseif DangerMode == 'On' then
-			DangerMode = 'Off'
-		elseif DangerMode == 'Off' then
-			DangerMode = 'Auto'
+		danger_mode = danger_mode + 1
+		if danger_mode > #danger_mode_names then
+			danger_mode = 1
 		end
+		live[player.name].brd.danger_mode = danger_mode
+		saveLiveData()
+		hud_noti_shdw:text('Danger Mode set to '..danger_mode_names[danger_mode])
+		hud_noti:text('Danger Mode set to '..danger_mode_names[danger_mode])
+		NotiCountdown = profile.clear_notifications_delay_in_seconds
 		choose_set()
-		setNotification()
 	elseif command == 'Mode' then
-		if Mode == 'Mode1' then
-			Mode = 'Mode2'
-		elseif Mode == 'Mode2' then
-			Mode = 'Mode1'
-		end
-		hud_mode_shdw:text('Mode: '..modeName[Mode]..' ('..EquipRange..')')
-		hud_mode:text('Mode: '..modeName[Mode]..' ('..EquipRange..')')
-		local c = color[Mode]
-		hud_mode:color(c.r,c.g,c.b)
-		hud_bg_color:bg_color(c.r,c.g,c.b)
-		choose_set()
+		song_mode = song_mode == 1 and 2 or 1
+		live[player.name].brd.song_mode = song_mode
+		saveLiveData()
+		updateMode()
 	elseif command == 'ClearNotifications' then --these reset the Notifications display back to a basic state
 		setNotification()
 	elseif command == 'ClearDebuffs' then --these reset the Debuffs display back to a basic state
 		hud_debuffs_shdw:text('')
 		hud_debuffs:text('')
-	elseif command == 'Zone Gear' then
-		if ZoneGear == 'Town' then
-			if TownZones[world.area] or windower.ffxi.get_info().mog_house then
-				send_command('wait 5;gs c Choose Set')
-			end
-		elseif ZoneGear ~= "Off" then
-			send_command('wait 5;gs c Choose Set')
-		end
 	elseif command == 'Choose Set' then
 		choose_set()
 	elseif command == 'Radialens' then
 		--we put this wait in to check what zone we're in when the Radialens wears so that it doesn't trigger when we're simply zoning out of an Escha zone
 		send_command('wait 4;gs c RadialensCheck')
 	elseif command == 'RadialensCheck' and string.find(world.area,'Escha') then
-		if AlertSounds then
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Radialens Has Worn Off »»')
@@ -2827,131 +3637,19 @@ function self_command(command)
 		NotiLowMPToggle = false
 	elseif command == 'AliveDelay' then
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
-	elseif command == 'HUD' and not ShowHUD then
-		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
-	elseif command == 'HUD' and ShowHUD then
-		ShowHUD = false
-		windower.send_command('gs c HideHUD')
-	elseif command == 'Songs' and not ShowSongList then
-		ShowSongList = true
-		windower.send_command('gs c ShowSongList')
-		windower.add_to_chat(220,('[Songs List] Display: '):color(36)..('ON'):color(200))
-	elseif command == 'Songs' and ShowSongList then
-		ShowSongList = false
-		windower.send_command('gs c HideSongs')
-		windower.add_to_chat(220,('[Songs List] Display: '):color(36)..('OFF'):color(200))
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		if ShowTPMeter then
-			hud_tp_meter_bg1:show()
-			hud_tp_meter_bg2:show()
-			hud_tp_meter:show()
+	elseif command == 'HUD' then
+		toggleHUDLock(mouse_event_id ~= nil)
+	elseif command == 'Songs' then
+		if live[player.name].brd.song_list_show then
+			live[player.name].brd.song_list_show = false
+			song_list:hide()
+		else
+			live[player.name].brd.song_list_show = true
+			updateCurrentSongList()
 		end
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_ptmember01_bg:show()
-		hud_ptmember02_bg:show()
-		hud_ptmember03_bg:show()
-		hud_ptmember04_bg:show()
-		hud_ptmember05_bg:show()
-		hud_ptmember06_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_weapons_shdw:show()
-		hud_mode_shdw:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_ptmember01_shdw:show()
-		hud_ptmember02_shdw:show()
-		hud_ptmember03_shdw:show()
-		hud_ptmember04_shdw:show()
-		hud_ptmember05_shdw:show()
-		hud_ptmember06_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_weapons:show()
-		hud_mode:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_ptmember01:show()
-		hud_ptmember02:show()
-		hud_ptmember03:show()
-		hud_ptmember04:show()
-		hud_ptmember05:show()
-		hud_ptmember06:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		song_list:hide()
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_tp_meter_bg1:hide()
-		hud_tp_meter_bg2:hide()
-		hud_tp_meter:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_ptmember01_bg:hide()
-		hud_ptmember02_bg:hide()
-		hud_ptmember03_bg:hide()
-		hud_ptmember04_bg:hide()
-		hud_ptmember05_bg:hide()
-		hud_ptmember06_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_weapons_shdw:hide()
-		hud_mode_shdw:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_ptmember01_shdw:hide()
-		hud_ptmember02_shdw:hide()
-		hud_ptmember03_shdw:hide()
-		hud_ptmember04_shdw:hide()
-		hud_ptmember05_shdw:hide()
-		hud_ptmember06_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_weapons:hide()
-		hud_mode:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_ptmember01:hide()
-		hud_ptmember02:hide()
-		hud_ptmember03:hide()
-		hud_ptmember04:hide()
-		hud_ptmember05:hide()
-		hud_ptmember06:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
-	elseif command == 'ShowSongList' then
-		song_list:show()
-	elseif command == 'HideSongs' then
-		song_list:hide()
+		saveLiveData()
+		local status = live[player.name].brd.song_list_show and 'ON ' or 'OFF'
+		add_to_chat(8,('[Notice] '):color(39)..('Songs List: '):color(8)..(status):color(200))
 	elseif command == 'WC' then
 		CurrentEquip = ''
 		if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
@@ -2970,16 +3668,16 @@ function self_command(command)
 			end
 		else --otherwise, use just the basic WeaponCycle table
 			if has_dual_wield then
-				pair = DualWieldCycle[WeaponCycleIndex]
+				pair = profile.DualWieldCycle[WeaponCycleIndex]
 				if pair == nil then
 					WeaponCycleIndex = 1
-					pair = DualWieldCycle[WeaponCycleIndex]
+					pair = profile.DualWieldCycle[WeaponCycleIndex]
 				end
 			else
-				pair = WeaponCycle[WeaponCycleIndex]
+				pair = profile.WeaponCycle[WeaponCycleIndex]
 				if pair == nil then
 					WeaponCycleIndex = 1
-					pair = WeaponCycle[WeaponCycleIndex]
+					pair = profile.WeaponCycle[WeaponCycleIndex]
 				end
 			end
 		end
@@ -2996,54 +3694,65 @@ function self_command(command)
 		WeaponCycleIndex = WeaponCycleIndex + 1
 	elseif command == 'Flash_Abil01_A' then
 		hud_abil01_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_abil01_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Abil01_B' then
 		hud_abil01_bg:bg_alpha(0)
 	elseif command == 'Flash_Abil02_A' then
 		hud_abil02_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_abil02_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Abil02_B' then
 		hud_abil02_bg:bg_alpha(0)
 	elseif command == 'Flash_Abil03_A' then
 		hud_abil03_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_abil03_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Abil03_B' then
 		hud_abil03_bg:bg_alpha(0)
 	elseif command == 'Flash_Abil04_A' then
 		hud_abil04_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_abil04_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Abil04_B' then
 		hud_abil04_bg:bg_alpha(0)
 	elseif command == 'Flash_Abil05_A' then
 		hud_abil05_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_abil05_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Abil05_B' then
 		hud_abil05_bg:bg_alpha(0)
 	elseif command == 'Flash_Abil06_A' then
 		hud_abil06_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_abil06_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Abil06_B' then
 		hud_abil06_bg:bg_alpha(0)
 	elseif command == 'Flash_Noti_A' then
 		hud_noti_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_noti_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Noti_B' then
 		hud_noti_bg:bg_alpha(0)
 	elseif command == 'Flash_Debuffs_A' then
 		hud_debuffs_bg:bg_alpha(50)
-		local c = color.abil.flash
+		local c = profile.color.abil.flash
 		hud_debuffs_bg:bg_color(c.r,c.g,c.b)
 	elseif command == 'Flash_Debuffs_B' then
 		hud_debuffs_bg:bg_alpha(0)
 	elseif command == "resetCapturedToggle" then
 		captured_spell_toggle = false
+	elseif command == 'getItemLevels1' then
+		hud_noti:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats..')
+		hud_noti_shdw:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats..')
+	elseif command == 'getItemLevels2' then
+		hud_noti:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats...')
+		hud_noti_shdw:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats...')
+	elseif command == 'getItemLevels3' then
+		getItemLevels()
+		hud_noti:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats... Done.')
+		hud_noti_shdw:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats... Done.')
+		pre_calc = false
 	end
 end
 
@@ -3053,7 +3762,7 @@ end
 
 function choose_set()
 
-	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage)) and sets.danger or nil
+	local danger = (LowHP or danger_mode == 2 or (danger_mode == 1 and TakingDamage and not melee)) and not midaction() and sets.danger or nil --danger_mode 1 = Auto, 2 = On
 	local main_sub = {main=pair[1],sub=pair[2]}
 
 	if player.status == "Resting" then
@@ -3075,7 +3784,7 @@ function choose_set()
 		else
 			local get_player = windower.ffxi.get_player()
 			local autorun = get_player and get_player.autorun
-			local auto_movement_speed = AutoMvmntSpeed and moving
+			local auto_movement_speed = profile.equip_movement_speed_set_when_moving and moving
 			local movement_speed = (auto_movement_speed or autorun) and sets.movement_speed or nil
 			equip(set_combine(sets.idle, danger, main_sub, movement_speed))
 		end
@@ -3113,11 +3822,11 @@ function precast(spell)
 	local transport_spells = {
 		['Teleport-Holla'] = true, ['Teleport-Dem'] = true, ['Teleport-Mea'] = true, ['Teleport-Altep'] = true, ['Teleport-Yhoat'] = true, ['Teleport-Vahzl'] = true, ['Recall-Jugner'] = true, ['Recall-Meriph'] = true, ['Recall-Pashh'] = true, ['Warp'] = true, ['Warp II'] = true, ['Retrace'] = true, ['Escape'] = true
 	}
-	if TransportLock and transport_spells[spell.en] and transport_locked then
+	if profile.confirm_transportation_spells_before_casting and transport_spells[spell.en] and transport_locked then
 		cancel_spell()
 		transport_locked = false
-		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
-		if AlertSounds then
+		add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
+		if profile.sound_effects then
 			play_sound(Notification_Cancel)
 		end
 		transport_lock_timestamp = os.time() + 180
@@ -3134,14 +3843,16 @@ function precast(spell)
 		(buffactive['mute'] and is_magic)
 	local silenced = buffactive['silence'] and is_magic
 	if blocked or silenced then
-		if AlertSounds then
+		if profile.sound_effects then
 			play_sound(Notification_Cancel)
 		end
-		if silenced then
-			if UseEcho == 'E' then
+		if silenced and profile.use_remedy_or_echo_when_silenced_and_casting then
+			if countEchoDrops() > 0 then
 				send_command('input /item "Echo Drops" <me>')
-			elseif UseEcho == 'R' then
+			elseif countRemedies() > 0 then
 				send_command('input /item "Remedy" <me>')
+			else
+				add_to_chat(8,('[Notice] '):color(39)..('Silenced. No available Echo Drops or Remedies!'):color(8))
 			end
 		end
 		flash('Debuffs')
@@ -3149,7 +3860,7 @@ function precast(spell)
 		return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
-			if AlertSounds then
+			if profile.sound_effects then
 				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Not Enough TP »»')
@@ -3165,7 +3876,7 @@ function precast(spell)
 			and spell.target.distance >= (spell.target.model_size + 3)
 			and not (spell.english == 'Starlight' or spell.english == 'Moonlight')
 		) then
-			if AlertSounds then
+			if profile.sound_effects then
 				play_sound(Notification_Cancel)
 			end
 			hud_noti_shdw:text('«« Too Far »»')
@@ -3204,7 +3915,31 @@ function precast(spell)
 		equip(sets.troubadour)
 	elseif spell.english == 'Quickstep' or string.find(spell.english,'Step') then
 		equip(sets.steps)
-	elseif string.find(spell.english,'Waltz') then
+	elseif string.find(spell.english,'Curing Waltz') then
+		local ability_recast = windower.ffxi.get_ability_recasts()
+		local waltzes = {
+			{name="Curing Waltz III", tp=500, id=187},
+			{name="Curing Waltz II",  tp=350, id=186},
+			{name="Curing Waltz",     tp=200, id=217},
+		}
+		local waltz_match = false
+		for _, waltz in ipairs(waltzes) do
+			--Match the original attempt (or an existing down-converted attempt)
+			if waltz.name == spell.english then
+				waltz_match = true
+			end
+			--Get the recast time (defaults to 0 if valid/not on cooldown)
+			local cd = math.ceil(ability_recast[waltz.id] or 0)
+			--Down-convert if matched AND we have enough TP AND the recast is < 1
+			if waltz_match and player.tp >= waltz.tp and cd < 1 then
+				if waltz.name ~= spell.english then
+					send_command('input /ja "'..waltz.name..'" '..spell.target.raw)
+					cancel_spell()
+					return
+				end
+				break
+			end
+		end
 		equip(sets.waltzes)
 	elseif spell.english == 'Animated Flourish' then
 		equip(sets.animated_flourish)
@@ -3221,7 +3956,12 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(sets.fast_cast_other)
 	elseif spell.type == 'BardSong' then
-		if AutoPianissimo and spell.english ~= "Pianissimo" and spell.target.ispartymember and spell.target.type ~= 'SELF' and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Pianissimo'] or string.find(spell.english,'Lullaby')) then --exempt lullabies so we can put charmed players to sleep
+		if pre_calc then
+			add_to_chat(8,('[Notice] '):color(39)..('Pre-calculating song stats; please wait.'):color(8))
+			cancel_spell()
+			return
+		end
+		if profile.use_pianissimo_when_singing_on_another_player and spell.english ~= "Pianissimo" and spell.target.ispartymember and spell.target.type ~= 'SELF' and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Pianissimo'] or string.find(spell.english,'Lullaby')) then --exempt lullabies so we can put charmed players to sleep
 			cancel_spell()
 			send_command('input /ja "Pianissimo" <me>;wait 1.5;input /ma \"'..spell.english..'\" '..spell.target.raw)
 			return
@@ -3232,71 +3972,71 @@ function precast(spell)
 			instrument = "Marsyas"
 		elseif spell.english == "Aria of Passion" then
 			instrument = "Loughnashade"
-		elseif Mode == "Mode2" then --Dummy/Extra Songs Mode
-			instrument = inst.dummy
+		elseif Mode == 2 then --Dummy/Extra Songs Mode
+			instrument = profile.inst.dummy
 		elseif string.find(spell.english,'Aubade') then
-			instrument = inst.aubade
+			instrument = profile.inst.aubade
 		elseif string.find(spell.english,'Ballad') then
-			instrument = inst.ballad
+			instrument = profile.inst.ballad
 		elseif string.find(spell.english,'Capriccio') then
-			instrument = inst.capriccio
+			instrument = profile.inst.capriccio
 		elseif string.find(spell.english,'Carol') then
-			instrument = inst.carol
+			instrument = profile.inst.carol
 		elseif string.find(spell.english,'Dirge') then
-			instrument = inst.dirge
+			instrument = profile.inst.dirge
 		elseif string.find(spell.english,'Etude') then
-			instrument = inst.etude
+			instrument = profile.inst.etude
 		elseif string.find(spell.english,'Fantasia') then
-			instrument = inst.fantasia
+			instrument = profile.inst.fantasia
 		elseif string.find(spell.english,'Gavotte') then
-			instrument = inst.gavotte
+			instrument = profile.inst.gavotte
 		elseif string.find(spell.english,'Hymnus') then
-			instrument = inst.hymnus
+			instrument = profile.inst.hymnus
 		elseif string.find(spell.english,'Madrigal') then
-			instrument = inst.madrigal
+			instrument = profile.inst.madrigal
 		elseif string.find(spell.english,'Mambo') then
-			instrument = inst.mambo
+			instrument = profile.inst.mambo
 		elseif string.find(spell.english,'March') then
-			instrument = inst.march
+			instrument = profile.inst.march
 		elseif string.find(spell.english,'Mazurka') then
-			instrument = inst.mazurka
+			instrument = profile.inst.mazurka
 		elseif string.find(spell.english,'Minne') then
-			instrument = inst.minne
+			instrument = profile.inst.minne
 		elseif string.find(spell.english,'Minuet') then
-			instrument = inst.minuet
+			instrument = profile.inst.minuet
 		elseif string.find(spell.english,'Operetta') then
-			instrument = inst.operetta
+			instrument = profile.inst.operetta
 		elseif string.find(spell.english,'Paeon') then
-			instrument = inst.paeon
+			instrument = profile.inst.paeon
 		elseif string.find(spell.english,'Pastoral') then
-			instrument = inst.pastoral
+			instrument = profile.inst.pastoral
 		elseif string.find(spell.english,'Prelude') then
-			instrument = inst.prelude
+			instrument = profile.inst.prelude
 		elseif string.find(spell.english,'Round') then
-			instrument = inst.round
+			instrument = profile.inst.round
 		elseif string.find(spell.english,'Scherzo') then
-			instrument = inst.scherzo
+			instrument = profile.inst.scherzo
 		elseif string.find(spell.english,'Sirvente') then
-			instrument = inst.sirvente
+			instrument = profile.inst.sirvente
 		elseif string.find(spell.english,'Horde Lullaby II') then
-			instrument = inst.horde_lullaby_II
+			instrument = profile.inst.horde_lullaby_II
 			main_sub = has_dual_wield and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
 		else
 			main_sub = has_dual_wield and "debuff_song_dual_wield" or "debuff_song_single_wield"
 			if string.find(spell.english,'Elegy') then
-				instrument = inst.elegy
+				instrument = profile.inst.elegy
 			elseif string.find(spell.english,'Finale') then
-				instrument = inst.finale
+				instrument = profile.inst.finale
 			elseif string.find(spell.english,'Lullaby') then
-				instrument = inst.lullaby
+				instrument = profile.inst.lullaby
 			elseif string.find(spell.english,'Nocturne') then
-				instrument = inst.nocturne
+				instrument = profile.inst.nocturne
 			elseif string.find(spell.english,'Requiem') then
-				instrument = inst.requiem
+				instrument = profile.inst.requiem
 			elseif string.find(spell.english,'Threnody') then
-				instrument = inst.threnody
+				instrument = profile.inst.threnody
 			elseif string.find(spell.english,'Virelai') then
-				instrument = inst.virelai
+				instrument = profile.inst.virelai
 			end
 		end
 		--Nightingale active, go straight into song midcast set and the proper instrument
@@ -3322,9 +4062,10 @@ end
 
 function midcast(spell)
 	if spell.type == 'BardSong' then
-		dummy_song = player.equipment.range == inst.dummy
+		dummy_song = player.equipment.range == profile.inst.dummy
 		setSongGear(spell.english, false)
 		soul_voice_song = buffactive['Soul Voice']
+		marcato_song = buffactive['Marcato']
 	elseif spell.skill == 'Enfeebling Magic' then
 		local engaged = player.status == "Engaged" and {main=pair[1],sub=pair[2]} or nil
 		equip(set_combine(sets.enfeeble, engaged))
@@ -3352,17 +4093,17 @@ end
 -------------------------------------------
 
 function aftercast(spell)
-	if spell.english == 'Soul Voice' and SVTimer and not spell.interrupted then
+	if spell.english == 'Soul Voice' and profile.echo_timer_for_soul_voice and not spell.interrupted then
 		if player.equipment.legs == 'Brd. Cannions +2' or player.equipment.legs == 'Bihu Cannions' or player.equipment.legs == 'Bihu Cannions +1' or player.equipment.legs == 'Bihu Cannions +2' or player.equipment.legs == 'Bihu Cannions +3' or player.equipment.legs == 'Bihu Cannions +4' then --these pieces extend Soul Voice by 30 seconds so we adjust accordingly
 			send_command('input /echo [Soul Voice] 3:30;wait 30;input /echo [Soul Voice] 3:00;wait 30;input /echo [Soul Voice] 2:30;wait 30;input /echo [Soul Voice] 2:00;wait 30;input /echo [Soul Voice] 1:30;wait 30;input /echo [Soul Voice] 1:00;wait 30;input /echo [Soul Voice] 0:30;wait 10;input /echo [Soul Voice] 0:20;wait 10;input /echo [Soul Voice] 0:10')
 		else
 			send_command('input /echo [Soul Voice] 3:00;wait 30;input /echo [Soul Voice] 2:30;wait 30;input /echo [Soul Voice] 2:00;wait 30;input /echo [Soul Voice] 1:30;wait 30;input /echo [Soul Voice] 1:00;wait 30;input /echo [Soul Voice] 0:30;wait 10;input /echo [Soul Voice] 0:20;wait 10;input /echo [Soul Voice] 0:10')
 		end
-	elseif spell.english == 'Clarion Call' and CCTimer and not spell.interrupted then
+	elseif spell.english == 'Clarion Call' and profile.echo_timer_for_clarion_call and not spell.interrupted then
 		send_command('input /echo [Clarion Call] 3:00;wait 30;input /echo [Clarion Call] 2:30;wait 30;input /echo [Clarion Call] 2:00;wait 30;input /echo [Clarion Call] 1:30;wait 30;input /echo [Clarion Call] 1:00;wait 30;input /echo [Clarion Call] 0:30;wait 10;input /echo [Clarion Call] 0:20;wait 10;input /echo [Clarion Call] 0:10')
 	end
 	choose_set()
-	if AutoSubCharge and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((AutoPianissimo and spell.english == "Pianissimo") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+	if profile.keep_sublimation_charging and spell.english ~= "Sublimation" and player.sub_job == 'SCH' and Sublimation.recast and Sublimation.recast < 2 and not ((profile.use_pianissimo_when_singing_on_another_player and spell.english == "Pianissimo") or buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
 		local wait = (spell.prefix == '/pet' or spell.type == '/jobability') and 0.5 or 3
 		send_command('wait '..wait..';input /ja Sublimation <me>')
 	end
@@ -3376,26 +4117,20 @@ windower.register_event('status change', function(status)
 
 	if status == 4 and not InCS then
 		InCS = true
-		if ShowHUD then --In a cutscene: Hide the HUD
-			windower.send_command('gs c HideHUD')
-		end
-		if ShowSongList then --In a cutscene: Hide the Song List
-			windower.send_command('gs c HideSongs')
-		end
+		hideHUD() --In a cutscene: Hide the HUD
+		song_list:hide() --In a cutscene: Hide the Song List
 	elseif status ~= 4 and InCS then
 		InCS = false
-		if ShowHUD then --Out of cutscene: Show the HUD
-			windower.send_command('gs c ShowHUD')
+		if profile.show_hud then --Out of cutscene: Show the HUD
+			showHUD()
 		end
-		if ShowSongList then --Out of cutscene: Show the Song List
-			windower.send_command('gs c ShowSongList')
-		end
+		updateCurrentSongList() --Out of cutscene: Show the Song List
 	end
 
 	choose_set()
 	setNotification()
 
-	if AutoSubCharge and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
+	if profile.keep_sublimation_charging and player.sub_job == 'SCH' and status == 0 and Sublimation.recast and Sublimation.recast < 2 and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] or buffactive['Refresh'] or buffactive['Invisible'] or windower.ffxi.get_info().mog_house or world.area == 'Mog Garden') then
 		send_command('input /ja Sublimation <me>')
 	end
 
@@ -3407,7 +4142,7 @@ end)
 
 windower.register_event('gain buff', function(buff)
 
-	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and AlertSounds then --Aftermath
+	if (buff == 270 or buff == 271 or buff == 272 or buff == 273) and profile.sound_effects then --Aftermath
 		play_sound(Notification_Aftermath_On)
 		AMTimer = pre_AMTimer
 		mythicNum = pre_mythicNum
@@ -3420,8 +4155,8 @@ windower.register_event('gain buff', function(buff)
 	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Danger set
 		equip(sets.danger)
 	elseif buff == 15 then --Doom
-		WarningCountdown = WarningRepeat --Start the Warning Sound going
-	elseif buff == 17 and AlertSounds then --Charm
+		WarningCountdown = profile.warning_sound_times_to_repeat --Start the Warning Sound going
+	elseif buff == 17 and profile.sound_effects then --Charm
 		play_sound(Notification_Cancel)
 	elseif buff == 71 or buff == 69 then --Sneak or Invisible
 		setNotification()
@@ -3435,58 +4170,58 @@ end)
 
 windower.register_event('lose buff', function(buff)
 
-	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and AlertSounds then --lose any aftermath
+	if buff == 270 or buff == 271 or buff == 272 or buff == 273 and profile.sound_effects then --lose any aftermath
 		play_sound(Notification_Aftermath_Off)
-	elseif buff == 251 and Alive and notifications.Food then --food wears off
-		if AlertSounds then
+	elseif buff == 251 and Alive and profile.notifications.food_wears_off then --food wears off
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Food Has Worn Off »»')
 		hud_noti:text('«« Food Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 113 and notifications.Reraise and Alive then --reraise wears off
-		if AlertSounds then
+	elseif buff == 113 and profile.notifications.reraise_wears_off and Alive then --reraise wears off
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Reraise Has Worn Off »»')
 		hud_noti:text('«« Reraise Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 602 and string.find(world.area,'Escha') and notifications.Vorseal then --Vorseal
-		if AlertSounds then
+	elseif buff == 602 and string.find(world.area,'Escha') and profile.notifications.vorseal_wears_off then --Vorseal
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Vorseal Has Worn Off »»')
 		hud_noti:text('«« Vorseal Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 253 and notifications.Signet then --Signet
-		if AlertSounds then
+	elseif buff == 253 and profile.notifications.regional_buff_wears_off then --Signet
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Signet Has Worn Off »»')
 		hud_noti:text('«« Signet Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 256 and notifications.Signet then --Sanction
-		if AlertSounds then
+	elseif buff == 256 and profile.notifications.regional_buff_wears_off then --Sanction
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sanction Has Worn Off »»')
 		hud_noti:text('«« Sanction Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 268 and notifications.Signet then --Sigil
-		if AlertSounds then
+	elseif buff == 268 and profile.notifications.regional_buff_wears_off then --Sigil
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Sigil Has Worn Off »»')
 		hud_noti:text('«« Sigil Has Worn Off »»')
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
-	elseif buff == 512 and notifications.Signet then --Ionis
-		if AlertSounds then
+	elseif buff == 512 and profile.notifications.regional_buff_wears_off then --Ionis
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
 		hud_noti_shdw:text('«« Ionis Has Worn Off »»')
@@ -3494,7 +4229,7 @@ windower.register_event('lose buff', function(buff)
 		hud_noti:color(255,50,50)
 		NotiCountdown = NotiDelay
 	elseif buff == 1 and Alive then --Weakness
-		if AlertSounds then
+		if profile.sound_effects then
 			play_sound(Notification_Good)
 		end
 		hud_noti_shdw:text('«« Weakness Has Worn Off »»')
@@ -3526,8 +4261,8 @@ end
 
 windower.register_event('tp change',function()
 
-	if player.tp == 3000 and notifications.TP3000 then
-		if AlertSounds then
+	if player.tp == 3000 and profile.notifications.tp_hits_3000 then
+		if profile.sound_effects then
 			play_sound(Notification_3000TP)
 		end
 		hud_noti_shdw:text('«« 3000 TP »»')
@@ -3540,15 +4275,15 @@ windower.register_event('tp change',function()
 	if not (TownZones[world.area] or windower.ffxi.get_info().mog_house) then
 		local TPMeter = ''
 		local spaces = 0
-		local c = color.AM3
+		local c = profile.color.AM3
 		if player.tp < 1000 then
-			c = color.AM1
+			c = profile.color.AM1
 			spaces = math.floor(36 * ((player.tp / 1000) * 100 / 100))
 			hud_tp_meter_bg1:bg_alpha(0)
 			hud_tp_meter_bg2:bg_alpha(0)
 			hud_tp_meter:bg_alpha(100)
 		elseif player.tp < 2000 then
-			c = color.AM2
+			c = profile.color.AM2
 			spaces = math.floor(36 * (((player.tp - 1000) / 1000) * 100 / 100))
 			hud_tp_meter_bg1:bg_alpha(100)
 			hud_tp_meter_bg2:bg_alpha(0)
@@ -3601,6 +4336,9 @@ end)
 --Miscellaneous things we check for to keep them updated
 windower.register_event('prerender', function()
 
+	--Get the text dimension data we need to create the HUD correctly (cancels internally once complete)
+	getTextDimensions()
+
 	--Using the teleports in Sortie pauses timers
 	if world.area == "Outer Ra'Kaznar [U]" and player.status == "Event" then
 		return
@@ -3633,29 +4371,23 @@ windower.register_event('prerender', function()
 		local pos = windower.ffxi.get_position()
 		if pos == "(?-?)" and not Zoning then
 			Zoning = true
-			if ShowHUD then
-				send_command('gs c HideHUD')
-			end
-			if ShowSongList then
-				send_command('gs c HideSongs')
-			end
+			hideHUD()
+			song_list:hide()
 		elseif pos ~= "(?-?)" and Zoning then
 			Zoning = false
-			if ShowHUD then
-				send_command('gs c ShowHUD')
+			if profile.show_hud then
+				showHUD()
 			end
-			if ShowSongList then
-				send_command('gs c ShowSongList')
-			end
+			updateCurrentSongList()
 		end
 
 		--Checking gear on movement
-		if AutoGearCheck or AutoMvmntSpeed then
+		if profile.equip_gear_when_moving or profile.equip_movement_speed_set_when_moving then
 			local get_player = windower.ffxi.get_mob_by_target('me')
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -3682,11 +4414,11 @@ windower.register_event('prerender', function()
 				if not ShowTPMeter then
 					local c = {r = 255, g = 255, b = 255}
 					if AM == 1 then
-						c = color.AM1
+						c = profile.color.AM1
 					elseif AM == 2 then
-						c = color.AM2
+						c = profile.color.AM2
 					elseif AM == 3 then
-						c = color.AM3
+						c = profile.color.AM3
 					end
 					hud_weapons:color(c.r,c.g,c.b)
 				end
@@ -3869,81 +4601,81 @@ windower.register_event('prerender', function()
 			end
 			if CurrentInstrument ~= EquipRange then
 				CurrentInstrument = EquipRange
-				hud_mode_shdw:text('Mode: '..modeName[Mode]..' ('..EquipRange..')')
-				hud_mode:text('Mode: '..modeName[Mode]..' ('..EquipRange..')')
+				hud_mode_shdw:text('Mode: '..song_mode_names[song_mode]..' ('..EquipRange..')')
+				hud_mode:text('Mode: '..song_mode_names[song_mode]..' ('..EquipRange..')')
 			end
 		end
 
 		--Debuff checks
-		if buffactive['doom'] and notifications.Doom and Alive then
-			if not debuffs.Charm then
-				debuffs.Charm = true
-				hud_debuffs_shdw:text('            «« DOOMED »»')
-				local c = color.Dark
-				hud_debuffs:text('            «« \\cs('..c.r..','..c.g..','..c.b..')DOOMED\\cr »»')
-			end
-		elseif buffactive['animated'] and notifications.Charm and Alive then
-			if not debuffs.Animated then
-				debuffs.Animated = true
-				hud_debuffs_shdw:text('           «« ANIMATED »»')
-				local c = color.Light
-				hud_debuffs:text('           «« \\cs('..c.r..','..c.g..','..c.b..')ANIMATED\\cr »»')
-			end
-		elseif buffactive['charm'] and notifications.Charm and Alive then
-			if not debuffs.Charm then
-				debuffs.Charm = true
-				hud_debuffs_shdw:text('           «« CHARMED »»')
-				local c = color.Light
-				hud_debuffs:text('           «« \\cs('..c.r..','..c.g..','..c.b..')CHARMED\\cr »»')
-			end
-		elseif buffactive['terror'] and notifications.Terror and Alive then
-			if not debuffs.Terror then
-				debuffs.Terror = true
-				hud_debuffs_shdw:text('          «« TERRORIZED »»')
-				local c = color.Dark
-				hud_debuffs:text('          «« \\cs('..c.r..','..c.g..','..c.b..')TERRORIZED\\cr »»')
-			end
-		elseif buffactive['petrification'] and notifications.Petrification and Alive then
-			if not debuffs.Petrification then
-				debuffs.Petrification = true
-				hud_debuffs_shdw:text('          «« PETRIFIED »»')
-				local c = color.Earth
-				hud_debuffs:text('          «« \\cs('..c.r..','..c.g..','..c.b..')PETRIFIED\\cr »»')
-			end
-		elseif buffactive['sleep'] and notifications.Sleep and Alive then
-			if not debuffs.Sleep then
-				debuffs.Sleep = true
-				hud_debuffs_shdw:text('            «« ASLEEP »»')
-				local c = color.Dark
-				hud_debuffs:text('            «« \\cs('..c.r..','..c.g..','..c.b..')ASLEEP\\cr »»')
-			end
-		elseif buffactive['stun'] and notifications.Stun and Alive then
-			if not debuffs.Stun then
-				debuffs.Stun = true
-				hud_debuffs_shdw:text('           «« STUNNED »»')
-				local c = color.Thunder
-				hud_debuffs:text('           «« \\cs('..c.r..','..c.g..','..c.b..')STUNNED\\cr »»')
-			end
-		else
-			--Set any of the above to false once they are gone
-			if debuffs.Doom then debuffs.Doom = false end
-			if debuffs.Animated then debuffs.Animated = false end
-			if debuffs.Charm then debuffs.Charm = false end
-			if debuffs.Terror then debuffs.Terror = false end
-			if debuffs.Petrification then debuffs.Petrification = false end
-			if debuffs.Sleep then debuffs.Sleep = false end
-			if debuffs.Stun then debuffs.Stun = false end
-			if notifications.Silence and Alive then
+		if profile.show_debuffs and Alive then
+			if buffactive['doom'] then
+				if not debuffs.Charm then
+					debuffs.Charm = true
+					hud_debuffs_shdw:text('            «« DOOMED »»')
+					local c = profile.color.Dark
+					hud_debuffs:text('            «« \\cs('..c.r..','..c.g..','..c.b..')DOOMED\\cr »»')
+				end
+			elseif buffactive['animated'] then
+				if not debuffs.Animated then
+					debuffs.Animated = true
+					hud_debuffs_shdw:text('           «« ANIMATED »»')
+					local c = profile.color.Light
+					hud_debuffs:text('           «« \\cs('..c.r..','..c.g..','..c.b..')ANIMATED\\cr »»')
+				end
+			elseif buffactive['charm'] then
+				if not debuffs.Charm then
+					debuffs.Charm = true
+					hud_debuffs_shdw:text('           «« CHARMED »»')
+					local c = profile.color.Light
+					hud_debuffs:text('           «« \\cs('..c.r..','..c.g..','..c.b..')CHARMED\\cr »»')
+				end
+			elseif buffactive['terror'] then
+				if not debuffs.Terror then
+					debuffs.Terror = true
+					hud_debuffs_shdw:text('          «« TERRORIZED »»')
+					local c = profile.color.Dark
+					hud_debuffs:text('          «« \\cs('..c.r..','..c.g..','..c.b..')TERRORIZED\\cr »»')
+				end
+			elseif buffactive['petrification'] then
+				if not debuffs.Petrification then
+					debuffs.Petrification = true
+					hud_debuffs_shdw:text('          «« PETRIFIED »»')
+					local c = profile.color.Earth
+					hud_debuffs:text('          «« \\cs('..c.r..','..c.g..','..c.b..')PETRIFIED\\cr »»')
+				end
+			elseif buffactive['sleep'] then
+				if not debuffs.Sleep then
+					debuffs.Sleep = true
+					hud_debuffs_shdw:text('            «« ASLEEP »»')
+					local c = profile.color.Dark
+					hud_debuffs:text('            «« \\cs('..c.r..','..c.g..','..c.b..')ASLEEP\\cr »»')
+				end
+			elseif buffactive['stun'] then
+				if not debuffs.Stun then
+					debuffs.Stun = true
+					hud_debuffs_shdw:text('           «« STUNNED »»')
+					local c = profile.color.Thunder
+					hud_debuffs:text('           «« \\cs('..c.r..','..c.g..','..c.b..')STUNNED\\cr »»')
+				end
+			else
+				--Set any of the above to false once they are gone
+				if debuffs.Doom then debuffs.Doom = false end
+				if debuffs.Animated then debuffs.Animated = false end
+				if debuffs.Charm then debuffs.Charm = false end
+				if debuffs.Terror then debuffs.Terror = false end
+				if debuffs.Petrification then debuffs.Petrification = false end
+				if debuffs.Sleep then debuffs.Sleep = false end
+				if debuffs.Stun then debuffs.Stun = false end
 				if buffactive['mute'] then
 					if not debuffs.Mute then
 						debuffs.Mute = true
-						local c = color.Air
+						local c = profile.color.Air
 						SIL = '\\cs('..c.r..','..c.g..','..c.b..')MUTE\\cr'
 					end
 				elseif buffactive['silence'] then
 					if not debuffs.Silence then
 						debuffs.Silence = true
-						local c = color.Air
+						local c = profile.color.Air
 						SIL = '\\cs('..c.r..','..c.g..','..c.b..')SLNC\\cr'
 					end
 				else
@@ -3951,48 +4683,42 @@ windower.register_event('prerender', function()
 					if debuffs.Silence then debuffs.Silence = false end
 					if SIL ~= '    ' then SIL = '    ' end
 				end
-			end
-			if notifications.Paralysis and Alive then
 				if buffactive['paralysis'] then
 					if not debuffs.Paralysis then
 						debuffs.Paralysis = true
-						local c = color.Ice
+						local c = profile.color.Ice
 						PAR = '\\cs('..c.r..','..c.g..','..c.b..')PARLZ\\cr'
 					end
 				else
 					if debuffs.Paralysis then debuffs.Paralysis = false end
 					if PAR ~= '     ' then PAR = '     ' end
 				end
-			end
-			if notifications.Plague and Alive then
 				if buffactive['plague'] then
 					if not debuffs.Plague then
 						debuffs.Plague = true
-						local c = color.Fire
+						local c = profile.color.Fire
 						PLG = '\\cs('..c.r..','..c.g..','..c.b..')PLGUE\\cr'
 					end
 				else
 					if debuffs.Plague then debuffs.Plague = false end
 					if PLG ~= '     ' then PLG = '     ' end
 				end
-			end
-			if notifications.Curse and Alive then
 				if buffactive[20] then
 					if not debuffs.Zombie then
 						debuffs.Zombie = true
-						local c = color.Dark
+						local c = profile.color.Dark
 						CUR = '\\cs('..c.r..','..c.g..','..c.b..')ZOMBI\\cr'
 					end
 				elseif buffactive['haunt'] then
 					if not debuffs.Haunt then
 						debuffs.Haunt = true
-						local c = color.Dark
+						local c = profile.color.Dark
 						CUR = '\\cs('..c.r..','..c.g..','..c.b..')HAUNT\\cr'
 					end
 				elseif buffactive['curse'] then
 					if not debuffs.Curse then
 						debuffs.Curse = true
-						local c = color.Dark
+						local c = profile.color.Dark
 						CUR = '\\cs('..c.r..','..c.g..','..c.b..')CURSE\\cr'
 					end
 				else
@@ -4001,65 +4727,59 @@ windower.register_event('prerender', function()
 					if debuffs.Curse then debuffs.Curse = false end
 					if CUR ~= '     ' then CUR = '     ' end
 				end
-			end
-			if notifications.Amnesia and Alive then
 				if buffactive['amneisa'] then
 					if not debuffs.Amnesia then
 						debuffs.Amnesia = true
-						local c = color.Fire
+						local c = profile.color.Fire
 						AMN = '\\cs('..c.r..','..c.g..','..c.b..')AMNES\\cr'
 					end
 				elseif buffactive['impairment'] then
 					if not debuffs.Impairment then
 						debuffs.Impairment = true
-						local c = color.Fire
+						local c = profile.color.Fire
 						AMN = '\\cs('..c.r..','..c.g..','..c.b..')IMPAR\\cr'
 					end
 				else
 					if debuffs.Amnesia then debuffs.Amnesia = false end
 					if AMN ~= '     ' then AMN = '     ' end
 				end
-			end
-			if notifications.Taint and Alive then
 				if buffactive['taint'] then
 					if not debuffs.Taint then
 						debuffs.Taint = true
-						local c = color.Water
+						local c = profile.color.Water
 						TNT = '\\cs('..c.r..','..c.g..','..c.b..')TAINT\\cr'
 					end
 				else
 					if debuffs.Taint then debuffs.Taint = false end
 					if TNT ~= '     ' then TNT = '     ' end
 				end
-			end
-			if notifications.Encumbrance and Alive then
 				if buffactive['encumbrance'] then
 					if not debuffs.Encumbrance then
 						debuffs.Encumbrance = true
-						local c = color.Water
+						local c = profile.color.Water
 						ENC = '\\cs('..c.r..','..c.g..','..c.b..')ENCMB\\cr'
 					end
 				else
 					if debuffs.Encumbrance then debuffs.Encumbrance = false end
 					if ENC ~= '     ' then ENC = '     ' end
 				end
-			end
-			if SIL == '    ' and PAR == '     ' and PLG == '     ' and CUR == '     ' and AMN == '     ' and TNT == '     ' and ENC == '     ' then
-				hud_debuffs_shdw:text('')
-				hud_debuffs:text('')
-			else
-				hud_debuffs:text(' '..AMN..CUR..ENC..PAR..PLG..SIL..TNT)
-				hud_debuffs_shdw:text(' '..AMN:text_strip_format()..CUR:text_strip_format()..ENC:text_strip_format()..PAR:text_strip_format()..PLG:text_strip_format()..SIL:text_strip_format()..TNT:text_strip_format())
+				if SIL == '    ' and PAR == '     ' and PLG == '     ' and CUR == '     ' and AMN == '     ' and TNT == '     ' and ENC == '     ' then
+					hud_debuffs_shdw:text('')
+					hud_debuffs:text('')
+				else
+					hud_debuffs:text(' '..AMN..CUR..ENC..PAR..PLG..SIL..TNT)
+					hud_debuffs_shdw:text(' '..AMN:text_strip_format()..CUR:text_strip_format()..ENC:text_strip_format()..PAR:text_strip_format()..PLG:text_strip_format()..SIL:text_strip_format()..TNT:text_strip_format())
+				end
 			end
 		end
 
 		--MP checks
-		if notifications.LowMP and subJobWithMP() and player then
+		if profile.notifications.low_mp_warning and subJobWithMP() and player and GreetingDelay == -1 then
 			if player.mpp <= 20 then
 				if not NotiLowMPToggle then
 					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
 					lowMP = true
-					if AlertSounds then
+					if profile.sound_effects then
 						play_sound(Notification_Bad)
 					end
 					hud_noti_shdw:text('«« Low MP »»')
@@ -4097,13 +4817,13 @@ windower.register_event('prerender', function()
 				announceAlive = false
 				send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
 			end
-			if player.hp <= LowHPThreshold and player.max_hp > LowHPThreshold and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
+			if player.hp <= profile.low_hp_threshold and player.max_hp > profile.low_hp_threshold and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house) then --when HP goes below a certain amount, turn on the LowHP flag and equip the appropriate gear set
 				if not LowHP then
 					LowHP = true
-					WarningCountdown = WarningRepeat
+					WarningCountdown = profile.warning_sound_times_to_repeat
 					choose_set()
 				end
-			elseif (player.hp > LowHPThreshold or player.max_hp > LowHPThreshold) and LowHP then --when HP goes back above a certain amount, turn off the LowHP flag and equip the appropriate gear set
+			elseif (player.hp > profile.low_hp_threshold or player.max_hp > profile.low_hp_threshold) and LowHP then --when HP goes back above a certain amount, turn off the LowHP flag and equip the appropriate gear set
 				LowHP = false
 				setNotification()
 				choose_set()
@@ -4113,7 +4833,7 @@ windower.register_event('prerender', function()
 		--Party distance checks
 		local function distance(pt_member)
 			local distance = pt_member and pt_member.mob and (math.floor(pt_member.mob.distance:sqrt() * 100) / 100) or 100
-			return pt_member and pt_member.mob and (distance <= PTMemNearDist - 1) and 50 or (distance <= PTMemNearDist) and 20 or 0
+			return pt_member and pt_member.mob and (distance <= 9) and 50 or (distance <= 10) and 20 or 0
 		end
 		hud_ptmember02_bg:bg_alpha(party[2] and distance(party[2]) or 0)
 		hud_ptmember03_bg:bg_alpha(party[3] and distance(party[3]) or 0)
@@ -4122,8 +4842,8 @@ windower.register_event('prerender', function()
 		hud_ptmember06_bg:bg_alpha(party[6] and distance(party[6]) or 0)
 
 		--Update the on-screen Song List
-		if ShowSongList then
-			song_list:text(getCurrentSongList())
+		if not Zoning then
+			updateCurrentSongList()
 		end
 
 		--Recast updates
@@ -4403,6 +5123,16 @@ windower.register_event('prerender', function()
 			textColor('Steps','notfound')
 		end
 
+		if Stratagems.recast then
+			if strat_charges > strat_flash_counter then
+				flash('Stratagems')
+			end
+			strat_flash_counter = strat_charges
+			textColor('Stratagems', strat_charges == 0 and 'cooldown' or 'ready')
+		else
+			textColor('Stratagems','notfound')
+		end
+
 		if Sublimation.recast then
 			if buffactive['Sublimation: Activated'] or buffactive['Sublimation: Complete'] then
 				textColor('Sublimation','active')
@@ -4464,12 +5194,12 @@ windower.register_event('prerender', function()
 
 		last_second = clock
 
-		if notifications.ReraiseReminder then
+		if profile.notifications.reraise_reminder then
 			if RRRCountdown > 0 then
 				RRRCountdown = RRRCountdown - 1
 			else
 				if not buffactive['Reraise'] and Alive then --if we are dead no need to remind us about reraise
-					if AlertSounds then
+					if profile.sound_effects then
 						play_sound(Notification_Bad)
 					end
 					hud_noti_shdw:text('«« No Reraise »»')
@@ -4477,7 +5207,7 @@ windower.register_event('prerender', function()
 					hud_noti:color(255,50,50)
 					NotiCountdown = NotiDelay
 				end
-				RRRCountdown = RRReminderTimer --start the timer back up
+				RRRCountdown = profile.notifications.reraise_reminder_delay_in_minutes * 60 --start the timer back up
 			end
 		end
 
@@ -4485,7 +5215,7 @@ windower.register_event('prerender', function()
 			AMTimer = AMTimer - 1
 		end
 
-		if notifications.LowHP and LowHP and Alive then
+		if profile.notifications.low_hp_warning and LowHP and Alive then
 			hud_noti_shdw:text('«« Low HP »»')
 			hud_noti:text('«« Low HP »»')
 			hud_noti:color(255,50,50)
@@ -4493,10 +5223,10 @@ windower.register_event('prerender', function()
 			NotiCountdown = -1
 		end
 
-		if notifications.Doom and buffactive['doom'] and Alive then
+		if buffactive['doom'] and Alive then
 			flash('Debuffs')
 		end
-		if (notifications.Doom and buffactive['doom'] and Alive) or (notifications.LowHP and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and AlertSounds and WarningCountdown > 0 then
+		if (buffactive['doom'] and Alive) or (profile.notifications.low_hp_warning and LowHP and Alive and not (buffactive['weakness'] or TownZones[world.area] or windower.ffxi.get_info().mog_house)) and profile.sound_effects and WarningCountdown > 0 then
 			WarningCountdown = WarningCountdown - 1
 			play_sound(Notification_Danger)
 		end
@@ -4525,8 +5255,6 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			GreetingDelay = -1
 			setNotification()
-			getItemLevels()
-			windower.add_to_chat(8,('[Notice] '):color(39)..('Done.'):color(8))
 		end
 
 		if party and party_count == 1 and party_count ~= party.count then
@@ -4539,7 +5267,7 @@ windower.register_event('prerender', function()
 		if transport_lock_timestamp ~= 0 and os.time() > transport_lock_timestamp then
 			transport_locked = true
 			transport_lock_timestamp = 0
-			windower.add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
+			add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
 		end
 
 		--On screen song list updates
@@ -4575,37 +5303,37 @@ windower.register_event('prerender', function()
 		local get_party = windower.ffxi.get_party
 		hud_ptmember01_shdw:text(formatName(player):text_strip_format())
 		hud_ptmember01:text(formatName(player))
-		c = color.song_list[getNameColor(player.name)]
+		c = profile.color.song_list[getNameColor(player.name)]
 		hud_ptmember01:color(c.r,c.g,c.b)
 
 		local p1 = get_party().p1
 		hud_ptmember02_shdw:text(formatName(p1 or nil):text_strip_format())
 		hud_ptmember02:text(formatName(p1 or nil))
-		c = p1 and p1.mob and p1.mob.name and color.song_list[getNameColor(p1.mob.name)] or c_not_found
+		c = p1 and p1.mob and p1.mob.name and profile.color.song_list[getNameColor(p1.mob.name)] or c_not_found
 		hud_ptmember02:color(c.r,c.g,c.b)
 
 		local p2 = get_party().p2
 		hud_ptmember03_shdw:text(formatName(p2 or nil):text_strip_format())
 		hud_ptmember03:text(formatName(p2 or nil))
-		c = p2 and p2.mob and p2.mob.name and color.song_list[getNameColor(p2.mob.name)] or c_not_found
+		c = p2 and p2.mob and p2.mob.name and profile.color.song_list[getNameColor(p2.mob.name)] or c_not_found
 		hud_ptmember03:color(c.r,c.g,c.b)
 
 		local p3 = get_party().p3
 		hud_ptmember04_shdw:text(formatName(p3 or nil):text_strip_format())
 		hud_ptmember04:text(formatName(p3 or nil))
-		c = p3 and p3.mob and p3.mob.name and color.song_list[getNameColor(p3.mob.name)] or c_not_found
+		c = p3 and p3.mob and p3.mob.name and profile.color.song_list[getNameColor(p3.mob.name)] or c_not_found
 		hud_ptmember04:color(c.r,c.g,c.b)
 
 		local p4 = get_party().p4
 		hud_ptmember05_shdw:text(formatName(p4 or nil):text_strip_format())
 		hud_ptmember05:text(formatName(p4 or nil))
-		c = p4 and p4.mob and p4.mob.name and color.song_list[getNameColor(p4.mob.name)] or c_not_found
+		c = p4 and p4.mob and p4.mob.name and profile.color.song_list[getNameColor(p4.mob.name)] or c_not_found
 		hud_ptmember05:color(c.r,c.g,c.b)
 
 		local p5 = get_party().p5
 		hud_ptmember06_shdw:text(formatName(p5 or nil):text_strip_format())
 		hud_ptmember06:text(formatName(p5 or nil))
-		c = p5 and p5.mob and p5.mob.name and color.song_list[getNameColor(p5.mob.name)] or c_not_found
+		c = p5 and p5.mob and p5.mob.name and profile.color.song_list[getNameColor(p5.mob.name)] or c_not_found
 		hud_ptmember06:color(c.r,c.g,c.b)
 
 		if set_weapon_timestamp > 0 and os.time() >= set_weapon_timestamp then
@@ -4623,9 +5351,7 @@ end)
 windower.register_event('zone change',function()
 
 	--Equip appropriate gear
-	if ZoneGear ~= 'Off' then
-		send_command('gs c Zone Gear')
-	end
+	send_command('gs c Choose Set')
 
 	--Clear any notifications
 	setNotification()
@@ -4652,43 +5378,15 @@ function sub_job_change(newSubjob, oldSubjob)
 		setNotification()
 	end
 
-	-- Reset HUD Abilities/Spells and Macro Page
-	if newSubjob == 'DNC' then
-		subjob = 'DNC'
-		if SubDNCPage ~= "Off" then
-			send_command('wait 2;input /macro set '..SubDNCPage)
-		end
-	elseif newSubjob == 'NIN' then
-		subjob = 'NIN'
-		if SubNINPage ~= "Off" then
-			send_command('wait 2;input /macro set '..SubNINPage)
-		end
-	elseif newSubjob == 'RDM' then
-		subjob = 'RDM'
-		if SubRDMPage ~= "Off" then
-			send_command('wait 2;input /macro set '..SubRDMPage)
-		end
-	elseif newSubjob == 'SCH' then
-		subjob = 'SCH'
-		if SubSCHPage ~= "Off" then
-			send_command('wait 2;input /macro set '..SubSCHPage)
-		end
-	elseif newSubjob == 'WHM' then
-		subjob = 'WHM'
-		if SubWHMPage ~= "Off" then
-			send_command('wait 2;input /macro set '..SubWHMPage)
-		end
-	else
-		subjob = 'OTH'
-	end
+	setSubJob()
+	setMacros()
 	getHUDAbils()
+	getStratChargeTimer()
 
 	--Set/reset a timer to set the weapons again
 	set_weapon_timestamp = os.time() + 6
 
-	if ZoneGear ~= 'Off' then
-		send_command('wait 2;gs c Zone Gear')
-	end
+	send_command('wait 2;gs c Choose Set')
 
 	has_dual_wield = hasDualWield()
 
@@ -4705,23 +5403,23 @@ windower.register_event('incoming text',function(org)
 	if not org then return end
 
 	if org:find('wishes to trade with you') then
-		if AlertSounds then
+		if profile.sound_effects then
 			play_sound(Notification_Good)
 		end
-		if notifications.Trade then
+		if profile.notifications.trade_offer then
 			hud_noti_shdw:text('«« Trade Request »»')
 			hud_noti:text('«« Trade Request »»')
 			hud_noti:color(255,255,50)
 		end
 	elseif org:find('The effect of') and org:find('is about to wear off.') then
-		if AlertSounds then
+		if profile.sound_effects then
 			play_sound(Notification_Bad)
 		end
-		if notifications.Sneak and org:find('Sneak') then
+		if profile.notifications.sneak_wearing_off and org:find('Sneak') then
 			hud_noti_shdw:text('«« Sneak Wearing »»')
 			hud_noti:text('«« Sneak Wearing »»')
 			hud_noti:color(255,100,100)
-		elseif notifications.Invis and org:find('Invisible') then
+		elseif profile.notifications.invisible_wearing_off and org:find('Invisible') then
 			hud_noti_shdw:text('«« Invisible Wearing »»')
 			hud_noti:text('«« Invisible Wearing »»')
 			hud_noti:color(255,100,100)
@@ -4729,14 +5427,14 @@ windower.register_event('incoming text',function(org)
 	elseif org:find('Lost key item') and org:find('Radialens') then
 		send_command('gs c Radialens')
 	elseif org:find('invites you to') then
-		if AlertSounds then
+		if profile.sound_effects then
 			play_sound(Notification_Good)
 		end
-		if notifications.Invite and org:find('party') and not org:find('alliance') then
+		if profile.notifications.invite_offer and org:find('party') and not org:find('alliance') then
 			hud_noti_shdw:text('«« Party Invite »»')
 			hud_noti:text('«« Party Invite »»')
 			hud_noti:color(255,255,50)
-		elseif notifications.Invite and org:find('alliance') then
+		elseif profile.notifications.invite_offer and org:find('alliance') then
 			hud_noti_shdw:text('«« Alliance Invite »»')
 			hud_noti:text('«« Alliance Invite »»')
 			hud_noti:color(255,255,50)
@@ -4744,28 +5442,28 @@ windower.register_event('incoming text',function(org)
 		NotiCountdown = 180
 	elseif org:find('Your visitant status will wear off in') then
 		if org:find(' 15 ') then
-			if AlertSounds then
+			if profile.sound_effects then
 				play_sound(Notification_Bad)
 			end
-			if notifications.Time then
+			if profile.notifications.time_remaining then
 				hud_noti_shdw:text('«« 15 Minutes Remaining »»')
 				hud_noti:text('«« 15 Minutes Remaining »»')
 				hud_noti:color(255,255,50)
 			end
 		elseif org:find(' 10 ') then
-			if AlertSounds then
+			if profile.sound_effects then
 				play_sound(Notification_Bad)
 			end
-			if notifications.Time then
+			if profile.notifications.time_remaining then
 				hud_noti_shdw:text('«« 10 Minutes Remaining »»')
 				hud_noti:text('«« 10 Minutes Remaining »»')
 				hud_noti:color(255,255,50)
 			end
 		elseif org:find(' 5 ') then
-			if AlertSounds then
+			if profile.sound_effects then
 				play_sound(Notification_Bad)
 			end
-			if notifications.Time then
+			if profile.notifications.time_remaining then
 				hud_noti_shdw:text('«« 5 Minutes Remaining »»')
 				hud_noti:text('«« 5 Minutes Remaining »»')
 				hud_noti:color(255,255,50)
@@ -4816,6 +5514,7 @@ windower.register_event('action',function(act)
 							duration = song_duration + tenuto_bonus, --Tenuto JP duration bonus only applies to the BRD
 							dummy = dummy_song,
 							soul_voice = soul_voice_song,
+							marcato = marcato_song,
 						}
 
 					--If the player has max_songs or more, check if the song exists
@@ -4827,6 +5526,7 @@ windower.register_event('action',function(act)
 								duration = song_duration,
 								dummy = dummy_song,
 								soul_voice = soul_voice_song,
+								marcato = marcato_song,
 							}
 
 						--Otherwise find the song with the lowest duration
@@ -4848,6 +5548,7 @@ windower.register_event('action',function(act)
 									duration = song_duration,
 									dummy = dummy_song,
 									soul_voice = soul_voice_song,
+									marcato = marcato_song,
 								}
 							end
 						end
@@ -4856,6 +5557,7 @@ windower.register_event('action',function(act)
 
 				dummy_song = false
 				soul_voice_song = false
+				marcato_song = false
 				max_songs = 2
 
 			end
@@ -4874,10 +5576,10 @@ windower.register_event('action',function(act)
 	local target_id = act.targets[1].id
 
 	--Check if a monsters attack hits the player
-	if DangerMode == "Auto" and (not DangerPTOnly or playerIsInAPartyOrAlliance()) and isMonster(act.actor_id) then
+	if danger_mode == 1 and playerIsInAPartyOrAlliance() and isMonster(act.actor_id) then --danger_mode 1 = Auto
 		for i = 1, act.target_count do
 			if act.targets[i].id == player.id then
-				SafeTimer = DangerSafeDelay
+				SafeTimer = profile.danger_mode_auto_safe_again_delay_in_seconds
 				TakingDamage = true
 				choose_set()
 				break
@@ -4886,7 +5588,7 @@ windower.register_event('action',function(act)
 	end
 
 	--Track Phalanx things our party is doing
-	if AutoPhalanxSet and isPlayerInParty(act.actor_id) then
+	if profile.equip_phalanx_set_when_cast_on and isPlayerInParty(act.actor_id) then
 		if act.category == 4 then --Completion of spell
 			if act.param == 106 and active_accession[act.actor_id] then --Phalanx + Accession active
 				choose_set()
@@ -4907,28 +5609,32 @@ windower.register_event('action',function(act)
 		end
 	end
 
-	if not notifications.Damage then return end
+	if not profile.notifications.damage then return end
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
-			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local weapon_skill = weaponskills[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
@@ -4936,8 +5642,9 @@ windower.register_event('action',function(act)
 		NotiCountdown = -1
 	--Magic Bursts:
 	elseif (act.category == 4 and msg == 252) and act.actor_id == player.id then
-		hud_noti_shdw:text('Magic Burst! '..spells[act.param].english..': '..addCommas(ata.param))
-		hud_noti:text('Magic Burst! '..spells[act.param].english..': '..addCommas(ata.param))
+		local spell = spells[act.param].english
+		hud_noti_shdw:text('Magic Burst! '..spell..': '..addCommas(ata.param))
+		hud_noti:text('Magic Burst! '..spell..': '..addCommas(ata.param))
 		hud_noti:color(0,255,255)
 		NotiCountdown = -1
 	end
@@ -4956,8 +5663,8 @@ function file_unload()
 	send_command('unalias wc')
 	send_command('unalias hud')
 	send_command('unalias songs')
-	send_command('unbind '..DMBind)
-	send_command('unbind '..GMBind)
-	send_command('unbind '..WCBind)
+	send_command('unbind '..profile.keybind_for_danger_mode)
+	send_command('unbind '..profile.keybind_for_song_mode)
+	send_command('unbind '..profile.keybind_for_weapon_cycler)
 
 end
