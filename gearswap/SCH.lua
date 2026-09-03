@@ -529,8 +529,7 @@ sets.movement_speed = {
 	-- feet="Herald's Gaiters",
 }
 
--- Danger
--- Full DT- and everything you've got with Absorbs or Annuls Damage
+-- Danger (Full DT- and everything you've got with Absorbs or Annuls Damage)
 sets.danger = {
 	head="Nyame Helm",
 	body="Nyame Mail",
@@ -1106,7 +1105,7 @@ end
 
 
 
-FileVersion = '1.4.1'
+FileVersion = '1.4.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1717,6 +1716,7 @@ local function addCommas(number)
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
 	return formattedNumber
 end
+
 --Color the appropriate Ability/spell recast
 local function textColor(abil,state)
 
@@ -1790,8 +1790,6 @@ local function getRecasts()
 	Sublimation.recast = ability_recast[234] and math.ceil(ability_recast[234])
 
 end
-
-getRecasts()
 
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
@@ -1978,7 +1976,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
 
 local function getStratChargeTimer()
 	local player = windower.ffxi.get_player()
@@ -2000,7 +1997,6 @@ local function getStratChargeTimer()
 	strat_flash_counter = max_charges
 
 end
-getStratChargeTimer()
 
 local function formatAMTime(input)
 
@@ -2303,6 +2299,92 @@ local function isPlayerInParty(player_id)
 	return false
 end
 
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	if ShowTPMeter then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_weapons_shdw:show()
+	hud_arts_shdw:show()
+	hud_mode_shdw:show()
+	hud_element_shdw:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_weapons:show()
+	hud_arts:show()
+	hud_mode:show()
+	hud_element:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_tp_meter_bg1:hide()
+	hud_tp_meter_bg2:hide()
+	hud_tp_meter:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_weapons_shdw:hide()
+	hud_arts_shdw:hide()
+	hud_mode_shdw:hide()
+	hud_element_shdw:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_weapons:hide()
+	hud_arts:hide()
+	hud_mode:hide()
+	hud_element:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+getRecasts()
+getHUDAbils()
+getStratChargeTimer()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -2381,88 +2463,10 @@ function self_command(command)
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		windower.send_command('gs c HideHUD')
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		if ShowTPMeter then
-			hud_tp_meter_bg1:show()
-			hud_tp_meter_bg2:show()
-			hud_tp_meter:show()
-		end
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_weapons_shdw:show()
-		hud_arts_shdw:show()
-		hud_mode_shdw:show()
-		hud_element_shdw:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_weapons:show()
-		hud_arts:show()
-		hud_mode:show()
-		hud_element:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_tp_meter_bg1:hide()
-		hud_tp_meter_bg2:hide()
-		hud_tp_meter:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_weapons_shdw:hide()
-		hud_arts_shdw:hide()
-		hud_mode_shdw:hide()
-		hud_element_shdw:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_weapons:hide()
-		hud_arts:hide()
-		hud_mode:hide()
-		hud_element:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
+		hideHUD()
 	elseif command == 'Flash_Abil01_A' then
 		hud_abil01_bg:bg_alpha(50)
 		local c = color.abil.flash
@@ -2546,7 +2550,7 @@ function choose_set(sublimation_activation)
 	local rest = player.status == "Resting" and sets.rest or nil
 	local full_mp = player.mpp > FullMpPercent and sets.idle.full_mp or nil
 	local melee = player.status == 'Engaged' and sets.melee or nil
-	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage and not melee)) and sets.danger or nil
+	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage and not melee)) and not midaction() and sets.danger or nil
 
 	if player.status == "Idle" then
 		if AdoulinZones[world.area] then
@@ -2601,7 +2605,7 @@ function precast(spell)
 	if TransportLock and transport_spells[spell.en] and transport_locked then
 		cancel_spell()
 		transport_locked = false
-		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
+		add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
 		if AlertSounds then
 			play_sound(Notification_Cancel)
 		end
@@ -2694,7 +2698,6 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(set_combine(sets.fast_cast))
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
-		-- if AutoTRStrats and auto_valve_open and not (buffactive['amnesia'] or buffactive['impairment']) then
 		if AutoTRStrats and buffactive['Tabula Rasa'] and auto_valve_open and not (buffactive['amnesia'] or buffactive['impairment'] or buffactive['Immanence']) then
 			auto_valve_open = false
 			local spell_name = spell.english
@@ -2846,10 +2849,10 @@ windower.register_event('status change', function(status)
 
 	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
-		windower.send_command('gs c HideHUD')
+		hideHUD()
 	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	end
 
 	choose_set()
@@ -3099,10 +3102,10 @@ windower.register_event('prerender', function()
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
 		if pos == "(?-?)" and not Zoning and ShowHUD then
-			send_command('gs c HideHUD')
+			hideHUD()
 			Zoning = true
 		elseif pos ~= "(?-?)" and Zoning and ShowHUD then
-			send_command('gs c ShowHUD')
+			showHUD()
 			Zoning = false
 		end
 
@@ -3112,7 +3115,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -3532,7 +3535,7 @@ windower.register_event('prerender', function()
 		elementCheck()
 
 		--MP checks
-		if notifications.LowMP and player then
+		if notifications.LowMP and player and GreetingDelay == -1 then
 			if player.mpp <= 20 then
 				if not NotiLowMPToggle then
 					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
@@ -3853,7 +3856,7 @@ windower.register_event('prerender', function()
 		if transport_lock_timestamp ~= 0 and os.time() > transport_lock_timestamp then
 			transport_locked = true
 			transport_lock_timestamp = 0
-			windower.add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
+			add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
 		end
 
 	end
@@ -4106,24 +4109,28 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
-			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local weapon_skill = weaponskills[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
