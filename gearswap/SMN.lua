@@ -632,41 +632,41 @@ end
 
 
 
-FileVersion = '14.3.3'
+FileVersion = '14.3.4'
 
 -------------------------------------------
 --            AVATAR MAPPING             --
 -------------------------------------------
 
-Avatars = S{
-	'Carbuncle','Cait Sith','Ifrit','Shiva','Garuda','Titan','Ramuh','Leviathan','Fenrir','Diabolos','Siren','Atomos','Alexander','Odin'
+Avatars = {
+	["Carbuncle"] = true, ["Cait Sith"] = true, ["Ifrit"] = true, ["Shiva"] = true, ["Garuda"] = true, ["Titan"] = true, ["Ramuh"] = true, ["Leviathan"] = true, ["Fenrir"] = true, ["Diabolos"] = true, ["Siren"] = true, ["Atomos"] = true, ["Alexander"] = true, ["Odin"] = true
 	}
 
-Spirits = S{
-	'Light Spirit','Fire Spirit','Ice Spirit','Air Spirit','Earth Spirit','Thunder Spirit','Water Spirit','Dark Spirit'
+Spirits = {
+	["Light Spirit"] = true, ["Fire Spirit"] = true, ["Ice Spirit"] = true, ["Air Spirit"] = true, ["Earth Spirit"] = true, ["Thunder Spirit"] = true, ["Water Spirit"] = true, ["Dark Spirit"] = true
 	}
 
 -------------------------------------------
 --          BLOOD PACT MAPPING           --
 -------------------------------------------
 
-BPRagePhysical = S{
+BPRagePhysical = {
 	["Punch"] = true, ["Rock Throw"] = true, ["Barracuda Dive"] = true, ["Claw"] = true, ["Welt"] = true, ["Axe Kick"] = true, ["Shock Strike"] = true, ["Camisado"] = true, ["Regal Scratch"] = true, ["Poison Nails"] = true, ["Moonlit Charge"] = true, ["Crescent Fang"] = true, ["Rock Buster"] = true, ["Roundhouse"] = true, ["Tail Whip"] = true, ["Double Punch"] = true, ["Megalith Throw"] = true, ["Double Slap"] = true, ["Eclipse Bite"] = true, ["Mountain Buster"] = true, ["Spinning Dive"] = true, ["Predator Claws"] = true, ["Rush"] = true, ["Chaotic Strike"] = true, ["Volt Strike"] = true, ["Hysteric Assault"] = true, ["Crag Throw"] = true, ["Blindside"] = true, ["Regal Gash"] = true
 }
 
-BPRageMagical = S{
+BPRageMagical = {
 	["Inferno"] = true, ["Earthen Fury"] = true, ["Tidal Wave"] = true, ["Aerial Blast"] = true, ["Clarsach Call"] = true, ["Diamond Dust"] = true, ["Judgment Bolt"] = true, ["Searing Light"] = true, ["Howling Moon"] = true, ["Ruinous Omen"] = true, ["Fire II"] = true, ["Stone II"] = true, ["Water II"] = true, ["Aero II"] = true, ["Blizzard II"] = true, ["Thunder II"] = true, ["Thunderspark"] = true, ["Meteorite"] = true, ["Fire IV"] = true, ["Stone IV"] = true, ["Water IV"] = true, ["Aero IV"] = true, ["Blizzard IV"] = true, ["Thunder IV"] = true, ["Sonic Buffet"] = true, ["Nether Blast"] = true, ["Zantetsuken"] = true, ["Meteor Strike"] = true, ["Geocrush"] = true, ["Grand Fall"] = true, ["Wind Blade"] = true, ["Tornado II"] = true, ["Heavenly Strike"] = true, ["Thunderstorm"] = true, ["Level ? Holy"] = true, ["Holy Mist"] = true, ["Lunar Bay"] = true, ["Night Terror"] = true, ["Conflag Strike"] = true, ["Impact"] = true
 }
 
-BPRageHybrid = S{
+BPRageHybrid = {
 	["Burning Strike"] = true, ["Flaming Crush"] = true
 }
 
-BPWardBuff = S{
+BPWardBuff = {
 	["Altana's Favor"] = true, ["Healing Ruby"] = true, ["Raise II"] = true, ["Shining Ruby"] = true, ["Aerial Armor"] = true, ["Frost Armor"] = true, ["Reraise II"] = true, ["Rolling Thunder"] = true, ["Katabatic Blades"] = true, ["Whispering Wind"] = true, ["Crimson Howl"] = true, ["Lightning Armor"] = true, ["Chinook"] = true, ["Ecliptic Growl"] = true, ["Glittering Ruby"] = true, ["Earthen Ward"] = true, ["Spring Water"] = true, ["Hastega"] = true, ["Noctoshield"] = true, ["Ecliptic Howl"] = true, ["Dream Shroud"] = true, ["Healing Ruby II"] = true, ["Perfect Defense"] = true, ["Earthen Armor"] = true, ["Fleet Wind"] = true, ["Inferno Howl"] = true, ["Wind's Blessing"] = true, ["Soothing Ruby"] = true, ["Heavenward Howl"] = true, ["Pacifying Ruby"] = true, ["Hastega II"] = true, ["Soothing Current"] = true, ["Crystal Blessing"] = true
 }
 
-BPWardDebuff = S{
+BPWardDebuff = {
 	["Lunatic Voice"] = true, ["Somnolence"] = true, ["Lunar Cry"] = true, ["Mewing Lullaby"] = true, ["Nightmare"] = true, ["Lunar Roar"] = true, ["Slowga"] = true, ["Ultimate Terror"] = true, ["Sleepga"] = true, ["Bitter Elegy"] = true, ["Eerie Eye"] = true, ["Tidal Roar"] = true, ["Diamond Storm"] = true, ["Shock Squall"] = true, ["Pavor Nocturnus"] = true
 }
 
@@ -1223,6 +1223,7 @@ local function addCommas(number)
 	-- Return the number (albeit as a string, we're not doing any math on it at this point)
 	return formattedNumber
 end
+
 --Color the appropriate Ability/spell recast
 local function textColor(abil,state)
 
@@ -1299,8 +1300,6 @@ local function getRecasts()
 	Sublimation.recast = ability_recast[234] and math.ceil(ability_recast[234])
 
 end
-
-getRecasts()
 
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
@@ -1468,7 +1467,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
 
 local function getStratChargeTimer()
 	if subjob ~= 'SCH' then return end
@@ -1488,7 +1486,6 @@ local function getStratChargeTimer()
 	strat_flash_counter = max_charges
 
 end
-getStratChargeTimer()
 
 local function formatAMTime(input)
 
@@ -1691,6 +1688,110 @@ local function isMonster(id)
 	return actor and actor.spawn_type == 16 and not actor.in_party
 end
 
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	if ShowTPMeter then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_weapons_shdw:show()
+	hud_avatar_shdw:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_weapons:show()
+	hud_avatar:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_tp_meter_bg1:hide()
+	hud_tp_meter_bg2:hide()
+	hud_tp_meter:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_weapons_shdw:hide()
+	hud_avatar_shdw:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_weapons:hide()
+	hud_avatar:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+local function setMacroPage()
+	if pet.name == "Ifrit" then
+		send_command('input /macro set '..IfritPage)
+	elseif pet.name == "Titan" then
+		send_command('input /macro set '..TitanPage)
+	elseif pet.name == "Leviathan" then
+		send_command('input /macro set '..LeviathanPage)
+	elseif pet.name == "Garuda" then
+		send_command('input /macro set '..GarudaPage)
+	elseif pet.name == "Shiva" then
+		send_command('input /macro set '..ShivaPage)
+	elseif pet.name == "Ramuh" then
+		send_command('input /macro set '..RamuhPage)
+	elseif pet.name == "Carbuncle" then
+		send_command('input /macro set '..CarbunclePage)
+	elseif pet.name == "Fenrir" then
+		send_command('input /macro set '..FenrirPage)
+	elseif pet.name == "Cait Sith" then
+		send_command('input /macro set '..CaitSithPage)
+	elseif pet.name == "Siren" then
+		send_command('input /macro set '..SirenPage)
+	elseif pet.name == "Diabolos" then
+		send_command('input /macro set '..DiabolosPage)
+	end
+end
+
+getRecasts()
+getHUDAbils()
+getStratChargeTimer()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -1742,90 +1843,31 @@ function self_command(command)
 	elseif command == 'AliveDelay' then
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'Siphon' then
-		SpiritElements={Light='Light Spirit',Fire='Fire Spirit',Ice='Ice Spirit',Wind='Air Spirit',Earth='Earth Spirit',Lightning='Thunder Spirit',Water='Water Spirit',Dark='Dark Spirit'}
-		SpiritOpposing={Light='Dark',Fire='Ice',Ice='Wind',Wind='Earth',Earth='Lightning',Lightning='Water',Water='Fire',Dark='Light'}
-		if world.weather_element ~= 'None' and SpiritOpposing[world.day_element] ~= world.weather_element then
-			send_command('input /ma '..SpiritElements[world.weather_element]..' <me>')
+		local SpiritElements={Light='Light Spirit',Fire='Fire Spirit',Ice='Ice Spirit',Wind='Air Spirit',Earth='Earth Spirit',Lightning='Thunder Spirit',Water='Water Spirit',Dark='Dark Spirit'}
+		local SpiritOpposing={Light='Dark',Fire='Ice',Ice='Wind',Wind='Earth',Earth='Lightning',Lightning='Water',Water='Fire',Dark='Light'}
+		if world.weather_intensity == 2 and world.weather_element ~= 'None' then
+			send_command('input /ma "'..SpiritElements[world.weather_element]..'" <me>')
+		elseif world.weather_element ~= 'None' and SpiritOpposing[world.day_element] ~= world.weather_element then
+			send_command('input /ma "'..SpiritElements[world.weather_element]..'" <me>')
 		else
-			send_command('input /ma '..SpiritElements[world.day_element]..' <me>')
+			send_command('input /ma "'..SpiritElements[world.day_element]..'" <me>')
 		end
 		send_command('wait 4.5;input /ja "Elemental Siphon" <me>;wait 1;input /pet Release <me>')
+	-- elseif command == 'Siphon' then
+	-- 	SpiritElements={Light='Light Spirit',Fire='Fire Spirit',Ice='Ice Spirit',Wind='Air Spirit',Earth='Earth Spirit',Lightning='Thunder Spirit',Water='Water Spirit',Dark='Dark Spirit'}
+	-- 	SpiritOpposing={Light='Dark',Fire='Ice',Ice='Wind',Wind='Earth',Earth='Lightning',Lightning='Water',Water='Fire',Dark='Light'}
+	-- 	if world.weather_element ~= 'None' and SpiritOpposing[world.day_element] ~= world.weather_element then
+	-- 		send_command('input /ma '..SpiritElements[world.weather_element]..' <me>')
+	-- 	else
+	-- 		send_command('input /ma '..SpiritElements[world.day_element]..' <me>')
+	-- 	end
+	-- 	send_command('wait 4.5;input /ja "Elemental Siphon" <me>;wait 1;input /pet Release <me>')
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		send_command('gs c ShowHUD')
+		showHUD()
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		send_command('gs c HideHUD')
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		if ShowTPMeter then
-			hud_tp_meter_bg1:show()
-			hud_tp_meter_bg2:show()
-			hud_tp_meter:show()
-		end
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_weapons_shdw:show()
-		hud_avatar_shdw:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_weapons:show()
-		hud_avatar:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_tp_meter_bg1:hide()
-		hud_tp_meter_bg2:hide()
-		hud_tp_meter:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_weapons_shdw:hide()
-		hud_avatar_shdw:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_weapons:hide()
-		hud_avatar:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
+		hideHUD()
 	elseif command == 'Flash_Abil01_A' then
 		hud_abil01_bg:bg_alpha(50)
 		local c = color.abil.flash
@@ -2030,7 +2072,7 @@ function precast(spell)
 		end
 	elseif (spell.type == 'BloodPactRage' or spell.type == 'BloodPactWard') and not (buffactive['Astral Conduit'] or buffactive['Apogee']) then
 		--if we're using a BP without Avatar's Favor up, we'll put it up before casting:
-		if AutoFavor and spell.english ~= "Avatar's Favor" and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
+		if AutoFavor and spell.english ~= "Avatar's Favor" and not Spirits[pet.name] and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
 			cancel_spell()
 			send_command('input /ja "Avatar\'s Favor" <me>;wait 1;input /pet \"'..spell.english..'\" '..spell.target.raw)
 			return
@@ -2129,7 +2171,7 @@ function aftercast(spell)
 		end
 	end
 	if spell.type == "SummonerPact" then
-		if AutoFavor and spell.english ~= "Avatar's Favor" and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
+		if AutoFavor and not Spirits[spell.english] and not buffactive['Avatar\'s Favor'] and not (buffactive['amnesia'] or buffactive['impairment']) and windower.ffxi.get_ability_recasts()[176] == 0 then
 			send_command('wait 3.5;input /ja "Avatar\'s Favor" <me>')
 		end
 		has_pet = true
@@ -2163,10 +2205,10 @@ windower.register_event('status change', function(status)
 
 	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
-		send_command('gs c HideHUD')
+		hideHUD()
 	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
-		send_command('gs c ShowHUD')
+		showHUD()
 	end
 
 	choose_set()
@@ -2422,10 +2464,10 @@ windower.register_event('prerender', function()
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
 		if pos == "(?-?)" and not Zoning and ShowHUD then
-			send_command('gs c HideHUD')
+			hideHUD()
 			Zoning = true
 		elseif pos ~= "(?-?)" and Zoning and ShowHUD then
-			send_command('gs c ShowHUD')
+			showHUD()
 			Zoning = false
 		end
 
@@ -2435,7 +2477,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -2829,46 +2871,27 @@ windower.register_event('prerender', function()
 		--Pet checks
 		if pet.isvalid and not PetPresent then --we have an avatar out when we did not have one out already (ie summoning)
 			PetPresent = true
-			if pet.name == "Ifrit" then
-				send_command('input /macro set '..IfritPage)
-			elseif pet.name == "Titan" then
-				send_command('input /macro set '..TitanPage)
-			elseif pet.name == "Leviathan" then
-				send_command('input /macro set '..LeviathanPage)
-			elseif pet.name == "Garuda" then
-				send_command('input /macro set '..GarudaPage)
-			elseif pet.name == "Shiva" then
-				send_command('input /macro set '..ShivaPage)
-			elseif pet.name == "Ramuh" then
-				send_command('input /macro set '..RamuhPage)
-			elseif pet.name == "Carbuncle" then
-				send_command('input /macro set '..CarbunclePage)
-			elseif pet.name == "Fenrir" then
-				send_command('input /macro set '..FenrirPage)
-			elseif pet.name == "Cait Sith" then
-				send_command('input /macro set '..CaitSithPage)
-			elseif pet.name == "Siren" then
-				send_command('input /macro set '..SirenPage)
-			elseif pet.name == "Diabolos" then
-				send_command('input /macro set '..DiabolosPage)
+
+			if GreetingDelay == 0 then
+				setMacroPage()
 			end
 
 			local pet_colors = {
-				-- Light pets
+				--Light pets
 				Carbuncle = color.Light, ["Cait Sith"] = color.Light, Alexander = color.Light, LightSpirit = color.Light,
-				-- Fire pets
+				--Fire pets
 				Ifrit = color.Fire, FireSpirit = color.Fire,
-				-- Ice pets
+				--Ice pets
 				Shiva = color.Ice, IceSpirit = color.Ice,
-				-- Air pets
+				--Air pets
 				Garuda = color.Air, Siren = color.Air, AirSpirit = color.Air,
-				-- Earth pets
+				--Earth pets
 				Titan = color.Earth, EarthSpirit = color.Earth,
-				-- Thunder pets
+				--Thunder pets
 				Ramuh = color.Thunder, ThunderSpirit = color.Thunder,
-				-- Water pets
+				--Water pets
 				Leviathan = color.Water, WaterSpirit = color.Water,
-				-- Dark pets
+				--Dark pets
 				Fenrir = color.Dark, Diabolos = color.Dark, Atomos = color.Dark, Odin = color.Dark, DarkSpirit = color.Dark
 			}
 			local c = pet_colors[pet.name] or color.None
@@ -3274,6 +3297,7 @@ windower.register_event('prerender', function()
 		elseif GreetingDelay == 0 then
 			GreetingDelay = -1
 			setNotification()
+			setMacroPage()
 		end
 
 		if party and party_count == 1 and party_count ~= party.count then
@@ -3343,6 +3367,7 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+	getStratChargeTimer()
 
 	if ZoneGear ~= 'Off' then
 		send_command('wait 2;gs c Zone Gear')
@@ -3492,24 +3517,28 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
-			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local weapon_skill = weaponskills[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
@@ -3519,13 +3548,13 @@ windower.register_event('action',function(act)
 	elseif ((act.category == 4 and msg == 252) or (act.category == 13 and msg == 379)) and act.actor_id == player.id then
 		--Magic:
 		if act.category == 4 then
-		local spell = spells[act.param].english
+			local spell = spells[act.param].english
 			hud_noti_shdw:text('Magic Burst! '..spell..': '..addCommas(ata.param))
 			hud_noti:text('Magic Burst! '..spell..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
 		--Blood Pacts:
 		elseif act.category == 13 then
-		local job_ability = jobabilities[act.param].english
+			local job_ability = jobabilities[act.param].english
 			hud_noti_shdw:text('Magic Burst! '..job_ability..': '..addCommas(ata.param))
 			hud_noti:text('Magic Burst! '..job_ability..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
@@ -3533,24 +3562,28 @@ windower.register_event('action',function(act)
 		NotiCountdown = -1
 	--Blood Pact: Rages:
 	elseif act.category == 13 then
-	local job_ability = jobabilities[act.param].english
-	--Blood Pact misses:
+		--Blood Pact misses:
 		if msg == 324 then
+			local job_ability = jobabilities[act.param].english
 			hud_noti_shdw:text('«« '..job_ability..' Missed »»')
 			hud_noti:text('«« '..job_ability..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Blood pact gets blinked:
 		elseif msg == 31 then
+			local job_ability = jobabilities[act.param].english
 			hud_noti_shdw:text('«« '..job_ability..' Blinked »»')
 			hud_noti:text('«« '..job_ability..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Blood Pact lands and creates a Skillchain:
 		elseif ata.has_add_effect then
-			hud_noti_shdw:text(job_ability..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(job_ability..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local job_ability = jobabilities[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(job_ability..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(job_ability..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Blood Pact lands but no Skillchain:
 		elseif msg == 317 then
+			local job_ability = jobabilities[act.param].english
 			hud_noti_shdw:text(job_ability..': '..addCommas(ata.param))
 			hud_noti:text(job_ability..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
