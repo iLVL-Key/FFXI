@@ -1,20 +1,22 @@
 # Keys Gearswap files
-
+## NEW FILE FORMAT
+I am slowly converting each of these files into a new file format. Instead of a single all inclusive JOB.lua file, there will now be a separate [Player_name]_JOB_profile.lua file for each character, as well as a single live.lua file, in addition to the usual JOB.lua file. These new files will **automatically create themselves** if they are not already present when you load a JOB.lua file. The profile files will now store all of the options and gear sets for that job and character. This allows updating the main JOB.lua file without having to redo any options or copy over gear sets, and players with multiple chartacters with overlapping jobs will only need to update the single JOB.lua file for all characters. The live.lua file stores any setting that may get updated live in-game, things like the HUD position (yes, the HUD can now be dragged with this new change), gear modes, weapon cycler selections, etc. This requires a bunch of work, so this is being slowly rolled out job by job.  
+Currently using the new file format:  
+- BRD
 ## Features
 ### QOL Improvements
 Lots of little things to improve your experience. Each file has an Options and Advanced Options section at the top. Nearly everything that the files do can be adjusted or turned off.  
-- Automatically* uses an Echo Drop or Remedy instead of spell when you are silenced.
-- Automatically* activates and keeps Majesty active.
-- Automatically* activates and keeps Stances (Hasso/Seigan) active.
-- Automatically* equips Movement Speed gear while you are moving.
+- Uses an Echo Drop or Remedy instead of spell when you are silenced.
+- Activates and keeps Majesty active.
+- Activates and keeps Stances (Hasso/Seigan) active.
+- Equips Movement Speed gear while you are moving.
 - Delays casting if you're coming to a stop from moving to help prevent "spell interrupted" even though you KNOW you weren't moving!
 - Set your specific macro book and page for that job (and common subjobs) when the file loads.
 - DD jobs will attempt to use a "save" when you are at low HP (High Jump, Chakra, etc depending on main/sub job).
 - Reminder to put Reraise up if it's down.
 - Removes Stoneskin if you are asleep and equips "HP drain" type gear pieces (for jobs that have them).
 - And many more...
-- *NOTE 1: All of the "auto" things will still require you to perform some action, depending on what it is, in order to trigger. None of them will act on their own without user input.
-- NOTE 2: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
+- NOTE: AutoHWater/DoomAlert and AutoLockstyle options have been removed and now have their own standalone addons: [Exorcist](https://github.com/iLVL-Key/FFXI/tree/main/addons/Exorcist) and [Vanity](https://github.com/iLVL-Key/FFXI/tree/main/addons/Vanity)
 
 ### Gear Modes
 Certain jobs have multiple modes you can switch between at any time. Standard DPS, Accuracy, Subtle Blow, etc. PLD and RUN have an Auto mode that will switch between Combat and Neutral modes on its own depending on when the game thinks you are in combat (ie idle but not in combat will equip refresh set, whereas idle but in combat will equip a kite set).
@@ -121,6 +123,12 @@ In general, each HUD has..
 
 <details>
 <summary>BLU</summary>
+
+Version 20.2.2
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed some occasional errors with Damage notifications.
 
 Version 20.2.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
@@ -559,6 +567,20 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 4.0
+- Overhauled options and gear sets. All options and gear sets are now saved in an external file: [Character name]_[JOB]_profile.lua. This allows for easier updating of the main JOB file without needing to redo desired options or reimport gear sets. All on-screen HUD/display positions, on/off settings, Modes, etc. (essentially anything you can change on the fly while playing without having to reload the file) are now saved in an external live.lua file. The live.lua file is not intended to be edited by the player, but instead is used by the main file to save those settings so they are remembered for next time the file is loaded.
+- Added ability to drag the HUD.
+- Added Stratagems HUD Recast. Tracks number of Startagems available and recast to next available.
+- Added down-converting of Curing Waltzes if not enough TP to use or if selected Waltz is on cooldown.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Adjusted the on screen Song List to now distinguish songs that have Marcato applied to them.
+- Adjusted the on screen Song List to auto-hide when empty.
+- Adjusted the //hud command to now toggle dragging of the HUD. HUD display is now under the HUD OPTIONS section in the profile file.
+- Fixed an issue with dummy songs that would incorrectly equip the buff_song set unless Nightingale was active.
+- Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed some occasional errors with Damage notifications.
+
 Version 3.3
 - Adjusted the way songs are calculated (again). Numbers for max songs and song duration bonuses from certain gear are callculated at file load now.
 - Adjusted song durations to account for exact number of JPs into Clarion Call Effect and Marcato Effect (previously missing entirely), instead of assuming a full 20 points into it at 99.
@@ -702,6 +724,13 @@ Version 1.0 BETA-1
 
 <summary>COR</summary>
 
+Version 2.4
+- Added down-converting of Curing Waltzes if not enough TP to use or if selected Waltz is on cooldown.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed some occasional errors with Damage notifications.
+
 Version 2.3.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
 - Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
@@ -818,6 +847,15 @@ Version 1.0 BETA-1
 <details>
 
 <summary>GEO</summary>
+
+Version 16.4
+- Added a notification for when your Lupoan dies.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed an error when reloading the file with a Lupoan already active then activating Blaze of Glory or Ecliptic Attrition.
+- Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed Stratagem HUD recast timer not working correctly when you change your Sub Job to Scholar after the file has loaded.
+- Fixed some occasional errors with Damage notifications.
 
 Version 16.3.2
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
@@ -1203,6 +1241,12 @@ Version 11.0.0
  
 <summary>MNK</summary>
 
+Version 8.5
+- Added down-converting of Curing Waltzes if not enough TP to use or if selected Waltz is on cooldown.
+- Added `.impetus` as an option to add to the end of a weapon skill gear set (ex. `sets["Vicory Smite"].impetus) to use when Impetus is active.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed some occasional errors with Damage notifications.
+
 Versioon 8.4.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
 - Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
@@ -1421,6 +1465,17 @@ Version 3.0
 <details>
  
 <summary>PLD</summary>
+
+Version 15.5
+- Added down-converting of Cure 4 to a lower Cure tier if not enough MP to now work on any tier cure cast.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed Fast Cast set not equipping for cures.
+- Fixed AutoMajesty trying to activate Majesty during aftercast when Majesty's recast timer was not ready.
+- Fixed AutoPhalanxSet not respecting the KeepTPThreshold setting.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed occasionally prematurely switching out of Max HP set while in the middle of casting a Max HP set Cure on yourself for hate, which would result in the sure landing on yourself not in the Max HP set.
+- Fixed Stratagem HUD recast timer not working correctly when you change your Sub Job to Scholar after the file has loaded.
+- Fixed some occasional errors with Damage notifications.
 
 Verison 15.4.2
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
@@ -1812,6 +1867,11 @@ Version 11.0
  
 <summary>RUN</summary>
 
+Version 10.4.2
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed some occasional errors with Damage notifications.
+
 Version 10.4.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
 - Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
@@ -2113,6 +2173,11 @@ Version 6.0.0
 <details>
  
 <summary>SAM</summary>
+
+Version 16.5
+- Added down-converting of Curing Waltzes if not enough TP to use or if selected Waltz is on cooldown.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed some occasional errors with Damage notifications.
 
 Version 16.4.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
@@ -2449,6 +2514,12 @@ Version 9.0
   
 <summary>SCH</summary>
 
+Version 1.4.2
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
+- Fixed the Low MP notification going off immediately after switching jobs when you had low MP before the switch.
+- Fixed some occasional errors with Damage notifications.
+
 Version 1.4.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
 - Removed the no longer used itemMatch function. This function was previously replaced by both different, more efficient code and a new getMainWeaponId function specicially for Aftermath calculations.
@@ -2504,6 +2575,14 @@ Version 1.0
 <details>
 
 <summary>SMN</summary>
+
+Version 14.3.4
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Adjusted the Elemental Siphon feature to account for double weather.
+- Fixed Pet Midcast not triggering correctly for Blood Pacts.
+- Fixed Stratagem HUD recast timer not working correctly when you change your Sub Job to Scholar after the file has loaded.
+- Fixed Avatar's Favor attempting to trigger with a Spirit out.
+- Fixed some occasional errors with Damage notifications.
 
 Version 14.3.3
 - Fixed Danger Mode activating while in the middle of another action and equipping the Danger set in place of the appropriate midcast set.
@@ -2824,6 +2903,11 @@ Version 8.0
 <details>
  
 <summary>WAR</summary>
+
+Version 10.5
+- Added down-converting of Curing Waltzes if not enough TP to use or if selected Waltz is on cooldown.
+- Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
+- Fixed some occasional errors with Damage notifications.
 
 Version 10.4.1
 - Adjusted precast to cancel processing while in midcast of another spell/ability.
