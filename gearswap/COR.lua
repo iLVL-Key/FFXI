@@ -527,8 +527,7 @@ sets.movement_speed = {
 	-- legs="Carmine Cuisses +1",
 }
 
--- Danger
--- Full DT- and everything you've got with Absorbs or Annuls Damage
+-- Danger (Full DT- and everything you've got with Absorbs or Annuls Damage)
 sets.danger = {
 	head="Nyame Helm",
 	body="Nyame Mail",
@@ -1085,7 +1084,7 @@ end
 
 
 
-FileVersion = '2.3.1'
+FileVersion = '2.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1941,14 +1940,12 @@ local function setWeaponPair()
 	local cycle = getWeaponCycle()
 	pair = cycle[WeaponCycleIndex]
 end
-setWeaponPair()
 
 --Set the initial Ranged Weapon
 local function setRangedWeapon()
 	RangedCycleIndex = 1 --used to cycle through the RangedCycle sets
 	ranged_weapon = RangedCycle[RangedCycleIndex]
 end
-setRangedWeapon()
 
 --Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
 local function checkProcWeapons(mainSlot, subSlot)
@@ -2071,7 +2068,6 @@ local function getRecasts()
 	Warcry.recast = ability_recast[2] and math.ceil(ability_recast[2])
 
 end
-getRecasts()
 
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
@@ -2239,7 +2235,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
 
 local function formatAMTime(input)
 
@@ -2338,7 +2333,6 @@ local function getJPsAndMerits()
 	jp_duration_upgrades = player and player.job_points.cor.phantom_roll_duration
 
 end
-getJPsAndMerits()
 
 local function getRollDuration()
 
@@ -2482,7 +2476,6 @@ local function displayCurrentRolls()
 	end
 
 end
-displayCurrentRolls()
 
 local function displayRollInfo(act, double_up, snake_eye)
 
@@ -2861,7 +2854,6 @@ function updateAmmo()
 	hud_ammo_bg:bg_color(ammo_color.r,ammo_color.g,ammo_color.b)
 
 end
-updateAmmo()
 
 local function checkAmmo()
 
@@ -3008,6 +3000,115 @@ local function isMonster(id)
 	return actor and actor.spawn_type == 16 and not actor.in_party
 end
 
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	if ShowTPMeter then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
+	if buffactive['Double-Up Chance'] then
+		hud_roll_bg:show()
+		hud_roll_shdw:show()
+		hud_roll:show()
+	else
+		hud_roll_1_bg:show()
+		hud_roll_2_bg:show()
+		hud_ammo_bg:show()
+		hud_roll_1_shdw:show()
+		hud_roll_2_shdw:show()
+		hud_ammo_shdw:show()
+		hud_roll_1:show()
+		hud_roll_2:show()
+		hud_ammo:show()
+	end
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_weapons_shdw:show()
+	hud_mode_shdw:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_weapons:show()
+	hud_mode:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_tp_meter_bg1:hide()
+	hud_tp_meter_bg2:hide()
+	hud_tp_meter:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_roll_bg:hide()
+	hud_roll_1_bg:hide()
+	hud_roll_2_bg:hide()
+	hud_ammo_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_weapons_shdw:hide()
+	hud_mode_shdw:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_roll_shdw:hide()
+	hud_roll_1_shdw:hide()
+	hud_roll_2_shdw:hide()
+	hud_ammo_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_weapons:hide()
+	hud_mode:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_roll:hide()
+	hud_roll_1:hide()
+	hud_roll_2:hide()
+	hud_ammo:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+getRecasts()
+getHUDAbils()
+getJPsAndMerits()
+displayCurrentRolls()
+updateAmmo()
+setRangedWeapon()
+setWeaponPair()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -3075,107 +3176,10 @@ function self_command(command)
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		windower.send_command('gs c HideHUD')
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		if ShowTPMeter then
-			hud_tp_meter_bg1:show()
-			hud_tp_meter_bg2:show()
-			hud_tp_meter:show()
-		end
-		if buffactive['Double-Up Chance'] then
-			hud_roll_bg:show()
-			hud_roll_shdw:show()
-			hud_roll:show()
-		else
-			hud_roll_1_bg:show()
-			hud_roll_2_bg:show()
-			hud_ammo_bg:show()
-			hud_roll_1_shdw:show()
-			hud_roll_2_shdw:show()
-			hud_ammo_shdw:show()
-			hud_roll_1:show()
-			hud_roll_2:show()
-			hud_ammo:show()
-		end
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_weapons_shdw:show()
-		hud_mode_shdw:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_weapons:show()
-		hud_mode:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_tp_meter_bg1:hide()
-		hud_tp_meter_bg2:hide()
-		hud_tp_meter:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_roll_bg:hide()
-		hud_roll_1_bg:hide()
-		hud_roll_2_bg:hide()
-		hud_ammo_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_weapons_shdw:hide()
-		hud_mode_shdw:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_roll_shdw:hide()
-		hud_roll_1_shdw:hide()
-		hud_roll_2_shdw:hide()
-		hud_ammo_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_weapons:hide()
-		hud_mode:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_roll:hide()
-		hud_roll_1:hide()
-		hud_roll_2:hide()
-		hud_ammo:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
+		hideHUD()
 	elseif command == 'WC' then
 		CurrentEquip = ''
 		local cycle = getWeaponCycle()
@@ -3271,7 +3275,7 @@ end
 
 function choose_set()
 
-	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage)) and sets.danger or nil
+	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and TakingDamage)) and not midaction() and sets.danger or nil
 	local high_acc_mob = player.target.name and HighAccMobs[player.target.name]
 	local bullet = (Mode == 'Mode3' or high_acc_mob) and {ammo=sets.ranged_accuracy_bullet.ammo} or {ammo=sets.ranged_attack_bullet.ammo}
 
@@ -3437,7 +3441,31 @@ function precast(spell)
 		equip(sets.fold)
 	elseif spell.english == 'Quickstep' or string.find(spell.english,'Step') then
 		equip(sets.steps)
-	elseif string.find(spell.english,'Waltz') then
+	elseif string.find(spell.english,'Curing Waltz') then
+		local ability_recast = windower.ffxi.get_ability_recasts()
+		local waltzes = {
+			{name="Curing Waltz III", tp=500, id=187},
+			{name="Curing Waltz II",  tp=350, id=186},
+			{name="Curing Waltz",     tp=200, id=217},
+		}
+		local waltz_match = false
+		for _, waltz in ipairs(waltzes) do
+			--Match the original attempt (or an existing down-converted attempt)
+			if waltz.name == spell.english then
+				waltz_match = true
+			end
+			--Get the recast time (defaults to 0 if valid/not on cooldown)
+			local cd = math.ceil(ability_recast[waltz.id] or 0)
+			--Down-convert if matched AND we have enough TP AND the recast is < 1
+			if waltz_match and player.tp >= waltz.tp and cd < 1 then
+				if waltz.name ~= spell.english then
+					send_command('input /ja "'..waltz.name..'" '..spell.target.raw)
+					cancel_spell()
+					return
+				end
+				break
+			end
+		end
 		equip(sets.waltzes)
 	elseif spell.english == 'Animated Flourish' then
 		equip(sets.animated_flourish)
@@ -3520,12 +3548,12 @@ windower.register_event('status change', function(status)
 	if status == 4 and not InCS then
 		InCS = true
 		if ShowHUD then --In a cutscene: Hide the HUD
-			windower.send_command('gs c HideHUD')
+			hideHUD()
 		end
 	elseif status ~= 4 and InCS then
 		InCS = false
 		if ShowHUD then --Out of cutscene: Show the HUD
-			windower.send_command('gs c ShowHUD')
+			showHUD()
 		end
 	end
 
@@ -3788,12 +3816,12 @@ windower.register_event('prerender', function()
 		if pos == "(?-?)" and not Zoning then
 			Zoning = true
 			if ShowHUD then
-				send_command('gs c HideHUD')
+				hideHUD()
 			end
 		elseif pos ~= "(?-?)" and Zoning then
 			Zoning = false
 			if ShowHUD then
-				send_command('gs c ShowHUD')
+				showHUD()
 			end
 		end
 
@@ -3803,7 +3831,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -4183,7 +4211,7 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and subJobWithMP() and player then
+		if notifications.LowMP and subJobWithMP() and player and GreetingDelay == -1 then
 			if player.mpp <= 20 then
 				if not NotiLowMPToggle then
 					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
@@ -5028,25 +5056,28 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
+			local weapon_skill = weaponskills[act.param].english
 			local sc_name = sc[ata.add_effect_animation]
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
