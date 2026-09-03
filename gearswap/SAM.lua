@@ -399,34 +399,62 @@ function get_sets()
 
 -- Hasso Mode 1 (Example: Hasso+, with a focus on Multi-Attack, Zanshin, and Store TP, then filling in the rest with DEX, Accuracy, and Attack)
 sets.hasso.Mode1 = {
+	-- ammo="Coiste Bodhar",
+	-- head="Ken. Jinpachi +1",
+	-- body="Kasuga Domaru +3",
+	-- hands="Tatena. Gote +1",
+	-- legs="Kasuga Haidate +3",
+	-- feet="Ryuo Sune-Ate +1",
+	-- neck="Sam. Nodowa +2",
+	-- waist="Sailfi Belt +1",
+	-- left_ear="Schere Earring",
+	-- right_ear="Kasuga Earring +2",
+	-- left_ring="Hetairoi Ring",
+	-- right_ring="Niqmaddu Ring",
+	-- back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
+
 	ammo="Coiste Bodhar",
-	head="Ken. Jinpachi +1",
+	head="Kasuga Kabuto +3",
 	body="Kasuga Domaru +3",
 	hands="Tatena. Gote +1",
 	legs="Kasuga Haidate +3",
 	feet="Ryuo Sune-Ate +1",
-	neck="Sam. Nodowa +2",
+	neck="Moonlight Nodowa",
 	waist="Sailfi Belt +1",
 	left_ear="Schere Earring",
 	right_ear="Kasuga Earring +2",
-	left_ring="Hetairoi Ring",
+	left_ring="Chirich Ring +1",
 	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
 }
 
 -- Hasso Mode 2 (Example: Hasso+, with a focus on Multi-Attack, Zanshin, and Store TP, with enough DT to survive higher end content)
 sets.hasso.Mode2 = set_combine(sets.hasso.Mode1, {
+	-- ammo="Coiste Bodhar",
+	-- head="Ken. Jinpachi +1",
+	-- body="Kasuga Domaru +3",
+	-- hands="Mpaca's Gloves",
+	-- legs="Kasuga Haidate +3",
+	-- feet="Ryuo Sune-Ate +1",
+	-- neck="Sam. Nodowa +2",
+	-- waist="Sailfi Belt +1",
+	-- left_ear="Schere Earring",
+	-- right_ear="Kasuga Earring +2",
+	-- left_ring="Hetairoi Ring",
+	-- right_ring="Niqmaddu Ring",
+	-- back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
+
 	ammo="Coiste Bodhar",
-	head="Ken. Jinpachi +1",
+	head="Kasuga Kabuto +3",
 	body="Kasuga Domaru +3",
-	hands="Mpaca's Gloves",
+	hands="Wakido Kote +4",
 	legs="Kasuga Haidate +3",
-	feet="Ryuo Sune-Ate +1",
-	neck="Sam. Nodowa +2",
-	waist="Sailfi Belt +1",
+	feet="Sak. Sune-Ate +4",
+	neck="Moonlight Nodowa",
+	waist="Windbuffet Belt +1",
 	left_ear="Schere Earring",
 	right_ear="Kasuga Earring +2",
-	left_ring="Hetairoi Ring",
+	left_ring="Chirich Ring +1",
 	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','DEX+10','"Store TP"+10','Phys. dmg. taken-10%',}},
 })
@@ -434,18 +462,10 @@ sets.hasso.Mode2 = set_combine(sets.hasso.Mode1, {
 -- Hasso Mode 3 - Accuracy (Example: Hasso+, with a focus on DEX and Accuracy, then filling in the rest with a mix of Multi-Attack, Zanshin, Store TP, and Attack)
 -- NOTE: This is a special set. Weapon skills will default to the Weapon Skill - Accuracy set.
 sets.hasso.Mode3 = set_combine(sets.hasso.Mode1, {
-	ammo="Coiste Bodhar",
-	head="Kasuga Kabuto +3",
-	body="Kasuga Domaru +3",
-	hands="Tatena. Gote +1",
-	legs="Kasuga Haidate +3",
-	feet="Tatena. Sune. +1",
-	neck="Sam. Nodowa +2",
+	hands="Wakido Kote +4",
 	waist="Ioskeha Belt +1",
-	left_ear="Schere Earring",
-	right_ear="Kasuga Earring +2",
-	left_ring="Hetairoi Ring",
-	right_ring="Niqmaddu Ring",
+	left_ring="Chirich Ring +1",
+	right_ring="Chirich Ring +1",
 	back="Null Shawl",
 })
 
@@ -524,16 +544,16 @@ sets.oh_shit = {
 sets.weapon_skill = {
 	ammo="Knobkierrie",
 	head="Mpaca's Cap",
-	body="Nyame Mail",
+	body="Sakonji Domaru +4",
 	hands="Kasuga Kote +3",
 	legs="Nyame Flanchard",
 	feet="Nyame Sollerets",
 	neck="Sam. Nodowa +2",
 	waist="Sailfi Belt +1",
-	left_ear="Thrud Earring",
+	left_ear="Moonshade Earring",
 	right_ear="Kasuga Earring +2",
 	left_ring="Cornelia's Ring",
-	right_ring="Niqmaddu Ring",
+	right_ring="Regal Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
@@ -565,84 +585,170 @@ sets["Tachi: Ageha"] = {
 
 -- Tachi: Jinpu (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
 sets["Tachi: Jinpu"] = {
-	head="Nyame Helm",
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
 	hands="Nyame Gauntlets",
-	neck="Fotia Gorget",
-	waist="Orpheus's Sash",
-	left_ear="Schere Earring",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Null Loop",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Tachi: Jinpu - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Jinpu"].high_buff = {
-	head="Nyame Helm",
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
 	hands="Nyame Gauntlets",
-	feet="Mpaca's Boots",
-	waist="Orpheus's Sash",
-	right_ring="Regal Ring",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Null Loop",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
+}
+
+-- Tachi: Jinpu - Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tachi: Jinpu"].capped_tp = {
+	head="Nyame Helm",
+	left_ear="Schere Earring",
 }
 
 -- Tachi: Kagero (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
 sets["Tachi: Kagero"] = {
-	head="Nyame Helm",
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
 	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
 	neck="Fotia Gorget",
-	waist="Orpheus's Sash",
-	left_ear="Schere Earring",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Tachi: Kagero - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Kagero"].high_buff = {
-	body="Sakonji Domaru +4",
-	waist="Orpheus's Sash",
-	right_ring="Regal Ring",
+	ammo="Knobkierrie",
+	head="Nyame Helm",
+	body="Nyame Mail",
+	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Fotia Gorget",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
+}
+
+-- Tachi: Kagero - Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tachi: Kagero"].capped_tp = {
+	head="Nyame Helm",
+	left_ear="Schere Earring",
 }
 
 -- Tachi: Koki (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack)
 sets["Tachi: Koki"] = {
-	head="Nyame Helm",
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
 	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
 	neck="Fotia Gorget",
 	waist="Fotia Belt",
-	left_ear="Schere Earring",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Tachi: Koki - High Buff (Magic Attack Bonus, Weapon Skill Damage, STR, Attack, Double/Triple Attack, PDL)
 sets["Tachi: Koki"].high_buff = {
+	ammo="Knobkierrie",
 	head="Nyame Helm",
+	body="Nyame Mail",
 	hands="Nyame Gauntlets",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Fotia Gorget",
 	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
 	back={ name="Smertrios's Mantle", augments={'STR+20','Mag. Acc+20 /Mag. Dmg.+20','Magic Damage +10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
+}
+
+-- Tachi: Koki - Capped TP (Replace slots with unneeded TP Bonus)
+sets["Tachi: Koki"].capped_tp = {
+	head="Nyame Helm",
+	left_ear="Schere Earring",
 }
 
 -- Tachi: Fudo (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Fudo"] = {
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
 	body="Sakonji Domaru +4",
+	hands="Kasuga Kote +3",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Regal Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Tachi: Fudo - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Fudo"].high_buff = {
-	body="Sakonji Domaru +4",
-	feet="Kas. Sune-Ate +3",
-	left_ring="Sroda Ring",
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
+	hands="Kasuga Kote +3",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Sroda Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
--- Tachi: Fudo Capped TP (Replace slots with unneeded TP Bonus)
+-- Tachi: Fudo - Capped TP (Replace slots with unneeded TP Bonus)
 sets["Tachi: Fudo"].capped_tp = {
 	head="Nyame Helm",
+	left_ear="Thrud Earring",
 }
 
 -- Tachi: Kaiten (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Kaiten"] = {
 	head="Nyame Helm",
-	body="Sakonji Domaru +4",
 	left_ear="Schere Earring",
 	left_ring="Sroda Ring",
 }
@@ -651,7 +757,6 @@ sets["Tachi: Kaiten"] = {
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Kaiten"].high_buff = {
 	head="Nyame Helm",
-	body="Sakonji Domaru +4",
 	legs="Mpaca's Hose",
 	feet="Kas. Sune-Ate +3",
 	left_ear="Schere Earring",
@@ -661,78 +766,178 @@ sets["Tachi: Kaiten"].high_buff = {
 -- Tachi: Mumei (STR, DEX)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Mumei"] = {
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
 	body="Sakonji Domaru +4",
-	left_ring="Regal Ring",
+	hands="Kasuga Kote +3",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Regal Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Tachi: Mumei - High Buff (STR, DEX, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Mumei"].high_buff = {
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
 	body="Sakonji Domaru +4",
+	hands="Kasuga Kote +3",
+	legs="Nyame Flanchard",
 	feet="Kas. Sune-Ate +3",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Epaminondas's Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
--- Tachi: Mumei Capped TP (Replace slots with unneeded TP Bonus)
+-- Tachi: Mumei - Capped TP (Replace slots with unneeded TP Bonus)
 sets["Tachi: Mumei"].capped_tp = {
 	head="Nyame Helm",
+	left_ear="Thrud Earring",
 }
 
 -- Tachi: Shoha (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Shoha"] = {
-	legs="Mpaca's Hose",
-	feet="Kas. Sune-Ate +3",
-	left_ring="Sroda Ring",
+	ammo="Knobkierrie",
+	head="Mpaca's Cap",
+	body="Kasuga Domaru +3",
+	hands="Kasuga Kote +3",
+	legs="Nyame Flanchard",
+	feet="Nyame Sollerets",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Tachi: Shoha - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Tachi: Shoha"].high_buff = {
+	ammo="Crepuscular Pebble",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
+	hands="Nyame Gauntlets",
 	legs="Mpaca's Hose",
 	feet="Kas. Sune-Ate +3",
-	left_ring="Sroda Ring",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
--- Tachi: Shoha Capped TP (Replace slots with unneeded TP Bonus)
+-- Tachi: Shoha - Capped TP (Replace slots with unneeded TP Bonus)
 sets["Tachi: Shoha"].capped_tp = {
 	head="Nyame Helm",
+	left_ear="Thrud Earring",
 }
 
 -- Impulse Drive (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Impulse Drive"] = {
+	ammo="Coiste Bodhar",
+	head="Mpaca's Cap",
+	body="Mpaca's Doublet",
+	hands="Kasuga Kote +3",
+	legs="Mpaca's Hose",
+	feet="Mpaca's Boots",
+	neck="Null Loop",
+	waist="Null Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
 	right_ring="Niqmaddu Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
 -- Impulse Drive - High Buff (STR, PDL)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Impulse Drive"].high_buff = {
-	feet="Kas. Sune-Ate +3",
+	ammo="Coiste Bodhar",
+	head="Mpaca's Cap",
+	body="Nyame Mail",
+	hands="Kasuga Kote +3",
 	legs="Mpaca's Hose",
-	left_ring="Sroda Ring",
+	feet="Kas. Sune-Ate +3",
+	neck="Sam. Nodowa +2",
+	waist="Sailfi Belt +1",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
 	right_ring="Niqmaddu Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
 }
 
--- Impulse Drive Capped TP (Replace slots with unneeded TP Bonus)
+-- Impulse Drive - Capped TP (Replace slots with unneeded TP Bonus)
 sets["Impulse Drive"].capped_tp = {
 	head="Nyame Helm",
+	left_ear="Thrud Earring",
 }
 
 -- Stardiver (STR)
 -- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
 sets["Stardiver"] = {
-	neck="Fotia Gorget",
+	ammo="Coiste Bodhar",
+	head="Mpaca's Cap",
+	body="Mpaca's Doublet",
+	hands="Mpaca's Gloves",
+	legs="Kasuga Haidate +3",
+	feet="Mpaca's Boots",
+	neck="Null Loop",
 	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Regal Ring",
+	right_ring="Niqmaddu Ring",
+	back="Null Shawl",
 }
 
--- Stardiver Capped TP (Replace slots with unneeded TP Bonus)
+-- Stardiver - High Buff (STR)
+-- Combines with Weapon Skill set, only necessary to set the slots with specific desired stats
+sets["Stardiver"].high_buff = {
+	ammo="Coiste Bodhar",
+	head="Mpaca's Cap",
+	body="Mpaca's Doublet",
+	hands="Mpaca's Gloves",
+	legs="Mpaca's Hose",
+	feet="Kas. Sune-Ate +3",
+	neck="Sam. Nodowa +2",
+	waist="Fotia Belt",
+	left_ear="Moonshade Earring",
+	right_ear="Kasuga Earring +2",
+	left_ring="Cornelia's Ring",
+	right_ring="Niqmaddu Ring",
+	back={ name="Smertrios's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}},
+}
+
+-- Stardiver Capped - TP (Replace slots with unneeded TP Bonus)
 sets["Stardiver"].capped_tp = {
-	head="Nyame Helm",
+	left_ear="Schere Earring",
 }
 
 -- Hachirin-no-obi
 sets.hachirin_no_obi = {
 	--waist="Hachirin-no-obi",
+}
+
+--Wake Up (piece to use with dot on it to wake you up when you are asleep)
+sets.wake_up = {
+	neck="Vim Torque",
 }
 
 -- Fast Cast (cap is 80%)
@@ -810,7 +1015,7 @@ sets.warding_circle = {
 
 -- Meikyo Shisui
 sets.meikyo_shisui = {
-	feet="Sak. Sune-Ate +3",
+	feet="Sak. Sune-Ate +4",
 }
 
 -- Steps
@@ -884,7 +1089,7 @@ end
 
 
 
-FileVersion = '16.4.1'
+FileVersion = '16.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1575,8 +1780,6 @@ local function getRecasts()
 
 end
 
-getRecasts()
-
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
 
@@ -1716,7 +1919,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
 
 local function formatAMTime(input)
 
@@ -1911,6 +2113,83 @@ local function isPlayerInParty(player_id)
 	return false
 end
 
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	if ShowTPMeter then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_weapons_shdw:show()
+	hud_mode_shdw:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_weapons:show()
+	hud_mode:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_tp_meter_bg1:hide()
+	hud_tp_meter_bg2:hide()
+	hud_tp_meter:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_weapons_shdw:hide()
+	hud_mode_shdw:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_weapons:hide()
+	hud_mode:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+getRecasts()
+getHUDAbils()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -1975,80 +2254,10 @@ function self_command(command)
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		windower.send_command('gs c HideHUD')
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		if ShowTPMeter then
-			hud_tp_meter_bg1:show()
-			hud_tp_meter_bg2:show()
-			hud_tp_meter:show()
-		end
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_weapons_shdw:show()
-		hud_mode_shdw:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_weapons:show()
-		hud_mode:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_tp_meter_bg1:hide()
-		hud_tp_meter_bg2:hide()
-		hud_tp_meter:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_weapons_shdw:hide()
-		hud_mode_shdw:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_weapons:hide()
-		hud_mode:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
+		hideHUD()
 	elseif command == 'WC' then
 		CurrentEquip = ''
 		if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
@@ -2291,7 +2500,31 @@ function precast(spell)
 		equip(sets.sengikori)
 	elseif spell.type == 'Step' then
 		equip(sets.steps)
-	elseif spell.type == 'Waltz' then
+	elseif string.find(spell.english,'Curing Waltz') then
+		local ability_recast = windower.ffxi.get_ability_recasts()
+		local waltzes = {
+			{name="Curing Waltz III", tp=500, id=187},
+			{name="Curing Waltz II",  tp=350, id=186},
+			{name="Curing Waltz",     tp=200, id=217},
+		}
+		local waltz_match = false
+		for _, waltz in ipairs(waltzes) do
+			--Match the original attempt (or an existing down-converted attempt)
+			if waltz.name == spell.english then
+				waltz_match = true
+			end
+			--Get the recast time (defaults to 0 if valid/not on cooldown)
+			local cd = math.ceil(ability_recast[waltz.id] or 0)
+			--Down-convert if matched AND we have enough TP AND the recast is < 1
+			if waltz_match and player.tp >= waltz.tp and cd < 1 then
+				if waltz.name ~= spell.english then
+					send_command('input /ja "'..waltz.name..'" '..spell.target.raw)
+					cancel_spell()
+					return
+				end
+				break
+			end
+		end
 		equip(sets.waltzes)
 	elseif spell.english == 'Animated Flourish' then
 		equip(sets.animated_flourish)
@@ -2369,10 +2602,10 @@ windower.register_event('status change', function(status)
 
 	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
-		windower.send_command('gs c HideHUD')
+		hideHUD()
 	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	end
 
 	choose_set()
@@ -2400,14 +2633,14 @@ windower.register_event('gain buff', function(buff)
 		mythicNum = pre_mythicNum
 		primeNum = pre_primeNum
 	elseif (buff == 2 or buff == 19) then --If we get slept,
+		local vim = nil
 		if buffactive['Stoneskin'] and not buffactive['charm'] then --first remove stoneskin if its up,
 			send_command('cancel 37')
-			equip(sets.oh_shit)
-		elseif not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already DOT'd, have more than 50 HP, and are engaged,
-			equip(set_combine({neck="Vim Torque"}, sets.oh_shit)) --equip the Vim Torque to wake us up
-		else
-			equip(sets.oh_shit)
 		end
+		if not (buffactive['Poison'] or buffactive['Dia'] or buffactive['bio'] or buffactive['Shock'] or buffactive['Rasp'] or buffactive['Choke'] or buffactive['Frost'] or buffactive['Burn'] or buffactive['Drown'] or buffactive['Requiem'] or buffactive['Kaustra'] or buffactive['Helix']) and player.hp > 50 and player.status == "Engaged" then --then as long as we're not already DOT'd, have more than 50 HP, and are engaged,
+			vim = sets.wake_up --equip the Vim Torque to wake us up
+		end
+		equip(set_combine(sets.oh_shit, vim))
 	elseif buff == 7 or buff == 10 or buff == 28 then --If we get petrified, stunned, or terrored, then equip the Oh Shit set
 		equip(sets.oh_shit)
 	elseif buff == 15 then --Doom
@@ -2631,10 +2864,10 @@ windower.register_event('prerender', function()
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
 		if pos == "(?-?)" and not Zoning and ShowHUD then
-			send_command('gs c HideHUD')
+			hideHUD()
 			Zoning = true
 		elseif pos ~= "(?-?)" and Zoning and ShowHUD then
-			send_command('gs c ShowHUD')
+			showHUD()
 			Zoning = false
 		end
 
@@ -2644,7 +2877,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -3810,24 +4043,28 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if notifications.Damage and act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
-			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local weapon_skill = weaponskills[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
