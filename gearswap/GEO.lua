@@ -97,6 +97,7 @@ notifications = {
 	Food			=	true,	--[true/false]	Displays a notification when food wears off.
 	Invis			=	true,	--[true/false]	Displays a notification when Invisible is about to wear off.
 	Invite			=	true,	--[true/false]	Displays a notification when someone invites to a party/alliance.
+	LupoanDies		=	true,	--[true/false]	Displays a notification when your Lupoan dies.
 	LowHP			=	true,	--[true/false]	Displays a notification when HP is low.
 	LowMP			=	true,	--[true/false]	Displays a notification when MP is under 20% when you have a subjob that uses MP.
 	Reraise			=	true,	--[true/false]	Displays a notification when reraise wears off.
@@ -296,8 +297,7 @@ sets.movement_speed = {
 	-- feet="Geo. Sandals +4",
 }
 
--- Danger
--- Full DT- and everything you've got with Absorbs or Annuls Damage
+-- Danger (Full DT- and everything you've got with Absorbs or Annuls Damage)
 sets.danger = {
 	head="Azimuth Hood +3",
 	body="Nyame Mail",
@@ -660,7 +660,7 @@ end
 
 
 
-FileVersion = '16.3.2'
+FileVersion = '16.4'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -733,6 +733,7 @@ TakingDamage = false
 NearDanger = false
 PetHPP = 0
 LuopanDelay = false --used to create a short delay between casting a luopan and checking if it still exists, pet.isvalid does a weird on/off/on thing when a luopan is cast which messes with checking if certain buffs are still active on the lupoan
+LuopanReleased = false
 EntrustCountdown = 0
 EntrustTarget = nil
 party_count = party and party.count or 1
@@ -1364,8 +1365,6 @@ local function getRecasts()
 
 end
 
-getRecasts()
-
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
 
@@ -1528,7 +1527,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
 
 local function getStratChargeTimer()
 	if subjob ~= 'SCH' then return end
@@ -1548,7 +1546,6 @@ local function getStratChargeTimer()
 	strat_flash_counter = max_charges
 
 end
-getStratChargeTimer()
 
 local function useHachirinNoObi(nuke_element)
 	local opposites = {
@@ -1683,6 +1680,92 @@ local function isMonster(id)
 	return actor and actor.spawn_type == 16 and not actor.in_party
 end
 
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_indi_label_shdw:show()
+	hud_geo_label_shdw:show()
+	hud_entrust_label_shdw:show()
+	hud_indi_spell_shdw:show()
+	hud_geo_spell_shdw:show()
+	hud_entrust_spell_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_indi_label:show()
+	hud_geo_label:show()
+	hud_entrust_label:show()
+	hud_indi_spell:show()
+	hud_geo_spell:show()
+	hud_entrust_spell:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_indi_label_shdw:hide()
+	hud_geo_label_shdw:hide()
+	hud_entrust_label_shdw:hide()
+	hud_indi_spell_shdw:hide()
+	hud_geo_spell_shdw:hide()
+	hud_entrust_spell_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_indi_label:hide()
+	hud_geo_label:hide()
+	hud_entrust_label:hide()
+	hud_indi_spell:hide()
+	hud_geo_spell:hide()
+	hud_entrust_spell:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+getRecasts()
+getHUDAbils()
+getStratChargeTimer()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -1730,88 +1813,10 @@ function self_command(command)
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		windower.send_command('gs c HideHUD')
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_indi_label_shdw:show()
-		hud_geo_label_shdw:show()
-		hud_entrust_label_shdw:show()
-		hud_indi_spell_shdw:show()
-		hud_geo_spell_shdw:show()
-		hud_entrust_spell_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_indi_label:show()
-		hud_geo_label:show()
-		hud_entrust_label:show()
-		hud_indi_spell:show()
-		hud_geo_spell:show()
-		hud_entrust_spell:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_indi_label_shdw:hide()
-		hud_geo_label_shdw:hide()
-		hud_entrust_label_shdw:hide()
-		hud_indi_spell_shdw:hide()
-		hud_geo_spell_shdw:hide()
-		hud_entrust_spell_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_indi_label:hide()
-		hud_geo_label:hide()
-		hud_entrust_label:hide()
-		hud_indi_spell:hide()
-		hud_geo_spell:hide()
-		hud_entrust_spell:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
+		hideHUD()
 	elseif command == 'Flash_Abil01_A' then
 		hud_abil01_bg:bg_alpha(50)
 		local c = color.abil.flash
@@ -1871,6 +1876,8 @@ function self_command(command)
 		end
 	elseif command == 'LuopanDelay' then
 		LuopanDelay = false
+	elseif command == 'LuopanReleased' then
+		LuopanReleased = false
 	elseif command == "resetCapturedToggle" then
 		captured_spell_toggle = false
 	end
@@ -1883,7 +1890,7 @@ end
 function choose_set()
 
 	local base_set = LuopanActive and sets.idle_luopan or sets.idle
-	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and (TakingDamage or NearDanger))) and sets.danger or nil
+	local danger = (LowHP or DangerMode == 'On' or (DangerMode == "Auto" and (TakingDamage or NearDanger))) and not midaction() and sets.danger or nil
 	if player.status == "Resting" then
 		equip(set_combine(base_set, sets.rest, danger))
 	elseif player.status == "Engaged" then
@@ -1943,7 +1950,7 @@ function precast(spell)
 	if TransportLock and transport_spells[spell.en] and transport_locked then
 		cancel_spell()
 		transport_locked = false
-		windower.add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
+		add_to_chat(8,('[Notice] '):color(39)..(spell.name):color(1)..(' cancelled. Unlocked for 3 min or until zone.'):color(8))
 		if AlertSounds then
 			play_sound(Notification_Cancel)
 		end
@@ -2145,7 +2152,7 @@ function aftercast(spell)
 			Bonus = 6
 			Suffix = ')'
 		elseif string.find(spell.english,'Precision') then
-			SpellSH = 'Precision (Acc/R.Acc +'
+			SpellSH = 'Precis. (Acc/R.Acc +'
 			Base = 50
 			Bonus = 5
 			Suffix = ')'
@@ -2259,11 +2266,6 @@ function aftercast(spell)
 			Base = 14.8
 			Bonus = 2.7
 			Suffix = '%)'
-		elseif string.find(spell.english,'Precision') then
-			SpellSH = 'Precision (Acc/R.Acc +'
-			Base = 50
-			Bonus = 5
-			Suffix = ')'
 		elseif string.find(spell.english,'Wilt') then
 			SpellSH = 'Wilt (Att -'
 			Base = 25
@@ -2345,6 +2347,8 @@ function aftercast(spell)
 		local c = color.bubble.normal
 		hud_geo_spell:color(c.r,c.g,c.b)
 		LuopanActive = false
+		LuopanReleased = true
+		send_command('wait 2;gs c LuopanReleased')
 	elseif spell.english == 'Bolster' and BolTimer and not spell.interrupted then
 		if player.equipment.body == 'Bagua Tunic' or player.equipment.body == 'Bagua Tunic +1' or player.equipment.body == 'Bagua Tunic +2' or player.equipment.body == 'Bagua Tunic +3' or player.equipment.body == 'Bagua Tunic +4' then --these pieces extend Bolster by 30 seconds so we adjust accordingly
 			send_command('input /echo [Bolster] 3:30;wait 30;input /echo [Bolster] 3:00;wait 30;input /echo [Bolster] 2:30;wait 30;input /echo [Bolster] 2:00;wait 30;input /echo [Bolster] 1:30;wait 30;input /echo [Bolster] 1:00;wait 30;input /echo [Bolster] 0:30;wait 10;input /echo [Bolster] 0:20;wait 10;input /echo [Bolster] 0:10')
@@ -2366,13 +2370,15 @@ end
 -------------------------------------------
 
 windower.register_event('status change', function(status)
-
+				if AlertSounds then
+					play_sound(Notification_Bad)
+				end
 	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
-		windower.send_command('gs c HideHUD')
+		hideHUD()
 	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	end
 
 	choose_set()
@@ -2572,10 +2578,10 @@ windower.register_event('prerender', function()
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
 		if pos == "(?-?)" and not Zoning and ShowHUD then
-			send_command('gs c HideHUD')
+			hideHUD()
 			Zoning = true
 		elseif pos ~= "(?-?)" and Zoning and ShowHUD then
-			send_command('gs c ShowHUD')
+			showHUD()
 			Zoning = false
 		end
 
@@ -2585,7 +2591,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -2820,7 +2826,7 @@ windower.register_event('prerender', function()
 		end
 
 		--MP checks
-		if notifications.LowMP and player then
+		if notifications.LowMP and player and GreetingDelay == -1 then
 			if player.mpp <= 20 then
 				if not NotiLowMPToggle then
 					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
@@ -2907,13 +2913,13 @@ windower.register_event('prerender', function()
 				tempTotal = GeoTotal and (math.floor((GeoTotal * 2) * 100)) / 100
 				c = color.bubble.bolster
 			elseif EclipticActive and BlazeActive then
-				tempTotal = (math.floor((GeoTotal * 1.75) * 100)) / 100
+				tempTotal = GeoTotal and (math.floor((GeoTotal * 1.75) * 100)) / 100
 				c = color.bubble.boge
 			elseif BlazeActive then
-				tempTotal = (math.floor((GeoTotal * 1.50) * 100)) / 100
+				tempTotal = GeoTotal and (math.floor((GeoTotal * 1.50) * 100)) / 100
 				c = color.bubble.extra
 			elseif EclipticActive then
-				tempTotal = (math.floor((GeoTotal * 1.25) * 100)) / 100
+				tempTotal = GeoTotal and (math.floor((GeoTotal * 1.25) * 100)) / 100
 				c = color.bubble.extra
 			end
 			hud_geo_spell_shdw:text(format24((GeoSpell == 'None' and 'Unknown' or GeoSpell)..(tempTotal and tempTotal or '')..(GeoSuffix and GeoSuffix or '')))
@@ -2934,6 +2940,15 @@ windower.register_event('prerender', function()
 				EclipticActive = false
 				LastingActive = false
 				BlazeActive = false
+			end
+			if notifications.LupoanDies and not LuopanReleased then
+				hud_noti_shdw:text('«« Lupoan Died »»')
+				hud_noti:text('«« Lupoan Died »»')
+				hud_noti:color(255,50,50)
+				NotiCountdown = NotiDelay
+				if AlertSounds then
+					play_sound(Notification_Bad)
+				end
 			end
 		end
 
@@ -3394,7 +3409,7 @@ windower.register_event('prerender', function()
 		if transport_lock_timestamp ~= 0 and time > transport_lock_timestamp then
 			transport_locked = true
 			transport_lock_timestamp = 0
-			windower.add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
+			add_to_chat(8,('[Notice] '):color(39)..('Transport locked.'):color(8))
 		end
 
 	end
@@ -3465,6 +3480,7 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+	getStratChargeTimer()
 
 	if ZoneGear ~= 'Off' then
 		send_command('wait 2;gs c Zone Gear')
@@ -3666,24 +3682,28 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
-			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local weapon_skill = weaponskills[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
@@ -3691,8 +3711,9 @@ windower.register_event('action',function(act)
 		NotiCountdown = -1
 	--Magic Bursts:
 	elseif (act.category == 4 and msg == 252) and act.actor_id == player.id then
-		hud_noti_shdw:text('Magic Burst! '..spells[act.param].english..': '..addCommas(ata.param))
-		hud_noti:text('Magic Burst! '..spells[act.param].english..': '..addCommas(ata.param))
+		local spell = spells[act.param].english
+		hud_noti_shdw:text('Magic Burst! '..spell..': '..addCommas(ata.param))
+		hud_noti:text('Magic Burst! '..spell..': '..addCommas(ata.param))
 		hud_noti:color(0,255,255)
 		NotiCountdown = -1
 	end
