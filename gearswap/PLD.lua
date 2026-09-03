@@ -291,6 +291,7 @@ color = {
 WeaponCycle = {
 	{"Burtgang", "Duban"},
 	{"Malignance Sword", "Aegis"},
+	{"Excalibur", "Aegis"},
 	--{"Main Slot", "Sub Slot"},
 }
 
@@ -568,14 +569,20 @@ sets.enlight_sird = {
 
 -- Phalanx (Phalanx+, Enhancing Magic+, Enhancing Magic Duration)
 -- NOTE: Main and Sub slots will only equip if your TP is under the number set as the KeepTPThreshold in the Advanced Options section.
--- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between or higher than 500 is wasted
+-- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between those or higher than 500 is wasted
 sets.phalanx = {
 	main="Sakpata's Sword",
+	sub="Priwen",
+	ammo="Egoist's Tathlum",
 	head={ name="Odyssean Helm", augments={'AGI+15','Accuracy+8','Phalanx +4','Accuracy+10 Attack+10','Mag. Acc.+20 "Mag.Atk.Bns."+20',}},
 	body="Odyssean Chestplate",
 	hands="Souv. Handsch. +1",
 	legs="Sakpata's Cuisses",
 	feet="Souveran Schuhs +1",
+	neck="Hoxne Torque",
+	waist="Plat. Mog. Belt",
+	left_ear="Alabaster Earring",
+	right_ear="Chev. Earring +2",
 	left_ring="Stikini Ring +1",
 	right_ring="Stikini Ring +1",
 	back="Weard Mantle",
@@ -586,6 +593,7 @@ sets.phalanx = {
 -- NOTE: Phalanx tiers are at 300/329/358/386/415/443/472/500 Enhancing Magic Skill, anything in between or higher than 500 is wasted
 sets.phalanx_sird = {
 	main="Sakpata's Sword",
+	sub="Priwen",
 	ammo="Staunch Tathlum +1",		--11 SIRD
 	head="Souv. Schaller +1",		--20 SIRD
 	body="Odyssean Chestplate",
@@ -594,6 +602,7 @@ sets.phalanx_sird = {
 	feet="Souveran Schuhs +1",
 	neck="Moonlight Necklace",		--15 SIRD
 	waist="Plat. Mog. Belt",
+	left_ear="Alabaster Earring",
 	right_ear="Knightly Earring",	--9 SIRD
 	left_ring="Defending Ring",
 	right_ring="Stikini Ring +1",
@@ -608,7 +617,7 @@ sets.enhancing = {
 	hands="Regal Gauntlets",
 	legs="Rev. Breeches +4",
 	legs="Carmine Cuisses +1",
-	neck="Incanter's Torque",
+	neck="Hoxne Torque",
 	left_ear="Mimir Earring",
 	right_ear="Andoaa Earring",
 	left_ring="Stikini Ring +1",
@@ -810,7 +819,7 @@ end
 
 
 
-FileVersion = '15.4.2'
+FileVersion = '15.5'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -1411,7 +1420,6 @@ local function setWeaponPair()
 		pair = WeaponCycle[WeaponCycleIndex]
 	end
 end
-setWeaponPair()
 
 --Check if the equipped Main/Sub pair are in our defined AbysseaProcCycle weapons table
 local function checkProcWeapons(mainSlot, subSlot)
@@ -1534,8 +1542,6 @@ local function getRecasts()
 	Warcry.recast = ability_recast[2] and math.ceil(ability_recast[2])
 
 end
-
-getRecasts()
 
 -- Format abilities/spells to fit into their allotted 12 spaces
 local function formatAbils(input,input_sh)
@@ -1703,7 +1709,6 @@ local function getHUDAbils()
 	hud_abil06:text(abil06)
 
 end
-getHUDAbils()
 
 local function getStratChargeTimer()
 	if subjob ~= 'SCH' then return end
@@ -1723,7 +1728,6 @@ local function getStratChargeTimer()
 	strat_flash_counter = max_charges
 
 end
-getStratChargeTimer()
 
 local function formatAMTime(input)
 
@@ -1907,6 +1911,85 @@ local function isPlayerInParty(player_id)
 	return false
 end
 
+local function showHUD()
+	hud_bg_color:show()
+	hud_bg:show()
+	if ShowTPMeter then
+		hud_tp_meter_bg1:show()
+		hud_tp_meter_bg2:show()
+		hud_tp_meter:show()
+	end
+	hud_noti_bg:show()
+	hud_debuffs_bg:show()
+	hud_abil01_bg:show()
+	hud_abil02_bg:show()
+	hud_abil03_bg:show()
+	hud_abil04_bg:show()
+	hud_abil05_bg:show()
+	hud_abil06_bg:show()
+	hud_weapons_shdw:show()
+	hud_mode_shdw:show()
+	hud_noti_shdw:show()
+	hud_debuffs_shdw:show()
+	hud_abil01_shdw:show()
+	hud_abil02_shdw:show()
+	hud_abil03_shdw:show()
+	hud_abil04_shdw:show()
+	hud_abil05_shdw:show()
+	hud_abil06_shdw:show()
+	hud_weapons:show()
+	hud_mode:show()
+	hud_noti:show()
+	hud_debuffs:show()
+	hud_abil01:show()
+	hud_abil02:show()
+	hud_abil03:show()
+	hud_abil04:show()
+	hud_abil05:show()
+	hud_abil06:show()
+end
+
+local function hideHUD()
+	hud_bg_color:hide()
+	hud_bg:hide()
+	hud_tp_meter_bg1:hide()
+	hud_tp_meter_bg2:hide()
+	hud_tp_meter:hide()
+	hud_noti_bg:hide()
+	hud_debuffs_bg:hide()
+	hud_abil01_bg:hide()
+	hud_abil02_bg:hide()
+	hud_abil03_bg:hide()
+	hud_abil04_bg:hide()
+	hud_abil05_bg:hide()
+	hud_abil06_bg:hide()
+	hud_weapons_shdw:hide()
+	hud_mode_shdw:hide()
+	hud_noti_shdw:hide()
+	hud_debuffs_shdw:hide()
+	hud_abil01_shdw:hide()
+	hud_abil02_shdw:hide()
+	hud_abil03_shdw:hide()
+	hud_abil04_shdw:hide()
+	hud_abil05_shdw:hide()
+	hud_abil06_shdw:hide()
+	hud_weapons:hide()
+	hud_mode:hide()
+	hud_noti:hide()
+	hud_debuffs:hide()
+	hud_abil01:hide()
+	hud_abil02:hide()
+	hud_abil03:hide()
+	hud_abil04:hide()
+	hud_abil05:hide()
+	hud_abil06:hide()
+end
+
+getRecasts()
+getHUDAbils()
+getStratChargeTimer()
+setWeaponPair()
+
 -------------------------------------------
 --            SELF COMMANDS              --
 -------------------------------------------
@@ -1963,80 +2046,10 @@ function self_command(command)
 		Alive = true --putting this in a command lets us set a small delay to prevent things from triggering right when we raise up
 	elseif command == 'HUD' and not ShowHUD then
 		ShowHUD = true
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	elseif command == 'HUD' and ShowHUD then
 		ShowHUD = false
-		windower.send_command('gs c HideHUD')
-	elseif command == 'ShowHUD' then
-		hud_bg_color:show()
-		hud_bg:show()
-		if ShowTPMeter then
-			hud_tp_meter_bg1:show()
-			hud_tp_meter_bg2:show()
-			hud_tp_meter:show()
-		end
-		hud_noti_bg:show()
-		hud_debuffs_bg:show()
-		hud_abil01_bg:show()
-		hud_abil02_bg:show()
-		hud_abil03_bg:show()
-		hud_abil04_bg:show()
-		hud_abil05_bg:show()
-		hud_abil06_bg:show()
-		hud_weapons_shdw:show()
-		hud_mode_shdw:show()
-		hud_noti_shdw:show()
-		hud_debuffs_shdw:show()
-		hud_abil01_shdw:show()
-		hud_abil02_shdw:show()
-		hud_abil03_shdw:show()
-		hud_abil04_shdw:show()
-		hud_abil05_shdw:show()
-		hud_abil06_shdw:show()
-		hud_weapons:show()
-		hud_mode:show()
-		hud_noti:show()
-		hud_debuffs:show()
-		hud_abil01:show()
-		hud_abil02:show()
-		hud_abil03:show()
-		hud_abil04:show()
-		hud_abil05:show()
-		hud_abil06:show()
-	elseif command == 'HideHUD' then
-		hud_bg_color:hide()
-		hud_bg:hide()
-		hud_tp_meter_bg1:hide()
-		hud_tp_meter_bg2:hide()
-		hud_tp_meter:hide()
-		hud_noti_bg:hide()
-		hud_debuffs_bg:hide()
-		hud_abil01_bg:hide()
-		hud_abil02_bg:hide()
-		hud_abil03_bg:hide()
-		hud_abil04_bg:hide()
-		hud_abil05_bg:hide()
-		hud_abil06_bg:hide()
-		hud_weapons_shdw:hide()
-		hud_mode_shdw:hide()
-		hud_noti_shdw:hide()
-		hud_debuffs_shdw:hide()
-		hud_abil01_shdw:hide()
-		hud_abil02_shdw:hide()
-		hud_abil03_shdw:hide()
-		hud_abil04_shdw:hide()
-		hud_abil05_shdw:hide()
-		hud_abil06_shdw:hide()
-		hud_weapons:hide()
-		hud_mode:hide()
-		hud_noti:hide()
-		hud_debuffs:hide()
-		hud_abil01:hide()
-		hud_abil02:hide()
-		hud_abil03:hide()
-		hud_abil04:hide()
-		hud_abil05:hide()
-		hud_abil06:hide()
+		hideHUD()
 	elseif command == 'WC' then
 		CurrentEquip = ''
 		if string.find(world.area,'Abyssea') then --if inside Abyssea use the combined table
@@ -2302,7 +2315,7 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(set_combine(sets.fast_cast, main_sub))
 	--if we're casting a cure or protect without Majesty up, we'll put it up before casting:
-	elseif AutoMajesty and spell.english ~= "Majesty" and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect')) and not (buffactive['Majesty'] or buffactive['amnesia'] or buffactive['impairment']) and Majesty.recast == 0 then
+	elseif AutoMajesty and spell.english ~= "Majesty" and (string.find(spell.english,'Cure') or string.find(spell.english,'Protect')) and not (buffactive['Majesty'] or buffactive['amnesia'] or buffactive['impairment']) and Majesty.recast == 0 then
 		cancel_spell()
 		send_command('input /ja Majesty <me>;wait 1;input /ma \"'..spell.english..'\" '..spell.target.raw)
 		return
@@ -2359,7 +2372,7 @@ function precast(spell)
 		end
 	elseif spell.action_type == 'Ranged Attack' then
 		equip(sets.snapshot)
-	elseif spell.english == "Cure IV" then
+	elseif spell.english:startswith('Cure') then
 		local la = buffactive['Light Arts'] and 0.9 or 1
 		local cures = {
 			{name="Cure IV",	mp=math.floor(88 * la)},
@@ -2367,8 +2380,14 @@ function precast(spell)
 			{name="Cure II",	mp=math.floor(24 * la)},
 			{name="Cure",		mp=8},
 		}
-		for _,cure in ipairs(cures) do
-			if player.mp >= cure.mp then
+		local cure_match = false
+		for _, cure in ipairs(cures) do
+			--First we have to match the spell the player originally cast...
+			if cure.name == spell.english then
+				cure_match = true
+			end
+			--...then we can down-convert from there if needed
+			if cure_match and player.mp >= cure.mp then
 				if cure.name ~= spell.english then
 					send_command('input /ma "'..cure.name..'" '..spell.target.raw)
 					cancel_spell()
@@ -2376,6 +2395,7 @@ function precast(spell)
 				break
 			end
 		end
+		equip(sets.fast_cast)
 	elseif not (spell.action_type == 'Item' or spell.action_type == 'Ability') then
 		equip(set_combine(sets.fast_cast, main_sub))
 	end
@@ -2391,7 +2411,7 @@ function midcast(spell)
 	local use_sird = (Mode == 'Tank' or Mode == 'Kite' or ((Mode == 'Auto' or Mode == 'DPS') and player_in_combat)) and not buffactive['Aquaveil']
 	local use_mainsub = player.tp <= KeepTPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath'])
 
-	if string.find(spell.english,'Cur') and spell.type == "WhiteMagic" then
+	if string.find(spell.english,'Cure') then
 		if use_sird then
 			if player.hpp >= MaxHPThreshold and spell.target.type == 'SELF' and UseMaxHP then
 				equip(sets.max_hp_sird)
@@ -2450,7 +2470,7 @@ function aftercast(spell)
 		end
 	elseif spell.english == 'Intervene' and IntTimer and not spell.interrupted then
 		send_command('input /echo [Intervene] 30 seconds;wait 10;input /echo [Intervene] 20 seconds;wait 10;input /echo [Intervene] 10 seconds')
-	elseif (string.find(spell.english,'Cur') and spell.type == "WhiteMagic" and spell.target.type == 'SELF') and UseMaxHP then
+	elseif (string.find(spell.english,'Cure') and spell.target.type == 'SELF') and UseMaxHP then
 		MaxHP = true
 	end
 	--Put Defender up afterwards if we're doing active tank things:
@@ -2459,7 +2479,7 @@ function aftercast(spell)
 	elseif (spell.english == 'Flash' or spell.english == 'Phalanx' or spell.english == 'Reprisal' or spell.english == 'Crusade') and AutoDefender and not (buffactive['Defender'] or buffactive['amnesia'] or buffactive['impairment']) and (Mode == 'Tank' or Mode == 'Kite' or Mode == 'Auto') and player.sub_job == 'WAR' and player.sub_job_level ~= 0 and DefenderRecast == 0 then
 		send_command('wait 3;input /ja Defender <me>')
 	end
-	if AutoMajesty and ((string.find(spell.english,'Cur') and spell.type == 'WhiteMagic') or string.find(spell.english,'Protect') or spell.english == 'Crusade' or spell.english == 'Phalanx' or spell.english == 'Cocoon' or spell.english == 'Defender' or spell.english == 'Reprisal' or spell.english == 'Palisade' or spell.english == 'Enlight') and MajestyTimer <= AutoMajWindow and not (buffactive['amnesia'] or buffactive['impairment']) then
+	if AutoMajesty and (string.find(spell.english,'Cure') or string.find(spell.english,'Protect') or spell.english == 'Crusade' or spell.english == 'Phalanx' or spell.english == 'Cocoon' or spell.english == 'Defender' or spell.english == 'Reprisal' or spell.english == 'Palisade' or spell.english == 'Enlight') and MajestyTimer <= AutoMajWindow and not (buffactive['amnesia'] or buffactive['impairment'])and Majesty.recast == 0  then
 		send_command('wait 3; input /ja Majesty <me>')
 	end
 	choose_set()
@@ -2477,10 +2497,10 @@ windower.register_event('status change', function(status)
 
 	if status == 4 and not InCS and ShowHUD then --In a cutscene: Hide the HUD
 		InCS = true
-		windower.send_command('gs c HideHUD')
+		hideHUD()
 	elseif status ~= 4 and InCS and ShowHUD then --Out of cutscene: Show the HUD
 		InCS = false
-		windower.send_command('gs c ShowHUD')
+		showHUD()
 	end
 
 	choose_set()
@@ -2734,10 +2754,10 @@ windower.register_event('prerender', function()
 		--Zoning: hide HUD
 		local pos = windower.ffxi.get_position()
 		if pos == "(?-?)" and not Zoning and ShowHUD then
-			send_command('gs c HideHUD')
+			hideHUD()
 			Zoning = true
 		elseif pos ~= "(?-?)" and Zoning and ShowHUD then
-			send_command('gs c ShowHUD')
+			showHUD()
 			Zoning = false
 		end
 
@@ -2747,7 +2767,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" then
+					if not moving and player.status == "Idle" and not midaction() then
 						moving = true
 						choose_set()
 					end
@@ -3157,33 +3177,18 @@ windower.register_event('prerender', function()
 					player_in_combat = true
 					choose_set()
 					setNotification()
-					-- if player.status == "Idle" then
-					-- 	hud_mode_shdw:text('Mode: Auto (Kite)')
-					-- 	hud_mode:text('Mode: Auto (Kite)')
-					-- 	local c = color.Kite
-					-- 	hud_bg_color:bg_color(c.r,c.g,c.b)
-					-- else
-					-- 	hud_mode_shdw:text('Mode: Auto (Tank)')
-					-- 	hud_mode:text('Mode: Auto (Tank)')
-					-- 	local c = color.Tank
-					-- 	hud_bg_color:bg_color(c.r,c.g,c.b)
-					-- end
 				end
 			else
 				if player_in_combat then
 					player_in_combat = false
 					choose_set()
 					setNotification()
-					-- hud_mode_shdw:text('Mode: Auto (Neutral)')
-					-- hud_mode:text('Mode: Auto (Neutral)')
-					-- local c = color.Neutral
-					-- hud_bg_color:bg_color(c.r,c.g,c.b)
 				end
 			end
 		end
 
 		--MP checks
-		if notifications.LowMP and player then
+		if notifications.LowMP and player and GreetingDelay == -1 then
 			if player.mpp <= 20 then
 				if not NotiLowMPToggle then
 					NotiLowMPToggle = true --turn the toggle on so this can't be triggered again until its toggled off
@@ -3226,7 +3231,7 @@ windower.register_event('prerender', function()
 				announceAlive = false
 				send_command('wait 1;gs c AliveDelay') --we use a command to set this to true so that we can set a short delay to prevent things from triggering right when we raise
 			end
-			if player.hpp <= MaxHPThreshold and MaxHP and UseMaxHP then --when HP% goes below a certain amount, turn off the MaxHP flag and equip the appropriate gear set
+			if player.hpp <= MaxHPThreshold and MaxHP and UseMaxHP and not midaction() then --when HP% goes below a certain amount, turn off the MaxHP flag and equip the appropriate gear set
 				MaxHP = false
 				choose_set()
 			end
@@ -3911,6 +3916,7 @@ function sub_job_change(newSubjob, oldSubjob)
 		subjob = 'OTH'
 	end
 	getHUDAbils()
+	getStratChargeTimer()
 
 	if ZoneGear ~= 'Off' then
 		send_command('wait 2;gs c Zone Gear')
@@ -4039,7 +4045,9 @@ windower.register_event('action',function(act)
 			end
 		elseif act.category == 8 then --Start of spell
 			if (ata.param == 106 and active_accession[act.actor_id]) or (ata.param == 107 and target_id == player.id) then --Phalanx + Accession active or Phalanx II on player
-				equip(sets.phalanx)
+				local use_mainsub = player.tp <= KeepTPThreshold and not (buffactive['Aftermath: Lv.1'] or buffactive['Aftermath: Lv.2'] or buffactive['Aftermath: Lv.3'] or buffactive['Aftermath'])
+				local main_sub = use_mainsub and {main=nil, sub=nil} or {main="", sub=""}
+				equip(set_combine(sets.phalanx, main_sub))
 			end
 		end
 	end
@@ -4048,24 +4056,28 @@ windower.register_event('action',function(act)
 
 	--Weapon Skills and Skillchains:
 	if act.category == 3 and act.actor_id == player.id then
-		local weapon_skill = weaponskills[act.param].english
 		--Weapon Skill misses:
 		if msg == 188 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:text('«« '..weapon_skill..' Missed »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill gets blinked:
 		elseif msg == 31 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:text('«« '..weapon_skill..' Blinked »»')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands and creates a Skillchain:
 		elseif msg == 185 and ata.has_add_effect then
-			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
-			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc[ata.add_effect_animation]..': '..addCommas(ata.add_effect_param)..')')
+			local weapon_skill = weaponskills[act.param].english
+			local sc_name = sc[ata.add_effect_animation]
+			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
+			hud_noti:text(weapon_skill..': '..addCommas(ata.param)..' ('..sc_name..': '..addCommas(ata.add_effect_param)..')')
 			hud_noti:color(0,255,255)
 		--Weapon Skill lands but no Skillchain:
 		elseif msg == 185 then
+			local weapon_skill = weaponskills[act.param].english
 			hud_noti_shdw:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:text(weapon_skill..': '..addCommas(ata.param))
 			hud_noti:color(0,255,255)
