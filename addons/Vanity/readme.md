@@ -78,6 +78,9 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.1.2
+- Fix issue with changing sub job unintentionally resetting previous lockstyle selection, causing an error when trying to then equip previous lockstyle selection.
+
 Version 4.1.1
 - Adjusted settings to auto-save on load, saving any newly added settings to the settings.xml file (mostly for the new `persist_random_selection` setting).
 
