@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '4.0'
+_addon.version = '4.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -51,6 +51,7 @@ defaults.options = {
 	after_disable_delay = 9,
 	after_job_change_delay = 6,
 	after_zone_delay = 5,
+	persist_random_selection = false,
 }
 
 defaults.town_zones = S{
@@ -59,13 +60,41 @@ defaults.town_zones = S{
 
 settings = config.load(defaults)
 
-lockstyles_help_msg = "--At the simplest, Vanity can use just one lockstyle for all conditions by setting either the town or combat lockstyle for each job.\n\n--Designate separate lockstyles for town and combat zones by setting different lockstyles for both town and combat for each job.\n\n--If you wish to have Vanity choose a random lockstyle, you can set multiple lockstyles by separating numbers with a comma.\n\n--Designate lockstyles for specific zones by using the zone option. For example, {zone=Western Adoulin:1,2,3} will set lockstyles 1, 2, and 3 for Western Adoulin.\n\n--Designate lockstyles for the common endgame activities Dynamis, Odyssey, Omen, Vagary, and Sortie by using the dynamis, odyssey, omen, vagary, and sortie conditions. For example, {dynamis:1,2,3} will set lockstyles 1, 2, and 3 for all Dynamis zones.\n\n--Designate lockstyles for specific weapons or weapon types by using the weapon name or skill conditions: main_name, main_skill, sub_name, sub_skill, range_name, and range_skill. For example, {main_name=Excalibur:1,2,3} will set lockstyles 1, 2, and 3 for Excalibur in the main slot. {sub_skill=Sword:1,2,3} will set lockstyles 1, 2, and 3 for any Sword in the sub slot.\n\n--Designate lockstyles for combinations of weapons or weapon types with the combo conditions: main_sub_name, main_sub_skill, main_range_name, and main_range_skill, and a slash between the weapons/skills. For example, {main_sub_name=Burtgang/Duban:1} will set lockstyle 1 for Burtgang in the main slot and Duban in the sub slot. {main_range_skill=sword/marksmanship:2} will set lockstyle 2 for any sword in the main slot and any gun/crossbow in the range slot.\n\n--Priority is as follows: zone, (dynamis, odyssey, omen, sortie, vagary), main_weapon, main_skill, sub_weapon, sub_skill, range_weapon, range_skill, combat, town. Will equip based on current condition and which conditions have lockstyles designated, going from highest to lowest priority (zone being the highest and town the lowest). The only exception is while in town: zone will still be prioritized first, then town immediately after.\n\n--If you wish to disable a lockstyle, set the lockstyles to 0. For example, {town:0} will disable the town lockstyle for that job. Removing the condition entirely will also disable it.\n\n--Things to note: All zone, weapon, and weapon skill names are case-insensitive but will still need to be spelled exactly including spaces and apostrophes, for example {main_name=bunzi's rod:10}. Lockstyle numbers must be between 1 and 200, numbers outside this (aside from 0) will simply be ignored. If no valid lockstyles are found for a condition, Vanity will do nothing. To manually set your lockstyle inside of a macro, use `/console vanity set` on its own line. Order does not matter, for example {town:1,2}{combat:3,4} is the same as {combat:4,3}{town:2,1}.\n\n"
+lockstyles_help_msg = "--At the simplest, Vanity can use just one lockstyle for all conditions by setting either the town or combat lockstyle for each job.\n\n--Designate separate lockstyles for town and combat zones by setting different lockstyles for both town and combat for each job.\n\n--If you wish to have Vanity choose a random lockstyle, you can set multiple lockstyles by separating numbers with a comma. In the settings.xml file, if the `persist_random_selection` option is set to false, then the same lockstyle will be used as long as the selection of lockstyle numbers remains the same. Meaning, for example, if you have a single lockstyle set for Town, then multiple set for Combat, you will keep the same lockstyle as you zone from combat area to combat area, but once you zone into a town the combat lockstyle selected will be reset and a new on selected until you zone into town again.\n\n--Designate lockstyles for specific zones by using the zone option. For example, {zone=Western Adoulin:1,2,3} will set lockstyles 1, 2, and 3 for Western Adoulin.\n\n--Designate lockstyles for the common endgame activities Dynamis, Odyssey, Omen, Vagary, and Sortie by using the dynamis, odyssey, omen, vagary, and sortie conditions. For example, {dynamis:1,2,3} will set lockstyles 1, 2, and 3 for all Dynamis zones.\n\n--Designate lockstyles for specific weapons or weapon types by using the weapon name or skill conditions: main_name, main_skill, sub_name, sub_skill, range_name, and range_skill. For example, {main_name=Excalibur:1,2,3} will set lockstyles 1, 2, and 3 for Excalibur in the main slot. {sub_skill=Sword:1,2,3} will set lockstyles 1, 2, and 3 for any Sword in the sub slot.\n\n--Designate lockstyles for combinations of weapons or weapon types with the combo conditions: main_sub_name, main_sub_skill, main_range_name, and main_range_skill, and a slash between the weapons/skills. For example, {main_sub_name=Burtgang/Duban:1} will set lockstyle 1 for Burtgang in the main slot and Duban in the sub slot. {main_range_skill=sword/marksmanship:2} will set lockstyle 2 for any sword in the main slot and any gun/crossbow in the range slot.\n\n--Priority is as follows: zone, (dynamis, odyssey, omen, sortie, vagary), main_weapon, main_skill, sub_weapon, sub_skill, range_weapon, range_skill, combat, town. Will equip based on current condition and which conditions have lockstyles designated, going from highest to lowest priority (zone being the highest and town the lowest). The only exception is while in town: zone will still be prioritized first, then town immediately after.\n\n--If you wish to disable a lockstyle, set the lockstyles to 0. For example, {town:0} will disable the town lockstyle for that job. Removing the condition entirely will also disable it.\n\n--Things to note: All zone, weapon, and weapon skill names are case-insensitive but will still need to be spelled exactly including spaces and apostrophes, for example {main_name=bunzi's rod:10}. Lockstyle numbers must be between 1 and 200, numbers outside this (aside from 0) will simply be ignored. If no valid lockstyles are found for a condition, Vanity will do nothing. To manually set your lockstyle inside of a macro, use `/console vanity set` on its own line. Order does not matter, for example {town:1,2}{combat:3,4} is the same as {combat:4,3}{town:2,1}.\n\n"
 
 lockstyles_file = nil
 lockstyles_data = {}
 town_zones = settings.town_zones
 Heartbeat = 0
 job_change_timestamp = 0
+previous_selected = nil
+
+--These ended up not being used, but I didn't want to delete them just in case
+-- --Are we using a two handed weapon?
+-- function twoHanded()
+
+-- 	local equipment = get_items().equipment
+-- 	local main = get_items(equipment.main_bag,equipment.main)
+
+-- 	if not main then return false end
+
+-- 	local skill = items[main.id].skill
+-- 	return skill == 4 or skill == 6 or skill == 7 or skill == 8 or skill == 10 or skill == 12
+
+-- end
+
+-- --Are we dualwielding weapons?
+-- function dualWield()
+
+-- 	local equipment = get_items().equipment
+-- 	local sub = get_items(equipment.sub_bag,equipment.sub)
+
+-- 	if not sub then return false end
+
+-- 	local skill = items[sub.id].skill
+-- 	return skill == 2 or skill == 3 or skill == 5 or skill == 9 or skill == 11
+
+-- end
 
 --Determine what type of location we are in
 function getLocation(old_zone_id)
@@ -211,10 +240,33 @@ function setLockstyle(old_zone_id)
 	--If no valid lockstyles were found, do nothing
 	if lockstyle_numbers == "0" then return end
 
+	local function areTablesEqual(t1, t2)
+		if not t1 or not t2 or #t1 ~= #t2 then return false end
+		for i = 1, #t1 do
+			if t1[i] ~= t2[i] then return false end
+		end
+		return true
+	end
+
 	--Select a random lockstyle from the valid numbers
 	if #lockstyle_numbers > 0 then
-		local selected = lockstyle_numbers[math.random(#lockstyle_numbers)]
-		send_command('input /lockstyleset '..selected)
+		local selected
+
+		if settings.options.persist_random_selection and areTablesEqual(lockstyle_numbers, previous_lockstyle_numbers) then
+			selected = previous_selected
+		else
+			selected = lockstyle_numbers[math.random(#lockstyle_numbers)]
+
+			--Shallow copy the table (can't just do this_table = that_table since that will make a reference instead of a copy)
+			previous_lockstyle_numbers = {}
+			for i, v in ipairs(lockstyle_numbers) do
+				previous_lockstyle_numbers[i] = v
+			end
+
+			previous_selected = selected
+		end
+
+		windower.send_command('input /lockstyleset '..selected)
 	end
 
 end
@@ -585,6 +637,7 @@ register_event('prerender', function()
 
 		if job_change_timestamp > 0 and os.time() >= job_change_timestamp then
 			job_change_timestamp = 0
+			previous_selected = nil
 			setLockstyle()
 		end
 
@@ -670,7 +723,7 @@ function initialize()
 		if not migrated then
 			lockstyles_data = default_lockstyles
 			add_to_chat(8, ('[Vanity] '):color(220)..('Created default lockstyle data for '):color(8)..(player_name):color(1)..('.'):color(8))
-			lockstyles_file:write(flockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
+			lockstyles_file:write(lockstyles_help_msg..'return '..T(lockstyles_data):tovstring())
 		end
 	else
 		--File already exists, load it
