@@ -1,4 +1,4 @@
---Copyright (c) 2025, Key
+--Copyright (c) 2026, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Vanity'
-_addon.version = '4.1.1'
+_addon.version = '4.1.2'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'vanity','van'}
 
@@ -254,7 +254,7 @@ function setLockstyle(old_zone_id)
 	if #lockstyle_numbers > 0 then
 		local selected
 
-		if settings.options.persist_random_selection and areTablesEqual(lockstyle_numbers, previous_lockstyle_numbers) then
+		if settings.options.persist_random_selection and areTablesEqual(lockstyle_numbers, previous_lockstyle_numbers) and previous_selected then
 			selected = previous_selected
 		else
 			selected = lockstyle_numbers[math.random(#lockstyle_numbers)]
@@ -448,11 +448,17 @@ function removeLockstyle(job, location, lockstyle_num)
 
 end
 
-register_event('job change',function()
+register_event('job change',function(main_job_id)
 
 	--We use this way for a timer (instead of the coroutine.sleep like with zoning) so that we can reset it during the countdown in case we change jobs again while its running, preventing it from trying to set the lockstyle multiple times.
 	if settings.options.after_job_change_delay ~= 0 then
 		job_change_timestamp = os.time() + settings.options.after_job_change_delay
+	end
+
+	--If main job has changed, reset the previous lockstyle selection
+	if main_job_id ~= previous_main_job_id then
+		previous_selected = nil
+		previous_main_job_id = main_job_id
 	end
 
 end)
@@ -639,7 +645,6 @@ register_event('prerender', function()
 
 		if job_change_timestamp > 0 and os.time() >= job_change_timestamp then
 			job_change_timestamp = 0
-			previous_selected = nil
 			setLockstyle()
 		end
 
@@ -663,7 +668,9 @@ register_event('incoming text',function(org)
 end)
 
 function initialize()
-	player_name = get_player().name
+	local get_player = get_player()
+	local player_name = get_player.name
+	previous_main_job_id = get_player.main_job_id
 
 	--Default lockstyles for this player (used only if migration fails)
 	local default_lockstyles = {
