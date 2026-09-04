@@ -78,6 +78,9 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.1.1
+- Adjusted settings to auto-save on load, saving any newly added settings to the settings.xml file (mostly for the new `persist_random_selection` setting).
+
 Version 4.1
 - Added `persist_random_selection` option. Every time Vanity attempts to set a lockstyle, if the previous table of lockstyle numbers to choose from is the same, it will reuse the previously selected lockstyle number. (thanks Asura.Sechs!)
 
