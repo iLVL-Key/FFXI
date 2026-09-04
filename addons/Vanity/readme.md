@@ -42,6 +42,7 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 - `after_job_change_delay` - Delay in seconds aftter changing your job that your lockstyle will be applied.
   - Note that this timer will be reset if you change jobs again before it is up.
 - `after_zone_delay` - Delay in seconds after zoning that your lockstyle will be applied.
+- `persist_random_selection` - Every time Vanity attempts to set a lockstyle, if the previous table of lockstyle numbers to choose from is the same, it will reuse the previously selected lockstyle number.
 
 ## Notes
 - At the simplest, Vanity can use just one lockstyle for all conditions by setting either the town or combat lockstyle for each job.
@@ -76,6 +77,9 @@ Open the `/Vanity/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.1
+- Added `persist_random_selection` option. This only applies when multiple lockstyle numbers are set. Every time Vanity attempts to set a lockstyle, if the previous table of lockstyle numbers to choose from is the same, it will reuse the previously selected lockstyle number.
 
 Version 4.0
 - Overhauled how lockstyle data is saved. No longer saved inside the settings file but instead in it's own data/lockstyles.lua file.
