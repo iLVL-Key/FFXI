@@ -196,11 +196,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `show_action_status_indicators` | Shows icons depicting when a spell/ability is casting, completed, or interrupted. |
 | `show_automaton_mp` | Displays the MP percent for your Automaton on the Pet bar. |
 | `show_commas_on_numbers` | Adds commas to numbers for easier readability. |
-| `show_dyna_jobs` | Show the job of Dynamis Divergence mobs. |
 | `show_fancy_rolls` | Show a fancified version of COR rolls (if `show_lucky_roll_info` is turned on). |
 | `show_focus_target_when_targeted` | Show the Auto Focus Target bar when the subject of it has been targeted. False prevents a target being on both at the same time. |
 | `show_hp_tp_markers` | Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP. |
 | `show_max_hp_mp_on_bars` | Shows the current maximum HP and MP on their respective bars. |
+| `show_monster_job` | Show the job(s) of specific monsters. |
 | `show_pet_distance` | Show the distance between you and your pet. |
 | `show_pet_status` | Show the current status of your pet (Idle, Engaged, etc.). |
 | `show_pet_tp` | Show the current TP of your pet. |
