@@ -21,7 +21,7 @@ https://github.com/iLVL-Key/FFXI
 
 ]]--
 
-FileVersion = '4.0'
+FileVersion = '4.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -4021,14 +4021,26 @@ function precast(spell)
 		elseif string.find(spell.english,'Horde Lullaby II') then
 			instrument = profile.inst.horde_lullaby_II
 			main_sub = has_dual_wield and "horde_lullaby_II_dual_wield" or "horde_lullaby_II_single_wield"
+			if windower.ffxi.get_spell_recasts()[377] / 60 > 1 and windower.ffxi.get_spell_recasts()[376] / 60 < 1 then
+				cancel_spell()
+				send_command('input /ma \"Horde Lullaby\" '..spell.target.raw)
+			end
 		else
 			main_sub = has_dual_wield and "debuff_song_dual_wield" or "debuff_song_single_wield"
 			if string.find(spell.english,'Elegy') then
 				instrument = profile.inst.elegy
+				if spell.english == 'Carnage Elegy' and windower.ffxi.get_spell_recasts()[422] / 60 > 1 and windower.ffxi.get_spell_recasts()[421] / 60 < 1 then
+					cancel_spell()
+					send_command('input /ma \"Battlefield Elegy\" '..spell.target.raw)
+				end
 			elseif string.find(spell.english,'Finale') then
 				instrument = profile.inst.finale
 			elseif string.find(spell.english,'Lullaby') then
 				instrument = profile.inst.lullaby
+				if spell.english == 'Foe Lullaby II' and windower.ffxi.get_spell_recasts()[471] / 60 > 1 and windower.ffxi.get_spell_recasts()[463] / 60 < 1 then
+					cancel_spell()
+					send_command('input /ma \"Foe Lullaby\" '..spell.target.raw)
+				end
 			elseif string.find(spell.english,'Nocturne') then
 				instrument = profile.inst.nocturne
 			elseif string.find(spell.english,'Requiem') then
