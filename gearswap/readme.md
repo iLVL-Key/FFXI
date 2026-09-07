@@ -2576,6 +2576,10 @@ Version 1.0
 
 <summary>SMN</summary>
 
+Version 14.3.5
+- Fixed the Summoning gear set. Was in precast when it should have been in midcast.
+- Fixed avatar macro page not being set correctly after summoning from previous update.
+
 Version 14.3.4
 - Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
 - Adjusted the Elemental Siphon feature to account for double weather.
