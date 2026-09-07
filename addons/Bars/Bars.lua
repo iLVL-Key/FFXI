@@ -12,20 +12,6 @@
 --    * Neither the name of Bars nor the
 --      names of its contributors may be used to endorse or promote products
 --      derived from this software without specific prior written permission.
---Copyright (c) 2026, Key
---All rights reserved.
-
---Redistribution and use in source and binary forms, with or without
---modification, are permitted provided that the following conditions are met:
-
---    * Redistributions of source code must retain the above copyright
---      notice, this list of conditions and the following disclaimer.
---    * Redistributions in binary form must reproduce the above copyright
---      notice, this list of conditions and the following disclaimer in the
---      documentation and/or other materials provided with the distribution.
---    * Neither the name of Bars nor the
---      names of its contributors may be used to endorse or promote products
---      derived from this software without specific prior written permission.
 
 --THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 --ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -39,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.11.2'
+_addon.version = '4.12'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -84,6 +70,7 @@ defaults = {
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
+		dynamis_nm = "¤",
 		monster_target = "►",
 		monster_target_aoe = "○",
 		number_of_targets_hit = "●",
@@ -259,7 +246,6 @@ defaults = {
 		show_action_status_indicators = true,
 		show_automaton_mp = true,
 		show_commas_on_numbers = true,
-		show_dyna_jobs = true,
 		show_fancy_rolls = true,
 		show_focus_target_when_targeted = false,
 		show_hp_tp_markers = true,
@@ -322,7 +308,7 @@ defaults = {
 				"Temenos Hume Echo", "Temenos Galka Echo", "Temenos Tarutaru Echo", "Temenos Elvaan Echo", "Temenos Mithra Echo",
 				"Apollyon Hume Shade", "Apollyon Galka Shade", "Apollyon Tarutaru Shade", "Apollyon Elvaan Shade", "Apollyon Mithra Shade",
 			},
-			pos = {x = 200, y = 320},
+			pos = {x = 200, y = 350},
 			show = true,
 			show_cursor_target = true,
 			size = 10,
@@ -383,6 +369,7 @@ defaults = {
 			show_battle_target_by_default = true,
 			show_player_angle_from_target_facing = false,
 			show_target_angle_from_player_facing = false,
+			show_monster_job = true,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -512,10 +499,11 @@ defaults = {
 			meter_alpha = 240,
 			pos = {x = 200, y = 180},
 			show = true,
-			show_player_angle_from_target_facing = false,
-			show_target_angle_from_player_facing = false,
+			show_monster_job = true,
 			show_monster_level = false,
 			show_monster_target = true,
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -546,6 +534,7 @@ defaults = {
 			pos = {x = 200, y = 250},
 			show_player_angle_from_target_facing = false,
 			show_target_angle_from_player_facing = false,
+			show_monster_job = true,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -568,7 +557,7 @@ defaults = {
 		},
 		xp = {
 			bar_size = 15,
-			bar_width = 76,
+			bar_width = 85,
 			bg_alpha = 240,
 			bold = true,
 			condensed_job_points = true,
@@ -605,6 +594,7 @@ defaults = {
 			dead = {r = 150, g = 30, b = 30},
 		},
 		target = {
+			dynamis_nm = {r = 200, g = 200, b = 25},
 			monster_passive = {r = 247, g = 237, b = 141},
 			monster_claimed_party = {r = 255, g = 50, b = 50},
 			monster_claimed_alliance = {r = 255, g = 92, b = 114},
@@ -1046,7 +1036,6 @@ show_battle_target_by_default = settings.sections.focus_target.show_battle_targe
 show_chat_bar = settings.sections.chat.show
 show_commas_on_numbers = settings.options.show_commas_on_numbers
 show_cursor_target = settings.sections.aggro_list.show_cursor_target
-show_dyna_jobs = settings.options.show_dyna_jobs
 show_fancy_rolls = settings.options.show_fancy_rolls
 show_focus_target_bar = settings.sections.focus_target.show
 show_focus_target_when_targeted = settings.options.show_focus_target_when_targeted
@@ -1171,6 +1160,7 @@ aggro_st_icon = settings.icons.aggro_list_sub_target
 casting_icon = settings.icons.casting
 cancelled_icon = settings.icons.cancelled
 completed_icon = settings.icons.completed
+dynamis_nm_icon = settings.icons.dynamis_nm
 targeting_icon = settings.icons.targeting
 num_hit_icon = settings.icons.number_of_targets_hit
 truncate_icon = settings.icons.truncate
@@ -1354,6 +1344,26 @@ custom_spells = {
 	[9912]	= "Treasure Hunter XII",
 	[9913]	= "Treasure Hunter XIII",
 	[9914]	= "Treasure Hunter XIV",
+	[99106] = "Lethargic Daze VI",
+	[99107] = "Lethargic Daze VII",
+	[99108] = "Lethargic Daze VIII",
+	[99109] = "Lethargic Daze IX",
+	[99110] = "Lethargic Daze X",
+	[99206] = "Sluggish Daze VI",
+	[99207] = "Sluggish Daze VII",
+	[99208] = "Sluggish Daze VIII",
+	[99209] = "Sluggish Daze IX",
+	[99210] = "Sluggish Daze X",
+	[99306] = "Weakened Daze VI",
+	[99307] = "Weakened Daze VII",
+	[99308] = "Weakened Daze VIII",
+	[99309] = "Weakened Daze IX",
+	[99310] = "Weakened Daze X",
+	[99406] = "Bewildered Daze VI",
+	[99407] = "Bewildered Daze VII",
+	[99408] = "Bewildered Daze VIII",
+	[99409] = "Bewildered Daze IX",
+	[99410] = "Bewildered Daze X",
 }
 remove_all_debuffs = S{
 	"Benediction",
@@ -1362,6 +1372,7 @@ remove_all_debuffs = S{
 	"Oppressive Yawp",
 	"Raksha Stance",
 	"Yaksha Stance",
+	"Tabbiyaa Gambit",
 }
 
 in_cutscene = false
@@ -1461,6 +1472,7 @@ chat_min_max_lines = 5
 chat_max_raw_history = settings.sections.chat.max_message_limit
 chat_drag_offset_x = 0
 chat_drag_offset_y = 0
+chat_line_buffer = {}
 chat_last_outbound = { --used to fix occasional duplicated outgoing chat
 	text = "",
 	mode = -1,
@@ -1613,60 +1625,52 @@ end
 
 --Word Wrapper
 function wrapTextByChars(sender_header, message_body, char_limit, indent_spaces)
-	local lines = {}
-	local pad = (" "):rep(indent_spaces or 0)
+	--Clear previous items from line_buffer without reallocating
+	for i = #chat_line_buffer, 1, -1 do
+		chat_line_buffer[i] = nil
+	end
 
+	local pad = (" "):rep(indent_spaces or 0)
 	local current_line = sender_header or pad
 	local is_first_word = true
-
 	local max_text_width_per_line = char_limit - #pad
 
 	for word in message_body:gmatch("%S+") do
-		--If an individual word is physically wider than a clean row's allotment
 		if #word > max_text_width_per_line then
-
 			if current_line ~= "" and current_line ~= pad then
-				table.insert(lines, current_line)
+				table.insert(chat_line_buffer, current_line)
 				current_line = pad
 			end
 
 			local word_index = 1
 			while word_index <= #word do
 				local available_space = char_limit - #current_line
-
 				if available_space < 1 then
-					table.insert(lines, current_line)
+					table.insert(chat_line_buffer, current_line)
 					current_line = pad
 					available_space = max_text_width_per_line
 				end
 
 				local chunk = word:sub(word_index, word_index + available_space - 1)
-
 				if word_index + #chunk > #word then
-					current_line = current_line .. chunk
+					current_line = current_line..chunk
 				else
-					table.insert(lines, current_line .. chunk)
+					table.insert(chat_line_buffer, current_line..chunk)
 					current_line = pad
 				end
-
 				word_index = word_index + #chunk
 			end
-
 			is_first_word = false
 		else
-			local test_line
-			if is_first_word and sender_header then
-				test_line = current_line..word
-				is_first_word = false
-			else
-				test_line = (current_line == "" or current_line == pad) and (current_line..word) or (current_line.." "..word)
-			end
+			local test_line = (is_first_word and sender_header) and (current_line..word) 
+				or ((current_line == "" or current_line == pad) and (current_line..word) or (current_line.." "..word))
+			is_first_word = false
 
 			if #test_line > char_limit then
 				if current_line ~= "" and current_line ~= pad then
-					table.insert(lines, current_line)
+					table.insert(chat_line_buffer, current_line)
 				end
-				current_line = pad .. word
+				current_line = pad..word
 			else
 				current_line = test_line
 			end
@@ -1674,11 +1678,79 @@ function wrapTextByChars(sender_header, message_body, char_limit, indent_spaces)
 	end
 
 	if current_line ~= "" and current_line ~= pad then
-		table.insert(lines, current_line)
+		table.insert(chat_line_buffer, current_line)
 	end
 
-	return lines
+	return chat_line_buffer
 end
+
+-- function wrapTextByChars(sender_header, message_body, char_limit, indent_spaces)
+-- 	local lines = {}
+-- 	local pad = (" "):rep(indent_spaces or 0)
+
+-- 	local current_line = sender_header or pad
+-- 	local is_first_word = true
+
+-- 	local max_text_width_per_line = char_limit - #pad
+
+-- 	for word in message_body:gmatch("%S+") do
+-- 		--If an individual word is physically wider than a clean row's allotment
+-- 		if #word > max_text_width_per_line then
+
+-- 			if current_line ~= "" and current_line ~= pad then
+-- 				table.insert(lines, current_line)
+-- 				current_line = pad
+-- 			end
+
+-- 			local word_index = 1
+-- 			while word_index <= #word do
+-- 				local available_space = char_limit - #current_line
+
+-- 				if available_space < 1 then
+-- 					table.insert(lines, current_line)
+-- 					current_line = pad
+-- 					available_space = max_text_width_per_line
+-- 				end
+
+-- 				local chunk = word:sub(word_index, word_index + available_space - 1)
+
+-- 				if word_index + #chunk > #word then
+-- 					current_line = current_line .. chunk
+-- 				else
+-- 					table.insert(lines, current_line .. chunk)
+-- 					current_line = pad
+-- 				end
+
+-- 				word_index = word_index + #chunk
+-- 			end
+
+-- 			is_first_word = false
+-- 		else
+-- 			local test_line
+-- 			if is_first_word and sender_header then
+-- 				test_line = current_line..word
+-- 				is_first_word = false
+-- 			else
+-- 				test_line = (current_line == "" or current_line == pad) and (current_line..word) or (current_line.." "..word)
+-- 			end
+
+-- 			if #test_line > char_limit then
+-- 				if current_line ~= "" and current_line ~= pad then
+-- 					table.insert(lines, current_line)
+-- 				end
+-- 				current_line = pad .. word
+-- 			else
+-- 				current_line = test_line
+-- 			end
+-- 		end
+-- 	end
+
+-- 	if current_line ~= "" and current_line ~= pad then
+-- 		table.insert(lines, current_line)
+-- 	end
+
+-- 	return lines
+-- end
 
 --Re-wrap text history with destination-specific header wrappers, timestamp histories, and dynamic margins
 function rebuildWrappedHistory()
@@ -2076,14 +2148,14 @@ aggro_list_box = texts.new()
 aggro_list_box:text()
 aggro_list_box:pos(settings.sections.aggro_list.pos.x,settings.sections.aggro_list.pos.y)
 aggro_list_box:bold(true)
-aggro_list_box:show(true)
+-- aggro_list_box:show(true)
 aggro_list_box:font(font)
 aggro_list_box:size(aggro_list_size)
 aggro_list_box:bg_alpha(aggro_list_bg_alpha)
 aggro_list_box:draggable(false)
 aggro_list_box:pad(2)
 
---MONSTER DEBUFFS
+--TARGET LOCK
 
 --Create the UI BG LEFT image objects
 ui_bg_left = {
@@ -2141,6 +2213,8 @@ for section in pairs(ui_bg_right) do
 		draggable = false,
 	})
 end
+
+--MONSTER DEBUFFS
 
 --Create the DEBUFF ICON image objects
 debuff_icons = {
@@ -4950,193 +5024,261 @@ end
 --What job/s are the target mob?
 function mobJob(mob_name)
 
-	local dyna_mobs = {
+	local c = settings.colors.target.dynamis_nm
+	local cs = "\\cs("..c.r..","..c.g..","..c.b..")"
+
+	local mobs = {
+
+		--DYNAMIS JOBS--
+
 		--Volte NMs
-		["Volte Cleaver"]		= "NM WAR",
-		["Volte Fistfighter"]	= "NM MNK",
-		["Volte Incanter"]		= "NM BLM",
-		["Volte Priest"]		= "NM WHM",
-		["Volte Duelist"]		= "NM RUN",
-		["Volte Vagabond"]		= "NM THF",
-		["Volte Crusader"]		= "NM PLD",
-		["Volte Reaper"]		= "NM DRK",
-		["Volte Trainer"]		= "NM BST",
-		["Volte Conductor"]		= "NM BRD",
-		["Volte Sniper"]		= "NM RNG",
-		["Volte Mononofu"]		= "NM SAM",
-		["Volte Shinobi"]		= "NM NIN",
-		["Volte Highwind"]		= "NM DRG",
-		["Volte Controller"]	= "NM SMN",
-		["Volte Joiner"]		= "NM BLU",
-		["Volte Sailor"]		= "NM COR",
-		["Volte Manipulator"]	= "NM PUP",
-		["Volte Twirler"]		= "NM DNC",
-		["Volte Erudite"]		= "NM SCH",
-		["Volte Communer"]		= "NM GEO",
-		["Volte Illusionist"]	= "NM RDM",
+		["Volte Cleaver"]		= cs..dynamis_nm_icon.."WAR".."\\cr",	["Volte Crusader"]		= cs..dynamis_nm_icon.."PLD".."\\cr",
+		["Volte Communer"]		= cs..dynamis_nm_icon.."GEO".."\\cr",	["Volte Conductor"]		= cs..dynamis_nm_icon.."BRD".."\\cr",
+		["Volte Controller"]	= cs..dynamis_nm_icon.."SMN".."\\cr",	["Volte Duelist"]		= cs..dynamis_nm_icon.."RUN".."\\cr",
+		["Volte Erudite"]		= cs..dynamis_nm_icon.."SCH".."\\cr",	["Volte Fistfighter"]	= cs..dynamis_nm_icon.."MNK".."\\cr",
+		["Volte Highwind"]		= cs..dynamis_nm_icon.."DRG".."\\cr",	["Volte Illusionist"]	= cs..dynamis_nm_icon.."RDM".."\\cr",
+		["Volte Incanter"]		= cs..dynamis_nm_icon.."BLM".."\\cr",	["Volte Joiner"]		= cs..dynamis_nm_icon.."BLU".."\\cr",
+		["Volte Manipulator"]	= cs..dynamis_nm_icon.."PUP".."\\cr",	["Volte Mononofu"]		= cs..dynamis_nm_icon.."SAM".."\\cr",
+		["Volte Priest"]		= cs..dynamis_nm_icon.."WHM".."\\cr",	["Volte Reaper"]		= cs..dynamis_nm_icon.."DRK".."\\cr",
+		["Volte Sailor"]		= cs..dynamis_nm_icon.."COR".."\\cr",	["Volte Shinobi"]		= cs..dynamis_nm_icon.."NIN".."\\cr",
+		["Volte Sniper"]		= cs..dynamis_nm_icon.."RNG".."\\cr",	["Volte Trainer"]		= cs..dynamis_nm_icon.."BST".."\\cr",
+		["Volte Twirler"]		= cs..dynamis_nm_icon.."DNC".."\\cr",	["Volte Vagabond"]		= cs..dynamis_nm_icon.."THF".."\\cr",
 
 		--Standard Mobs
 
 		--WAR|DRK
-		["Squadron Berserker"]		= "WAR|DRK", ["Regiment Berserker"]		= "WAR|DRK",
-		["Squadron Skullcrusher"]	= "WAR|DRK", ["Regiment Skullcrusher"]	= "WAR|DRK",
-		["Squadron Ravager"]		= "WAR|DRK", ["Regiment Ravager"]		= "WAR|DRK",
-		["Squadron Weaponmaster"]	= "WAR|DRK", ["Regiment Weaponmaster"]	= "WAR|DRK",
-		["Squadron Fighter"]		= "WAR|DRK", ["Regiment Fighter"]		= "WAR|DRK",
-		["Squadron Hoplite"]		= "WAR|DRK", ["Regiment Hoplite"]		= "WAR|DRK",
+		["Squadron Berserker"]		= "WAR|DRK",	["Regiment Berserker"]		= "WAR|DRK",
+		["Squadron Skullcrusher"]	= "WAR|DRK",	["Regiment Skullcrusher"]	= "WAR|DRK",
+		["Squadron Ravager"]		= "WAR|DRK",	["Regiment Ravager"]		= "WAR|DRK",
+		["Squadron Weaponmaster"]	= "WAR|DRK",	["Regiment Weaponmaster"]	= "WAR|DRK",
+		["Squadron Fighter"]		= "WAR|DRK",	["Regiment Fighter"]		= "WAR|DRK",
+		["Squadron Hoplite"]		= "WAR|DRK",	["Regiment Hoplite"]		= "WAR|DRK",
 		--MNK|PUP
-		["Squadron Fistfighter"]	= "MNK|PUP", ["Regiment Fistfighter"]	= "MNK|PUP",
-		["Squadron Pugilist"]		= "MNK|PUP", ["Regiment Pugilist"]		= "MNK|PUP",
-		["Squadron Mendicant"]		= "MNK|PUP", ["Regiment Mendicant"]		= "MNK|PUP",
-		["Squadron Combatant"]		= "MNK|PUP", ["Regiment Combatant"]		= "MNK|PUP",
-		["Squadron Brother"]		= "MNK|PUP", ["Regiment Brother"]		= "MNK|PUP",
-		["Squadron Ascetic"]		= "MNK|PUP", ["Regiment Ascetic"]		= "MNK|PUP",
+		["Squadron Fistfighter"]	= "MNK|PUP",	["Regiment Fistfighter"]	= "MNK|PUP",
+		["Squadron Pugilist"]		= "MNK|PUP",	["Regiment Pugilist"]		= "MNK|PUP",
+		["Squadron Mendicant"]		= "MNK|PUP",	["Regiment Mendicant"]		= "MNK|PUP",
+		["Squadron Combatant"]		= "MNK|PUP",	["Regiment Combatant"]		= "MNK|PUP",
+		["Squadron Brother"]		= "MNK|PUP",	["Regiment Brother"]		= "MNK|PUP",
+		["Squadron Ascetic"]		= "MNK|PUP",	["Regiment Ascetic"]		= "MNK|PUP",
 		--THF|DNC
-		["Squadron Vandal"]			= "THF|DNC", ["Regiment Vandal"]		= "THF|DNC",
-		["Squadron Fleetfoot"]		= "THF|DNC", ["Regiment Fleetfoot"]		= "THF|DNC",
-		["Squadron Cutpurse"]		= "THF|DNC", ["Regiment Cutpurse"]		= "THF|DNC",
-		["Squadron Trickster"]		= "THF|DNC", ["Regiment Trickster"]		= "THF|DNC",
-		["Squadron Pickpocket"]		= "THF|DNC", ["Regiment Pickpocket"]	= "THF|DNC",
-		["Squadron Ruffian"]		= "THF|DNC", ["Regiment Ruffian"]		= "THF|DNC",
+		["Squadron Vandal"]			= "THF|DNC",	["Regiment Vandal"]			= "THF|DNC",
+		["Squadron Fleetfoot"]		= "THF|DNC",	["Regiment Fleetfoot"]		= "THF|DNC",
+		["Squadron Cutpurse"]		= "THF|DNC",	["Regiment Cutpurse"]		= "THF|DNC",
+		["Squadron Trickster"]		= "THF|DNC",	["Regiment Trickster"]		= "THF|DNC",
+		["Squadron Pickpocket"]		= "THF|DNC",	["Regiment Pickpocket"]		= "THF|DNC",
+		["Squadron Ruffian"]		= "THF|DNC",	["Regiment Ruffian"]		= "THF|DNC",
 		--BLM|GEO
-		["Squadron Arcanomancer"]	= "BLM|GEO", ["Regiment Arcanomancer"]	= "BLM|GEO",
-		["Squadron Evoker"]			= "BLM|GEO", ["Regiment Evoker"]		= "BLM|GEO",
-		["Squadron Invoker"]		= "BLM|GEO", ["Regiment Invoker"]		= "BLM|GEO",
-		["Squadron Magister"]		= "BLM|GEO", ["Regiment Magister"]		= "BLM|GEO",
-		["Squadron Magus"]			= "BLM|GEO", ["Regiment Magus"]			= "BLM|GEO",
-		["Squadron Magian"]			= "BLM|GEO", ["Regiment Magian"]		= "BLM|GEO",
+		["Squadron Arcanomancer"]	= "BLM|GEO",	["Regiment Arcanomancer"]	= "BLM|GEO",
+		["Squadron Evoker"]			= "BLM|GEO",	["Regiment Evoker"]			= "BLM|GEO",
+		["Squadron Invoker"]		= "BLM|GEO",	["Regiment Invoker"]		= "BLM|GEO",
+		["Squadron Magister"]		= "BLM|GEO",	["Regiment Magister"]		= "BLM|GEO",
+		["Squadron Magus"]			= "BLM|GEO",	["Regiment Magus"]			= "BLM|GEO",
+		["Squadron Magian"]			= "BLM|GEO",	["Regiment Magian"]			= "BLM|GEO",
 		--RDM|RUN
-		["Squadron Defiler"]		= "RDM|RUN", ["Regiment Defiler"]		= "RDM|RUN",
-		["Squadron Enchanter"]		= "RDM|RUN", ["Regiment Enchanter"]		= "RDM|RUN",
-		["Squadron Warlock"]		= "RDM|RUN", ["Regiment Warlock"]		= "RDM|RUN",
-		["Squadron Magician"]		= "RDM|RUN", ["Regiment Magician"]		= "RDM|RUN",
-		["Squadron Shaman"]			= "RDM|RUN", ["Regiment Shaman"]		= "RDM|RUN",
-		["Squadron Prognosticator"]	= "RDM|RUN", ["Regiment Prognosticator"]= "RDM|RUN",
+		["Squadron Defiler"]		= "RDM|RUN",	["Regiment Defiler"]		= "RDM|RUN",
+		["Squadron Enchanter"]		= "RDM|RUN",	["Regiment Enchanter"]		= "RDM|RUN",
+		["Squadron Warlock"]		= "RDM|RUN",	["Regiment Warlock"]		= "RDM|RUN",
+		["Squadron Magician"]		= "RDM|RUN",	["Regiment Magician"]		= "RDM|RUN",
+		["Squadron Shaman"]			= "RDM|RUN",	["Regiment Shaman"]			= "RDM|RUN",
+		["Squadron Prognosticator"]	= "RDM|RUN",	["Regiment Prognosticator"]	= "RDM|RUN",
 		--PLD|DRG
-		["Squadron Banneret"]		= "PLD|DRG", ["Regiment Banneret"]		= "PLD|DRG",
-		["Squadron Knight"]			= "PLD|DRG", ["Regiment Knight"]		= "PLD|DRG",
-		["Squadron Stalwart"]		= "PLD|DRG", ["Regiment Stalwart"]		= "PLD|DRG",
-		["Squadron Cavalier"]		= "PLD|DRG", ["Regiment Cavalier"]		= "PLD|DRG",
-		["Squadron Chevalier"]		= "PLD|DRG", ["Regiment Chevalier"]		= "PLD|DRG",
-		["Squadron Champion"]		= "PLD|DRG", ["Regiment Champion"]		= "PLD|DRG",
+		["Squadron Banneret"]		= "PLD|DRG",	["Regiment Banneret"]		= "PLD|DRG",
+		["Squadron Knight"]			= "PLD|DRG",	["Regiment Knight"]			= "PLD|DRG",
+		["Squadron Stalwart"]		= "PLD|DRG",	["Regiment Stalwart"]		= "PLD|DRG",
+		["Squadron Cavalier"]		= "PLD|DRG",	["Regiment Cavalier"]		= "PLD|DRG",
+		["Squadron Chevalier"]		= "PLD|DRG",	["Regiment Chevalier"]		= "PLD|DRG",
+		["Squadron Champion"]		= "PLD|DRG",	["Regiment Champion"]		= "PLD|DRG",
 		--BST|RNG
-		["Squadron Animist"]		= "BST|RNG", ["Regiment Animist"]		= "BST|RNG",
-		["Squadron Tamer"]			= "BST|RNG", ["Regiment Tamer"]			= "BST|RNG",
-		["Squadron Hunter"]			= "BST|RNG", ["Regiment Hunter"]		= "BST|RNG",
-		["Squadron Harnesser"]		= "BST|RNG", ["Regiment Harnesser"]		= "BST|RNG",
-		["Squadron Domesticator"]	= "BST|RNG", ["Regiment Domesticator"]	= "BST|RNG",
-		["Squadron Empath"]			= "BST|RNG", ["Regiment Empath"]		= "BST|RNG",
+		["Squadron Animist"]		= "BST|RNG",	["Regiment Animist"]		= "BST|RNG",
+		["Squadron Tamer"]			= "BST|RNG",	["Regiment Tamer"]			= "BST|RNG",
+		["Squadron Hunter"]			= "BST|RNG",	["Regiment Hunter"]			= "BST|RNG",
+		["Squadron Harnesser"]		= "BST|RNG",	["Regiment Harnesser"]		= "BST|RNG",
+		["Squadron Domesticator"]	= "BST|RNG",	["Regiment Domesticator"]	= "BST|RNG",
+		["Squadron Empath"]			= "BST|RNG",	["Regiment Empath"]			= "BST|RNG",
 		--WHM|SMN
-		["Squadron Vivifier"]		= "WHM|SMN", ["Regiment Vivifier"]		= "WHM|SMN",
-		["Squadron Medic"]			= "WHM|SMN", ["Regiment Medic"]			= "WHM|SMN",
-		["Squadron Priest"]			= "WHM|SMN", ["Regiment Priest"]		= "WHM|SMN",
-		["Squadron Mender"]			= "WHM|SMN", ["Regiment Mender"]		= "WHM|SMN",
-		["Squadron Healer"]			= "WHM|SMN", ["Regiment Healer"]		= "WHM|SMN",
-		["Squadron Orisha"]			= "WHM|SMN", ["Regiment Orisha"]		= "WHM|SMN",
+		["Squadron Vivifier"]		= "WHM|SMN",	["Regiment Vivifier"]		= "WHM|SMN",
+		["Squadron Medic"]			= "WHM|SMN",	["Regiment Medic"]			= "WHM|SMN",
+		["Squadron Priest"]			= "WHM|SMN",	["Regiment Priest"]			= "WHM|SMN",
+		["Squadron Mender"]			= "WHM|SMN",	["Regiment Mender"]			= "WHM|SMN",
+		["Squadron Healer"]			= "WHM|SMN",	["Regiment Healer"]			= "WHM|SMN",
+		["Squadron Orisha"]			= "WHM|SMN",	["Regiment Orisha"]			= "WHM|SMN",
 		--BRD|SAM
-		["Squadron Flautist"]		= "BRD|SAM", ["Regiment Flautist"]		= "BRD|SAM",
-		["Squadron Troubador"]		= "BRD|SAM", ["Regiment Troubador"]		= "BRD|SAM",
-		["Squadron Minstrel"]		= "BRD|SAM", ["Regiment Minstrel"]		= "BRD|SAM",
-		["Squadron Balladeer"]		= "BRD|SAM", ["Regiment Balladeer"]		= "BRD|SAM",
-		["Squadron Joculator"]		= "BRD|SAM", ["Regiment Joculator"]		= "BRD|SAM",
-		["Squadron Minnesinger"]	= "BRD|SAM", ["Regiment Minnesinger"]	= "BRD|SAM",
+		["Squadron Flautist"]		= "BRD|SAM",	["Regiment Flautist"]		= "BRD|SAM",
+		["Squadron Troubador"]		= "BRD|SAM",	["Regiment Troubador"]		= "BRD|SAM",
+		["Squadron Minstrel"]		= "BRD|SAM",	["Regiment Minstrel"]		= "BRD|SAM",
+		["Squadron Balladeer"]		= "BRD|SAM",	["Regiment Balladeer"]		= "BRD|SAM",
+		["Squadron Joculator"]		= "BRD|SAM",	["Regiment Joculator"]		= "BRD|SAM",
+		["Squadron Minnesinger"]	= "BRD|SAM",	["Regiment Minnesinger"]	= "BRD|SAM",
 		--NIN|BLU
-		["Squadron Operative"]		= "NIN|BLU", ["Regiment Operative"]		= "NIN|BLU",
-		["Squadron Shinobi"]		= "NIN|BLU", ["Regiment Shinobi"]		= "NIN|BLU",
-		["Squadron Kagemusha"]		= "NIN|BLU", ["Regiment Kagemusha"]		= "NIN|BLU",
-		["Squadron Shadowstalker"]	= "NIN|BLU", ["Regiment Shadowstalker"]	= "NIN|BLU",
-		["Squadron Assassin"]		= "NIN|BLU", ["Regiment Assassin"]		= "NIN|BLU",
-		["Squadron Spy"]			= "NIN|BLU", ["Regiment Spy"]			= "NIN|BLU",
+		["Squadron Operative"]		= "NIN|BLU",	["Regiment Operative"]		= "NIN|BLU",
+		["Squadron Shinobi"]		= "NIN|BLU",	["Regiment Shinobi"]		= "NIN|BLU",
+		["Squadron Kagemusha"]		= "NIN|BLU",	["Regiment Kagemusha"]		= "NIN|BLU",
+		["Squadron Shadowstalker"]	= "NIN|BLU",	["Regiment Shadowstalker"]	= "NIN|BLU",
+		["Squadron Assassin"]		= "NIN|BLU",	["Regiment Assassin"]		= "NIN|BLU",
+		["Squadron Spy"]			= "NIN|BLU",	["Regiment Spy"]			= "NIN|BLU",
 		--COR|SCH
-		["Squadron Buccaneer"]		= "COR|SCH", ["Regiment Buccaneer"]		= "COR|SCH",
-		["Squadron Pirate"]			= "COR|SCH", ["Regiment Pirate"]		= "COR|SCH",
-		["Squadron Canoneer"]		= "COR|SCH", ["Regiment Canoneer"]		= "COR|SCH",
-		["Squadron Scallywag"]		= "COR|SCH", ["Regiment Scallywag"]		= "COR|SCH",
-		["Squadron Freebooter"]		= "COR|SCH", ["Regiment Freebooter"]	= "COR|SCH",
-		["Squadron Privateer"]		= "COR|SCH", ["Regiment Privateer"]		= "COR|SCH",
+		["Squadron Buccaneer"]		= "COR|SCH",	["Regiment Buccaneer"]		= "COR|SCH",
+		["Squadron Pirate"]			= "COR|SCH",	["Regiment Pirate"]			= "COR|SCH",
+		["Squadron Canoneer"]		= "COR|SCH",	["Regiment Canoneer"]		= "COR|SCH",
+		["Squadron Scallywag"]		= "COR|SCH",	["Regiment Scallywag"]		= "COR|SCH",
+		["Squadron Freebooter"]		= "COR|SCH",	["Regiment Freebooter"]		= "COR|SCH",
+		["Squadron Privateer"]		= "COR|SCH",	["Regiment Privateer"]		= "COR|SCH",
 
 		--NM Mobs
 
 		--WAR|DRK
-		["Berserker Commander"]		= "NM WAR|DRK", ["Berserker Leader"]		= "NM WAR|DRK",
-		["Skullcrusher Commander"]	= "NM WAR|DRK", ["Skullcrusher Leader"]		= "NM WAR|DRK",
-		["Ravager Commander"]		= "NM WAR|DRK", ["Ravager Leader"]			= "NM WAR|DRK",
-		["Weaponmaster Commander"]	= "NM WAR|DRK", ["Weaponmaster Leader"]		= "NM WAR|DRK",
-		["Fighter Commander"]		= "NM WAR|DRK", ["Fighter Leader"]			= "WAR|DRK NM",
-		["Hoplite Commander"]		= "NM WAR|DRK", ["Hoplite Leader"]			= "NM WAR|DRK",
+		["Berserker Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Berserker Leader"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Skullcrusher Commander"]	= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Skullcrusher Leader"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Ravager Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Ravager Leader"]			= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Weaponmaster Commander"]	= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Weaponmaster Leader"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Fighter Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Fighter Leader"]			= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Hoplite Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Hoplite Leader"]			= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
 		-- MNK|PUP
-		["Fistfighter Commander"]	= "NM MNK|PUP", ["Fistfighter Leader"]		= "NM MNK|PUP",
-		["Pugilist Commander"]		= "NM MNK|PUP", ["Pugilist Leader"]			= "NM MNK|PUP",
-		["Mendicant Commander"]		= "NM MNK|PUP", ["Mendicant Leader"]		= "NM MNK|PUP",
-		["Combatant Commander"]		= "NM MNK|PUP", ["Combatant Leader"]		= "NM MNK|PUP",
-		["Brother Commander"]		= "NM MNK|PUP", ["Brother Leader"]			= "NM MNK|PUP",
-		["Ascetic Commander"]		= "NM MNK|PUP", ["Ascetic Leader"]			= "NM MNK|PUP",
+		["Fistfighter Commander"]	= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Fistfighter Leader"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Pugilist Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Pugilist Leader"]			= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Mendicant Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Mendicant Leader"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Combatant Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Combatant Leader"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Brother Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Brother Leader"]			= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Ascetic Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Ascetic Leader"]			= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
 		-- THF|DNC
-		["Vandal Commander"]		= "NM THF|DNC", ["Vandal Leader"]			= "NM THF|DNC",
-		["Fleetfoot Commander"]		= "NM THF|DNC", ["Fleetfoot Leader"]		= "NM THF|DNC",
-		["Cutpurse Commander"]		= "NM THF|DNC", ["Cutpurse Leader"]			= "NM THF|DNC",
-		["Trickster Commander"]		= "NM THF|DNC", ["Trickster Leader"]		= "NM THF|DNC",
-		["Pickpocket Commander"]	= "NM THF|DNC", ["Pickpocket Leader"]		= "NM THF|DNC",
-		["Ruffian Commander"]		= "NM THF|DNC", ["Ruffian Leader"]			= "NM THF|DNC",
+		["Vandal Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Vandal Leader"]			= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Fleetfoot Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Fleetfoot Leader"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Cutpurse Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Cutpurse Leader"]			= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Trickster Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Trickster Leader"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Pickpocket Commander"]	= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Pickpocket Leader"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Ruffian Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Ruffian Leader"]			= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
 		-- BLM|GEO
-		["Arcanomancer Commander"]	= "NM BLM|GEO", ["Arcanomancer Leader"]		= "NM BLM|GEO",
-		["Evoker Commander"]		= "NM BLM|GEO", ["Evoker Leader"]			= "NM BLM|GEO",
-		["Invoker Commander"]		= "NM BLM|GEO", ["Invoker Leader"]			= "NM BLM|GEO",
-		["Magister Commander"]		= "NM BLM|GEO", ["Magister Leader"]			= "NM BLM|GEO",
-		["Magus Commander"]			= "NM BLM|GEO", ["Magus Leader"]			= "NM BLM|GEO",
-		["Magian Commander"]		= "NM BLM|GEO", ["Magian Leader"]			= "NM BLM|GEO",
+		["Arcanomancer Commander"]	= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Arcanomancer Leader"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Evoker Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Evoker Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Invoker Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Invoker Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Magister Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Magister Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Magus Commander"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Magus Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Magian Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Magian Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
 		-- RDM|RUN
-		["Defiler Commander"]		= "NM RDM|RUN", ["Defiler Leader"]			= "NM RDM|RUN",
-		["Enchanter Commander"]		= "NM RDM|RUN", ["Enchanter Leader"]		= "NM RDM|RUN",
-		["Warlock Commander"]		= "NM RDM|RUN", ["Warlock Leader"]			= "NM RDM|RUN",
-		["Magician Commander"]		= "NM RDM|RUN", ["Magician Leader"]			= "NM RDM|RUN",
-		["Shaman Commander"]		= "NM RDM|RUN", ["Shaman Leader"]			= "NM RDM|RUN",
-		["Prognosticator Commander"]= "NM RDM|RUN", ["Prognosticator Leader"]	= "NM RDM|RUN",
+		["Defiler Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Defiler Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Enchanter Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Enchanter Leader"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Warlock Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Warlock Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Magician Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Magician Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Shaman Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Shaman Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Prognosticator Commander"]= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Prognosticator Leader"]	= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
 		-- PLD|DRG
-		["Banneret Commander"]		= "NM PLD|DRG", ["Banneret Leader"]			= "NM PLD|DRG",
-		["Knight Commander"]		= "NM PLD|DRG", ["Knight Leader"]			= "NM PLD|DRG",
-		["Stalwart Commander"]		= "NM PLD|DRG", ["Stalwart Leader"]			= "NM PLD|DRG",
-		["Cavalier Commander"]		= "NM PLD|DRG", ["Cavalier Leader"]			= "NM PLD|DRG",
-		["Chevalier Commander"]		= "NM PLD|DRG", ["Chevalier Leader"]		= "NM PLD|DRG",
-		["Champion Commander"]		= "NM PLD|DRG", ["Champion Leader"]			= "NM PLD|DRG",
+		["Banneret Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Banneret Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Knight Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Knight Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Stalwart Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Stalwart Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Cavalier Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Cavalier Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Chevalier Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Chevalier Leader"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Champion Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Champion Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
 		-- BST|RNG
-		["Animist Commander"]		= "NM BST|RNG", ["Animist Leader"]			= "NM BST|RNG",
-		["Tamer Commander"]			= "NM BST|RNG", ["Tamer Leader"]			= "NM BST|RNG",
-		["Hunter Commander"]		= "NM BST|RNG", ["Hunter Leader"]			= "NM BST|RNG",
-		["Harnesser Commander"]		= "NM BST|RNG", ["Harnesser Leader"]		= "NM BST|RNG",
-		["Domesticator Commander"]	= "NM BST|RNG", ["Domesticator Leader"]		= "NM BST|RNG",
-		["Empath Commander"]		= "NM BST|RNG", ["Empath Leader"]			= "NM BST|RNG",
+		["Animist Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Animist Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Tamer Commander"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Tamer Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Hunter Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Hunter Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Harnesser Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Harnesser Leader"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Domesticator Commander"]	= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Domesticator Leader"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Empath Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Empath Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
 		-- WHM|SMN
-		["Vivifier Commander"]		= "NM WHM|SMN", ["Vivifier Leader"]			= "NM WHM|SMN",
-		["Medic Commander"]			= "NM WHM|SMN", ["Medic Leader"]			= "NM WHM|SMN",
-		["Priest Commander"]		= "NM WHM|SMN", ["Priest Leader"]			= "NM WHM|SMN",
-		["Mender Commander"]		= "NM WHM|SMN", ["Mender Leader"]			= "NM WHM|SMN",
-		["Healer Commander"]		= "NM WHM|SMN", ["Healer Leader"]			= "NM WHM|SMN",
-		["Orisha Commander"]		= "NM WHM|SMN", ["Orisha Leader"]			= "NM WHM|SMN",
+		["Vivifier Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Vivifier Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Medic Commander"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Medic Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Priest Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Priest Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Mender Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Mender Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Healer Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Healer Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Orisha Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Orisha Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
 		-- BRD|SAM
-		["Flautist Commander"]		= "NM BRD|SAM", ["Flautist Leader"]			= "NM BRD|SAM",
-		["Troubador Commander"]		= "NM BRD|SAM", ["Troubador Leader"]		= "NM BRD|SAM",
-		["Minstrel Commander"]		= "NM BRD|SAM", ["Minstrel Leader"]			= "NM BRD|SAM",
-		["Balladeer Commander"]		= "NM BRD|SAM", ["Balladeer Leader"]		= "NM BRD|SAM",
-		["Joculator Commander"]		= "NM BRD|SAM", ["Joculator Leader"]		= "NM BRD|SAM",
-		["Minnesinger Commander"]	= "NM BRD|SAM", ["Minnesinger Leader"]		= "NM BRD|SAM",
+		["Flautist Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Flautist Leader"]			= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Troubador Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Troubador Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Minstrel Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Minstrel Leader"]			= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Balladeer Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Balladeer Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Joculator Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Joculator Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Minnesinger Commander"]	= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Minnesinger Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
 		-- NIN|BLU
-		["Operative Commander"]		= "NM NIN|BLU", ["Operative Leader"]		= "NM NIN|BLU",
-		["Shinobi Commander"]		= "NM NIN|BLU", ["Shinobi Leader"]			= "NM NIN|BLU",
-		["Kagemusha Commander"]		= "NM NIN|BLU", ["Kagemusha Leader"]		= "NM NIN|BLU",
-		["Shadowstalker Commander"]	= "NM NIN|BLU", ["Shadowstalker Leader"]	= "NM NIN|BLU",
-		["Assassin Commander"]		= "NM NIN|BLU", ["Assassin Leader"]			= "NM NIN|BLU",
-		["Spy Commander"]			= "NM NIN|BLU", ["Spy Leader"]				= "NM NIN|BLU",
+		["Operative Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Operative Leader"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Shinobi Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Shinobi Leader"]			= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Kagemusha Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Kagemusha Leader"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Shadowstalker Commander"]	= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Shadowstalker Leader"]	= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Assassin Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Assassin Leader"]			= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Spy Commander"]			= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Spy Leader"]				= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
 		-- COR|SCH
-		["Buccaneer Commander"]		= "NM COR|SCH", ["Buccaneer Leader"]		= "NM COR|SCH",
-		["Pirate Commander"]		= "NM COR|SCH", ["Pirate Leader"]			= "NM COR|SCH",
-		["Canoneer Commander"]		= "NM COR|SCH", ["Canoneer Leader"]			= "NM COR|SCH",
-		["Scallywag Commander"]		= "NM COR|SCH", ["Scallywag Leader"]		= "NM COR|SCH",
-		["Freebooter Commander"]	= "NM COR|SCH", ["Freebooter Leader"]		= "NM COR|SCH",
-		["Privateer Commander"]		= "NM COR|SCH", ["Privateer Leader"]		= "NM COR|SCH",
+		["Buccaneer Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Buccaneer Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Pirate Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Pirate Leader"]			= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Canoneer Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Canoneer Leader"]			= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Scallywag Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Scallywag Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Freebooter Commander"]	= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Freebooter Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Privateer Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Privateer Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+
+		--ORB BCNM JOBS--
+
+		--Demolition Squad
+		["Nephiyl Moatfiller"]		= "BST",	["Nephiyl Keepcollapser"]	= "MNK",
+		["Nephiyl Pinnacletosser"]	= "RNG",	["Nephiyl Rampartbreacher"]	= "WAR",
+
+		--Brothers D'Aurphe
+		["Disfaurit B D'Aurphe"]	= "THF",	["Vaicoliaux B D'Aurphe"]	= "WAR",
+		["Jeumouque B D'Aurphe"]	= "RNG",	["Maldaramet B D'Aurphe"]	= "BLM",
+
+		--Legion XI Comitatensis
+		["Centurio XI-I"]			= "RNG",	["Hoplomachus XI-XXVI"]		= "PLD",
+		["Retiarius XI-XIX"]		= "BLM",	["Secutor XI-XXXII"]		= "WAR",
+
+		--Grimshell Shocktroopers
+		["Ku'Tya Hotblood"]			= "PLD",	["Ka'Nha Jabbertongue"]		= "BLM",
+		["Yo'Bhu Hideousmask"]		= "WAR",	["Bi'Fho Jestergrin"]		= "THF",
+		["Ea'Tho Cruelheart"]		= "DRK",	["Zo'Dha Legslicer"]		= "WHM",
+
+		--Divine Punishers
+		["Aa Nawu the Thunderblade"]= "SAM",	["Cuu Doko the Blizzard"]	= "WHM",
+		["Yoo Mihi the Haze"]		= "NIN",	["Voo Tolu the Ghostfist"]	= "MNK",
+		["Gii Jaha the Racous"]		= "BRD",	["Zuu Xowu the Darksmoke"]	= "BLM",
+
+		--Dismemberment Brigade
+		["Armsmaster Dekbuk"]		= "WAR",	["Invulnerable Mazzgozz"]	= "PLD",
+		["Keeneyed Aufwuf"]			= "BLM",	["Longarmed Gottditt"]		= "MNK",
+		["Mind's-eyed Klugwug"]		= "RNG",	["Undefeatable Sappdapp"]	= "DRK",
+
+		--Amphibian Assault
+		["Hyohh the Conchblower"]	= "BRD",	["Pevv the Riverleaper"]	= "DRG",
+		["Qull the Fallstopper"]	= "MNK",	["Rauu the Whaleswooner"]	= "WHM",
+
+		--Jungle Boogymen
+		["Cyaneous-toed Yallberry"]	= "NIN",	["Virid-faced Shanberry"]	= "THF",
+		["Vermillion-eared Noberry"]= "SMN",	["Sable-tongued Gonberry"]	= "BLM",
+
+		--Kindred Spirits
+		["Count Andromalius"]		= "DRK",	["Duke Amduscias"]			= "BLM",
+		["Duke Dantalian"]			= "SMN",	["Grand Marquis Chomiel"]	= "WAR",
+
+		--MASTER TRIALS--
+
+		--Black and White
+		["Helmwige"]	= "RDM|RUN",	["Ortlinde"]	= "RDM|RUN",
+		["Schwetleite"]	= "RDM|RUN",	["Rossweisse"]	= "WAR|PLD",
+		["Siegrune"]	= "WAR|PLD",	["Gerhilde"]	= "WAR|PLD",
+		["Brunhilde"]	= "WAR|PLD",	["Waltraute"]	= "BRD|WHM",
+		["Grimgerde"]	= "BRD|WHM",
+
+		--Unafraid of the Dark
+		["Tzee Xicu the Manifest"]	= "SMN|SCH",	["Bloodcrown Brradhod"] = "PLD|SAM",
+		["Za'Dha Adamantking"]		= "WAR|WHM",
+
+		--Heroines' Combat II
+		["Iroha"]		= "SAM|WHM",	["Lion"] = "THF|WAR",
+		["Prishe"]		= "MNK|WHM",	["Nashmeira"] = "PUP",
+		["Lilisette"]	= "DNC",		["Arciela"] = "RDM",
+
+		--Crystal Paradise
+		["Eald'narche"]		= "BLM",		["Kam'lanaut"]		= "RDM|WAR",
+		["Ark Angel HM"]	= "WAR|NIN",	["Ark Angel EV"]	= "PLD|WHM",
+		["Ark Angel TT"]	= "BLM|DRK",	["Ark Angel MR"]	= "BST|THF",
+		["Ark Angel GK"]	= "SAM|DRG",
+
+		--SINISTER REIGN--
+
+		["Ingrid"]			= "WHM",		["Teodor"]			= "BLM|DRK",
+		["Rosulatia"]		= "BLM",
+
+		-- [""] = "",
+
 	}
 
-	return dyna_mobs[mob_name] or false
+	return mobs[mob_name] or false
 end
 
 --Apply Range coloring to Distance number (most of the distance calculations come from DistancePlus)
@@ -5376,6 +5518,7 @@ function getIconFile(spell_name, debuff_id)
 		'ltng. threnody', 'water threnody', 'light threnody', 'dark threnody',
 		'comet', 'firaja', 'blizzaja', 'aeroja', 'stoneja', 'thundaja', 'waterja',
 		'carnage elegy', 'impact', 'treasure hunter',
+		'lethargic daze', 'sluggish daze', 'weakened daze', 'bewildered daze'
 	}
 	local shot_boosted_names = {
 		'boosted dia', 'boosted bio', 'boosted shock', 'boosted rasp',
@@ -5883,7 +6026,7 @@ function updateFocusTargetBar(player, target, clock)
 			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	local mob_job_raw = ft and show_dyna_jobs and mobJob(ft.name) or false
+	local mob_job_raw = ft and ft_settings.show_monster_job and mobJob(ft.name) or false
 	local mob_job = ft and mob_job_raw and ft_spaces..mob_job_raw or ''
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
 	local dist_raw = ft and ft.distance and math.floor(ft.distance:sqrt()*100)/100
@@ -5921,9 +6064,7 @@ function updateFocusTargetBar(player, target, clock)
 	else
 		focus_target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hpp_raw > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(meter) < spaces do
 			meter = meter..' '
 		end
@@ -6019,9 +6160,9 @@ function updateFocusTargetBar(player, target, clock)
 
 		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
 		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 3 or math.abs(debuff_list.pos.y - ft.y) > 3)
-		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
+		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			local watch_effects = {2, 7, 11, 19}
+			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -6119,9 +6260,7 @@ function updateFocusTargetBarAnimations(player, target)
 			focus_target_bar_drain_meter:hide()
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ft_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -6182,7 +6321,7 @@ function updateSubTargetBar(player, st, target, clock)
 			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	local mob_job_raw = st and show_dyna_jobs and mobJob(st.name) or false
+	local mob_job_raw = st and st_settings.show_monster_job and mobJob(st.name) or false
 	local mob_job = st and mob_job_raw and st_spaces..mob_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
 	local dist_raw = st and st.distance and math.floor(st.distance:sqrt()*100)/100
@@ -6220,9 +6359,7 @@ function updateSubTargetBar(player, st, target, clock)
 	else
 		sub_target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hpp_raw > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(meter) < spaces do
 			meter = meter..' '
 		end
@@ -6317,10 +6454,10 @@ function updateSubTargetBar(player, st, target, clock)
 		end
 
 		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
-		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 2 or math.abs(debuff_list.pos.y - st.y) > 2)
-		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
+		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 3 or math.abs(debuff_list.pos.y - st.y) > 3)
+		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			local watch_effects = {2, 7, 11, 19}
+			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -6413,9 +6550,7 @@ function updateSubTargetBarAnimations(player, st)
 			sub_target_bar_drain_meter:hide()
 		elseif drain_target_bars then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_st_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -6473,7 +6608,7 @@ function updateTargetBar(player, t, clock)
 			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
 		end
 	end
-	local mob_job_raw = t and show_dyna_jobs and mobJob(t.name) or false
+	local mob_job_raw = t and t_settings.show_monster_job and mobJob(t.name) or false
 	local mob_job = t and mob_job_raw and t_spaces..mob_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
 	local dist_raw = t and t.distance and math.floor(t.distance:sqrt()*100)/100
@@ -6496,7 +6631,7 @@ function updateTargetBar(player, t, clock)
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (t_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(t_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (t_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(t_targeting_id).name) or '')
 	local text = hpp..colorizeDistance(dist, dist_raw, t)..t_spaces.."\\cs("..formatRGB(getAngleColor(t_angle).r)..","..formatRGB(getAngleColor(t_angle).g)..","..formatRGB(getAngleColor(t_angle).b)..")"..t_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..t_spaces..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_name..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..t_spaces..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_name..'\\cr'..index_hex..mob_job:text_strip_format()..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
 	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
 	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
@@ -6517,9 +6652,7 @@ function updateTargetBar(player, t, clock)
 	else
 		target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hpp_raw > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(meter) < spaces do
 			meter = meter..' '
 		end
@@ -6629,10 +6762,10 @@ function updateTargetBar(player, t, clock)
 		end
 
 		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
-		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 2 or math.abs(debuff_list.pos.y - t.y) > 2)
-		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
+		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 3 or math.abs(debuff_list.pos.y - t.y) > 3)
+		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			local watch_effects = {2, 7, 11, 19}
+			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -6722,9 +6855,7 @@ function updateTargetBarAnimations(player, t)
 			target_bar_drain_meter:hide()
 		elseif not (not show_self_when_targeted and t.id == player.id) and not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_t_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -6899,9 +7030,7 @@ function updateHPBar(player)
 	else
 		player_stats_hp_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hp > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(hp_meter) < spaces do
 			hp_meter = hp_meter..' '
 		end
@@ -6984,9 +7113,7 @@ function updateHPBarAnimations(player)
 			player_stats_hp_bar_drain_meter:bg_alpha(0)
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -7019,9 +7146,7 @@ function updateMPBar(player)
 	else
 		player_stats_mp_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and mp >= 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(mp_meter) < spaces do
 			mp_meter = mp_meter..' '
 		end
@@ -7104,9 +7229,7 @@ function updateMPBarAnimations(player)
 			player_stats_mp_bar_drain_meter:bg_alpha(0)
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_mpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -7141,9 +7264,7 @@ function updateTPBar(player)
 			player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 		end
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and tp > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(tp_meter) < spaces do
 			tp_meter = tp_meter..' '
 		end
@@ -7221,9 +7342,7 @@ function updateTPBarAnimations(player)
 			player_stats_tp_bar_drain_meter:bg_alpha(0)
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_tp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -7277,9 +7396,7 @@ function updatePetBar(pet)
 	else
 		player_stats_pet_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces == 0 and hpp > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(pet_meter) < spaces and string.len(pet_meter) < (player_stats_bar_width * 10) do
 			pet_meter = pet_meter..' '
 		end
@@ -7375,9 +7492,7 @@ function updatePetBarAnimations(pet)
 			player_stats_pet_bar_drain_meter:bg_alpha(0)
 		elseif drain_player_stats_bars and not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_pet > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -7656,9 +7771,7 @@ function updateXPBar(player, time)
 	else
 		xp_bar_meter:bg_alpha((not Fade or exclude_from_fade) and xp_meter_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces == 0 and percent > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(xp_meter) < spaces and string.len(xp_meter) < (xp_bar_width * 10) do
 			xp_meter = xp_meter..' '
 		end
@@ -8236,16 +8349,6 @@ function resetFadeDelay()
 	end
 end
 
---Check a table if it contains a specific message number
-function checkForMessage(tbl, msg)
-	for _, v in ipairs(tbl) do
-		if v == msg then
-			return true
-		end
-	end
-	return false
-end
-
 --Show the Target, Sub Target, and Focus Target bars to test the screen layout
 function screenTest()
 
@@ -8709,7 +8812,7 @@ register_event('lose buff', function(buff_id)
 	end
 
 end)
-
+local last_gc_sweep = os.time()
 register_event('prerender', function()
 
 	if not logged_in or in_cutscene or zoning then return end
@@ -8940,9 +9043,17 @@ end)
 register_event('action', function (act)
 	local msg = act.targets[1].actions[1].message
 	local aoe_main_target_messages = {
-		2,7,14,67,75,83,85,102,103,110,116,127,131,134,141,148,150,156,185,186,187,188,189,194,197,
-		224,225,226,227,228,230,231,236,237,238,242,243,252,268,271,274,275,306,317,318,319,320,321,322,323,324,
-		341,342,362,373,375,379,408,412,413,435,441,570,645,658
+		[2] = true, [7] = true, [14] = true, [67] = true, [75] = true, [83] = true, [85] = true,
+		[102] = true, [103] = true, [110] = true, [116] = true, [127] = true, [131] = true,
+		[134] = true, [141] = true, [148] = true, [150] = true, [156] = true, [185] = true,
+		[186] = true, [187] = true, [188] = true, [189] = true, [194] = true, [197] = true,
+		[224] = true, [225] = true, [226] = true, [227] = true, [228] = true, [230] = true,
+		[231] = true, [236] = true, [237] = true, [238] = true, [242] = true, [243] = true,
+		[252] = true, [268] = true, [271] = true, [274] = true, [275] = true, [306] = true,
+		[317] = true, [318] = true, [319] = true, [320] = true, [321] = true, [322] = true,
+		[323] = true, [324] = true, [341] = true, [342] = true, [362] = true, [373] = true,
+		[375] = true, [379] = true, [408] = true, [412] = true, [413] = true, [435] = true,
+		[441] = true, [570] = true, [645] = true, [658] = true
 	}
 	local player = get_player()
 	local get_player = get_mob_by_id(player.id)
@@ -8955,7 +9066,7 @@ register_event('action', function (act)
 		local main_target_found = false
 		for i = 1, target_count do
 			local message = act.targets[i].actions[1].message
-			if checkForMessage(aoe_main_target_messages,message) then
+			if aoe_main_target_messages[message] then
 				action_target_id = act.targets[i].id
 				main_target_found = true
 				break
@@ -9760,6 +9871,11 @@ register_event('action', function (act)
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
 				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+			--Healing Waltz
+			elseif msg == 123 then
+				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
+				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 127 then
 				local landed = calculateInfo(act).landed
@@ -9873,9 +9989,12 @@ register_event('action', function (act)
 		end
 		local sc_amount = addCommas(act.targets[1].actions[1].add_effect_param)
 		local sc_name = sc[act.targets[1].actions[1].add_effect_animation]
-		local abs_msgs = {385,386,387,388,389,390,391,392,393,394,395,396,397,398}
+		local abs_msgs = {
+			[385] = true, [386] = true, [387] = true, [388] = true, [389] = true, [390] = true, [391] = true,
+			[392] = true, [393] = true, [394] = true, [395] = true, [396] = true, [397] = true, [398] = true
+		}
 		local ae_msg = act.targets[1].actions[1].add_effect_message
-		local sc_c = checkForMessage(abs_msgs,ae_msg) and color.result.heal or color.result.damage
+		local sc_c = abs_msgs[ae_msg] and color.result.heal or color.result.damage
 		local sc_c_r = formatRGB(sc_c.r)
 		local sc_c_g = formatRGB(sc_c.g)
 		local sc_c_b = formatRGB(sc_c.b)
@@ -10747,10 +10866,10 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		[10] = 120,
 	}
 	local daze_levels = {
-		[386] = 1, [387] = 2, [388] = 3, [389] = 4, [390] = 5, --Lethargic Daze
-		[391] = 1, [392] = 2, [393] = 3, [394] = 4, [395] = 5, --Sluggish Daze
-		[396] = 1, [397] = 2, [398] = 3, [399] = 4, [400] = 5, --Weakened Daze
-		[448] = 1, [449] = 2, [450] = 3, [451] = 4, [452] = 5, --Bewildered Daze
+		[386] = 1, [387] = 2, [388] = 3, [389] = 4, [390] = 5, [99106] = 6, [99107] = 7, [99108] = 8, [99109] = 9, [99110] = 10, --Lethargic Daze (Quickstep)
+		[391] = 1, [392] = 2, [393] = 3, [394] = 4, [395] = 5, [99206] = 6, [99207] = 7, [99208] = 8, [99209] = 9, [99210] = 10, --Sluggish Daze (Box Step)
+		[396] = 1, [397] = 2, [398] = 3, [399] = 4, [400] = 5, [99306] = 6, [99307] = 7, [99308] = 8, [99309] = 9, [99310] = 10, --Weakened Daze (Stutter Step)
+		[448] = 1, [449] = 2, [450] = 3, [451] = 4, [452] = 5, [99406] = 6, [99407] = 7, [99408] = 8, [99409] = 9, [99410] = 10, --Bewildered Daze (Feather Step)
 	}
 
 	--Match the effect with daze level
@@ -10960,7 +11079,8 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		--wait .5 sec to account for server tick lag if target was in motion
 		coroutine.schedule(function()
 			local target_data = get_mob_by_id(target_id)
-			if target_data and current_debuffs[target_data] then
+			-- if target_data then
+			if target_data and current_debuffs[target_id] then
 				current_debuffs[target_id].pos = {
 					x = target_data.x or 0,
 					y = target_data.y or 0,
@@ -11188,10 +11308,10 @@ function handleAction(act)
 
 			--Daze effect groups mapped to their level/message_id
 			local daze_types = {
-				[519] = {[1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=390, [7]=390, [8]=390, [9]=390, [10]=390}, --Lethargic Daze
-				[520] = {[1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=395, [7]=395, [8]=395, [9]=395, [10]=395}, --Sluggish Daze
-				[521] = {[1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=400, [7]=400, [8]=400, [9]=400, [10]=400}, --Weakened Daze
-				[591] = {[1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=452, [7]=452, [8]=452, [9]=452, [10]=452}, --Bewildered Daze
+				[519] = {[1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=99106, [7]=99107, [8]=99108, [9]=99109, [10]=99110}, --Lethargic Daze (Quickstep)
+				[520] = {[1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=99206, [7]=99207, [8]=99208, [9]=99209, [10]=99210}, --Sluggish Daze (Box Step)
+				[521] = {[1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=99306, [7]=99307, [8]=99308, [9]=99309, [10]=99310}, --Weakened Daze (Stutter Step)
+				[591] = {[1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=99406, [7]=99407, [8]=99408, [9]=99409, [10]=99410}, --Bewildered Daze (Feather Step)
 			}
 
 			--Check if the message ID is one of the Daze types
@@ -11204,6 +11324,9 @@ function handleAction(act)
 						for _, id in pairs(daze_group) do
 							current_debuffs[target_id][id] = nil
 						end
+					end
+					if level >= 6 then
+						spell_id = effect_id
 					end
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
@@ -12213,6 +12336,7 @@ register_event('addon command',function(addcmd, ...)
 			add_to_chat(8,('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
 			add_to_chat(8,('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
 			add_to_chat(8,('Display and adjust sub text sizes: '):color(8)..('//bars subtext'):color(1))
+			add_to_chat(8,('Toggle the display of specific bars: '):color(8)..('//bars focus|sub|target|aggro|chat|xp'):color(1))
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing locked.'):color(36))
 		end
@@ -12373,6 +12497,14 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
 		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
 		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
+
+	elseif addcmd == 'test' then
+		-- Check memory before and after manual collection
+		local before = collectgarbage("count")
+		collectgarbage("collect")
+		local after = collectgarbage("count")
+
+		windower.add_to_chat(207, string.format("Bars Memory: %.2f MB -> %.2f MB", before / 1024, after / 1024))
 
 	else
 
@@ -12809,8 +12941,7 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y, delta)
 				end
 			end
 
-			-- If no drag state was active but we are hovering the window, 
-			-- still swallow the release event to block FFXI from picking up a click.
+			--If no drag state was active but we are hovering the window, block FFXI from picking up a click.
 			if mouse_type == 2 and is_hovering_on_chat then
 				return true
 			end
