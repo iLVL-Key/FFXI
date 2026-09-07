@@ -567,6 +567,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 4.1
+- Added step-down conversions for Horde Lullaby, Foe Lullaby, and Elegy from their higher tier version to lower tier when their recast timers are not ready.
+
 Version 4.0
 - Overhauled options and gear sets. All options and gear sets are now saved in an external file: [Character name]_[JOB]_profile.lua. This allows for easier updating of the main JOB file without needing to redo desired options or reimport gear sets. All on-screen HUD/display positions, on/off settings, Modes, etc. (essentially anything you can change on the fly while playing without having to reload the file) are now saved in an external live.lua file. The live.lua file is not intended to be edited by the player, but instead is used by the main file to save those settings so they are remembered for next time the file is loaded.
 - Added ability to drag the HUD.
