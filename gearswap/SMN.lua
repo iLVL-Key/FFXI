@@ -347,7 +347,7 @@ sets.melee = {
 
 -- Rest
 sets.rest = {
-	waist="Austerity Belt",
+	waist="Austerity Belt +1",
 }
 
 -- Weapon Skill - Basic (STR, Weapon Skill Damage, Attack, Double/Triple Attack)
@@ -388,9 +388,9 @@ sets.fast_cast = {
 }
 
 -- Summoning (Summoning Magic Interruption Rate Down)
-sets.summoning = set_combine(sets.fast_cast, {
+sets.summoning = {
 	body="Baayami Robe +1",
-})
+}
 
 -- Blood Pact Delay (BP Ability Delay-, SMN Skill+) (BP precast)
 -- NOTE: BPD-I + BPD-II + BPD-III (only from JP gifts, -10s) cap is -30s.
@@ -632,7 +632,11 @@ end
 
 
 
-FileVersion = '14.3.4'
+FileVersion = '14.3.5'
+
+-- Version 14.3.5
+-- - Fixed the Summoning gear set. Was in precast when it should have been in midcast.
+-- - Fixed avatar macro page not being set correctly from previous update.
 
 -------------------------------------------
 --            AVATAR MAPPING             --
@@ -2093,7 +2097,7 @@ function precast(spell)
 			cancel_spell()
 			send_command('input /pet "Release" <me>;wait 1;input /ma \"'..spell.english..'\" <me>')
 		end
-		equip(set_combine(sets.summoning))
+		equip(set_combine(sets.fast_cast))
 	elseif (spell.english == 'Spectral Jig' or spell.english == 'Sneak' or spell.english == 'Monomi: Ichi' or spell.english == 'Monomi: Ni') and buffactive['Sneak'] and spell.target.type == 'SELF' then
 		send_command('cancel 71')
 		local fast_cast = spell.english ~= 'Spectral Jig' and sets.fast_cast or nil
@@ -2122,6 +2126,8 @@ function midcast(spell)
 		equip(set_combine(sets.buff, sets.healing))
 	elseif spell.type == 'Trust' then
 		equip(set_combine(sets.unity))
+	elseif (Avatars[spell.english] or Spirits[spell.english]) then
+		equip(set_combine(sets.avatar, sets.summoning))
 	elseif spell.action_type == 'Magic' then
 		equip(set_combine(sets.buff))
 	end
@@ -2872,7 +2878,7 @@ windower.register_event('prerender', function()
 		if pet.isvalid and not PetPresent then --we have an avatar out when we did not have one out already (ie summoning)
 			PetPresent = true
 
-			if GreetingDelay == 0 then
+			if GreetingDelay == -1 then
 				setMacroPage()
 			end
 
