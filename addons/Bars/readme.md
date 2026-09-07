@@ -347,6 +347,18 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.12
+- Added Debuff icons for Dancer Dazes levels 6-10. New icons have been added for them as well as redoing the icons for Daze levels 1-5 to match the new icons.
+- Added Tabbiyaa Gambit to list of moves that remove all monster debuffs.
+- Added various BCNM mobs (Macrocosmic Orbs, some Master Trials, etc.) to the list of mobs that show their jobs.
+- Added an icon to the jobs displayed to indicate NMs in Dynamis. Icon is set as `dynamis_nm_icon` under Settings.xml > icons.
+- Added Dynamis NM jobs highlight color.
+- Added missing results for Healing Waltz.
+- Renamed the `show_dyna_jobs` setting to `show_monster_job` to better match the now wider range of mobs included.
+- Fixed the check for when a monster moves and removing Sleep, Petrify, Bind not actually working since adjusting it to try to accound for fast moving monsters.
+- Fixed some minor padding issues when a bar is at 1%.
+- Fixed tiny black square showing up on screen when the addon is loaded before a character is logged in.
+
 Version 4.11.2
 - Fixed errors on a fresh install when the bars fade out, introduced with moving `bg_alpha` inside each bar section.
 - Adjusted the function that returns the Dynamis mob jobs. Now uses a static lookup table with an instant return, instead of the previous looping string match, hella more efficient. Will additionally label NM monsters.
