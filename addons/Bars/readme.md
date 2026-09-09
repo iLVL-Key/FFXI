@@ -349,7 +349,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ## Changelog
 
 Version 4.13
-- Added `show_wyvern_breath` option under the Self Action section. Shows your Wyvern's breath attacks when on DRG.
+- Added `show_wyvern_breath` option under the Self Action section. Shows your Wyvern's breath attacks when on DRG. (thanks olgi!)
 - Adjusted Kills Per Hour (KPH) and Seconds Per Kill (SPK) stats in the XP bar to use the XP table regardless of which type of points are displaying (XP, CP, or EP). Since you always earn XP/LP even when earning CP or EP, this allows the KPH and SPK stats to display much more frequently, even if you are not earning CP or EP.
 
 Version 4.12
