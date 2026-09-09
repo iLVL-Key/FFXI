@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.12'
+_addon.version = '4.13'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -472,6 +472,7 @@ defaults = {
 			show = true,
 			show_bar = true,
 			show_cast_time_bar = true,
+			show_wyvern_breath = false,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 0.5,
@@ -1057,6 +1058,7 @@ show_seconds_per_kill = settings.sections.xp.show_seconds_per_kill
 show_self_action = settings.sections.self_action.show
 show_self_action_bar = settings.sections.self_action.show_bar
 show_self_action_cast_bar = settings.sections.self_action.show_cast_time_bar
+show_self_action_wyvern_breath = settings.sections.self_action.show_wyvern_breath
 show_self_action_result = settings.options.show_self_action_result
 show_self_when_sub_targeted = settings.options.show_self_when_sub_targeted
 show_self_when_targeted = settings.options.show_self_when_targeted
@@ -7687,11 +7689,11 @@ function updateXPBar(player, time)
 			elseif cp_per_hour > 0 then
 				formatted_cp_per_hour = " "..math.floor(cp_per_hour).."/h"
 			end
-			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(cp_table) or 0
+			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(xp_table) or 0
 			local formatted_kills_per_hour = kills_per_hour > 0 and " "..kills_per_hour..":KPH" or ""
 			local points_per_kill = show_points_per_kill and cp_per_hour / kills_per_hour or 0
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
-			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(cp_table) or nil
+			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
 			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
 			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
@@ -7715,11 +7717,11 @@ function updateXPBar(player, time)
 			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
 			local ep_per_hour = calculatePointsPerHour(ep_table)
 			local formatted_ep_per_hour = ep_per_hour > 0 and " "..string.format("%.1f", math.floor(ep_per_hour / 100) / 10).."k/h" or ""
-			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(ep_table) or 0
+			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(xp_table) or 0
 			local formatted_kills_per_hour = kills_per_hour > 0 and " "..kills_per_hour..":KPH" or ""
 			local points_per_kill = show_points_per_kill and ep_per_hour / kills_per_hour or 0
 			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
-			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(ep_table) or nil
+			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
 			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
 			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
 			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
@@ -8637,7 +8639,6 @@ function initialize()
 	local target = get_mob_by_target('t')
 	local sub_target = get_mob_by_target('st')
 
-	greeting()
 	setJob(player)
 	setPositions()
 	setWidth()
@@ -8649,7 +8650,7 @@ function initialize()
 	updateXPBar(player)
 	runWideScan()
 	hideBars()
-
+	
 	--Wait 2 sec then repeat since values are 0 when first logging into a character
 	coroutine.schedule(function()
 		player = get_player()
@@ -8662,6 +8663,11 @@ function initialize()
 		server = res.servers[get_info().server].name
 		checkCustomSettings(player)
 	end, 2)
+
+	--Give a little room for the system and ls messages to display first
+	coroutine.schedule(function()
+		greeting()
+	end, 5)
 
 end
 
@@ -10584,21 +10590,24 @@ register_event('action', function (act)
 		--The actor is our pet
 		if actor and get_player and actor.index == get_player.pet_index then
 
-			self_action_bar_meter:bg_color(050,255,050)
-			self_action_bar_cast_meter:hide()
-			completeSelfMeter()
+			if job ~= 'drg' or show_self_action_wyvern_breath then
+				self_action_bar_meter:bg_color(050,255,050)
+				self_action_bar_cast_meter:hide()
+				completeSelfMeter()
 
-			addToActionsTable(player.id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
-			addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
+				addToActionsTable(player.id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
+				addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
-			if act.param ~= nil then
+				if act.param ~= nil then
 
-				coroutine.schedule(function()
-					removeFromActionsTable(player.id, trackingIndex)
-					removeFromActionsTable(act.actor_id, trackingIndex)
-				end, clear_action_delay)
+					coroutine.schedule(function()
+						removeFromActionsTable(player.id, trackingIndex)
+						removeFromActionsTable(act.actor_id, trackingIndex)
+					end, clear_action_delay)
 
+				end
 			end
+
 		else
 
 			if player.id == act.actor_id then
@@ -12331,7 +12340,7 @@ register_event('addon command',function(addcmd, ...)
 
 		if Screen_Test then
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Dragging enabled for highlighted bars.'):color(36))
-			add_to_chat(8,('NOTICE: May not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
+			add_to_chat(8,('NOTICE: Dragging may not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
 			add_to_chat(8,('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
 			add_to_chat(8,('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
 			add_to_chat(8,('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
