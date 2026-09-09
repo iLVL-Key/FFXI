@@ -296,6 +296,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `show_target_angle_from_player_facing` | Shows an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
 | → `show_time_tnl` | Shows the estimated amount of time until your next level/master/master level at the current points/hour rate. (XP bar only) |
 | → `show_tnl` | Display the number of points until your next level. (XP bar only) |
+| → `show_wyvern_breath` | Shows your Wyvern's breath attacks when on DRG. (Self Action bar only) |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
@@ -346,6 +347,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.13
+- Added `show_wyvern_breath` option under the Self Action section. Shows your Wyvern's breath attacks when on DRG.
+- Adjusted Kills Per Hour (KPH) and Seconds Per Kill (SPK) stats in the XP bar to use the XP table regardless of which type of points are displaying (XP, CP, or EP). Since you always earn XP/LP even when earning CP or EP, this allows the KPH and SPK stats to display much more frequently, even if you are not earning CP or EP.
 
 Version 4.12
 - Added Debuff icons for Dancer Dazes levels 6-10. New icons have been added for them as well as redoing the icons for Daze levels 1-5 to match the new icons.
