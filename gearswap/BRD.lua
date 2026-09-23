@@ -21,7 +21,7 @@ https://github.com/iLVL-Key/FFXI
 
 ]]--
 
-FileVersion = '4.1'
+FileVersion = '4.1.1'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -2820,7 +2820,7 @@ end
 --Create the song list to be displayed on the screen for tracking
 local function updateCurrentSongList()
 
-	if not live[player.name].brd.song_list_show then return end
+	if not (live[player.name] or live[player.name].brd or live[player.name].brd.song_list_show) then return end
 
 	local party = windower.ffxi.get_party()
 	local party_order = {}
@@ -3753,6 +3753,8 @@ function self_command(command)
 		hud_noti:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats... Done.')
 		hud_noti_shdw:text('Keys BRD Gearswap file v'..FileVersion..' - Pre-calculating song stats... Done.')
 		pre_calc = false
+	elseif command == 'song_status' then
+		song_status = nil
 	end
 end
 
@@ -3797,7 +3799,10 @@ end
 -------------------------------------------
 
 function precast(spell)
-
+	if song_status == 'midcast' then
+		cancel_spell()
+		return
+	end
 	local prefixes = {
 		["/magic"] = true,
 		["/song"] = true,
@@ -3856,8 +3861,8 @@ function precast(spell)
 			end
 		end
 		flash('Debuffs')
-	elseif midaction() then
-		return
+	-- elseif midaction() then
+	-- 	return
 	elseif spell.type == 'WeaponSkill' then
 		if player.tp < 1000 then
 			if profile.sound_effects then
@@ -3956,6 +3961,7 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(sets.fast_cast_other)
 	elseif spell.type == 'BardSong' then
+		song_status = 'precast'
 		if pre_calc then
 			add_to_chat(8,('[Notice] '):color(39)..('Pre-calculating song stats; please wait.'):color(8))
 			cancel_spell()
@@ -4074,6 +4080,7 @@ end
 
 function midcast(spell)
 	if spell.type == 'BardSong' then
+		song_status = 'midcast'
 		dummy_song = player.equipment.range == profile.inst.dummy
 		setSongGear(spell.english, false)
 		soul_voice_song = buffactive['Soul Voice']
@@ -4095,6 +4102,8 @@ function midcast(spell)
 		equip(set_combine(sets.buff, sets.healing, engaged))
 	elseif spell.type == 'Trust' then
 		equip(sets.unity)
+	elseif spell.skill == 'Dark Magic' then
+		equip(sets.magic_accuracy)
 	elseif spell.action_type == 'Magic' then
 		equip(sets.buff_other)
 	end
@@ -4105,6 +4114,9 @@ end
 -------------------------------------------
 
 function aftercast(spell)
+	if spell.type == 'BardSong' then
+		send_command('wait 0.5;gs c song_status')
+	end
 	if spell.english == 'Soul Voice' and profile.echo_timer_for_soul_voice and not spell.interrupted then
 		if player.equipment.legs == 'Brd. Cannions +2' or player.equipment.legs == 'Bihu Cannions' or player.equipment.legs == 'Bihu Cannions +1' or player.equipment.legs == 'Bihu Cannions +2' or player.equipment.legs == 'Bihu Cannions +3' or player.equipment.legs == 'Bihu Cannions +4' then --these pieces extend Soul Voice by 30 seconds so we adjust accordingly
 			send_command('input /echo [Soul Voice] 3:30;wait 30;input /echo [Soul Voice] 3:00;wait 30;input /echo [Soul Voice] 2:30;wait 30;input /echo [Soul Voice] 2:00;wait 30;input /echo [Soul Voice] 1:30;wait 30;input /echo [Soul Voice] 1:00;wait 30;input /echo [Soul Voice] 0:30;wait 10;input /echo [Soul Voice] 0:20;wait 10;input /echo [Soul Voice] 0:10')
