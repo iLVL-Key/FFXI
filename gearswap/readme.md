@@ -567,6 +567,9 @@ Version 15.0
 
 <summary>BRD</summary>
 
+Version 4.1.1
+- Adjusted songs to help prevent unwanted gear swapping during singing. This should help prevent instances of songs landing at low timer durations.
+
 Version 4.1
 - Added step-down conversions for Horde Lullaby, Foe Lullaby, and Elegy from their higher tier version to lower tier when their recast timers are not ready.
 
