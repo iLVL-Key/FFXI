@@ -570,6 +570,7 @@ Version 15.0
 Version 4.1.2
 - Adjusted the previous song adjustment a little further to help prevent it getting stuck blocking songs. This change will limit preventing unwanted gear swapping during singing to one occurance (so spamming over and over will still result in gear swapping while singing), but the tradeoff of preventing possibly getting stuck not being able to sing should be enough of a happy medium.
 - Adjusted Song List so that Raptor and Chocobo Mazurka properly overwrite each other now.
+- Adjusted the Movement check to better handle coming out of a cutscene (still not perfect but noticeably better).
 
 Version 4.1.1
 - Adjusted songs to help prevent unwanted gear swapping during singing. This should help prevent instances of songs landing at low timer durations.
