@@ -21,7 +21,7 @@ https://github.com/iLVL-Key/FFXI
 
 ]]--
 
-FileVersion = '4.1.1'
+FileVersion = '4.1.2'
 
 -------------------------------------------
 --             AREA MAPPING              --
@@ -3799,10 +3799,6 @@ end
 -------------------------------------------
 
 function precast(spell)
-	if song_status == 'midcast' then
-		cancel_spell()
-		return
-	end
 	local prefixes = {
 		["/magic"] = true,
 		["/song"] = true,
@@ -3961,6 +3957,11 @@ function precast(spell)
 		send_command('cancel 37')
 		equip(sets.fast_cast_other)
 	elseif spell.type == 'BardSong' then
+		if song_status == 'midcast' then
+			song_status = nil
+			cancel_spell()
+			return
+		end
 		song_status = 'precast'
 		if pre_calc then
 			add_to_chat(8,('[Notice] '):color(39)..('Pre-calculating song stats; please wait.'):color(8))
@@ -5514,6 +5515,7 @@ windower.register_event('action',function(act)
 			if act.targets[1].id and get_mob_by_id(act.targets[1].id).in_party then
 
 				local song_name = spells[act.param].en
+				local tenuto_bonus = target_name == my_name and buffactive['Tenuto'] and (player.job_points.brd.tenuto_effect * 2) or 0 --Tenuto JP duration bonus only applies to the BRD
 				max_songs = getMaxSongs()
 
 				for i = 1, act.target_count do
@@ -5533,13 +5535,33 @@ windower.register_event('action',function(act)
 
 					--If the player has fewer songs than max_songs, add or update the song
 					if player_songs and song_count < max_songs then
-						local tenuto_bonus = target_name == my_name and buffactive['Tenuto'] and (player.job_points.brd.tenuto_effect * 2) or 0
-						player_songs[song_name] = {
-							duration = song_duration + tenuto_bonus, --Tenuto JP duration bonus only applies to the BRD
-							dummy = dummy_song,
-							soul_voice = soul_voice_song,
-							marcato = marcato_song,
-						}
+
+						--Mazurkas overwrite eachother
+						if song_name == 'Chocobo Mazurka' and player_songs['Raptor Mazurka'] then
+							player_songs['Raptor Mazurka'] = nil
+							player_songs[song_name] = {
+								duration = song_duration + tenuto_bonus,
+								dummy = dummy_song,
+								soul_voice = soul_voice_song,
+								marcato = marcato_song,
+							}
+						elseif song_name == 'Raptor Mazurka' and player_songs['Chocobo Mazurka'] then
+							player_songs['Chocobo Mazurka'] = nil
+							player_songs[song_name] = {
+								duration = song_duration + tenuto_bonus,
+								dummy = dummy_song,
+								soul_voice = soul_voice_song,
+								marcato = marcato_song,
+							}
+
+						else
+							player_songs[song_name] = {
+								duration = song_duration + tenuto_bonus,
+								dummy = dummy_song,
+								soul_voice = soul_voice_song,
+								marcato = marcato_song,
+							}
+						end
 
 					--If the player has max_songs or more, check if the song exists
 					elseif player_songs then
@@ -5547,7 +5569,25 @@ windower.register_event('action',function(act)
 						--If the song already exists, update the duration
 						if player_songs[song_name] then
 							player_songs[song_name] = {
-								duration = song_duration,
+								duration = song_duration + tenuto_bonus,
+								dummy = dummy_song,
+								soul_voice = soul_voice_song,
+								marcato = marcato_song,
+							}
+
+						--Mazurkas overwrite eachother
+						elseif song_name == 'Chocobo Mazurka' and player_songs['Raptor Mazurka'] then
+							player_songs['Raptor Mazurka'] = nil
+							player_songs[song_name] = {
+								duration = song_duration + tenuto_bonus,
+								dummy = dummy_song,
+								soul_voice = soul_voice_song,
+								marcato = marcato_song,
+							}
+						elseif song_name == 'Raptor Mazurka' and player_songs['Chocobo Mazurka'] then
+							player_songs['Chocobo Mazurka'] = nil
+							player_songs[song_name] = {
+								duration = song_duration + tenuto_bonus,
 								dummy = dummy_song,
 								soul_voice = soul_voice_song,
 								marcato = marcato_song,
@@ -5569,7 +5609,7 @@ windower.register_event('action',function(act)
 							if lowest_song_name then
 								player_songs[lowest_song_name] = nil
 								player_songs[song_name] = {
-									duration = song_duration,
+									duration = song_duration + tenuto_bonus,
 									dummy = dummy_song,
 									soul_voice = soul_voice_song,
 									marcato = marcato_song,
