@@ -2187,6 +2187,7 @@ Version 6.0.0
 
 Version 16.5
 - Added down-converting of Curing Waltzes if not enough TP to use or if selected Waltz is on cooldown.
+- Added Wake Up set. Allows you to specify which item to use to wake yourself up when slept.
 - Adjusted the Movement check to not set as "moving" while mid action (will now wait until that action has finished to activate).
 - Fixed some occasional errors with Damage notifications.
 
