@@ -4412,7 +4412,7 @@ windower.register_event('prerender', function()
 			if get_player then
 				--Player has started moving
 				if player_x ~= get_player.x or player_y ~= get_player.y then
-					if not moving and player.status == "Idle" and not midaction() then
+					if not moving and get_player.status == 0 and not midaction() then
 						moving = true
 						choose_set()
 					end
