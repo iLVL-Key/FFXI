@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.13'
+_addon.version = '4.14'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -6131,7 +6131,7 @@ function updateFocusTargetBar(player, target, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock())
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - clock)
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -6160,10 +6160,11 @@ function updateFocusTargetBar(player, target, clock)
 			end
 		end
 
-		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
-		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 3 or math.abs(debuff_list.pos.y - ft.y) > 3)
+		--Check for movement greater than 2 yalms
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.x - ft.x) > 2 or math.abs(debuff_list.pos.y - ft.y) > 2)
 		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
+			print('moved (focus target)')
 			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6171,9 +6172,10 @@ function updateFocusTargetBar(player, target, clock)
 		end
 
 		--Check for spinning in place more than 10 degrees
-		local spun = debuff_list.pos and (math.abs(debuff_list.pos.facing - math.floor((ft.facing * 180 / math.pi) + 0.5)) > 10)
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.facing - math.floor((ft.facing * 180 / math.pi) + 0.5)) > 10)
 		--Clear Sleep or Petrfy debuffs if the mob has spun in place
 		if spun then
+			print('spun (focus target)')
 			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6426,7 +6428,7 @@ function updateSubTargetBar(player, st, target, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock())
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - clock)
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -6455,10 +6457,11 @@ function updateSubTargetBar(player, st, target, clock)
 			end
 		end
 
-		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
-		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 3 or math.abs(debuff_list.pos.y - st.y) > 3)
+		--Check for movement greater than 2 yalms
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.x - st.x) > 2 or math.abs(debuff_list.pos.y - st.y) > 2)
 		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
+			print('moved (sub target)')
 			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6466,9 +6469,10 @@ function updateSubTargetBar(player, st, target, clock)
 		end
 
 		--Check for spinning in place more than 10 degrees
-		local spun = debuff_list.pos and (math.abs(debuff_list.pos.facing - math.floor((st.facing * 180 / math.pi) + 0.5)) > 10)
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.facing - math.floor((st.facing * 180 / math.pi) + 0.5)) > 10)
 		--Clear Sleep or Petrfy debuffs if the mob has spun in place
 		if spun then
+			print('spun (sub target)')
 			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6734,7 +6738,7 @@ function updateTargetBar(player, t, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock())
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - clock)
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -6763,10 +6767,11 @@ function updateTargetBar(player, t, clock)
 			end
 		end
 
-		--Check for movement greater than 2 yalms (account for target already moving when initially slept/petrified/bound)
-		local moved = debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 3 or math.abs(debuff_list.pos.y - t.y) > 3)
+		--Check for movement greater than 2 yalms
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.x - t.x) > 2 or math.abs(debuff_list.pos.y - t.y) > 2)
 		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
+			print('moved (target)')
 			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6774,9 +6779,10 @@ function updateTargetBar(player, t, clock)
 		end
 
 		--Check for spinning in place more than 10 degrees
-		local spun = debuff_list.pos and (math.abs(debuff_list.pos.facing - math.floor((t.facing * 180 / math.pi) + 0.5)) > 10)
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.facing - math.floor((t.facing * 180 / math.pi) + 0.5)) > 10)
 		--Clear Sleep or Petrfy debuffs if the mob has spun in place
 		if spun then
+			print('spun (target)')
 			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -9002,7 +9008,7 @@ register_event('prerender', function()
 		
 		--Adjust Party Action positioning if the party/alliance changes
 		if Screen_Test then
-			updatePartyActionsPos(6,6,6)
+			-- updatePartyActionsPos(6,6,6)
 
 		elseif not Screen_Test
 		or num_party1_members ~= party_info.party1_count
@@ -10783,7 +10789,7 @@ end)
 
 function handleOverwrites(target_id, new_spell_id)
 
-	--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc., excluding TH)
+	--Over 9000(!) special case spells (Impact, boosted versions of Dia, Bio, Burn, etc., excluding TH)
 	new_spell_id = new_spell_id > 9000 and new_spell_id < 9900 and new_spell_id - 9000 or new_spell_id
 
 	--If the target has no current debuffs, return true so the new debuff gets saved
@@ -10793,8 +10799,30 @@ function handleOverwrites(target_id, new_spell_id)
 
 	--Loop through all debuffs the target currently has
 	for effect_id, spell in pairs(current_debuffs[target_id]) do
-		if effect_id ~= 'pos' then 
-			--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
+		if effect_id ~= 'pos' then
+
+			local threnody_i = {
+				[454] = true,
+				[455] = true,
+				[456] = true,
+				[457] = true,
+				[458] = true,
+				[459] = true,
+				[460] = true,
+				[461] = true,
+			}
+			local threnody_ii = {
+				[871] = true,
+				[872] = true,
+				[873] = true,
+				[874] = true,
+				[875] = true,
+				[876] = true,
+				[877] = true,
+				[878] = true,
+			}
+
+			--Over 9000(!) special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
 			local old_spell_id = spell.id and spell.id > 9000 and spell.id < 9900 and spell.id - 9000 or spell.id -- compare number with nil
 
 			--Impact does not overwrite itself
@@ -10804,6 +10832,9 @@ function handleOverwrites(target_id, new_spell_id)
 			elseif new_spell_id >= 9902 and new_spell_id <= 9914 and old_spell_id >= 9902 and old_spell_id <= 9914 then
 				current_debuffs[target_id][effect_id] = nil
 				return true
+			--Tier 1 Threnodies do not overwrite Tier 2 Threnodies
+			elseif threnody_ii[old_spell_id] and threnody_i[new_spell_id] then
+				return false
 			end
 			local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
 
@@ -10860,6 +10891,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 	local removal_timer = debuff_duration_cap
 	local trackingIndex = assignIndex()
 	local check_override = true
+	local clock = os.clock()
 
 	--Determine if this effect is a Daze and set duration accordingly
 	local daze_durations = {
@@ -11040,7 +11072,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 	--Singing
 	elseif res.spells[spell_id] and res.spells[spell_id].skill == 40 then
 		--Threnodies override eachother (at this point they've already landed so we can ignore tiers)
-		if effect_id == 217 and current_debuffs[target_id][217] then
+		if effect_id == 217 and current_debuffs[target_id][217] and not no_effect then
 			current_debuffs[target_id][217] = nil
 		end
 		--Lullaby fixes (incorrect durations in res\spells.lua)
@@ -11060,15 +11092,15 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 		removal_timer = nil
 	end
 
-	--No Effect duration adjustment (since we don't know when the previously cast effect will wear off)
-	if no_effect and not current_debuffs[target_id][effect_id] then
-		duration = 0
-	end
-
 	--Check for spells that overwrite a current debuff
 	if check_override and not handleOverwrites(target_id, spell_id) then
 		--If there is a higher priority buff already active, do not save the new debuff
 		return
+	end
+
+	--No Effect duration adjustment (since we don't know when the previously cast effect will wear off)
+	if no_effect and not current_debuffs[target_id][effect_id] then
+		duration = 0
 	end
 
 	--Set timer to remove the specific debuff
@@ -11085,26 +11117,24 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 
 	--Get target position if slept, bound, or petrified so we can later determine if it wears off
 	if effect_id == 2 or effect_id == 7 or effect_id == 11 or effect_id == 19 then
-		--wait .5 sec to account for server tick lag if target was in motion
-		coroutine.schedule(function()
-			local target_data = get_mob_by_id(target_id)
-			-- if target_data then
-			if target_data and current_debuffs[target_id] then
-				current_debuffs[target_id].pos = {
-					x = target_data.x or 0,
-					y = target_data.y or 0,
-					facing = target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0,
-				}
-			end
-		end, 0.5)
+		local target_data = get_mob_by_id(target_id)
+		-- if target_data then
+		if target_data and current_debuffs[target_id] then
+			current_debuffs[target_id].pos = {
+				x = target_data.x or 0,
+				y = target_data.y or 0,
+				facing = target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0,
+				clear_delay = clock + 0.65 --Because server ticks and lag can make this messy, we add this short timer before which these debuffs won't be cleared if they Do Things.
+			}
+		end
 	end
 
 	--Save debuff data to the current_debuffs table
-	--target_id = id of the target (monster)
-	--effect_id = id of the debuff/status
+	--  target_id = id of the target (monster)
+	--  effect_id = id of the debuff/status
 	current_debuffs[target_id][effect_id] = {
 		id = spell_id, --id of the spell that was cast
-		timer = duration and os.clock() + duration, --expiration time
+		timer = duration and clock + duration, --expiration time
 		index = trackingIndex, --Unique ID for this debuff
 	}
 
@@ -12058,7 +12088,7 @@ register_event('addon command',function(addcmd, ...)
 
 	--Show the text sizes and commands for each
 	elseif addcmd == 'text' or addcmd == 't' then
-		add_to_chat(8,('[Bars] '):color(220)..('Text Sizes (text above/on the meter)'):color(220))
+		add_to_chat(8,('[Bars] '):color(220)..('Text Sizes (main text)'):color(220))
 		add_to_chat(8,('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200)..(' ('):color(8)..('//bars ftts #'):color(1)..(')'):color(8))
 		add_to_chat(8,('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200)..(' ('):color(8)..('//bars stts #'):color(1)..(')'):color(8))
 		add_to_chat(8,('Target Text Size:'):color(36)..(' '..target_text_size):color(200)..(' ('):color(8)..('//bars tts #'):color(1)..(')'):color(8))
@@ -12176,7 +12206,7 @@ register_event('addon command',function(addcmd, ...)
 
 	--Update the Focus Target sub text sizes
 	elseif addcmd == 'subtext' or addcmd == 'st' then
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Text Sizes (text below the meter)'):color(220))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Text Sizes (secondary text)'):color(220))
 		add_to_chat(8,('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ftsts #'):color(1)..(')'):color(8))
 		add_to_chat(8,('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ststs #'):color(1)..(')'):color(8))
 		add_to_chat(8,('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200)..(' ('):color(8)..('//bars tsts #'):color(1)..(')'):color(8))
@@ -12312,9 +12342,18 @@ register_event('addon command',function(addcmd, ...)
 
 		resetFadeDelay()
 		screenTest()
-		local r = color.bar_bg.normal.r
+		local r = Screen_Test and 50 or color.bar_bg.normal.r
 		local g = Screen_Test and 255 or color.bar_bg.normal.g
-		local b = color.bar_bg.normal.b
+		local b = Screen_Test and 50 or color.bar_bg.normal.b
+		local pt1_r = Screen_Test and 0 or pt1_text_color.r
+		local pt1_g = Screen_Test and 255 or pt1_text_color.g
+		local pt1_b = Screen_Test and 0 or pt1_text_color.b
+		local pt2_r = Screen_Test and 0 or pt2_text_color.r
+		local pt2_g = Screen_Test and 255 or pt2_text_color.g
+		local pt2_b = Screen_Test and 0 or pt2_text_color.b
+		local pt3_r = Screen_Test and 0 or pt3_text_color.r
+		local pt3_g = Screen_Test and 255 or pt3_text_color.g
+		local pt3_b = Screen_Test and 0 or pt3_text_color.b
 		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
 			mp = player_stats_mp_bar_bg,
@@ -12337,9 +12376,15 @@ register_event('addon command',function(addcmd, ...)
 		xp_bar_bg:draggable(Screen_Test)
 		xp_bar_bg:bg_color(r,g,b)
 		chat_ui.bg_window:bg_color(r,g,b)
+		party_actions_pt1_p0_text:draggable(Screen_Test)
+		party_actions_pt1_p0_text:color(pt1_r,pt1_g,pt1_b)
+		party_actions_pt2_p0_text:draggable(Screen_Test)
+		party_actions_pt2_p0_text:color(pt2_r,pt2_g,pt2_b)
+		party_actions_pt3_p0_text:draggable(Screen_Test)
+		party_actions_pt3_p0_text:color(pt3_r,pt3_g,pt3_b)
 
 		if Screen_Test then
-			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Dragging enabled for highlighted bars.'):color(36))
+			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Highlighted green areas are now draggable.'):color(36))
 			add_to_chat(8,('NOTICE: Dragging may not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
 			add_to_chat(8,('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
 			add_to_chat(8,('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
@@ -12349,6 +12394,8 @@ register_event('addon command',function(addcmd, ...)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing locked.'):color(36))
 		end
+
+		updatePartyActionsPos(6,6,6)
 
 	--Toggle the Aggro List setting
 	elseif addcmd == 'aggro' or addcmd == 'agg' then
@@ -12595,6 +12642,15 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y, delta)
 			local xp_x = xp_bar_bg:pos_x()
 			local xp_y = xp_bar_bg:pos_y()
 
+			local party_1_x = party_actions_pt1_p0_text:pos_x()
+			local party_1_y = party_actions_pt1_p0_text:pos_y()
+
+			local party_2_x = party_actions_pt2_p0_text:pos_x()
+			local party_2_y = party_actions_pt2_p0_text:pos_y()
+
+			local party_3_x = party_actions_pt3_p0_text:pos_x()
+			local party_3_y = party_actions_pt3_p0_text:pos_y()
+
 			if focus_target_x >= 0 and focus_target_y >= 0
 			and settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
 				settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
@@ -12635,6 +12691,24 @@ register_event('mouse',function(mouse_type, mouse_x, mouse_y, delta)
 				settings.sections.xp.pos = {x = xp_x, y = xp_y}
 				settings:save('all')
 				setPositions()
+
+			elseif party_1_x >= 0 and party_1_y >= 0
+			and settings.sections.party_1_actions.pos.x ~= party_1_x or settings.sections.party_1_actions.pos.y ~= party_1_y then
+				settings.sections.party_1_actions.pos = {x = party_1_x, y = party_1_y}
+				settings:save('all')
+				updatePartyActionsPos(6,6,6)
+
+			elseif party_2_x >= 0 and party_2_y >= 0
+			and settings.sections.party_2_actions.pos.x ~= party_2_x or settings.sections.party_2_actions.pos.y ~= party_2_y then
+				settings.sections.party_2_actions.pos = {x = party_2_x, y = party_2_y}
+				settings:save('all')
+				updatePartyActionsPos(6,6,6)
+
+			elseif party_3_x >= 0 and party_3_y >= 0
+			and settings.sections.party_3_actions.pos.x ~= party_3_x or settings.sections.party_3_actions.pos.y ~= party_3_y then
+				settings.sections.party_3_actions.pos = {x = party_3_x, y = party_3_y}
+				settings:save('all')
+				updatePartyActionsPos(6,6,6)
 
 			end
 
