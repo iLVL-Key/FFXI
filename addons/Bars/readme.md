@@ -325,6 +325,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ## Known Issues
 - The name of a weapon skill used by a player being blinked by an enemy will be displayed incorrectly as a job ability.
 - Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the height of the window's title bar is included when Windower returns the position of the mouse, but is not included when determing the position of a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
+- There is a hard limit of 15 total targets on any single action. Even if you land a single action (Sleepga, for example) on more than 15 targets, only 15 will be returned in the action packet. This results in some debuff icons not being added to some monsters when more than 15 targets are hit by it at once. Additionally, the number returned in the action results for how many targets were hit by the action will also be capped at 15, as well as the total amount of damage calculated being limited to adding together numbers for only up to 15 targets. This is, unfortunately, not something I can work around.
 - The Target Lock icons/underline very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.  
 ![Bars_known_issue_1](https://github.com/user-attachments/assets/71e98977-4589-4501-841e-adbe3819294d)
 
@@ -347,6 +348,11 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.14
+- Adjusted the Party Actions sections to be draggable during the Screen Test (//bars ui). The top player in each party is now highlighted in green and able to be dragged, the rest of the party members will snap into place once the drag is released.
+- Adjusted (yet again) how the monitoring for removing Sleep/Bind/Petrify is handled. Instead of delaying recording the position info for the monster it now records immediately but adds a timestamp delay for when to check for movement to then remove the debuffs.
+- Adjusted Tier 1 Threnodies that land with a "no effect" to not overwrite the previous Tier 2 Threnody.
 
 Version 4.13
 - Added `show_wyvern_breath` option under the Self Action section. Shows your Wyvern's breath attacks when on DRG. (thanks olgi!)
