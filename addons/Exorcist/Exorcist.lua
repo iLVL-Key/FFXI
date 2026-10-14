@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Exorcist'
-_addon.version = '1.1'
+_addon.version = '1.2.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'exorcist'}
 
@@ -67,7 +67,6 @@ Exorcist_box:pos(settings.pos.x,settings.pos.y)
 Exorcist_box:bold(settings.flags.bold)
 Exorcist_box:draggable(settings.flags.draggable)
 
-
 -- Count the number of Holy Waters and return the number
 local function countHW()
 	local inventory = windower.ffxi.get_items().inventory
@@ -85,7 +84,6 @@ local function countHW()
 
 end
 
-
 --Update the on-screen box
 local function updateBox()
 
@@ -101,7 +99,6 @@ local function updateBox()
 
 end
 
-
 --Main function that gets repeated until Doom wears off
 local function useHolyWater()
 
@@ -115,12 +112,14 @@ local function useHolyWater()
 	if HWcount ~= 0 and Doom then
 		windower.send_command('input /item "Holy Water" <me>')
 	end
-	coroutine.sleep(settings.wait)
-	if Doom then
-		useHolyWater()
-	end
-end
 
+	coroutine.schedule(function()
+		if Doom then
+			useHolyWater()
+		end
+	end, settings.wait)
+	
+end
 
 windower.register_event('gain buff', function(buff)
 
@@ -136,9 +135,13 @@ windower.register_event('gain buff', function(buff)
 		--Start up the Holy Waters
 		useHolyWater()
 
+	elseif buff == 0 then --KO
+
+		Exorcist_box:hide()
+		Doom = false
+
 	end
 end)
-
 
 windower.register_event('lose buff', function(buff)
 
@@ -164,5 +167,5 @@ windower.register_event('addon command',function(addcmd)
 	windower.add_to_chat(36,' ')
 	windower.add_to_chat(36,'   This addon has no commands, but you can change a few things in the settings file.')
 	windower.add_to_chat(36,'   PRO TIP: Make sure your gearswap file has a rule and gear set for using Holy Waters.')
-	windower.add_to_chat(36,'   Have a great day!')
+	windower.add_to_chat(36,'   Have a wonderful day!')
 end)
