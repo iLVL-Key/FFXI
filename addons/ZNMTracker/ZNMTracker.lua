@@ -26,7 +26,7 @@
 
 _addon.name = 'ZNMTracker'
 _addon.author = 'Key (Keylesta@Valefor)'
-_addon.version = '1.3.1'
+_addon.version = '1.3.2'
 _addon.commands = {'znmtracker', 'znmtrack', 'znmt'}
 
 require 'logger'
@@ -1001,8 +1001,9 @@ windower.register_event('addon command', function(cmd, ...)
 			windower.add_to_chat(1, ("Inventory is still loading. Please try again in a moment."):color(28))
 		else
 			findAll()
-			printItems()
 			saveToFile()
+			loadExternalData()
+			printItems()
 		end
 
 	elseif cmd and cmd:find("tin") then
