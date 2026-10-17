@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.14'
+_addon.version = '4.14.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -1264,8 +1264,8 @@ sp_shorter_names = {
 	['Astral Conduit'] = 'Ast. Cond.',
 	['Azure Lore'] = 'Azure Lore',
 	['Unbridled Wisdom'] = 'Un. Wisdom',
-	['Wild Card'] = 'Wild Card',
-	['Cutting Cards'] = 'Cut. Cards',
+	['Wild Card'] = 'Wild C.',
+	['Cutting Cards'] = 'Cut. C.',
 	['Overdrive'] = 'Overdrive',
 	['Heady Artifice'] = 'Heady Art.',
 	['Trance'] = 'Trance',
@@ -4658,11 +4658,12 @@ function removeFromActionsTable(actor_id, index)
 end
 
 --Add an SP to the current_sp_actions table
-function addToSPTable(actor_id, sp_name)
+function addToSPTable(actor_id, sp_name, cor_roll)
 
 	current_sp_actions[actor_id] = {
 		sp_name = sp_name,
 		timestamp = os.clock() + sp_abils[sp_name],
+		cor_roll = cor_roll
 	}
 
 end
@@ -6020,12 +6021,13 @@ function updateFocusTargetBar(player, target, clock)
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[ft.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[ft.id].sp_name
+	local cor_roll = sp_active and current_sp_actions[ft.id].cor_roll and "|"..current_sp_actions[ft.id].cor_roll or ""
 	local ft_name = ft and ft.name or ''
 	if sp_active then
 		if condense_focus_target_name_and_sp_name then
-			ft_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or ft.name)
+			ft_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name..cor_roll or ft.name)
 		else
-			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]..cor_roll
 		end
 	end
 	local mob_job_raw = ft and ft_settings.show_monster_job and mobJob(ft.name) or false
@@ -6161,10 +6163,9 @@ function updateFocusTargetBar(player, target, clock)
 		end
 
 		--Check for movement greater than 2 yalms
-		local moved = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.x - ft.x) > 2 or math.abs(debuff_list.pos.y - ft.y) > 2)
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.x - ft.x) > 2 or math.abs(debuff_list.pos.y - ft.y) > 2)
 		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			print('moved (focus target)')
 			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6172,10 +6173,9 @@ function updateFocusTargetBar(player, target, clock)
 		end
 
 		--Check for spinning in place more than 10 degrees
-		local spun = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.facing - math.floor((ft.facing * 180 / math.pi) + 0.5)) > 10)
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.facing - math.floor((ft.facing * 180 / math.pi) + 0.5)) > 10)
 		--Clear Sleep or Petrfy debuffs if the mob has spun in place
 		if spun then
-			print('spun (focus target)')
 			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6317,12 +6317,13 @@ function updateSubTargetBar(player, st, target, clock)
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[st.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[st.id].sp_name
+	local cor_roll = sp_active and current_sp_actions[st.id].cor_roll and "|"..current_sp_actions[st.id].cor_roll or ""
 	local st_name = st and st.name or ''
 	if sp_active then
 		if condense_sub_target_name_and_sp_name then
-			st_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or st.name)
+			st_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name..cor_roll or st.name)
 		else
-			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]..cor_roll
 		end
 	end
 	local mob_job_raw = st and st_settings.show_monster_job and mobJob(st.name) or false
@@ -6458,10 +6459,9 @@ function updateSubTargetBar(player, st, target, clock)
 		end
 
 		--Check for movement greater than 2 yalms
-		local moved = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.x - st.x) > 2 or math.abs(debuff_list.pos.y - st.y) > 2)
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.x - st.x) > 2 or math.abs(debuff_list.pos.y - st.y) > 2)
 		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			print('moved (sub target)')
 			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6469,10 +6469,9 @@ function updateSubTargetBar(player, st, target, clock)
 		end
 
 		--Check for spinning in place more than 10 degrees
-		local spun = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.facing - math.floor((st.facing * 180 / math.pi) + 0.5)) > 10)
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.facing - math.floor((st.facing * 180 / math.pi) + 0.5)) > 10)
 		--Clear Sleep or Petrfy debuffs if the mob has spun in place
 		if spun then
-			print('spun (sub target)')
 			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6606,12 +6605,13 @@ function updateTargetBar(player, t, clock)
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[t.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[t.id].sp_name
+	local cor_roll = sp_active and current_sp_actions[t.id].cor_roll and "|"..current_sp_actions[t.id].cor_roll or ""
 	local t_name = t and t.name or ''
 	if sp_active then
 		if condense_target_name_and_sp_name then
-			t_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or t.name)
+			t_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name..cor_roll or t.name)
 		else
-			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]..cor_roll
 		end
 	end
 	local mob_job_raw = t and t_settings.show_monster_job and mobJob(t.name) or false
@@ -6768,10 +6768,9 @@ function updateTargetBar(player, t, clock)
 		end
 
 		--Check for movement greater than 2 yalms
-		local moved = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.x - t.x) > 2 or math.abs(debuff_list.pos.y - t.y) > 2)
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.x - t.x) > 2 or math.abs(debuff_list.pos.y - t.y) > 2)
 		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			print('moved (target)')
 			local watch_effects = {2, 7, 10, 11, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -6779,10 +6778,9 @@ function updateTargetBar(player, t, clock)
 		end
 
 		--Check for spinning in place more than 10 degrees
-		local spun = debuff_list.pos and debuff_list.pos.clear_delay > clock and (math.abs(debuff_list.pos.facing - math.floor((t.facing * 180 / math.pi) + 0.5)) > 10)
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.facing - math.floor((t.facing * 180 / math.pi) + 0.5)) > 10)
 		--Clear Sleep or Petrfy debuffs if the mob has spun in place
 		if spun then
-			print('spun (target)')
 			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
@@ -8824,7 +8822,7 @@ register_event('lose buff', function(buff_id)
 	end
 
 end)
-local last_gc_sweep = os.time()
+
 register_event('prerender', function()
 
 	if not logged_in or in_cutscene or zoning then return end
@@ -9549,6 +9547,7 @@ register_event('action', function (act)
 			end
 		--Most job abilities
 		elseif act.category == 6 then
+			local cor_roll = nil
 			--Erase
 			if msg == 123 then
 				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
@@ -9768,72 +9767,84 @@ register_event('action', function (act)
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'JAs Reset|1)'
 				target_action_result_shdw = ' ('..count..'JAs Reset|1)'
+				cor_roll = 1
 			--Wild Card 2
 			elseif act.targets[1].actions[1].animation == 133 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'JAs Reset|2)'
 				target_action_result_shdw = ' ('..count..'JAs Reset|2)'
+				cor_roll = 2
 			--Wild Card 3
 			elseif act.targets[1].actions[1].animation == 134 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'TP, JAs Reset|3)'
 				target_action_result_shdw = ' ('..count..'TP, JAs Reset|3)'
+				cor_roll = 3
 			--Wild Card 4
 			elseif act.targets[1].actions[1].animation == 135 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'TP, JAs Reset|4)'
 				target_action_result_shdw = ' ('..count..'TP, JAs Reset|4)'
+				cor_roll = 4
 			--Wild Card 5
 			elseif act.targets[1].actions[1].animation == 136 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|5)'
 				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|5)'
+				cor_roll = 5
 			--Wild Card 6
 			elseif act.targets[1].actions[1].animation == 137 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|6)'
 				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|6)'
+				cor_roll = 6
 			--Cutting Cards 1
 			elseif act.targets[1].actions[1].animation == 321 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'5-25% SP Recast Reduction|1)'
 				target_action_result_shdw = ' ('..count..'5-25% SP Recast Reduction|1)'
+				cor_roll = 1
 			--Cutting Cards 2
 			elseif act.targets[1].actions[1].animation == 322 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'10-30% SP Recast Reduction|2)'
 				target_action_result_shdw = ' ('..count..'10-30% SP Recast Reduction|2)'
+				cor_roll = 2
 			--Cutting Cards 3
 			elseif act.targets[1].actions[1].animation == 323 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'20-40% SP Recast Reduction|3)'
 				target_action_result_shdw = ' ('..count..'20-40% SP Recast Reduction|3)'
+				cor_roll = 3
 			--Cutting Cards 4
 			elseif act.targets[1].actions[1].animation == 324 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'30-50% SP Recast Reduction|4)'
 				target_action_result_shdw = ' ('..count..'30-50% SP Recast Reduction|4)'
+				cor_roll = 4
 			--Cutting Cards 5
 			elseif act.targets[1].actions[1].animation == 325 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'40-60% SP Recast Reduction|5)'
 				target_action_result_shdw = ' ('..count..'40-60% SP Recast Reduction|5)'
+				cor_roll = 5
 			--Cutting Cards 6
 			elseif act.targets[1].actions[1].animation == 326 then
 				action_target_name = ""
 				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'50-70% SP Recast Reduction|6)'
 				target_action_result_shdw = ' ('..count..'50-70% SP Recast Reduction|6)'
+				cor_roll = 6
 			--Regains MP
 			elseif msg == 451 then
 				local info = calculateInfo(act)
@@ -9863,7 +9874,7 @@ register_event('action', function (act)
 				--check if the ability used was an SP ability
 				local sp_abil = sp_abils[abil_name]
 				if sp_abil then
-					addToSPTable(act.actor_id, abil_name)
+					addToSPTable(act.actor_id, abil_name, cor_roll)
 				end
 
 				--If Benediction is used, remove all debuffs from all targets it hits
@@ -10769,10 +10780,32 @@ register_event('action', function (act)
 
 		if abil_name ~= "[REDACTED]" then
 
+			local cor_roll = nil
+
+			--Wild Card|Cutting Cards 1
+			if act.targets[1].actions[1].animation == 132 or act.targets[1].actions[1].animation == 321 then
+				cor_roll = 1
+			--Wild Card|Cutting Cards 2
+			elseif act.targets[1].actions[1].animation == 133 or act.targets[1].actions[1].animation == 322 then
+				cor_roll = 2
+			--Wild Card|Cutting Cards 3
+			elseif act.targets[1].actions[1].animation == 134 or act.targets[1].actions[1].animation == 323 then
+				cor_roll = 3
+			--Wild Card|Cutting Cards 4
+			elseif act.targets[1].actions[1].animation == 135 or act.targets[1].actions[1].animation == 324 then
+				cor_roll = 4
+			--Wild Card|Cutting Cards 5
+			elseif act.targets[1].actions[1].animation == 136 or act.targets[1].actions[1].animation == 325 then
+				cor_roll = 5
+			--Wild Card|Cutting Cards 6
+			elseif act.targets[1].actions[1].animation == 137 or act.targets[1].actions[1].animation == 326 then
+				cor_roll = 6
+			end
+
 			--Check if the ability used was an SP ability
 			local sp_abil = sp_abils[abil_name]
 			if sp_abil then
-				addToSPTable(act.actor_id, abil_name)
+				addToSPTable(act.actor_id, abil_name, cor_roll)
 			end
 
 			--If specific moves are used, remove all debuffs from all targets it hits
@@ -11124,7 +11157,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 				x = target_data.x or 0,
 				y = target_data.y or 0,
 				facing = target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0,
-				clear_delay = clock + 0.65 --Because server ticks and lag can make this messy, we add this short timer before which these debuffs won't be cleared if they Do Things.
+				clear_delay = clock + 1 --Because server ticks and lag can make this messy, we add this short timer before which these debuffs won't be cleared if they Do Things.
 			}
 		end
 	end
@@ -11438,7 +11471,7 @@ function handleActionMessage(data)
 				current_debuffs[target_id][9503] = nil
 			end
 
-			current_debuffs[target_id][effect_id] = nil
+			-- current_debuffs[target_id][effect_id] = nil
 		end
 
 	end
