@@ -349,6 +349,10 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 
 ## Changelog
 
+Version 4.14.1
+- Adjusted the Wild Card and Cutting Cards SP Ability names to include the roll number at the end.
+- Fixed an issue with the latest adjustment for removing Sleep/Bind/Petrify where the debuff icons for those would get stuck on when they should have been removed.
+
 Version 4.14
 - Adjusted the Party Actions sections to be draggable during the Screen Test (//bars ui). The top player in each party is now highlighted in green and able to be dragged, the rest of the party members will snap into place once the drag is released.
 - Adjusted (yet again) how the monitoring for removing Sleep/Bind/Petrify is handled. Instead of delaying recording the position info for the monster it now records immediately but adds a timestamp delay for when to check for movement to then remove the debuffs.
