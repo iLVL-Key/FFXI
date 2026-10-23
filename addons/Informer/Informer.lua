@@ -1117,8 +1117,6 @@ register_event('prerender', function()
 				if login_loading then
 					login_loading = false
 				end
-				-- updateTrackItems()
-				-- updateTrackAmmo()
 				updateInventory()
 			end
 		end
@@ -1140,7 +1138,6 @@ register_event('load', function()
 	if get_info().logged_in then
 		updateEarthData()
 		updateTrackItems()
-		-- updateTrackAmmo()
 		updateZone()
 		updateGameDay()
 		updateGameTime()
@@ -1166,7 +1163,6 @@ register_event('login', function()
 	login_loading = true --prevents frame lag while loading inventory from a login
 	updateEarthData()
 	updateTrackItems()
-	updateTrackAmmo()
 	updateZone()
 	updateGameDay()
 	updateGameTime()
@@ -1198,19 +1194,16 @@ end)
 --Item movement
 register_event('add item', function(bag,index,id,count)
 	updateTrackItems(login_loading)
-	updateTrackAmmo(login_loading)
 	updateInventory(login_loading)
 end)
 register_event('remove item', function(bag,index,id,count)
 	updateTrackItems()
-	updateTrackAmmo()
 	updateInventory()
 end)
 
 --Job Change
 register_event('job change', function()
 	updateTrackItems()
-	updateTrackAmmo()
 	updatePlayerJob()
 end)
 
@@ -1375,7 +1368,6 @@ register_event('addon command',function(addcmd, ...)
 
 		--Update the Things that use color
 		updateTrackItems()
-		updateTrackAmmo()
 		updateGameDay()
 		updateGameTime()
 		updateWeather()
