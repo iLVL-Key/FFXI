@@ -42,15 +42,14 @@ default_layout = '${job} | ${zone} [${zone_timer}] ${pos} ${direction} | ${day} 
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${accolades} ${ammo:Item Name} ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${sparks} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
+defaults.layout.ab_help = 'List of placeholders: ${accolades} ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${sparks} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
 defaults.layout.ac_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
-defaults.layout.ad_help = 'Tracking ammo with ${ammo:Item Name} is similar to using ${track:Item Name} except the first number is for your inventory plus all 8 wardrobes, and the second number is your inventory, all 8 wardrobes, satchel, case, and sack. NOTE: Ammo pouches/quivers are regular usable items and should be tracked using ${track:Item Name}.'
 defaults.layout.main = {}
 defaults.layout.main.brd = default_layout
 defaults.layout.main.blm = default_layout
 defaults.layout.main.blu = default_layout
 defaults.layout.main.bst = default_layout..' | PF Theta: ${track:Pet Food Theta}'
-defaults.layout.main.cor = default_layout..' | Cards: ${track:Trump Card} | Eminent: ${ammo:Eminent Bullet} | Orichalc.: ${ammo:Orichalc. Bullet}'
+defaults.layout.main.cor = default_layout..' | Cards: ${track:Trump Card} | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
 defaults.layout.main.dnc = default_layout
 defaults.layout.main.drg = default_layout..' | Angons: ${track:Angon}'
 defaults.layout.main.drk = default_layout
@@ -61,7 +60,7 @@ defaults.layout.main.nin = default_layout..' | Shihei: ${track:Shihei}'
 defaults.layout.main.pld = default_layout..' | Remedies: ${track:Remedy} | H.Waters: ${track:Holy Water}'
 defaults.layout.main.pup = default_layout..' | Oils: ${track:Automat. Oil +3}'
 defaults.layout.main.rdm = default_layout
-defaults.layout.main.rng = default_layout..' | Eminent: ${ammo:Eminent Bullet} | Orichalc.: ${ammo:Orichalc. Bullet}'
+defaults.layout.main.rng = default_layout..' | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
 defaults.layout.main.run = default_layout
 defaults.layout.main.sam = default_layout
 defaults.layout.main.sch = default_layout
@@ -337,7 +336,7 @@ function foodActive()
 	return false
 end
 
---Replace ${track:Item Name} and ${ammo:Item Name}
+--Replace ${track:Item Name}
 function updateTrackItems(loading)
 
 	--Count the number of given item and return the number and the color
@@ -349,58 +348,7 @@ function updateTrackItems(loading)
 
 		local items = get_items()
 
-		local item_storage_locations = {items.inventory, items.case, items.sack, items.satchel}
-
-		local item_use_num = 0
-		local item_all_num = 0
-		local item_use_color = colors.none
-		local item_all_color = colors.none
-
-		--Find the item in the main inventory (the only usable location)
-		for i, item in ipairs(items.inventory) do
-			if item.id == item_id then
-				item_use_num = item_use_num + item.count
-			end
-		end
-
-		--Find the item in storage locations
-		for _, location in ipairs(item_storage_locations) do
-			for _, item in ipairs(location) do
-				if item.id == item_id then
-					item_all_num = item_all_num + item.count
-				end
-			end
-		end
-
-		--Determine the color based on the count / stack
-		if use_colors and item_use_num == 0 then
-			item_use_color = colors.bad
-		elseif use_colors and (item_use_num / res.items[item_id].stack) <= .26 then
-			item_use_color = colors.warning
-		end
-		item_use_num = string.format("%2s", item_use_num)
-
-		if use_colors and item_all_num == 0 then
-			item_all_color = colors.bad
-		elseif use_colors and (item_all_num / res.items[item_id].stack) <= .26 then
-			item_all_color = colors.warning
-		end
-		item_all_num = string.format("%-2s", item_all_num)
-
-		return item_use_num, item_use_color, item_all_num, item_all_color
-
-	end
-
-	--Count the number of given ammo and return the number and the color
-	local function countAmmo(item_id)
-
-		if loading then
-			return " ?",colors.none,"? ",colors.none
-		end
-
-		local items = get_items()
-
-		local ammo_usable_locations = {
+		local item_usable_locations = {
 			items.inventory,
 			items.wardrobe,
 			items.wardrobe2,
@@ -411,7 +359,7 @@ function updateTrackItems(loading)
 			items.wardrobe7,
 			items.wardrobe8,
 		}
-		local ammo_storage_locations = {
+		local item_storage_locations = {
 			items.inventory,
 			items.wardrobe,
 			items.wardrobe2,
@@ -426,49 +374,49 @@ function updateTrackItems(loading)
 			items.satchel,
 		}
 
-		local ammo_use_num = 0
-		local ammo_all_num = 0
-		local ammo_use_color = colors.none
-		local ammo_all_color = colors.none
+		local use_num = 0
+		local all_num = 0
+		local use_color = colors.none
+		local all_color = colors.none
 
-		--Find the ammo in usable locations
-		for _, location in ipairs(ammo_usable_locations) do
+		--Find the item in usable locations
+		for _, location in ipairs(item_usable_locations) do
 			if location then
 				for _, item in ipairs(location) do
 					if item.id == item_id then
-						ammo_use_num = ammo_use_num + item.count
+						use_num = use_num + item.count
 					end
 				end
 			end
 		end
 
-		--Find the ammo in storage locations
-		for _, location in ipairs(ammo_storage_locations) do
+		--Find the item in storage locations
+		for _, location in ipairs(item_storage_locations) do
 			if location then
 				for _, item in ipairs(location) do
 					if item.id == item_id then
-						ammo_all_num = ammo_all_num + item.count
+						all_num = all_num + item.count
 					end
 				end
 			end
 		end
 
 		--Determine the color based on the count / stack
-		if use_colors and ammo_use_num == 0 then
-			ammo_use_color = colors.bad
-		elseif use_colors and (ammo_use_num / res.items[item_id].stack) <= .26 then
-			ammo_use_color = colors.warning
+		if use_colors and use_num == 0 then
+			use_color = colors.bad
+		elseif use_colors and (use_num / res.items[item_id].stack) <= .26 then
+			use_color = colors.warning
 		end
-		ammo_use_num = string.format("%2s", ammo_use_num)
+		use_num = string.format("%2s", use_num)
 
-		if use_colors and ammo_all_num == 0 then
-			ammo_all_color = colors.bad
-		elseif use_colors and (ammo_all_num / res.items[item_id].stack) <= .26 then
-			ammo_all_color = colors.warning
+		if use_colors and all_num == 0 then
+			all_color = colors.bad
+		elseif use_colors and (all_num / res.items[item_id].stack) <= .26 then
+			all_color = colors.warning
 		end
-		ammo_all_num = string.format("%-2s", ammo_all_num)
+		all_num = string.format("%-2s", all_num)
 
-		return ammo_use_num, ammo_use_color, ammo_all_num, ammo_all_color
+		return use_num, use_color, all_num, all_color
 
 	end
 
@@ -485,21 +433,17 @@ function updateTrackItems(loading)
 	local player = get_player()
 
 	local function processTrackedItems(input_layout)
-		return input_layout:gsub("%${(%a+):(.-)}", function(item_type, item_name)
-			if item_type ~= "track" and item_type ~= "ammo" then
-				return '${'..item_type..':'..item_name..'}'
+		return input_layout:gsub("%${track:(.-)}", function(match)
+			local itemName = match:match("(.-)$")
+			if itemName then
+				local itemId = getIdFromName(itemName)
+				if itemId then
+					local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
+					return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
+				else
+					return '\\cs('..colors.bad..')NO MATCH\\cr'
+				end
 			end
-
-			local itemId = getIdFromName(item_name)
-
-			if not itemId then
-				return '\\cs('..colors.bad..')NO MATCH\\cr'
-			end
-
-			local countFunction = item_type == "ammo" and countAmmo or countItem
-			local item_inv_num, item_inv_color, item_other_num, item_other_color = countFunction(itemId)
-
-			return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
 		end)
 	end
 
