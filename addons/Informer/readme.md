@@ -29,9 +29,6 @@ Displays a bar with information (much like InfoBar!)
 
 ## Placeholders
 - **${accolades}** - Current Accolades amount.
-- **${ammo:Item Name}** - Current number of X item in your main inventory plus all 8 wardrobes / current total number of X item between your inventory, all 8 wardrobes, satchel, case, and sack.
-  - Remember that ammo pouches/quivers are normal usable items and should be tracked using Track below.
-  - The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive.
 - **${day}** - Current Vana'diel day.
 - **${direction}** - Current direction your character is facing.
 - **${distance}** - Distance to current target/sub-target.
@@ -120,7 +117,7 @@ Earth Date, Day, and Time placeholders are able to be modified in `data/settings
 ## Changelog
 
 Version 5.6
-- Added Ammo placeholder. Differs from the normal Item Tracking (${track:Item Name} in that it displays the number found in main inventory plus all 8 wardrobes, followed by the number found in main inventory, all 8 wardrobes, satchel, sack, and case.
+- Updated the Track placeholder to account for being able to use ammo out of wardrobes.
 
 Version 5.5.1
 - Fixed subjob level not resetting correctly when losing SJ Restriction buff.
