@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Informer'
-_addon.version = '5.5.1'
+_addon.version = '5.6'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'informer','info'}
 
@@ -42,14 +42,15 @@ default_layout = '${job} | ${zone} [${zone_timer}] ${pos} ${direction} | ${day} 
 
 defaults.layout = {}
 defaults.layout.aa_help = 'Informer is able to display multiple different things via the use of placeholders, you may change the layout for each individual job however you would like below.'
-defaults.layout.ab_help = 'List of placeholders: ${accolades} ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${sparks} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
+defaults.layout.ab_help = 'List of placeholders: ${accolades} ${ammo:Item Name} ${day} ${direction} ${distance} ${earth_date} ${earth_day} ${earth_time} ${food} ${gil} ${inventory} ${job} ${moon_percent} ${moon_phase} ${name} ${pos} ${region} ${reraise} ${sparks} ${speed} ${target} ${target_w_hpp} ${time} ${title} ${tp} ${track:Item Name} ${weather} ${zone} ${zone_timer}'
 defaults.layout.ac_help = 'Informer is able to track any item in the game with ${track:Item Name}. The item name must be spelled exactly as it appears in the items list (not the longer descriptive name) and is case sensitive. The first number is how many of that item is in your inventory, the second number is the total between inventory, satchel, case, and sack.'
+defaults.layout.ad_help = 'Tracking ammo with ${ammo:Item Name} is similar to using ${track:Item Name} except the first number is for your inventory plus all 8 wardrobes, and the second number is your inventory, all 8 wardrobes, satchel, case, and sack. NOTE: Ammo pouches/quivers are regular usable items and should be tracked using ${track:Item Name}.'
 defaults.layout.main = {}
 defaults.layout.main.brd = default_layout
 defaults.layout.main.blm = default_layout
 defaults.layout.main.blu = default_layout
 defaults.layout.main.bst = default_layout..' | PF Theta: ${track:Pet Food Theta}'
-defaults.layout.main.cor = default_layout..' | Cards: ${track:Trump Card} | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
+defaults.layout.main.cor = default_layout..' | Cards: ${track:Trump Card} | Eminent: ${ammo:Eminent Bullet} | Orichalc.: ${ammo:Orichalc. Bullet}'
 defaults.layout.main.dnc = default_layout
 defaults.layout.main.drg = default_layout..' | Angons: ${track:Angon}'
 defaults.layout.main.drk = default_layout
@@ -60,7 +61,7 @@ defaults.layout.main.nin = default_layout..' | Shihei: ${track:Shihei}'
 defaults.layout.main.pld = default_layout..' | Remedies: ${track:Remedy} | H.Waters: ${track:Holy Water}'
 defaults.layout.main.pup = default_layout..' | Oils: ${track:Automat. Oil +3}'
 defaults.layout.main.rdm = default_layout
-defaults.layout.main.rng = default_layout..' | Eminent: ${track:Eminent Bullet} | Orichalc.: ${track:Orichalc. Bullet}'
+defaults.layout.main.rng = default_layout..' | Eminent: ${ammo:Eminent Bullet} | Orichalc.: ${ammo:Orichalc. Bullet}'
 defaults.layout.main.run = default_layout
 defaults.layout.main.sam = default_layout
 defaults.layout.main.sch = default_layout
@@ -230,6 +231,7 @@ time_in_zone = 0
 zone_timestamp = 0
 sparks = nil
 accolades = nil
+now = 0
 
 tnml = {
 	[2500] = 0, [5550] = 1, [8721] = 2, [11919] = 3, [15122] = 4, [18327] = 5, [21532] = 6, [24737] = 7, [27942] = 8, [31147] = 9, [41205] = 10, [48130] = 11, [53677] = 12, [58618] = 13, [63292] = 14, [67848] = 15, [72353] = 16, [76835] = 17, [81307] = 18, [85775] = 19, [109112] = 20, [127014] = 21, [141329] = 22, [153277] = 23, [163663] = 24, [173018] = 25, [181692] = 26, [189917] = 27, [197845] = 28, [205578] = 29, [258409] = 30, [307400] = 31, [353012] = 32, [395651] = 33, [435673] = 34, [473392] = 35, [509085] = 36, [542995] = 37, [575336] = 38, [606296] = 39, [769426] = 40, [951369] = 41, [1154006] = 42, [1379407] = 43, [1629848] = 44, [1907833] = 45, [2216116] = 46, [2557728] = 47, [2936001] = 48, [3354601] = 49, [3817561] = 50
@@ -335,7 +337,7 @@ function foodActive()
 	return false
 end
 
---Replace ${track:Item Name}
+--Replace ${track:Item Name} and ${ammo:Item Name}
 function updateTrackItems(loading)
 
 	--Count the number of given item and return the number and the color
@@ -346,46 +348,127 @@ function updateTrackItems(loading)
 		end
 
 		local items = get_items()
-		local inventory = items.inventory
-		local containers = {items.inventory, items.case, items.sack, items.satchel}
-		local invNum = 0
-		local otherNum = 0
-		local invColor = colors.none
-		local otherColor = colors.none
 
-		--Find the item and get the count
-		for i, item in ipairs(inventory) do
+		local item_storage_locations = {items.inventory, items.case, items.sack, items.satchel}
+
+		local item_use_num = 0
+		local item_all_num = 0
+		local item_use_color = colors.none
+		local item_all_color = colors.none
+
+		--Find the item in the main inventory (the only usable location)
+		for i, item in ipairs(items.inventory) do
 			if item.id == item_id then
-				invNum = invNum + item.count
+				item_use_num = item_use_num + item.count
 			end
 		end
 
-		--Iterate through each container
-		for _, container in ipairs(containers) do
-			--Find the item and add to the count if found
-			for _, item in ipairs(container) do
+		--Find the item in storage locations
+		for _, location in ipairs(item_storage_locations) do
+			for _, item in ipairs(location) do
 				if item.id == item_id then
-					otherNum = otherNum + item.count
+					item_all_num = item_all_num + item.count
 				end
 			end
 		end
 
 		--Determine the color based on the count / stack
-		if use_colors and invNum == 0 then
-			invColor = colors.bad
-		elseif use_colors and (invNum / res.items[item_id].stack) <= .26 then
-			invColor = colors.warning
+		if use_colors and item_use_num == 0 then
+			item_use_color = colors.bad
+		elseif use_colors and (item_use_num / res.items[item_id].stack) <= .26 then
+			item_use_color = colors.warning
 		end
-		invNum = string.format("%2s", invNum)
+		item_use_num = string.format("%2s", item_use_num)
 
-		if use_colors and otherNum == 0 then
-			otherColor = colors.bad
-		elseif use_colors and (otherNum / res.items[item_id].stack) <= .26 then
-			otherColor = colors.warning
+		if use_colors and item_all_num == 0 then
+			item_all_color = colors.bad
+		elseif use_colors and (item_all_num / res.items[item_id].stack) <= .26 then
+			item_all_color = colors.warning
 		end
-		otherNum = string.format("%-2s", otherNum)
+		item_all_num = string.format("%-2s", item_all_num)
 
-		return invNum, invColor, otherNum, otherColor
+		return item_use_num, item_use_color, item_all_num, item_all_color
+
+	end
+
+	--Count the number of given ammo and return the number and the color
+	local function countAmmo(item_id)
+
+		if loading then
+			return " ?",colors.none,"? ",colors.none
+		end
+
+		local items = get_items()
+
+		local ammo_usable_locations = {
+			items.inventory,
+			items.wardrobe,
+			items.wardrobe2,
+			items.wardrobe3,
+			items.wardrobe4,
+			items.wardrobe5,
+			items.wardrobe6,
+			items.wardrobe7,
+			items.wardrobe8,
+		}
+		local ammo_storage_locations = {
+			items.inventory,
+			items.wardrobe,
+			items.wardrobe2,
+			items.wardrobe3,
+			items.wardrobe4,
+			items.wardrobe5,
+			items.wardrobe6,
+			items.wardrobe7,
+			items.wardrobe8,
+			items.case,
+			items.sack,
+			items.satchel,
+		}
+
+		local ammo_use_num = 0
+		local ammo_all_num = 0
+		local ammo_use_color = colors.none
+		local ammo_all_color = colors.none
+
+		--Find the ammo in usable locations
+		for _, location in ipairs(ammo_usable_locations) do
+			if location then
+				for _, item in ipairs(location) do
+					if item.id == item_id then
+						ammo_use_num = ammo_use_num + item.count
+					end
+				end
+			end
+		end
+
+		--Find the ammo in storage locations
+		for _, location in ipairs(ammo_storage_locations) do
+			if location then
+				for _, item in ipairs(location) do
+					if item.id == item_id then
+						ammo_all_num = ammo_all_num + item.count
+					end
+				end
+			end
+		end
+
+		--Determine the color based on the count / stack
+		if use_colors and ammo_use_num == 0 then
+			ammo_use_color = colors.bad
+		elseif use_colors and (ammo_use_num / res.items[item_id].stack) <= .26 then
+			ammo_use_color = colors.warning
+		end
+		ammo_use_num = string.format("%2s", ammo_use_num)
+
+		if use_colors and ammo_all_num == 0 then
+			ammo_all_color = colors.bad
+		elseif use_colors and (ammo_all_num / res.items[item_id].stack) <= .26 then
+			ammo_all_color = colors.warning
+		end
+		ammo_all_num = string.format("%-2s", ammo_all_num)
+
+		return ammo_use_num, ammo_use_color, ammo_all_num, ammo_all_color
 
 	end
 
@@ -402,17 +485,21 @@ function updateTrackItems(loading)
 	local player = get_player()
 
 	local function processTrackedItems(input_layout)
-		return input_layout:gsub("%${track:(.-)}", function(match)
-			local itemName = match:match("(.-)$")
-			if itemName then
-				local itemId = getIdFromName(itemName)
-				if itemId then
-					local item_inv_num, item_inv_color, item_other_num, item_other_color = countItem(itemId)
-					return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
-				else
-					return '\\cs('..colors.bad..')NO MATCH\\cr'
-				end
+		return input_layout:gsub("%${(%a+):(.-)}", function(item_type, item_name)
+			if item_type ~= "track" and item_type ~= "ammo" then
+				return '${'..item_type..':'..item_name..'}'
 			end
+
+			local itemId = getIdFromName(item_name)
+
+			if not itemId then
+				return '\\cs('..colors.bad..')NO MATCH\\cr'
+			end
+
+			local countFunction = item_type == "ammo" and countAmmo or countItem
+			local item_inv_num, item_inv_color, item_other_num, item_other_color = countFunction(itemId)
+
+			return '\\cs('..item_inv_color..')'..item_inv_num..'\\cr/\\cs('..item_other_color..')'..item_other_num..'\\cr'
 		end)
 	end
 
@@ -1019,16 +1106,19 @@ end)
 register_event('prerender', function()
 
 	local time = os.time()
+	local clock = os.clock()
 
 	--Main call to update the Informer bar
-	if get_info().logged_in then
+	if get_info().logged_in and clock > now + 0.05 then
+		now = clock
 		updateInformerMain()
 		if not char_loading then
 			if not loading_inv then
 				if login_loading then
 					login_loading = false
 				end
-				updateTrackItems()
+				-- updateTrackItems()
+				-- updateTrackAmmo()
 				updateInventory()
 			end
 		end
@@ -1050,6 +1140,7 @@ register_event('load', function()
 	if get_info().logged_in then
 		updateEarthData()
 		updateTrackItems()
+		-- updateTrackAmmo()
 		updateZone()
 		updateGameDay()
 		updateGameTime()
@@ -1075,6 +1166,7 @@ register_event('login', function()
 	login_loading = true --prevents frame lag while loading inventory from a login
 	updateEarthData()
 	updateTrackItems()
+	updateTrackAmmo()
 	updateZone()
 	updateGameDay()
 	updateGameTime()
@@ -1106,16 +1198,19 @@ end)
 --Item movement
 register_event('add item', function(bag,index,id,count)
 	updateTrackItems(login_loading)
+	updateTrackAmmo(login_loading)
 	updateInventory(login_loading)
 end)
 register_event('remove item', function(bag,index,id,count)
 	updateTrackItems()
+	updateTrackAmmo()
 	updateInventory()
 end)
 
 --Job Change
 register_event('job change', function()
 	updateTrackItems()
+	updateTrackAmmo()
 	updatePlayerJob()
 end)
 
@@ -1280,6 +1375,7 @@ register_event('addon command',function(addcmd, ...)
 
 		--Update the Things that use color
 		updateTrackItems()
+		updateTrackAmmo()
 		updateGameDay()
 		updateGameTime()
 		updateWeather()
